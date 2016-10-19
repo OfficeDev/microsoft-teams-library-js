@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "noEmitOnError": true,
-    "noImplicitAny": false, /* TODO: Turn this on */
+    "noImplicitAny": true,
     "noImplicitReturns": true,
     "noResolve": false, /* Required for typings to work properly */
     "target": "es5"

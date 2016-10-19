@@ -1,34 +1,38 @@
-/// <reference path="../typings/globals/jasmine/index.d.ts" />
+/// <reference path="../typings/index.d.ts" />
+/// <reference path="../src/MicrosoftTeams.ts" />
+
+// Undocumented members only used for unit testing.
+declare namespace microsoftTeams
+{
+    let _window: Window;
+
+    function _uninitialize(): void;
+}
 
 describe("MicrosoftTeams", () =>
 {
-    // Work around bad intellisense from the ambient/non-ambient hack.
-    const microsoftTeams = microsoftTeamsImpl;
-
     const validOrigin = "https://teams.skype.com";
 
-    var mockWindow: Window;
-
     // Use to send a mock message from the app.
-    var processMessage: (ev: MessageEvent) => any;
+    let processMessage: (ev: MessageEvent) => void;
 
     // A list of messages the library sends to the app.
-    var messages: microsoftTeamsImpl.MessageRequest[];
+    let messages: microsoftTeamsImpl.MessageRequest[];
 
     beforeEach(() =>
     {
         processMessage = null;
         messages = [];
-        mockWindow =
+        let mockWindow =
         {
-            addEventListener: function(type: string, listener: (ev: MessageEvent) => any, useCapture?: boolean): void
+            addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
             {
                 if (type === "message")
                 {
                     processMessage = listener;
                 }
             },
-            removeEventListener: function(type: string, listener: (ev: MessageEvent) => any, useCapture?: boolean): void
+            removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
             {
                 if (type === "message")
                 {
@@ -49,20 +53,19 @@ describe("MicrosoftTeams", () =>
                     }
 
                     messages.push(message);
-                }
+                },
             } as Window,
-        } as Window;
-        mockWindow["self" + ""] = mockWindow;
-
-        microsoftTeams["_window"] = mockWindow;
+            self: null as Window,
+        };
+        microsoftTeams._window = mockWindow.self = mockWindow as Window;
     });
 
     afterEach(() =>
     {
         // Reset the object since it's a singleton
-        if (microsoftTeams["_uninitialize"])
+        if (microsoftTeams._uninitialize)
         {
-            microsoftTeams["_uninitialize"]();
+            microsoftTeams._uninitialize();
         }
     });
 
@@ -94,7 +97,7 @@ describe("MicrosoftTeams", () =>
 
     it("should not allow calls before initialization", () =>
     {
-        expect(() => microsoftTeams.getContext(() => {})).toThrowError("The library has not yet been initialized");
+        expect(() => microsoftTeams.getContext(() => { return; })).toThrowError("The library has not yet been initialized");
     });
 
     it("should not allow calls from the wrong context", () =>
@@ -121,13 +124,13 @@ describe("MicrosoftTeams", () =>
         {
             origin: "https://some-malicious-site.com/",
             data:
-            <microsoftTeamsImpl.MessageResponse>{
+            {
                 id: getContextMessage.id,
                 args:
                 [{
                     groupId: "someMaliciousValue",
-                }]
-            }
+                }],
+            } as microsoftTeamsImpl.MessageResponse,
         }));
 
         expect(callbackCalled).toBe(false);
@@ -138,7 +141,7 @@ describe("MicrosoftTeams", () =>
         microsoftTeams.initialize();
 
         // Another call made before the init response
-        microsoftTeams.getContext(() => {});
+        microsoftTeams.getContext(() => { return; });
 
         // Only the init call went out
         expect(messages.length).toBe(1);
@@ -158,7 +161,7 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
-        let actualContext1;
+        let actualContext1: microsoftTeams.Context;
         microsoftTeams.getContext((context) =>
         {
             actualContext1 = context;
@@ -166,7 +169,7 @@ describe("MicrosoftTeams", () =>
 
         let getContextMessage1 = messages[messages.length - 1];
 
-        let actualContext2;
+        let actualContext2: microsoftTeams.Context;
         microsoftTeams.getContext((context) =>
         {
             actualContext2 = context;
@@ -174,7 +177,7 @@ describe("MicrosoftTeams", () =>
 
         let getContextMessage2 = messages[messages.length - 1];
 
-        let actualContext3;
+        let actualContext3: microsoftTeams.Context;
         microsoftTeams.getContext((context) =>
         {
             actualContext3 = context;
@@ -187,9 +190,9 @@ describe("MicrosoftTeams", () =>
         expect(getContextMessage2).not.toBe(getContextMessage1);
         expect(getContextMessage3).not.toBe(getContextMessage2);
 
-        let expectedContext1 = { groupId: "someGroupId1" };
-        let expectedContext2 = { groupId: "someGroupId2" };
-        let expectedContext3 = { groupId: "someGroupId3" };
+        let expectedContext1: microsoftTeams.Context = { locale: "someLocale1", groupId: "someGroupId1" };
+        let expectedContext2: microsoftTeams.Context = { locale: "someLocale2", groupId: "someGroupId2" };
+        let expectedContext3: microsoftTeams.Context = { locale: "someLocale3", groupId: "someGroupId3" };
 
         // respond in the wrong order
         respondToMessage(getContextMessage3, expectedContext3);
@@ -206,7 +209,7 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
-        let actualContext;
+        let actualContext: microsoftTeams.Context;
         microsoftTeams.getContext((context) =>
         {
             actualContext = context;
@@ -215,8 +218,9 @@ describe("MicrosoftTeams", () =>
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        let expectedContext =
+        let expectedContext: microsoftTeams.Context =
         {
+            locale: "someLocale",
             groupId: "someGroupId",
         };
 
@@ -229,7 +233,7 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
-        let newTheme;
+        let newTheme: string;
         microsoftTeams.registerOnThemeChangeHandler((theme) =>
         {
             newTheme = theme;
@@ -299,7 +303,7 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("settings");
 
-        let actualSettings;
+        let actualSettings: microsoftTeams.settings.Settings;
         microsoftTeams.settings.getSettings((settings) =>
         {
             actualSettings = settings;
@@ -397,7 +401,7 @@ describe("MicrosoftTeams", () =>
 
         sendMessage("settings.save");
 
-        var message = findMessageByFunc("settings.save.success");
+        let message = findMessageByFunc("settings.save.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(0);
     });
@@ -416,7 +420,7 @@ describe("MicrosoftTeams", () =>
         sendMessage("settings.save");
 
         expect(handlerCalled).toBe(true);
-        var message = findMessageByFunc("settings.save.success");
+        let message = findMessageByFunc("settings.save.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(0);
     });
@@ -435,7 +439,7 @@ describe("MicrosoftTeams", () =>
         sendMessage("settings.save");
 
         expect(handlerCalled).toBe(true);
-        var message = findMessageByFunc("settings.save.failure");
+        let message = findMessageByFunc("settings.save.failure");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         expect(message.args[0]).toBe("someReason");
@@ -447,7 +451,7 @@ describe("MicrosoftTeams", () =>
 
         sendMessage("settings.remove");
 
-        var message = findMessageByFunc("settings.remove.success");
+        let message = findMessageByFunc("settings.remove.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(0);
     });
@@ -466,7 +470,7 @@ describe("MicrosoftTeams", () =>
         sendMessage("settings.remove");
 
         expect(handlerCalled).toBe(true);
-        var message = findMessageByFunc("settings.remove.success");
+        let message = findMessageByFunc("settings.remove.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(0);
     });
@@ -485,7 +489,7 @@ describe("MicrosoftTeams", () =>
         sendMessage("settings.remove");
 
         expect(handlerCalled).toBe(true);
-        var message = findMessageByFunc("settings.remove.failure");
+        let message = findMessageByFunc("settings.remove.failure");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         expect(message.args[0]).toBe("someReason");
@@ -507,7 +511,7 @@ describe("MicrosoftTeams", () =>
         sendMessage("settings.save");
 
         expect(handlerCalled).toBe(true);
-        var message = findMessageByFunc("settings.save.success");
+        let message = findMessageByFunc("settings.save.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(0);
     });
@@ -536,8 +540,8 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
-        let successResult: string; 
-        let failureReason: string; 
+        let successResult: string;
+        let failureReason: string;
         let authenticationParams =
         {
             url: "https://someUrl",
@@ -561,8 +565,8 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
-        let successResult: string; 
-        let failureReason: string; 
+        let successResult: string;
+        let failureReason: string;
         let authenticationParams =
         {
             url: "https://someUrl",
@@ -629,19 +633,21 @@ describe("MicrosoftTeams", () =>
         return null;
     }
 
+    // tslint:disable-next-line:no-any:The args here are a passthrough to MessageResponse
     function respondToMessage(message: microsoftTeamsImpl.MessageRequest, ...args: any[]): void
     {
         processMessage(new MessageEvent("message",
         {
             origin: validOrigin,
             data:
-            <microsoftTeamsImpl.MessageResponse>{
+            {
                 id: message.id,
                 args: args,
-            }
+            } as microsoftTeamsImpl.MessageResponse,
         }));
     }
 
+    // tslint:disable-next-line:no-any:The args here are a passthrough to MessageRequest
     function sendMessage(func: string, ...args: any[]): void
     {
         processMessage(new MessageEvent("message",
@@ -651,7 +657,7 @@ describe("MicrosoftTeams", () =>
             {
                 func: func,
                 args: args,
-            }
+            },
         }));
     }
 });

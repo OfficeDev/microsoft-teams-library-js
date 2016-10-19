@@ -3,23 +3,18 @@
     "align": [
       true,
       "parameters",
-      "arguments",
       "statements"
     ],
     "class-name": true,
     "comment-format": [
       true,
-      "check-space",
-      "check-uppercase"
+      "check-space"
     ],
     "curly": true,
     "eofline": true,
     "forin": false,
     "indent": [ true, "spaces" ],
-    "interface-name": [
-      true,
-      "always-prefix"
-    ],
+    "interface-name": [ false ],
     "member-access": true,
     "member-ordering": [
       true,
@@ -50,8 +45,8 @@
     "no-eval": true,
     "no-inferrable-types": true,
     "no-internal-module": true,
-    "no-invalid-this": true,
-    "no-reference": true,
+    "no-invalid-this": false,
+    "no-reference": false,
     "no-require-imports": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,
@@ -63,7 +58,7 @@
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": true,
-    "object-literal-sort-keys": true,
+    "object-literal-sort-keys": false,
     "one-line": [ false ],
     "quotemark": [
       true,
@@ -90,7 +85,6 @@
       true,
       "call-signature",
       "parameter",
-      "arrow-parameter",
       "property-declaration",
       "member-variable-declaration"
     ],

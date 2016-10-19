@@ -1,19 +1,22 @@
+/// <reference path="MicrosoftTeams.d.ts" />
+
 // Shim in definitions used for browser-compat
-interface MessageEvent {
-  // Needed for Chrome
-  originalEvent: MessageEvent;
+interface MessageEvent
+{
+    // Needed for Chrome
+    originalEvent: MessageEvent;
 }
 
 namespace microsoftTeamsImpl
 {
-    'use strict';
+    "use strict";
 
     const validOrigins = [
         "https://teams.microsoft.com",
         "https://teams.skype.com",
         "https://ppespaces.skype.com",
         "https://devspaces.skype.com",
-        "http://dev.local" // local development
+        "http://dev.local", // local development
     ];
 
     const handlers: {[func: string]: Function} = {};
@@ -24,26 +27,26 @@ namespace microsoftTeamsImpl
         settings: "settings",
         content: "content",
         authentication: "authentication",
-        remove: "remove"
-    }
+        remove: "remove",
+    };
 
     export interface MessageRequest
     {
         id: number;
         func: string;
-        args?: any[];
+        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
     }
 
     export interface MessageResponse
     {
         id: number;
-        args?: any[];
+        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[] */
     }
 
     // This indicates whether initialize was called (started).
     // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
     let initializeCalled = false;
-    
+
     let parentWindow: Window;
     let parentOrigin: string;
     let messageQueue: MessageRequest[] = [];
@@ -64,7 +67,7 @@ namespace microsoftTeamsImpl
         initializeCalled = true;
 
         // Undocumented field used to mock the window for unit tests
-        let currentWindow = this._window || window;
+        let currentWindow = this._window as Window || window;
 
         // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent); otherwise,
         // it's the window that opened us (i.e. window.opener)
@@ -75,7 +78,7 @@ namespace microsoftTeamsImpl
         }
 
         // Listen for messages post to our window (in a way that works for all browsers)
-        let messageListener = evt => processMessage(evt);
+        let messageListener = (evt: MessageEvent) => processMessage(evt);
         currentWindow.addEventListener("message", messageListener, false);
 
         // Undocumented function used to clear state between unit tests
@@ -215,13 +218,13 @@ namespace microsoftTeamsImpl
 
         class SaveEventImpl implements microsoftTeams.settings.SaveEvent
         {
-            public notified = false;
+            public notified: boolean = false;
 
             public notifySuccess(): void
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.save.success")
+                sendMessage("settings.save.success");
 
                 this.notified = true;
             }
@@ -230,12 +233,12 @@ namespace microsoftTeamsImpl
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.save.failure", reason)
+                sendMessage("settings.save.failure", reason);
 
                 this.notified = true;
             }
 
-            private ensureNotNotified()
+            private ensureNotNotified(): void
             {
                 if (this.notified)
                 {
@@ -260,13 +263,13 @@ namespace microsoftTeamsImpl
 
         class RemoveEventImpl implements microsoftTeams.settings.RemoveEvent
         {
-            public notified = false;
+            public notified: boolean = false;
 
             public notifySuccess(): void
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.remove.success")
+                sendMessage("settings.remove.success");
 
                 this.notified = true;
             }
@@ -275,12 +278,12 @@ namespace microsoftTeamsImpl
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.remove.failure", reason)
+                sendMessage("settings.remove.failure", reason);
 
                 this.notified = true;
             }
 
-            private ensureNotNotified()
+            private ensureNotNotified(): void
             {
                 if (this.notified)
                 {
@@ -297,7 +300,7 @@ namespace microsoftTeamsImpl
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             // Convert any relative URLs into absolute ones before sending them over to our parent window
-            let link = document.createElement('a');
+            let link = document.createElement("a");
             link.href = authenticateParameters.url;
 
             let messageId = sendMessage(
@@ -362,7 +365,7 @@ namespace microsoftTeamsImpl
     function processMessage(evt: MessageEvent): void
     {
         // Process only if we received a valid message
-        if (!evt || !evt.data || typeof evt.data != "object")
+        if (!evt || !evt.data || typeof evt.data !== "object")
         {
             return;
         }
@@ -404,6 +407,7 @@ namespace microsoftTeamsImpl
         }
     }
 
+    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
     function sendMessage(actionName: string, ...args: any[]): number
     {
         let request = createMessage(actionName, args);
@@ -422,6 +426,7 @@ namespace microsoftTeamsImpl
         return request.id;
     }
 
+    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
     function createMessage(func: string, args: any[]): MessageRequest
     {
         return {
@@ -433,4 +438,11 @@ namespace microsoftTeamsImpl
 }
 
 // Hack to get around having an ambient d.ts and non-ambient ts side by side. 
-window["microsoftTeams"] = microsoftTeamsImpl;
+/* tslint:disable:no-any:Part of the hack described above */
+declare interface Window
+{
+    microsoftTeams: any;
+}
+
+window.microsoftTeams = microsoftTeamsImpl as any;
+/* tslint:enable:no-any */
