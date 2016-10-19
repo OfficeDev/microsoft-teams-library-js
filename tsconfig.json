@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noEmitOnError": true,
+    "noImplicitAny": false, /* TODO: Turn this on */
+    "noImplicitReturns": true,
+    "noResolve": false, /* Required for typings to work properly */
+    "target": "es5"
+  },
+  "files": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "typings/index.d.ts"
+  ]
+}

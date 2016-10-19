@@ -1,0 +1,120 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "manifestVersion": {
+            "type": "string",
+            "description": "The version of the manifest schema this manifest is using."
+        },
+        "id": {
+            "type": "string",
+            "description": "A unique identifier for this extension. The id must use reverse domain name notation.",
+            "maxLength": 64
+        },
+        "version": {
+            "type": "string",
+            "description": "The extension version. Changes to the extension should cause a version change. This version string must follow the semver standard."
+        },
+        "name": {
+            "type": "string",
+            "description": "The display name of the extension.",
+            "maxLength": 16
+        },
+        "developer": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The display name for the developer",
+                    "maxLength": 32
+                },
+                "websiteUrl": {
+                    "type": "string",
+                    "description": "The url to the developer's website."
+                },
+                "privacyUrl": {
+                    "type": "string",
+                    "description": "The url to the developer's privacy policy."
+                },
+                "termsOfUseUrl": {
+                    "type": "string",
+                    "description": "The url to the developer's terms of use."
+                }
+            },
+            "required": [
+                "name",
+                "websiteUrl",
+                "privacyUrl",
+                "termsOfUseUrl"
+            ]
+        },
+        "description": {
+            "type": "object",
+            "properties": {
+                "short": {
+                    "type": "string",
+                    "description": "A short description of the extension used when space is limited.",
+                    "maxLength": 80
+                },
+                "full": {
+                    "type": "string",
+                    "description": "The full description of the extension.",
+                    "maxLength": 256
+                }
+            },
+            "required": [
+                "short",
+                "full"
+            ]
+        },
+        "icons": {
+            "type": "object",
+            "properties": {
+                "44": {
+                    "type": "string",
+                    "description": "An icon for the extension sized to 44x44."
+                },
+                "88": {
+                    "type": "string",
+                    "description": "An icon for the extension sized to 88x88."
+                }
+            },
+            "required": [
+                "44",
+                "88"
+            ]
+        },
+        "accentColor": {
+            "type": "string",
+            "description": "A color to use in conjunction with the extension's icons."
+        },
+        "configUrl": {
+            "type": "string",
+            "description": "The url to use when configuring the extension."
+        },
+        "canUpdateConfig": {
+            "type": "boolean",
+            "description": "A value indicating whether an instance of the extension's config can be updated by the user after creation.",
+            "default": true
+        },
+        "needsIdentity": {
+            "type": "boolean",
+            "description": "A value indicating whether the extension is requesting access to identity information"
+         },
+        "validDomains": {
+            "type": "array",
+            "description": "A list of valid domains from which the extension expects to load any content."
+        }
+    },
+    "required": [
+        "manifestVersion",
+        "id",
+        "version",
+        "name",
+        "developer",
+        "description",
+        "icons",
+        "accentColor",
+        "configUrl"
+    ]
+}

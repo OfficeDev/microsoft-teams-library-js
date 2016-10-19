@@ -1,0 +1,22 @@
+{
+  "name": "microsoftteams",
+  "version": "0.0.0",
+  "description": "",
+  "repository": {},
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-rename": "1.2.2",
+    "gulp-tslint": "6.1.2",
+    "gulp-typescript": "3.0.2",
+    "gulp-typings": "2.0.4",
+    "gulp-uglify": "2.0.0",
+    "jasmine": "2.5.2",
+    "karma": "1.3.0",
+    "karma-phantomjs-launcher": "1.0.2",
+    "karma-jasmine": "1.0.2",
+    "rimraf": "2.5.4",
+    "tslint": "3.15.1",
+    "typescript": "2.0.3"
+  }
+}
