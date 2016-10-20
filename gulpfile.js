@@ -2,6 +2,7 @@
 
 var gulp = require("gulp"),
     karma = require("karma").Server,
+    merge = require('merge2'),
     tslint = require("gulp-tslint"),
     typescript = require("gulp-typescript"),
     rename = require("gulp-rename"),
@@ -45,12 +46,18 @@ var tsProject = typescript.createProject(config.tsConfig, {
 
 gulp.task("ts", [ "typings", "tslint" ], function ()
 {
-    return tsProject.src()
-        .pipe(tsProject())
-        .pipe(gulp.dest(config.outDir))
-        .pipe(uglify())
-        .pipe(rename({ suffix: ".min" }))
-        .pipe(gulp.dest(config.outDir));
+    var tsResult = tsProject.src()
+        .pipe(tsProject());
+
+    return merge([
+        tsResult.dts
+            .pipe(gulp.dest(config.outDir)),
+        tsResult.js
+            .pipe(gulp.dest(config.outDir))
+            .pipe(uglify())
+            .pipe(rename({ suffix: ".min" }))
+            .pipe(gulp.dest(config.outDir)),
+    ]);
 });
 
 gulp.task("test", [ "ts" ], function (done)
