@@ -1,3 +1,4 @@
+/* tslint:disable:no-unused-variable:These aren't unused. This is part of a public SDK */
 declare namespace microsoftTeams
 {
     // Initializes the library. This must be called before any other API calls.
@@ -104,19 +105,19 @@ declare namespace microsoftTeams
         interface AuthenticateParameters
         {
             // The url for the authentication popup
-            url: string,
+            url: string;
 
             // The preferred width for the popup. Note that this value may be ignored if outside the acceptable bounds.
-            width?: number,
+            width?: number;
 
             // The preferred height for the popup. Note that this value may be ignored if outside the acceptable bounds.
-            height?: number,
+            height?: number;
 
             // A function which is called if the authentication succeeds with the result returned from the authentication popup.
-            successCallback?: (result?: string) => void,
+            successCallback?: (result?: string) => void;
 
             // A function which is called if the authentication fails with the reason for the failure returned from the authentication popup.
-            failureCallback?: (reason?: string) => void
+            failureCallback?: (reason?: string) => void;
         }
     }
 

@@ -30,17 +30,20 @@ gulp.task("tslint", function ()
     return gulp.src(config.tsFiles)
         .pipe(tslint({
             configuration: config.tsLintConfig,
-            tslint: require("tslint")
+            tslint: require("tslint"),
+            formatter: "verbose"
         }))
-        .pipe(tslint.report("verbose"));
+        .pipe(tslint.report({
+            summarizeFailureOutput: true
+        }));
 });
 
 var tsProject = typescript.createProject(config.tsConfig, {
     // Point to the specific typescript package we pull in, not a machine-installed one
-    typescript: require("typescript")
+    typescript: require("typescript"),
 });
 
-gulp.task("ts", [ "typings" /*, "tslint" */ ], function ()
+gulp.task("ts", [ "typings", "tslint" ], function ()
 {
     return tsProject.src()
         .pipe(tsProject())
