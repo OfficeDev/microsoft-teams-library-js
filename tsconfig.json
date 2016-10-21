@@ -4,7 +4,8 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noResolve": false, /* Required for typings to work properly */
-    "target": "es5"
+    "target": "es5",
+    "declaration": true
   },
   "files": [
     "src/**/*.ts",

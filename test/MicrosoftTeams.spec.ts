@@ -9,6 +9,19 @@ declare namespace microsoftTeams
     function _uninitialize(): void;
 }
 
+interface MessageRequest
+{
+    id: number;
+    func: string;
+    args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+}
+
+interface MessageResponse
+{
+    id: number;
+    args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[] */
+}
+
 describe("MicrosoftTeams", () =>
 {
     const validOrigin = "https://teams.skype.com";
@@ -17,7 +30,7 @@ describe("MicrosoftTeams", () =>
     let processMessage: (ev: MessageEvent) => void;
 
     // A list of messages the library sends to the app.
-    let messages: microsoftTeamsImpl.MessageRequest[];
+    let messages: MessageRequest[];
 
     beforeEach(() =>
     {
@@ -41,7 +54,7 @@ describe("MicrosoftTeams", () =>
             },
             parent:
             {
-                postMessage: function(message: microsoftTeamsImpl.MessageRequest, targetOrigin: string): void
+                postMessage: function(message: MessageRequest, targetOrigin: string): void
                 {
                     if (message.func === "initialize")
                     {
@@ -130,7 +143,7 @@ describe("MicrosoftTeams", () =>
                 [{
                     groupId: "someMaliciousValue",
                 }],
-            } as microsoftTeamsImpl.MessageResponse,
+            } as MessageResponse,
         }));
 
         expect(callbackCalled).toBe(false);
@@ -620,7 +633,7 @@ describe("MicrosoftTeams", () =>
         respondToMessage(initMessage, frameContext);
     }
 
-    function findMessageByFunc(func: string): microsoftTeamsImpl.MessageRequest
+    function findMessageByFunc(func: string): MessageRequest
     {
         for (let i = 0; i < messages.length; i++)
         {
@@ -634,7 +647,7 @@ describe("MicrosoftTeams", () =>
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to MessageResponse
-    function respondToMessage(message: microsoftTeamsImpl.MessageRequest, ...args: any[]): void
+    function respondToMessage(message: MessageRequest, ...args: any[]): void
     {
         processMessage(new MessageEvent("message",
         {
@@ -643,7 +656,7 @@ describe("MicrosoftTeams", () =>
             {
                 id: message.id,
                 args: args,
-            } as microsoftTeamsImpl.MessageResponse,
+            } as MessageResponse,
         }));
     }
 
