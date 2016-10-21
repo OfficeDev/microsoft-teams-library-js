@@ -38,7 +38,7 @@ namespace microsoftTeams
     interface MessageResponse
     {
         id: number;
-        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[] */
+        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
     }
 
     // This indicates whether initialize was called (started).
