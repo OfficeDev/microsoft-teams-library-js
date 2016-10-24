@@ -6,5 +6,5 @@ node_modules/
 typings/
 
 # build output
+build/
 dist/
-

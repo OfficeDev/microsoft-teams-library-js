@@ -103,7 +103,10 @@
          },
         "validDomains": {
             "type": "array",
-            "description": "A list of valid domains from which the extension expects to load any content."
+            "description": "A list of valid domains from which the extension expects to load any content.",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "required": [

@@ -1,36 +1,30 @@
 "use strict";
 
-var gulp = require("gulp"),
+var del = require("del"),
+    fs = require("fs"),
+    gulp = require("gulp"),
     karma = require("karma").Server,
     merge = require('merge2'),
     tslint = require("gulp-tslint"),
     typescript = require("gulp-typescript"),
     rename = require("gulp-rename"),
-    rimraf = require("rimraf"),
     typings = require("gulp-typings"),
     uglify = require("gulp-uglify");
 
-var config = {
-    karmaConfig: __dirname + "/karma.conf.js",
-    tsConfig: "./tsconfig.json",
-    tsFiles: [ "./src/**/*.ts", "./test/**/*.ts" ],
-    tsLintConfig: "tslint.json",
-    typingsConfig: "./typings.json",
-    typingsDir: "./typings/",
-    outDir: "./dist/",
-};
+var buildDir = "./build/";
+var distDir = "./dist/";
 
 gulp.task("typings", function ()
 {
-    return gulp.src(config.typingsConfig)
+    return gulp.src("./typings.json")
         .pipe(typings());
 });
 
 gulp.task("tslint", function ()
 {
-    return gulp.src(config.tsFiles)
+    return gulp.src([ "./src/**/*.ts", "./test/**/*.ts" ])
         .pipe(tslint({
-            configuration: config.tsLintConfig,
+            configuration: "tslint.json",
             tslint: require("tslint"),
             formatter: "verbose"
         }))
@@ -39,7 +33,7 @@ gulp.task("tslint", function ()
         }));
 });
 
-var tsProject = typescript.createProject(config.tsConfig, {
+var tsProject = typescript.createProject("./tsconfig.json", {
     // Point to the specific typescript package we pull in, not a machine-installed one
     typescript: require("typescript"),
 });
@@ -51,33 +45,50 @@ gulp.task("ts", [ "typings", "tslint" ], function ()
 
     return merge([
         tsResult.dts
-            .pipe(gulp.dest(config.outDir)),
+            .pipe(gulp.dest(buildDir)),
         tsResult.js
-            .pipe(gulp.dest(config.outDir))
+            .pipe(gulp.dest(buildDir))
             .pipe(uglify())
             .pipe(rename({ suffix: ".min" }))
-            .pipe(gulp.dest(config.outDir)),
+            .pipe(gulp.dest(buildDir)),
     ]);
 });
 
 gulp.task("test", [ "ts" ], function (done)
 {
-  new karma({
-    configFile: config.karmaConfig,
-    singleRun: true
-  }, done).start();
+    new karma({ configFile: __dirname + "/karma.conf.js" }, done).start();
 });
 
-gulp.task("default", [ "ts", "test" ]);
-
-gulp.task("clean:dist", function (cb)
+gulp.task("doc", function (done)
 {
-    rimraf(config.outDir, cb);
+    var parse = require("json-schema-to-markdown");
+    var schema = require("./src/MicrosoftTeams.schema.json");
+    var markdown = parse(schema);
+    fs.mkdir(buildDir, function () {
+        fs.mkdir(buildDir + "/doc", function () {
+            fs.writeFile(buildDir + "/doc/MicrosoftTeams.schema.md", markdown, done);
+        });
+    });
 });
 
-gulp.task("clean:typings", function (cb)
+gulp.task("dist", [ "ts", "doc" ], function ()
 {
-    rimraf(config.typingsDir, cb);
+    var distFiles = [
+        buildDir + "/src/**/*.js",
+        buildDir + "/src/**/*.d.ts",
+        buildDir + "/src/**/*.schema.json",
+    ];
+
+    return gulp.src(distFiles)
+        .pipe(gulp.dest(distDir));
 });
 
-gulp.task("clean", [ "clean:dist", "clean:typings" ]);
+gulp.task("default", [ "ts", "test", "doc", "dist" ]);
+
+gulp.task("clean", function() {
+    return del([
+        buildDir,
+        distDir,
+        "./typings/"
+    ]);
+});
