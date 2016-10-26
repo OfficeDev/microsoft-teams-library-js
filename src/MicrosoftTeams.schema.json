@@ -53,12 +53,12 @@
             "properties": {
                 "short": {
                     "type": "string",
-                    "description": "A short description of the extension used when space is limited.",
+                    "description": "A short description of the extension used when space is limited. Maximum length is 80 characters.",
                     "maxLength": 80
                 },
                 "full": {
                     "type": "string",
-                    "description": "The full description of the extension.",
+                    "description": "The full description of the extension. Maximum length is 256 characters.",
                     "maxLength": 256
                 }
             },
@@ -69,6 +69,7 @@
         },
         "icons": {
             "type": "object",
+            "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
             "properties": {
                 "44": {
                     "type": "string",
@@ -86,7 +87,7 @@
         },
         "accentColor": {
             "type": "string",
-            "description": "A color to use in conjunction with the extension's icons."
+            "description": "A color to use in conjunction with the extension's icons. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
         },
         "configUrl": {
             "type": "string",
@@ -103,7 +104,10 @@
          },
         "validDomains": {
             "type": "array",
-            "description": "A list of valid domains from which the extension expects to load any content."
+            "description": "A list of valid domains from which the extension expects to load any content. Domain listings can include wildcards, for example `*.example.com`. If your tab configuration or content UI needs to navigate to any other domain besides the one use for tab configuration, that domain must be specified here.",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "required": [

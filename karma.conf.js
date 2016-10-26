@@ -10,12 +10,12 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/**/*.js'
+      'build/**/*.js'
     ],
 
     // list of files to exclude
     exclude: [
-      'dist/**/*.min.js'
+      'build/**/*.min.js'
     ],
 
     // test results reporter to use
