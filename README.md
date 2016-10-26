@@ -1,6 +1,6 @@
-# [Microsoft Teams JavaScript SDK](https://msdn.microsoft.com/en-us/teams/)
+# [Microsoft Teams JavaScript SDK](https://msdn.microsoft.com/en-us/microsoft-teams/)
 
-This JavaScript library is used as part of the Microsoft Teams SDK. For instructions on building your own extension for Microsoft Teams, please read the [documentation](https://msdn.microsoft.com/en-us/teams/).
+This JavaScript library is used as part of the Microsoft Teams SDK. For instructions on building your own extension for Microsoft Teams, please read the [documentation](https://msdn.microsoft.com/en-us/microsoft-teams/).
 
 [![Build Status](https://travis-ci.com/OfficeDev/microsoft-teams-library-js.svg?token=UAYZgdbKQTPSakoAAsBL&branch=master)](https://travis-ci.com/OfficeDev/microsoft-teams-library-js)
 
