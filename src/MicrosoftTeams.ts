@@ -5,6 +5,9 @@ interface MessageEvent
     originalEvent: MessageEvent;
 }
 
+/**
+ * This is the root namespace for the JavaScript SDK.
+ */
 namespace microsoftTeams
 {
     "use strict";
@@ -56,7 +59,7 @@ namespace microsoftTeams
     handlers["themeChange"] = handleThemeChange;
 
     /**
-     * Initializes the library. This must be called before any other API calls.
+     * Initializes the library. This must be called before any other SDK calls.
      * The caller should only call this once the frame is loaded successfully.
      */
     export function initialize(): void
@@ -126,6 +129,7 @@ namespace microsoftTeams
 
     /**
      * Retrieves the current context the frame is running in.
+     * @param callback The callback to invoke when the {@link Context} object is retrieved.
      */
     export function getContext(callback: (context: Context) => void): void
     {
@@ -138,6 +142,7 @@ namespace microsoftTeams
     /**
      * Registers a handler for when the user changes their theme.
      * Only one handler may be registered at a time. Subsequent registrations will override the first.
+     * @param handler The handler to invoke when the user changes their theme.
      */
     export function registerOnThemeChangeHandler(handler: (theme: string) => void): void
     {
@@ -156,9 +161,10 @@ namespace microsoftTeams
 
     /**
      * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
-     * valid domains specified in the tab manifest; otherwise, an exception will be thrown. This API only
+     * valid domains specified in the tab manifest; otherwise, an exception will be thrown. This function only
      * needs to be used when navigating the frame to a URL in a different domain than the current one in
-     * a way that keeps the SkypeTeams app informed of the change and allows the API to continue working.
+     * a way that keeps the app informed of the change and allows the SDK to continue working.
+     * @param url The url to navigate the frame to.
      */
     export function navigateCrossDomain(url: string): void
     {
@@ -175,7 +181,7 @@ namespace microsoftTeams
     }
 
     /**
-     * Namespace to interact with the settings view-specific API.
+     * Namespace to interact with the settings view-specific SDK.
      * This object is only usable on the settings frame.
      */
     export namespace settings
@@ -188,6 +194,7 @@ namespace microsoftTeams
         /**
          * Sets the validity state for the settings.
          * The inital value is false so the user will not be able to save the settings until this is called with true.
+         * @param validityState A value indicating whether the save or remove button is enabled for the user.
          */
         export function setValidityState(validityState: boolean): void
         {
@@ -198,6 +205,7 @@ namespace microsoftTeams
 
         /**
          * Gets the settings for the current instance.
+         * @param callback The callback to invoke when the {@link Settings} object is retrieved.
          */
         export function getSettings(callback: (settings: Settings) => void): void
         {
@@ -211,6 +219,7 @@ namespace microsoftTeams
          * Sets the settings for the current instance.
          * Note that this is an asynchronous operation so there are no guarentees as to when calls
          * to getSettings will reflect the changed state.
+         * @param settings The desired settings for this current instance.
          */
         export function setSettings(settings: Settings): void
         {
@@ -224,6 +233,7 @@ namespace microsoftTeams
          * to create or update the underlying resource powering the content.
          * The object passed to the handler must be used to notify whether to proceed with the save.
          * Only one handler may be registered at a time. Subsequent registrations will override the first.
+         * @param handler The handler to invoke when the user selects the save button.
          */
         export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void
         {
@@ -237,6 +247,7 @@ namespace microsoftTeams
          * to remove the underlying resource powering the content.
          * The object passed to the handler must be used to notify whether to proceed with the remove
          * Only one handler may be registered at a time. Subsequent registrations will override the first.
+         * @param handler The handler to invoke when the user selects the remove button.
          */
         export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void
         {
@@ -300,6 +311,7 @@ namespace microsoftTeams
 
             /**
              * Notifies that the underlying resource creation failed and that the settings may not be saved.
+             * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user. Otherwise a generic error is displayed.
              */
             notifyFailure(reason?: string): void;
         }
@@ -313,6 +325,7 @@ namespace microsoftTeams
 
             /**
              * Notifies that the underlying resource removal failed and that the content may not be removed.
+             * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user. Otherwise a generic error is displayed.
              */
             notifyFailure(reason?: string): void;
         }
@@ -398,6 +411,7 @@ namespace microsoftTeams
     {
         /**
          * Initiates an authentication request which pops up a new windows with the specified settings.
+         * @param authenticateParameters A set of values that configure the authentication popup.
          */
         export function authenticate(authenticateParameters: AuthenticateParameters): void
         {
@@ -429,6 +443,7 @@ namespace microsoftTeams
          * Notifies the frame that initiated this authentication request that the request was successful.
          * This function is only usable on the authentication window.
          * This call causes the authentication window to be closed.
+         * @param result Specifies a result for the authentication. If specified, the frame which initiated the authentication popup will recieve this value in their callback.
          */
         export function notifySuccess(result?: string): void
         {
@@ -441,6 +456,7 @@ namespace microsoftTeams
          * Notifies the frame that initiated this authentication request that the request failed.
          * This function is only usable on the authentication window.
          * This call causes the authentication window to be closed.
+         * @param reason Specifies a reason for the authentication failure. If specified, the frame which initiated the authentication popup will recieve this value in their callback.
          */
         export function notifyFailure(reason?: string): void
         {
