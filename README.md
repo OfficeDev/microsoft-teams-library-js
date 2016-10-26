@@ -7,8 +7,8 @@ This JavaScript library is used as part of the Microsoft Teams SDK. For instruct
 ## Get Started
 1. Clone the repo
 2. Navigate to the repo root
-2. `npm install`
-3. `gulp`
+3. `npm install`
+4. `gulp`
 
 ## Contributing
 We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md).
