@@ -564,12 +564,15 @@ namespace microsoftTeams
             return;
         }
 
-        // Process only if the message is coming from a valid origin or the origin used for local testing.
-        parentOrigin = evt.origin || evt.originalEvent.origin;
-        if (validOrigins.indexOf(parentOrigin.toLowerCase()) === -1)
+        // Process only if the message is coming from a valid origin or the origin used for local testing
+        let messageOrigin = evt.origin || evt.originalEvent.origin;
+        if (validOrigins.indexOf(messageOrigin.toLowerCase()) === -1)
         {
             return;
         }
+
+        // Set our parent origin so that we can use it when sending messages
+        parentOrigin = messageOrigin;
 
         // If we have any messages in our queue send them now
         while (messageQueue.length > 0)
@@ -580,7 +583,7 @@ namespace microsoftTeams
         // Check to see if this looks like a request or a response
         if ("id" in evt.data)
         {
-            // Call any associated callbacks.
+            // Call any associated callbacks
             const message = evt.data as MessageResponse;
             const callback = callbacks[message.id];
             if (callback)
@@ -590,12 +593,12 @@ namespace microsoftTeams
         }
         else if ("func" in evt.data)
         {
-            // Delegate the request to the proper handler.
+            // Delegate the request to the proper handler
             const message = evt.data as MessageRequest;
             const handler = handlers[message.func];
             if (handler)
             {
-                // We don't expect any handler to respond at this point.
+                // We don't expect any handler to respond at this point
                 handler.apply(this, message.args);
             }
         }
