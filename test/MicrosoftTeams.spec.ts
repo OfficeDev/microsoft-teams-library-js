@@ -149,6 +149,33 @@ describe("MicrosoftTeams", () =>
         expect(callbackCalled).toBe(false);
     });
 
+    it("should not make calls to unsupported domain", () =>
+    {
+        microsoftTeams.initialize();
+
+        let initMessage = findMessageByFunc("initialize");
+        expect(initMessage).not.toBeNull();
+
+        processMessage(new MessageEvent("message",
+        {
+            origin: "https://some-malicious-site.com/",
+            data:
+            {
+                id: initMessage.id,
+                args:
+                [
+                    "content",
+                ],
+            } as MessageResponse,
+        }));
+
+        // Try to make a call
+        microsoftTeams.getContext(() => { return; });
+
+        // Only the init call went out
+        expect(messages.length).toBe(1);
+    });
+
     it("should successfully handle calls queued before init completes", () =>
     {
         microsoftTeams.initialize();
