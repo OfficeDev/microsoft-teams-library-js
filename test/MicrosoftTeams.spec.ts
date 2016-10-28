@@ -149,7 +149,7 @@ describe("MicrosoftTeams", () =>
         expect(callbackCalled).toBe(false);
     });
 
-    it("should not make calls to unsupported domain", () =>
+    it("should not make calls to unsupported domains", () =>
     {
         microsoftTeams.initialize();
 
