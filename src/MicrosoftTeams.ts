@@ -461,7 +461,6 @@ namespace microsoftTeams
                 if (result || reason)
                 {
                     clearInterval(interval);
-                    authWindow.close();
 
                     // Notify caller of the authentication result
                     if (result)
@@ -491,6 +490,7 @@ namespace microsoftTeams
             ensureInitialized(frameContexts.authentication);
 
             localStorage.setItem("authentication.success", result);
+            self.close();
         }
 
         /**
@@ -504,6 +504,7 @@ namespace microsoftTeams
             ensureInitialized(frameContexts.authentication);
 
             localStorage.setItem("authentication.failure", reason);
+            self.close();
         }
 
         export interface AuthenticateParameters

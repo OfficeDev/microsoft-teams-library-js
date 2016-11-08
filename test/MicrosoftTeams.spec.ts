@@ -588,16 +588,7 @@ describe("MicrosoftTeams", () =>
             expect(specs.indexOf("width = 100")).not.toBe(-1);
             expect(specs.indexOf("height = 200")).not.toBe(-1);
             windowOpenCalled = true;
-
-            let openedWindow =
-            {
-                close: function (): void
-                {
-                    return;
-                },
-            } as Window;
-
-            return openedWindow;
+            return {} as Window;
         });
 
         let authenticationParams =
@@ -613,15 +604,6 @@ describe("MicrosoftTeams", () =>
     it("should successfully handle auth success", () =>
     {
         initializeWithContext("content");
-
-        let windowCloseCalled = false;
-        spyOn(microsoftTeams._window, "open").and.returnValue(
-        {
-            close: function (): void
-            {
-                windowCloseCalled = true;
-            },
-        } as Window);
 
         let successResult: string;
         let failureReason: string;
@@ -645,15 +627,6 @@ describe("MicrosoftTeams", () =>
     it("should successfully handle auth failure", () =>
     {
         initializeWithContext("content");
-
-        let windowCloseCalled = false;
-        spyOn(microsoftTeams._window, "open").and.returnValue(
-        {
-            close: function (): void
-            {
-                windowCloseCalled = true;
-            },
-        } as Window);
 
         let successResult: string;
         let failureReason: string;
