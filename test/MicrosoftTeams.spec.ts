@@ -69,8 +69,22 @@ describe("MicrosoftTeams", () =>
                 },
             } as Window,
             self: null as Window,
+            open: function (url: string, name: string, specs: string): Window
+            {
+                let openedWindow =
+                {
+                    close: function (): void
+                    {
+                        return;
+                    },
+                } as Window;
+
+                return openedWindow;
+            },
         };
         microsoftTeams._window = mockWindow.self = mockWindow as Window;
+
+        jasmine.clock().install();
     });
 
     afterEach(() =>
@@ -80,6 +94,12 @@ describe("MicrosoftTeams", () =>
         {
             microsoftTeams._uninitialize();
         }
+
+        // Clear local storage values
+        localStorage.removeItem("authentication.success");
+        localStorage.removeItem("authentication.failure");
+
+        jasmine.clock().uninstall();
     });
 
     it("should exist in the global namespace", () =>
@@ -560,31 +580,54 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
+        {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("Microsoft Teams");
+            expect(specs.indexOf("width = 100")).not.toBe(-1);
+            expect(specs.indexOf("height = 200")).not.toBe(-1);
+            windowOpenCalled = true;
+
+            let openedWindow =
+            {
+                close: function (): void
+                {
+                    return;
+                },
+            } as Window;
+
+            return openedWindow;
+        });
+
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
-
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
-        expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + "/");
-        expect(message.args[1]).toBe(authenticationParams.width);
-        expect(message.args[2]).toBe(authenticationParams.height);
+        expect(windowOpenCalled).toBe(true);
     });
 
     it("should successfully handle auth success", () =>
     {
         initializeWithContext("content");
 
+        let windowCloseCalled = false;
+        spyOn(microsoftTeams._window, "open").and.returnValue(
+        {
+            close: function (): void
+            {
+                windowCloseCalled = true;
+            },
+        } as Window);
+
         let successResult: string;
         let failureReason: string;
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
             successCallback: (result: string) => successResult = result,
@@ -592,12 +635,10 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
+        localStorage.setItem("authentication.success", "someResult");
+        jasmine.clock().tick(201);
 
-        respondToMessage(message, true, "someResult");
-
-        expect(successResult).toBe("someResult");
+        expect(successResult).toEqual("someResult");
         expect(failureReason).toBeUndefined();
     });
 
@@ -605,25 +646,31 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
+        let windowCloseCalled = false;
+        spyOn(microsoftTeams._window, "open").and.returnValue(
+        {
+            close: function (): void
+            {
+                windowCloseCalled = true;
+            },
+        } as Window);
+
         let successResult: string;
         let failureReason: string;
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
             successCallback: (result: string) => successResult = result,
             failureCallback: (reason: string) => failureReason = reason,
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
-
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
-
-        respondToMessage(message, false, "someReason");
+        localStorage.setItem("authentication.failure", "someReason");
+        jasmine.clock().tick(201);
 
         expect(successResult).toBeUndefined();
-        expect(failureReason).toBe("someReason");
+        expect(failureReason).toEqual("someReason");
     });
 
     it("should successfully notify auth success", () =>
@@ -632,10 +679,8 @@ describe("MicrosoftTeams", () =>
 
         microsoftTeams.authentication.notifySuccess("someResult");
 
-        let message = findMessageByFunc("authentication.authenticate.success");
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBe("someResult");
+        let result = localStorage.getItem("authentication.success");
+        expect(result).toEqual("someResult");
     });
 
     it("should successfully notify auth failure", () =>
@@ -644,10 +689,8 @@ describe("MicrosoftTeams", () =>
 
         microsoftTeams.authentication.notifyFailure("someReason");
 
-        let message = findMessageByFunc("authentication.authenticate.failure");
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBe("someReason");
+        let reason = localStorage.getItem("authentication.failure");
+        expect(reason).toEqual("someReason");
     });
 
     function initializeWithContext(frameContext: string): void

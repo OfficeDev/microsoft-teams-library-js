@@ -48,12 +48,14 @@ namespace microsoftTeams
     // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
     let initializeCalled = false;
 
+    let currentWindow: Window;
     let parentWindow: Window;
     let parentOrigin: string;
     let messageQueue: MessageRequest[] = [];
     let nextMessageId = 0;
     let callbacks: {[id: number]: Function} = {};
     let frameContext: string;
+    let loadedInDesktopClient: boolean;
 
     let themeChangeHandler: (theme: string) => void;
     handlers["themeChange"] = handleThemeChange;
@@ -72,19 +74,34 @@ namespace microsoftTeams
         initializeCalled = true;
 
         // Undocumented field used to mock the window for unit tests
-        let currentWindow = this._window as Window || window;
+        currentWindow = this._window as Window || window;
+        let messageListener: (evt: MessageEvent) => void;
 
-        // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent); otherwise,
-        // it's the window that opened us (i.e. window.opener)
+        // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent)
         parentWindow = (currentWindow.parent !== currentWindow.self) ? currentWindow.parent : currentWindow.opener;
-        if (!parentWindow)
+        if (parentWindow)
         {
-            throw new Error("This page must be loaded in an iframe");
-        }
+            // Listen for messages post to our window (in a way that works for all browsers)
+            messageListener = (evt: MessageEvent) => processMessage(evt);
+            currentWindow.addEventListener("message", messageListener, false);
 
-        // Listen for messages post to our window (in a way that works for all browsers)
-        let messageListener = (evt: MessageEvent) => processMessage(evt);
-        currentWindow.addEventListener("message", messageListener, false);
+            try
+            {
+                // Send the initialized message to any origin since at this point we most likely don't know what our
+                // parent window's origin is yet and this message contains no data that could pose a security risk.
+                parentOrigin = "*";
+                let messageId = sendMessage("initialize");
+                callbacks[messageId] = (context: string, inDesktopClient: boolean) =>
+                {
+                    frameContext = context;
+                    loadedInDesktopClient = inDesktopClient;
+                };
+            }
+            finally
+            {
+                parentOrigin = null;
+            }
+        }
 
         // Undocumented function used to clear state between unit tests
         this._uninitialize = () =>
@@ -109,22 +126,6 @@ namespace microsoftTeams
 
             currentWindow.removeEventListener("message", messageListener, false);
         };
-
-        try
-        {
-            // Send the initialized message to any origin since at this point we most likely don't know what our
-            // parent window's origin is yet and this message contains no data that could pose a security risk.
-            parentOrigin = "*";
-            let messageId = sendMessage("initialize");
-            callbacks[messageId] = (context: string) =>
-            {
-                frameContext = context;
-            };
-        }
-        finally
-        {
-            parentOrigin = null;
-        }
     }
 
     /**
@@ -421,22 +422,62 @@ namespace microsoftTeams
             let link = document.createElement("a");
             link.href = authenticateParameters.url;
 
-            let messageId = sendMessage(
-                "authentication.authenticate",
-                link.href,
-                authenticateParameters.width,
-                authenticateParameters.height);
-            callbacks[messageId] = (success: boolean, response: string) =>
+            // Clear any previous success/failure values
+            localStorage.removeItem("authentication.success");
+            localStorage.removeItem("authentication.failure");
+
+            // Open a popup window to the specified authentication URL
+            let authWindow: Window;
+            if (loadedInDesktopClient)
             {
-                if (success)
+                let messageId = sendMessage("authentication.authenticate", link.href);
+                callbacks[messageId] = (allowed: boolean) =>
                 {
-                    authenticateParameters.successCallback(response);
-                }
-                else
+                    if (allowed)
+                    {
+                        authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authenticateParameters.width + ", height = " + authenticateParameters.height);
+                    }
+                    else
+                    {
+                        throw new Error("Authentication is only supported for URLs matching the pattern registered in the manifest.");
+                    }
+                };
+            }
+            else
+            {
+                authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authenticateParameters.width + ", height = " + authenticateParameters.height);
+            }
+
+            if (!authWindow)
+            {
+                throw new Error("Failed to open authentication window.");
+            }
+
+            // Wait for the authentication window to close
+            let interval = setInterval(() =>
+            {
+                let result: string = localStorage.getItem("authentication.success");
+                let reason: string = localStorage.getItem("authentication.failure");
+                if (result || reason)
                 {
-                    authenticateParameters.failureCallback(response);
+                    clearInterval(interval);
+                    authWindow.close();
+
+                    // Notify caller of the authentication result
+                    if (result)
+                    {
+                        authenticateParameters.successCallback(result);
+                    }
+                    else
+                    {
+                        authenticateParameters.failureCallback(reason);
+                    }
+
+                    // Clear the success/failure values
+                    localStorage.removeItem("authentication.success");
+                    localStorage.removeItem("authentication.failure");
                 }
-            };
+            }, 200);
         }
 
         /**
@@ -449,7 +490,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessage("authentication.authenticate.success", result);
+            localStorage.setItem("authentication.success", result);
         }
 
         /**
@@ -462,7 +503,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessage("authentication.authenticate.failure", reason);
+            localStorage.setItem("authentication.failure", reason);
         }
 
         export interface AuthenticateParameters
