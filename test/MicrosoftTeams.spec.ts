@@ -25,6 +25,7 @@ interface MessageResponse
 describe("MicrosoftTeams", () =>
 {
     const validOrigin = "https://teams.skype.com";
+    const tabOrigin = "https://example.com";
 
     // Use to send a mock message from the app.
     let processMessage: (ev: MessageEvent) => void;
@@ -51,6 +52,10 @@ describe("MicrosoftTeams", () =>
                 {
                     processMessage = null;
                 }
+            },
+            location:
+            {
+                origin: tabOrigin,
             },
             parent:
             {
@@ -153,9 +158,10 @@ describe("MicrosoftTeams", () =>
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: "https://some-malicious-site.com/",
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: getContextMessage.id,
@@ -164,7 +170,7 @@ describe("MicrosoftTeams", () =>
                     groupId: "someMaliciousValue",
                 }],
             } as MessageResponse,
-        }));
+        } as MessageEvent);
 
         expect(callbackCalled).toBe(false);
     });
@@ -176,9 +182,10 @@ describe("MicrosoftTeams", () =>
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
 
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: "https://some-malicious-site.com/",
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: initMessage.id,
@@ -187,7 +194,7 @@ describe("MicrosoftTeams", () =>
                     "content",
                 ],
             } as MessageResponse,
-        }));
+        } as MessageEvent);
 
         // Try to make a call
         microsoftTeams.getContext(() => { return; });
@@ -617,8 +624,16 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        localStorage.setItem("authentication.success", "someResult");
-        jasmine.clock().tick(201);
+        processMessage(
+        {
+            origin: tabOrigin,
+            source: {} as Window,
+            data:
+            {
+                func: "authentication.authenticate.success",
+                args: ["someResult"],
+            },
+        } as MessageEvent);
 
         expect(successResult).toEqual("someResult");
         expect(failureReason).toBeUndefined();
@@ -639,8 +654,17 @@ describe("MicrosoftTeams", () =>
             failureCallback: (reason: string) => failureReason = reason,
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
-        localStorage.setItem("authentication.failure", "someReason");
-        jasmine.clock().tick(201);
+
+        processMessage(
+        {
+            origin: tabOrigin,
+            source: {} as Window,
+            data:
+            {
+                func: "authentication.authenticate.failure",
+                args: ["someReason"],
+            },
+        } as MessageEvent);
 
         expect(successResult).toBeUndefined();
         expect(failureReason).toEqual("someReason");
@@ -652,8 +676,10 @@ describe("MicrosoftTeams", () =>
 
         microsoftTeams.authentication.notifySuccess("someResult");
 
-        let result = localStorage.getItem("authentication.success");
-        expect(result).toEqual("someResult");
+        let message = findMessageByFunc("authentication.authenticate.success");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1);
+        expect(message.args[0]).toBe("someResult");
     });
 
     it("should successfully notify auth failure", () =>
@@ -662,8 +688,10 @@ describe("MicrosoftTeams", () =>
 
         microsoftTeams.authentication.notifyFailure("someReason");
 
-        let reason = localStorage.getItem("authentication.failure");
-        expect(reason).toEqual("someReason");
+        let message = findMessageByFunc("authentication.authenticate.failure");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1);
+        expect(message.args[0]).toBe("someReason");
     });
 
     function initializeWithContext(frameContext: string): void
@@ -692,28 +720,30 @@ describe("MicrosoftTeams", () =>
     // tslint:disable-next-line:no-any:The args here are a passthrough to MessageResponse
     function respondToMessage(message: MessageRequest, ...args: any[]): void
     {
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: validOrigin,
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: message.id,
                 args: args,
             } as MessageResponse,
-        }));
+        } as MessageEvent);
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to MessageRequest
     function sendMessage(func: string, ...args: any[]): void
     {
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: validOrigin,
+            source: microsoftTeams._window.parent,
             data:
             {
                 func: func,
                 args: args,
             },
-        }));
+        } as MessageEvent);
     }
 });

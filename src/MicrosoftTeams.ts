@@ -51,6 +51,8 @@ namespace microsoftTeams
     let currentWindow: Window;
     let parentWindow: Window;
     let parentOrigin: string;
+    let childWindow: Window;
+    let childOrigin: string;
     let messageQueue: MessageRequest[] = [];
     let nextMessageId = 0;
     let callbacks: {[id: number]: Function} = {};
@@ -75,32 +77,29 @@ namespace microsoftTeams
 
         // Undocumented field used to mock the window for unit tests
         currentWindow = this._window as Window || window;
-        let messageListener: (evt: MessageEvent) => void;
+
+        // Listen for messages post to our window (in a way that works for all browsers)
+        let messageListener = (evt: MessageEvent) => processMessage(evt);
+        currentWindow.addEventListener("message", messageListener, false);
 
         // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent)
         parentWindow = (currentWindow.parent !== currentWindow.self) ? currentWindow.parent : currentWindow.opener;
-        if (parentWindow)
-        {
-            // Listen for messages post to our window (in a way that works for all browsers)
-            messageListener = (evt: MessageEvent) => processMessage(evt);
-            currentWindow.addEventListener("message", messageListener, false);
 
-            try
+        try
+        {
+            // Send the initialized message to any origin since at this point we most likely don't know what our
+            // parent window's origin is yet and this message contains no data that could pose a security risk.
+            parentOrigin = "*";
+            let messageId = sendMessage("initialize");
+            callbacks[messageId] = (context: string, inDesktopClient: boolean) =>
             {
-                // Send the initialized message to any origin since at this point we most likely don't know what our
-                // parent window's origin is yet and this message contains no data that could pose a security risk.
-                parentOrigin = "*";
-                let messageId = sendMessage("initialize");
-                callbacks[messageId] = (context: string, inDesktopClient: boolean) =>
-                {
-                    frameContext = context;
-                    loadedInDesktopClient = inDesktopClient;
-                };
-            }
-            finally
-            {
-                parentOrigin = null;
-            }
+                frameContext = context;
+                loadedInDesktopClient = inDesktopClient;
+            };
+        }
+        finally
+        {
+            parentOrigin = null;
         }
 
         // Undocumented function used to clear state between unit tests
@@ -157,6 +156,11 @@ namespace microsoftTeams
         if (themeChangeHandler)
         {
             themeChangeHandler(theme);
+        }
+
+        if (childWindow && childOrigin)
+        {
+            childWindow.postMessage({ func: "themeChange", args: [theme] }, childOrigin);
         }
     }
 
@@ -410,6 +414,12 @@ namespace microsoftTeams
 
     export namespace authentication
     {
+        let authWindow: Window;
+        let authInterval: number;
+        let authParams: AuthenticateParameters;
+        handlers["authentication.authenticate.success"] = handleSuccess;
+        handlers["authentication.authenticate.failure"] = handleFailure;
+
         /**
          * Initiates an authentication request which pops up a new windows with the specified settings.
          * @param authenticateParameters A set of values that configure the authentication popup.
@@ -418,16 +428,13 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
+            authParams = authenticateParameters;
+
             // Convert any relative URLs into absolute ones before sending them over to our parent window
             let link = document.createElement("a");
-            link.href = authenticateParameters.url;
-
-            // Clear any previous success/failure values
-            localStorage.removeItem("authentication.success");
-            localStorage.removeItem("authentication.failure");
+            link.href = authParams.url;
 
             // Open a popup window to the specified authentication URL
-            let authWindow: Window;
             if (loadedInDesktopClient)
             {
                 let messageId = sendMessage("authentication.authenticate", link.href);
@@ -435,48 +442,38 @@ namespace microsoftTeams
                 {
                     if (allowed)
                     {
-                        authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authenticateParameters.width + ", height = " + authenticateParameters.height);
+                        authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authParams.width + ", height = " + authParams.height);
                     }
                     else
                     {
+                        authParams = null;
                         throw new Error("Authentication is only supported for URLs matching the pattern registered in the manifest.");
                     }
                 };
             }
             else
             {
-                authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authenticateParameters.width + ", height = " + authenticateParameters.height);
+                authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authParams.width + ", height = " + authParams.height);
             }
 
             if (!authWindow)
             {
+                authParams = null;
                 throw new Error("Failed to open authentication window.");
             }
 
             // Wait for the authentication window to close
-            let interval = setInterval(() =>
+            authInterval = setInterval(() =>
             {
-                let result: string = localStorage.getItem("authentication.success");
-                let reason: string = localStorage.getItem("authentication.failure");
-                if (result || reason)
+                if (!authWindow || authWindow.closed)
                 {
-                    clearInterval(interval);
-
-                    // Notify caller of the authentication result
-                    if (result)
-                    {
-                        authenticateParameters.successCallback(result);
-                    }
-                    else
-                    {
-                        authenticateParameters.failureCallback(reason);
-                    }
-
-                    // Clear the success/failure values
-                    localStorage.removeItem("authentication.success");
-                    localStorage.removeItem("authentication.failure");
+                    handleFailure();
                 }
-            }, 200);
+                else
+                {
+                    authWindow.postMessage("ping", "*");
+                }
+            }, 100);
         }
 
         /**
@@ -489,8 +486,8 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            localStorage.setItem("authentication.success", result);
-            self.close();
+            sendMessage("authentication.authenticate.success", result);
+            window.close();
         }
 
         /**
@@ -503,8 +500,44 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            localStorage.setItem("authentication.failure", reason);
-            self.close();
+            sendMessage("authentication.authenticate.failure", reason);
+            window.close();
+        }
+
+        function handleSuccess(result?: string): void
+        {
+            console.log("In handleSuccess");
+            if (authInterval)
+            {
+                clearInterval(authInterval);
+                authInterval = 0;
+            }
+
+            if (authParams && authParams.successCallback)
+            {
+                authParams.successCallback(result);
+            }
+
+            authParams = null;
+            authWindow = null;
+        }
+
+        function handleFailure(reason?: string): void
+        {
+            console.log("In handleFailure");
+            if (authInterval)
+            {
+                clearInterval(authInterval);
+                authInterval = 0;
+            }
+
+            if (authParams && authParams.failureCallback)
+            {
+                authParams.failureCallback(reason);
+            }
+
+            authParams = null;
+            authWindow = null;
         }
 
         export interface AuthenticateParameters
@@ -600,30 +633,68 @@ namespace microsoftTeams
 
     function processMessage(evt: MessageEvent): void
     {
+        console.log(JSON.stringify(evt));
+
         // Process only if we received a valid message
         if (!evt || !evt.data || typeof evt.data !== "object")
         {
             return;
         }
 
-        // Process only if the message is coming from a valid origin or the origin used for local testing
+        // Process only if the message is coming from a valid origin
+        let messageSource = evt.source || evt.originalEvent.source;
         let messageOrigin = evt.origin || evt.originalEvent.origin;
-        if (validOrigins.indexOf(messageOrigin.toLowerCase()) === -1)
+        if ((validOrigins.indexOf(messageOrigin.toLowerCase()) === -1) &&
+            (messageOrigin !== currentWindow.location.origin) ||
+            (messageSource === currentWindow))
         {
+            console.log("Bailing");
             return;
         }
 
-        // Set our parent origin so that we can use it when sending messages
-        parentOrigin = messageOrigin;
+        // Set our parent window and origin so that we can use them when sending messages
+        if (!parentWindow || (parentWindow === messageSource))
+        {
+            parentWindow = messageSource;
+            parentOrigin = messageOrigin;
+        }
+        else if (parentWindow !== messageSource)
+        {
+            console.log("Setting child window and origin");
+            childWindow = messageSource;
+            childOrigin = messageOrigin;
+        }
 
         // If we have any messages in our queue send them now
-        while (messageQueue.length > 0)
+        while (parentWindow && parentOrigin && (messageQueue.length > 0))
         {
             parentWindow.postMessage(messageQueue.shift(), parentOrigin);
         }
 
-        // Check to see if this looks like a request or a response
-        if ("id" in evt.data)
+        if ("id" in evt.data && "func" in evt.data)
+        {
+            // Try to delegate the request to the proper handler
+            const message = evt.data as MessageRequest;
+            const handler = handlers[message.func];
+            if (handler)
+            {
+                // We don't expect any handler to respond at this point
+                console.log("Invoking handler");
+                handler.apply(this, message.args);
+            }
+            else
+            {
+                // Proxy to parent
+                let messageId = sendMessage(message.func, message.args);
+
+                // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+                callbacks[messageId] = (...args: any[]) =>
+                {
+                    childWindow.postMessage({ id: message.id, args: args }, childOrigin);
+                };
+            }
+        }
+        else if ("id" in evt.data)
         {
             // Call any associated callbacks
             const message = evt.data as MessageResponse;
@@ -641,6 +712,7 @@ namespace microsoftTeams
             if (handler)
             {
                 // We don't expect any handler to respond at this point
+                console.log("Invoking handler");
                 handler.apply(this, message.args);
             }
         }
@@ -653,7 +725,7 @@ namespace microsoftTeams
 
         // If we already know our parent window's origin then send the message right away; otherwise,
         // queue up the message and send it once the origin has been established
-        if (parentOrigin)
+        if (parentWindow && parentOrigin)
         {
             parentWindow.postMessage(request, parentOrigin);
         }
