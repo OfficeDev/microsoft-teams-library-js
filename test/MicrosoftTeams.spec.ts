@@ -33,12 +33,24 @@ describe("MicrosoftTeams", () =>
     // A list of messages the library sends to the app.
     let messages: MessageRequest[];
 
+    let childWindow =
+    {
+        close: function (): void
+        {
+            return;
+        },
+    };
+
     beforeEach(() =>
     {
         processMessage = null;
         messages = [];
         let mockWindow =
         {
+            innerWidth: 1024,
+            innerHeight: 768,
+            screenLeft: 0,
+            screenTop: 0,
             addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
             {
                 if (type === "message")
@@ -76,15 +88,7 @@ describe("MicrosoftTeams", () =>
             self: null as Window,
             open: function (url: string, name: string, specs: string): Window
             {
-                let openedWindow =
-                {
-                    close: function (): void
-                    {
-                        return;
-                    },
-                } as Window;
-
-                return openedWindow;
+                return childWindow as Window;
             },
         };
         microsoftTeams._window = mockWindow.self = mockWindow as Window;
@@ -591,9 +595,9 @@ describe("MicrosoftTeams", () =>
         spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
         {
             expect(url).toEqual("https://someurl/");
-            expect(name).toEqual("Microsoft Teams");
-            expect(specs.indexOf("width = 100")).not.toBe(-1);
-            expect(specs.indexOf("height = 200")).not.toBe(-1);
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
             windowOpenCalled = true;
             return {} as Window;
         });
@@ -627,9 +631,10 @@ describe("MicrosoftTeams", () =>
         processMessage(
         {
             origin: tabOrigin,
-            source: {} as Window,
+            source: childWindow,
             data:
             {
+                id: 0,
                 func: "authentication.authenticate.success",
                 args: ["someResult"],
             },
@@ -658,9 +663,10 @@ describe("MicrosoftTeams", () =>
         processMessage(
         {
             origin: tabOrigin,
-            source: {} as Window,
+            source: childWindow,
             data:
             {
+                id: 0,
                 func: "authentication.authenticate.failure",
                 args: ["someReason"],
             },

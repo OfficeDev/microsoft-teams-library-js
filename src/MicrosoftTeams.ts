@@ -31,6 +31,12 @@ namespace microsoftTeams
         remove: "remove",
     };
 
+    const hostClientTypes =
+    {
+        desktop: "desktop",
+        webb: "web",
+    };
+
     interface MessageRequest
     {
         id: number;
@@ -51,13 +57,14 @@ namespace microsoftTeams
     let currentWindow: Window;
     let parentWindow: Window;
     let parentOrigin: string;
+    let parentMessageQueue: MessageRequest[] = [];
     let childWindow: Window;
     let childOrigin: string;
-    let messageQueue: MessageRequest[] = [];
+    let childMessageQueue: MessageRequest[] = [];
     let nextMessageId = 0;
     let callbacks: {[id: number]: Function} = {};
     let frameContext: string;
-    let loadedInDesktopClient: boolean;
+    let hostClientType: string;
 
     let themeChangeHandler: (theme: string) => void;
     handlers["themeChange"] = handleThemeChange;
@@ -90,11 +97,11 @@ namespace microsoftTeams
             // Send the initialized message to any origin since at this point we most likely don't know what our
             // parent window's origin is yet and this message contains no data that could pose a security risk.
             parentOrigin = "*";
-            let messageId = sendMessage("initialize");
-            callbacks[messageId] = (context: string, inDesktopClient: boolean) =>
+            let messageId = sendMessageRequest(parentWindow, "initialize");
+            callbacks[messageId] = (context: string, clientType: string) =>
             {
                 frameContext = context;
-                loadedInDesktopClient = inDesktopClient;
+                hostClientType = clientType;
             };
         }
         finally
@@ -118,7 +125,10 @@ namespace microsoftTeams
             initializeCalled = false;
             parentWindow = null;
             parentOrigin = null;
-            messageQueue = [];
+            parentMessageQueue = [];
+            childWindow = null;
+            childOrigin = null;
+            childMessageQueue = [];
             nextMessageId = 0;
             callbacks = {};
             frameContext = null;
@@ -135,7 +145,7 @@ namespace microsoftTeams
     {
         ensureInitialized();
 
-        let messageId = sendMessage("getContext");
+        let messageId = sendMessageRequest(parentWindow, "getContext");
         callbacks[messageId] = callback;
     }
 
@@ -158,9 +168,9 @@ namespace microsoftTeams
             themeChangeHandler(theme);
         }
 
-        if (childWindow && childOrigin)
+        if (childWindow)
         {
-            childWindow.postMessage({ func: "themeChange", args: [theme] }, childOrigin);
+            sendMessageRequest(childWindow, "themeChange", theme);
         }
     }
 
@@ -175,7 +185,7 @@ namespace microsoftTeams
     {
         ensureInitialized();
 
-        let messageId = sendMessage("navigateCrossDomain", url);
+        let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", url);
         callbacks[messageId] = (success: boolean) =>
         {
             if (!success)
@@ -186,7 +196,7 @@ namespace microsoftTeams
     }
 
     /**
-     * Namespace to interact with the settings view-specific SDK.
+     * Namespace to interact with the settings-specific part of the SDK.
      * This object is only usable on the settings frame.
      */
     export namespace settings
@@ -205,7 +215,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
 
-            sendMessage("settings.setValidityState", validityState);
+            sendMessageRequest(parentWindow, "settings.setValidityState", validityState);
         }
 
         /**
@@ -216,7 +226,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
 
-            let messageId = sendMessage("settings.getSettings");
+            let messageId = sendMessageRequest(parentWindow, "settings.getSettings");
             callbacks[messageId] = callback;
         }
 
@@ -230,7 +240,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.settings);
 
-            sendMessage("settings.setSettings", settings);
+            sendMessageRequest(parentWindow, "settings.setSettings", settings);
         }
 
         /**
@@ -343,7 +353,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.save.success");
+                sendMessageRequest(parentWindow, "settings.save.success");
 
                 this.notified = true;
             }
@@ -352,7 +362,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.save.failure", reason);
+                sendMessageRequest(parentWindow, "settings.save.failure", reason);
 
                 this.notified = true;
             }
@@ -388,7 +398,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.remove.success");
+                sendMessageRequest(parentWindow, "settings.remove.success");
 
                 this.notified = true;
             }
@@ -397,7 +407,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessage("settings.remove.failure", reason);
+                sendMessageRequest(parentWindow, "settings.remove.failure", reason);
 
                 this.notified = true;
             }
@@ -412,11 +422,14 @@ namespace microsoftTeams
         }
     }
 
+    /**
+     * Namespace to interact with the authentication-specific part of the SDK.
+     * This object is used for starting or completing authentication flows.
+     */
     export namespace authentication
     {
-        let authWindow: Window;
-        let authInterval: number;
         let authParams: AuthenticateParameters;
+        let authWindowMonitor: number;
         handlers["authentication.authenticate.success"] = handleSuccess;
         handlers["authentication.authenticate.failure"] = handleFailure;
 
@@ -428,52 +441,133 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
+            // Open an authentication window with the parameters provided by the caller
+            openAuthenticationWindow(authenticateParameters.url, authenticateParameters.width, authenticateParameters.height);
+
             authParams = authenticateParameters;
+        }
+
+        function closeAuthenticationWindow(): void
+        {
+            // Stop monitoring the authentication window
+            stopAuthenticationWindowMonitor();
+
+            // Try to close the authentication window and clear all properties associated with it
+            try
+            {
+                if (childWindow)
+                {
+                    childWindow.close();
+                }
+            }
+            finally
+            {
+                childWindow = null;
+                childOrigin = null;
+            }
+        }
+
+        function openAuthenticationWindow(url: string, width?: number, height?: number): void
+        {
+            // Close the previously opened window if we have one
+            closeAuthenticationWindow();
+
+            // Start with a sensible default size
+            width = width || 600;
+            height = height || 400;
+
+            // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
+            width = Math.min(width, (currentWindow.innerWidth - 400));
+            height = Math.min(height, (currentWindow.innerHeight - 200));
 
             // Convert any relative URLs into absolute ones before sending them over to our parent window
             let link = document.createElement("a");
-            link.href = authParams.url;
+            link.href = url;
 
-            // Open a popup window to the specified authentication URL
-            if (loadedInDesktopClient)
+            if (hostClientType === hostClientTypes.desktop)
             {
-                let messageId = sendMessage("authentication.authenticate", link.href);
+                // We are running in our desktop app so give our main process a heads up on the URL we are about
+                // to call window.open with; this will allow the window.open call to pass through without getting
+                // kicked out into the browser (which is the default behavior)
+                let messageId = sendMessageRequest(parentWindow, "authentication.allowWindowOpen", link.href);
                 callbacks[messageId] = (allowed: boolean) =>
                 {
                     if (allowed)
                     {
-                        authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authParams.width + ", height = " + authParams.height);
+                        // Open the window with a desired set of electron BrowserWindow features
+                        childWindow = currentWindow.open(link.href, "_blank", "width=" + width + ", height=" + height);
                     }
                     else
                     {
-                        authParams = null;
                         throw new Error("Authentication is only supported for URLs matching the pattern registered in the manifest.");
                     }
                 };
             }
             else
             {
-                authWindow = currentWindow.open(link.href, "Microsoft Teams", "width = " + authParams.width + ", height = " + authParams.height);
+                // We are running in the browser so we need to center the new window ourselves
+                let left: number = (typeof currentWindow.screenLeft !== undefined) ? currentWindow.screenLeft : currentWindow.screenX;
+                let top: number = (typeof currentWindow.screenTop !== undefined) ? currentWindow.screenTop : currentWindow.screenY;
+                left += (currentWindow.innerWidth / 2) - (width / 2);
+                top += (currentWindow.innerHeight / 2) - (height / 2);
+
+                // Open the window with a desired set of standard browser features
+                childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
             }
 
-            if (!authWindow)
+            if (!childWindow)
             {
-                authParams = null;
                 throw new Error("Failed to open authentication window.");
             }
 
-            // Wait for the authentication window to close
-            authInterval = setInterval(() =>
+            // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
+            startAuthenticationWindowMonitor();
+        }
+
+        function stopAuthenticationWindowMonitor(): void
+        {
+            if (authWindowMonitor)
             {
-                if (!authWindow || authWindow.closed)
+                clearInterval(authWindowMonitor);
+                authWindowMonitor = 0;
+            }
+
+            handlers["initialize"] = null;
+        }
+
+        function startAuthenticationWindowMonitor(): void
+        {
+            // Stop the previous window monitor if there is one running
+            stopAuthenticationWindowMonitor();
+
+            // Create an interval loop that:
+            // - Notifies the caller of failure if it detects that the authentication window was closed
+            // - Keeps pinging the authentication window until it establishes contact
+            authWindowMonitor = setInterval(() =>
+            {
+                if (!childWindow || childWindow.closed)
                 {
-                    handleFailure();
+                    handleFailure("CancelledByUser");
                 }
-                else
+                else if (!childOrigin)
                 {
-                    authWindow.postMessage("ping", "*");
+                    try
+                    {
+                        childOrigin = "*";
+                        sendMessageRequest(childWindow, "ping");
+                    }
+                    finally
+                    {
+                        childOrigin = null;
+                    }
                 }
             }, 100);
+
+            // Set up an initialize message handler that will give the authentication window its frame context
+            handlers["initialize"] = () =>
+            {
+                return frameContexts.authentication;
+            };
         }
 
         /**
@@ -486,8 +580,11 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessage("authentication.authenticate.success", result);
-            window.close();
+            sendMessageRequest(parentWindow, "authentication.authenticate.success", result);
+
+            setTimeout(() => {
+                window.close();
+            }, 100);
         }
 
         /**
@@ -500,44 +597,43 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessage("authentication.authenticate.failure", reason);
-            window.close();
+            sendMessageRequest(parentWindow, "authentication.authenticate.failure", reason);
+
+            setTimeout(() => {
+                window.close();
+            }, 100);
         }
 
         function handleSuccess(result?: string): void
         {
-            console.log("In handleSuccess");
-            if (authInterval)
+            try
             {
-                clearInterval(authInterval);
-                authInterval = 0;
+                if (authParams && authParams.successCallback)
+                {
+                    authParams.successCallback(result);
+                }
             }
-
-            if (authParams && authParams.successCallback)
+            finally
             {
-                authParams.successCallback(result);
+                authParams = null;
+                closeAuthenticationWindow();
             }
-
-            authParams = null;
-            authWindow = null;
         }
 
         function handleFailure(reason?: string): void
         {
-            console.log("In handleFailure");
-            if (authInterval)
+            try
             {
-                clearInterval(authInterval);
-                authInterval = 0;
+                if (authParams && authParams.failureCallback)
+                {
+                    authParams.failureCallback(reason);
+                }
             }
-
-            if (authParams && authParams.failureCallback)
+            finally
             {
-                authParams.failureCallback(reason);
+                authParams = null;
+                closeAuthenticationWindow();
             }
-
-            authParams = null;
-            authWindow = null;
         }
 
         export interface AuthenticateParameters
@@ -633,8 +729,6 @@ namespace microsoftTeams
 
     function processMessage(evt: MessageEvent): void
     {
-        console.log(JSON.stringify(evt));
-
         // Process only if we received a valid message
         if (!evt || !evt.data || typeof evt.data !== "object")
         {
@@ -648,53 +742,58 @@ namespace microsoftTeams
             (messageOrigin !== currentWindow.location.origin) ||
             (messageSource === currentWindow))
         {
-            console.log("Bailing");
             return;
         }
 
-        // Set our parent window and origin so that we can use them when sending messages
-        if (!parentWindow || (parentWindow === messageSource))
+        // Update our parent and child relationships based on this message
+        updateRelationships(messageSource, messageOrigin);
+
+        // Handle the message
+        if (messageSource === parentWindow)
+        {
+            handleParentMessage(evt);
+        }
+        else if (messageSource === childWindow)
+        {
+            handleChildMessage(evt);
+        }
+    }
+
+    function updateRelationships(messageSource: Window, messageOrigin: string): void
+    {
+        // Determine whether the source of the message is our parent or child and update our
+        // window and origin pointer accordingly
+        if (!parentWindow || (messageSource === parentWindow))
         {
             parentWindow = messageSource;
             parentOrigin = messageOrigin;
         }
-        else if (parentWindow !== messageSource)
+        else if (!childWindow || (messageSource === childWindow))
         {
-            console.log("Setting child window and origin");
             childWindow = messageSource;
             childOrigin = messageOrigin;
         }
 
+        // Clean up pointers to closed parent and child windows
+        if (parentWindow && parentWindow.closed)
+        {
+            parentWindow = null;
+            parentOrigin = null;
+        }
+        if (childWindow && childWindow.closed)
+        {
+            childWindow = null;
+            childOrigin = null;
+        }
+
         // If we have any messages in our queue send them now
-        while (parentWindow && parentOrigin && (messageQueue.length > 0))
-        {
-            parentWindow.postMessage(messageQueue.shift(), parentOrigin);
-        }
+        flushMessageQueue(parentWindow);
+        flushMessageQueue(childWindow);
+    }
 
-        if ("id" in evt.data && "func" in evt.data)
-        {
-            // Try to delegate the request to the proper handler
-            const message = evt.data as MessageRequest;
-            const handler = handlers[message.func];
-            if (handler)
-            {
-                // We don't expect any handler to respond at this point
-                console.log("Invoking handler");
-                handler.apply(this, message.args);
-            }
-            else
-            {
-                // Proxy to parent
-                let messageId = sendMessage(message.func, message.args);
-
-                // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
-                callbacks[messageId] = (...args: any[]) =>
-                {
-                    childWindow.postMessage({ id: message.id, args: args }, childOrigin);
-                };
-            }
-        }
-        else if ("id" in evt.data)
+    function handleParentMessage(evt: MessageEvent): void
+    {
+        if ("id" in evt.data)
         {
             // Call any associated callbacks
             const message = evt.data as MessageResponse;
@@ -712,37 +811,117 @@ namespace microsoftTeams
             if (handler)
             {
                 // We don't expect any handler to respond at this point
-                console.log("Invoking handler");
                 handler.apply(this, message.args);
             }
         }
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
-    function sendMessage(actionName: string, ...args: any[]): number
+    function handleChildMessage(evt: MessageEvent): void
     {
-        let request = createMessage(actionName, args);
-
-        // If we already know our parent window's origin then send the message right away; otherwise,
-        // queue up the message and send it once the origin has been established
-        if (parentWindow && parentOrigin)
+        if (("id" in evt.data) && ("func" in evt.data))
         {
-            parentWindow.postMessage(request, parentOrigin);
+            // Try to delegate the request to the proper handler
+            const message = evt.data as MessageRequest;
+            const handler = handlers[message.func];
+            if (handler)
+            {
+                let result = handler.apply(this, message.args);
+                if (result)
+                {
+                    sendMessageResponse(childWindow, message.id, result);
+                }
+            }
+            else
+            {
+                // Proxy to parent
+                let messageId = sendMessageRequest(parentWindow, message.func, message.args);
+
+                // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+                callbacks[messageId] = (...args: any[]) =>
+                {
+                    if (childWindow)
+                    {
+                        sendMessageResponse(childWindow, message.id, args);
+                    }
+                };
+            }
+        }
+    }
+
+    function getTargetMessageQueue(targetWindow: Window): MessageRequest[]
+    {
+        return (targetWindow === parentWindow) ? parentMessageQueue :
+               (targetWindow === childWindow) ? childMessageQueue :
+               [];
+    }
+
+    function getTargetOrigin(targetWindow: Window): string
+    {
+        return (targetWindow === parentWindow) ? parentOrigin :
+               (targetWindow === childWindow) ? childOrigin :
+               null;
+    }
+
+    function flushMessageQueue(targetWindow: Window): void
+    {
+        let targetOrigin = getTargetOrigin(targetWindow);
+        let targetMessageQueue = getTargetMessageQueue(targetWindow);
+        while (targetWindow && targetOrigin && (targetMessageQueue.length > 0))
+        {
+            targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
+        }
+    }
+
+    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    function sendMessageRequest(targetWindow: Window, actionName: string, ...args: any[]): number
+    {
+        let request = createMessageRequest(actionName, args);
+        let targetOrigin = getTargetOrigin(targetWindow);
+
+        // If the target window isn't closed and we already know its origin then send the message right away; otherwise,
+        // queue up the message and send it once the origin has been established
+        if (targetOrigin)
+        {
+            targetWindow.postMessage(request, targetOrigin);
         }
         else
         {
-            messageQueue.push(request);
+            let targetMessageQueue = getTargetMessageQueue(targetWindow);
+            if (targetMessageQueue)
+            {
+                targetMessageQueue.push(request);
+            }
         }
 
         return request.id;
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
-    function createMessage(func: string, args: any[]): MessageRequest
+    function sendMessageResponse(targetWindow: Window, id: number, ...args: any[]): void
+    {
+        let response = createMessageResponse(id, args);
+        let targetOrigin = getTargetOrigin(targetWindow);
+        if (targetOrigin)
+        {
+            targetWindow.postMessage(response, targetOrigin);
+        }
+    }
+
+    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    function createMessageRequest(func: string, args: any[]): MessageRequest
     {
         return {
             id: nextMessageId++,
             func: func,
+            args: args,
+        };
+    }
+
+    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    function createMessageResponse(id: number, args: any[]): MessageResponse
+    {
+        return {
+            id: id,
             args: args,
         };
     }
