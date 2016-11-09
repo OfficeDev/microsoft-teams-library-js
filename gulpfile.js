@@ -76,7 +76,7 @@ gulp.task("dist", [ "ts", "doc" ], function ()
     var distFiles = [
         buildDir + "/src/**/*.js",
         buildDir + "/src/**/*.d.ts",
-        buildDir + "/src/**/*.schema.json",
+        "./src/**/*.schema.json",
     ];
 
     return gulp.src(distFiles)
