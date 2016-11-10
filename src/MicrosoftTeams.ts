@@ -542,8 +542,10 @@ namespace microsoftTeams
             stopAuthenticationWindowMonitor();
 
             // Create an interval loop that:
-            // - Notifies the caller of failure if it detects that the authentication window was closed
-            // - Keeps pinging the authentication window until it establishes contact
+            // - Notifies the caller of failure if it detects that the authentication window is closed
+            // - Keeps pinging the authentication window while its open in order to re-establish
+            //   contact with any pages along the authentication flow that need to communicate
+            //   with us
             authWindowMonitor = setInterval(() =>
             {
                 if (!childWindow || childWindow.closed)
@@ -552,6 +554,7 @@ namespace microsoftTeams
                 }
                 else
                 {
+                    let savedChildOrigin = childOrigin;
                     try
                     {
                         childOrigin = "*";
@@ -559,7 +562,7 @@ namespace microsoftTeams
                     }
                     finally
                     {
-                        childOrigin = null;
+                        childOrigin = savedChildOrigin;
                     }
                 }
             }, 100);
