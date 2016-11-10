@@ -34,7 +34,7 @@ namespace microsoftTeams
     const hostClientTypes =
     {
         desktop: "desktop",
-        webb: "web",
+        web: "web",
     };
 
     interface MessageRequest
@@ -133,6 +133,7 @@ namespace microsoftTeams
             nextMessageId = 0;
             callbacks = {};
             frameContext = null;
+            hostClientType = null;
 
             currentWindow.removeEventListener("message", messageListener, false);
         };
@@ -171,7 +172,7 @@ namespace microsoftTeams
 
         if (childWindow)
         {
-            sendMessageRequest(childWindow, "themeChange", theme);
+            sendMessageRequest(childWindow, "themeChange", [ theme ]);
         }
     }
 
@@ -186,7 +187,7 @@ namespace microsoftTeams
     {
         ensureInitialized();
 
-        let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", url);
+        let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [ url ]);
         callbacks[messageId] = (success: boolean) =>
         {
             if (!success)
@@ -216,7 +217,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
 
-            sendMessageRequest(parentWindow, "settings.setValidityState", validityState);
+            sendMessageRequest(parentWindow, "settings.setValidityState", [ validityState ]);
         }
 
         /**
@@ -241,7 +242,7 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.settings);
 
-            sendMessageRequest(parentWindow, "settings.setSettings", settings);
+            sendMessageRequest(parentWindow, "settings.setSettings", [ settings ]);
         }
 
         /**
@@ -363,7 +364,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessageRequest(parentWindow, "settings.save.failure", reason);
+                sendMessageRequest(parentWindow, "settings.save.failure", [ reason ]);
 
                 this.notified = true;
             }
@@ -408,7 +409,7 @@ namespace microsoftTeams
             {
                 this.ensureNotNotified();
 
-                sendMessageRequest(parentWindow, "settings.remove.failure", reason);
+                sendMessageRequest(parentWindow, "settings.remove.failure", [ reason ]);
 
                 this.notified = true;
             }
@@ -468,7 +469,7 @@ namespace microsoftTeams
             }
         }
 
-        function openAuthenticationWindow(url: string, width?: number, height?: number): void
+        function openAuthenticationWindow(url: string, width: number, height: number): void
         {
             // Close the previously opened window if we have one
             closeAuthenticationWindow();
@@ -490,7 +491,7 @@ namespace microsoftTeams
                 // We are running in our desktop app so give our main process a heads up on the URL we are about
                 // to call window.open with; this will allow the window.open call to pass through without getting
                 // kicked out into the browser (which is the default behavior)
-                let messageId = sendMessageRequest(parentWindow, "authentication.allowWindowOpen", link.href);
+                let messageId = sendMessageRequest(parentWindow, "authentication.allowWindowOpen", [ link.href ]);
                 callbacks[messageId] = (allowed: boolean) =>
                 {
                     if (allowed)
@@ -507,8 +508,8 @@ namespace microsoftTeams
             else
             {
                 // We are running in the browser so we need to center the new window ourselves
-                let left: number = (typeof currentWindow.screenLeft !== undefined) ? currentWindow.screenLeft : currentWindow.screenX;
-                let top: number = (typeof currentWindow.screenTop !== undefined) ? currentWindow.screenTop : currentWindow.screenY;
+                let left: number = (typeof currentWindow.screenLeft !== "undefined") ? currentWindow.screenLeft : currentWindow.screenX;
+                let top: number = (typeof currentWindow.screenTop !== "undefined") ? currentWindow.screenTop : currentWindow.screenY;
                 left += (currentWindow.outerWidth / 2) - (width / 2);
                 top += (currentWindow.outerHeight / 2) - (height / 2);
 
@@ -533,7 +534,7 @@ namespace microsoftTeams
                 authWindowMonitor = 0;
             }
 
-            handlers["initialize"] = null;
+            delete handlers["initialize"];
         }
 
         function startAuthenticationWindowMonitor(): void
@@ -570,7 +571,7 @@ namespace microsoftTeams
             // Set up an initialize message handler that will give the authentication window its frame context
             handlers["initialize"] = () =>
             {
-                return frameContexts.authentication;
+                return [ frameContexts.authentication, hostClientType ];
             };
         }
 
@@ -584,11 +585,9 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.success", result);
+            sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
 
-            setTimeout(() => {
-                window.close();
-            }, 100);
+            window.close();
         }
 
         /**
@@ -601,11 +600,9 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.failure", reason);
+            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [ reason ]);
 
-            setTimeout(() => {
-                window.close();
-            }, 100);
+            window.close();
         }
 
         function handleSuccess(result?: string): void
@@ -832,7 +829,7 @@ namespace microsoftTeams
                 let result = handler.apply(this, message.args);
                 if (result)
                 {
-                    sendMessageResponse(childWindow, message.id, result);
+                    sendMessageResponse(childWindow, message.id, Array.isArray(result) ? result : [ result ]);
                 }
             }
             else
@@ -877,7 +874,7 @@ namespace microsoftTeams
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
-    function sendMessageRequest(targetWindow: Window, actionName: string, ...args: any[]): number
+    function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number
     {
         let request = createMessageRequest(actionName, args);
         let targetOrigin = getTargetOrigin(targetWindow);
@@ -890,18 +887,14 @@ namespace microsoftTeams
         }
         else
         {
-            let targetMessageQueue = getTargetMessageQueue(targetWindow);
-            if (targetMessageQueue)
-            {
-                targetMessageQueue.push(request);
-            }
+            getTargetMessageQueue(targetWindow).push(request);
         }
 
         return request.id;
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
-    function sendMessageResponse(targetWindow: Window, id: number, ...args: any[]): void
+    function sendMessageResponse(targetWindow: Window, id: number, args?: any[]): void
     {
         let response = createMessageResponse(id, args);
         let targetOrigin = getTargetOrigin(targetWindow);
@@ -917,7 +910,7 @@ namespace microsoftTeams
         return {
             id: nextMessageId++,
             func: func,
-            args: args,
+            args: args || [],
         };
     }
 
@@ -926,7 +919,7 @@ namespace microsoftTeams
     {
         return {
             id: id,
-            args: args,
+            args: args || [],
         };
     }
 }
