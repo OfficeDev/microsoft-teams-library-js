@@ -47,8 +47,8 @@ describe("MicrosoftTeams", () =>
         messages = [];
         let mockWindow =
         {
-            innerWidth: 1024,
-            innerHeight: 768,
+            outerWidth: 1024,
+            outerHeight: 768,
             screenLeft: 0,
             screenTop: 0,
             addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void

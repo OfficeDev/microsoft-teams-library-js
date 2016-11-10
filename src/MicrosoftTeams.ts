@@ -89,7 +89,8 @@ namespace microsoftTeams
         let messageListener = (evt: MessageEvent) => processMessage(evt);
         currentWindow.addEventListener("message", messageListener, false);
 
-        // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent)
+        // If we are in an iframe then our parent window is the one hosting us (i.e. window.parent); otherwise,
+        // it's the window that opened us (i.e. window.opener)
         parentWindow = (currentWindow.parent !== currentWindow.self) ? currentWindow.parent : currentWindow.opener;
 
         try
@@ -477,8 +478,8 @@ namespace microsoftTeams
             height = height || 400;
 
             // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-            width = Math.min(width, (currentWindow.innerWidth - 400));
-            height = Math.min(height, (currentWindow.innerHeight - 200));
+            width = Math.min(width, (currentWindow.outerWidth - 400));
+            height = Math.min(height, (currentWindow.outerHeight - 200));
 
             // Convert any relative URLs into absolute ones before sending them over to our parent window
             let link = document.createElement("a");
@@ -508,8 +509,8 @@ namespace microsoftTeams
                 // We are running in the browser so we need to center the new window ourselves
                 let left: number = (typeof currentWindow.screenLeft !== undefined) ? currentWindow.screenLeft : currentWindow.screenX;
                 let top: number = (typeof currentWindow.screenTop !== undefined) ? currentWindow.screenTop : currentWindow.screenY;
-                left += (currentWindow.innerWidth / 2) - (width / 2);
-                top += (currentWindow.innerHeight / 2) - (height / 2);
+                left += (currentWindow.outerWidth / 2) - (width / 2);
+                top += (currentWindow.outerHeight / 2) - (height / 2);
 
                 // Open the window with a desired set of standard browser features
                 childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
