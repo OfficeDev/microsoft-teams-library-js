@@ -25,6 +25,7 @@ interface MessageResponse
 describe("MicrosoftTeams", () =>
 {
     const validOrigin = "https://teams.skype.com";
+    const tabOrigin = "https://example.com";
 
     // Use to send a mock message from the app.
     let processMessage: (ev: MessageEvent) => void;
@@ -32,12 +33,24 @@ describe("MicrosoftTeams", () =>
     // A list of messages the library sends to the app.
     let messages: MessageRequest[];
 
+    let childWindow =
+    {
+        close: function (): void
+        {
+            return;
+        },
+    };
+
     beforeEach(() =>
     {
         processMessage = null;
         messages = [];
         let mockWindow =
         {
+            outerWidth: 1024,
+            outerHeight: 768,
+            screenLeft: 0,
+            screenTop: 0,
             addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
             {
                 if (type === "message")
@@ -51,6 +64,10 @@ describe("MicrosoftTeams", () =>
                 {
                     processMessage = null;
                 }
+            },
+            location:
+            {
+                origin: tabOrigin,
             },
             parent:
             {
@@ -69,8 +86,14 @@ describe("MicrosoftTeams", () =>
                 },
             } as Window,
             self: null as Window,
+            open: function (url: string, name: string, specs: string): Window
+            {
+                return childWindow as Window;
+            },
         };
         microsoftTeams._window = mockWindow.self = mockWindow as Window;
+
+        jasmine.clock().install();
     });
 
     afterEach(() =>
@@ -80,6 +103,12 @@ describe("MicrosoftTeams", () =>
         {
             microsoftTeams._uninitialize();
         }
+
+        // Clear local storage values
+        localStorage.removeItem("authentication.success");
+        localStorage.removeItem("authentication.failure");
+
+        jasmine.clock().uninstall();
     });
 
     it("should exist in the global namespace", () =>
@@ -133,9 +162,10 @@ describe("MicrosoftTeams", () =>
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: "https://some-malicious-site.com/",
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: getContextMessage.id,
@@ -144,7 +174,7 @@ describe("MicrosoftTeams", () =>
                     groupId: "someMaliciousValue",
                 }],
             } as MessageResponse,
-        }));
+        } as MessageEvent);
 
         expect(callbackCalled).toBe(false);
     });
@@ -156,9 +186,10 @@ describe("MicrosoftTeams", () =>
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
 
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: "https://some-malicious-site.com/",
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: initMessage.id,
@@ -167,7 +198,7 @@ describe("MicrosoftTeams", () =>
                     "content",
                 ],
             } as MessageResponse,
-        }));
+        } as MessageEvent);
 
         // Try to make a call
         microsoftTeams.getContext(() => { return; });
@@ -560,20 +591,25 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("content");
 
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
+        {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
+            windowOpenCalled = true;
+            return {} as Window;
+        });
+
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
-
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
-        expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + "/");
-        expect(message.args[1]).toBe(authenticationParams.width);
-        expect(message.args[2]).toBe(authenticationParams.height);
+        expect(windowOpenCalled).toBe(true);
     });
 
     it("should successfully handle auth success", () =>
@@ -584,7 +620,7 @@ describe("MicrosoftTeams", () =>
         let failureReason: string;
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
             successCallback: (result: string) => successResult = result,
@@ -592,12 +628,19 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
+        processMessage(
+        {
+            origin: tabOrigin,
+            source: childWindow,
+            data:
+            {
+                id: 0,
+                func: "authentication.authenticate.success",
+                args: ["someResult"],
+            },
+        } as MessageEvent);
 
-        respondToMessage(message, true, "someResult");
-
-        expect(successResult).toBe("someResult");
+        expect(successResult).toEqual("someResult");
         expect(failureReason).toBeUndefined();
     });
 
@@ -609,7 +652,7 @@ describe("MicrosoftTeams", () =>
         let failureReason: string;
         let authenticationParams =
         {
-            url: "https://someUrl",
+            url: "https://someurl/",
             width: 100,
             height: 200,
             successCallback: (result: string) => successResult = result,
@@ -617,13 +660,20 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        let message = findMessageByFunc("authentication.authenticate");
-        expect(message).not.toBeNull();
-
-        respondToMessage(message, false, "someReason");
+        processMessage(
+        {
+            origin: tabOrigin,
+            source: childWindow,
+            data:
+            {
+                id: 0,
+                func: "authentication.authenticate.failure",
+                args: ["someReason"],
+            },
+        } as MessageEvent);
 
         expect(successResult).toBeUndefined();
-        expect(failureReason).toBe("someReason");
+        expect(failureReason).toEqual("someReason");
     });
 
     it("should successfully notify auth success", () =>
@@ -676,28 +726,30 @@ describe("MicrosoftTeams", () =>
     // tslint:disable-next-line:no-any:The args here are a passthrough to MessageResponse
     function respondToMessage(message: MessageRequest, ...args: any[]): void
     {
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: validOrigin,
+            source: microsoftTeams._window.parent,
             data:
             {
                 id: message.id,
                 args: args,
             } as MessageResponse,
-        }));
+        } as MessageEvent);
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to MessageRequest
     function sendMessage(func: string, ...args: any[]): void
     {
-        processMessage(new MessageEvent("message",
+        processMessage(
         {
             origin: validOrigin,
+            source: microsoftTeams._window.parent,
             data:
             {
                 func: func,
                 args: args,
             },
-        }));
+        } as MessageEvent);
     }
 });
