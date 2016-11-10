@@ -535,6 +535,7 @@ namespace microsoftTeams
             }
 
             delete handlers["initialize"];
+            delete handlers["navigateCrossDomain"];
         }
 
         function startAuthenticationWindowMonitor(): void
@@ -572,6 +573,15 @@ namespace microsoftTeams
             handlers["initialize"] = () =>
             {
                 return [ frameContexts.authentication, hostClientType ];
+            };
+
+            // Set up a navigateCrossDomain message handlers that will block cross-domain re-navigation attempts
+            // in the authentication window. We could at some point choose to implement this method via a call to
+            // authenticationWindow.location.href = url; however, we would first need to figure out how to
+            // validate the url against the tab's list of valid domains.
+            handlers["navigateCrossDomain"] = (url: string) =>
+            {
+                return false;
             };
         }
 
