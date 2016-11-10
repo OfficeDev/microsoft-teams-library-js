@@ -525,7 +525,10 @@ namespace microsoftTeams
             }
 
             // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-            startAuthenticationWindowMonitor();
+            if (childWindow)
+            {
+                startAuthenticationWindowMonitor();
+            }
         }
 
         function stopAuthenticationWindowMonitor(): void
