@@ -550,7 +550,7 @@ namespace microsoftTeams
                 {
                     handleFailure("CancelledByUser");
                 }
-                else if (!childOrigin)
+                else
                 {
                     try
                     {
