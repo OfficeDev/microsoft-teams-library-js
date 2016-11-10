@@ -85,7 +85,7 @@ namespace microsoftTeams
         // Undocumented field used to mock the window for unit tests
         currentWindow = this._window as Window || window;
 
-        // Listen for messages post to our window (in a way that works for all browsers)
+        // Listen for messages post to our window
         let messageListener = (evt: MessageEvent) => processMessage(evt);
         currentWindow.addEventListener("message", messageListener, false);
 
@@ -446,6 +446,13 @@ namespace microsoftTeams
             // Open an authentication window with the parameters provided by the caller
             openAuthenticationWindow(authenticateParameters.url, authenticateParameters.width, authenticateParameters.height);
 
+            // If we failed to open the window fail the authentication flow
+            if (!childWindow)
+            {
+                handleFailure("FailedToOpenWindow");
+                return;
+            }
+
             authParams = authenticateParameters;
         }
 
@@ -515,11 +522,6 @@ namespace microsoftTeams
 
                 // Open the window with a desired set of standard browser features
                 childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
-            }
-
-            if (!childWindow)
-            {
-                throw new Error("Failed to open authentication window.");
             }
 
             // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -746,12 +748,12 @@ namespace microsoftTeams
             return;
         }
 
-        // Process only if the message is coming from a valid origin
+        // Process only if the message is coming from a different window and a valid origin
         let messageSource = evt.source || evt.originalEvent.source;
         let messageOrigin = evt.origin || evt.originalEvent.origin;
-        if ((validOrigins.indexOf(messageOrigin.toLowerCase()) === -1) &&
-            (messageOrigin !== currentWindow.location.origin) ||
-            (messageSource === currentWindow))
+        if (messageSource === currentWindow ||
+            (messageOrigin !== currentWindow.location.origin &&
+             validOrigins.indexOf(messageOrigin.toLowerCase()) === -1))
         {
             return;
         }
