@@ -2,7 +2,7 @@
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://msdn.microsoft.com/en-us/microsoft-teams/).
 
-[![Build Status](https://travis-ci.com/OfficeDev/microsoft-teams-library-js.svg?token=UAYZgdbKQTPSakoAAsBL&branch=master)](https://travis-ci.com/OfficeDev/microsoft-teams-library-js)
+[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=master)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
 
 ## Get Started
 1. Clone the repo
