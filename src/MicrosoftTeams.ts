@@ -12,6 +12,8 @@ namespace microsoftTeams
 {
     "use strict";
 
+    const version = "0.2";
+
     const validOrigins = [
         "https://teams.microsoft.com",
         "https://teams.skype.com",
@@ -98,7 +100,7 @@ namespace microsoftTeams
             // Send the initialized message to any origin since at this point we most likely don't know what our
             // parent window's origin is yet and this message contains no data that could pose a security risk.
             parentOrigin = "*";
-            let messageId = sendMessageRequest(parentWindow, "initialize");
+            let messageId = sendMessageRequest(parentWindow, "initialize", [ version ]);
             callbacks[messageId] = (context: string, clientType: string) =>
             {
                 frameContext = context;
