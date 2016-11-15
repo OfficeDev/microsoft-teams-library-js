@@ -79,7 +79,9 @@ namespace microsoftTeams
     {
         if (initializeCalled)
         {
-            throw new Error("initialize must not be called more than once.");
+            // Independent components may not know whether the SDK is initialized so may call it to be safe.
+            // Just no-op if that happens to make it easier to use.
+            return;
         }
 
         initializeCalled = true;
