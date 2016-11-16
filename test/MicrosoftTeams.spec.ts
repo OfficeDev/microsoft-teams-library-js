@@ -130,11 +130,16 @@ describe("MicrosoftTeams", () =>
         expect(initMessage.args).toEqual(["0.2"]);
     });
 
-    it("should not allow multiple initialize calls", () =>
+    it("should allow multiple initialize calls", () =>
     {
-        microsoftTeams.initialize();
+        for (let i = 0; i < 100; i++)
+        {
+            microsoftTeams.initialize();
+        }
 
-        expect(() => microsoftTeams.initialize()).toThrowError("initialize must not be called more than once.");
+        // Still only one message actually sent, the extra calls just no-op'ed
+        expect(processMessage).toBeDefined();
+        expect(messages.length).toBe(1);
     });
 
     it("should not allow calls before initialization", () =>
