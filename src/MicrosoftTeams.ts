@@ -19,6 +19,7 @@ namespace microsoftTeams
         "https://teams.skype.com",
         "https://ppespaces.skype.com",
         "https://devspaces.skype.com",
+        "https://ssauth.skype.com",
         "http://dev.local", // local development
     ];
 
