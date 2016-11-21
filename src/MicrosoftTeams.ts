@@ -607,7 +607,8 @@ namespace microsoftTeams
 
             sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
 
-            window.close();
+            // Wait for the message to be sent before closing the window
+            waitForMessageQueue(parentWindow, () => currentWindow.close());
         }
 
         /**
@@ -622,7 +623,8 @@ namespace microsoftTeams
 
             sendMessageRequest(parentWindow, "authentication.authenticate.failure", [ reason ]);
 
-            window.close();
+            // Wait for the message to be sent before closing the window
+            waitForMessageQueue(parentWindow, () => currentWindow.close());
         }
 
         function handleSuccess(result?: string): void
@@ -891,6 +893,18 @@ namespace microsoftTeams
         {
             targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
         }
+    }
+
+    function waitForMessageQueue(targetWindow: Window, callback: () => void): void
+    {
+        let messageQueueMonitor = setInterval(() =>
+        {
+            if (getTargetMessageQueue(targetWindow).length === 0)
+            {
+                clearInterval(messageQueueMonitor);
+                callback();
+            }
+        }, 100);
     }
 
     // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]

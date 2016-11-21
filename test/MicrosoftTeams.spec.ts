@@ -90,6 +90,10 @@ describe("MicrosoftTeams", () =>
             {
                 return childWindow as Window;
             },
+            close: function (): void
+            {
+                return;
+            },
         };
         microsoftTeams._window = mockWindow.self = mockWindow as Window;
 
@@ -703,6 +707,48 @@ describe("MicrosoftTeams", () =>
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         expect(message.args[0]).toBe("someReason");
+    });
+
+    it("should not close auth window before notify success message has been sent", () =>
+    {
+        let closeWindowSpy = spyOn(microsoftTeams._window, "close").and.callThrough();
+
+        microsoftTeams.initialize();
+        let initMessage = findMessageByFunc("initialize");
+        expect(initMessage).not.toBeNull();
+
+        microsoftTeams.authentication.notifySuccess("someResult");
+        let message = findMessageByFunc("authentication.authenticate.success");
+        expect(message).toBeNull();
+        expect(closeWindowSpy).not.toHaveBeenCalled();
+
+        respondToMessage(initMessage, "authentication");
+        message = findMessageByFunc("authentication.authenticate.success");
+        expect(message).not.toBeNull();
+
+        jasmine.clock().tick(101);
+        expect(closeWindowSpy).toHaveBeenCalled();
+    });
+
+    it("should not close auth window before notify failure message has been sent", () =>
+    {
+        let closeWindowSpy = spyOn(microsoftTeams._window, "close").and.callThrough();
+
+        microsoftTeams.initialize();
+        let initMessage = findMessageByFunc("initialize");
+        expect(initMessage).not.toBeNull();
+
+        microsoftTeams.authentication.notifyFailure("someReason");
+        let message = findMessageByFunc("authentication.authenticate.failure");
+        expect(message).toBeNull();
+        expect(closeWindowSpy).not.toHaveBeenCalled();
+
+        respondToMessage(initMessage, "authentication");
+        message = findMessageByFunc("authentication.authenticate.failure");
+        expect(message).not.toBeNull();
+
+        jasmine.clock().tick(101);
+        expect(closeWindowSpy).toHaveBeenCalled();
     });
 
     function initializeWithContext(frameContext: string): void
