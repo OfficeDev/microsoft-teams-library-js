@@ -203,6 +203,20 @@ namespace microsoftTeams
     }
 
     /**
+     * Shares a deep link a user can use to navigate back to a specific state in this page.
+     */
+    export function shareDeepLink (deepLinkParameters: DeepLinkParameters): void
+    {
+        ensureInitialized(frameContexts.content);
+
+        sendMessageRequest(parentWindow, "shareDeepLink", [
+            deepLinkParameters.deepLinkContext,
+            deepLinkParameters.label,
+            deepLinkParameters.webUrl,
+        ]);
+    }
+
+    /**
      * Namespace to interact with the settings-specific part of the SDK.
      * This object is only usable on the settings frame.
      */
@@ -722,6 +736,30 @@ namespace microsoftTeams
          * The current UI theme the user is using.
          */
         theme?: string;
+
+        /**
+         * The context passed in as part of a deep link navigation to this page which should be used
+         * to restore a specific page state.
+         */
+        deepLinkContext?: string;
+    }
+
+    export interface DeepLinkParameters
+    {
+        /**
+         * Any context the page might need to restore a specific state for the user.
+         */
+        deepLinkContext?: string;
+
+        /**
+         * The label which should be displayed for this deep link when the link is rendered in a client.
+         */
+        label?: string;
+
+        /**
+         * The fallback url to navigate the user to if there is no support for rendering the page inside the client.
+         */
+        webUrl?: string;
     }
 
     function ensureInitialized(...expectedFrameContexts: string[]): void
