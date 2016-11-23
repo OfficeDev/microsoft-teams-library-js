@@ -203,16 +203,16 @@ namespace microsoftTeams
     }
 
     /**
-     * Displays a dialog to the user with a url they can use to navigate back to a specific state in this page.
+     * Shares a deep link a user can use to navigate back to a specific state in this page.
      */
-    export function showDeepLinkDialog(deepLinkDialogParameters: DeepLinkDialogParameters): void
+    export function shareDeepLink (deepLinkParameters: DeepLinkParameters): void
     {
         ensureInitialized(frameContexts.content);
 
-        sendMessageRequest(parentWindow, "showDeepLinkDialog", [
-            deepLinkDialogParameters.deepLinkContext,
-            deepLinkDialogParameters.label,
-            deepLinkDialogParameters.webUrl,
+        sendMessageRequest(parentWindow, "shareDeepLink", [
+            deepLinkParameters.deepLinkContext,
+            deepLinkParameters.label,
+            deepLinkParameters.webUrl,
         ]);
     }
 
@@ -744,7 +744,7 @@ namespace microsoftTeams
         deepLinkContext?: string;
     }
 
-    export interface DeepLinkDialogParameters
+    export interface DeepLinkParameters
     {
         /**
          * Any context the page might need to restore a specific state for the user.

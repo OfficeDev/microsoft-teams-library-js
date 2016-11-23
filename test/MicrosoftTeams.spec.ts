@@ -751,17 +751,17 @@ describe("MicrosoftTeams", () =>
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
-    it("should successfully show deep link dialog", () =>
+    it("should successfully share a deep link", () =>
     {
         initializeWithContext("content");
 
-        microsoftTeams.showDeepLinkDialog({
+        microsoftTeams.shareDeepLink({
             deepLinkContext: "someDeepLinkContext",
             label: "someLabel",
             webUrl: "someWebUrl",
         });
 
-        let message = findMessageByFunc("showDeepLinkDialog");
+        let message = findMessageByFunc("shareDeepLink");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(3);
         expect(message.args[0]).toBe("someDeepLinkContext");
