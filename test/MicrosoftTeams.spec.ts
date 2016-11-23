@@ -751,6 +751,24 @@ describe("MicrosoftTeams", () =>
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
+    it("should successfully show deep link dialog", () =>
+    {
+        initializeWithContext("content");
+
+        microsoftTeams.showDeepLinkDialog({
+            deepLinkContext: "someDeepLinkContext",
+            label: "someLabel",
+            webUrl: "someWebUrl",
+        });
+
+        let message = findMessageByFunc("showDeepLinkDialog");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(3);
+        expect(message.args[0]).toBe("someDeepLinkContext");
+        expect(message.args[1]).toBe("someLabel");
+        expect(message.args[2]).toBe("someWebUrl");
+    });
+
     function initializeWithContext(frameContext: string): void
     {
         microsoftTeams.initialize();
