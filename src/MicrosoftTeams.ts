@@ -485,15 +485,15 @@ namespace microsoftTeams
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             let messageId = sendMessageRequest(parentWindow, "authentication.getAuthToken", [ authTokenRequest.resources ]);
-            callbacks[messageId] = (error: string, token: string) =>
+            callbacks[messageId] = (success: boolean, result: string) =>
             {
-                if (error)
+                if (success)
                 {
-                    authTokenRequest.failureCallback(error);
+                    authTokenRequest.successCallback(result);
                 }
                 else
                 {
-                    authTokenRequest.successCallback(token);
+                    authTokenRequest.failureCallback(result);
                 }
             };
         }
@@ -506,12 +506,15 @@ namespace microsoftTeams
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             let messageId = sendMessageRequest(parentWindow, "authentication.getUser");
-            callbacks[messageId] = (error: string, user: UserProfile) => {
-                if (error) {
-                    userRequest.failureCallback(error);
+            callbacks[messageId] = (success: boolean, result: UserProfile | string) =>
+            {
+                if (success && typeof(result) === "UserProfile")
+                {
+                    userRequest.successCallback(result);
                 }
-                else {
-                    userRequest.successCallback(user);
+                else if (typeof(result) === "string")
+                {
+                    userRequest.failureCallback(result);
                 }
             };
         }
