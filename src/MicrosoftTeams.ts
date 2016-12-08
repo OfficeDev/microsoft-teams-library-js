@@ -476,13 +476,13 @@ namespace microsoftTeams
         }
 
         /**
-         * Requests an AAD token to be issued on behalf of the app. The token is acquired token from the
-         * cache if it is not expired. Otherwise a request will be sent to AAD to obtain a new token.
-         * @param authTokenRequest A set pf values that configure the token request.
+         * Requests an AAD token to be issued on behalf of the app. The token is acquired from the cache
+         * if it is not expired. Otherwise a request will be sent to AAD to obtain a new token.
+         * @param authTokenRequest A set of values that configure the token request.
          */
         export function getAuthToken(authTokenRequest: AuthTokenRequest): void
         {
-            ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
+            ensureInitialized();
 
             let messageId = sendMessageRequest(parentWindow, "authentication.getAuthToken", [ authTokenRequest.resources ]);
             callbacks[messageId] = (success: boolean, result: string) =>
@@ -503,18 +503,18 @@ namespace microsoftTeams
          */
         export function getUser(userRequest: UserRequest): void
         {
-            ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
+            ensureInitialized();
 
             let messageId = sendMessageRequest(parentWindow, "authentication.getUser");
             callbacks[messageId] = (success: boolean, result: UserProfile | string) =>
             {
-                if (success && typeof(result) === "UserProfile")
+                if (success)
                 {
-                    userRequest.successCallback(result);
+                    userRequest.successCallback(result as UserProfile);
                 }
-                else if (typeof(result) === "string")
+                else
                 {
-                    userRequest.failureCallback(result);
+                    userRequest.failureCallback(result as string);
                 }
             };
         }
