@@ -1019,6 +1019,9 @@ namespace microsoftTeams
             if (callback)
             {
                 callback.apply(null, message.args);
+
+                // Remove the callback to only let the callback get called once and to free up memory.
+                delete callbacks[message.id];
             }
         }
         else if ("func" in evt.data)
