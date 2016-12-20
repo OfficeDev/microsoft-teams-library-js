@@ -285,6 +285,35 @@ describe("MicrosoftTeams", () =>
         expect(actualContext3).toBe(expectedContext3);
     });
 
+    it("should only call callbacks once", () =>
+    {
+        initializeWithContext("content");
+
+        let callbackCalled = 0;
+        microsoftTeams.getContext((context) =>
+        {
+            callbackCalled++;
+        });
+
+        let getContextMessage = findMessageByFunc("getContext");
+        expect(getContextMessage).not.toBeNull();
+
+        let expectedContext: microsoftTeams.Context =
+        {
+            locale: "someLocale",
+            groupId: "someGroupId",
+        };
+
+        // Get many responses to the same message
+        for (let i = 0; i < 100; i++)
+        {
+            respondToMessage(getContextMessage, expectedContext);
+        }
+
+        // Still only called the callback once.
+        expect(callbackCalled).toBe(1);
+    });
+
     it("should successfully get context", () =>
     {
         initializeWithContext("content");
