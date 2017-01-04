@@ -462,17 +462,10 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
-            // Open an authentication window with the parameters provided by the caller
-            openAuthenticationWindow(authenticateParameters.url, authenticateParameters.width, authenticateParameters.height);
-
-            // If we failed to open the window fail the authentication flow
-            if (!childWindow)
-            {
-                handleFailure("FailedToOpenWindow");
-                return;
-            }
-
             authParams = authenticateParameters;
+
+            // Open an authentication window with the parameters provided by the caller
+            openAuthenticationWindow();
         }
 
         /**
@@ -539,14 +532,14 @@ namespace microsoftTeams
             }
         }
 
-        function openAuthenticationWindow(url: string, width: number, height: number): void
+        function openAuthenticationWindow(): void
         {
             // Close the previously opened window if we have one
             closeAuthenticationWindow();
 
             // Start with a sensible default size
-            width = width || 600;
-            height = height || 400;
+            let width = authParams.width || 600;
+            let height = authParams.height || 400;
 
             // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
             width = Math.min(width, (currentWindow.outerWidth - 400));
@@ -554,7 +547,7 @@ namespace microsoftTeams
 
             // Convert any relative URLs into absolute ones before sending them over to our parent window
             let link = document.createElement("a");
-            link.href = url;
+            link.href = authParams.url;
 
             if (hostClientType === hostClientTypes.desktop)
             {
@@ -568,6 +561,17 @@ namespace microsoftTeams
                     {
                         // Open the window with a desired set of electron BrowserWindow features
                         childWindow = currentWindow.open(link.href, "_blank", "width=" + width + ", height=" + height);
+
+                        // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
+                        if (childWindow)
+                        {
+                            startAuthenticationWindowMonitor();
+                        }
+                        else
+                        {
+                            // If we failed to open the window fail the authentication flow
+                            handleFailure("FailedToOpenWindow");
+                        }
                     }
                     else
                     {
@@ -585,12 +589,17 @@ namespace microsoftTeams
 
                 // Open the window with a desired set of standard browser features
                 childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
-            }
 
-            // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-            if (childWindow)
-            {
-                startAuthenticationWindowMonitor();
+                // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
+                if (childWindow)
+                {
+                    startAuthenticationWindowMonitor();
+                }
+                else
+                {
+                    // If we failed to open the window fail the authentication flow
+                    handleFailure("FailedToOpenWindow");
+                }
             }
         }
 
