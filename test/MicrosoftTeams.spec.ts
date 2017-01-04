@@ -637,7 +637,7 @@ describe("MicrosoftTeams", () =>
             expect(specs.indexOf("width=100")).not.toBe(-1);
             expect(specs.indexOf("height=200")).not.toBe(-1);
             windowOpenCalled = true;
-            return {} as Window;
+            return childWindow as Window;
         });
 
         let authenticationParams =
@@ -780,6 +780,57 @@ describe("MicrosoftTeams", () =>
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
+    it("should successfully conduct an end-to-end auth flow in the desktop client", () =>
+    {
+        initializeWithContext("content", "desktop");
+
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
+        {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
+            windowOpenCalled = true;
+            return childWindow as Window;
+        });
+
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams =
+        {
+            url: "https://someurl/",
+            width: 100,
+            height: 200,
+            successCallback: (result: string) => successResult = result,
+            failureCallback: (reason: string) => failureReason = reason,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+
+        let message = findMessageByFunc("authentication.allowWindowOpen");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1);
+        expect(message.args[0]).toBe("https://someurl/");
+        respondToMessage(message, true);
+
+        expect(windowOpenCalled).toBe(true);
+
+        processMessage(
+        {
+            origin: tabOrigin,
+            source: childWindow,
+            data:
+            {
+                id: 0,
+                func: "authentication.authenticate.success",
+                args: ["someResult"],
+            },
+        } as MessageEvent);
+
+        expect(successResult).toEqual("someResult");
+        expect(failureReason).toBeUndefined();
+    });
+
     it("should successfully share a deep link", () =>
     {
         initializeWithContext("content");
@@ -798,14 +849,14 @@ describe("MicrosoftTeams", () =>
         expect(message.args[2]).toBe("someWebUrl");
     });
 
-    function initializeWithContext(frameContext: string): void
+    function initializeWithContext(frameContext: string, hostClientType?: string): void
     {
         microsoftTeams.initialize();
 
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
 
-        respondToMessage(initMessage, frameContext);
+        respondToMessage(initMessage, frameContext, hostClientType);
     }
 
     function findMessageByFunc(func: string): MessageRequest
