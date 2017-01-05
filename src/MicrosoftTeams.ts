@@ -462,10 +462,35 @@ namespace microsoftTeams
         {
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
-            authParams = authenticateParameters;
+            if (hostClientType === hostClientTypes.desktop)
+            {
+                // Convert any relative URLs into absolute ones before sending them over to our parent window
+                let link = document.createElement("a");
+                link.href = authenticateParameters.url;
 
-            // Open an authentication window with the parameters provided by the caller
-            openAuthenticationWindow();
+                // Ask our parent window to open an authentication window with the parameters provided by the caller
+                let messageId = sendMessageRequest(parentWindow, "authentication.authenticate", [
+                    link.href,
+                    authenticateParameters.width,
+                    authenticateParameters.height,
+                ]);
+                callbacks[messageId] = (success: boolean, response: string) =>
+                {
+                    if (success)
+                    {
+                        authenticateParameters.successCallback(response);
+                    }
+                    else
+                    {
+                        authenticateParameters.failureCallback(response);
+                    }
+                };
+            }
+            else
+            {
+                // Open an authentication window with the parameters provided by the caller
+                openAuthenticationWindow(authenticateParameters);
+            }
         }
 
         /**
@@ -532,8 +557,10 @@ namespace microsoftTeams
             }
         }
 
-        function openAuthenticationWindow(): void
+        function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void
         {
+            authParams = authenticateParameters;
+
             // Close the previously opened window if we have one
             closeAuthenticationWindow();
 
@@ -549,50 +576,23 @@ namespace microsoftTeams
             let link = document.createElement("a");
             link.href = authParams.url;
 
-            let openChildWindow = (url: string, target: string, features: string): void =>
-            {
-                childWindow = currentWindow.open(url, target, features);
-                if (childWindow)
-                {
-                    // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-                    startAuthenticationWindowMonitor();
-                }
-                else
-                {
-                    // If we failed to open the window fail the authentication flow
-                    handleFailure("FailedToOpenWindow");
-                }
-            };
+            // We are running in the browser so we need to center the new window ourselves
+            let left: number = (typeof currentWindow.screenLeft !== "undefined") ? currentWindow.screenLeft : currentWindow.screenX;
+            let top: number = (typeof currentWindow.screenTop !== "undefined") ? currentWindow.screenTop : currentWindow.screenY;
+            left += (currentWindow.outerWidth / 2) - (width / 2);
+            top += (currentWindow.outerHeight / 2) - (height / 2);
 
-            if (hostClientType === hostClientTypes.desktop)
+            // Open a child window with a desired set of standard browser features
+            childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
+            if (childWindow)
             {
-                // We are running in our desktop app so give our main process a heads up on the URL we are about
-                // to call window.open with; this will allow the window.open call to pass through without getting
-                // kicked out into the browser (which is the default behavior)
-                let messageId = sendMessageRequest(parentWindow, "authentication.allowWindowOpen", [ link.href ]);
-                callbacks[messageId] = (allowed: boolean) =>
-                {
-                    if (allowed)
-                    {
-                        // Open a child window with a desired set of electron BrowserWindow features
-                        openChildWindow(link.href, "_blank", "width=" + width + ", height=" + height);
-                    }
-                    else
-                    {
-                        throw new Error("Authentication is only supported for URLs matching the pattern registered in the manifest.");
-                    }
-                };
+                // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
+                startAuthenticationWindowMonitor();
             }
             else
             {
-                // We are running in the browser so we need to center the new window ourselves
-                let left: number = (typeof currentWindow.screenLeft !== "undefined") ? currentWindow.screenLeft : currentWindow.screenX;
-                let top: number = (typeof currentWindow.screenTop !== "undefined") ? currentWindow.screenTop : currentWindow.screenY;
-                left += (currentWindow.outerWidth / 2) - (width / 2);
-                top += (currentWindow.outerHeight / 2) - (height / 2);
-
-                // Open a child window with a desired set of standard browser features
-                openChildWindow(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
+                // If we failed to open the window fail the authentication flow
+                handleFailure("FailedToOpenWindow");
             }
         }
 
@@ -1115,7 +1115,7 @@ namespace microsoftTeams
 
         // If the target window isn't closed and we already know its origin then send the message right away; otherwise,
         // queue up the message and send it once the origin has been established
-        if (targetOrigin)
+        if (targetWindow && targetOrigin)
         {
             targetWindow.postMessage(request, targetOrigin);
         }
@@ -1132,7 +1132,7 @@ namespace microsoftTeams
     {
         let response = createMessageResponse(id, args);
         let targetOrigin = getTargetOrigin(targetWindow);
-        if (targetOrigin)
+        if (targetWindow && targetOrigin)
         {
             targetWindow.postMessage(response, targetOrigin);
         }

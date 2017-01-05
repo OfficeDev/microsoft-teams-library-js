@@ -714,6 +714,76 @@ describe("MicrosoftTeams", () =>
         expect(failureReason).toEqual("someReason");
     });
 
+    it("should successfully pop up the auth window in the desktop client", () =>
+    {
+        initializeWithContext("content", "desktop");
+
+        let authenticationParams =
+        {
+            url: "https://someUrl",
+            width: 100,
+            height: 200,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(3);
+        expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + "/");
+        expect(message.args[1]).toBe(authenticationParams.width);
+        expect(message.args[2]).toBe(authenticationParams.height);
+    });
+
+    it("should successfully handle auth success in the desktop client", () =>
+    {
+        initializeWithContext("content", "desktop");
+
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams =
+        {
+            url: "https://someUrl",
+            width: 100,
+            height: 200,
+            successCallback: (result: string) => successResult = result,
+            failureCallback: (reason: string) => failureReason = reason,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
+
+        respondToMessage(message, true, "someResult");
+
+        expect(successResult).toBe("someResult");
+        expect(failureReason).toBeUndefined();
+    });
+
+    it("should successfully handle auth failure in the desktop client", () =>
+    {
+        initializeWithContext("content", "desktop");
+
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams =
+        {
+            url: "https://someUrl",
+            width: 100,
+            height: 200,
+            successCallback: (result: string) => successResult = result,
+            failureCallback: (reason: string) => failureReason = reason,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
+
+        respondToMessage(message, false, "someReason");
+
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toBe("someReason");
+    });
+
     it("should successfully notify auth success", () =>
     {
         initializeWithContext("authentication");
@@ -778,57 +848,6 @@ describe("MicrosoftTeams", () =>
 
         jasmine.clock().tick(101);
         expect(closeWindowSpy).toHaveBeenCalled();
-    });
-
-    it("should successfully conduct an end-to-end auth flow in the desktop client", () =>
-    {
-        initializeWithContext("content", "desktop");
-
-        let windowOpenCalled = false;
-        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
-        {
-            expect(url).toEqual("https://someurl/");
-            expect(name).toEqual("_blank");
-            expect(specs.indexOf("width=100")).not.toBe(-1);
-            expect(specs.indexOf("height=200")).not.toBe(-1);
-            windowOpenCalled = true;
-            return childWindow as Window;
-        });
-
-        let successResult: string;
-        let failureReason: string;
-        let authenticationParams =
-        {
-            url: "https://someurl/",
-            width: 100,
-            height: 200,
-            successCallback: (result: string) => successResult = result,
-            failureCallback: (reason: string) => failureReason = reason,
-        };
-        microsoftTeams.authentication.authenticate(authenticationParams);
-
-        let message = findMessageByFunc("authentication.allowWindowOpen");
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBe("https://someurl/");
-        respondToMessage(message, true);
-
-        expect(windowOpenCalled).toBe(true);
-
-        processMessage(
-        {
-            origin: tabOrigin,
-            source: childWindow,
-            data:
-            {
-                id: 0,
-                func: "authentication.authenticate.success",
-                args: ["someResult"],
-            },
-        } as MessageEvent);
-
-        expect(successResult).toEqual("someResult");
-        expect(failureReason).toBeUndefined();
     });
 
     it("should successfully share a deep link", () =>
