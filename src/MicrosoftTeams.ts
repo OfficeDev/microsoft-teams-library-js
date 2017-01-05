@@ -870,11 +870,6 @@ namespace microsoftTeams
         groupId?: string;
 
         /**
-         * The Microsoft Teams id for the team with which the content is associated.
-         */
-        teamId?: string;
-
-        /**
          * The Microsoft Teams id for the channel with which the content is associated.
          */
         channelId?: string;
