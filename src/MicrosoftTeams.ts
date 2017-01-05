@@ -870,6 +870,16 @@ namespace microsoftTeams
         groupId?: string;
 
         /**
+         * The Microsoft Teams id for the team with which the content is associated.
+         */
+        teamId?: string;
+
+        /**
+         * The Microsoft Teams id for the channel with which the content is associated.
+         */
+        channelId?: string;
+
+        /**
          * The current locale that the user has configured for the app formatted as
          * languageId-countryId (e.g. en-us).
          */
