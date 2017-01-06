@@ -270,9 +270,9 @@ describe("MicrosoftTeams", () =>
         expect(getContextMessage2).not.toBe(getContextMessage1);
         expect(getContextMessage3).not.toBe(getContextMessage2);
 
-        let expectedContext1: microsoftTeams.Context = { locale: "someLocale1", groupId: "someGroupId1" };
-        let expectedContext2: microsoftTeams.Context = { locale: "someLocale2", groupId: "someGroupId2" };
-        let expectedContext3: microsoftTeams.Context = { locale: "someLocale3", groupId: "someGroupId3" };
+        let expectedContext1: microsoftTeams.Context = { locale: "someLocale1", groupId: "someGroupId1", entityId: "someEntityId1" };
+        let expectedContext2: microsoftTeams.Context = { locale: "someLocale2", groupId: "someGroupId2", entityId: "someEntityId2" };
+        let expectedContext3: microsoftTeams.Context = { locale: "someLocale3", groupId: "someGroupId3", entityId: "someEntityId3" };
 
         // respond in the wrong order
         respondToMessage(getContextMessage3, expectedContext3);
@@ -302,6 +302,7 @@ describe("MicrosoftTeams", () =>
         {
             locale: "someLocale",
             groupId: "someGroupId",
+            entityId: "someEntityId",
         };
 
         // Get many responses to the same message
@@ -331,6 +332,7 @@ describe("MicrosoftTeams", () =>
         {
             locale: "someLocale",
             groupId: "someGroupId",
+            entityId: "someEntityId",
         };
 
         respondToMessage(getContextMessage, expectedContext);

@@ -336,6 +336,12 @@ namespace microsoftTeams
              * The string must be less than 1kb.
              */
             customSettings?: string;
+
+            /**
+             * The developer-defined unique id for the entity this content points to.
+             * If not provided, one will be generated from the contentUrl.
+             */
+            entityId?: string;
         }
 
         export interface SaveEvent
@@ -875,6 +881,12 @@ namespace microsoftTeams
         channelId?: string;
 
         /**
+         * The developer-defined unique id for the entity this content points to.
+         * If none was provided, this value is generated from the contentUrl.
+         */
+        entityId: string;
+
+        /**
          * The current locale that the user has configured for the app formatted as
          * languageId-countryId (e.g. en-us).
          */
@@ -914,6 +926,12 @@ namespace microsoftTeams
          * Any context the page might need to restore a specific state for the user.
          */
         deepLinkContext?: string;
+
+        /**
+         * The developer-defined unique id for the entity this deep link points to.
+         * If not provided, one will be generated from the contentUrl.
+         */
+        entityId?: string;
 
         /**
          * The label which should be displayed for this deep link when the link is rendered in a client.

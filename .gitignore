@@ -8,3 +8,6 @@ typings/
 # build output
 build/
 dist/
+
+# Visual Studio cache/options directory
+.vs/
