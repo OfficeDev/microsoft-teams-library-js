@@ -446,6 +446,7 @@ describe("MicrosoftTeams", () =>
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
             customSettings: "someCustomSettings",
+            entityId: "someEntityId",
         };
         microsoftTeams.settings.setSettings(settings);
 
@@ -857,17 +858,19 @@ describe("MicrosoftTeams", () =>
         initializeWithContext("content");
 
         microsoftTeams.shareDeepLink({
-            deepLinkContext: "someDeepLinkContext",
+            entityId: "someEntityId",
+            subEntityId: "someSubEntityId",
             label: "someLabel",
             webUrl: "someWebUrl",
         });
 
         let message = findMessageByFunc("shareDeepLink");
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
-        expect(message.args[0]).toBe("someDeepLinkContext");
-        expect(message.args[1]).toBe("someLabel");
-        expect(message.args[2]).toBe("someWebUrl");
+        expect(message.args.length).toBe(4);
+        expect(message.args[0]).toBe("someEntityId");
+        expect(message.args[1]).toBe("someSubEntityId");
+        expect(message.args[2]).toBe("someLabel");
+        expect(message.args[3]).toBe("someWebUrl");
     });
 
     function initializeWithContext(frameContext: string, hostClientType?: string): void

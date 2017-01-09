@@ -210,7 +210,8 @@ namespace microsoftTeams
         ensureInitialized(frameContexts.content);
 
         sendMessageRequest(parentWindow, "shareDeepLink", [
-            deepLinkParameters.deepLinkContext,
+            deepLinkParameters.entityId,
+            deepLinkParameters.subEntityId,
             deepLinkParameters.label,
             deepLinkParameters.webUrl,
         ]);
@@ -330,18 +331,9 @@ namespace microsoftTeams
             websiteUrl?: string;
 
             /**
-             * The custom settings for this content instance.
-             * The developer may use this for generic storage specific to this instance,
-             * for example a JSON blob describing the previously selected options used to pre-populate the UI.
-             * The string must be less than 1kb.
-             */
-            customSettings?: string;
-
-            /**
              * The developer-defined unique id for the entity this content points to.
-             * If not provided, one will be generated from the contentUrl.
              */
-            entityId?: string;
+            entityId: string;
         }
 
         export interface SaveEvent
@@ -878,13 +870,18 @@ namespace microsoftTeams
         /**
          * The Microsoft Teams id for the channel with which the content is associated.
          */
-        channelId?: string;
+        channelId: string;
 
         /**
          * The developer-defined unique id for the entity this content points to.
-         * If none was provided, this value is generated from the contentUrl.
          */
         entityId: string;
+
+        /**
+         * The developer-defined unique id for the sub-entity this content points to.
+         * This field should be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
+         */
+        subEntityId?: string;
 
         /**
          * The current locale that the user has configured for the app formatted as
@@ -912,31 +909,25 @@ namespace microsoftTeams
          * The current UI theme the user is using.
          */
         theme?: string;
-
-        /**
-         * The context passed in as part of a deep link navigation to this page which should be used
-         * to restore a specific page state.
-         */
-        deepLinkContext?: string;
     }
 
     export interface DeepLinkParameters
     {
         /**
-         * Any context the page might need to restore a specific state for the user.
+         * The developer-defined unique id for the entity this deep link points to.
          */
-        deepLinkContext?: string;
+        entityId: string;
 
         /**
-         * The developer-defined unique id for the entity this deep link points to.
-         * If not provided, one will be generated from the contentUrl.
+         * The developer-defined unique id for the sub-entity this deep link points to.
+         * This field may be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
          */
-        entityId?: string;
+        subEntityId?: string;
 
         /**
          * The label which should be displayed for this deep link when the link is rendered in a client.
          */
-        label?: string;
+        label: string;
 
         /**
          * The fallback url to navigate the user to if there is no support for rendering the page inside the client.
