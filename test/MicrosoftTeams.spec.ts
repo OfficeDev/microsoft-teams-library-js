@@ -425,12 +425,12 @@ describe("MicrosoftTeams", () =>
         let message = findMessageByFunc("settings.getSettings");
         expect(message).not.toBeNull();
 
-        let expectedSettings =
+        let expectedSettings: microsoftTeams.settings.Settings =
         {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
-            customSettings: "someCustomSettings",
+            entityId: "someEntityId",
         };
 
         respondToMessage(message, expectedSettings);
@@ -442,12 +442,11 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("settings");
 
-        let settings =
+        let settings: microsoftTeams.settings.Settings =
         {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
-            customSettings: "someCustomSettings",
             entityId: "someEntityId",
         };
         microsoftTeams.settings.setSettings(settings);
