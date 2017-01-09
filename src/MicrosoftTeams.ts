@@ -210,7 +210,6 @@ namespace microsoftTeams
         ensureInitialized(frameContexts.content);
 
         sendMessageRequest(parentWindow, "shareDeepLink", [
-            deepLinkParameters.entityId,
             deepLinkParameters.subEntityId,
             deepLinkParameters.label,
             deepLinkParameters.webUrl,
@@ -914,13 +913,8 @@ namespace microsoftTeams
     export interface DeepLinkParameters
     {
         /**
-         * The developer-defined unique id for the entity this deep link points to.
-         */
-        entityId: string;
-
-        /**
-         * The developer-defined unique id for the sub-entity this deep link points to.
-         * This field may be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
+         * The developer-defined unique id for the sub-entity this deep link points to. The entityId of this content will automatically be included
+         * so this field may be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
          */
         subEntityId?: string;
 
