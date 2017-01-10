@@ -270,9 +270,9 @@ describe("MicrosoftTeams", () =>
         expect(getContextMessage2).not.toBe(getContextMessage1);
         expect(getContextMessage3).not.toBe(getContextMessage2);
 
-        let expectedContext1: microsoftTeams.Context = { locale: "someLocale1", groupId: "someGroupId1" };
-        let expectedContext2: microsoftTeams.Context = { locale: "someLocale2", groupId: "someGroupId2" };
-        let expectedContext3: microsoftTeams.Context = { locale: "someLocale3", groupId: "someGroupId3" };
+        let expectedContext1: microsoftTeams.Context = { locale: "someLocale1", groupId: "someGroupId1", channelId: "someChannelId1", entityId: "someEntityId1" };
+        let expectedContext2: microsoftTeams.Context = { locale: "someLocale2", groupId: "someGroupId2", channelId: "someChannelId2", entityId: "someEntityId2" };
+        let expectedContext3: microsoftTeams.Context = { locale: "someLocale3", groupId: "someGroupId3", channelId: "someChannelId3", entityId: "someEntityId3" };
 
         // respond in the wrong order
         respondToMessage(getContextMessage3, expectedContext3);
@@ -302,6 +302,8 @@ describe("MicrosoftTeams", () =>
         {
             locale: "someLocale",
             groupId: "someGroupId",
+            channelId: "someChannelId",
+            entityId: "someEntityId",
         };
 
         // Get many responses to the same message
@@ -331,6 +333,8 @@ describe("MicrosoftTeams", () =>
         {
             locale: "someLocale",
             groupId: "someGroupId",
+            channelId: "someChannelId",
+            entityId: "someEntityId",
         };
 
         respondToMessage(getContextMessage, expectedContext);
@@ -421,12 +425,12 @@ describe("MicrosoftTeams", () =>
         let message = findMessageByFunc("settings.getSettings");
         expect(message).not.toBeNull();
 
-        let expectedSettings =
+        let expectedSettings: microsoftTeams.settings.Settings =
         {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
-            customSettings: "someCustomSettings",
+            entityId: "someEntityId",
         };
 
         respondToMessage(message, expectedSettings);
@@ -438,12 +442,12 @@ describe("MicrosoftTeams", () =>
     {
         initializeWithContext("settings");
 
-        let settings =
+        let settings: microsoftTeams.settings.Settings =
         {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
-            customSettings: "someCustomSettings",
+            entityId: "someEntityId",
         };
         microsoftTeams.settings.setSettings(settings);
 
@@ -855,7 +859,7 @@ describe("MicrosoftTeams", () =>
         initializeWithContext("content");
 
         microsoftTeams.shareDeepLink({
-            deepLinkContext: "someDeepLinkContext",
+            subEntityId: "someSubEntityId",
             label: "someLabel",
             webUrl: "someWebUrl",
         });
@@ -863,7 +867,7 @@ describe("MicrosoftTeams", () =>
         let message = findMessageByFunc("shareDeepLink");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(3);
-        expect(message.args[0]).toBe("someDeepLinkContext");
+        expect(message.args[0]).toBe("someSubEntityId");
         expect(message.args[1]).toBe("someLabel");
         expect(message.args[2]).toBe("someWebUrl");
     });
