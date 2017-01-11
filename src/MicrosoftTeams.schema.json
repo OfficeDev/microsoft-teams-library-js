@@ -6,19 +6,9 @@
             "type": "string",
             "description": "The version of the manifest schema this manifest is using."
         },
-        "id": {
-            "type": "string",
-            "description": "A unique identifier for this extension. The id must use reverse domain name notation.",
-            "maxLength": 64
-        },
         "version": {
             "type": "string",
             "description": "The extension version. Changes to the extension should cause a version change. This version string must follow the semver standard."
-        },
-        "name": {
-            "type": "string",
-            "description": "The display name of the extension.",
-            "maxLength": 16
         },
         "developer": {
             "type": "object",
@@ -48,55 +38,134 @@
                 "termsOfUseUrl"
             ]
         },
-        "description": {
-            "type": "object",
-            "properties": {
-                "short": {
-                    "type": "string",
-                    "description": "A short description of the extension used when space is limited. Maximum length is 80 characters.",
-                    "maxLength": 80
+        "tabs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "A unique identifier for this extension. The id must use reverse domain name notation.",
+                        "maxLength": 64
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The display name of the extension.",
+                        "maxLength": 16
+                    },
+                    "description": {
+                        "type": "object",
+                        "properties": {
+                            "short": {
+                                "type": "string",
+                                "description": "A short description of the extension used when space is limited. Maximum length is 80 characters.",
+                                "maxLength": 80
+                            },
+                            "full": {
+                                "type": "string",
+                                "description": "The full description of the extension. Maximum length is 256 characters.",
+                                "maxLength": 256
+                            }
+                        },
+                        "required": [
+                            "short",
+                            "full"
+                        ]
+                    },
+                    "icons": {
+                        "type": "object",
+                        "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
+                        "properties": {
+                            "44": {
+                                "type": "string",
+                                "description": "An icon for the extension sized to 44x44."
+                            },
+                            "88": {
+                                "type": "string",
+                                "description": "An icon for the extension sized to 88x88."
+                            }
+                        },
+                        "required": [
+                            "44",
+                            "88"
+                        ]
+                    },
+                    "accentColor": {
+                        "type": "string",
+                        "description": "A color to use in conjunction with the extension's icons. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
+                    },
+                    "configUrl": {
+                        "type": "string",
+                        "description": "The url to use when configuring the extension."
+                    },
+                    "canUpdateConfig": {
+                        "type": "boolean",
+                        "description": "A value indicating whether an instance of the extension's config can be updated by the user after creation.",
+                        "default": true
+                    }
                 },
-                "full": {
-                    "type": "string",
-                    "description": "The full description of the extension. Maximum length is 256 characters.",
-                    "maxLength": 256
-                }
-            },
-            "required": [
-                "short",
-                "full"
-            ]
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "icons",
+                    "accentColor",
+                    "configUrl"
+                ]
+            }
         },
-        "icons": {
-            "type": "object",
-            "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
-            "properties": {
-                "44": {
-                    "type": "string",
-                    "description": "An icon for the extension sized to 44x44."
+        "bots": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "mri": {
+                        "type": "string",
+                        "description": "A unique identifier for the bot that matches its ID in the bot framework.",
+                        "maxLength": 64
+                    },
+                    "pinnedTabs": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "description": "A unique identifier for this tab instance.",
+                                    "maxLength": 64
+                                },
+                                "definitionId": {
+                                    "type": "string",
+                                    "description": "The id of the tab definition this tab is an instance of.",
+                                    "maxLength": 64
+                                },
+                                "displayName": {
+                                    "type": "string",
+                                    "description": "The display name of this tab instance.",
+                                    "maxLength": 16
+                                },
+                                "url": {
+                                    "type": "string",
+                                    "description": "The content url for this tab instance"
+                                },
+                                "websiteUrl": {
+                                    "type": "string",
+                                    "description": "The website url of the content displayed in this tab instance"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "definitionId",
+                                "displayName",
+                                "url"
+                            ]
+                        }
+                    }
                 },
-                "88": {
-                    "type": "string",
-                    "description": "An icon for the extension sized to 88x88."
-                }
-            },
-            "required": [
-                "44",
-                "88"
-            ]
-        },
-        "accentColor": {
-            "type": "string",
-            "description": "A color to use in conjunction with the extension's icons. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
-        },
-        "configUrl": {
-            "type": "string",
-            "description": "The url to use when configuring the extension."
-        },
-        "canUpdateConfig": {
-            "type": "boolean",
-            "description": "A value indicating whether an instance of the extension's config can be updated by the user after creation.",
-            "default": true
+                "required": [
+                    "mri"
+                ]
+            }
         },
         "needsIdentity": {
             "type": "boolean",
@@ -112,13 +181,7 @@
     },
     "required": [
         "manifestVersion",
-        "id",
         "version",
-        "name",
-        "developer",
-        "description",
-        "icons",
-        "accentColor",
-        "configUrl"
+        "developer"
     ]
 }
