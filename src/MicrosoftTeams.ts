@@ -212,6 +212,7 @@ namespace microsoftTeams
         sendMessageRequest(parentWindow, "shareDeepLink", [
             deepLinkParameters.subEntityId,
             deepLinkParameters.label,
+            deepLinkParameters.webUrl,
         ]);
     }
 
@@ -921,6 +922,12 @@ namespace microsoftTeams
          * The label for the sub-entity which should be displayed when the deep link is rendered in a client.
          */
         label: string;
+
+        /**
+         * The fallback url to navigate the user to if there is no support for rendering the page inside the client.
+         * This url should lead directly to the sub-entity.
+         */
+        webUrl?: string;
     }
 
     function ensureInitialized(...expectedFrameContexts: string[]): void
