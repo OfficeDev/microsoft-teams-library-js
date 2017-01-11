@@ -212,7 +212,6 @@ namespace microsoftTeams
         sendMessageRequest(parentWindow, "shareDeepLink", [
             deepLinkParameters.subEntityId,
             deepLinkParameters.label,
-            deepLinkParameters.webUrl,
         ]);
     }
 
@@ -913,20 +912,15 @@ namespace microsoftTeams
     export interface DeepLinkParameters
     {
         /**
-         * The developer-defined unique id for the sub-entity this deep link points to. The entityId of this content will automatically be included
-         * so this field may be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
+         * The developer-defined unique id for the sub-entity this deep link points to within the current entity.
+         * This field should be used to restore to a specific state within an entity, for example scrolling to or activating a specific piece of content.
          */
-        subEntityId?: string;
+        subEntityId: string;
 
         /**
-         * The label which should be displayed for this deep link when the link is rendered in a client.
+         * The label for the sub-entity which should be displayed when the deep link is rendered in a client.
          */
         label: string;
-
-        /**
-         * The fallback url to navigate the user to if there is no support for rendering the page inside the client.
-         */
-        webUrl?: string;
     }
 
     function ensureInitialized(...expectedFrameContexts: string[]): void
