@@ -12,7 +12,7 @@ namespace microsoftTeams
 {
     "use strict";
 
-    const version = "0.3";
+    const version = "0.4";
 
     const validOrigins = [
         "https://teams.microsoft.com",

@@ -8,14 +8,19 @@
         },
         "version": {
             "type": "string",
-            "description": "The extension version. Changes to the extension should cause a version change. This version string must follow the semver standard."
+            "description": "The app version. Changes to the app should cause a version change. This version string must follow the semver standard."
+        },
+        "id": {
+            "type": "string",
+            "description": "A unique identifier for this app. The id must use reverse domain name notation.",
+            "maxLength": 64
         },
         "developer": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "The display name for the developer",
+                    "description": "The display name for the developer.",
                     "maxLength": 32
                 },
                 "websiteUrl": {
