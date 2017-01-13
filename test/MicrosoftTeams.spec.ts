@@ -860,16 +860,16 @@ describe("MicrosoftTeams", () =>
 
         microsoftTeams.shareDeepLink({
             subEntityId: "someSubEntityId",
-            label: "someLabel",
-            webUrl: "someWebUrl",
+            subEntityLabel: "someSubEntityLabel",
+            subEntityWebUrl: "someSubEntityWebUrl",
         });
 
         let message = findMessageByFunc("shareDeepLink");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(3);
         expect(message.args[0]).toBe("someSubEntityId");
-        expect(message.args[1]).toBe("someLabel");
-        expect(message.args[2]).toBe("someWebUrl");
+        expect(message.args[1]).toBe("someSubEntityLabel");
+        expect(message.args[2]).toBe("someSubEntityWebUrl");
     });
 
     function initializeWithContext(frameContext: string, hostClientType?: string): void
