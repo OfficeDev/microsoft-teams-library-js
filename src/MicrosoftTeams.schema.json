@@ -106,18 +106,13 @@
                     "scope": {
                         "type": "array",
                         "items": {
-                            "teams": {
-                                "type": "string",
-                                "description": "A value of 'teams' indicates the tab offers an experience in the context of a channel in a team"
-                            },
-                            "people": {
-                                "type": "string",
-                                "description": "A value of 'people' indicates the tab offers an experience in the context of a chat between one or more people"
-                            },
-                            "personal": {
-                                "type": "string",
-                                "description": "A value of 'personal' indicates the tab offers an experience scoped to an individual user alone"
-                            }
+                            "enum": [
+                                "team",
+                                "people",
+                                "personal"
+                            ],
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
+
                         }
                     }
                 },
@@ -134,44 +129,37 @@
                 "properties": {
                     "entityId": {
                         "type": "string",
-                        "description": "A unique identifier for the entity which the tab displays. The id must use reverse domain name notation.",
-                        "maxLength": 64
+                        "description": "A unique identifier for the entity which the tab displays."
                     },
                     "name": {
                         "type": "string",
-                        "description": "The display name of the tab.",
-                        "maxLength": 16
+                        "description": "The display name of the tab."
                     },
-                    "canvasUrl": {
+                    "contentUrl": {
                         "type": "string",
                         "description": "The url which points to the entity UI to be displayed in the Teams canvas."
                     },
                     "websiteUrl": {
                         "type": "string",
-                        "description": "The url to point at if a user opts to view in a browser. If this is not supplied the browswer will be pointed at the canvasUrl"
+                        "description": "The url to point at if a user opts to view in a browser."
                     },
                     "scope": {
                         "type": "array",
                         "items": {
-                            "teams": {
-                                "type": "string",
-                                "description": "A value of 'teams' indicates the tab offers an experience in the context of a channel in a team"
-                            },
-                            "people": {
-                                "type": "string",
-                                "description": "A value of 'people' indicates the tab offers an experience in the context of a chat between one or more people"
-                            },
-                            "personal": {
-                                "type": "string",
-                                "description": "A value of 'personal' indicates the tab offers an experience scoped to an individual user alone"
-                            }
+                            "enum": [
+                                "team",
+                                "people",
+                                "personal"
+                            ],
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
+
                         }
                     }
                 },
                 "required": [
                     "entityId",
                     "name",
-                    "canvasUrl",
+                    "contentUrl",
                     "scope"
                 ]
             }
@@ -189,18 +177,13 @@
                     "scope": {
                         "type": "array",
                         "items": {
-                            "teams": {
-                                "type": "string",
-                                "description": "A value of 'teams' indicates the bot offers an experience in the context of a channel in a team"
-                            },
-                            "people": {
-                                "type": "string",
-                                "description": "A value of 'people' indicates the bot offers an experience in the context of a chat between one or more people"
-                            },
-                            "personal": {
-                                "type": "string",
-                                "description": "A value of 'personal' indicates the bot offers an experience scoped to an individual user alone"
-                            }
+                            "enum": [
+                                "team",
+                                "people",
+                                "personal"
+                            ],
+                        "description": "Specifies whether the bot offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
+
                         }
                     }
                 },
