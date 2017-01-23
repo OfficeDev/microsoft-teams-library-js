@@ -198,7 +198,7 @@
                     "identity"
                 ]
             },
-            "description": "Specifies which permissions that app requests"
+            "description": "Specifies which permissions the app requests"
         },
         "validDomains": {
             "type": "array",
