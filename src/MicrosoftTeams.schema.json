@@ -94,13 +94,13 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "configUrl": {
+                    "configurationUrl": {
                         "type": "string",
                         "description": "The url to use when configuring the tab."
                     },
-                    "canUpdateConfig": {
+                    "canUpdateConfiguration": {
                         "type": "boolean",
-                        "description": "A value indicating whether an instance of the tab's config can be updated by the user after creation.",
+                        "description": "A value indicating whether an instance of the tab's configuration can be updated by the user after creation.",
                         "default": true
                     },
                     "scope": {
@@ -117,7 +117,7 @@
                     }
                 },
                 "required": [
-                    "configUrl",
+                    "configurationUrl",
                     "scope"
                 ]
             }
@@ -168,7 +168,7 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "mri": {
+                    "botId": {
                         "type": "string",
                         "description": "A unique identifier for the bot that matches its ID in the bot framework.",
                         "maxLength": 64
@@ -186,14 +186,19 @@
                     }
                 },
                 "required": [
-                    "mri",
+                    "botId",
                     "scope"
                 ]
             }
         },
-        "needsIdentity": {
-            "type": "boolean",
-            "description": "A value indicating whether the app is requesting access to identity information"
+        "permissions": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "identity"
+                ]
+            },
+            "description": "Specifies which permissions that app requests"
         },
         "validDomains": {
             "type": "array",
