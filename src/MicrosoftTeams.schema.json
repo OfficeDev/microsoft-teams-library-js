@@ -8,11 +8,11 @@
         },
         "version": {
             "type": "string",
-            "description": "The app version. Changes to the app should cause a version change. This version string must follow the semver standard."
+            "description": "The version of the manifest you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard."
         },
         "id": {
             "type": "string",
-            "description": "A unique identifier for this app. The id must use reverse domain name notation.",
+            "description": "A unique identifier for this set of tabs and bots. The id must be a guid.",
             "maxLength": 64
         },
         "developer": {
@@ -45,7 +45,7 @@
         },
         "name": {
             "type": "string",
-            "description": "The display name of the app.",
+            "description": "The display name for the package.",
             "maxLength": 16
         },
         "description": {
@@ -53,12 +53,12 @@
             "properties": {
                 "short": {
                     "type": "string",
-                    "description": "A short description of the app used when space is limited. Maximum length is 80 characters.",
+                    "description": "A short description used when space is limited. Maximum length is 80 characters.",
                     "maxLength": 80
                 },
                 "full": {
                     "type": "string",
-                    "description": "The full description of the app. Maximum length is 256 characters.",
+                    "description": "The full description of the package. Maximum length is 256 characters.",
                     "maxLength": 256
                 }
             },
@@ -73,11 +73,11 @@
             "properties": {
                 "44": {
                     "type": "string",
-                    "description": "An icon for the app sized to 44x44."
+                    "description": "An icon sized to 44x44."
                 },
                 "88": {
                     "type": "string",
-                    "description": "An icon for the app sized to 88x88."
+                    "description": "An icon sized to 88x88."
                 }
             },
             "required": [
@@ -87,10 +87,11 @@
         },
         "accentColor": {
             "type": "string",
-            "description": "A color to use in conjunction with the app's icons. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
+            "description": "A color to use in conjunction with the icon. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
         },
         "galleryTabs": {
             "type": "array",
+            "description": "The set of tabs that users can optionally add to Team's as a presentation canvas.",
             "items": {
                 "type": "object",
                 "properties": {
@@ -105,14 +106,12 @@
                     },
                     "scope": {
                         "type": "array",
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
                         "items": {
                             "enum": [
                                 "team",
-                                "people",
                                 "personal"
-                            ],
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
-
+                            ]
                         }
                     }
                 },
@@ -124,6 +123,7 @@
         },
         "staticTabs": {
             "type": "array",
+            "description": "The set of tabs that are automically pinned within Teams as a presentation canvas when this package is added.",
             "items": {
                 "type": "object",
                 "properties": {
@@ -145,13 +145,12 @@
                     },
                     "scope": {
                         "type": "array",
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
                         "items": {
                             "enum": [
                                 "team",
-                                "people",
                                 "personal"
-                            ],
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
+                            ]
                         }
                     }
                 },
@@ -173,36 +172,106 @@
                         "description": "A unique identifier for the bot that matches its ID in the bot framework.",
                         "maxLength": 64
                     },
+                    "hasIncomingWebhook": {
+                        "type": "boolean",
+                        "description": "This value describes whether or not the bot utilizes an incoming webhook",
+                        "default": "false"
+                    },
                     "scope": {
                         "type": "array",
+                        "description": "Specifies whether the bot offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
                         "items": {
                             "enum": [
                                 "team",
-                                "people",
                                 "personal"
-                            ],
-                        "description": "Specifies whether the bot offers an experience in the context of a channel in a team, a chat between one or more people, or an experience scoped to an individual user alone. These options are non-exclusive"
+                            ]
+                        }
+                    },
+                    "commandList": {
+                        "type": "array",
+                        "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list entry in the array should be used when valid scopes differ",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "scope": {
+                                    "type": "array",
+                                    "description": "Specifies the scopes for which the command list is valid",
+                                    "items": {
+                                        "enum": [
+                                            "team",
+                                            "personal"
+                                        ]
+                                    }
+                                },
+                                "commands": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "title": {
+                                                "type": "string",
+                                                "description": "The one word command name",
+                                                "maxLength": 16
+                                            },
+                                            "usageHint": {
+                                                "type": "string",
+                                                "description": "A short usage template for the command",
+                                                "maxLength": 32
+                                            },
+                                            "shortDescription": {
+                                                "type": "string",
+                                                "description": "A short description of the command",
+                                                "maxLength": 32
+                                            },
+                                            "value": {
+                                                "type": "string",
+                                                "description": "Payload to use for the bot action type. E.g, a URL for an OpenURL type."
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "enum" : ["imBack", "invoke", "openURL", "prompt", "gotoTab"],
+                                                "description": "The type of bot interaction the command defines.",
+                                                "maxLength": 16
+                                            },
+                                            "image": {
+                                                "type": "string",
+                                                "description": "An optional URL to an image to use for the command entry"
+                                            }
+                                        },
+                                        "required":[
+                                            "title",
+                                            "value",
+                                            "type"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required":[
+                                "scope",
+                                "commands"
+                            ]
                         }
                     }
                 },
                 "required": [
                     "botId",
-                    "scope"
+                    "scope",
+                    "hasIncomingWebhook"
                 ]
             }
         },
-        "permissions": {
+        "capabilities": {
             "type": "array",
+            "description": "Specifies which capabilties the bots or tabs request",
             "items": {
                 "enum": [
                     "identity"
                 ]
-            },
-            "description": "Specifies which permissions the app requests"
+            }
         },
         "validDomains": {
             "type": "array",
-            "description": "A list of valid domains from which the app expects to load any content. Domain listings can include wildcards, for example `*.example.com`. If your tab configuration or content UI needs to navigate to any other domain besides the one use for tab configuration, that domain must be specified here.",
+            "description": "A list of valid domains from which the tabs expect to load any content. Domain listings can include wildcards, for example `*.example.com`. If your tab configuration or content UI needs to navigate to any other domain besides the one use for tab configuration, that domain must be specified here.",
             "items": {
                 "type": "string"
             }
