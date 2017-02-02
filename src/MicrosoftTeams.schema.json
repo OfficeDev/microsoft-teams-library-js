@@ -172,9 +172,9 @@
                         "description": "A unique identifier for the bot that matches its ID in the bot framework.",
                         "maxLength": 64
                     },
-                    "hasIncomingWebhook": {
+                    "needsChannelSelctor": {
                         "type": "boolean",
-                        "description": "This value describes whether or not the bot utilizes an incoming webhook",
+                        "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
                         "default": "false"
                     },
                     "scope": {
@@ -256,16 +256,17 @@
                 "required": [
                     "botId",
                     "scope",
-                    "hasIncomingWebhook"
+                    "needsChannelSelctor"
                 ]
             }
         },
-        "capabilities": {
+        "permissions": {
             "type": "array",
-            "description": "Specifies which capabilties the bots or tabs request",
+            "description": "Specifies which permissions the bots or tabs request.",
             "items": {
                 "enum": [
-                    "identity"
+                    "identity",
+                    "sendToTeamMembers"
                 ]
             }
         },
