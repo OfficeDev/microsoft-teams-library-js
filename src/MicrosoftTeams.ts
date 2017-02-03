@@ -17,6 +17,7 @@ namespace microsoftTeams
     const validOrigins = [
         "https://teams.microsoft.com",
         "https://teams.skype.com",
+        "https://int.teams.microsoft.com",
         "https://ppespaces.skype.com",
         "https://devspaces.skype.com",
         "https://ssauth.skype.com",
