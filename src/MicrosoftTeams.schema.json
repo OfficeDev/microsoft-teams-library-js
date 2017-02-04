@@ -172,7 +172,7 @@
                         "description": "A unique identifier for the bot that matches its ID in the bot framework.",
                         "maxLength": 64
                     },
-                    "needsChannelSelctor": {
+                    "needsChannelSelector": {
                         "type": "boolean",
                         "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
                         "default": "false"
@@ -189,6 +189,7 @@
                     },
                     "commandList": {
                         "type": "array",
+                        "maxItems": 3,
                         "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list entry in the array should be used when valid scopes differ",
                         "items": {
                             "type": "object",
@@ -255,8 +256,7 @@
                 },
                 "required": [
                     "botId",
-                    "scope",
-                    "needsChannelSelctor"
+                    "scope"
                 ]
             }
         },
@@ -266,7 +266,7 @@
             "items": {
                 "enum": [
                     "identity",
-                    "sendToTeamMembers"
+                    "messageTeamMembers"
                 ]
             }
         },
