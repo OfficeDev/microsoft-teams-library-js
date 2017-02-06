@@ -91,7 +91,7 @@
         },
         "galleryTabs": {
             "type": "array",
-            "description": "The set of tabs that users can optionally add to Team's as a presentation canvas.",
+            "description": "The set of tabs that users can optionally add to Teams",
             "items": {
                 "type": "object",
                 "properties": {
