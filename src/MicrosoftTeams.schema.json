@@ -12,7 +12,12 @@
         },
         "id": {
             "type": "string",
-            "description": "A unique identifier for this set of tabs and bots. The id must be a guid.",
+            "description": "A human readable unique identifier for this set of tabs and bots. This id should be in reverse domain notation.",
+            "maxLength": 64
+        },
+        "guid": {
+            "type": "string",
+            "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
             "maxLength": 64
         },
         "developer": {
@@ -189,8 +194,8 @@
                     },
                     "commandList": {
                         "type": "array",
-                        "maxItems": 3,
-                        "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list entry in the array should be used when valid scopes differ",
+                        "maxItems": 2,
+                        "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list should be used for each scope.",
                         "items": {
                             "type": "object",
                             "properties": {
@@ -206,6 +211,7 @@
                                 },
                                 "commands": {
                                     "type": "array",
+                                    "maxItems": 10,
                                     "items": {
                                         "type": "object",
                                         "properties": {
@@ -282,6 +288,7 @@
         "manifestVersion",
         "version",
         "id",
+        "guid",
         "developer",
         "icons",
         "accentColor"
