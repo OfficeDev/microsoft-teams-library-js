@@ -12,12 +12,12 @@
         },
         "id": {
             "type": "string",
-            "description": "A human readable unique identifier for this set of tabs and bots. This id should be in reverse domain notation.",
-            "maxLength": 64
-        },
-        "guid": {
-            "type": "string",
             "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
+            "maxLength": 36
+        },
+        "reverseDomainId": {
+            "type": "string",
+            "description": "A unique identifier for this set of tabs and bots in reverse domain notation.",
             "maxLength": 64
         },
         "developer": {
@@ -288,7 +288,7 @@
         "manifestVersion",
         "version",
         "id",
-        "guid",
+        "reverseDomainId",
         "developer",
         "icons",
         "accentColor"
