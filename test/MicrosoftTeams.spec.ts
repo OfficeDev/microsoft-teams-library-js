@@ -24,7 +24,7 @@ interface MessageResponse
 
 describe("MicrosoftTeams", () =>
 {
-    const validOrigin = "https://teams.skype.com";
+    const validOrigin = "https://teams.microsoft.com";
     const tabOrigin = "https://example.com";
 
     // Use to send a mock message from the app.
