@@ -12,7 +12,7 @@ namespace microsoftTeams
 {
     "use strict";
 
-    const version = "0.4";
+    const version = "0.5";
 
     const validOrigins = [
         "https://teams.microsoft.com",
@@ -862,14 +862,19 @@ namespace microsoftTeams
     {
         /**
          * The O365 group id for the team with which the content is associated.
-         * This field is only available when needsIdentity is set in the manifest.
+         * This field is only available when the identity permission is requested in the manifest.
          */
         groupId?: string;
 
         /**
+         * The Microsoft Teams id for the team with which the content is associated.
+         */
+        teamId?: string;
+
+        /**
          * The Microsoft Teams id for the channel with which the content is associated.
          */
-        channelId: string;
+        channelId?: string;
 
         /**
          * The developer-defined unique id for the entity this content points to.
@@ -892,7 +897,7 @@ namespace microsoftTeams
          * The current user's upn.
          * As a malicious party can host content in a malicious browser, this value should only
          * be used as a hint as to who the user is and never as proof of identity.
-         * This field is only available when needsIdentity is set in the manifest.
+         * This field is only available when the identity permission is requested in the manifest.
          */
         upn?: string;
 
@@ -900,7 +905,7 @@ namespace microsoftTeams
          * The current user's AAD tenant id.
          * As a malicious party can host content in a malicious browser, this value should only
          * be used as a hint as to who the user is and never as proof of identity.
-         * This field is only available when needsIdentity is set in the manifest.
+         * This field is only available when the identity permission is requested in the manifest.
          */
         tid?: string;
 
