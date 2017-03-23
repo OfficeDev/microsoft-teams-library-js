@@ -1,10 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
+    "additionalProperties": false,
     "properties": {
         "manifestVersion": {
             "type": "string",
-            "description": "The version of the manifest schema this manifest is using."
+            "description": "The version of the manifest schema this manifest is using.",
+            "maxLength": 16
         },
         "version": {
             "type": "string",
@@ -14,7 +16,7 @@
         "id": {
             "type": "string",
             "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
-            "maxLength": 36
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
         },
         "reverseDomainId": {
             "type": "string",
@@ -23,6 +25,7 @@
         },
         "developer": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "name": {
                     "type": "string",
@@ -59,6 +62,7 @@
         },
         "description": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "short": {
                     "type": "string",
@@ -79,6 +83,7 @@
         "icons": {
             "type": "object",
             "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
+            "additionalProperties": false,
             "properties": {
                 "44": {
                     "type": "string",
@@ -107,11 +112,13 @@
             "maxItems": 1,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "configurationUrl": {
                         "type": "string",
                         "description": "The url to use when configuring the tab.",
-                        "maxLength": 2048
+                        "maxLength": 2048,
+                        "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
                     },
                     "canUpdateConfiguration": {
                         "type": "boolean",
@@ -142,6 +149,7 @@
             "maxItems": 16,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "entityId": {
                         "type": "string",
@@ -156,7 +164,8 @@
                     "contentUrl": {
                         "type": "string",
                         "description": "The url which points to the entity UI to be displayed in the Teams canvas.",
-                        "maxLength": 2048
+                        "maxLength": 2048,
+                        "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
                     },
                     "websiteUrl": {
                         "type": "string",
@@ -188,6 +197,7 @@
             "maxItems": 1,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "botId": {
                         "type": "string",
@@ -216,6 +226,7 @@
                         "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list should be used for each scope.",
                         "items": {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "scopes": {
                                     "type": "array",
@@ -232,6 +243,7 @@
                                     "maxItems": 10,
                                     "items": {
                                         "type": "object",
+                                        "additionalProperties": false,
                                         "properties": {
                                             "title": {
                                                 "type": "string",
@@ -311,6 +323,8 @@
         "id",
         "reverseDomainId",
         "developer",
+        "name",
+        "description",
         "icons",
         "accentColor"
     ]
