@@ -1,19 +1,22 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
+    "additionalProperties": false,
     "properties": {
         "manifestVersion": {
             "type": "string",
-            "description": "The version of the manifest schema this manifest is using."
+            "description": "The version of the manifest schema this manifest is using.",
+            "maxLength": 16
         },
         "version": {
             "type": "string",
-            "description": "The version of the manifest you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard."
+            "description": "The version of the manifest you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard.",
+            "maxLength": 256
         },
         "id": {
             "type": "string",
             "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
-            "maxLength": 36
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
         },
         "reverseDomainId": {
             "type": "string",
@@ -22,6 +25,7 @@
         },
         "developer": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "name": {
                     "type": "string",
@@ -30,15 +34,18 @@
                 },
                 "websiteUrl": {
                     "type": "string",
-                    "description": "The url to the developer's website."
+                    "description": "The url to the developer's website.",
+                    "maxLength": 2048
                 },
                 "privacyUrl": {
                     "type": "string",
-                    "description": "The url to the developer's privacy policy."
+                    "description": "The url to the developer's privacy policy.",
+                    "maxLength": 2048
                 },
                 "termsOfUseUrl": {
                     "type": "string",
-                    "description": "The url to the developer's terms of use."
+                    "description": "The url to the developer's terms of use.",
+                    "maxLength": 2048
                 }
             },
             "required": [
@@ -55,6 +62,7 @@
         },
         "description": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "short": {
                     "type": "string",
@@ -75,14 +83,17 @@
         "icons": {
             "type": "object",
             "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
+            "additionalProperties": false,
             "properties": {
                 "44": {
                     "type": "string",
-                    "description": "An icon sized to 44x44."
+                    "description": "An icon sized to 44x44.",
+                    "maxLength": 2048
                 },
                 "88": {
                     "type": "string",
-                    "description": "An icon sized to 88x88."
+                    "description": "An icon sized to 88x88.",
+                    "maxLength": 2048
                 }
             },
             "required": [
@@ -92,17 +103,22 @@
         },
         "accentColor": {
             "type": "string",
-            "description": "A color to use in conjunction with the icon. The value must be a valid HTML color code starting with '#', for example `#4464ee`."
+            "description": "A color to use in conjunction with the icon. The value must be a valid HTML color code starting with '#', for example `#4464ee`.",
+            "pattern": "^#[0-9a-fA-F]{6}$"
         },
         "galleryTabs": {
             "type": "array",
             "description": "The set of tabs that users can optionally add to Teams",
+            "maxItems": 1,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "configurationUrl": {
                         "type": "string",
-                        "description": "The url to use when configuring the tab."
+                        "description": "The url to use when configuring the tab.",
+                        "maxLength": 2048,
+                        "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
                     },
                     "canUpdateConfiguration": {
                         "type": "boolean",
@@ -112,6 +128,7 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
@@ -129,28 +146,36 @@
         "staticTabs": {
             "type": "array",
             "description": "The set of tabs that are automically pinned within Teams as a presentation canvas when this package is added.",
+            "maxItems": 16,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "entityId": {
                         "type": "string",
-                        "description": "A unique identifier for the entity which the tab displays."
+                        "description": "A unique identifier for the entity which the tab displays.",
+                        "maxLength": 64
                     },
                     "name": {
                         "type": "string",
-                        "description": "The display name of the tab."
+                        "description": "The display name of the tab.",
+                        "maxLength": 128
                     },
                     "contentUrl": {
                         "type": "string",
-                        "description": "The url which points to the entity UI to be displayed in the Teams canvas."
+                        "description": "The url which points to the entity UI to be displayed in the Teams canvas.",
+                        "maxLength": 2048,
+                        "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
                     },
                     "websiteUrl": {
                         "type": "string",
-                        "description": "The url to point at if a user opts to view in a browser."
+                        "description": "The url to point at if a user opts to view in a browser.",
+                        "maxLength": 2048
                     },
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
@@ -169,8 +194,10 @@
         },
         "bots": {
             "type": "array",
+            "maxItems": 1,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "botId": {
                         "type": "string",
@@ -180,11 +207,12 @@
                     "needsChannelSelector": {
                         "type": "boolean",
                         "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
-                        "default": "false"
+                        "default": false
                     },
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the bot offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive",
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
@@ -198,6 +226,7 @@
                         "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list should be used for each scope.",
                         "items": {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "scopes": {
                                     "type": "array",
@@ -214,6 +243,7 @@
                                     "maxItems": 10,
                                     "items": {
                                         "type": "object",
+                                        "additionalProperties": false,
                                         "properties": {
                                             "title": {
                                                 "type": "string",
@@ -269,6 +299,7 @@
         "permissions": {
             "type": "array",
             "description": "Specifies which permissions the bots or tabs request.",
+            "maxItems": 2,
             "items": {
                 "enum": [
                     "identity",
@@ -279,8 +310,10 @@
         "validDomains": {
             "type": "array",
             "description": "A list of valid domains from which the tabs expect to load any content. Domain listings can include wildcards, for example `*.example.com`. If your tab configuration or content UI needs to navigate to any other domain besides the one use for tab configuration, that domain must be specified here.",
+            "maxItems": 16,
             "items": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 2048
             }
         }
     },
@@ -290,6 +323,8 @@
         "id",
         "reverseDomainId",
         "developer",
+        "name",
+        "description",
         "icons",
         "accentColor"
     ]
