@@ -220,7 +220,7 @@
                             ]
                         }
                     },
-                    "commandList": {
+                    "commandLists": {
                         "type": "array",
                         "maxItems": 2,
                         "description": "The list of commands that the bot supplies, including their usage, description, and the scope for which the commands are valid. A seperate command list should be used for each scope.",
@@ -231,6 +231,7 @@
                                 "scopes": {
                                     "type": "array",
                                     "description": "Specifies the scopes for which the command list is valid",
+                                    "maxItems": 2,
                                     "items": {
                                         "enum": [
                                             "team",
@@ -247,38 +248,18 @@
                                         "properties": {
                                             "title": {
                                                 "type": "string",
-                                                "description": "The one word command name",
-                                                "maxLength": 16
-                                            },
-                                            "usageHint": {
-                                                "type": "string",
-                                                "description": "A short usage template for the command",
+                                                "description": "The bot command name",
                                                 "maxLength": 32
                                             },
-                                            "shortDescription": {
+                                            "description": {
                                                 "type": "string",
-                                                "description": "A short description of the command",
-                                                "maxLength": 32
-                                            },
-                                            "value": {
-                                                "type": "string",
-                                                "description": "Payload to use for the bot action type. E.g, a URL for an OpenURL type."
-                                            },
-                                            "type": {
-                                                "type": "string",
-                                                "enum" : ["imBack", "invoke", "openURL", "prompt", "gotoTab"],
-                                                "description": "The type of bot interaction the command defines.",
-                                                "maxLength": 16
-                                            },
-                                            "image": {
-                                                "type": "string",
-                                                "description": "An optional URL to an image to use for the command entry"
+                                                "description": "A simple text description or an example of the command syntax and its arguments.",
+                                                "maxLength": 128
                                             }
                                         },
                                         "required":[
                                             "title",
-                                            "value",
-                                            "type"
+                                            "description"
                                         ]
                                     }
                                 }
