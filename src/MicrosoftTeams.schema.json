@@ -193,7 +193,7 @@
                         "items": {
                             "enum": [
                                 "team",
-                                "personal"                    
+                                "personal"
                             ]
                         }
                     }
