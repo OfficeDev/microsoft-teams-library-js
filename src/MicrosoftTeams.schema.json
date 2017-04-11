@@ -142,13 +142,11 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 4,
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal",
-                                "twoWayPeopleChat",
-                                "threeOrMorePeopleChat"
+                                "personal"
                             ]
                         }
                     }
@@ -159,7 +157,7 @@
                 ]
             }
         },
-        "directTabs": {
+        "staticTabs": {
             "type": "array",
             "description": "The set of tabs that are automically pinned within Teams as a presentation canvas when this app is added.",
             "maxItems": 16,
@@ -191,13 +189,11 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 4,
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal",
-                                "twoWayPeopleChat",
-                                "threeOrMorePeopleChat"                        
+                                "personal"                    
                             ]
                         }
                     }
@@ -238,13 +234,11 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the bot offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 4,
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal",
-                                "twoWayPeopleChat",
-                                "threeOrMorePeopleChat"
+                                "personal"
                             ]
                         }
                     },
@@ -259,13 +253,11 @@
                                 "scopes": {
                                     "type": "array",
                                     "description": "Specifies the scopes for which the command list is valid",
-                                    "maxItems": 4,
+                                    "maxItems": 2,
                                     "items": {
                                         "enum": [
                                             "team",
-                                            "personal",
-                                            "twoWayPeopleChat",
-                                            "threeOrMorePeopleChat"
+                                            "personal"
                                         ]
                                     }
                                 },
@@ -322,13 +314,11 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 4,
+                        "maxItems": 2,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal",
-                                "twoWayPeopleChat",
-                                "threeOrMorePeopleChat"
+                                "personal"
                             ]
                         }
                     }
@@ -352,13 +342,11 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "maxItems": 4,
+                        "maxItems": 2,
                         "items": {
                             "enum": [
-                                "Team",
-                                "Personal",
-                                "twoWayPeopleChat",
-                                "threeOrMorePeopleChat"
+                                "team",
+                                "personal"
                             ],
                             "description": "Specifies whether the input extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
                         }
