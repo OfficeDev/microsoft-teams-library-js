@@ -41,30 +41,36 @@
                     "type": "string",
                     "description": "The url to the page that provides privacy information for the app.",
                     "maxLength": 2048
+                },
+                "termsOfUseUrl": {
+                    "type": "string",
+                    "description": "The url to the developer's terms of use.",
+                    "maxLength": 2048
                 }
             },
             "required": [
                 "name",
                 "websiteUrl",
-                "privacyUrl"
+                "privacyUrl",
+                "termsOfUseUrl"
             ]
         },
         "name": {
             "type": "string",
             "description": "The short and long display name for the app.",
             "properties": {
-                "short":{
-                    "type":"string",
+                "short": {
+                    "type": "string",
                     "description": "A short display name for the app",
                     "maxLength": 50
                 },
-                "full":{
-                    "type":"string",
+                "full": {
+                    "type": "string",
                     "description": "The full name of the app, used if the full app name exceeds 50 characters",
                     "maxLength": 100
                 }
             },
-            "required":[
+            "required": [
                 "short"
             ]
         },
@@ -142,8 +148,7 @@
                                 "team",
                                 "personal",
                                 "twoWayPeopleChat",
-                                "threeOrMorePeoplChat"
-
+                                "threeOrMorePeopleChat"
                             ]
                         }
                     }
@@ -192,7 +197,7 @@
                                 "team",
                                 "personal",
                                 "twoWayPeopleChat",
-                                "threeOrMorePeoplChat"                        
+                                "threeOrMorePeopleChat"                        
                             ]
                         }
                     }
@@ -222,14 +227,13 @@
                         "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
                         "default": false
                     },
-                    "botType":{
-                        "type":"string",
+                    "botType": {
+                        "type": "string",
                         "description": "Specifies whether the bot is a conversational bot, or the bot only sends notifications",
                         "enum": [
                             "conversational",
                             "notification"
                         ]
-
                     },
                     "scopes": {
                         "type": "array",
@@ -240,7 +244,7 @@
                                 "team",
                                 "personal",
                                 "twoWayPeopleChat",
-                                "threeOrMorePeoplChat"
+                                "threeOrMorePeopleChat"
                             ]
                         }
                     },
@@ -261,8 +265,7 @@
                                             "team",
                                             "personal",
                                             "twoWayPeopleChat",
-                                            "threOrMorePeopleChat"
-                                            
+                                            "threeOrMorePeopleChat"
                                         ]
                                     }
                                 },
@@ -284,14 +287,14 @@
                                                 "maxLength": 128
                                             }
                                         },
-                                        "required":[
+                                        "required": [
                                             "title",
                                             "description"
                                         ]
                                     }
                                 }
                             },
-                            "required":[
+                            "required": [
                                 "scopes",
                                 "commands"
                             ]
@@ -319,11 +322,13 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "maxItems": 4,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal"
+                                "personal",
+                                "twoWayPeopleChat",
+                                "threeOrMorePeopleChat"
                             ]
                         }
                     }
@@ -347,11 +352,13 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "maxItems": 2,
+                        "maxItems": 4,
                         "items": {
                             "enum": [
                                 "Team",
-                                "Personal"
+                                "Personal",
+                                "twoWayPeopleChat",
+                                "threeOrMorePeopleChat"
                             ],
                             "description": "Specifies whether the input extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
                         }
