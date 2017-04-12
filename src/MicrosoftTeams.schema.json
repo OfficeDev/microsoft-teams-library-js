@@ -223,13 +223,10 @@
                         "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
                         "default": false
                     },
-                    "botType": {
-                        "type": "string",
-                        "description": "Specifies whether the bot is a conversational bot, or the bot only sends notifications",
-                        "enum": [
-                            "conversational",
-                            "notification"
-                        ]
+                    "isNotificationOnly": {
+                        "type": "boolean",
+                        "description": "A value indicating whether or not the bot is a one-way notification only bot, as opposed to a conversational bot.",
+                        "default": false
                     },
                     "scopes": {
                         "type": "array",
