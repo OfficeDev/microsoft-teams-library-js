@@ -44,7 +44,7 @@
                 },
                 "termsOfUseUrl": {
                     "type": "string",
-                    "description": "The url to the developer's terms of use.",
+                    "description": "The url to the page that provides the terms of use for the app.",
                     "maxLength": 2048
                 }
             },
@@ -56,17 +56,17 @@
             ]
         },
         "name": {
-            "type": "string",
-            "description": "The short and long display name for the app.",
+            "type": "object",
+            "additionalProperties": false,            
             "properties": {
                 "short": {
                     "type": "string",
-                    "description": "A short display name for the app",
-                    "maxLength": 50
+                    "description": "A short display name for the app.",
+                    "maxLength": 30
                 },
                 "full": {
                     "type": "string",
-                    "description": "The full name of the app, used if the full app name exceeds 50 characters",
+                    "description": "The full name of the app, used if the full app name exceeds 30 characters.",
                     "maxLength": 100
                 }
             },
@@ -80,8 +80,8 @@
             "properties": {
                 "short": {
                     "type": "string",
-                    "description": "A short description of the app, used when space is limited. Maximum length is 100 characters.",
-                    "maxLength": 100
+                    "description": "A short description of the app used when space is limited. Maximum length is 80 characters.",
+                    "maxLength": 80
                 },
                 "full": {
                     "type": "string",
@@ -96,7 +96,6 @@
         },
         "icons": {
             "type": "object",
-            "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
             "additionalProperties": false,
             "properties": {
                 "outline": {
@@ -122,7 +121,7 @@
         },
         "configurableTabs": {
             "type": "array",
-            "description": "The set of tabs that users can optionally add to Teams",
+            "description": "These are tabs users can optionally add to their channels and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -141,12 +140,11 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive. Currently, configurable tabs are only supported in the teams scope.",
+                        "maxItems": 1,
                         "items": {
                             "enum": [
-                                "team",
-                                "personal"
+                                "team"
                             ]
                         }
                     }
@@ -159,7 +157,7 @@
         },
         "staticTabs": {
             "type": "array",
-            "description": "The set of tabs that are automically pinned within Teams as a presentation canvas when this app is added.",
+            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually.  Static tabs declared in personal scope are always pinned to the app's home screen.  Static tabs declared in the team scope are candidates to be pinned automatically to channels, subject to approval.",
             "maxItems": 16,
             "items": {
                 "type": "object",
@@ -208,6 +206,7 @@
         },
         "bots": {
             "type": "array",
+            "description": "The set of bots for this app. Currently only one bot per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -298,6 +297,7 @@
         },
         "connectors": {
             "type": "array",
+            "description": "The set of Office365 connectors for this app. Currently only one connector per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -311,11 +311,10 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "maxItems": 1,
                         "items": {
                             "enum": [
-                                "team",
-                                "personal"
+                                "team"
                             ]
                         }
                     }
@@ -326,15 +325,17 @@
                 ]
             }
         },
-        "inputExtensions": {
+        "composeExtensions": {
             "type": "array",
+            "description": "The set of compose extensions for this app. Currently only one compose extension per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "botId": {
                         "type": "string",
-                        "description": "A unique identifier for the bot which is backing the input extension that matches its ID in the bot framework.",
+                        "description": "A unique identifier for the bot which is backing the compose extension that matches its ID in the bot framework.",
                         "maxLength": 64
                     },
                     "scopes": {
@@ -345,7 +346,7 @@
                                 "team",
                                 "personal"
                             ],
-                            "description": "Specifies whether the input extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
+                            "description": "Specifies whether the compose extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
                         }
                     },
                     "commands": {
@@ -353,6 +354,7 @@
                         "maxItems": 1,
                         "items": {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "id": {
                                     "type": "string",
@@ -377,8 +379,10 @@
                                 "parameters": {
                                     "type": "array",
                                     "maxItems": 5,
+                                    "minItems": 1,
                                     "items": {
                                         "type": "object",
+                                        "additionalProperties": false,
                                         "properties": {
                                             "name": {
                                                 "type": "string",
@@ -397,17 +401,17 @@
                                             }
                                         },
                                         "required": [
-                                            "name"
-                                        ],
-                                        "additionalProperties": false
+                                            "name",
+                                            "title"
+                                        ]
                                     }
                                 }
                             },
                             "required": [
                                 "id",
-                                "title"
-                            ],
-                            "additionalProperties": false
+                                "title",
+                                "parameters"
+                            ]
                         }
                     }
                 },
@@ -415,8 +419,7 @@
                     "botId",
                     "scopes",
                     "commands"
-                ],
-                "additionalProperties": false
+                ]
             }
         },
         "permissions": {
@@ -444,7 +447,7 @@
         "manifestVersion",
         "version",
         "id",
-        "reverseDomainId",
+        "packageName",
         "developer",
         "name",
         "description",
