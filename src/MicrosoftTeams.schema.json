@@ -100,12 +100,12 @@
             "properties": {
                 "outline": {
                     "type": "string",
-                    "description": "A URL or relative file path to a transparent PNG outline icon. The border color needs to be white. Size 20x20.",
+                    "description": "A relative file path to a transparent PNG outline icon. The border color needs to be white. Size 20x20.",
                     "maxLength": 2048
                 },
                 "color": {
                     "type": "string",
-                    "description": "A URL or relative file path to a full color PNG icon. Size 96x96.",
+                    "description": "A relative file path to a full color PNG icon. Size 96x96.",
                     "maxLength": 2048
                 }
             },
@@ -157,7 +157,7 @@
         },
         "staticTabs": {
             "type": "array",
-            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually.  Static tabs declared in personal scope are always pinned to the app's home screen.  Static tabs declared in the team scope are candidates to be pinned automatically to channels, subject to approval.",
+            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually.  Static tabs declared in personal scope are always pinned to the app's personal experience.  Static tabs declared in the team scope are candidates to be pinned automatically to channels, subject to approval.",
             "maxItems": 16,
             "items": {
                 "type": "object",
