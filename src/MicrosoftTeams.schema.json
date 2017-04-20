@@ -5,12 +5,12 @@
     "properties": {
         "manifestVersion": {
             "type": "string",
-            "description": "The version of the manifest schema this manifest is using.",
+            "description": "The version of the schema this manifest is using.",
             "maxLength": 16
         },
         "version": {
             "type": "string",
-            "description": "The version of the manifest you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard.",
+            "description": "The version of your app you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard.",
             "maxLength": 256
         },
         "id": {
@@ -18,9 +18,9 @@
             "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
             "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
         },
-        "reverseDomainId": {
+        "packageName": {
             "type": "string",
-            "description": "A unique identifier for this set of tabs and bots in reverse domain notation.",
+            "description": "A unique identifier for this app in reverse domain notation. E.g: com.example.myapp",
             "maxLength": 64
         },
         "developer": {
@@ -34,17 +34,17 @@
                 },
                 "websiteUrl": {
                     "type": "string",
-                    "description": "The url to the developer's website.",
+                    "description": "The url to the page that provides support information for the app.",
                     "maxLength": 2048
                 },
                 "privacyUrl": {
                     "type": "string",
-                    "description": "The url to the developer's privacy policy.",
+                    "description": "The url to the page that provides privacy information for the app.",
                     "maxLength": 2048
                 },
                 "termsOfUseUrl": {
                     "type": "string",
-                    "description": "The url to the developer's terms of use.",
+                    "description": "The url to the page that provides the terms of use for the app.",
                     "maxLength": 2048
                 }
             },
@@ -56,9 +56,23 @@
             ]
         },
         "name": {
-            "type": "string",
-            "description": "The display name for the package.",
-            "maxLength": 16
+            "type": "object",
+            "additionalProperties": false,            
+            "properties": {
+                "short": {
+                    "type": "string",
+                    "description": "A short display name for the app.",
+                    "maxLength": 30
+                },
+                "full": {
+                    "type": "string",
+                    "description": "The full name of the app, used if the full app name exceeds 30 characters.",
+                    "maxLength": 100
+                }
+            },
+            "required": [
+                "short"
+            ]
         },
         "description": {
             "type": "object",
@@ -66,13 +80,13 @@
             "properties": {
                 "short": {
                     "type": "string",
-                    "description": "A short description used when space is limited. Maximum length is 80 characters.",
+                    "description": "A short description of the app used when space is limited. Maximum length is 80 characters.",
                     "maxLength": 80
                 },
                 "full": {
                     "type": "string",
-                    "description": "The full description of the package. Maximum length is 256 characters.",
-                    "maxLength": 256
+                    "description": "The full description of the app. Maximum length is 4000 characters.",
+                    "maxLength": 4000
                 }
             },
             "required": [
@@ -82,23 +96,22 @@
         },
         "icons": {
             "type": "object",
-            "description": "Each icon image file must be a transparent PNG, with a white or light-colored background.",
             "additionalProperties": false,
             "properties": {
-                "44": {
+                "outline": {
                     "type": "string",
-                    "description": "An icon sized to 44x44.",
+                    "description": "A relative file path to a transparent PNG outline icon. The border color needs to be white. Size 20x20.",
                     "maxLength": 2048
                 },
-                "88": {
+                "color": {
                     "type": "string",
-                    "description": "An icon sized to 88x88.",
+                    "description": "A relative file path to a full color PNG icon. Size 96x96.",
                     "maxLength": 2048
                 }
             },
             "required": [
-                "44",
-                "88"
+                "outline",
+                "color"
             ]
         },
         "accentColor": {
@@ -106,9 +119,9 @@
             "description": "A color to use in conjunction with the icon. The value must be a valid HTML color code starting with '#', for example `#4464ee`.",
             "pattern": "^#[0-9a-fA-F]{6}$"
         },
-        "galleryTabs": {
+        "configurableTabs": {
             "type": "array",
-            "description": "The set of tabs that users can optionally add to Teams",
+            "description": "These are tabs users can optionally add to their channels and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -127,12 +140,11 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive. Currently, configurable tabs are only supported in the teams scope.",
+                        "maxItems": 1,
                         "items": {
                             "enum": [
-                                "team",
-                                "personal"
+                                "team"
                             ]
                         }
                     }
@@ -145,7 +157,7 @@
         },
         "staticTabs": {
             "type": "array",
-            "description": "The set of tabs that are automically pinned within Teams as a presentation canvas when this package is added.",
+            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually.  Static tabs declared in personal scope are always pinned to the app's personal experience.  Static tabs declared in the team scope are candidates to be pinned automatically to channels, subject to approval.",
             "maxItems": 16,
             "items": {
                 "type": "object",
@@ -194,6 +206,7 @@
         },
         "bots": {
             "type": "array",
+            "description": "The set of bots for this app. Currently only one bot per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -207,6 +220,11 @@
                     "needsChannelSelector": {
                         "type": "boolean",
                         "description": "This value describes whether or not the bot utilizes a user hint to add the bot to a specific channel.",
+                        "default": false
+                    },
+                    "isNotificationOnly": {
+                        "type": "boolean",
+                        "description": "A value indicating whether or not the bot is a one-way notification only bot, as opposed to a conversational bot.",
                         "default": false
                     },
                     "scopes": {
@@ -257,14 +275,14 @@
                                                 "maxLength": 128
                                             }
                                         },
-                                        "required":[
+                                        "required": [
                                             "title",
                                             "description"
                                         ]
                                     }
                                 }
                             },
-                            "required":[
+                            "required": [
                                 "scopes",
                                 "commands"
                             ]
@@ -279,6 +297,7 @@
         },
         "connectors": {
             "type": "array",
+            "description": "The set of Office365 connectors for this app. Currently only one connector per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -292,11 +311,10 @@
                     "scopes": {
                         "type": "array",
                         "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "maxItems": 1,
                         "items": {
                             "enum": [
-                                "team",
-                                "personal"
+                                "team"
                             ]
                         }
                     }
@@ -304,6 +322,103 @@
                 "required": [
                     "connectorId",
                     "scopes"
+                ]
+            }
+        },
+        "composeExtensions": {
+            "type": "array",
+            "description": "The set of compose extensions for this app. Currently only one compose extension per app is supported.",
+            "maxItems": 1,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "botId": {
+                        "type": "string",
+                        "description": "A unique identifier for the bot which is backing the compose extension that matches its ID in the bot framework.",
+                        "maxLength": 64
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "maxItems": 2,
+                        "items": {
+                            "enum": [
+                                "team",
+                                "personal"
+                            ],
+                            "description": "Specifies whether the compose extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
+                        }
+                    },
+                    "commands": {
+                        "type": "array",
+                        "maxItems": 1,
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "description": "Id of the command",
+                                    "maxLength": 64
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "description": "Title of the command",
+                                    "maxLength": 32
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Description of the command",
+                                    "maxLength": 128
+                                },
+                                "initialRun": {
+                                    "type": "boolean",
+                                    "description": "A boolean value that indicates if the command should be run once initially with no parameter",
+                                    "default": false
+                                },
+                                "parameters": {
+                                    "type": "array",
+                                    "maxItems": 5,
+                                    "minItems": 1,
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "Name of the parameter",
+                                                "maxLength": 64
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "description": "Title of the parameter",
+                                                "maxLength": 32
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "description": "Description of the parameter",
+                                                "maxLength": 128
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "title"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "title",
+                                "parameters"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "botId",
+                    "scopes",
+                    "commands"
                 ]
             }
         },
@@ -332,7 +447,7 @@
         "manifestVersion",
         "version",
         "id",
-        "reverseDomainId",
+        "packageName",
         "developer",
         "name",
         "description",
