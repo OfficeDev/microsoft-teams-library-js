@@ -36,7 +36,7 @@
                     "type": "string",
                     "description": "The url to the page that provides support information for the app.",
                     "maxLength": 2048,
-                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]*://"
                 },
                 "privacyUrl": {
                     "type": "string",
