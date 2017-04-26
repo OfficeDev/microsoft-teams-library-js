@@ -94,6 +94,7 @@ describe("MicrosoftTeams", () =>
             {
                 return;
             },
+            setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
         };
         microsoftTeams._window = mockWindow.self = mockWindow as Window;
 
