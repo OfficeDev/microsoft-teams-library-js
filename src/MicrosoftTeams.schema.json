@@ -36,19 +36,19 @@
                     "type": "string",
                     "description": "The url to the page that provides support information for the app.",
                     "maxLength": 2048,
-                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]*://"
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 },
                 "privacyUrl": {
                     "type": "string",
                     "description": "The url to the page that provides privacy information for the app.",
                     "maxLength": 2048,
-                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 },
                 "termsOfUseUrl": {
                     "type": "string",
                     "description": "The url to the page that provides the terms of use for the app.",
                     "maxLength": 2048,
-                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 }
             },
             "required": [
