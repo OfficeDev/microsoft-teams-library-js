@@ -190,7 +190,7 @@ namespace microsoftTeams
      */
     export function navigateCrossDomain(url: string): void
     {
-        ensureInitialized();
+        ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
         let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [ url ]);
         callbacks[messageId] = (success: boolean) =>
