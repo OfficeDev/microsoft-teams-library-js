@@ -10,12 +10,12 @@
         },
         "version": {
             "type": "string",
-            "description": "The version of your app you are submitting. Changes to your manifest should cause a version change. This version string must follow the semver standard.",
+            "description": "The version of the app. Changes to your manifest should cause a version change. This version string must follow the semver standard (http://semver.org).",
             "maxLength": 256
         },
         "id": {
             "type": "string",
-            "description": "A unique identifier for this set of tabs and bots. This id must be a guid.",
+            "description": "A unique identifier for this app. This id must be a GUID.",
             "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$"
         },
         "packageName": {
@@ -35,17 +35,20 @@
                 "websiteUrl": {
                     "type": "string",
                     "description": "The url to the page that provides support information for the app.",
-                    "maxLength": 2048
+                    "maxLength": 2048,
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 },
                 "privacyUrl": {
                     "type": "string",
                     "description": "The url to the page that provides privacy information for the app.",
-                    "maxLength": 2048
+                    "maxLength": 2048,
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 },
                 "termsOfUseUrl": {
                     "type": "string",
                     "description": "The url to the page that provides the terms of use for the app.",
-                    "maxLength": 2048
+                    "maxLength": 2048,
+                    "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
                 }
             },
             "required": [
@@ -121,7 +124,7 @@
         },
         "configurableTabs": {
             "type": "array",
-            "description": "These are tabs users can optionally add to their channels and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab is supported.",
+            "description": "These are tabs users can optionally add to their channels and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -157,7 +160,7 @@
         },
         "staticTabs": {
             "type": "array",
-            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually.  Static tabs declared in personal scope are always pinned to the app's personal experience.  Static tabs declared in the team scope are candidates to be pinned automatically to channels, subject to approval.",
+            "description": "A set of tabs that may be 'pinned' by default, without the user adding them manually. Static tabs declared in personal scope are always pinned to the app's personal experience. Static tabs do not currently support the 'teams' scope.",
             "maxItems": 16,
             "items": {
                 "type": "object",
@@ -182,11 +185,12 @@
                     "websiteUrl": {
                         "type": "string",
                         "description": "The url to point at if a user opts to view in a browser.",
-                        "maxLength": 2048
+                        "maxLength": 2048,
+                        "pattern": "^[Hh][Tt][Tt][Pp][Ss]://"
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive. Currently static tabs are only supported in the 'personal' scope.",
                         "maxItems": 2,
                         "items": {
                             "enum": [
@@ -214,7 +218,7 @@
                 "properties": {
                     "botId": {
                         "type": "string",
-                        "description": "A unique identifier for the bot that matches its ID in the bot framework.",
+                        "description": "The Microsoft App ID specified for the bot in the Bot Framework portal (https://dev.botframework.com/bots)",
                         "maxLength": 64
                     },
                     "needsChannelSelector": {
@@ -310,7 +314,7 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
+                        "description": "Specifies whether the connector offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. Currently, only the team scope is supported.",
                         "maxItems": 1,
                         "items": {
                             "enum": [
@@ -335,7 +339,7 @@
                 "properties": {
                     "botId": {
                         "type": "string",
-                        "description": "A unique identifier for the bot which is backing the compose extension that matches its ID in the bot framework.",
+                        "description": "The Microsoft App ID specified for the bot powering the compose extension in the Bot Framework portal (https://dev.botframework.com/bots)",
                         "maxLength": 64
                     },
                     "scopes": {
@@ -358,22 +362,22 @@
                             "properties": {
                                 "id": {
                                     "type": "string",
-                                    "description": "Id of the command",
+                                    "description": "Id of the command.",
                                     "maxLength": 64
                                 },
                                 "title": {
                                     "type": "string",
-                                    "description": "Title of the command",
+                                    "description": "Title of the command.",
                                     "maxLength": 32
                                 },
                                 "description": {
                                     "type": "string",
-                                    "description": "Description of the command",
+                                    "description": "Description of the command.",
                                     "maxLength": 128
                                 },
                                 "initialRun": {
                                     "type": "boolean",
-                                    "description": "A boolean value that indicates if the command should be run once initially with no parameter",
+                                    "description": "A boolean value that indicates if the command should be run once initially with no parameter.",
                                     "default": false
                                 },
                                 "parameters": {
@@ -386,17 +390,17 @@
                                         "properties": {
                                             "name": {
                                                 "type": "string",
-                                                "description": "Name of the parameter",
+                                                "description": "Name of the parameter.",
                                                 "maxLength": 64
                                             },
                                             "title": {
                                                 "type": "string",
-                                                "description": "Title of the parameter",
+                                                "description": "Title of the parameter.",
                                                 "maxLength": 32
                                             },
                                             "description": {
                                                 "type": "string",
-                                                "description": "Description of the parameter",
+                                                "description": "Description of the parameter.",
                                                 "maxLength": 128
                                             }
                                         },
@@ -424,7 +428,7 @@
         },
         "permissions": {
             "type": "array",
-            "description": "Specifies which permissions the bots or tabs request.",
+            "description": "Specifies the permissions the app requests from users.",
             "maxItems": 2,
             "items": {
                 "enum": [

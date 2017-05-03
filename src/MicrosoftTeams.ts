@@ -190,7 +190,7 @@ namespace microsoftTeams
      */
     export function navigateCrossDomain(url: string): void
     {
-        ensureInitialized();
+        ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
         let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [ url ]);
         callbacks[messageId] = (success: boolean) =>
@@ -615,7 +615,7 @@ namespace microsoftTeams
             // - Keeps pinging the authentication window while its open in order to re-establish
             //   contact with any pages along the authentication flow that need to communicate
             //   with us
-            authWindowMonitor = setInterval(() =>
+            authWindowMonitor = currentWindow.setInterval(() =>
             {
                 if (!childWindow || childWindow.closed)
                 {
@@ -1111,7 +1111,7 @@ namespace microsoftTeams
 
     function waitForMessageQueue(targetWindow: Window, callback: () => void): void
     {
-        let messageQueueMonitor = setInterval(() =>
+        let messageQueueMonitor = currentWindow.setInterval(() =>
         {
             if (getTargetMessageQueue(targetWindow).length === 0)
             {
