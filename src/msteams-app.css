@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+html {
+  font-size: 10px;
+}
 body {
   font-family:  "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   font-size: 1.4rem;
@@ -12,14 +15,18 @@ a:hover, a:focus {
   text-decoration: underline;
   outline: none;
 }
-
+* {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
 /* Form controls */
 .form-field-title:first-of-type {
   margin-top: 0;
 }
 .form-field-title {
   display: flex;
-  margin: 1rem 0 .3rem;
+  margin: .7rem 0 .3rem;
 }
 .form-control:focus {
   border-bottom-color: #5558af;
@@ -36,7 +43,6 @@ a:hover, a:focus {
   box-shadow: none;
   display: block;
   width: 100%;
-  height: 34px;
   padding: 6px 12px;
   font-family: inherit;
   font-size: 14px;
