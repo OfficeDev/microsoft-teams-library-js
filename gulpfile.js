@@ -13,7 +13,9 @@ var del = require("del"),
     uglify = require("gulp-uglify"),
     deployCdn = require("gulp-deploy-azure-cdn"),
     KeyVault = require("azure-keyvault"),
-    argv = require("yargs").argv,
+    argv = require("yargs")
+        .option('version', { type: 'string' }) // version may look like a number, so force it to be a string
+        .argv,
     AuthenticationContext = require("adal-node").AuthenticationContext;
 
 var buildDir = "./build/";
