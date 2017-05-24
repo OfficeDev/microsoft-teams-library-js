@@ -72,6 +72,9 @@ namespace microsoftTeams
     let themeChangeHandler: (theme: string) => void;
     handlers["themeChange"] = handleThemeChange;
 
+    let fullScreenChangeHandler: (isFullScreen: boolean) => void;
+    handlers["fullScreenChange"] = handleFullScreenChange;
+
     /**
      * Initializes the library. This must be called before any other SDK calls.
      * The caller should only call this once the frame is loaded successfully.
@@ -178,6 +181,26 @@ namespace microsoftTeams
         if (childWindow)
         {
             sendMessageRequest(childWindow, "themeChange", [ theme ]);
+        }
+    }
+
+    /**
+     * Registers a handler for when the user toggle full screen view for tab.
+     * Only one handler may be registered at a time. Subsequent registrations will override the first.
+     * @param handler The handler to invoke when the user changes toggle full screen view for tab.
+     */
+    export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void
+    {
+        ensureInitialized();
+
+        fullScreenChangeHandler = handler;
+    }
+
+    function handleFullScreenChange(isFullScreen: boolean): void
+    {
+        if (fullScreenChangeHandler)
+        {
+            fullScreenChangeHandler(isFullScreen);
         }
     }
 
