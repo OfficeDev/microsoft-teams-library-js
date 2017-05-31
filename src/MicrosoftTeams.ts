@@ -936,6 +936,11 @@ namespace microsoftTeams
          * The current UI theme the user is using.
          */
         theme?: string;
+
+        /**
+         * The current tab is full screen.
+         */
+        isFullScreen?: boolean;
     }
 
     export interface DeepLinkParameters
