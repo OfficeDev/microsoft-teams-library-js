@@ -938,7 +938,7 @@ namespace microsoftTeams
         theme?: string;
 
         /**
-         * The current tab is full screen.
+         * Indication whether the tab is in full screen mode.
          */
         isFullScreen?: boolean;
     }
