@@ -32,6 +32,7 @@ namespace microsoftTeams
         content: "content",
         authentication: "authentication",
         remove: "remove",
+        composeExtension: "composeExtension",
     };
 
     const hostClientTypes =
@@ -878,6 +879,45 @@ namespace microsoftTeams
              * Stores the version number of the token.
              */
             ver: string;
+        }
+    }
+
+    /**
+     * Namespace to interact with the compose extension specific part of the SDK.
+     * This object is used for authentication or configuration flows of compose extension.
+     */
+    export namespace composeExtension
+    {
+        /**
+         * Notifies that the flow was completed successfully.
+         * This call causes the popup window to be closed.
+         * @param state Specifies a state parameter for the flow.
+         * If specified, the Teams client initiated the popup window will recieve this value and sent it by invoke to the compose extension bot.
+         */
+        export function notifySuccess(state?: string): void
+        {
+            ensureInitialized(frameContexts.composeExtension);
+
+            sendMessageRequest(parentWindow, "composeExtension.success", [state]);
+
+            // Wait for the message to be sent before closing the window
+            waitForMessageQueue(parentWindow, () => currentWindow.close());
+        }
+
+        /**
+         * Notifies that the flow has failed.
+         * This call causes the popup window to be closed.
+         * @param reason Specifies a reason for the  failure.
+         * If specified, the Teams client initiated the popup window will recieve this value in their callback.
+         */
+        export function notifyFailure(reason?: string): void
+        {
+            ensureInitialized(frameContexts.composeExtension);
+
+            sendMessageRequest(parentWindow, "composeExtension.failure", [ reason ]);
+
+            // Wait for the message to be sent before closing the window
+            waitForMessageQueue(parentWindow, () => currentWindow.close());
         }
     }
 
