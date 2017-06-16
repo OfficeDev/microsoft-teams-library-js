@@ -64,7 +64,7 @@
         },
         "name": {
             "type": "object",
-            "additionalProperties": false,            
+            "additionalProperties": false,
             "properties": {
                 "short": {
                     "type": "string",
@@ -356,6 +356,11 @@
                             ],
                             "description": "Specifies whether the compose extension offers an experience in the context of a channel in a team or an experience scoped to an individual user alone. These options are non-exclusive."
                         }
+                    },
+                    "canUpdateConfiguration": {
+                        "type": "boolean",
+                        "description": "A value indicating whether the configuration of a compose extension can be updated by the user.",
+                        "default": false
                     },
                     "commands": {
                         "type": "array",
