@@ -873,6 +873,43 @@ describe("MicrosoftTeams", () =>
         expect(message.args[2]).toBe("someSubEntityWebUrl");
     });
 
+    it("should successfully open a stage", () =>
+    {
+        initializeWithContext("content");
+
+        microsoftTeams.openStage({
+            contentUrl: "someContentUrl",
+            displayName: "someDisplayName",
+            entityId: "someEntityId",
+            websiteUrl: "someWebsiteUrl",
+        });
+
+        let message = findMessageByFunc("openStage");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(4);
+        expect(message.args[0]).toBe("someContentUrl");
+        expect(message.args[1]).toBe("someDisplayName");
+        expect(message.args[2]).toBe("someEntityId");
+        expect(message.args[3]).toBe("someWebsiteUrl");
+    });
+
+    it("should throw on invalid stage request", () =>
+    {
+        initializeWithContext("content");
+
+        microsoftTeams.openStage({
+            contentUrl: "someContentUrl",
+        });
+
+        let message = findMessageByFunc("openStage");
+        let respondWithFailure = () =>
+        {
+            respondToMessage(message, false);
+        };
+
+        expect(respondWithFailure).toThrow();
+    });
+
     function initializeWithContext(frameContext: string, hostClientType?: string): void
     {
         microsoftTeams.initialize();
