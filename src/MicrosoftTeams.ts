@@ -53,7 +53,25 @@ namespace microsoftTeams
         args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
     }
 
-    // This indicates whether initialize was called (started).
+    export interface AppInformation {
+        tabList?: TabInformation[];
+    }
+
+    export interface TabInformation {
+        tabName: string;
+        entityId?: string;
+        channelId?: string;
+        channelName?: string;
+        teamId?: string;
+        teamName?: string;
+        teamThumbnailUri?: string;
+        groupId?: string;
+        url?: string;
+        websiteUrl?: string;
+        customSettings?: string;
+    }
+
+        // This indicates whether initialize was called (started).
     // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
     let initializeCalled = false;
 
@@ -223,6 +241,17 @@ namespace microsoftTeams
                 throw new Error("Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.");
             }
         };
+    }
+
+    /**
+     * Allows an app to retrieve all the tabs in favorite channels where it is enabled for this user
+     */
+    export function getTabsInChannels(callback: (appInfo: AppInformation) => void): void
+    {
+        ensureInitialized();
+
+        let messageId = sendMessageRequest(parentWindow, "getTabsInChannels");
+        callbacks[messageId] = callback;
     }
 
     /**
