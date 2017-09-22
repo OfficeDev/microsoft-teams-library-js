@@ -54,7 +54,7 @@ namespace microsoftTeams
     }
 
     export interface TabInformation {
-        tabList?: TabInstance[];
+        teamTabs?: TabInstance[];
     }
 
     export interface TabInstance {
@@ -62,6 +62,7 @@ namespace microsoftTeams
         entityId?: string;
         channelId?: string;
         channelName?: string;
+        channelIsFavorite?: boolean;
         teamId?: string;
         teamName?: string;
         groupId?: string;
