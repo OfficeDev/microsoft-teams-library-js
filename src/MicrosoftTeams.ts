@@ -53,11 +53,11 @@ namespace microsoftTeams
         args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
     }
 
-    export interface AppInformation {
-        tabList?: TabInformation[];
+    export interface TabInformation {
+        tabList?: TabInstance[];
     }
 
-    export interface TabInformation {
+    export interface TabInstance {
         tabName: string;
         entityId?: string;
         channelId?: string;
@@ -67,10 +67,9 @@ namespace microsoftTeams
         groupId?: string;
         url?: string;
         websiteUrl?: string;
-        customSettings?: string;
     }
 
-        // This indicates whether initialize was called (started).
+    // This indicates whether initialize was called (started).
     // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
     let initializeCalled = false;
 
@@ -245,7 +244,7 @@ namespace microsoftTeams
     /**
      * Allows an app to retrieve all the tabs in favorite channels where it is enabled for this user
      */
-    export function getTabsInChannels(callback: (appInfo: AppInformation) => void): void
+    export function getTabInstances(callback: (tabInfo: TabInformation) => void): void
     {
         ensureInitialized();
 
