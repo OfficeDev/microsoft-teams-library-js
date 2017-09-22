@@ -64,7 +64,6 @@ namespace microsoftTeams
         channelName?: string;
         teamId?: string;
         teamName?: string;
-        teamThumbnailUri?: string;
         groupId?: string;
         url?: string;
         websiteUrl?: string;
