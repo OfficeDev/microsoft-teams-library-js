@@ -65,6 +65,7 @@ namespace microsoftTeams
         channelIsFavorite?: boolean;
         teamId?: string;
         teamName?: string;
+        teamIsFavorite?: boolean;
         groupId?: string;
         url?: string;
         websiteUrl?: string;
