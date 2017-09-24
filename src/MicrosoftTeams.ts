@@ -54,7 +54,7 @@ namespace microsoftTeams
     }
 
     export interface TabInformation {
-        teamTabs?: TabInstance[];
+        teamTabs: TabInstance[];
     }
 
     export interface TabInstance {
