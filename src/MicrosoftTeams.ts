@@ -257,7 +257,7 @@ namespace microsoftTeams
     /**
      * Shares a deep link a user can use to navigate back to a specific state in this page.
      */
-    export function shareDeepLink (deepLinkParameters: DeepLinkParameters): void
+    export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void
     {
         ensureInitialized(frameContexts.content);
 
@@ -266,6 +266,29 @@ namespace microsoftTeams
             deepLinkParameters.subEntityLabel,
             deepLinkParameters.subEntityWebUrl,
         ]);
+    }
+
+    /**
+     * Opens a stage displaying the content identified by the stage parameters
+     */
+    export function openStage(stageParameters: StageParameters): void
+    {
+        ensureInitialized(frameContexts.content);
+
+        let messageId = sendMessageRequest(parentWindow, "openStage", [
+            stageParameters.contentUrl,
+            stageParameters.displayName,
+            stageParameters.entityId,
+            stageParameters.websiteUrl,
+        ]);
+
+        callbacks[messageId] = (success: boolean) =>
+        {
+            if (!success)
+            {
+                throw new Error("Stages can only be opened to URLs matching the pattern registered in the manifest.");
+            }
+        };
     }
 
     /**
@@ -990,6 +1013,29 @@ namespace microsoftTeams
          * This url should lead directly to the sub-entity.
          */
         subEntityWebUrl?: string;
+    }
+
+    export interface StageParameters
+    {
+        /**
+         * The url to use for the stage content.
+         */
+        contentUrl: string;
+
+        /**
+         * Display name for the stage content. If the display name isn't provided the app's name is used.
+         */
+        displayName?: string;
+
+        /**
+         * The developer-defined unique id for the entity the stage content points to.
+         */
+        entityId?: string;
+
+        /**
+         * The url to use for the external link to view the underlying resource in a browser.
+         */
+        websiteUrl?: string;
     }
 
     function ensureInitialized(...expectedFrameContexts: string[]): void
