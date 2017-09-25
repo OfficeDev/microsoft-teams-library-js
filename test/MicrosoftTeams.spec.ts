@@ -305,6 +305,7 @@ describe("MicrosoftTeams", () =>
             groupId: "someGroupId",
             channelId: "someChannelId",
             entityId: "someEntityId",
+            teamType: microsoftTeams.TeamType.Edu,
         };
 
         // Get many responses to the same message
@@ -336,6 +337,8 @@ describe("MicrosoftTeams", () =>
             groupId: "someGroupId",
             channelId: "someChannelId",
             entityId: "someEntityId",
+            isFullScreen: true,
+            teamType: microsoftTeams.TeamType.Staff,
         };
 
         respondToMessage(getContextMessage, expectedContext);
