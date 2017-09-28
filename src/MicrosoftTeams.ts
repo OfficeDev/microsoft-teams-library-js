@@ -229,7 +229,7 @@ namespace microsoftTeams {
     }
 
     /**
-     * Allows an app to retrieve all the tabs in favorite channels where it is enabled for this user
+     * Allows an app to retrieve all the tabs in channels where it is enabled for this user
      */
     export function getTabInstances(callback: (tabInfo: TabInformation) => void): void {
         ensureInitialized();
