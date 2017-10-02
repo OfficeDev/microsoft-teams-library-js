@@ -239,6 +239,16 @@ namespace microsoftTeams {
     }
 
     /**
+     * Allows an app to retrieve the most recent used tabs for this user
+     */
+    export function getMruTabInstances(callback: (tabInfo: TabInformation) => void): void {
+        ensureInitialized();
+
+        let messageId = sendMessageRequest(parentWindow, "getMruTabInstances");
+        callbacks[messageId] = callback;
+    }
+
+    /**
      * Shares a deep link a user can use to navigate back to a specific state in this page.
      */
     export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
@@ -249,6 +259,16 @@ namespace microsoftTeams {
             deepLinkParameters.subEntityLabel,
             deepLinkParameters.subEntityWebUrl,
         ]);
+    }
+
+    /**
+     * Navigates the MS Teams app to the provided tabInstance
+     * @param tabInstance The tab instance to navigate to
+     */
+    export function navigateToTab(tabInstance: TabInstance): void {
+        ensureInitialized();
+
+        sendMessageRequest(parentWindow, "navigateToTab", [tabInstance]);
     }
 
     /**
