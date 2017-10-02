@@ -75,6 +75,18 @@ namespace microsoftTeams {
         Staff = 4
     }
 
+    export interface TabInstanceParameters {
+        /**
+         * Flag indicating to return all channels
+         */
+        favoriteChannelsOnly?: boolean;
+
+        /**
+         * Flag indicating to return all teams
+         */
+        favoriteTeamsOnly?: boolean;
+    }
+
     // This indicates whether initialize was called (started).
     // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
     let initializeCalled = false;
@@ -229,12 +241,13 @@ namespace microsoftTeams {
     }
 
     /**
-     * Allows an app to retrieve all the tabs in channels where it is enabled for this user
+     * Allows an app to retrieve tabs for this user owned by this app.
+     * If no TabInstanceParameters are passed in, the app defaults to favorite teams and favorite channels
      */
-    export function getTabInstances(callback: (tabInfo: TabInformation) => void): void {
+    export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters: TabInstanceParameters): void {
         ensureInitialized();
 
-        let messageId = sendMessageRequest(parentWindow, "getTabsInChannels");
+        let messageId = sendMessageRequest(parentWindow, "getTabInstances", [ tabInstanceParameters ]);
         callbacks[messageId] = callback;
     }
 
