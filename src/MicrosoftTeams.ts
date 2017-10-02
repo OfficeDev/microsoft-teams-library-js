@@ -77,12 +77,12 @@ namespace microsoftTeams {
 
     export interface TabInstanceParameters {
         /**
-         * Flag indicating to return all channels
+         * Flag allowing to select favorite channels only
          */
         favoriteChannelsOnly?: boolean;
 
         /**
-         * Flag indicating to return all teams
+         * Flag allowing to select favorite teams only
          */
         favoriteTeamsOnly?: boolean;
     }
