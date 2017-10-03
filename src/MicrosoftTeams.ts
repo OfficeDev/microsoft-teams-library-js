@@ -55,6 +55,7 @@ namespace microsoftTeams {
 
     export interface TabInstance {
         tabName: string;
+        tabId: string;
         entityId?: string;
         channelId?: string;
         channelName?: string;
@@ -868,9 +869,19 @@ namespace microsoftTeams {
         teamId?: string;
 
         /**
+         * The name for the team with which the content is associated.
+         */
+        teamName?: string;
+
+        /**
          * The Microsoft Teams id for the channel with which the content is associated.
          */
         channelId?: string;
+
+        /**
+         * The name for the channel with which the content is associated.
+         */
+        channelName?: string;
 
         /**
          * The developer-defined unique id for the entity this content points to.
