@@ -55,6 +55,8 @@ namespace microsoftTeams {
 
     export interface TabInstance {
         tabName: string;
+        internalTabInstanceId?: string;
+        lastViewUnixEpochTime?: string;
         entityId?: string;
         channelId?: string;
         channelName?: string;
@@ -281,7 +283,12 @@ namespace microsoftTeams {
     export function navigateToTab(tabInstance: TabInstance): void {
         ensureInitialized();
 
-        sendMessageRequest(parentWindow, "navigateToTab", [tabInstance]);
+        let messageId = sendMessageRequest(parentWindow, "navigateToTab", [tabInstance]);
+        callbacks[messageId] = (success: boolean) => {
+            if (!success) {
+                throw new Error("Invalid internalTabInstanceId and/or channelId were/was provided");
+            }
+        };
     }
 
     /**
