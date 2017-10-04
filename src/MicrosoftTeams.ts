@@ -888,7 +888,7 @@ namespace microsoftTeams {
          * The name for the channel with which the content is associated.
          */
         channelName?: string;
-        
+
         /**
          * The developer-defined unique id for the entity this content points to.
          */
