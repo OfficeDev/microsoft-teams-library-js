@@ -249,7 +249,7 @@ namespace microsoftTeams {
     export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters: TabInstanceParameters): void {
         ensureInitialized();
 
-        let messageId = sendMessageRequest(parentWindow, "getTabInstances", [ tabInstanceParameters ]);
+        let messageId = sendMessageRequest(parentWindow, "getTabInstances", [tabInstanceParameters]);
         callbacks[messageId] = callback;
     }
 
@@ -875,9 +875,19 @@ namespace microsoftTeams {
         teamId?: string;
 
         /**
+         * The name for the team with which the content is associated.
+         */
+        teamName?: string;
+
+        /**
          * The Microsoft Teams id for the channel with which the content is associated.
          */
         channelId?: string;
+
+        /**
+         * The name for the channel with which the content is associated.
+         */
+        channelName?: string;
 
         /**
          * The developer-defined unique id for the entity this content points to.
