@@ -54,6 +54,7 @@ namespace microsoftTeams {
     }
 
     export interface TabInstance {
+        appId: string;
         tabName: string;
         internalTabInstanceId?: string;
         lastViewUnixEpochTime?: string;
