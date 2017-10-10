@@ -256,10 +256,10 @@ namespace microsoftTeams {
     /**
      * Allows an app to retrieve the most recent used tabs for this user
      */
-    export function getMruTabInstances(callback: (tabInfo: TabInformation) => void): void {
+    export function getMruTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters: TabInstanceParameters): void {
         ensureInitialized();
 
-        let messageId = sendMessageRequest(parentWindow, "getMruTabInstances");
+        let messageId = sendMessageRequest(parentWindow, "getMruTabInstances", [tabInstanceParameters]);
         callbacks[messageId] = callback;
     }
 
