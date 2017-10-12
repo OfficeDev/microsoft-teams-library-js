@@ -10,7 +10,7 @@ interface MessageEvent {
 namespace microsoftTeams {
     "use strict";
 
-    const version = "1.0";
+    const version = "1.1-prerel";
 
     const validOrigins = [
         "https://teams.microsoft.com",
