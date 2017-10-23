@@ -876,6 +876,24 @@ describe("MicrosoftTeams", () =>
         expect(message.args[2]).toBe("someSubEntityWebUrl");
     });
 
+    describe("getTabInstances", () => {
+        it("should allow a missing and valid optional parameter", () => {
+            initializeWithContext("getTabInstances");
+
+            microsoftTeams.getTabInstances(tabInfo => tabInfo);
+            microsoftTeams.getTabInstances(tabInfo => tabInfo, {} as microsoftTeams.TabInstanceParameters);
+        });
+    });
+
+    describe("getMruTabInstances", () => {
+        it("should allow a missing and valid optional parameter", () => {
+            initializeWithContext("getMruTabInstances");
+
+            microsoftTeams.getMruTabInstances(tabInfo => tabInfo);
+            microsoftTeams.getMruTabInstances(tabInfo => tabInfo, {} as microsoftTeams.TabInstanceParameters);
+        });
+    });
+
     function initializeWithContext(frameContext: string, hostClientType?: string): void
     {
         microsoftTeams.initialize();
