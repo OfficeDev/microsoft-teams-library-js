@@ -247,9 +247,9 @@ namespace microsoftTeams {
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
      * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
-     * @param {TabInstanceParameters} tabInstanceParameters Flags that specify whether to scope call to favorite teams or channels.
+     * @param {TabInstanceParameters} tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
      */
-    export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters: TabInstanceParameters): void {
+    export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
         ensureInitialized();
 
         let messageId = sendMessageRequest(parentWindow, "getTabInstances", [tabInstanceParameters]);
@@ -259,9 +259,9 @@ namespace microsoftTeams {
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
      * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
-     * @param {TabInstanceParameters} tabInstanceParameters Flags that specify whether to scope call to favorite teams or channels.
+     * @param {TabInstanceParameters} tabInstanceParameters OPTIONAL Ignored, kept for future use
      */
-    export function getMruTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters: TabInstanceParameters): void {
+    export function getMruTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
         ensureInitialized();
 
         let messageId = sendMessageRequest(parentWindow, "getMruTabInstances", [tabInstanceParameters]);
