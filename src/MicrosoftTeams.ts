@@ -230,7 +230,7 @@ namespace microsoftTeams {
      * thrown. This function needs to be used only when navigating the frame to a URL in a different domain 
      * than the current one in a way that keeps the app informed of the change and allows the SDK to 
      * continue working.
-     * @param {string} url The URL to navigate the frame to.
+     * @param url The URL to navigate the frame to.
      */
     export function navigateCrossDomain(url: string): void {
         ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
@@ -247,7 +247,7 @@ namespace microsoftTeams {
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
      * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
-     * @param {TabInstanceParameters} tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+     * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
      */
     export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
         ensureInitialized();
@@ -259,7 +259,7 @@ namespace microsoftTeams {
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
      * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
-     * @param {TabInstanceParameters} tabInstanceParameters OPTIONAL Ignored, kept for future use
+     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
      */
     export function getMruTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
         ensureInitialized();
@@ -270,7 +270,7 @@ namespace microsoftTeams {
 
     /**
      * Shares a deep link that a user can use to navigate back to a specific state in this page.
-     * @param {DeepLinkParameters} deepLinkParameters ID and label for the link and fallback URL.
+     * @param deepLinkParameters ID and label for the link and fallback URL.
      */
     export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
         ensureInitialized(frameContexts.content);
@@ -284,7 +284,7 @@ namespace microsoftTeams {
 
     /**
      * Navigates the Microsoft Teams app to the specified tab instance.
-     * @param {TabInstance} tabInstance The tab instance to navigate to.
+     * @param tabInstance The tab instance to navigate to.
      */
     export function navigateToTab(tabInstance: TabInstance): void {
         ensureInitialized();
@@ -310,7 +310,7 @@ namespace microsoftTeams {
         /**
          * Sets the validity state for the settings.
          * The initial value is false, so the user cannot save the settings until this is called with true.
-         * @param {boolean} validityState Indicates whether the save or remove button is enabled for the user.
+         * @param validityState Indicates whether the save or remove button is enabled for the user.
          */
         export function setValidityState(validityState: boolean): void {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
@@ -332,7 +332,7 @@ namespace microsoftTeams {
         /**
          * Sets the settings for the current instance.
          * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
-         * @param {Settings} settings The desired settings for this instance.
+         * @param settings The desired settings for this instance.
          */
         export function setSettings(settings: Settings): void {
             ensureInitialized(frameContexts.settings);
@@ -413,7 +413,7 @@ namespace microsoftTeams {
 
             /**
              * Indicates that creation of the underlying resource failed and that the settings cannot be saved.
-             * @param {string} reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+             * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
              */
             notifyFailure(reason?: string): void;
         }
@@ -426,7 +426,7 @@ namespace microsoftTeams {
 
             /**
              * Indicates that removal of the underlying resource failed and that the content cannot be removed.
-             * @param {string} reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+             * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
              */
             notifyFailure(reason?: string): void;
         }
@@ -507,7 +507,7 @@ namespace microsoftTeams {
 
         /**
          * Initiates an authentication request, which opens a new window with the specified settings.
-         * @param {AuthenticateParameters} authenticateParameters A set of values that configure the authentication pop-up.
+         * @param authenticateParameters A set of values that configure the authentication pop-up.
          */
         export function authenticate(authenticateParameters: AuthenticateParameters): void {
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
@@ -541,7 +541,7 @@ namespace microsoftTeams {
         /**
          * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
          * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
-         * @param {AuthTokenRequest} authTokenRequest A set of values that configure the token request.
+         * @param authTokenRequest A set of values that configure the token request.
          */
         export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
             ensureInitialized();
@@ -679,7 +679,7 @@ namespace microsoftTeams {
          * Notifies the frame that initiated this authentication request that the request was successful.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param {string} result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
          */
         export function notifySuccess(result?: string): void {
             ensureInitialized(frameContexts.authentication);
