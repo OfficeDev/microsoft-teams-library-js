@@ -1,5 +1,5 @@
 {
-  "name": "microsoftteams",
+  "name": "msteams-client",
   "version": "0.0.0",
   "description": "",
   "repository": {},
@@ -8,7 +8,7 @@
     "adal-node": "^0.1.22",
     "azure-keyvault": "^2.0.1-preview",
     "del": "2.2.2",
-    "gulp": "3.9.1",
+    "gulp": "^3.9.1",
     "gulp-deploy-azure-cdn": "^2.0.0",
     "gulp-rename": "1.2.2",
     "gulp-tslint": "6.1.2",
