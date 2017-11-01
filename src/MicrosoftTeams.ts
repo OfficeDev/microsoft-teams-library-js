@@ -49,23 +49,77 @@ namespace microsoftTeams {
         args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
     }
 
+    /**
+     * Represents information about tabs for an app
+     */
     export interface TabInformation {
         teamTabs: TabInstance[];
     }
 
+    /**
+     * Represents information about a tab instance
+     */
     export interface TabInstance {
+        /**
+         * The name of the tab
+         */
         tabName: string;
+
+        // internal: do not use
         internalTabInstanceId?: string;
+
+        /**
+         * last viewed time of this tab. null means unknown
+         */
         lastViewUnixEpochTime?: string;
+
+        /**
+         * The developer-defined unique ID for the entity this content points to.
+         */
         entityId?: string;
+
+        /**
+         * The Microsoft Teams ID for the channel with which the content is associated.
+         */
         channelId?: string;
+
+        /**
+         * The name for the channel with which the content is associated.
+         */
         channelName?: string;
+
+        // is this tab in a favorite channel?
         channelIsFavorite?: boolean;
+
+        /**
+         * The Microsoft Teams ID for the team with which the content is associated.
+         */
         teamId?: string;
+
+        /**
+         * The name for the team with which the content is associated.
+         */
         teamName?: string;
+
+        /**
+         * is this tab in a favorite team?
+         */
         teamIsFavorite?: boolean;
+
+        /**
+         * The Office 365 group ID for the team with which the content is associated.
+         * This field is available only when the identity permission is requested in the manifest.
+         */
         groupId?: string;
+
+        /**
+         * URL of this tab
+         */
         url?: string;
+
+        /**
+         * Website URL of this tab
+         */
         websiteUrl?: string;
     }
 
