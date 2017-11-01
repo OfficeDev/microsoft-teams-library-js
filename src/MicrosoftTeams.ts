@@ -431,6 +431,10 @@ namespace microsoftTeams {
             notifyFailure(reason?: string): void;
         }
 
+        /**
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
 
@@ -468,6 +472,10 @@ namespace microsoftTeams {
             }
         }
 
+        /**
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class RemoveEventImpl implements RemoveEvent {
             public notified: boolean = false;
 
