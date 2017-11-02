@@ -65,11 +65,13 @@ namespace microsoftTeams {
          */
         tabName: string;
 
-        // internal: do not use
+        /**
+         * Internal: do not use
+         */
         internalTabInstanceId?: string;
 
         /**
-         * last viewed time of this tab. null means unknown
+         * Last viewed time of this tab. null means unknown
          */
         lastViewUnixEpochTime?: string;
 
@@ -88,7 +90,9 @@ namespace microsoftTeams {
          */
         channelName?: string;
 
-        // is this tab in a favorite channel?
+        /**
+         * Is this tab in a favorite channel?
+         */
         channelIsFavorite?: boolean;
 
         /**
@@ -102,7 +106,7 @@ namespace microsoftTeams {
         teamName?: string;
 
         /**
-         * is this tab in a favorite team?
+         * Is this tab in a favorite team?
          */
         teamIsFavorite?: boolean;
 
@@ -113,7 +117,7 @@ namespace microsoftTeams {
         groupId?: string;
 
         /**
-         * URL of this tab
+         * Content URL of this tab
          */
         url?: string;
 
