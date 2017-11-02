@@ -366,8 +366,8 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(): void {
-            let saveEvent = new SaveEventImpl();
+        function handleSave(result): void {
+            let saveEvent = new SaveEventImpl(result);
             if (saveHandler) {
                 saveHandler(saveEvent);
             }
@@ -433,6 +433,10 @@ namespace microsoftTeams {
 
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
+            public result: Object = {};
+            constructor(result: Object) {
+                this.result = result;
+            }
 
             public notifySuccess(): void {
                 this.ensureNotNotified();
