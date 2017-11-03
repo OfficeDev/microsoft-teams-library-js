@@ -49,23 +49,81 @@ namespace microsoftTeams {
         args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
     }
 
+    /**
+     * Represents information about tabs for an app
+     */
     export interface TabInformation {
         teamTabs: TabInstance[];
     }
 
+    /**
+     * Represents information about a tab instance
+     */
     export interface TabInstance {
+        /**
+         * The name of the tab
+         */
         tabName: string;
+
+        /**
+         * Internal: do not use
+         */
         internalTabInstanceId?: string;
+
+        /**
+         * Last viewed time of this tab. null means unknown
+         */
         lastViewUnixEpochTime?: string;
+
+        /**
+         * The developer-defined unique ID for the entity this content points to.
+         */
         entityId?: string;
+
+        /**
+         * The Microsoft Teams ID for the channel with which the content is associated.
+         */
         channelId?: string;
+
+        /**
+         * The name for the channel with which the content is associated.
+         */
         channelName?: string;
+
+        /**
+         * Is this tab in a favorite channel?
+         */
         channelIsFavorite?: boolean;
+
+        /**
+         * The Microsoft Teams ID for the team with which the content is associated.
+         */
         teamId?: string;
+
+        /**
+         * The name for the team with which the content is associated.
+         */
         teamName?: string;
+
+        /**
+         * Is this tab in a favorite team?
+         */
         teamIsFavorite?: boolean;
+
+        /**
+         * The Office 365 group ID for the team with which the content is associated.
+         * This field is available only when the identity permission is requested in the manifest.
+         */
         groupId?: string;
+
+        /**
+         * Content URL of this tab
+         */
         url?: string;
+
+        /**
+         * Website URL of this tab
+         */
         websiteUrl?: string;
     }
 
@@ -366,8 +424,8 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(result): void {
-            let saveEvent = new SaveEventImpl(result);
+        function handleSave(): void {
+            let saveEvent = new SaveEventImpl();
             if (saveHandler) {
                 saveHandler(saveEvent);
             }
@@ -431,12 +489,12 @@ namespace microsoftTeams {
             notifyFailure(reason?: string): void;
         }
 
+        /**
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
-            public result: Object = {};
-            constructor(result: Object) {
-                this.result = result;
-            }
 
             public notifySuccess(): void {
                 this.ensureNotNotified();
@@ -472,6 +530,10 @@ namespace microsoftTeams {
             }
         }
 
+        /**
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class RemoveEventImpl implements RemoveEvent {
             public notified: boolean = false;
 
@@ -505,6 +567,7 @@ namespace microsoftTeams {
      */
     export namespace authentication {
         let authParams: AuthenticateParameters;
+        let authResultParams: AuthenticationResultParameters;
         let authWindowMonitor: number;
         handlers["authentication.authenticate.success"] = handleSuccess;
         handlers["authentication.authenticate.failure"] = handleFailure;
@@ -679,16 +742,35 @@ namespace microsoftTeams {
             };
         }
 
+        function isValidateState(state: string): boolean {
+            var link = document.createElement('a');
+            link.href = state;
+            if (link.host && link.host != window.location.host && link.host === "outlook.office.com" && link.search.indexOf('client_type=Win32_Outlook') > -1) {
+                return true;
+            }
+            return false;
+        }
+
         /**
          * Notifies the frame that initiated this authentication request that the request was successful.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param authenticationResultParameters Specifies
+         * 1. a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * 2. a state which is the encoded url of the connectors page added as a query param when redirecting to the 3rd party auth url for Outlook desktop. We use this to redirect the control back to the connector's page post authentication
          */
-        export function notifySuccess(result?: string): void {
+        export function notifySuccess(authenticationResultParameters: AuthenticationResultParameters): void {
+            authResultParams = authenticationResultParameters;
+            if (authResultParams.state) {
+                var decodedUrl = decodeURIComponent(authResultParams.state);
+                if (isValidateState(decodedUrl)) {
+                    window.location.href = decodedUrl;
+                }
+            }
+
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.success", [authResultParams.result]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
@@ -700,14 +782,17 @@ namespace microsoftTeams {
          * This call causes the authentication window to be closed.
          * @param reason Specifies a reason for the authentication failure. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
          */
-        export function notifyFailure(reason?: string): void {
+        export function notifyFailure(authenticationResultParameters: AuthenticationResultParameters): void {
+            authResultParams = authenticationResultParameters;
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [reason]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [authResultParams.reason]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
         }
+
+
 
         function handleSuccess(result?: string): void {
             try {
@@ -758,6 +843,24 @@ namespace microsoftTeams {
              * A function that is called if the authentication fails, with the reason for the failure returned from the authentication pop-up.
              */
             failureCallback?: (reason?: string) => void;
+        }
+
+
+        export interface AuthenticationResultParameters {
+            /**
+             * result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+             */
+            result?: string;
+
+            /**
+             * reason Specifies a reason for the authentication failure. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+             */
+            reason?: string;
+
+            /**
+             * state specifies the "state" query param containing the connector's url used to redirect the window back to connector's page in Outlook Desktop
+             */
+            state?: string;
         }
 
         export interface AuthTokenRequest {
