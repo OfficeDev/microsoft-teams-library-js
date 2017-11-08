@@ -50,15 +50,15 @@ namespace microsoftTeams {
     }
 
     /**
-     * Represents information about tabs for an app
-     */
+   * Represents information about tabs for an app
+   */
     export interface TabInformation {
         teamTabs: TabInstance[];
     }
 
     /**
-     * Represents information about a tab instance
-     */
+      * Represents information about a tab instance
+      */
     export interface TabInstance {
         /**
          * The name of the tab
@@ -424,8 +424,8 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(): void {
-            let saveEvent = new SaveEventImpl();
+        function handleSave(result): void {
+            let saveEvent = new SaveEventImpl(result);
             if (saveHandler) {
                 saveHandler(saveEvent);
             }
@@ -489,13 +489,19 @@ namespace microsoftTeams {
             notifyFailure(reason?: string): void;
         }
 
-        /**
-         * @private
-         * Hide from docs, since this class is not directly used.
-         */
+        export interface SaveResult {
+            /**
+             * Connector's webhook Url returned as arguments to settings.save event as part of user clicking on Save
+             */
+            webhookUrl?: string;
+        }
+
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
-
+            public result: SaveResult = {};
+            constructor(result: SaveResult) {
+                this.result = result;
+            }
             public notifySuccess(): void {
                 this.ensureNotNotified();
 
@@ -531,9 +537,9 @@ namespace microsoftTeams {
         }
 
         /**
-         * @private
-         * Hide from docs, since this class is not directly used.
-         */
+      * @private
+      * Hide from docs, since this class is not directly used.
+      */
         class RemoveEventImpl implements RemoveEvent {
             public notified: boolean = false;
 
@@ -567,16 +573,20 @@ namespace microsoftTeams {
      */
     export namespace authentication {
         let authParams: AuthenticateParameters;
-        let authResultParams: AuthenticationResultParameters;
         let authWindowMonitor: number;
         handlers["authentication.authenticate.success"] = handleSuccess;
         handlers["authentication.authenticate.failure"] = handleFailure;
 
+
+        export function registerAuthenticationParameters(authenticateParameters: AuthenticateParameters): void {
+            authParams = authenticateParameters;
+        }
+
         /**
          * Initiates an authentication request, which opens a new window with the specified settings.
-         * @param authenticateParameters A set of values that configure the authentication pop-up.
          */
-        export function authenticate(authenticateParameters: AuthenticateParameters): void {
+        export function authenticate(): void {
+            var authenticateParameters = authParams;
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             if (hostClientType === hostClientTypes.desktop) {
@@ -742,35 +752,24 @@ namespace microsoftTeams {
             };
         }
 
-        function isValidateState(state: string): boolean {
-            var link = document.createElement('a');
-            link.href = state;
-            if (link.host && link.host != window.location.host && link.host === "outlook.office.com" && link.search.indexOf('client_type=Win32_Outlook') > -1) {
-                return true;
-            }
-            return false;
-        }
-
         /**
          * Notifies the frame that initiated this authentication request that the request was successful.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param authenticationResultParameters Specifies
-         * 1. a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
-         * 2. a state which is the encoded url of the connectors page added as a query param when redirecting to the 3rd party auth url for Outlook desktop. We use this to redirect the control back to the connector's page post authentication
+         * @param authenticationResultParams Specifies a result for the authentication. It contains the optional values of state(URL to redirect back after authentication in Outlook Desktop), reason(in case of failure), result(in case of success).
          */
-        export function notifySuccess(authenticationResultParameters: AuthenticationResultParameters): void {
-            authResultParams = authenticationResultParameters;
-            if (authResultParams.state) {
-                var decodedUrl = decodeURIComponent(authResultParams.state);
-                if (isValidateState(decodedUrl)) {
-                    window.location.href = decodedUrl;
+        export function notifySuccess(authenticationResultParams: AuthenticationResultParameters): void {
+            if (authenticationResultParams.state) {
+                var decodedUrl = decodeURIComponent(authenticationResultParams.state);
+                if (isValidState(decodedUrl)) {
+                    var link = document.createElement('a');
+                    link.href = updateUrlParameter(decodedUrl, "result", authenticationResultParams.result);
+                    window.location.href = link.href;
                 }
             }
-
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.success", [authResultParams.result]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.success", [authenticationResultParams.result]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
@@ -780,19 +779,24 @@ namespace microsoftTeams {
          * Notifies the frame that initiated this authentication request that the request failed.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param reason Specifies a reason for the authentication failure. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param authenticationResultParams Specifies a result for the authentication. It contains the optional values of state(URL to redirect back after authentication in Outlook Desktop), reason(in case of failure), result(in case of success).
          */
-        export function notifyFailure(authenticationResultParameters: AuthenticationResultParameters): void {
-            authResultParams = authenticationResultParameters;
+        export function notifyFailure(authenticationResultParams: AuthenticationResultParameters): void {
+            if (authenticationResultParams.state) {
+                var decodedUrl = decodeURIComponent(authenticationResultParams.state);
+                if (isValidState(decodedUrl)) {
+                    var link = document.createElement('a');
+                    link.href = updateUrlParameter(decodedUrl, "reason", authenticationResultParams.reason);
+                    window.location.href = link.href;
+                }
+            }
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [authResultParams.reason]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [authenticationResultParams.reason]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
         }
-
-
 
         function handleSuccess(result?: string): void {
             try {
@@ -817,6 +821,33 @@ namespace microsoftTeams {
                 closeAuthenticationWindow();
             }
         }
+
+        /**
+        * Validates that the state param is a url with host as outlook.office.com and client_type correctly set to Outlook Desktop
+        */
+        function isValidState(state) {
+            var link = document.createElement('a');
+            link.href = state;
+            if (link.host && link.host != window.location.host && link.host === "outlook.office.com" && link.search.indexOf('client_type=Win32_Outlook') > -1) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Appends either result or reason as a hash param to the 'state' url 
+         * @param uri - the url to modify
+         * @param key - the QSP key
+         * @param value - the QSP value
+         */
+        function updateUrlParameter(uri, key, value) {
+            var i = uri.indexOf('#');
+            var hash = i === -1 ? '' : uri.substr(i);
+            hash = hash + "&" + key + "=" + value;
+            uri = i === -1 ? uri : uri.substr(0, i);
+            return uri + hash;  // append the updated hash
+        }
+
 
         export interface AuthenticateParameters {
             /**
@@ -845,21 +876,14 @@ namespace microsoftTeams {
             failureCallback?: (reason?: string) => void;
         }
 
-
         export interface AuthenticationResultParameters {
-            /**
-             * result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
-             */
-            result?: string;
-
-            /**
-             * reason Specifies a reason for the authentication failure. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
-             */
+            /* reason Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback*/
             reason?: string;
 
-            /**
-             * state specifies the "state" query param containing the connector's url used to redirect the window back to connector's page in Outlook Desktop
-             */
+            /* result Specifies a result for the authentication.If specified, the frame that initiated the authentication pop- up receives this value in its callback.*/
+            result?: string;
+
+            /* state Specifies a return url for the authentication applicable in case of Outlook Desktop client. If specified, the frame that initiated the authentication redirects back to the specified URL after authentication success/failure.*/
             state?: string;
         }
 
