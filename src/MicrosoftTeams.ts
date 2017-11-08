@@ -424,7 +424,7 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(result): void {
+        function handleSave(result: SaveResult): void {
             let saveEvent = new SaveEventImpl(result);
             if (saveHandler) {
                 saveHandler(saveEvent);
@@ -593,7 +593,7 @@ namespace microsoftTeams {
          * Initiates an authentication request, which opens a new window with the specified settings.
          */
         export function authenticate(): void {
-            var authenticateParameters = authParams;
+            let authenticateParameters = authParams;
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             if (hostClientType === hostClientTypes.desktop) {
@@ -767,9 +767,9 @@ namespace microsoftTeams {
          */
         export function notifySuccess(authenticationResultParams: AuthenticationResultParameters): void {
             if (authenticationResultParams.state) {
-                var decodedUrl = decodeURIComponent(authenticationResultParams.state);
+                let decodedUrl = decodeURIComponent(authenticationResultParams.state);
                 if (isValidState(decodedUrl)) {
-                    var link = document.createElement('a');
+                    let link = document.createElement("a");
                     link.href = updateUrlParameter(decodedUrl, "result", authenticationResultParams.result);
                     window.location.href = link.href;
                 }
@@ -790,9 +790,9 @@ namespace microsoftTeams {
          */
         export function notifyFailure(authenticationResultParams: AuthenticationResultParameters): void {
             if (authenticationResultParams.state) {
-                var decodedUrl = decodeURIComponent(authenticationResultParams.state);
+                let decodedUrl = decodeURIComponent(authenticationResultParams.state);
                 if (isValidState(decodedUrl)) {
-                    var link = document.createElement('a');
+                    let link = document.createElement("a");
                     link.href = updateUrlParameter(decodedUrl, "reason", authenticationResultParams.reason);
                     window.location.href = link.href;
                 }
@@ -833,10 +833,10 @@ namespace microsoftTeams {
         * Validates that the state param is a valid url with host as outlook.office.com and client_type correctly set to Outlook Desktop
         * @param uri - the url to validate
         */
-        function isValidState(state) {
-            var link = document.createElement('a');
+        function isValidState(state: string): boolean {
+            let link = document.createElement("a");
             link.href = state;
-            if (link.host && link.host != window.location.host && link.host === "outlook.office.com" && link.search.indexOf('client_type=Win32_Outlook') > -1) {
+            if (link.host && link.host !== window.location.host && link.host === "outlook.office.com" && link.search.indexOf("client_type=Win32_Outlook") > -1) {
                 return true;
             }
             return false;
@@ -848,14 +848,13 @@ namespace microsoftTeams {
          * @param key - the QSP key
          * @param value - the QSP value
          */
-        function updateUrlParameter(uri, key, value) {
-            var i = uri.indexOf('#');
-            var hash = i === -1 ? '' : uri.substr(i);
+        function updateUrlParameter(uri: string, key: string, value: string): string {
+            let i = uri.indexOf("#");
+            let hash = i === -1 ? "" : uri.substr(i);
             hash = hash + "&" + key + "=" + value;
             uri = i === -1 ? uri : uri.substr(0, i);
             return uri + hash;  // append the updated hash
         }
-
 
         export interface AuthenticateParameters {
             /**
