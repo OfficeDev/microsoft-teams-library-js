@@ -50,15 +50,15 @@ namespace microsoftTeams {
     }
 
     /**
-   * Represents information about tabs for an app
-   */
+    * Represents information about tabs for an app
+    */
     export interface TabInformation {
         teamTabs: TabInstance[];
     }
 
     /**
-      * Represents information about a tab instance
-      */
+     * Represents information about a tab instance
+     */
     export interface TabInstance {
         /**
          * The name of the tab
@@ -496,6 +496,10 @@ namespace microsoftTeams {
             webhookUrl?: string;
         }
 
+         /**
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
             public result: SaveResult = {};
@@ -537,9 +541,9 @@ namespace microsoftTeams {
         }
 
         /**
-      * @private
-      * Hide from docs, since this class is not directly used.
-      */
+         * @private
+         * Hide from docs, since this class is not directly used.
+         */
         class RemoveEventImpl implements RemoveEvent {
             public notified: boolean = false;
 
@@ -577,7 +581,10 @@ namespace microsoftTeams {
         handlers["authentication.authenticate.success"] = handleSuccess;
         handlers["authentication.authenticate.failure"] = handleFailure;
 
-
+        /**
+         * Registers the authentication parameters
+         * @param authenticateParameters A set of values that configure the authentication pop-up.
+         */
         export function registerAuthenticationParameters(authenticateParameters: AuthenticateParameters): void {
             authParams = authenticateParameters;
         }
@@ -822,8 +829,9 @@ namespace microsoftTeams {
             }
         }
 
-        /**
-        * Validates that the state param is a url with host as outlook.office.com and client_type correctly set to Outlook Desktop
+        /*
+        * Validates that the state param is a valid url with host as outlook.office.com and client_type correctly set to Outlook Desktop
+        * @param uri - the url to validate
         */
         function isValidState(state) {
             var link = document.createElement('a');
