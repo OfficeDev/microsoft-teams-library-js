@@ -476,6 +476,22 @@ describe("MicrosoftTeams", () =>
         expect(handlerCalled).toBe(true);
     });
 
+    it("should successfully get webhook URL in the save handler", () => {
+        initializeWithContext("settings");
+
+        let handlerCalled = false;
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
+            handlerCalled = true;
+            expect(saveEvent.result["webhookUrl"]).not.toBeNull();
+        });
+
+        sendMessage("settings.save", [{
+            webhookUrl: "someWebhookUrl",
+        }]);
+
+        expect(handlerCalled).toBe(true);
+    });
+
     it("should successfully register a remove handler", () =>
     {
         initializeWithContext("remove");
@@ -658,6 +674,30 @@ describe("MicrosoftTeams", () =>
         expect(windowOpenCalled).toBe(true);
     });
 
+    it("should successfully pop up the auth window when registerAuthenticationParameters is called", () => {
+        initializeWithContext("content");
+
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window => {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
+            windowOpenCalled = true;
+            return childWindow as Window;
+        });
+
+        let authenticationParams =
+            {
+                url: "https://someurl/",
+                width: 100,
+                height: 200,
+            };
+        microsoftTeams.authentication.registerAuthenticationParameters(authenticationParams);
+        microsoftTeams.authentication.authenticate();
+        expect(windowOpenCalled).toBe(true);
+    });
+
     it("should successfully handle auth success", () =>
     {
         initializeWithContext("content");
@@ -795,8 +835,11 @@ describe("MicrosoftTeams", () =>
     it("should successfully notify auth success", () =>
     {
         initializeWithContext("authentication");
-
-        microsoftTeams.authentication.notifySuccess("someResult");
+        let authenticationResultParams =
+        {
+            result: "someResult",
+        };
+        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
 
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
@@ -807,8 +850,11 @@ describe("MicrosoftTeams", () =>
     it("should successfully notify auth failure", () =>
     {
         initializeWithContext("authentication");
-
-        microsoftTeams.authentication.notifyFailure("someReason");
+        let authenticationResultParams =
+        {
+            reason: "someReason",
+        };
+        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
 
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
@@ -823,8 +869,11 @@ describe("MicrosoftTeams", () =>
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-
-        microsoftTeams.authentication.notifySuccess("someResult");
+        let authenticationResultParams =
+        {
+            result: "someResult",
+        };
+        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).toBeNull();
         expect(closeWindowSpy).not.toHaveBeenCalled();
@@ -844,8 +893,11 @@ describe("MicrosoftTeams", () =>
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-
-        microsoftTeams.authentication.notifyFailure("someReason");
+        let authenticationResultParams =
+        {
+            reason: "someReason",
+        };
+        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).toBeNull();
         expect(closeWindowSpy).not.toHaveBeenCalled();

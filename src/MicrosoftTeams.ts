@@ -465,6 +465,11 @@ namespace microsoftTeams {
 
         export interface SaveEvent {
             /**
+             * Object containing properties passed as arguments to the settings.save event. 
+             */
+            result: SaveResult;
+
+            /**
              * Indicates that the underlying resource has been created and the settings can be saved.
              */
             notifySuccess(): void;
@@ -503,9 +508,11 @@ namespace microsoftTeams {
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
             public result: SaveResult = {};
+
             constructor(result: SaveResult) {
                 this.result = result;
             }
+
             public notifySuccess(): void {
                 this.ensureNotNotified();
 
@@ -592,33 +599,33 @@ namespace microsoftTeams {
         /**
          * Initiates an authentication request, which opens a new window with the specified settings.
          */
-        export function authenticate(): void {
-            let authenticateParameters = authParams;
+        export function authenticate(authenticateParameters?: AuthenticateParameters): void {
+            let authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             if (hostClientType === hostClientTypes.desktop) {
                 // Convert any relative URLs into absolute URLs before sending them over to the parent window.
                 let link = document.createElement("a");
-                link.href = authenticateParameters.url;
+                link.href = authenticateParams.url;
 
                 // Ask the parent window to open an authentication window with the parameters provided by the caller.
                 let messageId = sendMessageRequest(parentWindow, "authentication.authenticate", [
                     link.href,
-                    authenticateParameters.width,
-                    authenticateParameters.height,
+                    authenticateParams.width,
+                    authenticateParams.height,
                 ]);
                 callbacks[messageId] = (success: boolean, response: string) => {
                     if (success) {
-                        authenticateParameters.successCallback(response);
+                        authenticateParams.successCallback(response);
                     }
                     else {
-                        authenticateParameters.failureCallback(response);
+                        authenticateParams.failureCallback(response);
                     }
                 };
             }
             else {
                 // Open an authentication window with the parameters provided by the caller.
-                openAuthenticationWindow(authenticateParameters);
+                openAuthenticationWindow(authenticateParams);
             }
         }
 
