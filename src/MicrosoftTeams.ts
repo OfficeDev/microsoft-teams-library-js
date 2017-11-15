@@ -235,7 +235,7 @@ namespace microsoftTeams {
 
     /**
      * Retrieves the current context the frame is running in.
-     * @param callback The callback to invoke when the {@link Context} object is retrieved.
+     * @param callback The callback to invoke when the {@link microsoftTeams.Context} object is retrieved.
      */
     export function getContext(callback: (context: Context) => void): void {
         ensureInitialized();
@@ -304,7 +304,7 @@ namespace microsoftTeams {
     /**
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-     * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
+     * @param callback The callback to invoke when the {@link microsoftTeams.TabInstanceParameters} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
      */
     export function getTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
@@ -316,7 +316,7 @@ namespace microsoftTeams {
 
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
-     * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
+     * @param callback The callback to invoke when the {@link microsoftTeams.TabInformation} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
      */
     export function getMruTabInstances(callback: (tabInfo: TabInformation) => void, tabInstanceParameters?: TabInstanceParameters): void {
@@ -378,7 +378,7 @@ namespace microsoftTeams {
 
         /**
          * Gets the settings for the current instance.
-         * @param callback The callback to invoke when the {@link Settings} object is retrieved.
+         * @param callback The callback to invoke when the {@link microsoftTeams.Settings} object is retrieved.
          */
         export function getSettings(callback: (settings: Settings) => void): void {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
