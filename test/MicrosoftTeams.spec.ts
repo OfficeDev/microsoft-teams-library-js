@@ -361,6 +361,31 @@ describe("MicrosoftTeams", () =>
         expect(newTheme).toBe("someTheme");
     });
 
+    it("should call navigateBack automatically when no back button handler is registered", () =>
+    {
+        initializeWithContext("content");
+
+        sendMessage("backButtonPress");
+
+        let navigateBackMessage = findMessageByFunc("navigateBack");
+        expect(navigateBackMessage).not.toBeNull();
+    });
+
+    it("should successfully register a back button handler", () =>
+    {
+        initializeWithContext("content");
+
+        let backButtonPressed = false;
+        microsoftTeams.registerBackButtonHandler(() =>
+        {
+            backButtonPressed = true;
+        });
+
+        sendMessage("backButtonPress");
+
+        expect(backButtonPressed).toBe(true);
+    });
+
     it("should successfully navigate cross-origin", () =>
     {
         initializeWithContext("content");

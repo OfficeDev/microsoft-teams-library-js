@@ -169,6 +169,9 @@ namespace microsoftTeams {
     let fullScreenChangeHandler: (isFullScreen: boolean) => void;
     handlers["fullScreenChange"] = handleFullScreenChange;
 
+    let backButtonPressHandler: () => void;
+    handlers["backButtonPress"] = handleBackButtonPress;
+
     /**
      * Initializes the library. This must be called before any other SDK calls
      * but after the frame is loaded successfully.
@@ -209,13 +212,12 @@ namespace microsoftTeams {
 
         // Undocumented function used to clear state between unit tests
         this._uninitialize = () => {
-            if (frameContext === frameContexts.settings) {
-                settings.registerOnSaveHandler(null);
-            }
+            settings.registerOnSaveHandler(null);
+            settings.registerOnRemoveHandler(null);
 
-            if (frameContext === frameContexts.remove) {
-                settings.registerOnRemoveHandler(null);
-            }
+            registerOnThemeChangeHandler(null);
+            registerFullScreenHandler(null);
+            registerBackButtonHandler(null);
 
             initializeCalled = false;
             parentWindow = null;
@@ -280,6 +282,42 @@ namespace microsoftTeams {
         if (fullScreenChangeHandler) {
             fullScreenChangeHandler(isFullScreen);
         }
+    }
+
+    /**
+     * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
+     * navigation stack should use this handler to navigate the user back within their frame. If an app finds
+     * that after running its back button handler it cannot handle the event it should call the navigateBack
+     * method to ask the Teams client to handle it instead.
+     * @param handler The handler to invoke when the user presses their Team client's back button.
+     */
+    export function registerBackButtonHandler(handler: () => void): void {
+        ensureInitialized();
+
+        backButtonPressHandler = handler;
+    }
+
+    function handleBackButtonPress(): void {
+        if (backButtonPressHandler) {
+            backButtonPressHandler();
+         } else {
+             navigateBack();
+         }
+    }
+
+    /**
+     * Navigates back in the Teams client. See registerBackButtonHandler for more information on when
+     * it's appropriate to use this method.
+     */
+    export function navigateBack(): void {
+        ensureInitialized();
+
+        let messageId = sendMessageRequest(parentWindow, "navigateBack", []);
+        callbacks[messageId] = (success: boolean) => {
+            if (!success) {
+                throw new Error("Back navigation is not supported in the current client or context.");
+            }
+        };
     }
 
     /**
