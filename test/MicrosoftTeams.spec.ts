@@ -876,6 +876,33 @@ describe("MicrosoftTeams", () =>
         expect(message.args[2]).toBe("someSubEntityWebUrl");
     });
 
+    it("should successfully open a file preview", () => {
+        initializeWithContext("content");
+
+        microsoftTeams.openFilePreview({
+            entityId: "someEntityId",
+            title: "someTitle",
+            description: "someDescription",
+            type: "someType",
+            objectUrl: "someObjectUrl",
+            downloadUrl: "someDownloadUrl",
+            webPreviewUrl: "someWebPreviewUrl",
+            webEditUrl: "someWebEditUrl",
+        });
+
+        let message = findMessageByFunc("openFilePreview");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(8);
+        expect(message.args[0]).toBe("someEntityId");
+        expect(message.args[1]).toBe("someTitle");
+        expect(message.args[2]).toBe("someDescription");
+        expect(message.args[3]).toBe("someType");
+        expect(message.args[4]).toBe("someObjectUrl");
+        expect(message.args[5]).toBe("someDownloadUrl");
+        expect(message.args[6]).toBe("someWebPreviewUrl");
+        expect(message.args[7]).toBe("someWebEditUrl");
+    });
+
     describe("getTabInstances", () => {
         it("should allow a missing and valid optional parameter", () => {
             initializeWithContext("getTabInstances");
