@@ -41,12 +41,12 @@ namespace microsoftTeams {
     interface MessageRequest {
         id: number;
         func: string;
-        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+        args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
     }
 
     interface MessageResponse {
         id: number;
-        args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[]
+        args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
     }
 
     /**
@@ -132,7 +132,7 @@ namespace microsoftTeams {
         Edu = 1,
         Class = 2,
         Plc = 3,
-        Staff = 4
+        Staff = 4,
     }
 
     export interface TabInstanceParameters {
@@ -212,12 +212,19 @@ namespace microsoftTeams {
 
         // Undocumented function used to clear state between unit tests
         this._uninitialize = () => {
-            settings.registerOnSaveHandler(null);
-            settings.registerOnRemoveHandler(null);
+            if (frameContext) {
+                registerOnThemeChangeHandler(null);
+                registerFullScreenHandler(null);
+                registerBackButtonHandler(null);
+            }
 
-            registerOnThemeChangeHandler(null);
-            registerFullScreenHandler(null);
-            registerBackButtonHandler(null);
+            if (frameContext === frameContexts.settings) {
+                settings.registerOnSaveHandler(null);
+            }
+
+            if (frameContext === frameContexts.remove) {
+                settings.registerOnRemoveHandler(null);
+            }
 
             initializeCalled = false;
             parentWindow = null;
@@ -247,7 +254,7 @@ namespace microsoftTeams {
     }
 
     /**
-     * Registers a handler for theme changes. 
+     * Registers a handler for theme changes.
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler The handler to invoke when the user changes their theme.
      */
@@ -322,9 +329,9 @@ namespace microsoftTeams {
 
     /**
      * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
-     * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be 
-     * thrown. This function needs to be used only when navigating the frame to a URL in a different domain 
-     * than the current one in a way that keeps the app informed of the change and allows the SDK to 
+     * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
+     * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
+     * than the current one in a way that keeps the app informed of the change and allows the SDK to
      * continue working.
      * @param url The URL to navigate the frame to.
      */
@@ -418,7 +425,7 @@ namespace microsoftTeams {
          * Gets the settings for the current instance.
          * @param callback The callback to invoke when the {@link Settings} object is retrieved.
          */
-        export function getSettings(callback: (settings: Settings) => void): void {
+        export function getSettings(callback: (instanceSettings: Settings) => void): void {
             ensureInitialized(frameContexts.settings, frameContexts.remove);
 
             let messageId = sendMessageRequest(parentWindow, "settings.getSettings");
@@ -430,10 +437,10 @@ namespace microsoftTeams {
          * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
          * @param settings The desired settings for this instance.
          */
-        export function setSettings(settings: Settings): void {
+        export function setSettings(instanceSettings: Settings): void {
             ensureInitialized(frameContexts.settings);
 
-            sendMessageRequest(parentWindow, "settings.setSettings", [settings]);
+            sendMessageRequest(parentWindow, "settings.setSettings", [instanceSettings]);
         }
 
         /**
@@ -952,7 +959,7 @@ namespace microsoftTeams {
 
             /**
              * Defines the time interval within which a token is valid. The service that validates the token should verify
-             * that the current date is within the token lifetime; otherwise it should reject the token. The service might 
+             * that the current date is within the token lifetime; otherwise it should reject the token. The service might
              * allow for up to five minutes beyond the token lifetime to account for any differences in clock time ("time
              * skew") between Azure AD and the service.
              */
@@ -1017,7 +1024,7 @@ namespace microsoftTeams {
 
         /**
          * The UPN of the current user.
-         * Because a malicious party can host malicious content in a browser, this value should 
+         * Because a malicious party can host malicious content in a browser, this value should
          * be used only as a hint as to who the user is and never as proof of identity.
          * This field is available only when the identity permission is requested in the manifest.
          */
@@ -1025,7 +1032,7 @@ namespace microsoftTeams {
 
         /**
          * The Azure AD tenant ID of the current user.
-         * Because a malicious party can host malicious content in a browser, this value should 
+         * Because a malicious party can host malicious content in a browser, this value should
          * be used only as a hint as to who the user is and never as proof of identity.
          * This field is available only when the identity permission is requested in the manifest.
          */
@@ -1178,7 +1185,7 @@ namespace microsoftTeams {
                 // Proxy to parent
                 let messageId = sendMessageRequest(parentWindow, message.func, message.args);
 
-                // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+                // tslint:disable-next-line:no-any
                 callbacks[messageId] = (...args: any[]) => {
                     if (childWindow) {
                         sendMessageResponse(childWindow, message.id, args);
@@ -1217,7 +1224,7 @@ namespace microsoftTeams {
         }, 100);
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    // tslint:disable-next-line:no-any
     function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number {
         let request = createMessageRequest(actionName, args);
         let targetOrigin = getTargetOrigin(targetWindow);
@@ -1234,7 +1241,7 @@ namespace microsoftTeams {
         return request.id;
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    // tslint:disable-next-line:no-any
     function sendMessageResponse(targetWindow: Window, id: number, args?: any[]): void {
         let response = createMessageResponse(id, args);
         let targetOrigin = getTargetOrigin(targetWindow);
@@ -1243,7 +1250,7 @@ namespace microsoftTeams {
         }
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    // tslint:disable-next-line:no-any
     function createMessageRequest(func: string, args: any[]): MessageRequest {
         return {
             id: nextMessageId++,
@@ -1252,7 +1259,7 @@ namespace microsoftTeams {
         };
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    // tslint:disable-next-line:no-any
     function createMessageResponse(id: number, args: any[]): MessageResponse {
         return {
             id: id,

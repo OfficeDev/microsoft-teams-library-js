@@ -13,13 +13,13 @@ interface MessageRequest
 {
     id: number;
     func: string;
-    args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough to postMessage where we do allow any[]
+    args?: any[]; // tslint:disable-line:no-any
 }
 
 interface MessageResponse
 {
     id: number;
-    args?: any[]; // tslint:disable-line:no-any:The args here are a passthrough from OnMessage where we do receive any[] */
+    args?: any[]; // tslint:disable-line:no-any
 }
 
 describe("MicrosoftTeams", () =>
@@ -942,7 +942,7 @@ describe("MicrosoftTeams", () =>
         return null;
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to MessageResponse
+    // tslint:disable-next-line:no-any
     function respondToMessage(message: MessageRequest, ...args: any[]): void
     {
         processMessage(
@@ -957,7 +957,7 @@ describe("MicrosoftTeams", () =>
         } as MessageEvent);
     }
 
-    // tslint:disable-next-line:no-any:The args here are a passthrough to MessageRequest
+    // tslint:disable-next-line:no-any
     function sendMessage(func: string, ...args: any[]): void
     {
         processMessage(
