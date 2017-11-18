@@ -22,8 +22,7 @@ interface MessageResponse
     args?: any[]; // tslint:disable-line:no-any
 }
 
-describe("MicrosoftTeams", () =>
-{
+describe("MicrosoftTeams", () => {
     const validOrigin = "https://teams.microsoft.com";
     const tabOrigin = "https://example.com";
 
@@ -33,52 +32,39 @@ describe("MicrosoftTeams", () =>
     // A list of messages the library sends to the app.
     let messages: MessageRequest[];
 
-    let childWindow =
-    {
-        close: function (): void
-        {
+    let childWindow = {
+        close: function (): void {
             return;
         },
     };
 
-    beforeEach(() =>
-    {
+    beforeEach(() => {
         processMessage = null;
         messages = [];
-        let mockWindow =
-        {
+        let mockWindow = {
             outerWidth: 1024,
             outerHeight: 768,
             screenLeft: 0,
             screenTop: 0,
-            addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
-            {
-                if (type === "message")
-                {
+            addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+                if (type === "message") {
                     processMessage = listener;
                 }
             },
-            removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void
-            {
-                if (type === "message")
-                {
+            removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+                if (type === "message") {
                     processMessage = null;
                 }
             },
-            location:
-            {
+            location: {
                 origin: tabOrigin,
             },
-            parent:
-            {
-                postMessage: function(message: MessageRequest, targetOrigin: string): void
-                {
-                    if (message.func === "initialize")
-                    {
+            parent: {
+                postMessage: function(message: MessageRequest, targetOrigin: string): void {
+                    if (message.func === "initialize") {
                         expect(targetOrigin).toEqual("*");
                     }
-                    else
-                    {
+                    else {
                         expect(targetOrigin).toEqual(validOrigin);
                     }
 
@@ -86,12 +72,10 @@ describe("MicrosoftTeams", () =>
                 },
             } as Window,
             self: null as Window,
-            open: function (url: string, name: string, specs: string): Window
-            {
+            open: function (url: string, name: string, specs: string): Window {
                 return childWindow as Window;
             },
-            close: function (): void
-            {
+            close: function (): void {
                 return;
             },
             setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
@@ -101,11 +85,9 @@ describe("MicrosoftTeams", () =>
         jasmine.clock().install();
     });
 
-    afterEach(() =>
-    {
+    afterEach(() => {
         // Reset the object since it's a singleton
-        if (microsoftTeams._uninitialize)
-        {
+        if (microsoftTeams._uninitialize) {
             microsoftTeams._uninitialize();
         }
 
@@ -116,13 +98,11 @@ describe("MicrosoftTeams", () =>
         jasmine.clock().uninstall();
     });
 
-    it("should exist in the global namespace", () =>
-    {
+    it("should exist in the global namespace", () => {
         expect(microsoftTeams).toBeDefined();
     });
 
-    it("should successfully initialize", () =>
-    {
+    it("should successfully initialize", () => {
         microsoftTeams.initialize();
 
         expect(processMessage).toBeDefined();
@@ -135,10 +115,8 @@ describe("MicrosoftTeams", () =>
         expect(initMessage.args).toEqual(["1.2"]);
     });
 
-    it("should allow multiple initialize calls", () =>
-    {
-        for (let i = 0; i < 100; i++)
-        {
+    it("should allow multiple initialize calls", () => {
+        for (let i = 0; i < 100; i++) {
             microsoftTeams.initialize();
         }
 
@@ -147,40 +125,33 @@ describe("MicrosoftTeams", () =>
         expect(messages.length).toBe(1);
     });
 
-    it("should not allow calls before initialization", () =>
-    {
+    it("should not allow calls before initialization", () => {
         expect(() => microsoftTeams.getContext(() => { return; })).toThrowError("The library has not yet been initialized");
     });
 
-    it("should not allow calls from the wrong context", () =>
-    {
+    it("should not allow calls from the wrong context", () => {
         initializeWithContext("content");
 
         expect(() => microsoftTeams.settings.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
     });
 
-    it("should reject messages from unsupported domains", () =>
-    {
+    it("should reject messages from unsupported domains", () => {
         initializeWithContext("content");
 
         let callbackCalled = false;
-        microsoftTeams.getContext(() =>
-        {
+        microsoftTeams.getContext(() => {
             callbackCalled = true;
         });
 
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        processMessage(
-        {
+        processMessage({
             origin: "https://some-malicious-site.com/",
             source: microsoftTeams._window.parent,
-            data:
-            {
+            data: {
                 id: getContextMessage.id,
-                args:
-                [{
+                args: [{
                     groupId: "someMaliciousValue",
                 }],
             } as MessageResponse,
@@ -189,19 +160,16 @@ describe("MicrosoftTeams", () =>
         expect(callbackCalled).toBe(false);
     });
 
-    it("should not make calls to unsupported domains", () =>
-    {
+    it("should not make calls to unsupported domains", () => {
         microsoftTeams.initialize();
 
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
 
-        processMessage(
-        {
+        processMessage({
             origin: "https://some-malicious-site.com/",
             source: microsoftTeams._window.parent,
-            data:
-            {
+            data: {
                 id: initMessage.id,
                 args:
                 [
@@ -217,8 +185,7 @@ describe("MicrosoftTeams", () =>
         expect(messages.length).toBe(1);
     });
 
-    it("should successfully handle calls queued before init completes", () =>
-    {
+    it("should successfully handle calls queued before init completes", () => {
         microsoftTeams.initialize();
 
         // Another call made before the init response
@@ -238,29 +205,25 @@ describe("MicrosoftTeams", () =>
         expect(findMessageByFunc("getContext")).not.toBeNull();
     });
 
-    it("should successfully handle out of order calls", () =>
-    {
+    it("should successfully handle out of order calls", () => {
         initializeWithContext("content");
 
         let actualContext1: microsoftTeams.Context;
-        microsoftTeams.getContext((context) =>
-        {
+        microsoftTeams.getContext((context) => {
             actualContext1 = context;
         });
 
         let getContextMessage1 = messages[messages.length - 1];
 
         let actualContext2: microsoftTeams.Context;
-        microsoftTeams.getContext((context) =>
-        {
+        microsoftTeams.getContext((context) => {
             actualContext2 = context;
         });
 
         let getContextMessage2 = messages[messages.length - 1];
 
         let actualContext3: microsoftTeams.Context;
-        microsoftTeams.getContext((context) =>
-        {
+        microsoftTeams.getContext((context) => {
             actualContext3 = context;
         });
 
@@ -286,21 +249,18 @@ describe("MicrosoftTeams", () =>
         expect(actualContext3).toBe(expectedContext3);
     });
 
-    it("should only call callbacks once", () =>
-    {
+    it("should only call callbacks once", () => {
         initializeWithContext("content");
 
         let callbackCalled = 0;
-        microsoftTeams.getContext((context) =>
-        {
+        microsoftTeams.getContext((context) => {
             callbackCalled++;
         });
 
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        let expectedContext: microsoftTeams.Context =
-        {
+        let expectedContext: microsoftTeams.Context = {
             locale: "someLocale",
             groupId: "someGroupId",
             channelId: "someChannelId",
@@ -309,8 +269,7 @@ describe("MicrosoftTeams", () =>
         };
 
         // Get many responses to the same message
-        for (let i = 0; i < 100; i++)
-        {
+        for (let i = 0; i < 100; i++) {
             respondToMessage(getContextMessage, expectedContext);
         }
 
@@ -318,21 +277,18 @@ describe("MicrosoftTeams", () =>
         expect(callbackCalled).toBe(1);
     });
 
-    it("should successfully get context", () =>
-    {
+    it("should successfully get context", () => {
         initializeWithContext("content");
 
         let actualContext: microsoftTeams.Context;
-        microsoftTeams.getContext((context) =>
-        {
+        microsoftTeams.getContext((context) => {
             actualContext = context;
         });
 
         let getContextMessage = findMessageByFunc("getContext");
         expect(getContextMessage).not.toBeNull();
 
-        let expectedContext: microsoftTeams.Context =
-        {
+        let expectedContext: microsoftTeams.Context = {
             locale: "someLocale",
             groupId: "someGroupId",
             channelId: "someChannelId",
@@ -346,13 +302,11 @@ describe("MicrosoftTeams", () =>
         expect(actualContext).toBe(expectedContext);
     });
 
-    it("should successfully register a theme change handler", () =>
-    {
+    it("should successfully register a theme change handler", () => {
         initializeWithContext("content");
 
         let newTheme: string;
-        microsoftTeams.registerOnThemeChangeHandler((theme) =>
-        {
+        microsoftTeams.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
         });
 
@@ -361,8 +315,7 @@ describe("MicrosoftTeams", () =>
         expect(newTheme).toBe("someTheme");
     });
 
-    it("should call navigateBack automatically when no back button handler is registered", () =>
-    {
+    it("should call navigateBack automatically when no back button handler is registered", () => {
         initializeWithContext("content");
 
         sendMessage("backButtonPress");
@@ -371,13 +324,11 @@ describe("MicrosoftTeams", () =>
         expect(navigateBackMessage).not.toBeNull();
     });
 
-    it("should successfully register a back button handler", () =>
-    {
+    it("should successfully register a back button handler", () => {
         initializeWithContext("content");
 
         let backButtonPressed = false;
-        microsoftTeams.registerBackButtonHandler(() =>
-        {
+        microsoftTeams.registerBackButtonHandler(() => {
             backButtonPressed = true;
         });
 
@@ -386,8 +337,7 @@ describe("MicrosoftTeams", () =>
         expect(backButtonPressed).toBe(true);
     });
 
-    it("should successfully navigate cross-origin", () =>
-    {
+    it("should successfully navigate cross-origin", () => {
         initializeWithContext("content");
 
         microsoftTeams.navigateCrossDomain("https://valid.origin.com");
@@ -398,8 +348,7 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe("https://valid.origin.com");
     });
 
-    it("should throw on invalid cross-origin navigation request", () =>
-    {
+    it("should throw on invalid cross-origin navigation request", () => {
         initializeWithContext("settings");
 
         microsoftTeams.navigateCrossDomain("https://invalid.origin.com");
@@ -409,16 +358,14 @@ describe("MicrosoftTeams", () =>
         expect(navigateCrossDomainMessage.args.length).toBe(1);
         expect(navigateCrossDomainMessage.args[0]).toBe("https://invalid.origin.com");
 
-        let respondWithFailure = () =>
-        {
+        let respondWithFailure = () => {
             respondToMessage(navigateCrossDomainMessage, false);
         };
 
         expect(respondWithFailure).toThrow();
     });
 
-    it("should successfully set validity state to true", () =>
-    {
+    it("should successfully set validity state to true", () => {
         initializeWithContext("settings");
 
         microsoftTeams.settings.setValidityState(true);
@@ -429,8 +376,7 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe(true);
     });
 
-    it("should successfully set validity state to false", () =>
-    {
+    it("should successfully set validity state to false", () => {
         initializeWithContext("settings");
 
         microsoftTeams.settings.setValidityState(false);
@@ -441,21 +387,18 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe(false);
     });
 
-    it("should successfully get settings", () =>
-    {
+    it("should successfully get settings", () => {
         initializeWithContext("settings");
 
         let actualSettings: microsoftTeams.settings.Settings;
-        microsoftTeams.settings.getSettings((settings) =>
-        {
+        microsoftTeams.settings.getSettings((settings) => {
             actualSettings = settings;
         });
 
         let message = findMessageByFunc("settings.getSettings");
         expect(message).not.toBeNull();
 
-        let expectedSettings: microsoftTeams.settings.Settings =
-        {
+        let expectedSettings: microsoftTeams.settings.Settings = {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
@@ -467,12 +410,10 @@ describe("MicrosoftTeams", () =>
         expect(actualSettings).toBe(expectedSettings);
     });
 
-    it("should successfully set settings", () =>
-    {
+    it("should successfully set settings", () => {
         initializeWithContext("settings");
 
-        let settings: microsoftTeams.settings.Settings =
-        {
+        let settings: microsoftTeams.settings.Settings = {
             suggestedDisplayName: "someSuggestedDisplayName",
             contentUrl: "someContentUrl",
             websiteUrl: "someWebsiteUrl",
@@ -486,13 +427,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe(settings);
     });
 
-    it("should successfully register a save handler", () =>
-    {
+    it("should successfully register a save handler", () => {
         initializeWithContext("settings");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             handlerCalled = true;
         });
 
@@ -501,13 +440,11 @@ describe("MicrosoftTeams", () =>
         expect(handlerCalled).toBe(true);
     });
 
-    it("should successfully register a remove handler", () =>
-    {
+    it("should successfully register a remove handler", () => {
         initializeWithContext("remove");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) =>
-        {
+        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) => {
             handlerCalled = true;
         });
 
@@ -516,18 +453,15 @@ describe("MicrosoftTeams", () =>
         expect(handlerCalled).toBe(true);
     });
 
-    it("should successfully override a save handler with another", () =>
-    {
+    it("should successfully override a save handler with another", () => {
         initializeWithContext("settings");
 
         let handler1Called = false;
         let handler2Called = false;
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             handler1Called = true;
         });
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             handler2Called = true;
         });
 
@@ -537,8 +471,7 @@ describe("MicrosoftTeams", () =>
         expect(handler2Called).toBe(true);
     });
 
-    it("should successfully notify success on save when there is no registered handler", () =>
-    {
+    it("should successfully notify success on save when there is no registered handler", () => {
         initializeWithContext("settings");
 
         sendMessage("settings.save");
@@ -548,13 +481,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args.length).toBe(0);
     });
 
-    it("should successfully notify success from the registered save handler", () =>
-    {
+    it("should successfully notify success from the registered save handler", () => {
         initializeWithContext("settings");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             saveEvent.notifySuccess();
             handlerCalled = true;
         });
@@ -567,13 +498,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args.length).toBe(0);
     });
 
-    it("should successfully notify failure from the registered save handler", () =>
-    {
+    it("should successfully notify failure from the registered save handler", () => {
         initializeWithContext("settings");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             saveEvent.notifyFailure("someReason");
             handlerCalled = true;
         });
@@ -587,8 +516,7 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe("someReason");
     });
 
-    it("should successfully notify success on remove when there is no registered handler", () =>
-    {
+    it("should successfully notify success on remove when there is no registered handler", () => {
         initializeWithContext("remove");
 
         sendMessage("settings.remove");
@@ -598,13 +526,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args.length).toBe(0);
     });
 
-    it("should successfully notify success from the registered remove handler", () =>
-    {
+    it("should successfully notify success from the registered remove handler", () => {
         initializeWithContext("remove");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) =>
-        {
+        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) => {
             removeEvent.notifySuccess();
             handlerCalled = true;
         });
@@ -617,13 +543,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args.length).toBe(0);
     });
 
-    it("should successfully notify failure from the registered remove handler", () =>
-    {
+    it("should successfully notify failure from the registered remove handler", () => {
         initializeWithContext("remove");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) =>
-        {
+        microsoftTeams.settings.registerOnRemoveHandler((removeEvent) => {
             removeEvent.notifyFailure("someReason");
             handlerCalled = true;
         });
@@ -637,13 +561,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe("someReason");
     });
 
-    it("should not allow multiple notifies from the registered save handler", () =>
-    {
+    it("should not allow multiple notifies from the registered save handler", () => {
         initializeWithContext("settings");
 
         let handlerCalled = false;
-        microsoftTeams.settings.registerOnSaveHandler((saveEvent) =>
-        {
+        microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
             saveEvent.notifySuccess();
             expect(() => saveEvent.notifySuccess()).toThrowError("The SaveEvent may only notify success or failure once.");
             expect(() => saveEvent.notifyFailure()).toThrowError("The SaveEvent may only notify success or failure once.");
@@ -658,13 +580,11 @@ describe("MicrosoftTeams", () =>
         expect(message.args.length).toBe(0);
     });
 
-    it("should successfully pop up the auth window", () =>
-    {
+    it("should successfully pop up the auth window", () => {
         initializeWithContext("content");
 
         let windowOpenCalled = false;
-        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window =>
-        {
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window => {
             expect(url).toEqual("https://someurl/");
             expect(name).toEqual("_blank");
             expect(specs.indexOf("width=100")).not.toBe(-1);
@@ -673,8 +593,7 @@ describe("MicrosoftTeams", () =>
             return childWindow as Window;
         });
 
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someurl/",
             width: 100,
             height: 200,
@@ -683,14 +602,12 @@ describe("MicrosoftTeams", () =>
         expect(windowOpenCalled).toBe(true);
     });
 
-    it("should successfully handle auth success", () =>
-    {
+    it("should successfully handle auth success", () => {
         initializeWithContext("content");
 
         let successResult: string;
         let failureReason: string;
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someurl/",
             width: 100,
             height: 200,
@@ -699,12 +616,10 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        processMessage(
-        {
+        processMessage({
             origin: tabOrigin,
             source: childWindow,
-            data:
-            {
+            data: {
                 id: 0,
                 func: "authentication.authenticate.success",
                 args: ["someResult"],
@@ -715,14 +630,12 @@ describe("MicrosoftTeams", () =>
         expect(failureReason).toBeUndefined();
     });
 
-    it("should successfully handle auth failure", () =>
-    {
+    it("should successfully handle auth failure", () => {
         initializeWithContext("content");
 
         let successResult: string;
         let failureReason: string;
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someurl/",
             width: 100,
             height: 200,
@@ -731,12 +644,10 @@ describe("MicrosoftTeams", () =>
         };
         microsoftTeams.authentication.authenticate(authenticationParams);
 
-        processMessage(
-        {
+        processMessage({
             origin: tabOrigin,
             source: childWindow,
-            data:
-            {
+            data: {
                 id: 0,
                 func: "authentication.authenticate.failure",
                 args: ["someReason"],
@@ -747,12 +658,10 @@ describe("MicrosoftTeams", () =>
         expect(failureReason).toEqual("someReason");
     });
 
-    it("should successfully pop up the auth window in the desktop client", () =>
-    {
+    it("should successfully pop up the auth window in the desktop client", () => {
         initializeWithContext("content", "desktop");
 
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someUrl",
             width: 100,
             height: 200,
@@ -767,14 +676,12 @@ describe("MicrosoftTeams", () =>
         expect(message.args[2]).toBe(authenticationParams.height);
     });
 
-    it("should successfully handle auth success in the desktop client", () =>
-    {
+    it("should successfully handle auth success in the desktop client", () => {
         initializeWithContext("content", "desktop");
 
         let successResult: string;
         let failureReason: string;
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someUrl",
             width: 100,
             height: 200,
@@ -792,14 +699,12 @@ describe("MicrosoftTeams", () =>
         expect(failureReason).toBeUndefined();
     });
 
-    it("should successfully handle auth failure in the desktop client", () =>
-    {
+    it("should successfully handle auth failure in the desktop client", () => {
         initializeWithContext("content", "desktop");
 
         let successResult: string;
         let failureReason: string;
-        let authenticationParams =
-        {
+        let authenticationParams = {
             url: "https://someUrl",
             width: 100,
             height: 200,
@@ -817,8 +722,7 @@ describe("MicrosoftTeams", () =>
         expect(failureReason).toBe("someReason");
     });
 
-    it("should successfully notify auth success", () =>
-    {
+    it("should successfully notify auth success", () => {
         initializeWithContext("authentication");
 
         microsoftTeams.authentication.notifySuccess("someResult");
@@ -829,8 +733,7 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe("someResult");
     });
 
-    it("should successfully notify auth failure", () =>
-    {
+    it("should successfully notify auth failure", () => {
         initializeWithContext("authentication");
 
         microsoftTeams.authentication.notifyFailure("someReason");
@@ -841,8 +744,7 @@ describe("MicrosoftTeams", () =>
         expect(message.args[0]).toBe("someReason");
     });
 
-    it("should not close auth window before notify success message has been sent", () =>
-    {
+    it("should not close auth window before notify success message has been sent", () => {
         let closeWindowSpy = spyOn(microsoftTeams._window, "close").and.callThrough();
 
         microsoftTeams.initialize();
@@ -862,8 +764,7 @@ describe("MicrosoftTeams", () =>
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
-    it("should not close auth window before notify failure message has been sent", () =>
-    {
+    it("should not close auth window before notify failure message has been sent", () => {
         let closeWindowSpy = spyOn(microsoftTeams._window, "close").and.callThrough();
 
         microsoftTeams.initialize();
@@ -883,8 +784,7 @@ describe("MicrosoftTeams", () =>
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
-    it("should successfully share a deep link", () =>
-    {
+    it("should successfully share a deep link", () => {
         initializeWithContext("content");
 
         microsoftTeams.shareDeepLink({
@@ -919,8 +819,7 @@ describe("MicrosoftTeams", () =>
         });
     });
 
-    function initializeWithContext(frameContext: string, hostClientType?: string): void
-    {
+    function initializeWithContext(frameContext: string, hostClientType?: string): void {
         microsoftTeams.initialize();
 
         let initMessage = findMessageByFunc("initialize");
@@ -929,12 +828,9 @@ describe("MicrosoftTeams", () =>
         respondToMessage(initMessage, frameContext, hostClientType);
     }
 
-    function findMessageByFunc(func: string): MessageRequest
-    {
-        for (let i = 0; i < messages.length; i++)
-        {
-            if (messages[i].func === func)
-            {
+    function findMessageByFunc(func: string): MessageRequest {
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].func === func) {
                 return messages[i];
             }
         }
@@ -943,14 +839,11 @@ describe("MicrosoftTeams", () =>
     }
 
     // tslint:disable-next-line:no-any
-    function respondToMessage(message: MessageRequest, ...args: any[]): void
-    {
-        processMessage(
-        {
+    function respondToMessage(message: MessageRequest, ...args: any[]): void {
+        processMessage({
             origin: validOrigin,
             source: microsoftTeams._window.parent,
-            data:
-            {
+            data: {
                 id: message.id,
                 args: args,
             } as MessageResponse,
@@ -958,14 +851,11 @@ describe("MicrosoftTeams", () =>
     }
 
     // tslint:disable-next-line:no-any
-    function sendMessage(func: string, ...args: any[]): void
-    {
-        processMessage(
-        {
+    function sendMessage(func: string, ...args: any[]): void {
+        processMessage({
             origin: validOrigin,
             source: microsoftTeams._window.parent,
-            data:
-            {
+            data: {
                 func: func,
                 args: args,
             },

@@ -305,11 +305,9 @@ namespace microsoftTeams {
     }
 
     function handleBackButtonPress(): void {
-        if (backButtonPressHandler) {
-            backButtonPressHandler();
-         } else {
-             navigateBack();
-         }
+        if (!backButtonPressHandler || !backButtonPressHandler()) {
+            navigateBack();
+        }
     }
 
     /**
