@@ -50,8 +50,8 @@ namespace microsoftTeams {
     }
 
     /**
-    * Represents information about tabs for an app
-    */
+     * Represents information about tabs for an app
+     */
     export interface TabInformation {
         teamTabs: TabInstance[];
     }
@@ -778,7 +778,8 @@ namespace microsoftTeams {
                 if (isValidState(decodedUrl)) {
                     let link = document.createElement("a");
                     link.href = updateUrlParameter(decodedUrl, "result", authenticationResultParams.result);
-                    window.location.href = link.href;
+                    currentWindow.location.assign(link.href);
+                    return;
                 }
             }
             ensureInitialized(frameContexts.authentication);
@@ -801,7 +802,8 @@ namespace microsoftTeams {
                 if (isValidState(decodedUrl)) {
                     let link = document.createElement("a");
                     link.href = updateUrlParameter(decodedUrl, "reason", authenticationResultParams.reason);
-                    window.location.href = link.href;
+                    currentWindow.location.assign(link.href);
+                    return;
                 }
             }
             ensureInitialized(frameContexts.authentication);
@@ -838,7 +840,7 @@ namespace microsoftTeams {
 
         /*
         * Validates that the state param is a valid url with host as outlook.office.com and client_type correctly set to Outlook Desktop
-        * @param uri - the url to validate
+        * @param state - the url to validate
         */
         function isValidState(state: string): boolean {
             let link = document.createElement("a");
@@ -857,10 +859,10 @@ namespace microsoftTeams {
          */
         function updateUrlParameter(uri: string, key: string, value: string): string {
             let i = uri.indexOf("#");
-            let hash = i === -1 ? "" : uri.substr(i);
+            let hash = i === -1 ? "#" : uri.substr(i);
             hash = hash + "&" + key + "=" + value;
             uri = i === -1 ? uri : uri.substr(0, i);
-            return uri + hash;  // append the updated hash
+            return uri + hash;
         }
 
         export interface AuthenticateParameters {
@@ -891,13 +893,19 @@ namespace microsoftTeams {
         }
 
         export interface AuthenticationResultParameters {
-            /* reason Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback*/
+            /**
+             * Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback
+             */
             reason?: string;
 
-            /* result Specifies a result for the authentication.If specified, the frame that initiated the authentication pop- up receives this value in its callback.*/
+            /**
+             * Specifies a result for the authentication.If specified, the frame that initiated the authentication pop- up receives this value in its callback. 
+             */
             result?: string;
 
-            /* state Specifies a return url for the authentication applicable in case of Outlook Desktop client. If specified, the frame that initiated the authentication redirects back to the specified URL after authentication success/failure.*/
+            /**
+             * Specifies a return url for the authentication applicable in case of Outlook Desktop client. If specified, the frame that initiated the authentication redirects back to the specified URL after authentication success/failure
+             */
             state?: string;
         }
 
