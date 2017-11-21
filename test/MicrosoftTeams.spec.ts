@@ -857,14 +857,14 @@ describe("MicrosoftTeams", () =>
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors/Home/Login?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook&MailboxType=group#/configurations&result=someResult");
+            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&result=someResult&authSuccess");
         });
 
         initializeWithContext("authentication");
         let authenticationResultParams =
         {
             result: "someResult",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%2FHome%2FLogin%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%26MailboxType%3Dgroup%23%2Fconfigurations",
+            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%23%2Fconfigurations",
         };
 
         microsoftTeams.authentication.notifySuccess(authenticationResultParams);
@@ -878,14 +878,14 @@ describe("MicrosoftTeams", () =>
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors/Home/Login?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook&MailboxType=group#&result=someResult");
+            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#&result=someResult&authSuccess");
         });
 
         initializeWithContext("authentication");
         let authenticationResultParams =
         {
             result: "someResult",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%2FHome%2FLogin%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%26MailboxType%3Dgroup",
+            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook",
         };
 
         microsoftTeams.authentication.notifySuccess(authenticationResultParams);
@@ -897,7 +897,7 @@ describe("MicrosoftTeams", () =>
     it("should successfully notify auth success if state is invalid", () =>
     {
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
-            expect(url).toEqual("https://outlook.office.com/connectors/Home/Login?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook&MailboxType=group#/configurations&result=someResult");
+            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&result=someResult");
         });
 
         initializeWithContext("authentication");
@@ -934,14 +934,14 @@ describe("MicrosoftTeams", () =>
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors/Home/Login?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook&MailboxType=group#/configurations&reason=someReason");
+            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&reason=someReason&authFailure");
         });
 
         initializeWithContext("authentication");
         let authenticationResultParams =
         {
             reason: "someReason",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%2FHome%2FLogin%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%26MailboxType%3Dgroup%23%2Fconfigurations",
+            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%23%2Fconfigurations",
         };
 
         microsoftTeams.authentication.notifyFailure(authenticationResultParams);
@@ -953,7 +953,7 @@ describe("MicrosoftTeams", () =>
     it("should successfully notify auth failure if state is invalid", () =>
     {
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
-            expect(url).toEqual("https://outlook.office.com/connectors/Home/Login?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook&MailboxType=group#/configurations&reason=someResult");
+            expect(url).toEqual("https://someinvalidurl.com?state=test#/configuration&reason=someReason&authFailure");
         });
 
         initializeWithContext("authentication");

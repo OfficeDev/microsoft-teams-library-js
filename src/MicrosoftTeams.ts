@@ -501,7 +501,7 @@ namespace microsoftTeams {
             webhookUrl?: string;
         }
 
-         /**
+        /**
          * @private
          * Hide from docs, since this class is not directly used.
          */
@@ -591,7 +591,7 @@ namespace microsoftTeams {
         /**
          * Registers the authentication parameters
          * @param authenticateParameters A set of values that configure the authentication pop-up.
-         */
+	     */
         export function registerAuthenticationParameters(authenticateParameters: AuthenticateParameters): void {
             authParams = authenticateParameters;
         }
@@ -706,7 +706,7 @@ namespace microsoftTeams {
             top += (currentWindow.outerHeight / 2) - (height / 2);
 
             // Open a child window with a desired set of standard browser features
-            childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
+            childWindow = currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" + top + ", left=" + left + ", width=" + width + ", height=" + height);
             if (childWindow) {
                 // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
                 startAuthenticationWindowMonitor();
@@ -777,8 +777,11 @@ namespace microsoftTeams {
                 let decodedUrl = decodeURIComponent(authenticationResultParams.state);
                 if (isValidState(decodedUrl)) {
                     let link = document.createElement("a");
-                    link.href = updateUrlParameter(decodedUrl, "result", authenticationResultParams.result);
-                    currentWindow.location.assign(link.href);
+                    link.href = decodedUrl;
+                    if (authenticationResultParams.result != undefined) {
+                    link.href = updateUrlParameter(link.href, "result", authenticationResultParams.result);
+                    }
+                    currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
                     return;
                 }
             }
@@ -801,8 +804,12 @@ namespace microsoftTeams {
                 let decodedUrl = decodeURIComponent(authenticationResultParams.state);
                 if (isValidState(decodedUrl)) {
                     let link = document.createElement("a");
-                    link.href = updateUrlParameter(decodedUrl, "reason", authenticationResultParams.reason);
-                    currentWindow.location.assign(link.href);
+                    link.href = decodedUrl;
+                    if (authenticationResultParams.reason != undefined) {
+                    link.href = updateUrlParameter(link.href, "reason", authenticationResultParams.reason);
+                    }
+
+                    currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
                     return;
                 }
             }
@@ -860,7 +867,7 @@ namespace microsoftTeams {
         function updateUrlParameter(uri: string, key: string, value: string): string {
             let i = uri.indexOf("#");
             let hash = i === -1 ? "#" : uri.substr(i);
-            hash = hash + "&" + key + "=" + value;
+            hash = hash + "&" + key + (value !== "" ? "=" + value : "");
             uri = i === -1 ? uri : uri.substr(0, i);
             return uri + hash;
         }
