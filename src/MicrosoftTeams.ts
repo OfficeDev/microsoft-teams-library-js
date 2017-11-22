@@ -527,7 +527,7 @@ namespace microsoftTeams {
 
         export interface SaveEvent {
             /**
-             * Object containing properties passed as arguments to the settings.save event. 
+             * Object containing properties passed as arguments to the settings.save event.
              */
             result: SaveResult;
 
@@ -843,7 +843,7 @@ namespace microsoftTeams {
          */
         export function notifySuccess(result?: string, callbackUrl?: string): void {
             redirectIfWin32Outlook(callbackUrl, "result", result);
-            
+
             ensureInitialized(frameContexts.authentication);
 
             sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
@@ -861,7 +861,7 @@ namespace microsoftTeams {
          */
         export function notifyFailure(reason?: string, callbackUrl?: string): void {
             redirectIfWin32Outlook(callbackUrl, "reason", reason);
-            
+
             ensureInitialized(frameContexts.authentication);
 
             sendMessageRequest(parentWindow, "authentication.authenticate.failure", [reason]);
@@ -903,14 +903,18 @@ namespace microsoftTeams {
         function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
             if (callbackUrl) {
                 let link = document.createElement("a");
-                link.href = decodeURIComponent(callbackUrl);;
+                link.href = decodeURIComponent(callbackUrl);
                 if (link.host && link.host !== window.location.host && link.host === "outlook.office.com" && link.search.indexOf("client_type=Win32_Outlook") > -1) {
-                    if (key && key === "result" && value) {
-                        link.href = updateUrlParameter(link.href, "result", value);
+                    if (key && key === "result") {
+                        if (value) {
+                            link.href = updateUrlParameter(link.href, "result", value);
+                        }
                         currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
                     }
-                    if (key && key === "reason" && value) {
-                        link.href = updateUrlParameter(link.href, "reason", value);
+                    if (key && key === "reason") {
+                        if (value) {
+                            link.href = updateUrlParameter(link.href, "reason", value);
+                        }
                         currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
                     }
                 }
@@ -918,10 +922,10 @@ namespace microsoftTeams {
         }
 
         /**
-         * Appends either result or reason as a hash param to the 'state' url 
+         * Appends either result or reason as a fragment to the 'callbackUrl'
          * @param uri - the url to modify
-         * @param key - the QSP key
-         * @param value - the QSP value
+         * @param key - the fragment key
+         * @param value - the fragment value
          */
         function updateUrlParameter(uri: string, key: string, value: string): string {
             let i = uri.indexOf("#");
@@ -957,7 +961,7 @@ namespace microsoftTeams {
              */
             failureCallback?: (reason?: string) => void;
         }
-      
+
         /**
         * @private
         * Hide from docs.

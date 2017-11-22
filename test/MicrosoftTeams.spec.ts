@@ -795,7 +795,7 @@ describe("MicrosoftTeams", () => {
         expect(message.args[0]).toBe("someResult");
     });
 
-    it("should do window redirect if state is valid", () => {
+    it("should do window redirect if callbackUrl is for win32 Outlook", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
@@ -805,12 +805,23 @@ describe("MicrosoftTeams", () => {
         initializeWithContext("authentication");
 
         microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations");
-        let message = findMessageByFunc("authentication.authenticate.success");
-        expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
     });
 
-    it("should do window redirect if state is valid but does not have URL fragments", () => {
+    it("should do window redirect if callbackUrl is for win32 Outlook and no result param specified", () => {
+        let windowAssignSpyCalled = false;
+        spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
+            windowAssignSpyCalled = true;
+            expect(url).toEqual("https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess");
+        });
+
+        initializeWithContext("authentication");
+
+        microsoftTeams.authentication.notifySuccess(null, "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations");
+        expect(windowAssignSpyCalled).toBe(true);
+    });
+
+    it("should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
@@ -820,15 +831,13 @@ describe("MicrosoftTeams", () => {
         initializeWithContext("authentication");
 
         microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook");
-        let message = findMessageByFunc("authentication.authenticate.success");
-        expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
     });
 
-    it("should successfully notify auth success if state is invalid", () => {
+    it("should successfully notify auth success if callbackUrl is not for win32 Outlook", () => {
         initializeWithContext("authentication");
 
-        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration");
+        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrlstate%3Dtest%23%2Fconfiguration");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -837,7 +846,7 @@ describe("MicrosoftTeams", () => {
 
     it("should successfully notify auth failure", () => {
         initializeWithContext("authentication");
-        
+
         microsoftTeams.authentication.notifyFailure("someReason");
 
         let message = findMessageByFunc("authentication.authenticate.failure");
@@ -846,7 +855,7 @@ describe("MicrosoftTeams", () => {
         expect(message.args[0]).toBe("someReason");
     });
 
-    it("should do window redirect if state is valid and auth failure happens", () => {
+    it("should do window redirect if callbackUrl is for win32 Outlook and auth failure happens", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
@@ -856,19 +865,17 @@ describe("MicrosoftTeams", () => {
         initializeWithContext("authentication");
 
         microsoftTeams.authentication.notifyFailure("someReason", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations");
-        let message = findMessageByFunc("authentication.authenticate.failure");
-        expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
     });
 
-    it("should successfully notify auth failure if state is invalid", () => {
+    it("should successfully notify auth failure if callbackUrl is not for win32 Outlook", () => {
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
-            expect(url).toEqual("https://someinvalidurl.com?state=test#/configuration&reason=someReason&authFailure");
+            expect(url).toEqual("https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure");
         });
 
         initializeWithContext("authentication");
-        
-        microsoftTeams.authentication.notifyFailure("someReason", "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration");
+
+        microsoftTeams.authentication.notifyFailure("someReason", "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration");
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -881,7 +888,7 @@ describe("MicrosoftTeams", () => {
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-        
+
         microsoftTeams.authentication.notifySuccess("someResult");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).toBeNull();
@@ -901,7 +908,7 @@ describe("MicrosoftTeams", () => {
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-        
+
         microsoftTeams.authentication.notifyFailure("someReason");
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).toBeNull();
