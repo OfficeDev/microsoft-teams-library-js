@@ -630,6 +630,9 @@ namespace microsoftTeams {
         }
 
         /**
+         * @private
+        * Hide from docs.
+         * ------
          * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
          * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
          * @param authTokenRequest A set of values that configure the token request.
@@ -649,6 +652,9 @@ namespace microsoftTeams {
         }
 
         /**
+         * @private
+        * Hide from docs.
+         * ------
          * Requests the decoded Azure AD user identity on behalf of the app.
          */
         export function getUser(userRequest: UserRequest): void {
@@ -898,7 +904,7 @@ namespace microsoftTeams {
              */
             failureCallback?: (reason?: string) => void;
         }
-
+      
         export interface AuthenticationResultParameters {
             /**
              * Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback
@@ -915,7 +921,12 @@ namespace microsoftTeams {
              */
             state?: string;
         }
-
+      
+        /**
+        * @private
+        * Hide from docs.
+        * ------
+        */
         export interface AuthTokenRequest {
             /**
              * An array of resource URIs identifying the target resources for which the token should be requested.
@@ -933,6 +944,11 @@ namespace microsoftTeams {
             failureCallback?: (reason: string) => void;
         }
 
+        /**
+        * @private
+        * Hide from docs.
+        * ------
+        */
         export interface UserRequest {
             /**
              * A function that is called if the token request succeeds, with the resulting token.
@@ -945,6 +961,11 @@ namespace microsoftTeams {
             failureCallback?: (reason: string) => void;
         }
 
+        /**
+        * @private
+        * Hide from docs.
+        * ------
+        */
         export interface UserProfile {
             /**
              * The intended recipient of the token. The application that receives the token must verify that the audience
