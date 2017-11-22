@@ -838,24 +838,15 @@ namespace microsoftTeams {
          * Notifies the frame that initiated this authentication request that the request was successful.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param authenticationResultParams Specifies a result for the authentication. It contains the optional values of state(URL to redirect back after authentication in Outlook Desktop), reason(in case of failure), result(in case of success).
+         * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
          */
-        export function notifySuccess(authenticationResultParams: AuthenticationResultParameters): void {
-            if (authenticationResultParams.state) {
-                let decodedUrl = decodeURIComponent(authenticationResultParams.state);
-                if (isValidState(decodedUrl)) {
-                    let link = document.createElement("a");
-                    link.href = decodedUrl;
-                    if (authenticationResultParams.result != undefined) {
-                    link.href = updateUrlParameter(link.href, "result", authenticationResultParams.result);
-                    }
-                    currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
-                    return;
-                }
-            }
+        export function notifySuccess(result?: string, callbackUrl?: string): void {
+            redirectIfWin32Outlook(callbackUrl, "result", result);
+            
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.success", [authenticationResultParams.result]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
@@ -865,25 +856,15 @@ namespace microsoftTeams {
          * Notifies the frame that initiated this authentication request that the request failed.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param authenticationResultParams Specifies a result for the authentication. It contains the optional values of state(URL to redirect back after authentication in Outlook Desktop), reason(in case of failure), result(in case of success).
+         * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
          */
-        export function notifyFailure(authenticationResultParams: AuthenticationResultParameters): void {
-            if (authenticationResultParams.state) {
-                let decodedUrl = decodeURIComponent(authenticationResultParams.state);
-                if (isValidState(decodedUrl)) {
-                    let link = document.createElement("a");
-                    link.href = decodedUrl;
-                    if (authenticationResultParams.reason != undefined) {
-                    link.href = updateUrlParameter(link.href, "reason", authenticationResultParams.reason);
-                    }
-
-                    currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
-                    return;
-                }
-            }
+        export function notifyFailure(reason?: string, callbackUrl?: string): void {
+            redirectIfWin32Outlook(callbackUrl, "reason", reason);
+            
             ensureInitialized(frameContexts.authentication);
 
-            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [authenticationResultParams.reason]);
+            sendMessageRequest(parentWindow, "authentication.authenticate.failure", [reason]);
 
             // Wait for the message to be sent before closing the window
             waitForMessageQueue(parentWindow, () => currentWindow.close());
@@ -913,17 +894,27 @@ namespace microsoftTeams {
             }
         }
 
-        /*
-        * Validates that the state param is a valid url with host as outlook.office.com and client_type correctly set to Outlook Desktop
-        * @param state - the url to validate
-        */
-        function isValidState(state: string): boolean {
-            let link = document.createElement("a");
-            link.href = state;
-            if (link.host && link.host !== window.location.host && link.host === "outlook.office.com" && link.search.indexOf("client_type=Win32_Outlook") > -1) {
-                return true;
+        /**
+         * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
+         * @param callbackUrl - the connectors url to redirect to
+         * @param key - "result" in case of success and "reason" in case of failure
+         * @param value - the value of the passed result/reason parameter
+         */
+        function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
+            if (callbackUrl) {
+                let link = document.createElement("a");
+                link.href = decodeURIComponent(callbackUrl);;
+                if (link.host && link.host !== window.location.host && link.host === "outlook.office.com" && link.search.indexOf("client_type=Win32_Outlook") > -1) {
+                    if (key && key === "result" && value) {
+                        link.href = updateUrlParameter(link.href, "result", value);
+                        currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
+                    }
+                    if (key && key === "reason" && value) {
+                        link.href = updateUrlParameter(link.href, "reason", value);
+                        currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
+                    }
+                }
             }
-            return false;
         }
 
         /**
@@ -934,9 +925,9 @@ namespace microsoftTeams {
          */
         function updateUrlParameter(uri: string, key: string, value: string): string {
             let i = uri.indexOf("#");
-            let hash = i === -1 ? "#" : uri.substr(i);
-            hash = hash + "&" + key + (value !== "" ? "=" + value : "");
-            uri = i === -1 ? uri : uri.substr(0, i);
+            let hash = (i === -1) ? "#" : uri.substr(i);
+            hash = hash + "&" + key + ((value !== "") ? ("=" + value) : "");
+            uri = (i === -1) ? uri : uri.substr(0, i);
             return uri + hash;
         }
 
@@ -965,23 +956,6 @@ namespace microsoftTeams {
              * A function that is called if the authentication fails, with the reason for the failure returned from the authentication pop-up.
              */
             failureCallback?: (reason?: string) => void;
-        }
-      
-        export interface AuthenticationResultParameters {
-            /**
-             * Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback
-             */
-            reason?: string;
-
-            /**
-             * Specifies a result for the authentication.If specified, the frame that initiated the authentication pop- up receives this value in its callback. 
-             */
-            result?: string;
-
-            /**
-             * Specifies a return url for the authentication applicable in case of Outlook Desktop client. If specified, the frame that initiated the authentication redirects back to the specified URL after authentication success/failure
-             */
-            state?: string;
         }
       
         /**

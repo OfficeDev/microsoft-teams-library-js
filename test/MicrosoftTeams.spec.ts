@@ -787,11 +787,8 @@ describe("MicrosoftTeams", () => {
 
     it("should successfully notify auth success", () => {
         initializeWithContext("authentication");
-        let authenticationResultParams = {
-            result: "someResult",
-        };
-        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
 
+        microsoftTeams.authentication.notifySuccess("someResult");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -802,17 +799,12 @@ describe("MicrosoftTeams", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&result=someResult&authSuccess");
+            expect(url).toEqual("https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess");
         });
 
         initializeWithContext("authentication");
-        let authenticationResultParams =
-        {
-            result: "someResult",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%23%2Fconfigurations",
-        };
 
-        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
+        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
@@ -822,35 +814,21 @@ describe("MicrosoftTeams", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#&result=someResult&authSuccess");
+            expect(url).toEqual("https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess");
         });
 
         initializeWithContext("authentication");
-        let authenticationResultParams =
-        {
-            result: "someResult",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook",
-        };
 
-        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
+        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
     });
 
     it("should successfully notify auth success if state is invalid", () => {
-        spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
-            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&result=someResult");
-        });
-
         initializeWithContext("authentication");
-        let authenticationResultParams =
-        {
-            result: "someResult",
-            state: "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration",
-        };
 
-        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
+        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -859,10 +837,8 @@ describe("MicrosoftTeams", () => {
 
     it("should successfully notify auth failure", () => {
         initializeWithContext("authentication");
-        let authenticationResultParams = {
-            reason: "someReason",
-        };
-        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
+        
+        microsoftTeams.authentication.notifyFailure("someReason");
 
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
@@ -874,17 +850,12 @@ describe("MicrosoftTeams", () => {
         let windowAssignSpyCalled = false;
         spyOn(microsoftTeams._window.location, "assign").and.callFake((url: string): void => {
             windowAssignSpyCalled = true;
-            expect(url).toEqual("https://outlook.office.com/connectors?MailboxAddress=test%40service.microsoft.com&client_type=Win32_Outlook#/configurations&reason=someReason&authFailure");
+            expect(url).toEqual("https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=someReason&authFailure");
         });
 
         initializeWithContext("authentication");
-        let authenticationResultParams =
-        {
-            reason: "someReason",
-            state: "https%3A%2F%2Foutlook.office.com%2Fconnectors%3FMailboxAddress%3Dtest%2540service.microsoft.com%26client_type%3DWin32_Outlook%23%2Fconfigurations",
-        };
 
-        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
+        microsoftTeams.authentication.notifyFailure("someReason", "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations");
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).toBeNull();
         expect(windowAssignSpyCalled).toBe(true);
@@ -896,13 +867,8 @@ describe("MicrosoftTeams", () => {
         });
 
         initializeWithContext("authentication");
-        let authenticationResultParams =
-        {
-            reason: "someReason",
-            state: "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration",
-        };
-
-        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
+        
+        microsoftTeams.authentication.notifyFailure("someReason", "https%3A%2F%2Fsomeinvalidurl.com%3Fstate%3Dtest%23%2Fconfiguration");
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -915,11 +881,8 @@ describe("MicrosoftTeams", () => {
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-        let authenticationResultParams = {
-            result: "someResult",
-        };
-        microsoftTeams.authentication.notifySuccess(authenticationResultParams);
-
+        
+        microsoftTeams.authentication.notifySuccess("someResult");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).toBeNull();
         expect(closeWindowSpy).not.toHaveBeenCalled();
@@ -938,10 +901,8 @@ describe("MicrosoftTeams", () => {
         microsoftTeams.initialize();
         let initMessage = findMessageByFunc("initialize");
         expect(initMessage).not.toBeNull();
-        let authenticationResultParams = {
-            reason: "someReason",
-        };
-        microsoftTeams.authentication.notifyFailure(authenticationResultParams);
+        
+        microsoftTeams.authentication.notifyFailure("someReason");
         let message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).toBeNull();
         expect(closeWindowSpy).not.toHaveBeenCalled();
