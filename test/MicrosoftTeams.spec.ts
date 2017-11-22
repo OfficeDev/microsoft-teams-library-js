@@ -324,17 +324,36 @@ describe("MicrosoftTeams", () => {
         expect(navigateBackMessage).not.toBeNull();
     });
 
-    it("should successfully register a back button handler", () => {
+    it("should successfully register a back button handler and not call navigateBack if it returns true", () => {
         initializeWithContext("content");
 
-        let backButtonPressed = false;
+        let handlerInvoked = false;
         microsoftTeams.registerBackButtonHandler(() => {
-            backButtonPressed = true;
+            handlerInvoked = true;
+            return true;
         });
 
         sendMessage("backButtonPress");
 
-        expect(backButtonPressed).toBe(true);
+        let navigateBackMessage = findMessageByFunc("navigateBack");
+        expect(navigateBackMessage).toBeNull();
+        expect(handlerInvoked).toBe(true);
+    });
+
+    it("should successfully register a back button handler and call navigateBack if it returns false", () => {
+        initializeWithContext("content");
+
+        let handlerInvoked = false;
+        microsoftTeams.registerBackButtonHandler(() => {
+            handlerInvoked = true;
+            return false;
+        });
+
+        sendMessage("backButtonPress");
+
+        let navigateBackMessage = findMessageByFunc("navigateBack");
+        expect(navigateBackMessage).not.toBeNull();
+        expect(handlerInvoked).toBe(true);
     });
 
     it("should successfully navigate cross-origin", () => {

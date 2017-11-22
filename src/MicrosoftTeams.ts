@@ -169,7 +169,7 @@ namespace microsoftTeams {
     let fullScreenChangeHandler: (isFullScreen: boolean) => void;
     handlers["fullScreenChange"] = handleFullScreenChange;
 
-    let backButtonPressHandler: () => void;
+    let backButtonPressHandler: () => boolean;
     handlers["backButtonPress"] = handleBackButtonPress;
 
     /**
@@ -298,7 +298,7 @@ namespace microsoftTeams {
      * method to ask the Teams client to handle it instead.
      * @param handler The handler to invoke when the user presses their Team client's back button.
      */
-    export function registerBackButtonHandler(handler: () => void): void {
+    export function registerBackButtonHandler(handler: () => boolean): void {
         ensureInitialized();
 
         backButtonPressHandler = handler;
