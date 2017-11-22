@@ -1,9 +1,19 @@
 {
+  "extends": [
+    "tslint-eslint-rules"
+  ],
   "rules": {
     "align": [
       true,
       "parameters",
       "statements"
+    ],
+    "brace-style": [
+      true,
+      "stroustrup",
+      {
+        "allowSingleLine": true
+      }
     ],
     "class-name": true,
     "comment-format": [
@@ -18,9 +28,9 @@
     "member-access": true,
     "member-ordering": [
       true,
-      "public-before-private",
-      "static-before-instance",
-      "variables-before-functions"
+      {
+        "order": "statics-first"
+      }
     ],
     "no-angle-bracket-type-assertion": true,
     "no-any": true,
@@ -37,22 +47,19 @@
       "trace"
     ],
     "no-construct": true,
-    "no-constructor-vars": true,
     "no-debugger": true,
-    "no-duplicate-key": true,
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
-    "no-inferrable-types": true,
     "no-internal-module": true,
     "no-invalid-this": false,
+    "no-parameter-properties": true,
     "no-reference": false,
     "no-require-imports": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
-    "no-unreachable": true,
     "no-unused-expression": true,
     "no-unused-variable": true,
     "no-use-before-declare": true,
@@ -106,11 +113,6 @@
       }
     ],
     "use-isnan": true,
-    "use-strict": [
-      true,
-      "check-module",
-      "check-function"
-    ],
     "variable-name": [
       true,
       "check-format",
