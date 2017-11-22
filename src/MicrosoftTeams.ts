@@ -341,6 +341,25 @@ namespace microsoftTeams {
     }
 
     /**
+     * Opens a client-friendly preview of the specified file.
+     * @param file The file to preview.
+     */
+    export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
+        ensureInitialized(frameContexts.content);
+
+        sendMessageRequest(parentWindow, "openFilePreview", [
+            filePreviewParameters.entityId,
+            filePreviewParameters.title,
+            filePreviewParameters.description,
+            filePreviewParameters.type,
+            filePreviewParameters.objectUrl,
+            filePreviewParameters.downloadUrl,
+            filePreviewParameters.webPreviewUrl,
+            filePreviewParameters.webEditUrl,
+        ]);
+    }
+
+    /**
      * Navigates the Microsoft Teams app to the specified tab instance.
      * @param tabInstance The tab instance to navigate to.
      */
@@ -1047,6 +1066,48 @@ namespace microsoftTeams {
          * This URL should lead directly to the sub-entity.
          */
         subEntityWebUrl?: string;
+    }
+
+    export interface FilePreviewParameters {
+        /**
+         * The developer-defined unique ID for the file.
+         */
+        entityId: string;
+
+        /**
+         * The display name of the file.
+         */
+        title: string;
+
+        /**
+         * An optional description of the file.
+         */
+        description?: string;
+
+        /**
+         * The file extension; e.g. pptx, docx, etc.
+         */
+        type: string;
+
+        /**
+         * A url to the source of the file, used to open the content in the user's default browser
+         */
+        objectUrl: string;
+
+        /**
+         * Optional; an alternate self-authenticating url used to preview the file in Mobile clients and offer it for download by the user
+         */
+        downloadUrl?: string;
+
+        /**
+         * Optional; an alternate url optimized for previewing the file in Teams web and desktop clients
+         */
+        webPreviewUrl?: string;
+
+        /**
+         * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
+         */
+        webEditUrl?: string;
     }
 
     function ensureInitialized(...expectedFrameContexts: string[]): void {
