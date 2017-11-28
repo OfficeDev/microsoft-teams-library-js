@@ -486,7 +486,7 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(result: SaveResult): void {
+        function handleSave(result?: SaveParameters): void {
             let saveEvent = new SaveEventImpl(result);
             if (saveHandler) {
                 saveHandler(saveEvent);
@@ -529,7 +529,7 @@ namespace microsoftTeams {
             /**
              * Object containing properties passed as arguments to the settings.save event.
              */
-            result: SaveResult;
+            result: SaveParameters;
 
             /**
              * Indicates that the underlying resource has been created and the settings can be saved.
@@ -556,7 +556,7 @@ namespace microsoftTeams {
             notifyFailure(reason?: string): void;
         }
 
-        export interface SaveResult {
+        export interface SaveParameters {
             /**
              * Connector's webhook Url returned as arguments to settings.save event as part of user clicking on Save
              */
@@ -569,10 +569,10 @@ namespace microsoftTeams {
          */
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
-            public result: SaveResult = {};
+            public result: SaveParameters;
 
-            constructor(result: SaveResult) {
-                this.result = result;
+            constructor(result?: SaveParameters) {
+                this.result = result ? result : {};
             }
 
             public notifySuccess(): void {
@@ -651,10 +651,10 @@ namespace microsoftTeams {
         handlers["authentication.authenticate.failure"] = handleFailure;
 
         /**
-         * Registers the authentication parameters
+         * Registers the authentication handlers
          * @param authenticateParameters A set of values that configure the authentication pop-up.
 	     */
-        export function registerAuthenticationParameters(authenticateParameters: AuthenticateParameters): void {
+        export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
             authParams = authenticateParameters;
         }
 

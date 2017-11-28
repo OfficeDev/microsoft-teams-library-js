@@ -660,7 +660,7 @@ describe("MicrosoftTeams", () => {
                 width: 100,
                 height: 200,
             };
-        microsoftTeams.authentication.registerAuthenticationParameters(authenticationParams);
+        microsoftTeams.authentication.registerAuthenticationHandlers(authenticationParams);
         microsoftTeams.authentication.authenticate();
         expect(windowOpenCalled).toBe(true);
     });
@@ -837,7 +837,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully notify auth success if callbackUrl is not for win32 Outlook", () => {
         initializeWithContext("authentication");
 
-        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrlstate%3Dtest%23%2Fconfiguration");
+        microsoftTeams.authentication.notifySuccess("someResult", "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration");
         let message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
