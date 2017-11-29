@@ -486,8 +486,8 @@ namespace microsoftTeams {
             removeHandler = handler;
         }
 
-        function handleSave(): void {
-            let saveEvent = new SaveEventImpl();
+        function handleSave(result?: SaveParameters): void {
+            let saveEvent = new SaveEventImpl(result);
             if (saveHandler) {
                 saveHandler(saveEvent);
             }
@@ -527,6 +527,11 @@ namespace microsoftTeams {
 
         export interface SaveEvent {
             /**
+             * Object containing properties passed as arguments to the settings.save event.
+             */
+            result: SaveParameters;
+
+            /**
              * Indicates that the underlying resource has been created and the settings can be saved.
              */
             notifySuccess(): void;
@@ -551,12 +556,24 @@ namespace microsoftTeams {
             notifyFailure(reason?: string): void;
         }
 
+        export interface SaveParameters {
+            /**
+             * Connector's webhook Url returned as arguments to settings.save event as part of user clicking on Save
+             */
+            webhookUrl?: string;
+        }
+
         /**
          * @private
          * Hide from docs, since this class is not directly used.
          */
         class SaveEventImpl implements SaveEvent {
             public notified: boolean = false;
+            public result: SaveParameters;
+
+            constructor(result?: SaveParameters) {
+                this.result = result ? result : {};
+            }
 
             public notifySuccess(): void {
                 this.ensureNotNotified();
@@ -634,35 +651,43 @@ namespace microsoftTeams {
         handlers["authentication.authenticate.failure"] = handleFailure;
 
         /**
-         * Initiates an authentication request, which opens a new window with the specified settings.
+         * Registers the authentication handlers
          * @param authenticateParameters A set of values that configure the authentication pop-up.
+	     */
+        export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
+            authParams = authenticateParameters;
+        }
+
+        /**
+         * Initiates an authentication request, which opens a new window with the specified settings.
          */
-        export function authenticate(authenticateParameters: AuthenticateParameters): void {
+        export function authenticate(authenticateParameters?: AuthenticateParameters): void {
+            let authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
             ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
             if (hostClientType === hostClientTypes.desktop) {
                 // Convert any relative URLs into absolute URLs before sending them over to the parent window.
                 let link = document.createElement("a");
-                link.href = authenticateParameters.url;
+                link.href = authenticateParams.url;
 
                 // Ask the parent window to open an authentication window with the parameters provided by the caller.
                 let messageId = sendMessageRequest(parentWindow, "authentication.authenticate", [
                     link.href,
-                    authenticateParameters.width,
-                    authenticateParameters.height,
+                    authenticateParams.width,
+                    authenticateParams.height,
                 ]);
                 callbacks[messageId] = (success: boolean, response: string) => {
                     if (success) {
-                        authenticateParameters.successCallback(response);
+                        authenticateParams.successCallback(response);
                     }
                     else {
-                        authenticateParameters.failureCallback(response);
+                        authenticateParams.failureCallback(response);
                     }
                 };
             }
             else {
                 // Open an authentication window with the parameters provided by the caller.
-                openAuthenticationWindow(authenticateParameters);
+                openAuthenticationWindow(authenticateParams);
             }
         }
 
@@ -814,8 +839,11 @@ namespace microsoftTeams {
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
          * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
          */
-        export function notifySuccess(result?: string): void {
+        export function notifySuccess(result?: string, callbackUrl?: string): void {
+            redirectIfWin32Outlook(callbackUrl, "result", result);
+
             ensureInitialized(frameContexts.authentication);
 
             sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
@@ -828,9 +856,12 @@ namespace microsoftTeams {
          * Notifies the frame that initiated this authentication request that the request failed.
          * This function is usable only on the authentication window.
          * This call causes the authentication window to be closed.
-         * @param reason Specifies a reason for the authentication failure. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+         * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
          */
-        export function notifyFailure(reason?: string): void {
+        export function notifyFailure(reason?: string, callbackUrl?: string): void {
+            redirectIfWin32Outlook(callbackUrl, "reason", reason);
+
             ensureInitialized(frameContexts.authentication);
 
             sendMessageRequest(parentWindow, "authentication.authenticate.failure", [reason]);
@@ -861,6 +892,47 @@ namespace microsoftTeams {
                 authParams = null;
                 closeAuthenticationWindow();
             }
+        }
+
+        /**
+         * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
+         * @param callbackUrl - the connectors url to redirect to
+         * @param key - "result" in case of success and "reason" in case of failure
+         * @param value - the value of the passed result/reason parameter
+         */
+        function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
+            if (callbackUrl) {
+                let link = document.createElement("a");
+                link.href = decodeURIComponent(callbackUrl);
+                if (link.host && link.host !== window.location.host && link.host === "outlook.office.com" && link.search.indexOf("client_type=Win32_Outlook") > -1) {
+                    if (key && key === "result") {
+                        if (value) {
+                            link.href = updateUrlParameter(link.href, "result", value);
+                        }
+                        currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
+                    }
+                    if (key && key === "reason") {
+                        if (value) {
+                            link.href = updateUrlParameter(link.href, "reason", value);
+                        }
+                        currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
+                    }
+                }
+            }
+        }
+
+        /**
+         * Appends either result or reason as a fragment to the 'callbackUrl'
+         * @param uri - the url to modify
+         * @param key - the fragment key
+         * @param value - the fragment value
+         */
+        function updateUrlParameter(uri: string, key: string, value: string): string {
+            let i = uri.indexOf("#");
+            let hash = (i === -1) ? "#" : uri.substr(i);
+            hash = hash + "&" + key + ((value !== "") ? ("=" + value) : "");
+            uri = (i === -1) ? uri : uri.substr(0, i);
+            return uri + hash;
         }
 
         export interface AuthenticateParameters {
