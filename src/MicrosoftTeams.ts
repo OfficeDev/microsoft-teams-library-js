@@ -1162,6 +1162,11 @@ namespace microsoftTeams {
          * The type of the team.
          */
         teamType?: TeamType;
+
+        /**
+         * The root ShatePoint folder associated with the team.
+         */
+        teamSiteUrl?: string;
     }
 
     export interface DeepLinkParameters {
