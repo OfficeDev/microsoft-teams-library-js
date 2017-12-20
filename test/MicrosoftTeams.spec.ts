@@ -270,6 +270,7 @@ describe("MicrosoftTeams", () => {
             channelId: "someChannelId",
             entityId: "someEntityId",
             teamType: microsoftTeams.TeamType.Edu,
+            teamSiteUrl: "someSiteUrl",
         };
 
         // Get many responses to the same message
@@ -299,6 +300,7 @@ describe("MicrosoftTeams", () => {
             entityId: "someEntityId",
             isFullScreen: true,
             teamType: microsoftTeams.TeamType.Staff,
+            teamSiteUrl: "someSiteUrl",
         };
 
         respondToMessage(getContextMessage, expectedContext);
