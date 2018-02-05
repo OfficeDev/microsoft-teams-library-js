@@ -900,7 +900,8 @@ describe("MicrosoftTeams", () => {
         message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
 
-        jasmine.clock().tick(101);
+        // Wait 100ms for the message queue and 200ms for the close delay
+        jasmine.clock().tick(301);
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
@@ -920,7 +921,8 @@ describe("MicrosoftTeams", () => {
         message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
 
-        jasmine.clock().tick(101);
+        // Wait 100ms for the message queue and 200ms for the close delay
+        jasmine.clock().tick(301);
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
