@@ -32,7 +32,13 @@ describe("MicrosoftTeams", () => {
     // A list of messages the library sends to the app.
     let messages: MessageRequest[];
 
+    // A list of messages the library sends to the auth popup.
+    let childMessages: MessageRequest[];
+
     let childWindow = {
+        postMessage: function(message: MessageRequest, targetOrigin: string): void {
+            childMessages.push(message);
+        },
         close: function (): void {
             return;
         },
@@ -42,6 +48,8 @@ describe("MicrosoftTeams", () => {
     beforeEach(() => {
         processMessage = null;
         messages = [];
+        childMessages = [];
+        childWindow.closed = false;
         let mockWindow = {
             outerWidth: 1024,
             outerHeight: 768,
@@ -95,10 +103,6 @@ describe("MicrosoftTeams", () => {
         if (microsoftTeams._uninitialize) {
             microsoftTeams._uninitialize();
         }
-
-        // Clear local storage values
-        localStorage.removeItem("authentication.success");
-        localStorage.removeItem("authentication.failure");
 
         jasmine.clock().uninstall();
     });
