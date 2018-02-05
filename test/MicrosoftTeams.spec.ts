@@ -667,6 +667,38 @@ describe("MicrosoftTeams", () => {
         expect(windowOpenCalled).toBe(true);
     });
 
+    it("should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called", () => {
+        initializeWithContext("content");
+
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window => {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
+            windowOpenCalled = true;
+            return childWindow as Window;
+        });
+
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+            url: "https://someurl/",
+            width: 100,
+            height: 200,
+            successCallback: (result: string) => successResult = result,
+            failureCallback: (reason: string) => failureReason = reason,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+        expect(windowOpenCalled).toBe(true);
+
+        childWindow.closed = true;
+        jasmine.clock().tick(101);
+
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toEqual("CancelledByUser");
+    });
+
     it("should successfully handle auth success", () => {
         initializeWithContext("content");
 
@@ -721,38 +753,6 @@ describe("MicrosoftTeams", () => {
 
         expect(successResult).toBeUndefined();
         expect(failureReason).toEqual("someReason");
-    });
-
-    it("should successfully handle auth cancellation", () => {
-        initializeWithContext("content");
-
-        let windowOpenCalled = false;
-        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window => {
-            expect(url).toEqual("https://someurl/");
-            expect(name).toEqual("_blank");
-            expect(specs.indexOf("width=100")).not.toBe(-1);
-            expect(specs.indexOf("height=200")).not.toBe(-1);
-            windowOpenCalled = true;
-            return childWindow as Window;
-        });
-
-        let successResult: string;
-        let failureReason: string;
-        let authenticationParams = {
-            url: "https://someurl/",
-            width: 100,
-            height: 200,
-            successCallback: (result: string) => successResult = result,
-            failureCallback: (reason: string) => failureReason = reason,
-        };
-        microsoftTeams.authentication.authenticate(authenticationParams);
-        expect(windowOpenCalled).toBe(true);
-
-        childWindow.closed = true;
-        jasmine.clock().tick(101);
-
-        expect(successResult).toBeUndefined();
-        expect(failureReason).toEqual("CancelledByUser");
     });
 
     it("should successfully pop up the auth window in the desktop client", () => {
