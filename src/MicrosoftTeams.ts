@@ -176,9 +176,8 @@ namespace microsoftTeams {
     /**
      * Initializes the library. This must be called before any other SDK calls
      * but after the frame is loaded successfully.
-     * @param {string} [appCorrelationId] Optional unique ID for use in correlating telemetry data.
      */
-    export function initialize(appCorrelationId?: string): void {
+    export function initialize(): void {
         if (initializeCalled) {
             // Independent components might not know whether the SDK is initialized so might call it to be safe.
             // Just no-op if that happens to make it easier to use.
@@ -204,12 +203,17 @@ namespace microsoftTeams {
             parentOrigin = "*";
 
             // Generate a unique ID and share it with our parent so that it be logged and use for correlating telemetry data
-            correlationId = appCorrelationId || getGuid();
+            correlationId = getGuid();
 
             let messageId = sendMessageRequest(parentWindow, "initialize", [version, correlationId]);
-            callbacks[messageId] = (context: string, clientType: string) => {
+            callbacks[messageId] = (context: string, clientType: string, parentCorrelationId?: string) => {
                 frameContext = context;
                 hostClientType = clientType;
+
+                // Allow our parent to override our correlationId
+                if (parentCorrelationId) {
+                    correlationId = parentCorrelationId;
+                }
             };
         }
         finally {
@@ -266,8 +270,10 @@ namespace microsoftTeams {
         let messageId = sendMessageRequest(parentWindow, "getContext");
         callbacks[messageId] = (context: Context): void => {
 
-            // Inject the correlationId into the context before returning it to the caller
-            context.correlationId = correlationId;
+            // If our parent hasn't already added a correlationId to the context inject our locally generated copy
+            if (!context.correlationId) {
+                context.correlationId = correlationId;
+            }
 
             callback(context);
         };
@@ -842,7 +848,7 @@ namespace microsoftTeams {
 
             // Set up an initialize-message handler that gives the authentication window its frame context
             handlers["initialize"] = () => {
-                return [frameContexts.authentication, hostClientType];
+                return [frameContexts.authentication, hostClientType, correlationId];
             };
 
             // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
