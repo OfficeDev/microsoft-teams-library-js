@@ -162,6 +162,7 @@ namespace microsoftTeams {
     let callbacks: { [id: number]: Function } = {};
     let frameContext: string;
     let hostClientType: string;
+    let correlationId: string;
 
     let themeChangeHandler: (theme: string) => void;
     handlers["themeChange"] = handleThemeChange;
@@ -175,8 +176,9 @@ namespace microsoftTeams {
     /**
      * Initializes the library. This must be called before any other SDK calls
      * but after the frame is loaded successfully.
+     * @param {string} [appCorrelationId] Optional unique ID for use in correlating telemetry data.
      */
-    export function initialize(): void {
+    export function initialize(appCorrelationId?: string): void {
         if (initializeCalled) {
             // Independent components might not know whether the SDK is initialized so might call it to be safe.
             // Just no-op if that happens to make it easier to use.
@@ -200,7 +202,11 @@ namespace microsoftTeams {
             // Send the initialized message to any origin, because at this point we most likely don't know the origin
             // of the parent window, and this message contains no data that could pose a security risk.
             parentOrigin = "*";
-            let messageId = sendMessageRequest(parentWindow, "initialize", [version]);
+
+            // Generate a unique ID and share it with our parent so that it be logged and use for correlating telemetry data
+            correlationId = appCorrelationId || getGuid();
+
+            let messageId = sendMessageRequest(parentWindow, "initialize", [version, correlationId]);
             callbacks[messageId] = (context: string, clientType: string) => {
                 frameContext = context;
                 hostClientType = clientType;
@@ -242,6 +248,14 @@ namespace microsoftTeams {
         };
     }
 
+    function getGuid(): string {
+        let rd = (): string => {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16).substring(1, 5);
+        };
+        return [rd(), rd(), "-", rd(), "-", rd(), "-", rd(), "-", rd(), rd(), rd()].join("");
+    }
+
     /**
      * Retrieves the current context the frame is running in.
      * @param callback The callback to invoke when the {@link Context} object is retrieved.
@@ -250,7 +264,13 @@ namespace microsoftTeams {
         ensureInitialized();
 
         let messageId = sendMessageRequest(parentWindow, "getContext");
-        callbacks[messageId] = callback;
+        callbacks[messageId] = (context: Context): void => {
+
+            // Inject the correlationId into the context before returning it to the caller
+            context.correlationId = correlationId;
+
+            callback(context);
+        };
     }
 
     /**
@@ -1167,6 +1187,11 @@ namespace microsoftTeams {
          * The root ShatePoint folder associated with the team.
          */
         teamSiteUrl?: string;
+
+        /**
+         * Unique ID for use in correlating telemetry data.
+         */
+        correlationId?: string;
     }
 
     export interface DeepLinkParameters {
