@@ -162,7 +162,6 @@ namespace microsoftTeams {
     let callbacks: { [id: number]: Function } = {};
     let frameContext: string;
     let hostClientType: string;
-    let correlationId: string;
 
     let themeChangeHandler: (theme: string) => void;
     handlers["themeChange"] = handleThemeChange;
@@ -202,18 +201,10 @@ namespace microsoftTeams {
             // of the parent window, and this message contains no data that could pose a security risk.
             parentOrigin = "*";
 
-            // Generate a unique ID and share it with our parent so that it be logged and use for correlating telemetry data
-            correlationId = getGuid();
-
-            let messageId = sendMessageRequest(parentWindow, "initialize", [version, correlationId]);
-            callbacks[messageId] = (context: string, clientType: string, parentCorrelationId?: string) => {
+            let messageId = sendMessageRequest(parentWindow, "initialize", [version]);
+            callbacks[messageId] = (context: string, clientType: string) => {
                 frameContext = context;
                 hostClientType = clientType;
-
-                // Allow our parent to override our correlationId
-                if (parentCorrelationId) {
-                    correlationId = parentCorrelationId;
-                }
             };
         }
         finally {
@@ -269,12 +260,6 @@ namespace microsoftTeams {
 
         let messageId = sendMessageRequest(parentWindow, "getContext");
         callbacks[messageId] = (context: Context): void => {
-
-            // If our parent hasn't already added a correlationId to the context inject our locally generated copy
-            if (!context.correlationId) {
-                context.correlationId = correlationId;
-            }
-
             callback(context);
         };
     }
@@ -848,7 +833,7 @@ namespace microsoftTeams {
 
             // Set up an initialize-message handler that gives the authentication window its frame context
             handlers["initialize"] = () => {
-                return [frameContexts.authentication, hostClientType, correlationId];
+                return [frameContexts.authentication, hostClientType];
             };
 
             // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
@@ -1195,9 +1180,9 @@ namespace microsoftTeams {
         teamSiteUrl?: string;
 
         /**
-         * Unique ID for use in correlating telemetry data.
+         * Unique ID for the current Teams session for use in correlating telemetry data.
          */
-        correlationId?: string;
+        sessionId?: string;
     }
 
     export interface DeepLinkParameters {
