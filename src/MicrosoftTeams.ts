@@ -250,9 +250,7 @@ namespace microsoftTeams {
         ensureInitialized();
 
         let messageId = sendMessageRequest(parentWindow, "getContext");
-        callbacks[messageId] = (context: Context): void => {
-            callback(context);
-        };
+        callbacks[messageId] = callback;
     }
 
     /**
