@@ -200,7 +200,6 @@ namespace microsoftTeams {
             // Send the initialized message to any origin, because at this point we most likely don't know the origin
             // of the parent window, and this message contains no data that could pose a security risk.
             parentOrigin = "*";
-
             let messageId = sendMessageRequest(parentWindow, "initialize", [version]);
             callbacks[messageId] = (context: string, clientType: string) => {
                 frameContext = context;
@@ -241,14 +240,6 @@ namespace microsoftTeams {
 
             currentWindow.removeEventListener("message", messageListener, false);
         };
-    }
-
-    function getGuid(): string {
-        let rd = (): string => {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16).substring(1, 5);
-        };
-        return [rd(), rd(), "-", rd(), "-", rd(), "-", rd(), "-", rd(), rd(), rd()].join("");
     }
 
     /**
