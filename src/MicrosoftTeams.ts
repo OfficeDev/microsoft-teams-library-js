@@ -1167,6 +1167,11 @@ namespace microsoftTeams {
          * The root ShatePoint folder associated with the team.
          */
         teamSiteUrl?: string;
+
+        /**
+         * Unique ID for the current Teams session for use in correlating telemetry data.
+         */
+        sessionId?: string;
     }
 
     export interface DeepLinkParameters {
