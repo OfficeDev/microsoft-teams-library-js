@@ -849,7 +849,7 @@ namespace microsoftTeams {
             sendMessageRequest(parentWindow, "authentication.authenticate.success", [result]);
 
             // Wait for the message to be sent before closing the window
-            waitForMessageQueue(parentWindow, () => currentWindow.close());
+            waitForMessageQueue(parentWindow, () => setTimeout(() => currentWindow.close(), 200));
         }
 
         /**
@@ -867,7 +867,7 @@ namespace microsoftTeams {
             sendMessageRequest(parentWindow, "authentication.authenticate.failure", [reason]);
 
             // Wait for the message to be sent before closing the window
-            waitForMessageQueue(parentWindow, () => currentWindow.close());
+            waitForMessageQueue(parentWindow, () => setTimeout(() => currentWindow.close(), 200));
         }
 
         function handleSuccess(result?: string): void {

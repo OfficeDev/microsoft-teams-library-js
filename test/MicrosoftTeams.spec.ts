@@ -32,15 +32,24 @@ describe("MicrosoftTeams", () => {
     // A list of messages the library sends to the app.
     let messages: MessageRequest[];
 
+    // A list of messages the library sends to the auth popup.
+    let childMessages: MessageRequest[];
+
     let childWindow = {
+        postMessage: function(message: MessageRequest, targetOrigin: string): void {
+            childMessages.push(message);
+        },
         close: function (): void {
             return;
         },
+        closed: false,
     };
 
     beforeEach(() => {
         processMessage = null;
         messages = [];
+        childMessages = [];
+        childWindow.closed = false;
         let mockWindow = {
             outerWidth: 1024,
             outerHeight: 768,
@@ -94,10 +103,6 @@ describe("MicrosoftTeams", () => {
         if (microsoftTeams._uninitialize) {
             microsoftTeams._uninitialize();
         }
-
-        // Clear local storage values
-        localStorage.removeItem("authentication.success");
-        localStorage.removeItem("authentication.failure");
 
         jasmine.clock().uninstall();
     });
@@ -659,15 +664,46 @@ describe("MicrosoftTeams", () => {
             return childWindow as Window;
         });
 
-        let authenticationParams =
-            {
-                url: "https://someurl/",
-                width: 100,
-                height: 200,
-            };
+        let authenticationParams = {
+            url: "https://someurl/",
+            width: 100,
+            height: 200,
+        };
         microsoftTeams.authentication.registerAuthenticationHandlers(authenticationParams);
         microsoftTeams.authentication.authenticate();
         expect(windowOpenCalled).toBe(true);
+    });
+
+    it("should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called", () => {
+        initializeWithContext("content");
+
+        let windowOpenCalled = false;
+        spyOn(microsoftTeams._window, "open").and.callFake((url: string, name: string, specs: string): Window => {
+            expect(url).toEqual("https://someurl/");
+            expect(name).toEqual("_blank");
+            expect(specs.indexOf("width=100")).not.toBe(-1);
+            expect(specs.indexOf("height=200")).not.toBe(-1);
+            windowOpenCalled = true;
+            return childWindow as Window;
+        });
+
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+            url: "https://someurl/",
+            width: 100,
+            height: 200,
+            successCallback: (result: string) => successResult = result,
+            failureCallback: (reason: string) => failureReason = reason,
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
+        expect(windowOpenCalled).toBe(true);
+
+        childWindow.closed = true;
+        jasmine.clock().tick(101);
+
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toEqual("CancelledByUser");
     });
 
     it("should successfully handle auth success", () => {
@@ -903,7 +939,8 @@ describe("MicrosoftTeams", () => {
         message = findMessageByFunc("authentication.authenticate.success");
         expect(message).not.toBeNull();
 
-        jasmine.clock().tick(101);
+        // Wait 100ms for the message queue and 200ms for the close delay
+        jasmine.clock().tick(301);
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
@@ -923,7 +960,8 @@ describe("MicrosoftTeams", () => {
         message = findMessageByFunc("authentication.authenticate.failure");
         expect(message).not.toBeNull();
 
-        jasmine.clock().tick(101);
+        // Wait 100ms for the message queue and 200ms for the close delay
+        jasmine.clock().tick(301);
         expect(closeWindowSpy).toHaveBeenCalled();
     });
 
