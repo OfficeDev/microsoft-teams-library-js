@@ -1,8 +1,12 @@
 {
   "name": "@microsoft/microsoft-teams-library-js",
-  "version": "0.0.0",
-  "description": "",
-  "repository": {},
+  "author": "Microsoft Teams",
+  "version": "1.2.0",
+  "description": "Microsoft Client SDK for building app for Microsoft teams",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
+  },
   "license": "MIT",
   "devDependencies": {
     "adal-node": "^0.1.22",
