@@ -133,6 +133,12 @@ namespace microsoftTeams {
     Staff = 4
   }
 
+    export const enum UserTeamRole {
+        Admin = 0,
+        User = 1,
+        Guest = 2,
+    }
+
   export interface TabInstanceParameters {
     /**
      * Flag allowing to select favorite channels only
@@ -1269,10 +1275,15 @@ namespace microsoftTeams {
      * Unique ID for the current Teams session for use in correlating telemetry data.
      */
     sessionId?: string;
+
+        /**
+         * The user's role in the team.
+         */
+        userTeamRole?: UserTeamRole;
   }
 
   export interface DeepLinkParameters {
-    /**
+    /**teamTteamT
      * The developer-defined unique ID for the sub-entity to which this deep link points in the current entity.
      * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
      */
