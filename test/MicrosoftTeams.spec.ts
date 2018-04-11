@@ -340,7 +340,8 @@ describe("MicrosoftTeams", () => {
       isFullScreen: true,
       teamType: microsoftTeams.TeamType.Staff,
       teamSiteUrl: "someSiteUrl",
-      sessionId: "someSessionId"
+      sessionId: "someSessionId",
+      userTeamRole: microsoftTeams.UserTeamRole.Admin
     };
 
     respondToMessage(getContextMessage, expectedContext);
