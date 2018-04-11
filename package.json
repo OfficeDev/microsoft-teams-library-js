@@ -9,6 +9,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/jasmine": "^2.8.6",
     "adal-node": "^0.1.22",
     "azure-keyvault": "^2.0.1-preview",
     "del": "2.2.2",
