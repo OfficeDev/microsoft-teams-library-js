@@ -272,11 +272,7 @@ describe("MicrosoftTeams", () => {
 
         let expectedContext: microsoftTeams.Context = {
             locale: "someLocale",
-            groupId: "someGroupId",
-            channelId: "someChannelId",
             entityId: "someEntityId",
-            teamType: microsoftTeams.TeamType.Edu,
-            teamSiteUrl: "someSiteUrl",
             sessionId: "someSessionId",
         };
 
@@ -309,6 +305,7 @@ describe("MicrosoftTeams", () => {
             teamType: microsoftTeams.TeamType.Staff,
             teamSiteUrl: "someSiteUrl",
             sessionId: "someSessionId",
+            userTeamRole: microsoftTeams.UserTeamRole.Admin,
         };
 
         respondToMessage(getContextMessage, expectedContext);
