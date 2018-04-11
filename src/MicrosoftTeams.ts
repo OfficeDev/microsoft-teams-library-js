@@ -1283,7 +1283,7 @@ namespace microsoftTeams {
   }
 
   export interface DeepLinkParameters {
-    /**teamTteamT
+    /**
      * The developer-defined unique ID for the sub-entity to which this deep link points in the current entity.
      * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
      */
