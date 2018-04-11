@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
+  "scripts": {
+    "build": "gulp"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "^2.8.6",
