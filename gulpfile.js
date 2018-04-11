@@ -4,6 +4,7 @@ var del = require("del"),
     fs = require("fs"),
     gulp = require("gulp"),
     gutil = require("gulp-util"),
+    umd = require('gulp-umd'),
     karma = require("karma").Server,
     merge = require("merge2"),
     tslint = require("gulp-tslint"),
@@ -19,15 +20,15 @@ var del = require("del"),
 
 var buildDir = "./build/";
 var distDir = "./dist/";
+var libName = 'microsoftTeams';
 
 /// global options
 var options = {
     connectionString: ""
 };
 
-gulp.task("tslint", function ()
-{
-    return gulp.src([ "./src/**/*.ts", "./test/**/*.ts" ])
+gulp.task("tslint", function () {
+    return gulp.src(["./src/**/*.ts", "./test/**/*.ts"])
         .pipe(tslint({
             configuration: "tslint.json",
             tslint: require("tslint"),
@@ -43,8 +44,7 @@ var tsProject = typescript.createProject("./tsconfig.json", {
     typescript: require("typescript"),
 });
 
-gulp.task("ts", [ "tslint" ], function ()
-{
+gulp.task("ts", ["tslint"], function () {
     var tsResult = tsProject.src()
         .pipe(tsProject());
 
@@ -52,6 +52,14 @@ gulp.task("ts", [ "tslint" ], function ()
         tsResult.dts
             .pipe(gulp.dest(buildDir)),
         tsResult.js
+            .pipe(umd({
+                exports: function (file) {
+                    return libName;
+                },
+                namespace: function (file) {
+                    return libName;
+                },
+            }))
             .pipe(gulp.dest(buildDir))
             .pipe(uglify())
             .pipe(rename({ suffix: ".min" }))
@@ -59,13 +67,11 @@ gulp.task("ts", [ "tslint" ], function ()
     ]);
 });
 
-gulp.task("test", [ "ts" ], function (done)
-{
+gulp.task("test", ["ts"], function (done) {
     new karma({ configFile: __dirname + "/karma.conf.js" }, done).start();
 });
 
-gulp.task("doc", function (done)
-{
+gulp.task("doc", function (done) {
     var parse = require("json-schema-to-markdown");
     var schema = require("./src/MicrosoftTeams.schema.json");
     var markdown = parse(schema);
@@ -76,8 +82,7 @@ gulp.task("doc", function (done)
     });
 });
 
-gulp.task("dist", [ "ts", "doc" ], function ()
-{
+gulp.task("dist", ["ts", "doc"], function () {
     var distFiles = [
         buildDir + "/src/**/*.js",
         buildDir + "/src/**/*.d.ts",
@@ -88,9 +93,9 @@ gulp.task("dist", [ "ts", "doc" ], function ()
         .pipe(gulp.dest(distDir));
 });
 
-gulp.task("default", [ "ts", "test", "doc", "dist" ]);
+gulp.task("default", ["ts", "test", "doc", "dist"]);
 
-gulp.task("clean", function() {
+gulp.task("clean", function () {
     return del([
         buildDir,
         distDir
@@ -153,7 +158,7 @@ gulp.task("upload", ["get-connectionstring-from-secret", "dist", "test"], functi
         }
     ];
 
-    var uploadTasks = assetBundles.map(function(assetBundle) {
+    var uploadTasks = assetBundles.map(function (assetBundle) {
         return gulp.src(assetBundle.glob).pipe(deployCdn({
             containerName: "sdk", // container name in blob
             serviceOptions: [options.connectionString], // custom arguments to azure.createBlobService
