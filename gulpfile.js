@@ -1,21 +1,21 @@
 "use strict";
 
-var del = require("del"),
-  fs = require("fs"),
-  gulp = require("gulp"),
-  gutil = require("gulp-util"),
-  karma = require("karma").Server,
-  merge = require("merge2"),
-  tslint = require("gulp-tslint"),
-  typescript = require("gulp-typescript"),
-  rename = require("gulp-rename"),
-  typings = require("gulp-typings"),
-  uglify = require("gulp-uglify"),
-  deployCdn = require("gulp-deploy-azure-cdn"),
-  prettierPlugin = require("gulp-prettier-plugin"),
-  KeyVault = require("azure-keyvault"),
-  argv = require("yargs").option("version", { type: "string" }).argv, // version may look like a number, so force it to be a string
-  AuthenticationContext = require("adal-node").AuthenticationContext;
+var del = require("del");
+var fs = require("fs");
+var gulp = require("gulp");
+var gutil = require("gulp-util");
+var karma = require("karma").Server;
+var merge = require("merge2");
+var tslint = require("gulp-tslint");
+var typescript = require("gulp-typescript");
+var rename = require("gulp-rename");
+var typings = require("gulp-typings");
+var uglify = require("gulp-uglify");
+var deployCdn = require("gulp-deploy-azure-cdn");
+var prettierPlugin = require("gulp-prettier-plugin");
+var KeyVault = require("azure-keyvault");
+var argv = require("yargs").option("version", { type: "string" }).argv; // version may look like a number, so force it to be a string
+var AuthenticationContext = require("adal-node").AuthenticationContext;
 
 var buildDir = "./build/";
 var distDir = "./dist/";
