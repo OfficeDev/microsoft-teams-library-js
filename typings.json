@@ -1,7 +1,0 @@
-{
-  "name": "microsoftteams",
-  "dependencies": {},
-  "globalDevDependencies": {
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#da2ec683661b92240ca69c474790aaaeed8ec8e6"
-  }
-}

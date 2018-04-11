@@ -9,7 +9,6 @@ var del = require("del"),
     tslint = require("gulp-tslint"),
     typescript = require("gulp-typescript"),
     rename = require("gulp-rename"),
-    typings = require("gulp-typings"),
     uglify = require("gulp-uglify"),
     deployCdn = require("gulp-deploy-azure-cdn"),
     KeyVault = require("azure-keyvault"),
@@ -25,12 +24,6 @@ var distDir = "./dist/";
 var options = {
     connectionString: ""
 };
-
-gulp.task("typings", function ()
-{
-    return gulp.src("./typings.json")
-        .pipe(typings());
-});
 
 gulp.task("tslint", function ()
 {
@@ -50,7 +43,7 @@ var tsProject = typescript.createProject("./tsconfig.json", {
     typescript: require("typescript"),
 });
 
-gulp.task("ts", [ "typings", "tslint" ], function ()
+gulp.task("ts", [ "tslint" ], function ()
 {
     var tsResult = tsProject.src()
         .pipe(tsProject());
@@ -100,8 +93,7 @@ gulp.task("default", [ "ts", "test", "doc", "dist" ]);
 gulp.task("clean", function() {
     return del([
         buildDir,
-        distDir,
-        "./typings/"
+        distDir
     ]);
 });
 

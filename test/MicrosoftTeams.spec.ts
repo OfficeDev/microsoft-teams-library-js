@@ -1,4 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
 /// <reference path="../src/MicrosoftTeams.ts" />
 
 // Undocumented members only used for unit testing.
