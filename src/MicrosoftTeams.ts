@@ -133,11 +133,11 @@ namespace microsoftTeams {
     Staff = 4
   }
 
-    export const enum UserTeamRole {
-        Admin = 0,
-        User = 1,
-        Guest = 2,
-    }
+  export const enum UserTeamRole {
+    Admin = 0,
+    User = 1,
+    Guest = 2
+  }
 
   export interface TabInstanceParameters {
     /**
@@ -1276,10 +1276,10 @@ namespace microsoftTeams {
      */
     sessionId?: string;
 
-        /**
-         * The user's role in the team.
-         */
-        userTeamRole?: UserTeamRole;
+    /**
+     * The user's role in the team.
+     */
+    userTeamRole?: UserTeamRole;
   }
 
   export interface DeepLinkParameters {

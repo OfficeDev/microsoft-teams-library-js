@@ -332,17 +332,17 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-        let expectedContext: microsoftTeams.Context = {
-            locale: "someLocale",
-            groupId: "someGroupId",
-            channelId: "someChannelId",
-            entityId: "someEntityId",
-            isFullScreen: true,
-            teamType: microsoftTeams.TeamType.Staff,
-            teamSiteUrl: "someSiteUrl",
-            sessionId: "someSessionId",
-            userTeamRole: microsoftTeams.UserTeamRole.Admin,
-        };
+    let expectedContext: microsoftTeams.Context = {
+      locale: "someLocale",
+      groupId: "someGroupId",
+      channelId: "someChannelId",
+      entityId: "someEntityId",
+      isFullScreen: true,
+      teamType: microsoftTeams.TeamType.Staff,
+      teamSiteUrl: "someSiteUrl",
+      sessionId: "someSessionId",
+      userTeamRole: microsoftTeams.UserTeamRole.Admin
+    };
 
     respondToMessage(getContextMessage, expectedContext);
 
