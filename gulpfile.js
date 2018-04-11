@@ -4,6 +4,7 @@ var del = require("del");
 var fs = require("fs");
 var gulp = require("gulp");
 var gutil = require("gulp-util");
+var umd = require('gulp-umd'),
 var karma = require("karma").Server;
 var merge = require("merge2");
 var tslint = require("gulp-tslint");
@@ -19,6 +20,7 @@ var AuthenticationContext = require("adal-node").AuthenticationContext;
 
 var buildDir = "./build/";
 var distDir = "./dist/";
+var libName = 'microsoftTeams';
 
 /// global options
 var options = {
@@ -54,16 +56,26 @@ var tsProject = typescript.createProject("./tsconfig.json", {
   typescript: require("typescript")
 });
 
-gulp.task("ts", ["typings", "tslint"], function () {
-  var tsResult = tsProject.src().pipe(tsProject());
+gulp.task("ts", ["tslint"], function () {
+  var tsResult = tsProject.src()
+    .pipe(tsProject());
 
   return merge([
-    tsResult.dts.pipe(gulp.dest(buildDir)),
+    tsResult.dts
+      .pipe(gulp.dest(buildDir)),
     tsResult.js
+      .pipe(umd({
+        exports: function (file) {
+          return libName;
+        },
+        namespace: function (file) {
+          return libName;
+        },
+      }))
       .pipe(gulp.dest(buildDir))
       .pipe(uglify())
       .pipe(rename({ suffix: ".min" }))
-      .pipe(gulp.dest(buildDir))
+      .pipe(gulp.dest(buildDir)),
   ]);
 });
 
@@ -86,7 +98,7 @@ gulp.task("dist", ["ts", "doc"], function () {
   var distFiles = [
     buildDir + "/src/**/*.js",
     buildDir + "/src/**/*.d.ts",
-    "./src/**/*.schema.json"
+    "./src/**/*.schema.json",
   ];
 
   return gulp.src(distFiles).pipe(gulp.dest(distDir));
@@ -95,7 +107,7 @@ gulp.task("dist", ["ts", "doc"], function () {
 gulp.task("default", ["prettier", "ts", "test", "doc", "dist"]);
 
 gulp.task("clean", function () {
-  return del([buildDir, distDir, "./typings/"]);
+  return del([buildDir, distDir]);
 });
 
 /// tasks for uploading dist assets to CDN
@@ -165,20 +177,18 @@ gulp.task(
     ];
 
     var uploadTasks = assetBundles.map(function (assetBundle) {
-      return gulp.src(assetBundle.glob).pipe(
-        deployCdn({
-          containerName: "sdk", // container name in blob
-          serviceOptions: [options.connectionString], // custom arguments to azure.createBlobService
-          folder: assetBundle.dest, // path within container
-          zip: true, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
-          deleteExistingBlobs: false, // true means recursively deleting anything under folder
-          concurrentUploadThreads: 4, // number of concurrent uploads, choose best for your network condition
-          metadata: {
-            cacheControl: "public, max-age=31536000" // cache in browser for 1 year
-          },
-          testRun: argv.whatIf || false // test run - means no blobs will be actually deleted or uploaded, see log messages for details
-        })
-      );
+      return gulp.src(assetBundle.glob).pipe(deployCdn({
+        containerName: "sdk", // container name in blob
+        serviceOptions: [options.connectionString], // custom arguments to azure.createBlobService
+        folder: assetBundle.dest, // path within container
+        zip: true, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
+        deleteExistingBlobs: false, // true means recursively deleting anything under folder
+        concurrentUploadThreads: 4, // number of concurrent uploads, choose best for your network condition
+        metadata: {
+          cacheControl: "public, max-age=31536000", // cache in browser for 1 year
+        },
+        testRun: argv.whatIf || false // test run - means no blobs will be actually deleted or uploaded, see log messages for details
+      }));
     });
 
     return merge(...uploadTasks).on("error", gutil.log);
