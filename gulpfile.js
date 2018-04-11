@@ -7,6 +7,7 @@ var del = require("del"),
     umd = require('gulp-umd'),
     karma = require("karma").Server,
     merge = require("merge2"),
+    header = require('gulp-header'),
     tslint = require("gulp-tslint"),
     typescript = require("gulp-typescript"),
     rename = require("gulp-rename"),
@@ -21,6 +22,11 @@ var del = require("del"),
 var buildDir = "./build/";
 var distDir = "./dist/";
 var libName = 'microsoftTeams';
+var dtsHeaderTemplate = `
+declare module '@microsoft/microsoft-teams-library-js' {
+    export = microsoftTeams;
+}
+`;
 
 /// global options
 var options = {
@@ -50,6 +56,7 @@ gulp.task("ts", ["tslint"], function () {
 
     return merge([
         tsResult.dts
+            .pipe(header(dtsHeaderTemplate))
             .pipe(gulp.dest(buildDir)),
         tsResult.js
             .pipe(umd({

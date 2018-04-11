@@ -1,14 +1,16 @@
 {
   "name": "@microsoft/microsoft-teams-library-js",
   "author": "Microsoft Teams",
-  "version": "1.2.0",
+  "version": "1.2.1-beta.2",
   "description": "Microsoft Client SDK for building app for Microsoft teams",
+  "main": "./dist/MicrosoftTeams.min.js",
+  "typings": "./dist/MicrosoftTeams.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "build": "gulp"
+    "build": "gulp dist"
   },
   "license": "MIT",
   "devDependencies": {
@@ -18,6 +20,7 @@
     "del": "2.2.2",
     "gulp": "3.9.1",
     "gulp-deploy-azure-cdn": "^2.0.0",
+    "gulp-header": "2.0.5",
     "gulp-rename": "1.2.2",
     "gulp-tslint": "6.1.2",
     "gulp-typescript": "3.0.2",
@@ -33,5 +36,10 @@
     "tslint": "3.15.1",
     "typescript": "2.5.0",
     "yargs": "^8.0.1"
-  }
+  },
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE"
+  ]
 }
