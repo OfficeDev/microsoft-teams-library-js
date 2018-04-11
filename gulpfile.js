@@ -8,6 +8,7 @@ var umd = require('gulp-umd'),
 var karma = require("karma").Server;
 var merge = require("merge2");
 var tslint = require("gulp-tslint");
+var header = require('gulp-header'),
 var typescript = require("gulp-typescript");
 var rename = require("gulp-rename");
 var typings = require("gulp-typings");
@@ -21,6 +22,11 @@ var AuthenticationContext = require("adal-node").AuthenticationContext;
 var buildDir = "./build/";
 var distDir = "./dist/";
 var libName = 'microsoftTeams';
+var dtsHeaderTemplate = `
+declare module '@microsoft/microsoft-teams-library-js' {
+    export = microsoftTeams;
+}
+`;
 
 /// global options
 var options = {
@@ -62,6 +68,7 @@ gulp.task("ts", ["tslint"], function () {
 
   return merge([
     tsResult.dts
+      .pipe(header(dtsHeaderTemplate))
       .pipe(gulp.dest(buildDir)),
     tsResult.js
       .pipe(umd({
