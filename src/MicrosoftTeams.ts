@@ -1501,10 +1501,10 @@ namespace microsoftTeams {
     }, 100);
   }
 
-  // tslint:disable-next-line:no-any
   function sendMessageRequest(
     targetWindow: Window,
     actionName: string,
+    // tslint:disable-next-line:no-any
     args?: any[]
   ): number {
     let request = createMessageRequest(actionName, args);
@@ -1521,10 +1521,10 @@ namespace microsoftTeams {
     return request.id;
   }
 
-  // tslint:disable-next-line:no-any
   function sendMessageResponse(
     targetWindow: Window,
     id: number,
+    // tslint:disable-next-line:no-any
     args?: any[]
   ): void {
     let response = createMessageResponse(id, args);
