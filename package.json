@@ -10,7 +10,8 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "build": "gulp dist"
+    "build": "gulp dist",
+    "test": "gulp test"
   },
   "license": "MIT",
   "devDependencies": {
