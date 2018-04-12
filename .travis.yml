@@ -1,11 +1,21 @@
 language: node_js
 
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
 node_js:
+- '6.11.3'
 
-  - "node"
+install:
+- yarn install
+- yarn build
 
-before_script:
-
-  - npm install -g gulp
-
-script: gulp
+deploy:
+- provider: npm
+  email: saching@microsoft.com
+  skip_cleanup: true
+  api_key: $NPM_DEPLOY_TOKEN
+  on:
+    branch: master
