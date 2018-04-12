@@ -341,7 +341,8 @@ describe("MicrosoftTeams", () => {
       teamType: microsoftTeams.TeamType.Staff,
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId",
-      userTeamRole: microsoftTeams.UserTeamRole.Admin
+      userTeamRole: microsoftTeams.UserTeamRole.Admin,
+      chatId: "someChatId"
     };
 
     respondToMessage(getContextMessage, expectedContext);
