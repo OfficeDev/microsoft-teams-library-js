@@ -1,0 +1,13 @@
+.vscode/**
+!dist/**
+src/**
+test/**
+coverage/**
+.gitattributes
+.gitignore
+.travis.yml
+CONTRIBUTING.md
+gulpfile.js
+karma.conf.js
+tsconfig.json
+tslint.json
