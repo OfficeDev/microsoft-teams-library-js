@@ -1280,6 +1280,11 @@ namespace microsoftTeams {
      * The user's role in the team.
      */
     userTeamRole?: UserTeamRole;
+
+    /**
+     * The Microsoft Teams ID for the chat with which the content is associated.
+     */
+    chatId?: string;
   }
 
   export interface DeepLinkParameters {
