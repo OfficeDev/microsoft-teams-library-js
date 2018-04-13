@@ -4,9 +4,6 @@ node_modules/
 npm-debug
 npm-error
 
-# Typings
-typings/
-
 # build output
 build/
 dist/

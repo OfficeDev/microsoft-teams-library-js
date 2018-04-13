@@ -11,7 +11,6 @@ var tslint = require("gulp-tslint");
 var header = require('gulp-header');
 var typescript = require("gulp-typescript");
 var rename = require("gulp-rename");
-var typings = require("gulp-typings");
 var uglify = require("gulp-uglify");
 var deployCdn = require("gulp-deploy-azure-cdn");
 var prettierPlugin = require("gulp-prettier-plugin");
@@ -32,10 +31,6 @@ declare module '@microsoft/microsoft-teams-library-js' {
 var options = {
   connectionString: ""
 };
-
-gulp.task("typings", function () {
-  return gulp.src("./typings.json").pipe(typings());
-});
 
 gulp.task("tslint", function () {
   return gulp.src(["./src/**/*.ts", "./test/**/*.ts"])
