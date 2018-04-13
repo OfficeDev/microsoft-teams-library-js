@@ -11,11 +11,3 @@ node_js:
 install:
 - yarn install
 - yarn build
-
-deploy:
-- provider: npm
-  email: saching@microsoft.com
-  skip_cleanup: true
-  api_key: $NPM_DEPLOY_TOKEN
-  on:
-    branch: master
