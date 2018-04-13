@@ -128,7 +128,7 @@
         },
         "configurableTabs": {
             "type": "array",
-            "description": "These are tabs users can optionally add to their channels and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab per app is supported.",
+            "description": "These are tabs users can optionally add to their channels and 1:1 or group chats and require extra configuration before they are added. Configurable tabs are not supported in the personal scope. Currently only one configurable tab per app is supported.",
             "maxItems": 1,
             "items": {
                 "type": "object",
@@ -147,11 +147,12 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive. Currently, configurable tabs are only supported in the teams scope.",
-                        "maxItems": 1,
+                        "description": "Specifies whether the tab offers an experience in the context of a channel in a team, in a 1:1 or group chat, or in an experience scoped to an individual user alone. These options are non-exclusive. Currently, configurable tabs are only supported in the teams and groupchats scopes.",
+                        "maxItems": 2,
                         "items": {
                             "enum": [
-                                "team"
+                                "team",
+                                "groupchat"
                             ]
                         }
                     }
@@ -237,12 +238,13 @@
                     },
                     "scopes": {
                         "type": "array",
-                        "description": "Specifies whether the bot offers an experience in the context of a channel in a team, or an experience scoped to an individual user alone. These options are non-exclusive.",
-                        "maxItems": 2,
+                        "description": "Specifies whether the bot offers an experience in the context of a channel in a team, in a 1:1 or group chat, or in an experience scoped to an individual user alone. These options are non-exclusive.",
+                        "maxItems": 3,
                         "items": {
                             "enum": [
                                 "team",
-                                "personal"
+                                "personal",
+                                "groupchat"
                             ]
                         }
                     },
