@@ -7,7 +7,7 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 ## Get Started
 1. Clone the repo
 2. Navigate to the repo root
-3. `npm install`
+3. `yarn install`
 4. `gulp`
 
 ## Contributing
