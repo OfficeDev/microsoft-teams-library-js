@@ -11,13 +11,15 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 4. `gulp`
 
 ### Installation
-
-#### Development
-> This assumes you are using npm as your package manager.
-
 To install the stable version:
 
+#### npm
+
 `npm install --save @microsoft/teams-js`
+
+#### yarn
+
+`yarn add @microsoft/teams-js`
 
 #### Production
 
@@ -25,28 +27,28 @@ You can access [these files on unpkg](https://unpkg.com/@microsoft/teams-js@1.2.
 
 ## Usage
 
-### JavaScript
+### As a npm package
+
+Install either using npm or yarn
+
+**If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
+
+```typescript
+import * as microsoftTeams from '@microsoft/teams-js';
+```
+
+### As a Script Tag
 
 Reference the library inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
-<script src="https://unpkg.com/@microsoft/teams-js@1.2.2/dist/MicrosoftTeams.min.js"></script>
+<script src="https://unpkg.com/@microsoft/teams-js@1.2.2/dist/MicrosoftTeams.min.js" integrity="sha384-fTjWNTelhUDsOG+6Xvsly5BVO8estmdrfVmaRQuTGRTtcjHYA3oQANo805/kHXvJ" crossorigin="anonymous"></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
 <script src="node_modules/@microsoft/teams-js@1.2.2/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>
-```
-
-### TypeScript
-
-**If you are just referencing the library using a script tag** then make sure to set your `moduleResolution` to `node` in your tsconfig.json to pickup the intellisense automatically. You will need to install the package via `npm install @microsoft/teams-js`.
-
-**If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use TypeScript `import` syntax to import specific modules. For e.g.
-
-```typescript
-import * as microsoftTeams from '@microsoft/microsoft-teams-library-js';
 ```
 
 ## Contributing
