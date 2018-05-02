@@ -49,6 +49,58 @@ namespace microsoftTeams {
         args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
     }
 
+    export namespace menu {
+        export interface ViewConfiguration {
+            id: number;
+            title: string;
+            contentDescription?: string;
+        }
+
+        export interface Item {
+            id: string;
+            title: string;
+            icon?: string;
+            contentDescription?: string;
+        }
+
+        export const enum ListType {
+            dropDown,
+            actionSheet,
+        }
+
+        export interface ViewData {
+            listTitle?: string;
+            listType: ListType;
+            listItems: Item[];
+        }
+
+        export class OptionMenuItem {
+            public id: number;
+            public title: number;
+            public icon?: string;
+            public iconSelected?: string;
+            public contentDescription?: string;
+            public enabled: boolean = true;
+            public viewData: ViewData;
+        }
+
+        export function setModuleView(id: string): void {
+            ensureInitialized();
+        }
+
+        export function setupViews(viewConfigs: ViewConfiguration[]): void {
+            ensureInitialized();
+
+            sendMessageRequest(parentWindow, "setupViews", [viewConfigs]);
+        }
+
+        export function setOptionsMenu(items: OptionMenuItem[]): void {
+            ensureInitialized();
+
+            sendMessageRequest(parentWindow, "setOptionsMenu", [items]);
+        }
+    }
+
     /**
      * Represents information about tabs for an app
      */
