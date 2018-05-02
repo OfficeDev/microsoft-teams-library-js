@@ -1236,8 +1236,9 @@ namespace microsoftTeams {
     locale: string;
 
     /**
+     * @deprecated Use loginHint or userPrincipalName.
      * The UPN of the current user.
-     * Because a malicious party can host malicious content in a browser, this value should
+     * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to who the user is and never as proof of identity.
      * This field is available only when the identity permission is requested in the manifest.
      */
@@ -1245,7 +1246,7 @@ namespace microsoftTeams {
 
     /**
      * The Azure AD tenant ID of the current user.
-     * Because a malicious party can host malicious content in a browser, this value should
+     * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to who the user is and never as proof of identity.
      * This field is available only when the identity permission is requested in the manifest.
      */
@@ -1285,6 +1286,30 @@ namespace microsoftTeams {
      * The Microsoft Teams ID for the chat with which the content is associated.
      */
     chatId?: string;
+
+    /**
+     * A value suitable for use as a login_hint when authenticating with Azure AD.
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    loginHint?: string;
+
+    /**
+     * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
+     * Because a malicious party run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    userPrincipalName?: string;
+
+    /**
+     * The Azure AD object id of the current user.
+     * Because a malicious party run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    userObjectId?: string;
   }
 
   export interface DeepLinkParameters {
