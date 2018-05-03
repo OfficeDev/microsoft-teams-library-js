@@ -850,13 +850,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1488,13 +1488,17 @@ namespace microsoftTeams {
   function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
     return targetWindow === parentWindow
       ? parentMessageQueue
-      : targetWindow === childWindow ? childMessageQueue : [];
+      : targetWindow === childWindow
+        ? childMessageQueue
+        : [];
   }
 
   function getTargetOrigin(targetWindow: Window): string {
     return targetWindow === parentWindow
       ? parentOrigin
-      : targetWindow === childWindow ? childOrigin : null;
+      : targetWindow === childWindow
+        ? childOrigin
+        : null;
   }
 
   function flushMessageQueue(targetWindow: Window): void {
@@ -1565,5 +1569,90 @@ namespace microsoftTeams {
       id: id,
       args: args || []
     };
+  }
+
+  export interface TaskInfo {
+    /**
+     * The app Id from which the task module should be invoked.
+     */
+    appId: string;
+
+    /**
+     * The url to be rendered in the webview/iframe.
+     */
+    url?: string;
+
+    /**
+     * JSON defining an adaptive card.
+     */
+    card?: string;
+
+    /**
+     * Invoke message sent to the bot to fect the URL or Adaptive card body dynamically.
+     */
+    fetchtask?: boolean;
+
+    /**
+     * The requested height of the webview/iframe in pixels.
+     */
+    height?: string;
+
+    /**
+     * The requested width of the webview/iframe in pixels.
+     */
+    width?: string;
+
+    /**
+     * Title of the task module.
+     */
+    title?: string;
+
+    /**
+     * If client doesnt support the URL, the URL that needs to be opened in the browser.
+     */
+    fallbackUrl?: string;
+
+    /**
+     * Used to identify the BotId to send the task/complete invoke message to.
+     */
+    completionBotId?: string;
+  }
+
+  /**
+   * Namespace to interact with the task module-specific part of the SDK.
+   * This object is usable only on the content frame.
+   */
+  export namespace task {
+
+    /**
+    * Allows an app to open the task module.
+    * @param taskInfo An object containing the parameters of the task module
+    * @param completionHandler Handler to call when the task module is completed
+    */
+    export function start(taskInfo: TaskInfo, completionHandler?: (err: string, result: string) => void): void {
+
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      let messageId = sendMessageRequest(parentWindow, "start", [taskInfo]);
+      callbacks[messageId] = completionHandler;
+    }
+
+    /**
+    * Complete the task module.
+    * @param result Contains the result to be sent to the bot or teh app. Typically a JSON object or a serialized version of it
+    * @param appId Helps to validate that the call originates from the same appId as the one that invoked the task module
+    */
+    export function complete(result?: string|object, appId?: string): void {
+
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      sendMessageRequest(parentWindow, "complete", [
+        result,
+        appId
+      ]);
+    }
+
   }
 }
