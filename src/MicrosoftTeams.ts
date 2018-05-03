@@ -422,7 +422,7 @@ namespace microsoftTeams {
   ): void {
     ensureInitialized(frameContexts.content);
 
-    sendMessageRequest(parentWindow, "openFilePreview", [
+    const params = [
       filePreviewParameters.entityId,
       filePreviewParameters.title,
       filePreviewParameters.description,
@@ -431,7 +431,13 @@ namespace microsoftTeams {
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
       filePreviewParameters.webEditUrl
-    ]);
+    ];
+
+    if (filePreviewParameters.baseUrl) {
+      params.push(filePreviewParameters.baseUrl);
+    }
+
+    sendMessageRequest(parentWindow, "openFilePreview", params);
   }
 
   /**
@@ -850,13 +856,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1346,6 +1352,11 @@ namespace microsoftTeams {
      * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
      */
     webEditUrl?: string;
+
+    /**
+     * Optional; the base url of the site where the file is hosted
+     */
+    baseUrl?: string;
   }
 
   function ensureInitialized(...expectedFrameContexts: string[]): void {
@@ -1488,13 +1499,17 @@ namespace microsoftTeams {
   function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
     return targetWindow === parentWindow
       ? parentMessageQueue
-      : targetWindow === childWindow ? childMessageQueue : [];
+      : targetWindow === childWindow
+        ? childMessageQueue
+        : [];
   }
 
   function getTargetOrigin(targetWindow: Window): string {
     return targetWindow === parentWindow
       ? parentOrigin
-      : targetWindow === childWindow ? childOrigin : null;
+      : targetWindow === childWindow
+        ? childOrigin
+        : null;
   }
 
   function flushMessageQueue(targetWindow: Window): void {
