@@ -1086,12 +1086,13 @@ describe("MicrosoftTeams", () => {
       objectUrl: "someObjectUrl",
       downloadUrl: "someDownloadUrl",
       webPreviewUrl: "someWebPreviewUrl",
-      webEditUrl: "someWebEditUrl"
+      webEditUrl: "someWebEditUrl",
+      baseUrl: "someBaseUrl"
     });
 
     let message = findMessageByFunc("openFilePreview");
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(8);
+    expect(message.args.length).toBe(9);
     expect(message.args[0]).toBe("someEntityId");
     expect(message.args[1]).toBe("someTitle");
     expect(message.args[2]).toBe("someDescription");
@@ -1100,6 +1101,7 @@ describe("MicrosoftTeams", () => {
     expect(message.args[5]).toBe("someDownloadUrl");
     expect(message.args[6]).toBe("someWebPreviewUrl");
     expect(message.args[7]).toBe("someWebEditUrl");
+    expect(message.args[8]).toBe("someBaseUrl");
   });
 
   describe("getTabInstances", () => {

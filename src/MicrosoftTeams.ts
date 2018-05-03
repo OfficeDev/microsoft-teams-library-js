@@ -422,7 +422,7 @@ namespace microsoftTeams {
   ): void {
     ensureInitialized(frameContexts.content);
 
-    sendMessageRequest(parentWindow, "openFilePreview", [
+    const params = [
       filePreviewParameters.entityId,
       filePreviewParameters.title,
       filePreviewParameters.description,
@@ -430,9 +430,14 @@ namespace microsoftTeams {
       filePreviewParameters.objectUrl,
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
-      filePreviewParameters.webEditUrl,
-      filePreviewParameters.baseUrl
-    ]);
+      filePreviewParameters.webEditUrl
+    ];
+
+    if (filePreviewParameters.baseUrl) {
+      params.push(filePreviewParameters.baseUrl);
+    }
+
+    sendMessageRequest(parentWindow, "openFilePreview", params);
   }
 
   /**
