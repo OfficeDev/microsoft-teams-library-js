@@ -851,13 +851,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1494,13 +1494,17 @@ namespace microsoftTeams {
   function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
     return targetWindow === parentWindow
       ? parentMessageQueue
-      : targetWindow === childWindow ? childMessageQueue : [];
+      : targetWindow === childWindow
+        ? childMessageQueue
+        : [];
   }
 
   function getTargetOrigin(targetWindow: Window): string {
     return targetWindow === parentWindow
       ? parentOrigin
-      : targetWindow === childWindow ? childOrigin : null;
+      : targetWindow === childWindow
+        ? childOrigin
+        : null;
   }
 
   function flushMessageQueue(targetWindow: Window): void {
