@@ -430,7 +430,8 @@ namespace microsoftTeams {
       filePreviewParameters.objectUrl,
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
-      filePreviewParameters.webEditUrl
+      filePreviewParameters.webEditUrl,
+      filePreviewParameters.baseUrl
     ]);
   }
 
@@ -1346,6 +1347,11 @@ namespace microsoftTeams {
      * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
      */
     webEditUrl?: string;
+
+    /**
+     * Optional; the base url of the site where the file is hosted
+     */
+    baseUrl?: string;
   }
 
   function ensureInitialized(...expectedFrameContexts: string[]): void {
