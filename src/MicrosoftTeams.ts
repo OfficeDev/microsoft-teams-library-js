@@ -51,7 +51,7 @@ namespace microsoftTeams {
 
     export namespace menu {
         export interface ViewConfiguration {
-            id: number;
+            id: string;
             title: string;
             contentDescription?: string;
         }
@@ -80,14 +80,23 @@ namespace microsoftTeams {
         let navBarMenuItemPressHandler: (id: String) => boolean;
         handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
 
-        export function setModuleView(id: string): void {
+        let actionMenuItemPressHandler: (id: String) => boolean;
+        handlers["actionMenuItemPress"] = handleActionMenuItemPress;
+
+        let viewConfigItemPressHandler: (id: String) => boolean;
+        handlers["setModuleView"] = handleViewConfigItemPress;
+
+        export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
             ensureInitialized();
+            viewConfigItemPressHandler = handler;
+            sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
         }
 
-        export function setupViews(viewConfigs: ViewConfiguration[]): void {
-            ensureInitialized();
-
-            sendMessageRequest(parentWindow, "setupViews", [viewConfigs]);
+        export function handleViewConfigItemPress(id: String): void {
+            if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
+                ensureInitialized();
+                sendMessageRequest(parentWindow, "viewConfigItemPress", [id]);
+            }
         }
 
         export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
@@ -101,6 +110,20 @@ namespace microsoftTeams {
             if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
                 ensureInitialized();
                 sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
+            }
+        }
+
+        export function showActionMenu(title: string, items: MenuItem[], handler: (id: string) => boolean): void {
+            ensureInitialized();
+
+            actionMenuItemPressHandler = handler;
+            sendMessageRequest(parentWindow, "showActionMenu", [title, items]);
+        }
+
+        export function handleActionMenuItemPress(id: String): void {
+            if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
+                ensureInitialized();
+                sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
             }
         }
     }
