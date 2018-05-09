@@ -56,33 +56,29 @@ namespace microsoftTeams {
             contentDescription?: string;
         }
 
-        export interface Item {
-            id: string;
-            title: string;
-            icon?: string;
-            contentDescription?: string;
+        export enum MenuListType {
+            dropDown = "dropDown",
+            actionSheet = "actionSheet",
         }
 
-        export const enum ListType {
-            dropDown,
-            actionSheet,
-        }
-
-        export interface ViewData {
-            listTitle?: string;
-            listType: ListType;
-            listItems: Item[];
-        }
-
-        export class OptionMenuItem {
+        export class MenuItem {
             public id: number;
-            public title: number;
+            public title: string;
             public icon?: string;
             public iconSelected?: string;
             public contentDescription?: string;
             public enabled: boolean = true;
             public viewData: ViewData;
         }
+
+        export interface ViewData {
+            listTitle?: string;
+            listType: MenuListType;
+            listItems: MenuItem[];
+        }
+
+        let navBarMenuItemPressHandler: (id: String) => boolean;
+        handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
 
         export function setModuleView(id: string): void {
             ensureInitialized();
@@ -94,10 +90,18 @@ namespace microsoftTeams {
             sendMessageRequest(parentWindow, "setupViews", [viewConfigs]);
         }
 
-        export function setOptionsMenu(items: OptionMenuItem[]): void {
+        export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
             ensureInitialized();
 
-            sendMessageRequest(parentWindow, "setOptionsMenu", [items]);
+            navBarMenuItemPressHandler = handler;
+            sendMessageRequest(parentWindow, "setNavBarMenu", [items]);
+        }
+
+        export function handleNavBarMenuItemPress(id: String): void {
+            if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
+                ensureInitialized();
+                sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
+            }
         }
     }
 
