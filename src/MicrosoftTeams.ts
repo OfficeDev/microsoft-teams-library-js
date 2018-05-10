@@ -1573,11 +1573,6 @@ namespace microsoftTeams {
 
   export interface TaskInfo {
     /**
-     * The app Id from which the task module should be invoked.
-     */
-    appId: string;
-
-    /**
      * The url to be rendered in the webview/iframe.
      */
     url?: string;
@@ -1586,11 +1581,6 @@ namespace microsoftTeams {
      * JSON defining an adaptive card.
      */
     card?: string;
-
-    /**
-     * Invoke message sent to the bot to fect the URL or Adaptive card body dynamically.
-     */
-    fetchtask?: boolean;
 
     /**
      * The requested height of the webview/iframe in pixels.
@@ -1611,11 +1601,6 @@ namespace microsoftTeams {
      * If client doesnt support the URL, the URL that needs to be opened in the browser.
      */
     fallbackUrl?: string;
-
-    /**
-     * Used to identify the BotId to send the task/complete invoke message to.
-     */
-    completionBotId?: string;
   }
 
   /**
@@ -1623,14 +1608,15 @@ namespace microsoftTeams {
    * This object is usable only on the content frame.
    */
   export namespace task {
-
     /**
-    * Allows an app to open the task module.
-    * @param taskInfo An object containing the parameters of the task module
-    * @param completionHandler Handler to call when the task module is completed
-    */
-    export function start(taskInfo: TaskInfo, completionHandler?: (err: string, result: string) => void): void {
-
+     * Allows an app to open the task module.
+     * @param taskInfo An object containing the parameters of the task module
+     * @param completionHandler Handler to call when the task module is completed
+     */
+    export function start(
+      taskInfo: TaskInfo,
+      completionHandler?: (err: string, result: string) => void
+    ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
@@ -1639,20 +1625,18 @@ namespace microsoftTeams {
     }
 
     /**
-    * Complete the task module.
-    * @param result Contains the result to be sent to the bot or teh app. Typically a JSON object or a serialized version of it
-    * @param appId Helps to validate that the call originates from the same appId as the one that invoked the task module
-    */
-    export function complete(result?: string|object, appId?: string): void {
-
+     * Complete the task module.
+     * @param result Contains the result to be sent to the bot or teh app. Typically a JSON object or a serialized version of it
+     * @param appId Helps to validate that the call originates from the same appId as the one that invoked the task module
+     */
+    export function complete(
+      result?: string | object,
+      appIds?: string[]
+    ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
-      sendMessageRequest(parentWindow, "complete", [
-        result,
-        appId
-      ]);
+      sendMessageRequest(parentWindow, "complete", [result, appIds]);
     }
-
   }
 }
