@@ -1607,13 +1607,13 @@ namespace microsoftTeams {
    * Namespace to interact with the task module-specific part of the SDK.
    * This object is usable only on the content frame.
    */
-  export namespace task {
+  export namespace tasks {
     /**
      * Allows an app to open the task module.
      * @param taskInfo An object containing the parameters of the task module
      * @param completionHandler Handler to call when the task module is completed
      */
-    export function start(
+    export function startTask(
       taskInfo: TaskInfo,
       completionHandler?: (err: string, result: string) => void
     ): void {
@@ -1629,7 +1629,7 @@ namespace microsoftTeams {
      * @param result Contains the result to be sent to the bot or teh app. Typically a JSON object or a serialized version of it
      * @param appId Helps to validate that the call originates from the same appId as the one that invoked the task module
      */
-    export function complete(
+    export function completeTask(
       result?: string | object,
       appIds?: string[]
     ): void {
