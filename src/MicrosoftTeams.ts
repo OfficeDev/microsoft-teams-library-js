@@ -1620,14 +1620,14 @@ namespace microsoftTeams {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
-      let messageId = sendMessageRequest(parentWindow, "start", [taskInfo]);
+      let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [taskInfo]);
       callbacks[messageId] = completionHandler;
     }
 
     /**
      * Complete the task module.
-     * @param result Contains the result to be sent to the bot or teh app. Typically a JSON object or a serialized version of it
-     * @param appId Helps to validate that the call originates from the same appId as the one that invoked the task module
+     * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+     * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
      */
     export function completeTask(
       result?: string | object,
@@ -1636,7 +1636,7 @@ namespace microsoftTeams {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
-      sendMessageRequest(parentWindow, "complete", [result, appIds]);
+      sendMessageRequest(parentWindow, "tasks.completeTask", [result, appIds]);
     }
   }
 }
