@@ -49,6 +49,12 @@ namespace microsoftTeams {
         args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
     }
 
+    export namespace native {
+        export function postMessage(msg: MessageEvent): void {
+            handleParentMessage(msg);
+        }
+    }
+
     export namespace menu {
         export interface ViewConfiguration {
             id: string;
@@ -213,6 +219,10 @@ namespace microsoftTeams {
         Plc = 3,
         Staff = 4,
     }
+    interface Window {
+        // tslint:disable-next-line: no-any
+        [key: string]: any;
+    }
 
     export interface TabInstanceParameters {
         /**
@@ -267,13 +277,22 @@ namespace microsoftTeams {
         // Undocumented field used to mock the window for unit tests
         currentWindow = this._window as Window || window;
 
-        // Listen for messages post to our window
-        let messageListener = (evt: MessageEvent) => processMessage(evt);
-        currentWindow.addEventListener("message", messageListener, false);
-
         // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
         // it's the window that opened us (i.e., window.opener)
         parentWindow = (currentWindow.parent !== currentWindow.self) ? currentWindow.parent : currentWindow.opener;
+
+        // Listen for messages post to our window
+        let messageListener = (evt: MessageEvent) => processMessage(evt);
+
+        // tslint:disable-next-line: no-any
+        if (!parentWindow && currentWindow["teamsJsClient"]) {
+            // assign the parent
+            // tslint:disable-next-line: no-any
+            parentWindow = currentWindow["teamsJsClient"];
+        }
+        else {
+            currentWindow.addEventListener("message", messageListener, false);
+        }
 
         try {
             // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -1468,17 +1487,25 @@ namespace microsoftTeams {
     // tslint:disable-next-line:no-any
     function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number {
         let request = createMessageRequest(actionName, args);
-        let targetOrigin = getTargetOrigin(targetWindow);
-
-        // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-        // queue the message and send it after the origin is established
-        if (targetWindow && targetOrigin) {
-            targetWindow.postMessage(request, targetOrigin);
+        // tslint:disable-next-line: no-any
+        if (currentWindow["teamsJsClient"]){
+            // tslint:disable-next-line: no-any
+            setTimeout(function(): void {
+                currentWindow["teamsJsClient"]["framelessPostMessage"](request);
+            }, 0);
         }
         else {
-            getTargetMessageQueue(targetWindow).push(request);
-        }
+            let targetOrigin = getTargetOrigin(targetWindow);
 
+            // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+            // queue the message and send it after the origin is established
+            if (targetWindow && targetOrigin) {
+                targetWindow.postMessage(request, targetOrigin);
+            }
+            else {
+                getTargetMessageQueue(targetWindow).push(request);
+            }
+        }
         return request.id;
     }
 
