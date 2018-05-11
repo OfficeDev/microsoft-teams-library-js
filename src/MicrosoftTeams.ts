@@ -285,10 +285,10 @@ namespace microsoftTeams {
         let messageListener = (evt: MessageEvent) => processMessage(evt);
 
         // tslint:disable-next-line: no-any
-        if (!parentWindow && currentWindow["teamsJsClient"]) {
+        if (!parentWindow && currentWindow["teamsNativeClient"]) {
             // assign the parent
             // tslint:disable-next-line: no-any
-            parentWindow = currentWindow["teamsJsClient"];
+            parentWindow = currentWindow["teamsNativeClient"];
         }
         else {
             currentWindow.addEventListener("message", messageListener, false);
@@ -1488,10 +1488,10 @@ namespace microsoftTeams {
     function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number {
         let request = createMessageRequest(actionName, args);
         // tslint:disable-next-line: no-any
-        if (currentWindow["teamsJsClient"]){
+        if (currentWindow["teamsNativeClient"]){
             // tslint:disable-next-line: no-any
             setTimeout(function(): void {
-                currentWindow["teamsJsClient"]["framelessPostMessage"](request);
+                currentWindow["teamsNativeClient"]["framelessPostMessage"](request);
             }, 0);
         }
         else {
