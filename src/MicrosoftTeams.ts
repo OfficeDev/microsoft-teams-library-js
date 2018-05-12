@@ -151,6 +151,12 @@ namespace microsoftTeams {
     favoriteTeamsOnly?: boolean;
   }
 
+  export const enum TaskModuleDimension {
+    Large = "80px",
+    Medium = "60px",
+    Small = "40px"
+  }
+
   // This indicates whether initialize was called (started).
   // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
   let initializeCalled = false;
@@ -1585,12 +1591,12 @@ namespace microsoftTeams {
     /**
      * The requested height of the webview/iframe in pixels.
      */
-    height?: string;
+    height?: TaskModuleDimension | Number;
 
     /**
      * The requested width of the webview/iframe in pixels.
      */
-    width?: string;
+    width?: TaskModuleDimension | Number;
 
     /**
      * Title of the task module.
@@ -1620,7 +1626,9 @@ namespace microsoftTeams {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
-      let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [taskInfo]);
+      let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
+        taskInfo
+      ]);
       callbacks[messageId] = completionHandler;
     }
 
