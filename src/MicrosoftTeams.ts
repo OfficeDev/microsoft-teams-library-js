@@ -1294,6 +1294,7 @@ namespace microsoftTeams {
 
     /**
      * Indicate wheather team is archived
+     * apps should use this as a signal to prevent any changes to content associated with archived teams
      */
     isTeamArchived?: boolean;
   }
