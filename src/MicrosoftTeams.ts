@@ -152,9 +152,9 @@ namespace microsoftTeams {
   }
 
   export const enum TaskModuleDimension {
-    Large = "80px",
-    Medium = "60px",
-    Small = "40px"
+    Large = "large",
+    Medium = "medium",
+    Small = "small"
   }
 
   // This indicates whether initialize was called (started).
@@ -856,13 +856,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1589,12 +1589,12 @@ namespace microsoftTeams {
     card?: string;
 
     /**
-     * The requested height of the webview/iframe in pixels.
+     * The requested height of the webview/iframe.
      */
     height?: TaskModuleDimension | Number;
 
     /**
-     * The requested width of the webview/iframe in pixels.
+     * The requested width of the webview/iframe.
      */
     width?: TaskModuleDimension | Number;
 
