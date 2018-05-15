@@ -138,7 +138,7 @@ namespace microsoftTeams {
             listType: MenuListType;
 
             /**
-             * Array of MenuItem. Icon value will be required for all items in the list. 
+             * Array of MenuItem. Icon value will be required for all items in the list.
              */
             listItems: MenuItem[];
         }
