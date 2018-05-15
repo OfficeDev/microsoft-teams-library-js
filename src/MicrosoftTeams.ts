@@ -49,16 +49,20 @@ namespace microsoftTeams {
         args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
     }
 
-     /**
-     * Namespace to send message to SDK from native apps.
+    /**
+     * Namespace to send message to SDK from native apps, incase of frameless scenario.
      */
     export namespace native {
+        /**
+         * Call it incase of frameless scenario to pass message to SDK
+         * @param msg Message to be sent to sdk
+         */
         export function postMessage(msg: MessageEvent): void {
             handleParentMessage(msg);
         }
     }
 
-     /**
+    /**
      * Namespace to interact with the menu-specific part of the SDK.
      * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
      */
@@ -180,7 +184,7 @@ namespace microsoftTeams {
         }
 
         /**
-         * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, other title will be shown.
+         * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, otherwise title will be shown.
          * @param items List of MenuItems for Navigation Bar Menu.
          * @param handler The handler to invoke when the user selects menu item.
          */
@@ -304,6 +308,7 @@ namespace microsoftTeams {
         Plc = 3,
         Staff = 4,
     }
+
     interface Window {
         // tslint:disable-next-line: no-any
         [key: string]: any;
@@ -371,11 +376,12 @@ namespace microsoftTeams {
 
         // tslint:disable-next-line: no-any
         if (!parentWindow && currentWindow["teamsNativeClient"]) {
-            // assign the parent
+            // For frame-less scenario, assign parent window for communication
             // tslint:disable-next-line: no-any
             parentWindow = currentWindow["teamsNativeClient"];
         }
         else {
+            // For iFrame scenario, add listener to listen 'message'
             currentWindow.addEventListener("message", messageListener, false);
         }
 
@@ -1573,7 +1579,7 @@ namespace microsoftTeams {
     function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number {
         let request = createMessageRequest(actionName, args);
         // tslint:disable-next-line: no-any
-        if (currentWindow["teamsNativeClient"]){
+        if (currentWindow["teamsNativeClient"]) {
             // tslint:disable-next-line: no-any
             setTimeout(function(): void {
                 currentWindow["teamsNativeClient"]["framelessPostMessage"](request);
