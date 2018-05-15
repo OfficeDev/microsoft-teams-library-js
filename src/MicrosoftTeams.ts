@@ -151,6 +151,12 @@ namespace microsoftTeams {
     favoriteTeamsOnly?: boolean;
   }
 
+  export const enum TaskModuleDimension {
+    Large = "large",
+    Medium = "medium",
+    Small = "small"
+  }
+
   // This indicates whether initialize was called (started).
   // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
   let initializeCalled = false;
@@ -1586,5 +1592,76 @@ namespace microsoftTeams {
       id: id,
       args: args || []
     };
+  }
+
+  export interface TaskInfo {
+    /**
+     * The url to be rendered in the webview/iframe.
+     */
+    url?: string;
+
+    /**
+     * JSON defining an adaptive card.
+     */
+    card?: string;
+
+    /**
+     * The requested height of the webview/iframe.
+     */
+    height?: TaskModuleDimension | Number;
+
+    /**
+     * The requested width of the webview/iframe.
+     */
+    width?: TaskModuleDimension | Number;
+
+    /**
+     * Title of the task module.
+     */
+    title?: string;
+
+    /**
+     * If client doesnt support the URL, the URL that needs to be opened in the browser.
+     */
+    fallbackUrl?: string;
+  }
+
+  /**
+   * Namespace to interact with the task module-specific part of the SDK.
+   * This object is usable only on the content frame.
+   */
+  export namespace tasks {
+    /**
+     * Allows an app to open the task module.
+     * @param taskInfo An object containing the parameters of the task module
+     * @param completionHandler Handler to call when the task module is completed
+     */
+    export function startTask(
+      taskInfo: TaskInfo,
+      completionHandler?: (err: string, result: string) => void
+    ): void {
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
+        taskInfo
+      ]);
+      callbacks[messageId] = completionHandler;
+    }
+
+    /**
+     * Complete the task module.
+     * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+     * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
+     */
+    export function completeTask(
+      result?: string | object,
+      appIds?: string[]
+    ): void {
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      sendMessageRequest(parentWindow, "tasks.completeTask", [result, appIds]);
+    }
   }
 }
