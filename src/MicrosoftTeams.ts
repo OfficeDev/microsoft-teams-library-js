@@ -48,23 +48,23 @@ namespace microsoftTeams {
   }
 
   /**
-  * Namespace to send message to SDK from native apps, incase of frameless scenario.
-  */
+   * Namespace to send message to SDK from native apps, incase of frameless scenario.
+   */
   export namespace native {
     /**
-      * Call it incase of frameless scenario to pass message to SDK
-      * @param msg Message to be sent to sdk
-      */
+     * Call it incase of frameless scenario to pass message to SDK
+     * @param msg Message to be sent to sdk
+     */
     export function postMessage(msg: MessageEvent): void {
       handleParentMessage(msg);
     }
   }
 
   /**
-  * Namespace to interact with the menu-specific part of the SDK.
-  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
-  */
-  export namespace menu {
+   * Namespace to interact with the menu-specific part of the SDK.
+   * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+   */
+  export namespace menus {
     /**
      * Represents information about item in View Configuration.
      */
@@ -168,7 +168,10 @@ namespace microsoftTeams {
      * @param viewConfig List of view configurations. Minimum 1 value is required.
      * @param handler The handler to invoke when the user selects view configuration.
      */
-    export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
+    export function setUpViews(
+      viewConfig: ViewConfiguration[],
+      handler: (id: string) => boolean
+    ): void {
       ensureInitialized();
       viewConfigItemPressHandler = handler;
       sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
@@ -186,7 +189,10 @@ namespace microsoftTeams {
      * @param items List of MenuItems for Navigation Bar Menu.
      * @param handler The handler to invoke when the user selects menu item.
      */
-    export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
+    export function setNavBarMenu(
+      items: MenuItem[],
+      handler: (id: string) => boolean
+    ): void {
       ensureInitialized();
 
       navBarMenuItemPressHandler = handler;
@@ -206,7 +212,11 @@ namespace microsoftTeams {
      * @param items List of MenuItems for Action Menu.
      * @param handler The handler to invoke when the user selects menu item.
      */
-    export function showActionMenu(title: string, items: MenuItem[], handler: (id: string) => boolean): void {
+    export function showActionMenu(
+      title: string,
+      items: MenuItem[],
+      handler: (id: string) => boolean
+    ): void {
       ensureInitialized();
 
       actionMenuItemPressHandler = handler;
@@ -219,6 +229,11 @@ namespace microsoftTeams {
         sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
       }
     }
+  }
+
+  interface Window {
+    // tslint:disable-next-line: no-any
+    [key: string]: any;
   }
 
   /**
@@ -1045,13 +1060,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1727,13 +1742,17 @@ namespace microsoftTeams {
     }, 100);
   }
 
-  // tslint:disable-next-line: no-any
-  function sendMessageRequest(targetWindow: Window, actionName: string, args?: any[]): number {
+  function sendMessageRequest(
+    targetWindow: Window,
+    actionName: string,
+    // tslint:disable-next-line: no-any
+    args?: any[]
+  ): number {
     let request = createMessageRequest(actionName, args);
     // tslint:disable-next-line: no-any
     if (currentWindow["teamsNativeClient"]) {
       // tslint:disable-next-line: no-any
-      setTimeout(function (): void {
+      setTimeout(function(): void {
         currentWindow["teamsNativeClient"]["framelessPostMessage"](request);
       }, 0);
     } else {
