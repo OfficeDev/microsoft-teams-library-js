@@ -407,7 +407,7 @@ namespace microsoftTeams {
     let messageListener = (evt: MessageEvent) => processMessage(evt);
 
     // tslint:disable-next-line: no-any
-    if (!parentWindow && currentWindow.teamsNativeClient) {
+    if (!parentWindow) {
       isFramelessWindow = true;
       // For frame-less scenario, assign parent window for communication
       // tslint:disable-next-line: no-any
@@ -1079,13 +1079,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1771,7 +1771,7 @@ namespace microsoftTeams {
     // tslint:disable-next-line: no-any
     if (isFramelessWindow) {
       // tslint:disable-next-line: no-any
-      setTimeout(function (): void {
+      setTimeout(function(): void {
         if (
           currentWindow.teamsNativeClient &&
           currentWindow.teamsNativeClient.framelessPostMessage
