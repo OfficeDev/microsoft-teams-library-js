@@ -4,6 +4,15 @@ interface MessageEvent {
   originalEvent: MessageEvent;
 }
 
+interface TeamsNativeClient extends Window {
+  framelessPostMessage(msg: microsoftTeams.MessageRequest): void;
+}
+
+interface Window {
+  // tslint:disable-next-line: no-any
+  teamsNativeClient: TeamsNativeClient;
+}
+
 /**
  * This is the root namespace for the JavaScript SDK.
  */
@@ -36,7 +45,7 @@ namespace microsoftTeams {
     web: "web"
   };
 
-  interface MessageRequest {
+  export interface MessageRequest {
     id: number;
     func: string;
     args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
@@ -150,7 +159,7 @@ namespace microsoftTeams {
      */
     export enum MenuListType {
       dropDown = "dropDown",
-      actionSheet = "actionSheet"
+      popOver = "popOver"
     }
 
     let navBarMenuItemPressHandler: (id: String) => boolean;
@@ -229,11 +238,6 @@ namespace microsoftTeams {
         sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
       }
     }
-  }
-
-  interface Window {
-    // tslint:disable-next-line: no-any
-    [key: string]: any;
   }
 
   /**
@@ -350,6 +354,8 @@ namespace microsoftTeams {
   // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
   let initializeCalled = false;
 
+  let isFramelessWindow = false;
+  let framelessMessageQueue: MessageRequest[] = [];
   let currentWindow: Window;
   let parentWindow: Window;
   let parentOrigin: string;
@@ -371,6 +377,16 @@ namespace microsoftTeams {
   let backButtonPressHandler: () => boolean;
   handlers["backButtonPress"] = handleBackButtonPress;
 
+  handlers["nativeJsLoaded"] = handleNativeJsLoaded;
+
+  function handleNativeJsLoaded(): void {
+    while (framelessMessageQueue.length > 0) {
+      currentWindow.teamsNativeClient.framelessPostMessage(
+        framelessMessageQueue.shift()
+      );
+    }
+  }
+
   /**
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
@@ -391,10 +407,11 @@ namespace microsoftTeams {
     let messageListener = (evt: MessageEvent) => processMessage(evt);
 
     // tslint:disable-next-line: no-any
-    if (!parentWindow && currentWindow["teamsNativeClient"]) {
+    if (!parentWindow && currentWindow.teamsNativeClient) {
+      isFramelessWindow = true;
       // For frame-less scenario, assign parent window for communication
       // tslint:disable-next-line: no-any
-      parentWindow = currentWindow["teamsNativeClient"];
+      parentWindow = currentWindow.teamsNativeClient;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -447,6 +464,8 @@ namespace microsoftTeams {
       callbacks = {};
       frameContext = null;
       hostClientType = null;
+      framelessMessageQueue = [];
+      isFramelessWindow = false;
 
       currentWindow.removeEventListener("message", messageListener, false);
     };
@@ -1060,13 +1079,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1750,10 +1769,17 @@ namespace microsoftTeams {
   ): number {
     let request = createMessageRequest(actionName, args);
     // tslint:disable-next-line: no-any
-    if (currentWindow["teamsNativeClient"]) {
+    if (isFramelessWindow) {
       // tslint:disable-next-line: no-any
-      setTimeout(function(): void {
-        currentWindow["teamsNativeClient"]["framelessPostMessage"](request);
+      setTimeout(function (): void {
+        if (
+          currentWindow.teamsNativeClient &&
+          currentWindow.teamsNativeClient.framelessPostMessage
+        ) {
+          currentWindow.teamsNativeClient.framelessPostMessage(request);
+        } else {
+          framelessMessageQueue.push(request);
+        }
       }, 0);
     } else {
       let targetOrigin = getTargetOrigin(targetWindow);
