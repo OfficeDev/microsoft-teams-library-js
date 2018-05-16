@@ -406,6 +406,13 @@ namespace microsoftTeams {
     // Listen for messages post to our window
     let messageListener = (evt: MessageEvent) => processMessage(evt);
 
+    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
+    // it's the window that opened us (i.e., window.opener)
+    parentWindow =
+      currentWindow.parent !== currentWindow.self
+        ? currentWindow.parent
+        : currentWindow.opener;
+
     // tslint:disable-next-line: no-any
     if (!parentWindow) {
       isFramelessWindow = true;
@@ -416,13 +423,6 @@ namespace microsoftTeams {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
     }
-
-    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-    // it's the window that opened us (i.e., window.opener)
-    parentWindow =
-      currentWindow.parent !== currentWindow.self
-        ? currentWindow.parent
-        : currentWindow.opener;
 
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
