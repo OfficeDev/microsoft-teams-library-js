@@ -10,7 +10,7 @@
     ],
     "brace-style": [
       true,
-      "stroustrup",
+      "1tbs",
       {
         "allowSingleLine": true
       }
@@ -79,7 +79,7 @@
     "trailing-comma": [
       true,
       {
-        "multiline": "always",
+        "multiline": "never",
         "singleline": "never"
       }
     ],
