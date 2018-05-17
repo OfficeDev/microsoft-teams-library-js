@@ -9,7 +9,6 @@ interface TeamsNativeClient extends Window {
 }
 
 interface Window {
-  // tslint:disable-next-line: no-any
   teamsNativeClient: TeamsNativeClient;
 }
 
@@ -414,11 +413,9 @@ namespace microsoftTeams {
         ? currentWindow.parent
         : currentWindow.opener;
 
-    // tslint:disable-next-line: no-any
     if (!parentWindow) {
       isFramelessWindow = true;
       // For frame-less scenario, assign parent window for communication
-      // tslint:disable-next-line: no-any
       parentWindow = currentWindow.teamsNativeClient;
     } else {
       // For iFrame scenario, add listener to listen 'message'
@@ -1769,10 +1766,8 @@ namespace microsoftTeams {
     args?: any[]
   ): number {
     let request = createMessageRequest(actionName, args);
-    // tslint:disable-next-line: no-any
     if (isFramelessWindow) {
-      // tslint:disable-next-line: no-any
-      setTimeout(function (): void {
+      setTimeout(function(): void {
         if (
           currentWindow.teamsNativeClient &&
           currentWindow.teamsNativeClient.framelessPostMessage
