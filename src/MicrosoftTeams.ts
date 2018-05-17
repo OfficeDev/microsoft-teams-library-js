@@ -61,7 +61,8 @@ namespace microsoftTeams {
    */
   export namespace native {
     /**
-     * Call it incase of frameless scenario to pass message to SDK
+     * Incase of frameless scenario, it is used to pass message from client to SDK.
+     * Web developers should not use this function.
      * @param msg Message to be sent to sdk
      */
     export function postMessage(msg: MessageEvent): void {
@@ -1079,13 +1080,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1771,7 +1772,7 @@ namespace microsoftTeams {
     // tslint:disable-next-line: no-any
     if (isFramelessWindow) {
       // tslint:disable-next-line: no-any
-      setTimeout(function(): void {
+      setTimeout(function (): void {
         if (
           currentWindow.teamsNativeClient &&
           currentWindow.teamsNativeClient.framelessPostMessage
