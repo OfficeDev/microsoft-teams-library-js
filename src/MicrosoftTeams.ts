@@ -62,7 +62,7 @@ namespace microsoftTeams {
   export namespace native {
     /**
      * Incase of frameless scenario, it is used to pass message from client to SDK.
-     * Web developers should not use this function.
+     * This function meant for intern use. Web developers using SDK should not use this function.
      * @param msg Message to be sent to sdk
      */
     export function postMessage(msg: MessageEvent): void {
