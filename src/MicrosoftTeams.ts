@@ -377,9 +377,9 @@ namespace microsoftTeams {
   let backButtonPressHandler: () => boolean;
   handlers["backButtonPress"] = handleBackButtonPress;
 
-  handlers["nativeJsLoaded"] = handleNativeJsLoaded;
+  handlers["nativeClientInitialize"] = handleNativeClientInitialize;
 
-  function handleNativeJsLoaded(): void {
+  function handleNativeClientInitialize(): void {
     while (framelessMessageQueue.length > 0) {
       currentWindow.teamsNativeClient.framelessPostMessage(
         framelessMessageQueue.shift()
@@ -415,8 +415,6 @@ namespace microsoftTeams {
 
     if (!parentWindow) {
       isFramelessWindow = true;
-      // For frame-less scenario, assign parent window for communication
-      parentWindow = currentWindow.teamsNativeClient;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -465,7 +463,9 @@ namespace microsoftTeams {
       framelessMessageQueue = [];
       isFramelessWindow = false;
 
-      currentWindow.removeEventListener("message", messageListener, false);
+      if (!isFramelessWindow) {
+        currentWindow.removeEventListener("message", messageListener, false);
+      }
     };
   }
 
@@ -1077,13 +1077,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1767,16 +1767,16 @@ namespace microsoftTeams {
   ): number {
     let request = createMessageRequest(actionName, args);
     if (isFramelessWindow) {
-      setTimeout(function(): void {
-        if (
-          currentWindow.teamsNativeClient &&
-          currentWindow.teamsNativeClient.framelessPostMessage
-        ) {
+      if (
+        currentWindow.teamsNativeClient &&
+        currentWindow.teamsNativeClient.framelessPostMessage
+      ) {
+        setTimeout(function(): void {
           currentWindow.teamsNativeClient.framelessPostMessage(request);
-        } else {
-          framelessMessageQueue.push(request);
-        }
-      }, 0);
+        }, 0);
+      } else {
+        framelessMessageQueue.push(request);
+      }
     } else {
       let targetOrigin = getTargetOrigin(targetWindow);
 
