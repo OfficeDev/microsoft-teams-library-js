@@ -4,7 +4,7 @@ interface MessageEvent {
   originalEvent: MessageEvent;
 }
 
-interface TeamsNativeClient extends Window {
+interface TeamsNativeClient {
   framelessPostMessage(msg: microsoftTeams.MessageRequest): void;
 }
 
@@ -215,21 +215,31 @@ namespace microsoftTeams {
       }
     }
 
+    export interface ActionMenuParameters {
+      /**
+       * Display title for Action Menu
+       */
+      title: string;
+
+      /**
+       * List of MenuItems for Action Menu
+       */
+      items: MenuItem[];
+    }
+
     /**
      * Used to show Action Menu.
-     * @param title Title for Action Menu
-     * @param items List of MenuItems for Action Menu.
+     * @param params Parameters for Menu Parameters
      * @param handler The handler to invoke when the user selects menu item.
      */
     export function showActionMenu(
-      title: string,
-      items: MenuItem[],
+      params: ActionMenuParameters,
       handler: (id: string) => boolean
     ): void {
       ensureInitialized();
 
       actionMenuItemPressHandler = handler;
-      sendMessageRequest(parentWindow, "showActionMenu", [title, items]);
+      sendMessageRequest(parentWindow, "showActionMenu", [params]);
     }
 
     function handleActionMenuItemPress(id: String): void {
@@ -1077,13 +1087,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1771,7 +1781,7 @@ namespace microsoftTeams {
         currentWindow.teamsNativeClient &&
         currentWindow.teamsNativeClient.framelessPostMessage
       ) {
-        setTimeout(function(): void {
+        setTimeout(function (): void {
           currentWindow.teamsNativeClient.framelessPostMessage(request);
         }, 0);
       } else {
