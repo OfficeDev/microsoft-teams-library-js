@@ -5,11 +5,12 @@ interface MessageEvent {
 }
 
 interface TeamsNativeClient {
-  framelessPostMessage(msg: microsoftTeams.MessageRequest): void;
+  framelessPostMessage(msg: String): void;
 }
 
 interface Window {
-  teamsNativeClient: TeamsNativeClient;
+  nativeInterface: TeamsNativeClient;
+  onNativeMessage(evt: MessageEvent): void;
 }
 
 /**
@@ -44,7 +45,7 @@ namespace microsoftTeams {
     web: "web"
   };
 
-  export interface MessageRequest {
+  interface MessageRequest {
     id: number;
     func: string;
     args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
@@ -53,20 +54,6 @@ namespace microsoftTeams {
   interface MessageResponse {
     id: number;
     args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
-  }
-
-  /**
-   * Namespace to send message to SDK from native apps, incase of frameless scenario.
-   */
-  export namespace native {
-    /**
-     * Incase of frameless scenario, it is used to pass message from client to SDK.
-     * This function meant for intern use. Web developers using SDK should not use this function.
-     * @param msg Message to be sent to sdk
-     */
-    export function postMessage(msg: MessageEvent): void {
-      handleParentMessage(msg);
-    }
   }
 
   /**
@@ -387,15 +374,7 @@ namespace microsoftTeams {
   let backButtonPressHandler: () => boolean;
   handlers["backButtonPress"] = handleBackButtonPress;
 
-  handlers["nativeClientInitialize"] = handleNativeClientInitialize;
-
-  function handleNativeClientInitialize(): void {
-    while (framelessMessageQueue.length > 0) {
-      currentWindow.teamsNativeClient.framelessPostMessage(
-        framelessMessageQueue.shift()
-      );
-    }
-  }
+  window.onNativeMessage = handleParentMessage;
 
   /**
    * Initializes the library. This must be called before any other SDK calls
@@ -1087,13 +1066,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1777,16 +1756,9 @@ namespace microsoftTeams {
   ): number {
     let request = createMessageRequest(actionName, args);
     if (isFramelessWindow) {
-      if (
-        currentWindow.teamsNativeClient &&
-        currentWindow.teamsNativeClient.framelessPostMessage
-      ) {
-        setTimeout(function (): void {
-          currentWindow.teamsNativeClient.framelessPostMessage(request);
-        }, 0);
-      } else {
-        framelessMessageQueue.push(request);
-      }
+      currentWindow.nativeInterface.framelessPostMessage(
+        JSON.stringify(request)
+      );
     } else {
       let targetOrigin = getTargetOrigin(targetWindow);
 
