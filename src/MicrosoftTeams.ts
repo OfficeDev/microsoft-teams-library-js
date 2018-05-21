@@ -1449,8 +1449,9 @@ namespace microsoftTeams {
     locale: string;
 
     /**
+     * @deprecated Use loginHint or userPrincipalName.
      * The UPN of the current user.
-     * Because a malicious party can host malicious content in a browser, this value should
+     * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to who the user is and never as proof of identity.
      * This field is available only when the identity permission is requested in the manifest.
      */
@@ -1458,7 +1459,7 @@ namespace microsoftTeams {
 
     /**
      * The Azure AD tenant ID of the current user.
-     * Because a malicious party can host malicious content in a browser, this value should
+     * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to who the user is and never as proof of identity.
      * This field is available only when the identity permission is requested in the manifest.
      */
@@ -1491,6 +1492,8 @@ namespace microsoftTeams {
 
     /**
      * The user's role in the team.
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a hint as to the user's role, and never as proof of her role.
      */
     userTeamRole?: UserTeamRole;
 
@@ -1500,8 +1503,32 @@ namespace microsoftTeams {
     chatId?: string;
 
     /**
-     * Indicate wheather team is archived
-     * apps should use this as a signal to prevent any changes to content associated with archived teams
+     * A value suitable for use as a login_hint when authenticating with Azure AD.
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    loginHint?: string;
+
+    /**
+     * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
+     * Because a malicious party run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    userPrincipalName?: string;
+
+    /**
+     * The Azure AD object id of the current user.
+     * Because a malicious party run your content in a browser, this value should
+     * be used only as a hint as to who the user is and never as proof of identity.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    userObjectId?: string;
+
+    /**
+     * Indicates wheather team is archived.
+     * Apps should use this as a signal to prevent any changes to content associated with archived teams.
      */
     isTeamArchived?: boolean;
   }
