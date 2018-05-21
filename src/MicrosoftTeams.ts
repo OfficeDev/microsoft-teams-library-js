@@ -374,8 +374,6 @@ namespace microsoftTeams {
   let backButtonPressHandler: () => boolean;
   handlers["backButtonPress"] = handleBackButtonPress;
 
-  window.onNativeMessage = handleParentMessage;
-
   /**
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
@@ -404,6 +402,7 @@ namespace microsoftTeams {
 
     if (!parentWindow) {
       isFramelessWindow = true;
+      window.onNativeMessage = handleParentMessage;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -1066,13 +1065,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
