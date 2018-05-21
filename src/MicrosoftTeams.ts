@@ -4,6 +4,15 @@ interface MessageEvent {
   originalEvent: MessageEvent;
 }
 
+interface TeamsNativeClient {
+  framelessPostMessage(msg: String): void;
+}
+
+interface Window {
+  nativeInterface: TeamsNativeClient;
+  onNativeMessage(evt: MessageEvent): void;
+}
+
 /**
  * This is the root namespace for the JavaScript SDK.
  */
@@ -45,6 +54,187 @@ namespace microsoftTeams {
   interface MessageResponse {
     id: number;
     args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
+  }
+
+  /**
+   * Namespace to interact with the menu-specific part of the SDK.
+   * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+   */
+  export namespace menus {
+    /**
+     * Represents information about item in View Configuration.
+     */
+    export interface ViewConfiguration {
+      /**
+       * Unique identifier of view.
+       */
+      id: string;
+
+      /**
+       * Display title of the view.
+       */
+      title: string;
+
+      /**
+       * Additional information for accessibility.
+       */
+      contentDescription?: string;
+    }
+
+    /**
+     * Represents information about menu item for Action Menu and Navigation Bar Menu.
+     */
+    export class MenuItem {
+      /**
+       * Unique identifier for the menu item.
+       */
+      public id: string;
+
+      /**
+       * Display title of the menu item.
+       */
+      public title: string;
+
+      /**
+       * Display icon of the menu item. The icon value must be a string having SVG icon content.
+       */
+      public icon?: string;
+
+      /**
+       * Selected state display icon of the menu item. The icon value must be a string having SVG icon content.
+       */
+      public iconSelected?: string;
+
+      /**
+       * Additional information for accessibility.
+       */
+      public contentDescription?: string;
+
+      /**
+       * State of the menu item
+       */
+      public enabled: boolean = true;
+
+      /**
+       * Interface to show list of items on selection of menu item.
+       */
+      public viewData: ViewData;
+    }
+
+    /**
+     * Represents information about view to show on Navigation Bar Menu item selection
+     */
+    export interface ViewData {
+      /**
+       * Display header title of the item list.
+       */
+      listTitle?: string;
+
+      /**
+       * Type of the menu item.
+       */
+      listType: MenuListType;
+
+      /**
+       * Array of MenuItem. Icon value will be required for all items in the list.
+       */
+      listItems: MenuItem[];
+    }
+
+    /**
+     * Represents information about type of list to display in Navigation Bar Menu.
+     */
+    export enum MenuListType {
+      dropDown = "dropDown",
+      popOver = "popOver"
+    }
+
+    let navBarMenuItemPressHandler: (id: String) => boolean;
+    handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
+
+    let actionMenuItemPressHandler: (id: String) => boolean;
+    handlers["actionMenuItemPress"] = handleActionMenuItemPress;
+
+    let viewConfigItemPressHandler: (id: String) => boolean;
+    handlers["setModuleView"] = handleViewConfigItemPress;
+
+    /**
+     * Registers list of view configurations and it's handler.
+     * Handler is responsible for listening selection of View Configuration.
+     * @param viewConfig List of view configurations. Minimum 1 value is required.
+     * @param handler The handler to invoke when the user selects view configuration.
+     */
+    export function setUpViews(
+      viewConfig: ViewConfiguration[],
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+      viewConfigItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
+    }
+
+    function handleViewConfigItemPress(id: String): void {
+      if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "viewConfigItemPress", [id]);
+      }
+    }
+
+    /**
+     * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, otherwise title will be shown.
+     * @param items List of MenuItems for Navigation Bar Menu.
+     * @param handler The handler to invoke when the user selects menu item.
+     */
+    export function setNavBarMenu(
+      items: MenuItem[],
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+
+      navBarMenuItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "setNavBarMenu", [items]);
+    }
+
+    function handleNavBarMenuItemPress(id: String): void {
+      if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
+      }
+    }
+
+    export interface ActionMenuParameters {
+      /**
+       * Display title for Action Menu
+       */
+      title: string;
+
+      /**
+       * List of MenuItems for Action Menu
+       */
+      items: MenuItem[];
+    }
+
+    /**
+     * Used to show Action Menu.
+     * @param params Parameters for Menu Parameters
+     * @param handler The handler to invoke when the user selects menu item.
+     */
+    export function showActionMenu(
+      params: ActionMenuParameters,
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+
+      actionMenuItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "showActionMenu", [params]);
+    }
+
+    function handleActionMenuItemPress(id: String): void {
+      if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
+      }
+    }
   }
 
   /**
@@ -161,6 +351,7 @@ namespace microsoftTeams {
   // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
   let initializeCalled = false;
 
+  let isFramelessWindow = false;
   let currentWindow: Window;
   let parentWindow: Window;
   let parentOrigin: string;
@@ -200,7 +391,6 @@ namespace microsoftTeams {
 
     // Listen for messages post to our window
     let messageListener = (evt: MessageEvent) => processMessage(evt);
-    currentWindow.addEventListener("message", messageListener, false);
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
@@ -208,6 +398,14 @@ namespace microsoftTeams {
       currentWindow.parent !== currentWindow.self
         ? currentWindow.parent
         : currentWindow.opener;
+
+    if (!parentWindow) {
+      isFramelessWindow = true;
+      window.onNativeMessage = handleParentMessage;
+    } else {
+      // For iFrame scenario, add listener to listen 'message'
+      currentWindow.addEventListener("message", messageListener, false);
+    }
 
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -238,6 +436,10 @@ namespace microsoftTeams {
         settings.registerOnRemoveHandler(null);
       }
 
+      if (!isFramelessWindow) {
+        currentWindow.removeEventListener("message", messageListener, false);
+      }
+
       initializeCalled = false;
       parentWindow = null;
       parentOrigin = null;
@@ -249,8 +451,7 @@ namespace microsoftTeams {
       callbacks = {};
       frameContext = null;
       hostClientType = null;
-
-      currentWindow.removeEventListener("message", messageListener, false);
+      isFramelessWindow = false;
     };
   }
 
@@ -1547,20 +1748,25 @@ namespace microsoftTeams {
   function sendMessageRequest(
     targetWindow: Window,
     actionName: string,
-    // tslint:disable-next-line:no-any
+    // tslint:disable-next-line: no-any
     args?: any[]
   ): number {
     let request = createMessageRequest(actionName, args);
-    let targetOrigin = getTargetOrigin(targetWindow);
-
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      targetWindow.postMessage(request, targetOrigin);
+    if (isFramelessWindow) {
+      currentWindow.nativeInterface.framelessPostMessage(
+        JSON.stringify(request)
+      );
     } else {
-      getTargetMessageQueue(targetWindow).push(request);
-    }
+      let targetOrigin = getTargetOrigin(targetWindow);
 
+      // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+      // queue the message and send it after the origin is established
+      if (targetWindow && targetOrigin) {
+        targetWindow.postMessage(request, targetOrigin);
+      } else {
+        getTargetMessageQueue(targetWindow).push(request);
+      }
+    }
     return request.id;
   }
 
