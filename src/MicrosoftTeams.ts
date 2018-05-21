@@ -436,6 +436,10 @@ namespace microsoftTeams {
         settings.registerOnRemoveHandler(null);
       }
 
+      if (!isFramelessWindow) {
+        currentWindow.removeEventListener("message", messageListener, false);
+      }
+
       initializeCalled = false;
       parentWindow = null;
       parentOrigin = null;
@@ -448,10 +452,6 @@ namespace microsoftTeams {
       frameContext = null;
       hostClientType = null;
       isFramelessWindow = false;
-
-      if (!isFramelessWindow) {
-        currentWindow.removeEventListener("message", messageListener, false);
-      }
     };
   }
 
