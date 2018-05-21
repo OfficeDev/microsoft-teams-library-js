@@ -352,7 +352,6 @@ namespace microsoftTeams {
   let initializeCalled = false;
 
   let isFramelessWindow = false;
-  let framelessMessageQueue: MessageRequest[] = [];
   let currentWindow: Window;
   let parentWindow: Window;
   let parentOrigin: string;
@@ -448,7 +447,6 @@ namespace microsoftTeams {
       callbacks = {};
       frameContext = null;
       hostClientType = null;
-      framelessMessageQueue = [];
       isFramelessWindow = false;
 
       if (!isFramelessWindow) {
