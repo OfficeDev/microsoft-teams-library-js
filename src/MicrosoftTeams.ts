@@ -4,6 +4,15 @@ interface MessageEvent {
   originalEvent: MessageEvent;
 }
 
+interface TeamsNativeClient {
+  framelessPostMessage(msg: String): void;
+}
+
+interface Window {
+  nativeInterface: TeamsNativeClient;
+  onNativeMessage(evt: MessageEvent): void;
+}
+
 /**
  * This is the root namespace for the JavaScript SDK.
  */
@@ -45,6 +54,187 @@ namespace microsoftTeams {
   interface MessageResponse {
     id: number;
     args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
+  }
+
+  /**
+   * Namespace to interact with the menu-specific part of the SDK.
+   * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+   */
+  export namespace menus {
+    /**
+     * Represents information about item in View Configuration.
+     */
+    export interface ViewConfiguration {
+      /**
+       * Unique identifier of view.
+       */
+      id: string;
+
+      /**
+       * Display title of the view.
+       */
+      title: string;
+
+      /**
+       * Additional information for accessibility.
+       */
+      contentDescription?: string;
+    }
+
+    /**
+     * Represents information about menu item for Action Menu and Navigation Bar Menu.
+     */
+    export class MenuItem {
+      /**
+       * Unique identifier for the menu item.
+       */
+      public id: string;
+
+      /**
+       * Display title of the menu item.
+       */
+      public title: string;
+
+      /**
+       * Display icon of the menu item. The icon value must be a string having SVG icon content.
+       */
+      public icon?: string;
+
+      /**
+       * Selected state display icon of the menu item. The icon value must be a string having SVG icon content.
+       */
+      public iconSelected?: string;
+
+      /**
+       * Additional information for accessibility.
+       */
+      public contentDescription?: string;
+
+      /**
+       * State of the menu item
+       */
+      public enabled: boolean = true;
+
+      /**
+       * Interface to show list of items on selection of menu item.
+       */
+      public viewData: ViewData;
+    }
+
+    /**
+     * Represents information about view to show on Navigation Bar Menu item selection
+     */
+    export interface ViewData {
+      /**
+       * Display header title of the item list.
+       */
+      listTitle?: string;
+
+      /**
+       * Type of the menu item.
+       */
+      listType: MenuListType;
+
+      /**
+       * Array of MenuItem. Icon value will be required for all items in the list.
+       */
+      listItems: MenuItem[];
+    }
+
+    /**
+     * Represents information about type of list to display in Navigation Bar Menu.
+     */
+    export enum MenuListType {
+      dropDown = "dropDown",
+      popOver = "popOver"
+    }
+
+    let navBarMenuItemPressHandler: (id: String) => boolean;
+    handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
+
+    let actionMenuItemPressHandler: (id: String) => boolean;
+    handlers["actionMenuItemPress"] = handleActionMenuItemPress;
+
+    let viewConfigItemPressHandler: (id: String) => boolean;
+    handlers["setModuleView"] = handleViewConfigItemPress;
+
+    /**
+     * Registers list of view configurations and it's handler.
+     * Handler is responsible for listening selection of View Configuration.
+     * @param viewConfig List of view configurations. Minimum 1 value is required.
+     * @param handler The handler to invoke when the user selects view configuration.
+     */
+    export function setUpViews(
+      viewConfig: ViewConfiguration[],
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+      viewConfigItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
+    }
+
+    function handleViewConfigItemPress(id: String): void {
+      if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "viewConfigItemPress", [id]);
+      }
+    }
+
+    /**
+     * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, otherwise title will be shown.
+     * @param items List of MenuItems for Navigation Bar Menu.
+     * @param handler The handler to invoke when the user selects menu item.
+     */
+    export function setNavBarMenu(
+      items: MenuItem[],
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+
+      navBarMenuItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "setNavBarMenu", [items]);
+    }
+
+    function handleNavBarMenuItemPress(id: String): void {
+      if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
+      }
+    }
+
+    export interface ActionMenuParameters {
+      /**
+       * Display title for Action Menu
+       */
+      title: string;
+
+      /**
+       * List of MenuItems for Action Menu
+       */
+      items: MenuItem[];
+    }
+
+    /**
+     * Used to show Action Menu.
+     * @param params Parameters for Menu Parameters
+     * @param handler The handler to invoke when the user selects menu item.
+     */
+    export function showActionMenu(
+      params: ActionMenuParameters,
+      handler: (id: string) => boolean
+    ): void {
+      ensureInitialized();
+
+      actionMenuItemPressHandler = handler;
+      sendMessageRequest(parentWindow, "showActionMenu", [params]);
+    }
+
+    function handleActionMenuItemPress(id: String): void {
+      if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
+        ensureInitialized();
+        sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
+      }
+    }
   }
 
   /**
@@ -151,10 +341,17 @@ namespace microsoftTeams {
     favoriteTeamsOnly?: boolean;
   }
 
+  export const enum TaskModuleDimension {
+    Large = "large",
+    Medium = "medium",
+    Small = "small"
+  }
+
   // This indicates whether initialize was called (started).
   // It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
   let initializeCalled = false;
 
+  let isFramelessWindow = false;
   let currentWindow: Window;
   let parentWindow: Window;
   let parentOrigin: string;
@@ -194,7 +391,6 @@ namespace microsoftTeams {
 
     // Listen for messages post to our window
     let messageListener = (evt: MessageEvent) => processMessage(evt);
-    currentWindow.addEventListener("message", messageListener, false);
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
@@ -202,6 +398,14 @@ namespace microsoftTeams {
       currentWindow.parent !== currentWindow.self
         ? currentWindow.parent
         : currentWindow.opener;
+
+    if (!parentWindow) {
+      isFramelessWindow = true;
+      window.onNativeMessage = handleParentMessage;
+    } else {
+      // For iFrame scenario, add listener to listen 'message'
+      currentWindow.addEventListener("message", messageListener, false);
+    }
 
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -232,6 +436,10 @@ namespace microsoftTeams {
         settings.registerOnRemoveHandler(null);
       }
 
+      if (!isFramelessWindow) {
+        currentWindow.removeEventListener("message", messageListener, false);
+      }
+
       initializeCalled = false;
       parentWindow = null;
       parentOrigin = null;
@@ -243,8 +451,7 @@ namespace microsoftTeams {
       callbacks = {};
       frameContext = null;
       hostClientType = null;
-
-      currentWindow.removeEventListener("message", messageListener, false);
+      isFramelessWindow = false;
     };
   }
 
@@ -422,7 +629,7 @@ namespace microsoftTeams {
   ): void {
     ensureInitialized(frameContexts.content);
 
-    sendMessageRequest(parentWindow, "openFilePreview", [
+    const params = [
       filePreviewParameters.entityId,
       filePreviewParameters.title,
       filePreviewParameters.description,
@@ -431,7 +638,13 @@ namespace microsoftTeams {
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
       filePreviewParameters.webEditUrl
-    ]);
+    ];
+
+    if (filePreviewParameters.baseUrl) {
+      params.push(filePreviewParameters.baseUrl);
+    }
+
+    sendMessageRequest(parentWindow, "openFilePreview", params);
   }
 
   /**
@@ -1279,6 +1492,8 @@ namespace microsoftTeams {
 
     /**
      * The user's role in the team.
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a hint as to the user's role, and never as proof of her role.
      */
     userTeamRole?: UserTeamRole;
 
@@ -1310,6 +1525,12 @@ namespace microsoftTeams {
      * This field is available only when the identity permission is requested in the manifest.
      */
     userObjectId?: string;
+
+    /**
+     * Indicates wheather team is archived.
+     * Apps should use this as a signal to prevent any changes to content associated with archived teams.
+     */
+    isTeamArchived?: boolean;
   }
 
   export interface DeepLinkParameters {
@@ -1371,6 +1592,11 @@ namespace microsoftTeams {
      * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
      */
     webEditUrl?: string;
+
+    /**
+     * Optional; the base url of the site where the file is hosted
+     */
+    baseUrl?: string;
   }
 
   function ensureInitialized(...expectedFrameContexts: string[]): void {
@@ -1513,13 +1739,17 @@ namespace microsoftTeams {
   function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
     return targetWindow === parentWindow
       ? parentMessageQueue
-      : targetWindow === childWindow ? childMessageQueue : [];
+      : targetWindow === childWindow
+        ? childMessageQueue
+        : [];
   }
 
   function getTargetOrigin(targetWindow: Window): string {
     return targetWindow === parentWindow
       ? parentOrigin
-      : targetWindow === childWindow ? childOrigin : null;
+      : targetWindow === childWindow
+        ? childOrigin
+        : null;
   }
 
   function flushMessageQueue(targetWindow: Window): void {
@@ -1545,20 +1775,25 @@ namespace microsoftTeams {
   function sendMessageRequest(
     targetWindow: Window,
     actionName: string,
-    // tslint:disable-next-line:no-any
+    // tslint:disable-next-line: no-any
     args?: any[]
   ): number {
     let request = createMessageRequest(actionName, args);
-    let targetOrigin = getTargetOrigin(targetWindow);
-
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      targetWindow.postMessage(request, targetOrigin);
+    if (isFramelessWindow) {
+      currentWindow.nativeInterface.framelessPostMessage(
+        JSON.stringify(request)
+      );
     } else {
-      getTargetMessageQueue(targetWindow).push(request);
-    }
+      let targetOrigin = getTargetOrigin(targetWindow);
 
+      // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+      // queue the message and send it after the origin is established
+      if (targetWindow && targetOrigin) {
+        targetWindow.postMessage(request, targetOrigin);
+      } else {
+        getTargetMessageQueue(targetWindow).push(request);
+      }
+    }
     return request.id;
   }
 
@@ -1590,5 +1825,76 @@ namespace microsoftTeams {
       id: id,
       args: args || []
     };
+  }
+
+  export interface TaskInfo {
+    /**
+     * The url to be rendered in the webview/iframe.
+     */
+    url?: string;
+
+    /**
+     * JSON defining an adaptive card.
+     */
+    card?: string;
+
+    /**
+     * The requested height of the webview/iframe.
+     */
+    height?: TaskModuleDimension | Number;
+
+    /**
+     * The requested width of the webview/iframe.
+     */
+    width?: TaskModuleDimension | Number;
+
+    /**
+     * Title of the task module.
+     */
+    title?: string;
+
+    /**
+     * If client doesnt support the URL, the URL that needs to be opened in the browser.
+     */
+    fallbackUrl?: string;
+  }
+
+  /**
+   * Namespace to interact with the task module-specific part of the SDK.
+   * This object is usable only on the content frame.
+   */
+  export namespace tasks {
+    /**
+     * Allows an app to open the task module.
+     * @param taskInfo An object containing the parameters of the task module
+     * @param completionHandler Handler to call when the task module is completed
+     */
+    export function startTask(
+      taskInfo: TaskInfo,
+      completionHandler?: (err: string, result: string) => void
+    ): void {
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
+        taskInfo
+      ]);
+      callbacks[messageId] = completionHandler;
+    }
+
+    /**
+     * Complete the task module.
+     * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+     * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
+     */
+    export function completeTask(
+      result?: string | object,
+      appIds?: string[]
+    ): void {
+      // Ensure that the tab content is initialized
+      ensureInitialized(frameContexts.content);
+
+      sendMessageRequest(parentWindow, "tasks.completeTask", [result, appIds]);
+    }
   }
 }
