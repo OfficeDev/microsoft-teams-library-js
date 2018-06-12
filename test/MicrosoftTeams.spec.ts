@@ -32,10 +32,10 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function(message: MessageRequest, targetOrigin: string): void {
+    postMessage: function (message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function(): void {
+    close: function (): void {
       return;
     },
     closed: false
@@ -51,7 +51,7 @@ describe("MicrosoftTeams", () => {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function(
+      addEventListener: function (
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -60,7 +60,7 @@ describe("MicrosoftTeams", () => {
           processMessage = listener;
         }
       },
-      removeEventListener: function(
+      removeEventListener: function (
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -72,12 +72,12 @@ describe("MicrosoftTeams", () => {
       location: {
         origin: tabOrigin,
         href: validOrigin,
-        assign: function(url: string): void {
+        assign: function (url: string): void {
           return;
         }
       },
       parent: {
-        postMessage: function(
+        postMessage: function (
           message: MessageRequest,
           targetOrigin: string
         ): void {
@@ -91,10 +91,10 @@ describe("MicrosoftTeams", () => {
         }
       } as Window,
       self: null as Window,
-      open: function(url: string, name: string, specs: string): Window {
+      open: function (url: string, name: string, specs: string): Window {
         return childWindow as Window;
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number =>
@@ -1087,7 +1087,9 @@ describe("MicrosoftTeams", () => {
       downloadUrl: "someDownloadUrl",
       webPreviewUrl: "someWebPreviewUrl",
       webEditUrl: "someWebEditUrl",
-      baseUrl: "someBaseUrl"
+      baseUrl: "someBaseUrl",
+      editFile: true,
+      subEntityId: "someSubEntityId"
     });
 
     let message = findMessageByFunc("openFilePreview");
@@ -1102,6 +1104,8 @@ describe("MicrosoftTeams", () => {
     expect(message.args[6]).toBe("someWebPreviewUrl");
     expect(message.args[7]).toBe("someWebEditUrl");
     expect(message.args[8]).toBe("someBaseUrl");
+    expect(message.args[9]).toBe(true);
+    expect(message.args[10]).toBe("someSubEntityId");
   });
 
   describe("getTabInstances", () => {

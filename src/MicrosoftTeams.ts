@@ -637,7 +637,9 @@ namespace microsoftTeams {
       filePreviewParameters.objectUrl,
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
-      filePreviewParameters.webEditUrl
+      filePreviewParameters.webEditUrl,
+      filePreviewParameters.editFile,
+      filePreviewParameters.subEntityId
     ];
 
     if (filePreviewParameters.baseUrl) {
@@ -1597,6 +1599,17 @@ namespace microsoftTeams {
      * Optional; the base url of the site where the file is hosted
      */
     baseUrl?: string;
+
+    /**
+     * Optional; indicates whether the file should be opened in edit mode
+     */
+    editFile?: true;
+
+    /**
+     * Optional; the developer-defined unique ID for the sub-entity to return to when the file stage closes.
+     * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
+     */
+    subEntityId?: string;
   }
 
   function ensureInitialized(...expectedFrameContexts: string[]): void {
