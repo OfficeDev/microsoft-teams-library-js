@@ -1600,7 +1600,7 @@ namespace microsoftTeams {
     /**
      * Optional; indicates whether the file should be opened in edit mode
      */
-    editFile?: true;
+    editFile?: boolean;
 
     /**
      * Optional; the developer-defined unique ID for the sub-entity to return to when the file stage closes.
