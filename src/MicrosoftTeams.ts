@@ -18,7 +18,7 @@ namespace microsoftTeams {
     "https://int.teams.microsoft.com",
     "https://devspaces.skype.com",
     "https://ssauth.skype.com",
-    "http://dev.local" // local development
+    "http://dev.local", // local development
   ];
 
   const handlers: { [func: string]: Function } = {};
@@ -28,12 +28,12 @@ namespace microsoftTeams {
     settings: "settings",
     content: "content",
     authentication: "authentication",
-    remove: "remove"
+    remove: "remove",
   };
 
   const hostClientTypes = {
     desktop: "desktop",
-    web: "web"
+    web: "web",
   };
 
   interface MessageRequest {
@@ -130,13 +130,13 @@ namespace microsoftTeams {
     Edu = 1,
     Class = 2,
     Plc = 3,
-    Staff = 4
+    Staff = 4,
   }
 
   export const enum UserTeamRole {
     Admin = 0,
     User = 1,
-    Guest = 2
+    Guest = 2,
   }
 
   export interface TabInstanceParameters {
@@ -154,7 +154,7 @@ namespace microsoftTeams {
   export const enum TaskModuleDimension {
     Large = "large",
     Medium = "medium",
-    Small = "small"
+    Small = "small",
   }
 
   // This indicates whether initialize was called (started).
@@ -271,7 +271,7 @@ namespace microsoftTeams {
    * @param handler The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(
-    handler: (theme: string) => void
+    handler: (theme: string) => void,
   ): void {
     ensureInitialized();
 
@@ -294,7 +294,7 @@ namespace microsoftTeams {
    * @param handler The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(
-    handler: (isFullScreen: boolean) => void
+    handler: (isFullScreen: boolean) => void,
   ): void {
     ensureInitialized();
 
@@ -337,7 +337,7 @@ namespace microsoftTeams {
     callbacks[messageId] = (success: boolean) => {
       if (!success) {
         throw new Error(
-          "Back navigation is not supported in the current client or context."
+          "Back navigation is not supported in the current client or context.",
         );
       }
     };
@@ -355,16 +355,16 @@ namespace microsoftTeams {
     ensureInitialized(
       frameContexts.content,
       frameContexts.settings,
-      frameContexts.remove
+      frameContexts.remove,
     );
 
     let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [
-      url
+      url,
     ]);
     callbacks[messageId] = (success: boolean) => {
       if (!success) {
         throw new Error(
-          "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest."
+          "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.",
         );
       }
     };
@@ -378,12 +378,12 @@ namespace microsoftTeams {
    */
   export function getTabInstances(
     callback: (tabInfo: TabInformation) => void,
-    tabInstanceParameters?: TabInstanceParameters
+    tabInstanceParameters?: TabInstanceParameters,
   ): void {
     ensureInitialized();
 
     let messageId = sendMessageRequest(parentWindow, "getTabInstances", [
-      tabInstanceParameters
+      tabInstanceParameters,
     ]);
     callbacks[messageId] = callback;
   }
@@ -395,12 +395,12 @@ namespace microsoftTeams {
    */
   export function getMruTabInstances(
     callback: (tabInfo: TabInformation) => void,
-    tabInstanceParameters?: TabInstanceParameters
+    tabInstanceParameters?: TabInstanceParameters,
   ): void {
     ensureInitialized();
 
     let messageId = sendMessageRequest(parentWindow, "getMruTabInstances", [
-      tabInstanceParameters
+      tabInstanceParameters,
     ]);
     callbacks[messageId] = callback;
   }
@@ -415,7 +415,7 @@ namespace microsoftTeams {
     sendMessageRequest(parentWindow, "shareDeepLink", [
       deepLinkParameters.subEntityId,
       deepLinkParameters.subEntityLabel,
-      deepLinkParameters.subEntityWebUrl
+      deepLinkParameters.subEntityWebUrl,
     ]);
   }
 
@@ -424,7 +424,7 @@ namespace microsoftTeams {
    * @param file The file to preview.
    */
   export function openFilePreview(
-    filePreviewParameters: FilePreviewParameters
+    filePreviewParameters: FilePreviewParameters,
   ): void {
     ensureInitialized(frameContexts.content);
 
@@ -436,7 +436,7 @@ namespace microsoftTeams {
       filePreviewParameters.objectUrl,
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
-      filePreviewParameters.webEditUrl
+      filePreviewParameters.webEditUrl,
     ]);
   }
 
@@ -448,12 +448,12 @@ namespace microsoftTeams {
     ensureInitialized();
 
     let messageId = sendMessageRequest(parentWindow, "navigateToTab", [
-      tabInstance
+      tabInstance,
     ]);
     callbacks[messageId] = (success: boolean) => {
       if (!success) {
         throw new Error(
-          "Invalid internalTabInstanceId and/or channelId were/was provided"
+          "Invalid internalTabInstanceId and/or channelId were/was provided",
         );
       }
     };
@@ -478,7 +478,7 @@ namespace microsoftTeams {
       ensureInitialized(frameContexts.settings, frameContexts.remove);
 
       sendMessageRequest(parentWindow, "settings.setValidityState", [
-        validityState
+        validityState,
       ]);
     }
 
@@ -487,7 +487,7 @@ namespace microsoftTeams {
      * @param callback The callback to invoke when the {@link Settings} object is retrieved.
      */
     export function getSettings(
-      callback: (instanceSettings: Settings) => void
+      callback: (instanceSettings: Settings) => void,
     ): void {
       ensureInitialized(frameContexts.settings, frameContexts.remove);
 
@@ -504,7 +504,7 @@ namespace microsoftTeams {
       ensureInitialized(frameContexts.settings);
 
       sendMessageRequest(parentWindow, "settings.setSettings", [
-        instanceSettings
+        instanceSettings,
       ]);
     }
 
@@ -516,7 +516,7 @@ namespace microsoftTeams {
      * @param handler The handler to invoke when the user selects the save button.
      */
     export function registerOnSaveHandler(
-      handler: (evt: SaveEvent) => void
+      handler: (evt: SaveEvent) => void,
     ): void {
       ensureInitialized(frameContexts.settings);
 
@@ -531,7 +531,7 @@ namespace microsoftTeams {
      * @param handler The handler to invoke when the user selects the remove button.
      */
     export function registerOnRemoveHandler(
-      handler: (evt: RemoveEvent) => void
+      handler: (evt: RemoveEvent) => void,
     ): void {
       ensureInitialized(frameContexts.remove);
 
@@ -619,6 +619,7 @@ namespace microsoftTeams {
      * Hide from docs, since this class is not directly used.
      */
     class SaveEventImpl implements SaveEvent {
+      // tslint:disable-next-line:no-inferrable-types
       public notified: boolean = false;
       public result: SaveParameters;
 
@@ -645,7 +646,7 @@ namespace microsoftTeams {
       private ensureNotNotified(): void {
         if (this.notified) {
           throw new Error(
-            "The SaveEvent may only notify success or failure once."
+            "The SaveEvent may only notify success or failure once.",
           );
         }
       }
@@ -666,7 +667,8 @@ namespace microsoftTeams {
      * Hide from docs, since this class is not directly used.
      */
     class RemoveEventImpl implements RemoveEvent {
-      public notified: boolean = false;
+         // tslint:disable-next-line:no-inferrable-types
+         public notified: boolean = false;
 
       public notifySuccess(): void {
         this.ensureNotNotified();
@@ -687,7 +689,7 @@ namespace microsoftTeams {
       private ensureNotNotified(): void {
         if (this.notified) {
           throw new Error(
-            "The removeEvent may only notify success or failure once."
+            "The removeEvent may only notify success or failure once.",
           );
         }
       }
@@ -709,7 +711,7 @@ namespace microsoftTeams {
      * @param authenticateParameters A set of values that configure the authentication pop-up.
      */
     export function registerAuthenticationHandlers(
-      authenticateParameters: AuthenticateParameters
+      authenticateParameters: AuthenticateParameters,
     ): void {
       authParams = authenticateParameters;
     }
@@ -718,7 +720,7 @@ namespace microsoftTeams {
      * Initiates an authentication request, which opens a new window with the specified settings.
      */
     export function authenticate(
-      authenticateParameters?: AuthenticateParameters
+      authenticateParameters?: AuthenticateParameters,
     ): void {
       let authenticateParams =
         authenticateParameters !== undefined
@@ -727,7 +729,7 @@ namespace microsoftTeams {
       ensureInitialized(
         frameContexts.content,
         frameContexts.settings,
-        frameContexts.remove
+        frameContexts.remove,
       );
 
       if (hostClientType === hostClientTypes.desktop) {
@@ -739,7 +741,7 @@ namespace microsoftTeams {
         let messageId = sendMessageRequest(
           parentWindow,
           "authentication.authenticate",
-          [link.href, authenticateParams.width, authenticateParams.height]
+          [link.href, authenticateParams.width, authenticateParams.height],
         );
         callbacks[messageId] = (success: boolean, response: string) => {
           if (success) {
@@ -768,7 +770,7 @@ namespace microsoftTeams {
       let messageId = sendMessageRequest(
         parentWindow,
         "authentication.getAuthToken",
-        [authTokenRequest.resources]
+        [authTokenRequest.resources],
       );
       callbacks[messageId] = (success: boolean, result: string) => {
         if (success) {
@@ -790,11 +792,11 @@ namespace microsoftTeams {
 
       let messageId = sendMessageRequest(
         parentWindow,
-        "authentication.getUser"
+        "authentication.getUser",
       );
       callbacks[messageId] = (
         success: boolean,
-        result: UserProfile | string
+        result: UserProfile | string,
       ) => {
         if (success) {
           userRequest.successCallback(result as UserProfile);
@@ -820,7 +822,7 @@ namespace microsoftTeams {
     }
 
     function openAuthenticationWindow(
-      authenticateParameters: AuthenticateParameters
+      authenticateParameters: AuthenticateParameters,
     ): void {
       authParams = authenticateParameters;
 
@@ -862,7 +864,7 @@ namespace microsoftTeams {
         ", width=" +
         width +
         ", height=" +
-        height
+        height,
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -933,12 +935,12 @@ namespace microsoftTeams {
       ensureInitialized(frameContexts.authentication);
 
       sendMessageRequest(parentWindow, "authentication.authenticate.success", [
-        result
+        result,
       ]);
 
       // Wait for the message to be sent before closing the window
       waitForMessageQueue(parentWindow, () =>
-        setTimeout(() => currentWindow.close(), 200)
+        setTimeout(() => currentWindow.close(), 200),
       );
     }
 
@@ -955,12 +957,12 @@ namespace microsoftTeams {
       ensureInitialized(frameContexts.authentication);
 
       sendMessageRequest(parentWindow, "authentication.authenticate.failure", [
-        reason
+        reason,
       ]);
 
       // Wait for the message to be sent before closing the window
       waitForMessageQueue(parentWindow, () =>
-        setTimeout(() => currentWindow.close(), 200)
+        setTimeout(() => currentWindow.close(), 200),
       );
     }
 
@@ -995,7 +997,7 @@ namespace microsoftTeams {
     function redirectIfWin32Outlook(
       callbackUrl?: string,
       key?: string,
-      value?: string
+      value?: string,
     ): void {
       if (callbackUrl) {
         let link = document.createElement("a");
@@ -1011,7 +1013,7 @@ namespace microsoftTeams {
               link.href = updateUrlParameter(link.href, "result", value);
             }
             currentWindow.location.assign(
-              updateUrlParameter(link.href, "authSuccess", "")
+              updateUrlParameter(link.href, "authSuccess", ""),
             );
           }
           if (key && key === "reason") {
@@ -1019,7 +1021,7 @@ namespace microsoftTeams {
               link.href = updateUrlParameter(link.href, "reason", value);
             }
             currentWindow.location.assign(
-              updateUrlParameter(link.href, "authFailure", "")
+              updateUrlParameter(link.href, "authFailure", ""),
             );
           }
         }
@@ -1035,7 +1037,7 @@ namespace microsoftTeams {
     function updateUrlParameter(
       uri: string,
       key: string,
-      value: string
+      value: string,
     ): string {
       let i = uri.indexOf("#");
       let hash = i === -1 ? "#" : uri.substr(i);
@@ -1374,7 +1376,7 @@ namespace microsoftTeams {
 
       if (!found) {
         throw new Error(
-          "This call is not allowed in the '" + frameContext + "' context"
+          "This call is not allowed in the '" + frameContext + "' context",
         );
       }
     }
@@ -1410,7 +1412,7 @@ namespace microsoftTeams {
 
   function updateRelationships(
     messageSource: Window,
-    messageOrigin: string
+    messageOrigin: string,
   ): void {
     // Determine whether the source of the message is our parent or child and update our
     // window and origin pointer accordingly
@@ -1470,7 +1472,7 @@ namespace microsoftTeams {
           sendMessageResponse(
             childWindow,
             message.id,
-            Array.isArray(result) ? result : [result]
+            Array.isArray(result) ? result : [result],
           );
         }
       } else {
@@ -1478,7 +1480,7 @@ namespace microsoftTeams {
         let messageId = sendMessageRequest(
           parentWindow,
           message.func,
-          message.args
+          message.args,
         );
 
         // tslint:disable-next-line:no-any
@@ -1517,7 +1519,7 @@ namespace microsoftTeams {
 
   function waitForMessageQueue(
     targetWindow: Window,
-    callback: () => void
+    callback: () => void,
   ): void {
     let messageQueueMonitor = currentWindow.setInterval(() => {
       if (getTargetMessageQueue(targetWindow).length === 0) {
@@ -1531,7 +1533,7 @@ namespace microsoftTeams {
     targetWindow: Window,
     actionName: string,
     // tslint:disable-next-line:no-any
-    args?: any[]
+    args?: any[],
   ): number {
     let request = createMessageRequest(actionName, args);
     let targetOrigin = getTargetOrigin(targetWindow);
@@ -1551,7 +1553,7 @@ namespace microsoftTeams {
     targetWindow: Window,
     id: number,
     // tslint:disable-next-line:no-any
-    args?: any[]
+    args?: any[],
   ): void {
     let response = createMessageResponse(id, args);
     let targetOrigin = getTargetOrigin(targetWindow);
@@ -1565,7 +1567,7 @@ namespace microsoftTeams {
     return {
       id: nextMessageId++,
       func: func,
-      args: args || []
+      args: args || [],
     };
   }
 
@@ -1573,7 +1575,7 @@ namespace microsoftTeams {
   function createMessageResponse(id: number, args: any[]): MessageResponse {
     return {
       id: id,
-      args: args || []
+      args: args || [],
     };
   }
 
@@ -1621,13 +1623,13 @@ namespace microsoftTeams {
      */
     export function startTask(
       taskInfo: TaskInfo,
-      completionHandler?: (err: string, result: string) => void
+      completionHandler?: (err: string, result: string) => void,
     ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
       let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
-        taskInfo
+        taskInfo,
       ]);
       callbacks[messageId] = completionHandler;
     }
@@ -1639,7 +1641,7 @@ namespace microsoftTeams {
      */
     export function completeTask(
       result?: string | object,
-      appIds?: string[]
+      appIds?: string[],
     ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
