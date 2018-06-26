@@ -637,12 +637,11 @@ namespace microsoftTeams {
       filePreviewParameters.objectUrl,
       filePreviewParameters.downloadUrl,
       filePreviewParameters.webPreviewUrl,
-      filePreviewParameters.webEditUrl
+      filePreviewParameters.webEditUrl,
+      filePreviewParameters.baseUrl,
+      filePreviewParameters.editFile,
+      filePreviewParameters.subEntityId
     ];
-
-    if (filePreviewParameters.baseUrl) {
-      params.push(filePreviewParameters.baseUrl);
-    }
 
     sendMessageRequest(parentWindow, "openFilePreview", params);
   }
@@ -1063,13 +1062,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1597,6 +1596,17 @@ namespace microsoftTeams {
      * Optional; the base url of the site where the file is hosted
      */
     baseUrl?: string;
+
+    /**
+     * Optional; indicates whether the file should be opened in edit mode
+     */
+    editFile?: boolean;
+
+    /**
+     * Optional; the developer-defined unique ID for the sub-entity to return to when the file stage closes.
+     * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
+     */
+    subEntityId?: string;
   }
 
   function ensureInitialized(...expectedFrameContexts: string[]): void {
