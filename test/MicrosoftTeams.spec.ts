@@ -160,6 +160,18 @@ describe("MicrosoftTeams", () => {
 
   it("should reject messages from unsupported domains", () => {
     initializeWithContext("content");
+    const unSupportedDomains = [
+      "https://teams.com",
+      "https://teams.us",
+      "https://int.microsoft.com",
+      "https://dev.skype.com",
+      "http://localhost",
+      "https://microsoftsharepoint.com",
+      "https://msft.com",
+      "https://microsoft.sharepoint-xyz.com",
+      "http://teams.microsoft.com",
+      "http://microsoft.sharepoint-df.com"
+    ];
 
     let callbackCalled = false;
     microsoftTeams.getContext(() => {
@@ -169,20 +181,61 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-    processMessage({
-      origin: "https://some-malicious-site.com/",
-      source: microsoftTeams._window.parent,
-      data: {
-        id: getContextMessage.id,
-        args: [
-          {
-            groupId: "someMaliciousValue"
-          }
-        ]
-      } as MessageResponse
-    } as MessageEvent);
+    unSupportedDomains.forEach(unSupportedDomain => {
+      processMessage({
+        origin: unSupportedDomain,
+        source: microsoftTeams._window.parent,
+        data: {
+          id: getContextMessage.id,
+          args: [
+            {
+              groupId: "someMaliciousValue"
+            }
+          ]
+        } as MessageResponse
+      } as MessageEvent);
 
-    expect(callbackCalled).toBe(false);
+      expect(callbackCalled).toBe(false);
+    });
+  });
+
+  it("should allow messages from supported domains", () => {
+    initializeWithContext("content");
+    const supportedDomains = [
+      "https://teams.microsoft.com",
+      "https://teams.microsoft.us",
+      "https://int.teams.microsoft.com",
+      "https://devspaces.skype.com",
+      "http://dev.local",
+      "https://microsoft.sharepoint.com",
+      "https://msft.spoppe.com",
+      "https://microsoft.sharepoint-df.com"
+    ];
+
+    let callbackCalled = false;
+    microsoftTeams.getContext(() => {
+      callbackCalled = true;
+    });
+
+    let getContextMessage = findMessageByFunc("getContext");
+    expect(getContextMessage).not.toBeNull();
+
+    supportedDomains.forEach(supportedDomain => {
+      processMessage({
+        origin: supportedDomain,
+        source: microsoftTeams._window.parent,
+        data: {
+          id: getContextMessage.id,
+          args: [
+            {
+              groupId: "someMaliciousValue"
+            }
+          ]
+        } as MessageResponse
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(true);
+    });
   });
 
   it("should not make calls to unsupported domains", () => {
