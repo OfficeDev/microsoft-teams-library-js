@@ -21,14 +21,26 @@ namespace microsoftTeams {
 
   const version = "1.2";
 
-  const validOrigins = [
-    "https://teams.microsoft.com",
-    "https://teams.microsoft.us",
-    "https://int.teams.microsoft.com",
-    "https://devspaces.skype.com",
-    "https://ssauth.skype.com",
+  const validHostRegEx = new RegExp(
+    "https://teams.microsoft.com"
+    + "|" +
+    "https://teams.microsoft.us"
+    + "|" +
+    "https://int.teams.microsoft.com"
+    + "|" +
+    "https://devspaces.skype.com"
+    + "|" +
+    "https://ssauth.skype.com"
+    + "|" +
     "http://dev.local" // local development
-  ];
+    + "|" +
+    "https://msft.spoppe.com"
+    + "|" +
+    "http*.*sharepoint.com"
+    + "|" +
+    "http*.*sharepoint-df.com"
+    , "i"
+  );
 
   const handlers: { [func: string]: Function } = {};
 
@@ -1062,13 +1074,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1647,7 +1659,7 @@ namespace microsoftTeams {
     if (
       messageSource === currentWindow ||
       (messageOrigin !== currentWindow.location.origin &&
-        validOrigins.indexOf(messageOrigin.toLowerCase()) === -1)
+        validHostRegEx.test(messageOrigin.toLowerCase()))
     ) {
       return;
     }
