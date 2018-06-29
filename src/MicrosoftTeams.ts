@@ -22,24 +22,24 @@ namespace microsoftTeams {
   const version = "1.2";
 
   const validHostRegEx = new RegExp(
-    "https://teams.microsoft.com"
-    + "|" +
-    "https://teams.microsoft.us"
-    + "|" +
-    "https://int.teams.microsoft.com"
-    + "|" +
-    "https://devspaces.skype.com"
-    + "|" +
-    "https://ssauth.skype.com"
-    + "|" +
-    "http://dev.local" // local development
-    + "|" +
-    "https://msft.spoppe.com"
-    + "|" +
-    "http*.*sharepoint.com"
-    + "|" +
-    "http*.*sharepoint-df.com"
-    , "i"
+    "https://teams.microsoft.com" +
+    "|" +
+    "https://teams.microsoft.us" +
+    "|" +
+    "https://int.teams.microsoft.com" +
+    "|" +
+    "https://devspaces.skype.com" +
+    "|" +
+    "https://ssauth.skype.com" +
+    "|" +
+    "http://dev.local" + // local development
+    "|" +
+    "https://msft.spoppe.com" +
+    "|" +
+    "http*.*sharepoint.com" +
+    "|" +
+    "http*.*sharepoint-df.com",
+    "i"
   );
 
   const handlers: { [func: string]: Function } = {};
@@ -1659,7 +1659,7 @@ namespace microsoftTeams {
     if (
       messageSource === currentWindow ||
       (messageOrigin !== currentWindow.location.origin &&
-        validHostRegEx.test(messageOrigin.toLowerCase()))
+        !validHostRegEx.test(messageOrigin.toLowerCase()))
     ) {
       return;
     }
