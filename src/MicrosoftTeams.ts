@@ -33,12 +33,12 @@ namespace microsoftTeams {
     "https://ssauth.skype.com" +
     "|" +
     "http://dev.local" + // local development
-    "|" +
-    "https://msft.spoppe.com" +
-    "|" +
-    "http*.*sharepoint.com" +
-    "|" +
-    "http*.*sharepoint-df.com",
+      "|" +
+      "https://msft.spoppe.com" +
+      "|" +
+      "http*.*sharepoint.com" +
+      "|" +
+      "http*.*sharepoint-df.com",
     "i"
   );
 
@@ -1074,13 +1074,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
