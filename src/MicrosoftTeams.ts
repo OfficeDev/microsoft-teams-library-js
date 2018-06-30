@@ -1,3 +1,13 @@
+declare interface String {
+  startsWith(search: string, pos: number): boolean;
+}
+
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function (search: string, pos: number): boolean {
+    return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+  };
+}
+
 // Shim in definitions used for browser-compat
 interface MessageEvent {
   // Needed for Chrome
@@ -1130,13 +1140,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
