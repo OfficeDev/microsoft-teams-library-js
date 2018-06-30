@@ -70,44 +70,6 @@ namespace microsoftTeams {
 
   const validOriginRegExp = generateRegExpFromUrls(validOrigins);
 
-  /**
-   * Validate whether the given domain is a part of the given list of validOrigins
-   * @param {string} origin - Domain to be validated
-   * @returns {boolean} - True if the url belongs to the valid origins, else False
-   */
-  const isValidOrigin: ((origin: string) => boolean) = (
-    origin: string
-  ): boolean => {
-    // Non Regex check
-    if (validOrigins.indexOf(origin) !== -1) {
-      return true;
-    } else {
-      // Regex check
-      // Check the URL against each domain in the list
-      for (let i = 0; i < validOrigins.length; i++) {
-        let validOrigin = "";
-        let validOrigininParts = validOrigins[i].split(".");
-
-        for (let j = 0; j < validOrigininParts.length; j++) {
-          validOrigin +=
-            (j > 0 ? "[.]" : "") +
-            validOrigininParts[j].replace("*", "[^/^.]+");
-        }
-
-        // Check domain against the pattern
-        let regExPattern = new RegExp(
-          "^https://" + validOrigin + "((/|\\?).*)?$",
-          "i"
-        );
-        if (origin.match(regExPattern)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-  };
-
   const handlers: { [func: string]: Function } = {};
 
   // Ensure these declarations stay in sync with the framework.
