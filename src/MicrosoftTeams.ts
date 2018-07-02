@@ -51,7 +51,7 @@ namespace microsoftTeams {
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
       urlRegExpPart +=
-        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
+        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.?]+");
     }
     urlRegExpPart += "$";
     return urlRegExpPart;

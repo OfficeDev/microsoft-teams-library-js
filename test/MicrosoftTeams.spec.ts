@@ -170,7 +170,9 @@ describe("MicrosoftTeams", () => {
       "https://msft.com",
       "https://microsoft.sharepoint-xyz.com",
       "http://teams.microsoft.com",
-      "http://microsoft.sharepoint-df.com"
+      "http://microsoft.sharepoint-df.com",
+      "https://a.b.sharepoint.com",
+      "https://a.b.c.sharepoint.com",
     ];
 
     let callbackCalled = false;
@@ -180,7 +182,7 @@ describe("MicrosoftTeams", () => {
 
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
-
+    callbackCalled = false;
     unSupportedDomains.forEach(unSupportedDomain => {
       processMessage({
         origin: unSupportedDomain,
@@ -208,8 +210,6 @@ describe("MicrosoftTeams", () => {
       "https://devspaces.skype.com",
       "http://dev.local",
       "https://microsoft.sharepoint.com",
-      "https://a.b.sharepoint.com",
-      "https://a.b.c.sharepoint.com",
       "https://msft.spoppe.com",
       "https://microsoft.sharepoint-df.com"
     ];
@@ -221,7 +221,7 @@ describe("MicrosoftTeams", () => {
 
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
-
+    callbackCalled = false;
     supportedDomains.forEach(supportedDomain => {
       processMessage({
         origin: supportedDomain,
