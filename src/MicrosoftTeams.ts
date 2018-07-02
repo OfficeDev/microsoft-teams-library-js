@@ -31,7 +31,6 @@ namespace microsoftTeams {
 
   const version = "1.2";
 
-  // if schema is not specified then default use https:// only http/https schema are supported
   const validOrigins = [
     "https://teams.microsoft.com",
     "https://teams.microsoft.us",
@@ -40,18 +39,17 @@ namespace microsoftTeams {
     "https://ssauth.skype.com",
     "http://dev.local", // local development
     "https://msft.spoppe.com",
-    "*.sharepoint.com",
-    "*.sharepoint-df.com",
-    "*.sharepointonline.com"
+    "https://*.sharepoint.com",
+    "https://*.sharepoint-df.com",
+    "https://*.sharepointonline.com"
   ];
 
   // This will return a reg expression a given url
   const generateRegExpFromUrl: ((url: string) => string) = (url: string) => {
-    let urlRegExpPart = url.startsWith("http") ? "^" : "^https://";
+    let urlRegExpPart = "^";
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
-      urlRegExpPart +=
-        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.?]+");
+      urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.?]+");
     }
     urlRegExpPart += "$";
     return urlRegExpPart;
