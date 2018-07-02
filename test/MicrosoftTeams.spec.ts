@@ -158,32 +158,33 @@ describe("MicrosoftTeams", () => {
     );
   });
 
-  it("should reject messages from unsupported domains", () => {
-    initializeWithContext("content");
-    const unSupportedDomains = [
-      "https://teams.com",
-      "https://teams.us",
-      "https://int.microsoft.com",
-      "https://dev.skype.com",
-      "http://localhost",
-      "https://microsoftsharepoint.com",
-      "https://msft.com",
-      "https://microsoft.sharepoint-xyz.com",
-      "http://teams.microsoft.com",
-      "http://microsoft.sharepoint-df.com",
-      "https://a.b.sharepoint.com",
-      "https://a.b.c.sharepoint.com",
-    ];
+  const unSupportedDomains = [
+    "https://teams.com",
+    "https://teams.us",
+    "https://int.microsoft.com",
+    "https://dev.skype.com",
+    "http://localhost",
+    "https://microsoftsharepoint.com",
+    "https://msft.com",
+    "https://microsoft.sharepoint-xyz.com",
+    "http://teams.microsoft.com",
+    "http://microsoft.sharepoint-df.com",
+    "https://a.b.sharepoint.com",
+    "https://a.b.c.sharepoint.com"
+  ];
 
-    let callbackCalled = false;
-    microsoftTeams.getContext(() => {
-      callbackCalled = true;
-    });
+  unSupportedDomains.forEach(unSupportedDomain => {
+    it("should reject messages from unsupported domain: " + unSupportedDomain, () => {
+      initializeWithContext("content");
+      let callbackCalled = false;
+      microsoftTeams.getContext(() => {
+        callbackCalled = true;
+      });
 
-    let getContextMessage = findMessageByFunc("getContext");
-    expect(getContextMessage).not.toBeNull();
-    callbackCalled = false;
-    unSupportedDomains.forEach(unSupportedDomain => {
+      let getContextMessage = findMessageByFunc("getContext");
+      expect(getContextMessage).not.toBeNull();
+
+      callbackCalled = false;
       processMessage({
         origin: unSupportedDomain,
         source: microsoftTeams._window.parent,
@@ -201,28 +202,28 @@ describe("MicrosoftTeams", () => {
     });
   });
 
-  it("should allow messages from supported domains", () => {
-    initializeWithContext("content");
-    const supportedDomains = [
-      "https://teams.microsoft.com",
-      "https://teams.microsoft.us",
-      "https://int.teams.microsoft.com",
-      "https://devspaces.skype.com",
-      "http://dev.local",
-      "https://microsoft.sharepoint.com",
-      "https://msft.spoppe.com",
-      "https://microsoft.sharepoint-df.com"
-    ];
+  const supportedDomains = [
+    "https://teams.microsoft.com",
+    "https://teams.microsoft.us",
+    "https://int.teams.microsoft.com",
+    "https://devspaces.skype.com",
+    "http://dev.local",
+    "https://microsoft.sharepoint.com",
+    "https://msft.spoppe.com",
+    "https://microsoft.sharepoint-df.com"
+  ];
 
-    let callbackCalled = false;
-    microsoftTeams.getContext(() => {
-      callbackCalled = true;
-    });
+  supportedDomains.forEach(supportedDomain => {
+    it("should allow messages from supported domain " + supportedDomain, () => {
+      initializeWithContext("content");
+      let callbackCalled = false;
+      microsoftTeams.getContext(() => {
+        callbackCalled = true;
+      });
 
-    let getContextMessage = findMessageByFunc("getContext");
-    expect(getContextMessage).not.toBeNull();
-    callbackCalled = false;
-    supportedDomains.forEach(supportedDomain => {
+      let getContextMessage = findMessageByFunc("getContext");
+      expect(getContextMessage).not.toBeNull();
+
       processMessage({
         origin: supportedDomain,
         source: microsoftTeams._window.parent,
