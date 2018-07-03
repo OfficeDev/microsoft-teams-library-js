@@ -45,7 +45,7 @@ namespace microsoftTeams {
   ];
 
   // This will return a reg expression a given url
-  const generateRegExpFromUrl: ((url: string) => string) = (url: string) => {
+  function generateRegExpFromUrl(url: string): string {
     let urlRegExpPart = "^";
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
@@ -53,18 +53,16 @@ namespace microsoftTeams {
     }
     urlRegExpPart += "$";
     return urlRegExpPart;
-  };
+  }
 
   // This will return a reg expression for list of url
-  const generateRegExpFromUrls: ((urls: string[]) => RegExp) = (
-    urls: string[]
-  ) => {
+  function generateRegExpFromUrls(urls: string[]): RegExp {
     let urlRegExp = "";
     for (let i = 0; i < urls.length; i++) {
       urlRegExp += (i === 0 ? "" : "|") + generateRegExpFromUrl(urls[i]);
     }
     return new RegExp(urlRegExp);
-  };
+  }
 
   const validOriginRegExp = generateRegExpFromUrls(validOrigins);
 
