@@ -32,10 +32,10 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function(message: MessageRequest, targetOrigin: string): void {
+    postMessage: function (message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function(): void {
+    close: function (): void {
       return;
     },
     closed: false
@@ -51,7 +51,7 @@ describe("MicrosoftTeams", () => {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function(
+      addEventListener: function (
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -60,7 +60,7 @@ describe("MicrosoftTeams", () => {
           processMessage = listener;
         }
       },
-      removeEventListener: function(
+      removeEventListener: function (
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -72,12 +72,12 @@ describe("MicrosoftTeams", () => {
       location: {
         origin: tabOrigin,
         href: validOrigin,
-        assign: function(url: string): void {
+        assign: function (url: string): void {
           return;
         }
       },
       parent: {
-        postMessage: function(
+        postMessage: function (
           message: MessageRequest,
           targetOrigin: string
         ): void {
@@ -91,10 +91,10 @@ describe("MicrosoftTeams", () => {
         }
       } as Window,
       self: null as Window,
-      open: function(url: string, name: string, specs: string): Window {
+      open: function (url: string, name: string, specs: string): Window {
         return childWindow as Window;
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number =>
@@ -158,31 +158,87 @@ describe("MicrosoftTeams", () => {
     );
   });
 
-  it("should reject messages from unsupported domains", () => {
-    initializeWithContext("content");
+  const unSupportedDomains = [
+    "https://teams.com",
+    "https://teams.us",
+    "https://int.microsoft.com",
+    "https://dev.skype.com",
+    "http://localhost",
+    "https://microsoftsharepoint.com",
+    "https://msft.com",
+    "https://microsoft.sharepoint-xyz.com",
+    "http://teams.microsoft.com",
+    "http://microsoft.sharepoint-df.com",
+    "https://a.b.sharepoint.com",
+    "https://a.b.c.sharepoint.com"
+  ];
 
-    let callbackCalled = false;
-    microsoftTeams.getContext(() => {
-      callbackCalled = true;
+  unSupportedDomains.forEach(unSupportedDomain => {
+    it("should reject messages from unsupported domain: " + unSupportedDomain, () => {
+      initializeWithContext("content");
+      let callbackCalled = false;
+      microsoftTeams.getContext(() => {
+        callbackCalled = true;
+      });
+
+      let getContextMessage = findMessageByFunc("getContext");
+      expect(getContextMessage).not.toBeNull();
+
+      callbackCalled = false;
+      processMessage({
+        origin: unSupportedDomain,
+        source: microsoftTeams._window.parent,
+        data: {
+          id: getContextMessage.id,
+          args: [
+            {
+              groupId: "someMaliciousValue"
+            }
+          ]
+        } as MessageResponse
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(false);
     });
+  });
 
-    let getContextMessage = findMessageByFunc("getContext");
-    expect(getContextMessage).not.toBeNull();
+  const supportedDomains = [
+    "https://teams.microsoft.com",
+    "https://teams.microsoft.us",
+    "https://int.teams.microsoft.com",
+    "https://devspaces.skype.com",
+    "http://dev.local",
+    "https://microsoft.sharepoint.com",
+    "https://msft.spoppe.com",
+    "https://microsoft.sharepoint-df.com"
+  ];
 
-    processMessage({
-      origin: "https://some-malicious-site.com/",
-      source: microsoftTeams._window.parent,
-      data: {
-        id: getContextMessage.id,
-        args: [
-          {
-            groupId: "someMaliciousValue"
-          }
-        ]
-      } as MessageResponse
-    } as MessageEvent);
+  supportedDomains.forEach(supportedDomain => {
+    it("should allow messages from supported domain " + supportedDomain, () => {
+      initializeWithContext("content");
+      let callbackCalled = false;
+      microsoftTeams.getContext(() => {
+        callbackCalled = true;
+      });
 
-    expect(callbackCalled).toBe(false);
+      let getContextMessage = findMessageByFunc("getContext");
+      expect(getContextMessage).not.toBeNull();
+
+      processMessage({
+        origin: supportedDomain,
+        source: microsoftTeams._window.parent,
+        data: {
+          id: getContextMessage.id,
+          args: [
+            {
+              groupId: "someMaliciousValue"
+            }
+          ]
+        } as MessageResponse
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(true);
+    });
   });
 
   it("should not make calls to unsupported domains", () => {

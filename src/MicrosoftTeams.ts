@@ -1,3 +1,13 @@
+declare interface String {
+  startsWith(search: string, pos?: number): boolean;
+}
+
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function (search: string, pos?: number): boolean {
+    return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+  };
+}
+
 // Shim in definitions used for browser-compat
 interface MessageEvent {
   // Needed for Chrome
@@ -27,8 +37,36 @@ namespace microsoftTeams {
     "https://int.teams.microsoft.com",
     "https://devspaces.skype.com",
     "https://ssauth.skype.com",
-    "http://dev.local" // local development
+    "http://dev.local", // local development
+    "https://msft.spoppe.com",
+    "https://*.sharepoint.com",
+    "https://*.sharepoint-df.com",
+    "https://*.sharepointonline.com"
   ];
+
+  // This will return a reg expression a given url
+  const generateRegExpFromUrl: ((url: string) => string) = (url: string) => {
+    let urlRegExpPart = "^";
+    let urlParts = url.split(".");
+    for (let j = 0; j < urlParts.length; j++) {
+      urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^\/^.]+");
+    }
+    urlRegExpPart += "$";
+    return urlRegExpPart;
+  };
+
+  // This will return a reg expression for list of url
+  const generateRegExpFromUrls: ((urls: string[]) => RegExp) = (
+    urls: string[]
+  ) => {
+    let urlRegExp = "";
+    for (let i = 0; i < urls.length; i++) {
+      urlRegExp += (i === 0 ? "" : "|") + generateRegExpFromUrl(urls[i]);
+    }
+    return new RegExp(urlRegExp);
+  };
+
+  const validOriginRegExp = generateRegExpFromUrls(validOrigins);
 
   const handlers: { [func: string]: Function } = {};
 
@@ -1062,13 +1100,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1647,7 +1685,7 @@ namespace microsoftTeams {
     if (
       messageSource === currentWindow ||
       (messageOrigin !== currentWindow.location.origin &&
-        validOrigins.indexOf(messageOrigin.toLowerCase()) === -1)
+        !validOriginRegExp.test(messageOrigin.toLowerCase()))
     ) {
       return;
     }
