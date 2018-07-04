@@ -42,7 +42,9 @@ namespace microsoftTeams {
 
   const hostClientTypes = {
     desktop: "desktop",
-    web: "web"
+    web: "web",
+    android: "android",
+    ios: "ios"
   };
 
   interface MessageRequest {
@@ -453,6 +455,16 @@ namespace microsoftTeams {
       hostClientType = null;
       isFramelessWindow = false;
     };
+  }
+
+  /**
+   * Retrieves client type of the host.
+   * Possible values are : desktop, web, android, ios
+   */
+  export function getHostClientType(): string {
+    ensureInitialized();
+
+    return hostClientType;
   }
 
   /**
@@ -1063,13 +1075,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
