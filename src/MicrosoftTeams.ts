@@ -458,16 +458,6 @@ namespace microsoftTeams {
   }
 
   /**
-   * Retrieves client type of the host.
-   * Possible values are : desktop, web, android, ios
-   */
-  export function getHostClientType(): string {
-    ensureInitialized();
-
-    return hostClientType;
-  }
-
-  /**
    * Retrieves the current context the frame is running in.
    * @param callback The callback to invoke when the {@link Context} object is retrieved.
    */
@@ -475,7 +465,12 @@ namespace microsoftTeams {
     ensureInitialized();
 
     let messageId = sendMessageRequest(parentWindow, "getContext");
-    callbacks[messageId] = callback;
+    callbacks[messageId] = (context: Context) => {
+      if (hostClientType != null) {
+        context.hostClientType = hostClientType;
+      }
+      callback.apply(null, [context]);
+    };
   }
 
   /**
@@ -1543,6 +1538,11 @@ namespace microsoftTeams {
      * Apps should use this as a signal to prevent any changes to content associated with archived teams.
      */
     isTeamArchived?: boolean;
+
+    /**
+     * The client type of the current user. Possible values are : android, ios, web, desktop
+     */
+    hostClientType?: string;
   }
 
   export interface DeepLinkParameters {
