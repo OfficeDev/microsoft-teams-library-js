@@ -40,12 +40,12 @@ namespace microsoftTeams {
     remove: "remove"
   };
 
-  const hostClientTypes = {
-    desktop: "desktop",
-    web: "web",
-    android: "android",
-    ios: "ios"
-  };
+  export enum HostClientTypes {
+    desktop = "desktop",
+    web = "web",
+    android = "android",
+    ios = "ios"
+  }
 
   interface MessageRequest {
     id: number;
@@ -465,12 +465,7 @@ namespace microsoftTeams {
     ensureInitialized();
 
     let messageId = sendMessageRequest(parentWindow, "getContext");
-    callbacks[messageId] = (context: Context) => {
-      if (hostClientType != null) {
-        context.hostClientType = hostClientType;
-      }
-      callback.apply(null, [context]);
-    };
+    callbacks[messageId] = callback;
   }
 
   /**
@@ -944,7 +939,7 @@ namespace microsoftTeams {
         frameContexts.remove
       );
 
-      if (hostClientType === hostClientTypes.desktop) {
+      if (hostClientType === HostClientTypes.desktop) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         let link = document.createElement("a");
         link.href = authenticateParams.url;
@@ -1070,13 +1065,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1542,7 +1537,7 @@ namespace microsoftTeams {
     /**
      * The type of the host client. Possible values are : android, ios, web, desktop
      */
-    hostClientType?: string;
+    hostClientType?: HostClientTypes;
   }
 
   export interface DeepLinkParameters {
