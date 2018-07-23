@@ -8,16 +8,22 @@ if (!String.prototype.startsWith) {
   };
 }
 
+// @private
+// Hide from docs, since this interface is not directly used.
 // Shim in definitions used for browser-compat
 interface MessageEvent {
   // Needed for Chrome
   originalEvent: MessageEvent;
 }
 
+// @private
+// Hide from docs, since this interface is not directly used.
 interface TeamsNativeClient {
   framelessPostMessage(msg: String): void;
 }
 
+// @private
+// Hide from docs, since this interface is not directly used.
 interface Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: MessageEvent): void;
@@ -97,6 +103,9 @@ namespace microsoftTeams {
   /**
    * Namespace to interact with the menu-specific part of the SDK.
    * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+   * 
+   * @private
+   * Hide from docs until feature is complete
    */
   export namespace menus {
     /**
@@ -293,6 +302,7 @@ namespace microsoftTeams {
 
     /**
      * Internal: do not use
+     * @protected
      */
     internalTabInstanceId?: string;
 
@@ -353,6 +363,10 @@ namespace microsoftTeams {
     websiteUrl?: string;
   }
 
+  /**
+   * Indicates the team type, currently used to distinguish between different team
+   * types in Office 365 for Education (team types 1, 2, 3, and 4).
+   */
   export const enum TeamType {
     Standard = 0,
     Edu = 1,
@@ -361,12 +375,18 @@ namespace microsoftTeams {
     Staff = 4
   }
 
+  /**
+   * Indicates the various types of roles of a user in a team.
+   */
   export const enum UserTeamRole {
     Admin = 0,
     User = 1,
     Guest = 2
   }
 
+  /**
+   * Indicates information about the tab instance for filtering purposes.
+   */
   export interface TabInstanceParameters {
     /**
      * Flag allowing to select favorite channels only
@@ -379,6 +399,10 @@ namespace microsoftTeams {
     favoriteTeamsOnly?: boolean;
   }
 
+  /**
+   * @private
+   * Internal use only
+   */    
   export const enum TaskModuleDimension {
     Large = "large",
     Medium = "medium",
