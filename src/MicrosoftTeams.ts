@@ -688,13 +688,13 @@ namespace microsoftTeams {
    * @private
    * Hide from docs.
    * ------
-   * Sideload an App-manifest directly to a team.
+   * Upload a custom App manifest directly to both team and personal scopes.
    * This method works just for the first party Apps.
    */
-  export function sideLoadAppManifestPackage(manifestBlob: Blob): void {
+  export function uploadACustomApp(manifestBlob: Blob): void {
     ensureInitialized();
 
-    let messageId = sendMessageRequest(parentWindow, "sideLoadApp", [
+    const messageId = sendMessageRequest(parentWindow, "uploadACustomApp", [
       manifestBlob
     ]);
     callbacks[messageId] = (success: boolean, result: string) => {
