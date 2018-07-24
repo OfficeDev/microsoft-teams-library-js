@@ -685,6 +685,26 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Sideload an App-manifest directly to a team.
+   * This method works just for the first party Apps.
+   */
+  export function sideLoadAppManifestPackage(manifestBlob: Blob): void {
+    ensureInitialized();
+
+    let messageId = sendMessageRequest(parentWindow, "sideLoadApp", [
+      manifestBlob
+    ]);
+    callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
+  }
+
+  /**
    * Navigates the Microsoft Teams app to the specified tab instance.
    * @param tabInstance The tab instance to navigate to.
    */
