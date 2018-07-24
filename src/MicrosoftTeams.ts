@@ -691,10 +691,10 @@ namespace microsoftTeams {
    * Upload a custom App manifest directly to both team and personal scopes.
    * This method works just for the first party Apps.
    */
-  export function uploadACustomApp(manifestBlob: Blob): void {
+  export function uploadCustomApp(manifestBlob: Blob): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(parentWindow, "uploadACustomApp", [
+    const messageId = sendMessageRequest(parentWindow, "uploadCustomApp", [
       manifestBlob
     ]);
     callbacks[messageId] = (success: boolean, result: string) => {
