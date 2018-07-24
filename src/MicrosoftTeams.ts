@@ -685,6 +685,26 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Upload a custom App manifest directly to both team and personal scopes.
+   * This method works just for the first party Apps.
+   */
+  export function uploadCustomApp(manifestBlob: Blob): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "uploadCustomApp", [
+      manifestBlob
+    ]);
+    callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
+  }
+
+  /**
    * Navigates the Microsoft Teams app to the specified tab instance.
    * @param tabInstance The tab instance to navigate to.
    */
