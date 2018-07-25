@@ -390,6 +390,16 @@ namespace microsoftTeams {
   }
 
   /**
+   * Information on userJoined Teams
+   */
+  export interface UserJoinedTeamsInformation {
+    /**
+     * List of team information
+     */
+    userJoinedTeams: TeamInformation[];
+  }
+
+  /**
    * Represends Team Information
    */
   export interface TeamInformation {
@@ -679,7 +689,7 @@ namespace microsoftTeams {
    * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
    */
   export function getUserJoinedTeams(
-    callback: (teams: TeamInformation[]) => void,
+    callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
     teamInstanceParameters?: TeamInstanceParameters
   ): void {
     ensureInitialized();
