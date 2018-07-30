@@ -1188,6 +1188,72 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("getUserJoinedTeams", () => {
+
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.getUserJoinedTeams(() => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should allow a valid optional parameter set to true", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => { callbackCalled = true; },
+        { favoriteTeamsOnly: true } as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a valid optional parameter set to false", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => { callbackCalled = true; },
+        { favoriteTeamsOnly: false } as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a missing optional parameter", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => { callbackCalled = true; }
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a missing and valid optional parameter", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => { callbackCalled = true; },
+        {} as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string

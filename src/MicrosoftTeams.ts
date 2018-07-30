@@ -379,6 +379,62 @@ namespace microsoftTeams {
     favoriteTeamsOnly?: boolean;
   }
 
+  /**
+   * Query parameters used when fetching team information
+   */
+  export interface TeamInstanceParameters {
+    /**
+     * Flag allowing to select favorite teams only
+     */
+    favoriteTeamsOnly?: boolean;
+  }
+
+  /**
+   * Information on userJoined Teams
+   */
+  export interface UserJoinedTeamsInformation {
+    /**
+     * List of team information
+     */
+    userJoinedTeams: TeamInformation[];
+  }
+
+  /**
+   * Represends Team Information
+   */
+  export interface TeamInformation {
+    /**
+     * Id of the team
+     */
+    teamId: string;
+
+    /**
+     * Team display name
+     */
+    teamName: string;
+
+    /**
+     * Team description
+     */
+    teamDescription?: string;
+
+    /**
+     * Thumbnail Uri
+     */
+    thumbnailUri?: string;
+
+    /**
+     * The Office 365 group ID for the team with which the content is associated.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    groupId?: string;
+
+    /**
+     * Role of current user in the team
+     */
+    userTeamRole?: UserTeamRole;
+  }
+
   export const enum TaskModuleDimension {
     Large = "large",
     Medium = "medium",
@@ -623,6 +679,26 @@ namespace microsoftTeams {
 
     let messageId = sendMessageRequest(parentWindow, "getTabInstances", [
       tabInstanceParameters
+    ]);
+    callbacks[messageId] = callback;
+  }
+
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Allows an app to retrieve information of all user joined teams
+   * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
+   * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+   */
+  export function getUserJoinedTeams(
+    callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
+    teamInstanceParameters?: TeamInstanceParameters
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "getUserJoinedTeams", [
+      teamInstanceParameters
     ]);
     callbacks[messageId] = callback;
   }
