@@ -2620,7 +2620,7 @@ karma-coverage@1.1.2:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
-karma-coveralls@^2.0.0:
+karma-coveralls@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/karma-coveralls/-/karma-coveralls-2.0.0.tgz#7511cf16efa4f46953c55451c676633f5e058c6f"
   dependencies:
