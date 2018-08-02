@@ -397,6 +397,9 @@ var microsoftTeams;
     }
     microsoftTeams.shareDeepLink = shareDeepLink;
     /**
+     * @private
+     * Hide from docs.
+     * ------
      * Opens a client-friendly preview of the specified file.
      * @param file The file to preview.
      */
