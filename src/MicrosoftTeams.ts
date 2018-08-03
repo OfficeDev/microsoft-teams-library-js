@@ -1622,6 +1622,11 @@ namespace microsoftTeams {
     teamSiteUrl?: string;
 
     /**
+     * The relative path to the SharePoint folder associated with the channel.
+     */
+    channelRelativeUrl?: string;
+
+    /**
      * Unique ID for the current Teams session for use in correlating telemetry data.
      */
     sessionId?: string;
