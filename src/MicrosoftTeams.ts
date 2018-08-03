@@ -735,6 +735,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
    * Opens a client-friendly preview of the specified file.
    * @param file The file to preview.
    */
@@ -1619,6 +1622,11 @@ namespace microsoftTeams {
     teamSiteUrl?: string;
 
     /**
+     * The relative path to the SharePoint folder associated with the channel.
+     */
+    channelRelativeUrl?: string;
+
+    /**
      * Unique ID for the current Teams session for use in correlating telemetry data.
      */
     sessionId?: string;
@@ -1690,6 +1698,11 @@ namespace microsoftTeams {
     subEntityWebUrl?: string;
   }
 
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   */
   export interface FilePreviewParameters {
     /**
      * The developer-defined unique ID for the file.
