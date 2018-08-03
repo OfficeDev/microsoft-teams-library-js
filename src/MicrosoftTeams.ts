@@ -735,6 +735,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
    * Opens a client-friendly preview of the specified file.
    * @param file The file to preview.
    */
@@ -1690,6 +1693,11 @@ namespace microsoftTeams {
     subEntityWebUrl?: string;
   }
 
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   */
   export interface FilePreviewParameters {
     /**
      * The developer-defined unique ID for the file.
