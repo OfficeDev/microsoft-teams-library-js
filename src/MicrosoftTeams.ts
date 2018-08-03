@@ -1987,7 +1987,17 @@ namespace microsoftTeams {
     /**
      * JSON defining an adaptive card.
      */
-    card?: string;
+    card?: any;
+
+    /**
+     * HTML for an embeddable <iframe>.
+     */
+    embedCode?: string;
+
+    /**
+     * An invoke message is sent to the bot to fetch the URL or Adaptive Card to appear in the task module.
+     */
+    fetchTask?: boolean;
 
     /**
      * The requested height of the webview/iframe.
@@ -2008,7 +2018,13 @@ namespace microsoftTeams {
      * If client doesnt support the URL, the URL that needs to be opened in the browser.
      */
     fallbackUrl?: string;
-  }
+
+    /**
+     * If specified, the result will be delivered to the specified bot via a task/complete invoke event. 
+     * The completionBotId must match a botId specified in the app's manifest.
+     */
+    completionBotId?: string;
+}
 
   /**
    * Namespace to interact with the task module-specific part of the SDK.
