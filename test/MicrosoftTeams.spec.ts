@@ -400,7 +400,8 @@ describe("MicrosoftTeams", () => {
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId",
       userTeamRole: microsoftTeams.UserTeamRole.Admin,
-      chatId: "someChatId"
+      chatId: "someChatId",
+      hostClientType: microsoftTeams.HostClientType.web
     };
 
     respondToMessage(getContextMessage, expectedContext);
