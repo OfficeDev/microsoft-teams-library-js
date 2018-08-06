@@ -32,7 +32,7 @@ var options = {
   connectionString: ""
 };
 
-gulp.task("tslint", function () {
+gulp.task("tslint", function() {
   return gulp
     .src(["./src/**/*.ts", "./test/**/*.ts"])
     .pipe(
@@ -62,7 +62,7 @@ var tsProject = typescript.createProject("./tsconfig.json", {
   typescript: require("typescript")
 });
 
-gulp.task("ts", ["tslint"], function () {
+gulp.task("ts", ["tslint"], function() {
   var tsResult = tsProject.src().pipe(tsProject());
 
   return merge([
@@ -70,10 +70,10 @@ gulp.task("ts", ["tslint"], function () {
     tsResult.js
       .pipe(
         umd({
-          exports: function (file) {
+          exports: function(file) {
             return libName;
           },
-          namespace: function (file) {
+          namespace: function(file) {
             return libName;
           }
         })
@@ -85,22 +85,22 @@ gulp.task("ts", ["tslint"], function () {
   ]);
 });
 
-gulp.task("test", ["ts"], function (done) {
+gulp.task("test", ["ts"], function(done) {
   new karma({ configFile: __dirname + "/karma.conf.js" }, done).start();
 });
 
-gulp.task("doc", function (done) {
+gulp.task("doc", function(done) {
   var parse = require("json-schema-to-markdown");
   var schema = require("./src/MicrosoftTeams.schema.json");
   var markdown = parse(schema);
-  fs.mkdir(buildDir, function () {
-    fs.mkdir(buildDir + "/doc", function () {
+  fs.mkdir(buildDir, function() {
+    fs.mkdir(buildDir + "/doc", function() {
       fs.writeFile(buildDir + "/doc/MicrosoftTeams.schema.md", markdown, done);
     });
   });
 });
 
-gulp.task("dist", ["ts", "doc"], function () {
+gulp.task("dist", ["ts", "doc"], function() {
   var distFiles = [
     buildDir + "/src/**/*.js",
     buildDir + "/src/**/*.d.ts",
@@ -112,12 +112,12 @@ gulp.task("dist", ["ts", "doc"], function () {
 
 gulp.task("default", ["prettier", "ts", "test", "doc", "dist"]);
 
-gulp.task("clean", function () {
+gulp.task("clean", function() {
   return del([buildDir, distDir]);
 });
 
 /// tasks for uploading dist assets to CDN
-gulp.task("get-connectionstring-from-secret", function (done) {
+gulp.task("get-connectionstring-from-secret", function(done) {
   var clientId = argv.clientId;
   var clientSecret = argv.clientSecret;
   var vaultUri = argv.vaultUri;
@@ -132,13 +132,13 @@ gulp.task("get-connectionstring-from-secret", function (done) {
   }
 
   // Authenticator - retrieves the access token
-  var authenticator = function (challenge, callback) {
+  var authenticator = function(challenge, callback) {
     var context = new AuthenticationContext(challenge.authorization);
     return context.acquireTokenWithClientCredentials(
       challenge.resource,
       clientId,
       clientSecret,
-      function (err, tokenResponse) {
+      function(err, tokenResponse) {
         if (err) throw err;
         var authorizationValue =
           tokenResponse.tokenType + " " + tokenResponse.accessToken;
@@ -150,7 +150,7 @@ gulp.task("get-connectionstring-from-secret", function (done) {
   var credentials = new KeyVault.KeyVaultCredentials(authenticator);
   var keyVaultClient = new KeyVault.KeyVaultClient(credentials);
 
-  keyVaultClient.getSecret(secretIdentifier, function (err, secretBundle) {
+  keyVaultClient.getSecret(secretIdentifier, function(err, secretBundle) {
     if (err) throw err;
     options.connectionString = secretBundle.value;
     done();
@@ -160,7 +160,7 @@ gulp.task("get-connectionstring-from-secret", function (done) {
 gulp.task(
   "upload",
   ["get-connectionstring-from-secret", "dist", "test"],
-  function () {
+  function() {
     var buildVer = argv.version || "";
     if (!buildVer) {
       console.error("missing build version argument (--version)!");
@@ -182,7 +182,7 @@ gulp.task(
       }
     ];
 
-    var uploadTasks = assetBundles.map(function (assetBundle) {
+    var uploadTasks = assetBundles.map(function(assetBundle) {
       return gulp.src(assetBundle.glob).pipe(
         deployCdn({
           containerName: "sdk", // container name in blob
