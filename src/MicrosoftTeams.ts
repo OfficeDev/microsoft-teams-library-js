@@ -3,7 +3,10 @@ declare interface String {
 }
 
 if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function (search: string, pos?: number): boolean {
+  String.prototype.startsWith = function(
+    search: string,
+    pos?: number
+  ): boolean {
     return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
   };
 }
@@ -29,7 +32,7 @@ interface Window {
 namespace microsoftTeams {
   "use strict";
 
-  const version = "1.2";
+  const version = "1.3.3";
 
   const validOrigins = [
     "https://teams.microsoft.com",
@@ -49,7 +52,8 @@ namespace microsoftTeams {
     let urlRegExpPart = "^";
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
-      urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^\/^.]+");
+      urlRegExpPart +=
+        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
     }
     urlRegExpPart += "$";
     return urlRegExpPart;
@@ -76,7 +80,7 @@ namespace microsoftTeams {
     remove: "remove"
   };
 
-  export enum HostClientTypes {
+  export const enum HostClientType {
     desktop = "desktop",
     web = "web",
     android = "android",
@@ -1073,7 +1077,7 @@ namespace microsoftTeams {
         frameContexts.remove
       );
 
-      if (hostClientType === HostClientTypes.desktop) {
+      if (hostClientType === HostClientType.desktop) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         let link = document.createElement("a");
         link.href = authenticateParams.url;
@@ -1199,13 +1203,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1676,7 +1680,7 @@ namespace microsoftTeams {
     /**
      * The type of the host client. Possible values are : android, ios, web, desktop
      */
-    hostClientType?: HostClientTypes;
+    hostClientType?: HostClientType;
   }
 
   export interface DeepLinkParameters {
