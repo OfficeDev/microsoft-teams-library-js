@@ -734,7 +734,7 @@ namespace microsoftTeams {
     sendMessageRequest(parentWindow, "shareDeepLink", [
       deepLinkParameters.subEntityId,
       deepLinkParameters.subEntityLabel,
-      deepLinkParameters.subEntityWeUrl
+      deepLinkParameters.subEntityWebUrl
     ]);
   }
 
