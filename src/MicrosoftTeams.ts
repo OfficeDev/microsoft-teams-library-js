@@ -3,7 +3,10 @@ declare interface String {
 }
 
 if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function (search: string, pos?: number): boolean {
+  String.prototype.startsWith = function(
+    search: string,
+    pos?: number
+  ): boolean {
     return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
   };
 }
@@ -49,7 +52,8 @@ namespace microsoftTeams {
     let urlRegExpPart = "^";
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
-      urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^\/^.]+");
+      urlRegExpPart +=
+        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
     }
     urlRegExpPart += "$";
     return urlRegExpPart;
@@ -730,7 +734,7 @@ namespace microsoftTeams {
     sendMessageRequest(parentWindow, "shareDeepLink", [
       deepLinkParameters.subEntityId,
       deepLinkParameters.subEntityLabel,
-      deepLinkParameters.subEntityWebUrl
+      deepLinkParameters.subEntityWeUrl
     ]);
   }
 
@@ -1199,13 +1203,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
