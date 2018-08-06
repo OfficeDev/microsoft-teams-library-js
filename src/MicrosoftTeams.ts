@@ -32,7 +32,7 @@ interface Window {
 namespace microsoftTeams {
   "use strict";
 
-  const version = "1.2";
+  const version = "1.3.3";
 
   const validOrigins = [
     "https://teams.microsoft.com",
