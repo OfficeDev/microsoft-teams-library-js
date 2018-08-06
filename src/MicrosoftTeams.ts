@@ -76,7 +76,7 @@ namespace microsoftTeams {
     remove: "remove"
   };
 
-  export enum HostClientTypes {
+  export const enum HostClientType {
     desktop = "desktop",
     web = "web",
     android = "android",
@@ -1073,7 +1073,7 @@ namespace microsoftTeams {
         frameContexts.remove
       );
 
-      if (hostClientType === HostClientTypes.desktop) {
+      if (hostClientType === HostClientType.desktop) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         let link = document.createElement("a");
         link.href = authenticateParams.url;
@@ -1676,7 +1676,7 @@ namespace microsoftTeams {
     /**
      * The type of the host client. Possible values are : android, ios, web, desktop
      */
-    hostClientType?: HostClientTypes;
+    hostClientType?: HostClientType;
   }
 
   export interface DeepLinkParameters {
