@@ -2035,11 +2035,11 @@ namespace microsoftTeams {
     /**
      * Allows an app to open the task module.
      * @param taskInfo An object containing the parameters of the task module
-     * @param completionHandler Handler to call when the task module is completed
+     * @param submitHandler Handler to call when the task module is completed
      */
     export function startTask(
       taskInfo: TaskInfo,
-      completionHandler?: (err: string, result: string) => void
+      submitHandler?: (err: string, result: string) => void
     ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
@@ -2047,22 +2047,25 @@ namespace microsoftTeams {
       let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
         taskInfo
       ]);
-      callbacks[messageId] = completionHandler;
+      callbacks[messageId] = submitHandler;
     }
 
     /**
-     * Complete the task module.
+     * Submit the task module.
      * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
      * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
      */
-    export function completeTask(
+    export function submitTask(
       result?: string | object,
-      appIds?: string[]
+      appIds?: string | string[]
     ): void {
       // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
-      sendMessageRequest(parentWindow, "tasks.completeTask", [result, appIds]);
+      sendMessageRequest(parentWindow, "tasks.submitTask", [
+        result,
+        Array.isArray(appIds) ? appIds : [appIds]
+      ]);
     }
   }
 }
