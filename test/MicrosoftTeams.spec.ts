@@ -1275,6 +1275,42 @@ describe("MicrosoftTeams", () => {
       );
     });
 
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should not allow calls from task context", () => {
+      initializeWithContext("task");
+
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+        "This call is not allowed in the 'task' context"
+      );
+    });
+
     it("should pass along entire TaskInfo parameter", () => {
       initializeWithContext("content");
 
@@ -1293,6 +1329,41 @@ describe("MicrosoftTeams", () => {
 
       const startTaskMessage = findMessageByFunc("tasks.startTask");
       expect(startTaskMessage).not.toBeNull();
+      expect(startTaskMessage.args).toEqual([taskInfo]);
+    });
+
+    it("should invoke callback with result", () => {
+      initializeWithContext("content");
+
+      let callbackCalled = false;
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+        expect(err).toBeNull();
+        expect(result).toBe("someResult");
+        callbackCalled = true;
+      });
+
+      const startTaskMessage = findMessageByFunc("tasks.startTask");
+      expect(startTaskMessage).not.toBeNull();
+      respondToMessage(startTaskMessage, null, "someResult");
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should invoke callback with error", () => {
+      initializeWithContext("content");
+
+      let callbackCalled = false;
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+        expect(err).toBe("someError");
+        expect(result).toBeUndefined();
+        callbackCalled = true;
+      });
+
+      const startTaskMessage = findMessageByFunc("tasks.startTask");
+      expect(startTaskMessage).not.toBeNull();
+      respondToMessage(startTaskMessage, "someError");
+      expect(callbackCalled).toBe(true);
     });
   });
 
