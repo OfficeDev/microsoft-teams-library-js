@@ -32,10 +32,10 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function (message: MessageRequest, targetOrigin: string): void {
+    postMessage: function(message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function (): void {
+    close: function(): void {
       return;
     },
     closed: false
@@ -51,7 +51,7 @@ describe("MicrosoftTeams", () => {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (
+      addEventListener: function(
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -60,7 +60,7 @@ describe("MicrosoftTeams", () => {
           processMessage = listener;
         }
       },
-      removeEventListener: function (
+      removeEventListener: function(
         type: string,
         listener: (ev: MessageEvent) => void,
         useCapture?: boolean
@@ -72,12 +72,12 @@ describe("MicrosoftTeams", () => {
       location: {
         origin: tabOrigin,
         href: validOrigin,
-        assign: function (url: string): void {
+        assign: function(url: string): void {
           return;
         }
       },
       parent: {
-        postMessage: function (
+        postMessage: function(
           message: MessageRequest,
           targetOrigin: string
         ): void {
@@ -91,10 +91,10 @@ describe("MicrosoftTeams", () => {
         }
       } as Window,
       self: null as Window,
-      open: function (url: string, name: string, specs: string): Window {
+      open: function(url: string, name: string, specs: string): Window {
         return childWindow as Window;
       },
-      close: function (): void {
+      close: function(): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number =>
@@ -129,7 +129,7 @@ describe("MicrosoftTeams", () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe("initialize");
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual("1.2");
+    expect(initMessage.args[0]).toEqual("1.3.3");
   });
 
   it("should allow multiple initialize calls", () => {
@@ -174,32 +174,35 @@ describe("MicrosoftTeams", () => {
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
-    it("should reject messages from unsupported domain: " + unSupportedDomain, () => {
-      initializeWithContext("content");
-      let callbackCalled = false;
-      microsoftTeams.getContext(() => {
-        callbackCalled = true;
-      });
+    it(
+      "should reject messages from unsupported domain: " + unSupportedDomain,
+      () => {
+        initializeWithContext("content");
+        let callbackCalled = false;
+        microsoftTeams.getContext(() => {
+          callbackCalled = true;
+        });
 
-      let getContextMessage = findMessageByFunc("getContext");
-      expect(getContextMessage).not.toBeNull();
+        let getContextMessage = findMessageByFunc("getContext");
+        expect(getContextMessage).not.toBeNull();
 
-      callbackCalled = false;
-      processMessage({
-        origin: unSupportedDomain,
-        source: microsoftTeams._window.parent,
-        data: {
-          id: getContextMessage.id,
-          args: [
-            {
-              groupId: "someMaliciousValue"
-            }
-          ]
-        } as MessageResponse
-      } as MessageEvent);
+        callbackCalled = false;
+        processMessage({
+          origin: unSupportedDomain,
+          source: microsoftTeams._window.parent,
+          data: {
+            id: getContextMessage.id,
+            args: [
+              {
+                groupId: "someMaliciousValue"
+              }
+            ]
+          } as MessageResponse
+        } as MessageEvent);
 
-      expect(callbackCalled).toBe(false);
-    });
+        expect(callbackCalled).toBe(false);
+      }
+    );
   });
 
   const supportedDomains = [
@@ -397,7 +400,8 @@ describe("MicrosoftTeams", () => {
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId",
       userTeamRole: microsoftTeams.UserTeamRole.Admin,
-      chatId: "someChatId"
+      chatId: "someChatId",
+      hostClientType: microsoftTeams.HostClientType.web
     };
 
     respondToMessage(getContextMessage, expectedContext);
@@ -1185,6 +1189,77 @@ describe("MicrosoftTeams", () => {
         tabInfo => tabInfo,
         {} as microsoftTeams.TabInstanceParameters
       );
+    });
+  });
+
+  describe("getUserJoinedTeams", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.getUserJoinedTeams(() => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should allow a valid optional parameter set to true", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => {
+          callbackCalled = true;
+        },
+        { favoriteTeamsOnly: true } as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a valid optional parameter set to false", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => {
+          callbackCalled = true;
+        },
+        { favoriteTeamsOnly: false } as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a missing optional parameter", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(userJoinedTeamsInformation => {
+        callbackCalled = true;
+      });
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    it("should allow a missing and valid optional parameter", () => {
+      let callbackCalled: boolean = false;
+      initializeWithContext("getUserJoinedTeams");
+      microsoftTeams.getUserJoinedTeams(
+        userJoinedTeamsInformation => {
+          callbackCalled = true;
+        },
+        {} as microsoftTeams.TeamInstanceParameters
+      );
+
+      let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
+      expect(getUserJoinedTeamsMessage).not.toBeNull();
+      respondToMessage(getUserJoinedTeamsMessage, {});
+      expect(callbackCalled).toBe(true);
     });
   });
 

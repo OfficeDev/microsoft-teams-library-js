@@ -3,7 +3,10 @@ declare interface String {
 }
 
 if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function (search: string, pos?: number): boolean {
+  String.prototype.startsWith = function(
+    search: string,
+    pos?: number
+  ): boolean {
     return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
   };
 }
@@ -35,7 +38,7 @@ interface Window {
 namespace microsoftTeams {
   "use strict";
 
-  const version = "1.2";
+  const version = "1.3.3";
 
   const validOrigins = [
     "https://teams.microsoft.com",
@@ -55,7 +58,8 @@ namespace microsoftTeams {
     let urlRegExpPart = "^";
     let urlParts = url.split(".");
     for (let j = 0; j < urlParts.length; j++) {
-      urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^\/^.]+");
+      urlRegExpPart +=
+        (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
     }
     urlRegExpPart += "$";
     return urlRegExpPart;
@@ -82,7 +86,7 @@ namespace microsoftTeams {
     remove: "remove"
   };
 
-  export enum HostClientTypes {
+  export const enum HostClientType {
     desktop = "desktop",
     web = "web",
     android = "android",
@@ -400,9 +404,65 @@ namespace microsoftTeams {
   }
 
   /**
+   * Query parameters used when fetching team information
+   */
+  export interface TeamInstanceParameters {
+    /**
+     * Flag allowing to select favorite teams only
+     */
+    favoriteTeamsOnly?: boolean;
+  }
+
+  /**
+   * Information on userJoined Teams
+   */
+  export interface UserJoinedTeamsInformation {
+    /**
+     * List of team information
+     */
+    userJoinedTeams: TeamInformation[];
+  }
+
+  /**
+   * Represends Team Information
+   */
+  export interface TeamInformation {
+    /**
+     * Id of the team
+     */
+    teamId: string;
+
+    /**
+     * Team display name
+     */
+    teamName: string;
+
+    /**
+     * Team description
+     */
+    teamDescription?: string;
+
+    /**
+     * Thumbnail Uri
+     */
+    thumbnailUri?: string;
+
+    /**
+     * The Office 365 group ID for the team with which the content is associated.
+     * This field is available only when the identity permission is requested in the manifest.
+     */
+    groupId?: string;
+
+    /**
+     * Role of current user in the team
+     */
+    userTeamRole?: UserTeamRole;
+  }
+
+  /**
    * @private
    * Internal use only
-   */    
+   */ 
   export const enum TaskModuleDimension {
     Large = "large",
     Medium = "medium",
@@ -652,6 +712,26 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Allows an app to retrieve information of all user joined teams
+   * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
+   * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+   */
+  export function getUserJoinedTeams(
+    callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
+    teamInstanceParameters?: TeamInstanceParameters
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "getUserJoinedTeams", [
+      teamInstanceParameters
+    ]);
+    callbacks[messageId] = callback;
+  }
+
+  /**
    * Allows an app to retrieve the most recently used tabs for this user.
    * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
    * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
@@ -683,6 +763,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs.
+   * ------
    * Opens a client-friendly preview of the specified file.
    * @param file The file to preview.
    */
@@ -706,6 +789,26 @@ namespace microsoftTeams {
     ];
 
     sendMessageRequest(parentWindow, "openFilePreview", params);
+  }
+
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Upload a custom App manifest directly to both team and personal scopes.
+   * This method works just for the first party Apps.
+   */
+  export function uploadCustomApp(manifestBlob: Blob): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "uploadCustomApp", [
+      manifestBlob
+    ]);
+    callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
   }
 
   /**
@@ -998,7 +1101,7 @@ namespace microsoftTeams {
         frameContexts.remove
       );
 
-      if (hostClientType === HostClientTypes.desktop) {
+      if (hostClientType === HostClientType.desktop) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         let link = document.createElement("a");
         link.href = authenticateParams.url;
@@ -1124,13 +1227,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1547,6 +1650,11 @@ namespace microsoftTeams {
     teamSiteUrl?: string;
 
     /**
+     * The relative path to the SharePoint folder associated with the channel.
+     */
+    channelRelativeUrl?: string;
+
+    /**
      * Unique ID for the current Teams session for use in correlating telemetry data.
      */
     sessionId?: string;
@@ -1596,7 +1704,7 @@ namespace microsoftTeams {
     /**
      * The type of the host client. Possible values are : android, ios, web, desktop
      */
-    hostClientType?: HostClientTypes;
+    hostClientType?: HostClientType;
   }
 
   export interface DeepLinkParameters {
@@ -1618,6 +1726,11 @@ namespace microsoftTeams {
     subEntityWebUrl?: string;
   }
 
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   */
   export interface FilePreviewParameters {
     /**
      * The developer-defined unique ID for the file.
