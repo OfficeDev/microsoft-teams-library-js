@@ -11,22 +11,28 @@ if (!String.prototype.startsWith) {
   };
 }
 
-// @private
-// Hide from docs, since this interface is not directly used.
-// Shim in definitions used for browser-compat
+/**
+ * @private
+ * Internal use only
+ * Shim in definitions used for browser-compat
+ */
 interface MessageEvent {
   // Needed for Chrome
   originalEvent: MessageEvent;
 }
 
-// @private
-// Hide from docs, since this interface is not directly used.
+/**
+ * @private
+ * Internal use only
+ */
 interface TeamsNativeClient {
   framelessPostMessage(msg: String): void;
 }
 
-// @private
-// Hide from docs, since this interface is not directly used.
+/**
+ * @private
+ * Internal use only
+ */
 interface Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: MessageEvent): void;
@@ -107,7 +113,7 @@ namespace microsoftTeams {
   /**
    * Namespace to interact with the menu-specific part of the SDK.
    * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
-   * 
+   *
    * @private
    * Hide from docs until feature is complete
    */
@@ -462,7 +468,8 @@ namespace microsoftTeams {
   /**
    * @private
    * Internal use only
-   */ 
+   */
+
   export const enum TaskModuleDimension {
     Large = "large",
     Medium = "medium",
