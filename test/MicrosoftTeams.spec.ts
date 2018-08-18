@@ -468,10 +468,10 @@ describe("MicrosoftTeams", () => {
 
     microsoftTeams.navigateCrossDomain("https://valid.origin.com");
 
-    let message = findMessageByFunc("navigateCrossDomain");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe("https://valid.origin.com");
+    let navigateCrossDomainMessage = findMessageByFunc("navigateCrossDomain");
+    expect(navigateCrossDomainMessage).not.toBeNull();
+    expect(navigateCrossDomainMessage.args.length).toBe(1);
+    expect(navigateCrossDomainMessage.args[0]).toBe("https://valid.origin.com");
   });
 
   it("should throw on invalid cross-origin navigation request", () => {
@@ -1170,7 +1170,7 @@ describe("MicrosoftTeams", () => {
 
   describe("getTabInstances", () => {
     it("should allow a missing and valid optional parameter", () => {
-      initializeWithContext("getTabInstances");
+      initializeWithContext("content");
 
       microsoftTeams.getTabInstances(tabInfo => tabInfo);
       microsoftTeams.getTabInstances(
@@ -1182,7 +1182,7 @@ describe("MicrosoftTeams", () => {
 
   describe("getMruTabInstances", () => {
     it("should allow a missing and valid optional parameter", () => {
-      initializeWithContext("getMruTabInstances");
+      initializeWithContext("content");
 
       microsoftTeams.getMruTabInstances(tabInfo => tabInfo);
       microsoftTeams.getMruTabInstances(
@@ -1202,8 +1202,9 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should allow a valid optional parameter set to true", () => {
+      initializeWithContext("content");
+
       let callbackCalled: boolean = false;
-      initializeWithContext("getUserJoinedTeams");
       microsoftTeams.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
@@ -1218,8 +1219,9 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should allow a valid optional parameter set to false", () => {
+      initializeWithContext("content");
+
       let callbackCalled: boolean = false;
-      initializeWithContext("getUserJoinedTeams");
       microsoftTeams.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
@@ -1234,8 +1236,9 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should allow a missing optional parameter", () => {
+      initializeWithContext("content");
+
       let callbackCalled: boolean = false;
-      initializeWithContext("getUserJoinedTeams");
       microsoftTeams.getUserJoinedTeams(userJoinedTeamsInformation => {
         callbackCalled = true;
       });
@@ -1247,8 +1250,9 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should allow a missing and valid optional parameter", () => {
+      initializeWithContext("content");
+
       let callbackCalled: boolean = false;
-      initializeWithContext("getUserJoinedTeams");
       microsoftTeams.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
@@ -1263,13 +1267,108 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("tasks.startTask", () => {
+    it("should not allow calls before initialization", () => {
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should pass along entire TaskInfo parameter", () => {
+      initializeWithContext("content");
+
+      const taskInfo: microsoftTeams.TaskInfo = {
+        card: "someCard",
+        fallbackUrl: "someFallbackUrl",
+        height: microsoftTeams.TaskModuleDimension.Large,
+        width: microsoftTeams.TaskModuleDimension.Large,
+        title: "someTitle",
+        url: "someUrl"
+      };
+
+      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+        return;
+      });
+
+      const startTaskMessage = findMessageByFunc("tasks.startTask");
+      expect(startTaskMessage).not.toBeNull();
+    });
+  });
+
+  describe("tasks.submitTask", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from content context", () => {
+      initializeWithContext("content");
+
+      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+        "This call is not allowed in the 'content' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should successfully pass result and appIds parameters when called from task context", () => {
+      initializeWithContext("task");
+
+      microsoftTeams.tasks.submitTask("someResult", [
+        "someAppId",
+        "someOtherAppId"
+      ]);
+
+      const submitTaskMessage = findMessageByFunc("tasks.submitTask");
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual([
+        "someResult",
+        ["someAppId", "someOtherAppId"]
+      ]);
+    });
+
+    it("should handle a single string passed as appIds parameter", () => {
+      initializeWithContext("task");
+
+      microsoftTeams.tasks.submitTask("someResult", "someAppId");
+
+      const submitTaskMessage = findMessageByFunc("tasks.submitTask");
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual(["someResult", ["someAppId"]]);
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
   ): void {
     microsoftTeams.initialize();
 
-    let initMessage = findMessageByFunc("initialize");
+    const initMessage = findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
 
     respondToMessage(initMessage, frameContext, hostClientType);

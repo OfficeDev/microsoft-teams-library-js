@@ -77,7 +77,8 @@ namespace microsoftTeams {
     settings: "settings",
     content: "content",
     authentication: "authentication",
-    remove: "remove"
+    remove: "remove",
+    task: "task"
   };
 
   export const enum HostClientType {
@@ -2041,7 +2042,6 @@ namespace microsoftTeams {
       taskInfo: TaskInfo,
       submitHandler?: (err: string, result: string) => void
     ): void {
-      // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
       let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
@@ -2059,8 +2059,7 @@ namespace microsoftTeams {
       result?: string | object,
       appIds?: string | string[]
     ): void {
-      // Ensure that the tab content is initialized
-      ensureInitialized(frameContexts.content);
+      ensureInitialized(frameContexts.task);
 
       sendMessageRequest(parentWindow, "tasks.submitTask", [
         result,
