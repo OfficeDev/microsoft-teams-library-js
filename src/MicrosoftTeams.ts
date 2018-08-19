@@ -2090,7 +2090,7 @@ namespace microsoftTeams {
       result?: string | object,
       appIds?: string | string[]
     ): void {
-      ensureInitialized(frameContexts.task);
+      ensureInitialized(frameContexts.content, frameContexts.task);
 
       sendMessageRequest(parentWindow, "tasks.submitTask", [
         result,

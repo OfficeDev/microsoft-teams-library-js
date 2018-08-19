@@ -1382,14 +1382,6 @@ describe("MicrosoftTeams", () => {
       );
     });
 
-    it("should not allow calls from content context", () => {
-      initializeWithContext("content");
-
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
-        "This call is not allowed in the 'content' context"
-      );
-    });
-
     it("should not allow calls from authentication context", () => {
       initializeWithContext("authentication");
 
