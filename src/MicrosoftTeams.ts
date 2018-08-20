@@ -1996,6 +1996,21 @@ namespace microsoftTeams {
     return request.id;
   }
 
+  /**
+   * Sends a custom action message to Teams.
+   * @param actionName Specifies name of the custom action to be sent
+   * @param args Specifies additional arguments passed to the action
+   * @returns id of sent message
+   */
+  export function sendMessage(
+    actionName: string,
+    // tslint:disable-next-line:no-any
+    args?: any[]
+  ): number {
+    ensureInitialized();
+    return sendMessageRequest(parentWindow, actionName, args);
+  }
+
   function sendMessageResponse(
     targetWindow: Window,
     id: number,

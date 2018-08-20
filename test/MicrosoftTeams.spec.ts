@@ -1263,6 +1263,24 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("sendMessage", () => {
+    it("should successfully pass message and provided arguments", () => {
+      initializeWithContext("content");
+
+      const id = microsoftTeams.sendMessage("customMessage", [
+        "arg1",
+        2,
+        3.0,
+        true
+      ]);
+
+      let message = findMessageByFunc("customMessage");
+      expect(message).not.toBeNull();
+      expect(message.args).toEqual(["arg1", 2, 3.0, true]);
+      expect(id).toBe(message.id);
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
