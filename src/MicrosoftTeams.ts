@@ -13,7 +13,7 @@ if (!String.prototype.startsWith) {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  * Shim in definitions used for browser-compat
  */
 interface MessageEvent {
@@ -23,7 +23,7 @@ interface MessageEvent {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  */
 interface TeamsNativeClient {
   framelessPostMessage(msg: String): void;
@@ -31,7 +31,7 @@ interface TeamsNativeClient {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  */
 interface Window {
   nativeInterface: TeamsNativeClient;
@@ -411,6 +411,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------
    * Query parameters used when fetching team information
    */
   export interface TeamInstanceParameters {
@@ -421,6 +424,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------
    * Information on userJoined Teams
    */
   export interface UserJoinedTeamsInformation {
@@ -465,11 +471,6 @@ namespace microsoftTeams {
      */
     userTeamRole?: UserTeamRole;
   }
-
-  /**
-   * @private
-   * Internal use only
-   */
 
   export const enum TaskModuleDimension {
     Large = "large",
@@ -721,7 +722,7 @@ namespace microsoftTeams {
 
   /**
    * @private
-   * Hide from docs.
+   * Hide from docs
    * ------
    * Allows an app to retrieve information of all user joined teams
    * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
