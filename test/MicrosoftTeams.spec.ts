@@ -129,7 +129,7 @@ describe("MicrosoftTeams", () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe("initialize");
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual("1.3.3");
+    expect(initMessage.args[0]).toEqual("1.3.4");
   });
 
   it("should allow multiple initialize calls", () => {
