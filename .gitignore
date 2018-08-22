@@ -6,7 +6,6 @@ npm-error
 
 # build output
 build/
-dist/
 coverage/
 
 # Visual Studio cache/options directory
