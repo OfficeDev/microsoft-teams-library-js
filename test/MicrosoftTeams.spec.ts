@@ -1263,11 +1263,11 @@ describe("MicrosoftTeams", () => {
     });
   });
 
-  describe("sendMessage", () => {
+  describe("sendCustomMessage", () => {
     it("should successfully pass message and provided arguments", () => {
       initializeWithContext("content");
 
-      const id = microsoftTeams.sendMessage("customMessage", [
+      const id = microsoftTeams.sendCustomMessage("customMessage", [
         "arg1",
         2,
         3.0,

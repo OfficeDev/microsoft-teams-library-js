@@ -1997,12 +1997,14 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Internal use only
    * Sends a custom action message to Teams.
    * @param actionName Specifies name of the custom action to be sent
    * @param args Specifies additional arguments passed to the action
    * @returns id of sent message
    */
-  export function sendMessage(
+  export function sendCustomMessage(
     actionName: string,
     // tslint:disable-next-line:no-any
     args?: any[]
