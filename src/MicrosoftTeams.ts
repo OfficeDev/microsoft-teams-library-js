@@ -13,7 +13,7 @@ if (!String.prototype.startsWith) {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  * Shim in definitions used for browser-compat
  */
 interface MessageEvent {
@@ -23,7 +23,7 @@ interface MessageEvent {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  */
 interface TeamsNativeClient {
   framelessPostMessage(msg: String): void;
@@ -31,7 +31,7 @@ interface TeamsNativeClient {
 
 /**
  * @private
- * Internal use only
+ * Hide from docs
  */
 interface Window {
   nativeInterface: TeamsNativeClient;
@@ -44,7 +44,7 @@ interface Window {
 namespace microsoftTeams {
   "use strict";
 
-  const version = "1.3.3";
+  const version = "1.3.4";
 
   const validOrigins = [
     "https://teams.microsoft.com",
@@ -89,7 +89,8 @@ namespace microsoftTeams {
     settings: "settings",
     content: "content",
     authentication: "authentication",
-    remove: "remove"
+    remove: "remove",
+    task: "task"
   };
 
   export const enum HostClientType {
@@ -410,6 +411,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------
    * Query parameters used when fetching team information
    */
   export interface TeamInstanceParameters {
@@ -420,6 +424,9 @@ namespace microsoftTeams {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------
    * Information on userJoined Teams
    */
   export interface UserJoinedTeamsInformation {
@@ -464,11 +471,6 @@ namespace microsoftTeams {
      */
     userTeamRole?: UserTeamRole;
   }
-
-  /**
-   * @private
-   * Internal use only
-   */
 
   export const enum TaskModuleDimension {
     Large = "large",
@@ -720,7 +722,7 @@ namespace microsoftTeams {
 
   /**
    * @private
-   * Hide from docs.
+   * Hide from docs
    * ------
    * Allows an app to retrieve information of all user joined teams
    * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
@@ -2083,34 +2085,35 @@ namespace microsoftTeams {
     /**
      * Allows an app to open the task module.
      * @param taskInfo An object containing the parameters of the task module
-     * @param completionHandler Handler to call when the task module is completed
+     * @param submitHandler Handler to call when the task module is completed
      */
     export function startTask(
       taskInfo: TaskInfo,
-      completionHandler?: (err: string, result: string) => void
+      submitHandler?: (err: string, result: string) => void
     ): void {
-      // Ensure that the tab content is initialized
       ensureInitialized(frameContexts.content);
 
       let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
         taskInfo
       ]);
-      callbacks[messageId] = completionHandler;
+      callbacks[messageId] = submitHandler;
     }
 
     /**
-     * Complete the task module.
+     * Submit the task module.
      * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
      * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
      */
-    export function completeTask(
+    export function submitTask(
       result?: string | object,
-      appIds?: string[]
+      appIds?: string | string[]
     ): void {
-      // Ensure that the tab content is initialized
-      ensureInitialized(frameContexts.content);
+      ensureInitialized(frameContexts.content, frameContexts.task);
 
-      sendMessageRequest(parentWindow, "tasks.completeTask", [result, appIds]);
+      sendMessageRequest(parentWindow, "tasks.submitTask", [
+        result,
+        Array.isArray(appIds) ? appIds : [appIds]
+      ]);
     }
   }
 }
