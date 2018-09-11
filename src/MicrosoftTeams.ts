@@ -44,7 +44,7 @@ interface Window {
 namespace microsoftTeams {
   "use strict";
 
-  const version = "1.3.4";
+  const version = "1.3.5";
 
   const validOrigins = [
     "https://teams.microsoft.com",
@@ -2110,7 +2110,8 @@ namespace microsoftTeams {
     ): void {
       ensureInitialized(frameContexts.content, frameContexts.task);
 
-      sendMessageRequest(parentWindow, "tasks.submitTask", [
+      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+      sendMessageRequest(parentWindow, "tasks.completeTask", [
         result,
         Array.isArray(appIds) ? appIds : [appIds]
       ]);
