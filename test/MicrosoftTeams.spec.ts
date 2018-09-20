@@ -463,36 +463,6 @@ describe("MicrosoftTeams", () => {
     expect(handlerInvoked).toBe(true);
   });
 
-  it("should successfully navigate cross-origin", () => {
-    initializeWithContext("content");
-
-    microsoftTeams.navigateCrossDomain("https://valid.origin.com");
-
-    let navigateCrossDomainMessage = findMessageByFunc("navigateCrossDomain");
-    expect(navigateCrossDomainMessage).not.toBeNull();
-    expect(navigateCrossDomainMessage.args.length).toBe(1);
-    expect(navigateCrossDomainMessage.args[0]).toBe("https://valid.origin.com");
-  });
-
-  it("should throw on invalid cross-origin navigation request", () => {
-    initializeWithContext("settings");
-
-    microsoftTeams.navigateCrossDomain("https://invalid.origin.com");
-
-    let navigateCrossDomainMessage = findMessageByFunc("navigateCrossDomain");
-    expect(navigateCrossDomainMessage).not.toBeNull();
-    expect(navigateCrossDomainMessage.args.length).toBe(1);
-    expect(navigateCrossDomainMessage.args[0]).toBe(
-      "https://invalid.origin.com"
-    );
-
-    let respondWithFailure = () => {
-      respondToMessage(navigateCrossDomainMessage, false);
-    };
-
-    expect(respondWithFailure).toThrow();
-  });
-
   it("should successfully set validity state to true", () => {
     initializeWithContext("settings");
 
@@ -730,394 +700,6 @@ describe("MicrosoftTeams", () => {
     expect(message.args.length).toBe(0);
   });
 
-  it("should successfully pop up the auth window", () => {
-    initializeWithContext("content");
-
-    let windowOpenCalled = false;
-    spyOn(microsoftTeams._window, "open").and.callFake(
-      (url: string, name: string, specs: string): Window => {
-        expect(url).toEqual("https://someurl/");
-        expect(name).toEqual("_blank");
-        expect(specs.indexOf("width=100")).not.toBe(-1);
-        expect(specs.indexOf("height=200")).not.toBe(-1);
-        windowOpenCalled = true;
-        return childWindow as Window;
-      }
-    );
-
-    let authenticationParams = {
-      url: "https://someurl/",
-      width: 100,
-      height: 200
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-    expect(windowOpenCalled).toBe(true);
-  });
-
-  it("should successfully pop up the auth window when authenticate called without authenticationParams for connectors", () => {
-    initializeWithContext("content");
-
-    let windowOpenCalled = false;
-    spyOn(microsoftTeams._window, "open").and.callFake(
-      (url: string, name: string, specs: string): Window => {
-        expect(url).toEqual("https://someurl/");
-        expect(name).toEqual("_blank");
-        expect(specs.indexOf("width=100")).not.toBe(-1);
-        expect(specs.indexOf("height=200")).not.toBe(-1);
-        windowOpenCalled = true;
-        return childWindow as Window;
-      }
-    );
-
-    let authenticationParams = {
-      url: "https://someurl/",
-      width: 100,
-      height: 200
-    };
-    microsoftTeams.authentication.registerAuthenticationHandlers(
-      authenticationParams
-    );
-    microsoftTeams.authentication.authenticate();
-    expect(windowOpenCalled).toBe(true);
-  });
-
-  it("should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called", () => {
-    initializeWithContext("content");
-
-    let windowOpenCalled = false;
-    spyOn(microsoftTeams._window, "open").and.callFake(
-      (url: string, name: string, specs: string): Window => {
-        expect(url).toEqual("https://someurl/");
-        expect(name).toEqual("_blank");
-        expect(specs.indexOf("width=100")).not.toBe(-1);
-        expect(specs.indexOf("height=200")).not.toBe(-1);
-        windowOpenCalled = true;
-        return childWindow as Window;
-      }
-    );
-
-    let successResult: string;
-    let failureReason: string;
-    let authenticationParams = {
-      url: "https://someurl/",
-      width: 100,
-      height: 200,
-      successCallback: (result: string) => (successResult = result),
-      failureCallback: (reason: string) => (failureReason = reason)
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-    expect(windowOpenCalled).toBe(true);
-
-    childWindow.closed = true;
-    jasmine.clock().tick(101);
-
-    expect(successResult).toBeUndefined();
-    expect(failureReason).toEqual("CancelledByUser");
-  });
-
-  it("should successfully handle auth success", () => {
-    initializeWithContext("content");
-
-    let successResult: string;
-    let failureReason: string;
-    let authenticationParams = {
-      url: "https://someurl/",
-      width: 100,
-      height: 200,
-      successCallback: (result: string) => (successResult = result),
-      failureCallback: (reason: string) => (failureReason = reason)
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-
-    processMessage({
-      origin: tabOrigin,
-      source: childWindow,
-      data: {
-        id: 0,
-        func: "authentication.authenticate.success",
-        args: ["someResult"]
-      }
-    } as MessageEvent);
-
-    expect(successResult).toEqual("someResult");
-    expect(failureReason).toBeUndefined();
-  });
-
-  it("should successfully handle auth failure", () => {
-    initializeWithContext("content");
-
-    let successResult: string;
-    let failureReason: string;
-    let authenticationParams = {
-      url: "https://someurl/",
-      width: 100,
-      height: 200,
-      successCallback: (result: string) => (successResult = result),
-      failureCallback: (reason: string) => (failureReason = reason)
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-
-    processMessage({
-      origin: tabOrigin,
-      source: childWindow,
-      data: {
-        id: 0,
-        func: "authentication.authenticate.failure",
-        args: ["someReason"]
-      }
-    } as MessageEvent);
-
-    expect(successResult).toBeUndefined();
-    expect(failureReason).toEqual("someReason");
-  });
-
-  it("should successfully pop up the auth window in the desktop client", () => {
-    initializeWithContext("content", "desktop");
-
-    let authenticationParams = {
-      url: "https://someUrl",
-      width: 100,
-      height: 200
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-
-    let message = findMessageByFunc("authentication.authenticate");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(3);
-    expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + "/");
-    expect(message.args[1]).toBe(authenticationParams.width);
-    expect(message.args[2]).toBe(authenticationParams.height);
-  });
-
-  it("should successfully handle auth success in the desktop client", () => {
-    initializeWithContext("content", "desktop");
-
-    let successResult: string;
-    let failureReason: string;
-    let authenticationParams = {
-      url: "https://someUrl",
-      width: 100,
-      height: 200,
-      successCallback: (result: string) => (successResult = result),
-      failureCallback: (reason: string) => (failureReason = reason)
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-
-    let message = findMessageByFunc("authentication.authenticate");
-    expect(message).not.toBeNull();
-
-    respondToMessage(message, true, "someResult");
-
-    expect(successResult).toBe("someResult");
-    expect(failureReason).toBeUndefined();
-  });
-
-  it("should successfully handle auth failure in the desktop client", () => {
-    initializeWithContext("content", "desktop");
-
-    let successResult: string;
-    let failureReason: string;
-    let authenticationParams = {
-      url: "https://someUrl",
-      width: 100,
-      height: 200,
-      successCallback: (result: string) => (successResult = result),
-      failureCallback: (reason: string) => (failureReason = reason)
-    };
-    microsoftTeams.authentication.authenticate(authenticationParams);
-
-    let message = findMessageByFunc("authentication.authenticate");
-    expect(message).not.toBeNull();
-
-    respondToMessage(message, false, "someReason");
-
-    expect(successResult).toBeUndefined();
-    expect(failureReason).toBe("someReason");
-  });
-
-  it("should successfully notify auth success", () => {
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifySuccess("someResult");
-    let message = findMessageByFunc("authentication.authenticate.success");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe("someResult");
-  });
-
-  it("should do window redirect if callbackUrl is for win32 Outlook", () => {
-    let windowAssignSpyCalled = false;
-    spyOn(microsoftTeams._window.location, "assign").and.callFake(
-      (url: string): void => {
-        windowAssignSpyCalled = true;
-        expect(url).toEqual(
-          "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess"
-        );
-      }
-    );
-
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifySuccess(
-      "someResult",
-      "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
-    );
-    expect(windowAssignSpyCalled).toBe(true);
-  });
-
-  it("should do window redirect if callbackUrl is for win32 Outlook and no result param specified", () => {
-    let windowAssignSpyCalled = false;
-    spyOn(microsoftTeams._window.location, "assign").and.callFake(
-      (url: string): void => {
-        windowAssignSpyCalled = true;
-        expect(url).toEqual(
-          "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess"
-        );
-      }
-    );
-
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifySuccess(
-      null,
-      "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
-    );
-    expect(windowAssignSpyCalled).toBe(true);
-  });
-
-  it("should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments", () => {
-    let windowAssignSpyCalled = false;
-    spyOn(microsoftTeams._window.location, "assign").and.callFake(
-      (url: string): void => {
-        windowAssignSpyCalled = true;
-        expect(url).toEqual(
-          "https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess"
-        );
-      }
-    );
-
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifySuccess(
-      "someResult",
-      "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook"
-    );
-    expect(windowAssignSpyCalled).toBe(true);
-  });
-
-  it("should successfully notify auth success if callbackUrl is not for win32 Outlook", () => {
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifySuccess(
-      "someResult",
-      "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
-    );
-    let message = findMessageByFunc("authentication.authenticate.success");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe("someResult");
-  });
-
-  it("should successfully notify auth failure", () => {
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifyFailure("someReason");
-
-    let message = findMessageByFunc("authentication.authenticate.failure");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe("someReason");
-  });
-
-  it("should do window redirect if callbackUrl is for win32 Outlook and auth failure happens", () => {
-    let windowAssignSpyCalled = false;
-    spyOn(microsoftTeams._window.location, "assign").and.callFake(
-      (url: string): void => {
-        windowAssignSpyCalled = true;
-        expect(url).toEqual(
-          "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=someReason&authFailure"
-        );
-      }
-    );
-
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifyFailure(
-      "someReason",
-      "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
-    );
-    expect(windowAssignSpyCalled).toBe(true);
-  });
-
-  it("should successfully notify auth failure if callbackUrl is not for win32 Outlook", () => {
-    spyOn(microsoftTeams._window.location, "assign").and.callFake(
-      (url: string): void => {
-        expect(url).toEqual(
-          "https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure"
-        );
-      }
-    );
-
-    initializeWithContext("authentication");
-
-    microsoftTeams.authentication.notifyFailure(
-      "someReason",
-      "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
-    );
-    let message = findMessageByFunc("authentication.authenticate.failure");
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe("someReason");
-  });
-
-  it("should not close auth window before notify success message has been sent", () => {
-    let closeWindowSpy = spyOn(
-      microsoftTeams._window,
-      "close"
-    ).and.callThrough();
-
-    microsoftTeams.initialize();
-    let initMessage = findMessageByFunc("initialize");
-    expect(initMessage).not.toBeNull();
-
-    microsoftTeams.authentication.notifySuccess("someResult");
-    let message = findMessageByFunc("authentication.authenticate.success");
-    expect(message).toBeNull();
-    expect(closeWindowSpy).not.toHaveBeenCalled();
-
-    respondToMessage(initMessage, "authentication");
-    message = findMessageByFunc("authentication.authenticate.success");
-    expect(message).not.toBeNull();
-
-    // Wait 100ms for the message queue and 200ms for the close delay
-    jasmine.clock().tick(301);
-    expect(closeWindowSpy).toHaveBeenCalled();
-  });
-
-  it("should not close auth window before notify failure message has been sent", () => {
-    let closeWindowSpy = spyOn(
-      microsoftTeams._window,
-      "close"
-    ).and.callThrough();
-
-    microsoftTeams.initialize();
-    let initMessage = findMessageByFunc("initialize");
-    expect(initMessage).not.toBeNull();
-
-    microsoftTeams.authentication.notifyFailure("someReason");
-    let message = findMessageByFunc("authentication.authenticate.failure");
-    expect(message).toBeNull();
-    expect(closeWindowSpy).not.toHaveBeenCalled();
-
-    respondToMessage(initMessage, "authentication");
-    message = findMessageByFunc("authentication.authenticate.failure");
-    expect(message).not.toBeNull();
-
-    // Wait 100ms for the message queue and 200ms for the close delay
-    jasmine.clock().tick(301);
-    expect(closeWindowSpy).toHaveBeenCalled();
-  });
-
   it("should successfully share a deep link", () => {
     initializeWithContext("content");
 
@@ -1166,6 +748,545 @@ describe("MicrosoftTeams", () => {
     expect(message.args[8]).toBe("someBaseUrl");
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe("someSubEntityId");
+  });
+
+  describe("navigateCrossDomain", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.navigateCrossDomain("https://valid.origin.com")
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() =>
+        microsoftTeams.navigateCrossDomain("https://valid.origin.com")
+      ).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should allow calls from content context", () => {
+      initializeWithContext("content");
+
+      microsoftTeams.navigateCrossDomain("https://valid.origin.com");
+    });
+
+    it("should allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      microsoftTeams.navigateCrossDomain("https://valid.origin.com");
+    });
+
+    it("should allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      microsoftTeams.navigateCrossDomain("https://valid.origin.com");
+    });
+
+    it("should allow calls from task context", () => {
+      initializeWithContext("task");
+
+      microsoftTeams.navigateCrossDomain("https://valid.origin.com");
+    });
+
+    it("should successfully navigate cross-origin", () => {
+      initializeWithContext("content");
+
+      microsoftTeams.navigateCrossDomain("https://valid.origin.com");
+
+      let navigateCrossDomainMessage = findMessageByFunc("navigateCrossDomain");
+      expect(navigateCrossDomainMessage).not.toBeNull();
+      expect(navigateCrossDomainMessage.args.length).toBe(1);
+      expect(navigateCrossDomainMessage.args[0]).toBe(
+        "https://valid.origin.com"
+      );
+    });
+
+    it("should throw on invalid cross-origin navigation request", () => {
+      initializeWithContext("settings");
+
+      microsoftTeams.navigateCrossDomain("https://invalid.origin.com");
+
+      let navigateCrossDomainMessage = findMessageByFunc("navigateCrossDomain");
+      expect(navigateCrossDomainMessage).not.toBeNull();
+      expect(navigateCrossDomainMessage.args.length).toBe(1);
+      expect(navigateCrossDomainMessage.args[0]).toBe(
+        "https://invalid.origin.com"
+      );
+
+      let respondWithFailure = () => {
+        respondToMessage(navigateCrossDomainMessage, false);
+      };
+
+      expect(respondWithFailure).toThrow();
+    });
+  });
+
+  describe("authentication", () => {
+    it("should not allow authentication.authenticate calls before initialization", () => {
+      const authenticationParams: microsoftTeams.authentication.AuthenticateParameters = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+
+      expect(() =>
+        microsoftTeams.authentication.authenticate(authenticationParams)
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should not allow authentication.authenticate calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      const authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+
+      const taskInfo: microsoftTeams.TaskInfo = {};
+      expect(() =>
+        microsoftTeams.authentication.authenticate(authenticationParams)
+      ).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should allow authentication.authenticate calls from content context", () => {
+      initializeWithContext("content");
+
+      const authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+    });
+
+    it("should allow authentication.authenticate calls from settings context", () => {
+      initializeWithContext("settings");
+
+      const authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+    });
+
+    it("should allow authentication.authenticate calls from remove context", () => {
+      initializeWithContext("remove");
+
+      const authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+    });
+
+    it("should allow authentication.authenticate calls from task context", () => {
+      initializeWithContext("task");
+
+      const authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+    });
+
+    it("should successfully pop up the auth window", () => {
+      initializeWithContext("content");
+
+      let windowOpenCalled = false;
+      spyOn(microsoftTeams._window, "open").and.callFake(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual("https://someurl/");
+          expect(name).toEqual("_blank");
+          expect(specs.indexOf("width=100")).not.toBe(-1);
+          expect(specs.indexOf("height=200")).not.toBe(-1);
+          windowOpenCalled = true;
+          return childWindow as Window;
+        }
+      );
+
+      let authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+      expect(windowOpenCalled).toBe(true);
+    });
+
+    it("should successfully pop up the auth window when authenticate called without authenticationParams for connectors", () => {
+      initializeWithContext("content");
+
+      let windowOpenCalled = false;
+      spyOn(microsoftTeams._window, "open").and.callFake(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual("https://someurl/");
+          expect(name).toEqual("_blank");
+          expect(specs.indexOf("width=100")).not.toBe(-1);
+          expect(specs.indexOf("height=200")).not.toBe(-1);
+          windowOpenCalled = true;
+          return childWindow as Window;
+        }
+      );
+
+      let authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.registerAuthenticationHandlers(
+        authenticationParams
+      );
+      microsoftTeams.authentication.authenticate();
+      expect(windowOpenCalled).toBe(true);
+    });
+
+    it("should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called", () => {
+      initializeWithContext("content");
+
+      let windowOpenCalled = false;
+      spyOn(microsoftTeams._window, "open").and.callFake(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual("https://someurl/");
+          expect(name).toEqual("_blank");
+          expect(specs.indexOf("width=100")).not.toBe(-1);
+          expect(specs.indexOf("height=200")).not.toBe(-1);
+          windowOpenCalled = true;
+          return childWindow as Window;
+        }
+      );
+
+      let successResult: string;
+      let failureReason: string;
+      let authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => (successResult = result),
+        failureCallback: (reason: string) => (failureReason = reason)
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+      expect(windowOpenCalled).toBe(true);
+
+      childWindow.closed = true;
+      jasmine.clock().tick(101);
+
+      expect(successResult).toBeUndefined();
+      expect(failureReason).toEqual("CancelledByUser");
+    });
+
+    it("should successfully handle auth success", () => {
+      initializeWithContext("content");
+
+      let successResult: string;
+      let failureReason: string;
+      let authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => (successResult = result),
+        failureCallback: (reason: string) => (failureReason = reason)
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+
+      processMessage({
+        origin: tabOrigin,
+        source: childWindow,
+        data: {
+          id: 0,
+          func: "authentication.authenticate.success",
+          args: ["someResult"]
+        }
+      } as MessageEvent);
+
+      expect(successResult).toEqual("someResult");
+      expect(failureReason).toBeUndefined();
+    });
+
+    it("should successfully handle auth failure", () => {
+      initializeWithContext("content");
+
+      let successResult: string;
+      let failureReason: string;
+      let authenticationParams = {
+        url: "https://someurl/",
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => (successResult = result),
+        failureCallback: (reason: string) => (failureReason = reason)
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+
+      processMessage({
+        origin: tabOrigin,
+        source: childWindow,
+        data: {
+          id: 0,
+          func: "authentication.authenticate.failure",
+          args: ["someReason"]
+        }
+      } as MessageEvent);
+
+      expect(successResult).toBeUndefined();
+      expect(failureReason).toEqual("someReason");
+    });
+
+    it("should successfully pop up the auth window in the desktop client", () => {
+      initializeWithContext("content", "desktop");
+
+      let authenticationParams = {
+        url: "https://someUrl",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+
+      let message = findMessageByFunc("authentication.authenticate");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toBe(
+        authenticationParams.url.toLowerCase() + "/"
+      );
+      expect(message.args[1]).toBe(authenticationParams.width);
+      expect(message.args[2]).toBe(authenticationParams.height);
+    });
+
+    it("should successfully handle auth success in the desktop client", () => {
+      initializeWithContext("content", "desktop");
+
+      let successResult: string;
+      let failureReason: string;
+      let authenticationParams = {
+        url: "https://someUrl",
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => (successResult = result),
+        failureCallback: (reason: string) => (failureReason = reason)
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+
+      let message = findMessageByFunc("authentication.authenticate");
+      expect(message).not.toBeNull();
+
+      respondToMessage(message, true, "someResult");
+
+      expect(successResult).toBe("someResult");
+      expect(failureReason).toBeUndefined();
+    });
+
+    it("should successfully handle auth failure in the desktop client", () => {
+      initializeWithContext("content", "desktop");
+
+      let successResult: string;
+      let failureReason: string;
+      let authenticationParams = {
+        url: "https://someUrl",
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => (successResult = result),
+        failureCallback: (reason: string) => (failureReason = reason)
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
+
+      let message = findMessageByFunc("authentication.authenticate");
+      expect(message).not.toBeNull();
+
+      respondToMessage(message, false, "someReason");
+
+      expect(successResult).toBeUndefined();
+      expect(failureReason).toBe("someReason");
+    });
+
+    it("should successfully notify auth success", () => {
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifySuccess("someResult");
+      let message = findMessageByFunc("authentication.authenticate.success");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe("someResult");
+    });
+
+    it("should do window redirect if callbackUrl is for win32 Outlook", () => {
+      let windowAssignSpyCalled = false;
+      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+        (url: string): void => {
+          windowAssignSpyCalled = true;
+          expect(url).toEqual(
+            "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess"
+          );
+        }
+      );
+
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifySuccess(
+        "someResult",
+        "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
+      );
+      expect(windowAssignSpyCalled).toBe(true);
+    });
+
+    it("should do window redirect if callbackUrl is for win32 Outlook and no result param specified", () => {
+      let windowAssignSpyCalled = false;
+      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+        (url: string): void => {
+          windowAssignSpyCalled = true;
+          expect(url).toEqual(
+            "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess"
+          );
+        }
+      );
+
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifySuccess(
+        null,
+        "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
+      );
+      expect(windowAssignSpyCalled).toBe(true);
+    });
+
+    it("should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments", () => {
+      let windowAssignSpyCalled = false;
+      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+        (url: string): void => {
+          windowAssignSpyCalled = true;
+          expect(url).toEqual(
+            "https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess"
+          );
+        }
+      );
+
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifySuccess(
+        "someResult",
+        "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook"
+      );
+      expect(windowAssignSpyCalled).toBe(true);
+    });
+
+    it("should successfully notify auth success if callbackUrl is not for win32 Outlook", () => {
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifySuccess(
+        "someResult",
+        "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
+      );
+      let message = findMessageByFunc("authentication.authenticate.success");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe("someResult");
+    });
+
+    it("should successfully notify auth failure", () => {
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifyFailure("someReason");
+
+      let message = findMessageByFunc("authentication.authenticate.failure");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe("someReason");
+    });
+
+    it("should do window redirect if callbackUrl is for win32 Outlook and auth failure happens", () => {
+      let windowAssignSpyCalled = false;
+      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+        (url: string): void => {
+          windowAssignSpyCalled = true;
+          expect(url).toEqual(
+            "https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=someReason&authFailure"
+          );
+        }
+      );
+
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifyFailure(
+        "someReason",
+        "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
+      );
+      expect(windowAssignSpyCalled).toBe(true);
+    });
+
+    it("should successfully notify auth failure if callbackUrl is not for win32 Outlook", () => {
+      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+        (url: string): void => {
+          expect(url).toEqual(
+            "https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure"
+          );
+        }
+      );
+
+      initializeWithContext("authentication");
+
+      microsoftTeams.authentication.notifyFailure(
+        "someReason",
+        "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
+      );
+      let message = findMessageByFunc("authentication.authenticate.failure");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe("someReason");
+    });
+
+    it("should not close auth window before notify success message has been sent", () => {
+      let closeWindowSpy = spyOn(
+        microsoftTeams._window,
+        "close"
+      ).and.callThrough();
+
+      microsoftTeams.initialize();
+      let initMessage = findMessageByFunc("initialize");
+      expect(initMessage).not.toBeNull();
+
+      microsoftTeams.authentication.notifySuccess("someResult");
+      let message = findMessageByFunc("authentication.authenticate.success");
+      expect(message).toBeNull();
+      expect(closeWindowSpy).not.toHaveBeenCalled();
+
+      respondToMessage(initMessage, "authentication");
+      message = findMessageByFunc("authentication.authenticate.success");
+      expect(message).not.toBeNull();
+
+      // Wait 100ms for the message queue and 200ms for the close delay
+      jasmine.clock().tick(301);
+      expect(closeWindowSpy).toHaveBeenCalled();
+    });
+
+    it("should not close auth window before notify failure message has been sent", () => {
+      let closeWindowSpy = spyOn(
+        microsoftTeams._window,
+        "close"
+      ).and.callThrough();
+
+      microsoftTeams.initialize();
+      let initMessage = findMessageByFunc("initialize");
+      expect(initMessage).not.toBeNull();
+
+      microsoftTeams.authentication.notifyFailure("someReason");
+      let message = findMessageByFunc("authentication.authenticate.failure");
+      expect(message).toBeNull();
+      expect(closeWindowSpy).not.toHaveBeenCalled();
+
+      respondToMessage(initMessage, "authentication");
+      message = findMessageByFunc("authentication.authenticate.failure");
+      expect(message).not.toBeNull();
+
+      // Wait 100ms for the message queue and 200ms for the close delay
+      jasmine.clock().tick(301);
+      expect(closeWindowSpy).toHaveBeenCalled();
+    });
   });
 
   describe("getTabInstances", () => {
