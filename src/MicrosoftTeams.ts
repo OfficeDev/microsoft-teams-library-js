@@ -1000,9 +1000,6 @@ namespace microsoftTeams {
      * @private
      * Hide from docs, since this class is not directly used.
      */
-            webhookUrl?: string;
-        }
-
     class SaveEventImpl implements SaveEvent {
       public notified: boolean = false;
       public result: SaveParameters;
@@ -1010,6 +1007,7 @@ namespace microsoftTeams {
       constructor(result?: SaveParameters) {
         this.result = result ? result : {};
       }
+
       public notifySuccess(): void {
         this.ensureNotNotified();
 
@@ -1087,11 +1085,6 @@ namespace microsoftTeams {
     let authWindowMonitor: number;
     handlers["authentication.authenticate.success"] = handleSuccess;
     handlers["authentication.authenticate.failure"] = handleFailure;
-
-
-        export function registerAuthenticationParameters(authenticateParameters: AuthenticateParameters): void {
-            authParams = authenticateParameters;
-        }
 
     /**
      * Registers the authentication handlers
@@ -1319,12 +1312,6 @@ namespace microsoftTeams {
     export function notifySuccess(result?: string, callbackUrl?: string): void {
       redirectIfWin32Outlook(callbackUrl, "result", result);
 
-                if (isValidState(decodedUrl)) {
-                    var link = document.createElement('a');
-                    link.href = updateUrlParameter(decodedUrl, "result", authenticationResultParams.result);
-                    window.location.href = link.href;
-                }
-            }
       ensureInitialized(frameContexts.authentication);
 
       sendMessageRequest(parentWindow, "authentication.authenticate.success", [
@@ -1347,12 +1334,6 @@ namespace microsoftTeams {
     export function notifyFailure(reason?: string, callbackUrl?: string): void {
       redirectIfWin32Outlook(callbackUrl, "reason", reason);
 
-                if (isValidState(decodedUrl)) {
-                    var link = document.createElement('a');
-                    link.href = updateUrlParameter(decodedUrl, "reason", authenticationResultParams.reason);
-                    window.location.href = link.href;
-                }
-            }
       ensureInitialized(frameContexts.authentication);
 
       sendMessageRequest(parentWindow, "authentication.authenticate.failure", [
@@ -1470,17 +1451,6 @@ namespace microsoftTeams {
        * A function that is called if the authentication fails, with the reason for the failure returned from the authentication pop-up.
        */
       failureCallback?: (reason?: string) => void;
-        }
-
-        export interface AuthenticationResultParameters {
-            /* reason Specifies a reason for the authentication failure.If specified, the frame that initiated the authentication pop- up receives this value in its callback*/
-            reason?: string;
-
-            /* result Specifies a result for the authentication.If specified, the frame that initiated the authentication pop- up receives this value in its callback.*/
-            result?: string;
-
-            /* state Specifies a return url for the authentication applicable in case of Outlook Desktop client. If specified, the frame that initiated the authentication redirects back to the specified URL after authentication success/failure.*/
-            state?: string;
     }
 
     /**
