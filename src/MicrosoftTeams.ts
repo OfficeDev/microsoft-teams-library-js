@@ -38,9 +38,12 @@ interface Window {
   onNativeMessage(evt: MessageEvent): void;
 }
 
+/**
+ * adding ctrl+P and cmd+P handler
+ */
 document.addEventListener("keydown", function(event: KeyboardEvent): void {
   if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
-    microsoftTeams.printHandler();
+    microsoftTeams.print();
     event.cancelBubble = true;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -508,6 +511,7 @@ namespace microsoftTeams {
 
   let themeChangeHandler: (theme: string) => void;
   let customPrintHandler: () => void;
+  let printCapabilityEnabled: boolean = false;
   handlers["themeChange"] = handleThemeChange;
 
   let fullScreenChangeHandler: (isFullScreen: boolean) => void;
@@ -599,22 +603,30 @@ namespace microsoftTeams {
   }
 
   /**
-   * Registers a handler for print.
-   * default print handler
+   * enable print capability
    */
-  export function printHandler(): void {
-    ensureInitialized();
-    if (customPrintHandler) {
-      customPrintHandler();
-    } else {
-      window.print();
-    }
+  export function enablePrintCapability(): void {
+    printCapabilityEnabled = true;
   }
 
   /**
    * Registers a handler for print.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the user changes their theme.
+   * default print handler
+   */
+  export function print(): void {
+    if (printCapabilityEnabled) {
+      ensureInitialized();
+      if (customPrintHandler) {
+        customPrintHandler();
+      } else {
+        window.print();
+      }
+    }
+  }
+
+  /**
+   * Registers a custom handler for print.
+   * @param handler The handler to invoke when printHandler is called.
    */
   export function registerCustomPrintHandler(handler: () => void): void {
     ensureInitialized();

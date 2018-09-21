@@ -599,14 +599,27 @@ describe("MicrosoftTeams", () => {
     expect(handlerCalled).toBe(true);
   });
 
-  it("print handler should successfully call default print handler", () => {
+  it("print handler should not called if print capability is disabled", () => {
     let handlerCalled = false;
     microsoftTeams.initialize();
     spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
     });
 
-    microsoftTeams.printHandler();
+    microsoftTeams.print();
+
+    expect(handlerCalled).toBe(false);
+  });
+
+  it("print handler should successfully call default print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    microsoftTeams.enablePrintCapability();
+    spyOn(window, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+
+    microsoftTeams.print();
 
     expect(handlerCalled).toBe(true);
   });
@@ -614,7 +627,8 @@ describe("MicrosoftTeams", () => {
   it("Ctrl+P should successfully call print handler", () => {
     let handlerCalled = false;
     microsoftTeams.initialize();
-    spyOn(microsoftTeams, "printHandler").and.callFake((): void => {
+    microsoftTeams.enablePrintCapability();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");
@@ -630,7 +644,8 @@ describe("MicrosoftTeams", () => {
   it("Cmd+P should successfully call print handler", () => {
     let handlerCalled = false;
     microsoftTeams.initialize();
-    spyOn(microsoftTeams, "printHandler").and.callFake((): void => {
+    microsoftTeams.enablePrintCapability();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");
@@ -646,11 +661,12 @@ describe("MicrosoftTeams", () => {
   it("should successfully register a print handler", () => {
     let handlerCalled = false;
     microsoftTeams.initialize();
+    microsoftTeams.enablePrintCapability();
     microsoftTeams.registerCustomPrintHandler(() => {
       handlerCalled = true;
     });
 
-    microsoftTeams.printHandler();
+    microsoftTeams.print();
 
     expect(handlerCalled).toBe(true);
   });
