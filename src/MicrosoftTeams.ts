@@ -40,7 +40,7 @@ interface Window {
 
 document.addEventListener("keydown", function(event: KeyboardEvent): void {
   if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
-    print();
+    microsoftTeams.printHandler();
     event.cancelBubble = true;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -507,7 +507,7 @@ namespace microsoftTeams {
   let hostClientType: string;
 
   let themeChangeHandler: (theme: string) => void;
-  let printHandler: () => void;
+  let customPrintHandler: () => void;
   handlers["themeChange"] = handleThemeChange;
 
   let fullScreenChangeHandler: (isFullScreen: boolean) => void;
@@ -602,10 +602,10 @@ namespace microsoftTeams {
    * Registers a handler for print.
    * default print handler
    */
-  export function print(handler: () => void): void {
+  export function printHandler(): void {
     ensureInitialized();
-    if (printHandler) {
-      printHandler();
+    if (customPrintHandler) {
+      customPrintHandler();
     } else {
       window.print();
     }
@@ -619,7 +619,7 @@ namespace microsoftTeams {
   export function registerOnPrintHandler(handler: () => void): void {
     ensureInitialized();
 
-    printHandler = handler;
+    customPrintHandler = handler;
   }
 
   /**
