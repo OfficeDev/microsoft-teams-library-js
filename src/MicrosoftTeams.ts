@@ -38,6 +38,15 @@ interface Window {
   onNativeMessage(evt: MessageEvent): void;
 }
 
+document.addEventListener("keydown", function(event: KeyboardEvent): void {
+  if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
+    print();
+    event.cancelBubble = true;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+});
+
 /**
  * This is the root namespace for the JavaScript SDK.
  */
@@ -498,6 +507,7 @@ namespace microsoftTeams {
   let hostClientType: string;
 
   let themeChangeHandler: (theme: string) => void;
+  let printHandler: () => void;
   handlers["themeChange"] = handleThemeChange;
 
   let fullScreenChangeHandler: (isFullScreen: boolean) => void;
@@ -586,6 +596,30 @@ namespace microsoftTeams {
       hostClientType = null;
       isFramelessWindow = false;
     };
+  }
+
+  /**
+   * Registers a handler for print.
+   * default print handler
+   */
+  export function print(handler: () => void): void {
+    ensureInitialized();
+    if (printHandler) {
+      printHandler();
+    } else {
+      window.print();
+    }
+  }
+
+  /**
+   * Registers a handler for print.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the user changes their theme.
+   */
+  export function registerOnPrintHandler(handler: () => void): void {
+    ensureInitialized();
+
+    printHandler = handler;
   }
 
   /**
