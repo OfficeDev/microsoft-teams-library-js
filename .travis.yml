@@ -1,6 +1,13 @@
 language: node_js
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
 node_js:
-  - "node"
-before_script:
-  - npm install -g gulp
-script: gulp
+- '6.11.3'
+
+install:
+- yarn install
+- yarn build

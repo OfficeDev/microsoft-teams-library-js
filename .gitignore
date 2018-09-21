@@ -1,13 +1,13 @@
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules/
-
-# Typings
-typings/
+npm-debug
+npm-error
 
 # build output
 build/
 dist/
+coverage/
 
 # Visual Studio cache/options directory
 .vs/
