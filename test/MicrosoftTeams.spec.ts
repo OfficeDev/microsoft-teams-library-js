@@ -599,6 +599,62 @@ describe("MicrosoftTeams", () => {
     expect(handlerCalled).toBe(true);
   });
 
+  it("print handler should successfully call default print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    spyOn(window, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+
+    microsoftTeams.printHandler();
+
+    expect(handlerCalled).toBe(true);
+  });
+
+  it("Ctrl+P should successfully call print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    spyOn(microsoftTeams, "printHandler").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).ctrlKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
+    expect(handlerCalled).toBe(true);
+  });
+
+  it("Cmd+P should successfully call print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    spyOn(microsoftTeams, "printHandler").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).metaKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
+    expect(handlerCalled).toBe(true);
+  });
+
+  it("should successfully register a print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    microsoftTeams.registerCustomPrintHandler(() => {
+      handlerCalled = true;
+    });
+
+    microsoftTeams.printHandler();
+
+    expect(handlerCalled).toBe(true);
+  });
+
   it("should successfully override a save handler with another", () => {
     initializeWithContext("settings");
 

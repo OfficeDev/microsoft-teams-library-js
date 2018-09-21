@@ -616,7 +616,7 @@ namespace microsoftTeams {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the user changes their theme.
    */
-  export function registerOnPrintHandler(handler: () => void): void {
+  export function registerCustomPrintHandler(handler: () => void): void {
     ensureInitialized();
 
     customPrintHandler = handler;
