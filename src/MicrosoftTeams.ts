@@ -56,7 +56,9 @@ namespace microsoftTeams {
     "https://msft.spoppe.com",
     "https://*.sharepoint.com",
     "https://*.sharepoint-df.com",
-    "https://*.sharepointonline.com"
+    "https://*.sharepointonline.com",
+    "https://outlook.office.com",
+    "https://outlook-sdf.office.com"
   ];
 
   // This will return a reg expression a given url
