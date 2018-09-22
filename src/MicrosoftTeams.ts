@@ -689,7 +689,8 @@ namespace microsoftTeams {
     ensureInitialized(
       frameContexts.content,
       frameContexts.settings,
-      frameContexts.remove
+      frameContexts.remove,
+      frameContexts.task
     );
 
     let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [
@@ -1109,7 +1110,8 @@ namespace microsoftTeams {
       ensureInitialized(
         frameContexts.content,
         frameContexts.settings,
-        frameContexts.remove
+        frameContexts.remove,
+        frameContexts.task
       );
 
       if (hostClientType === HostClientType.desktop) {
