@@ -2119,4 +2119,43 @@ namespace microsoftTeams {
       ]);
     }
   }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Information about all members in a chat
+   */
+  export interface ChatMembersInformation {
+    members: ChatMember[];
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Information about a chat member
+   */
+  export interface ChatMember {
+    /**
+     * The user name of the user principal.
+     */
+    upn: string;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * ------
+   * Allows an app to retrieve information of all chat members
+   * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
+   */
+  export function getChatMembers(
+    callback: (chatMembersInformation: ChatMembersInformation) => void
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "getChatMembers");
+    callbacks[messageId] = callback;
+  }
 }

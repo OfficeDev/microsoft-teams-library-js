@@ -1443,6 +1443,30 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("getChatMembers", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.getChatMembers(() => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully get chat members", () => {
+      initializeWithContext("content");
+
+      let callbackCalled: boolean = false;
+      microsoftTeams.getChatMembers(chatMembersInformation => {
+        callbackCalled = true;
+      });
+
+      let getChatMembersMessage = findMessageByFunc("getChatMembers");
+      expect(getChatMembersMessage).not.toBeNull();
+      respondToMessage(getChatMembersMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
