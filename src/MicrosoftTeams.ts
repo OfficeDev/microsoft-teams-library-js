@@ -1238,13 +1238,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -2127,7 +2127,7 @@ namespace microsoftTeams {
    * Information about all members in a chat
    */
   export interface ChatMembersInformation {
-    members: ChatMember[];
+    members: ThreadMember[];
   }
 
   /**
@@ -2136,9 +2136,9 @@ namespace microsoftTeams {
    * --------
    * Information about a chat member
    */
-  export interface ChatMember {
+  export interface ThreadMember {
     /**
-     * The user name of the user principal.
+     * The member's user principal name in the current tenant.
      */
     upn: string;
   }
@@ -2148,6 +2148,8 @@ namespace microsoftTeams {
    * Hide from docs
    * ------
    * Allows an app to retrieve information of all chat members
+   * Because a malicious party run your content in a browser, this value should
+   * be used only as a hint as to who the members are and never as proof of identity.
    * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
    */
   export function getChatMembers(
