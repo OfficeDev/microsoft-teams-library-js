@@ -1441,7 +1441,8 @@ describe("MicrosoftTeams", () => {
         height: microsoftTeams.TaskModuleDimension.Large,
         width: microsoftTeams.TaskModuleDimension.Large,
         title: "someTitle",
-        url: "someUrl"
+        url: "someUrl",
+        completionBotId: "someCompletionBotId"
       };
 
       microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
