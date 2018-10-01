@@ -2079,6 +2079,13 @@ namespace microsoftTeams {
      * If client doesnt support the URL, the URL that needs to be opened in the browser.
      */
     fallbackUrl?: string;
+
+    /**
+     * Specifies a bot ID to send the result of the user's interaction with the task module.
+     * If specified, the bot will receive a task/complete invoke event with a JSON object
+     * in the event payload.
+     */
+    completionBotId?: string;
   }
 
   /**
