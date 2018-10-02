@@ -735,7 +735,8 @@ namespace microsoftTeams {
     ensureInitialized(
       frameContexts.content,
       frameContexts.settings,
-      frameContexts.remove
+      frameContexts.remove,
+      frameContexts.task
     );
 
     let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [
@@ -1155,7 +1156,8 @@ namespace microsoftTeams {
       ensureInitialized(
         frameContexts.content,
         frameContexts.settings,
-        frameContexts.remove
+        frameContexts.remove,
+        frameContexts.task
       );
 
       if (hostClientType === HostClientType.desktop) {
@@ -2123,6 +2125,13 @@ namespace microsoftTeams {
      * If client doesnt support the URL, the URL that needs to be opened in the browser.
      */
     fallbackUrl?: string;
+
+    /**
+     * Specifies a bot ID to send the result of the user's interaction with the task module.
+     * If specified, the bot will receive a task/complete invoke event with a JSON object
+     * in the event payload.
+     */
+    completionBotId?: string;
   }
 
   /**
@@ -2164,5 +2173,46 @@ namespace microsoftTeams {
         Array.isArray(appIds) ? appIds : [appIds]
       ]);
     }
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Information about all members in a chat
+   */
+  export interface ChatMembersInformation {
+    members: ThreadMember[];
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Information about a chat member
+   */
+  export interface ThreadMember {
+    /**
+     * The member's user principal name in the current tenant.
+     */
+    upn: string;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * ------
+   * Allows an app to retrieve information of all chat members
+   * Because a malicious party run your content in a browser, this value should
+   * be used only as a hint as to who the members are and never as proof of membership.
+   * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
+   */
+  export function getChatMembers(
+    callback: (chatMembersInformation: ChatMembersInformation) => void
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(parentWindow, "getChatMembers");
+    callbacks[messageId] = callback;
   }
 }
