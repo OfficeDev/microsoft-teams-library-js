@@ -39,18 +39,6 @@ interface Window {
 }
 
 /**
- * adding ctrl+P and cmd+P handler
- */
-document.addEventListener("keydown", function(event: KeyboardEvent): void {
-  if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
-    microsoftTeams.print();
-    event.cancelBubble = true;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  }
-});
-
-/**
  * This is the root namespace for the JavaScript SDK.
  */
 namespace microsoftTeams {
@@ -606,7 +594,19 @@ namespace microsoftTeams {
    * enable print capability
    */
   export function enablePrintCapability(): void {
+    ensureInitialized();
     printCapabilityEnabled = true;
+    /**
+     * adding ctrl+P and cmd+P handler
+     */
+    document.addEventListener("keydown", function(event: KeyboardEvent): void {
+      if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
+        microsoftTeams.print();
+        event.cancelBubble = true;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    });
   }
 
   /**
@@ -615,7 +615,6 @@ namespace microsoftTeams {
    */
   export function print(): void {
     if (printCapabilityEnabled) {
-      ensureInitialized();
       if (customPrintHandler) {
         customPrintHandler();
       } else {
