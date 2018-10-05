@@ -628,19 +628,6 @@ describe("MicrosoftTeams", () => {
     expect(handlerCalled).toBe(true);
   });
 
-  it("should successfully register a print handler", () => {
-    let handlerCalled = false;
-    microsoftTeams.initialize();
-    microsoftTeams.enablePrintCapability();
-    microsoftTeams.registerCustomPrintHandler(() => {
-      handlerCalled = true;
-    });
-
-    microsoftTeams.print();
-
-    expect(handlerCalled).toBe(true);
-  });
-
   it("should successfully override a save handler with another", () => {
     initializeWithContext("settings");
 

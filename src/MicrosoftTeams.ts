@@ -610,27 +610,12 @@ namespace microsoftTeams {
   }
 
   /**
-   * Registers a handler for print.
    * default print handler
    */
   export function print(): void {
     if (printCapabilityEnabled) {
-      if (customPrintHandler) {
-        customPrintHandler();
-      } else {
-        window.print();
-      }
+      window.print();
     }
-  }
-
-  /**
-   * Registers a custom handler for print.
-   * @param handler The handler to invoke when printHandler is called.
-   */
-  export function registerCustomPrintHandler(handler: () => void): void {
-    ensureInitialized();
-
-    customPrintHandler = handler;
   }
 
   /**
