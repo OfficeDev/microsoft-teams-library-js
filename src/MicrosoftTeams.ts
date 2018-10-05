@@ -498,8 +498,6 @@ namespace microsoftTeams {
   let hostClientType: string;
 
   let themeChangeHandler: (theme: string) => void;
-  let customPrintHandler: () => void;
-  let printCapabilityEnabled: boolean = false;
   handlers["themeChange"] = handleThemeChange;
 
   let fullScreenChangeHandler: (isFullScreen: boolean) => void;
@@ -595,7 +593,6 @@ namespace microsoftTeams {
    */
   export function enablePrintCapability(): void {
     ensureInitialized();
-    printCapabilityEnabled = true;
     /**
      * adding ctrl+P and cmd+P handler
      */
@@ -613,9 +610,7 @@ namespace microsoftTeams {
    * default print handler
    */
   export function print(): void {
-    if (printCapabilityEnabled) {
-      window.print();
-    }
+    window.print();
   }
 
   /**
