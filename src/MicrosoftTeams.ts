@@ -496,6 +496,7 @@ namespace microsoftTeams {
   let callbacks: { [id: number]: Function } = {};
   let frameContext: string;
   let hostClientType: string;
+  let printCapabilityEnabled: boolean = false;
 
   let themeChangeHandler: (theme: string) => void;
   handlers["themeChange"] = handleThemeChange;
@@ -586,6 +587,32 @@ namespace microsoftTeams {
       hostClientType = null;
       isFramelessWindow = false;
     };
+  }
+
+  /**
+   * Enable print capability to support printing page using Ctrl+P and cmd+P
+   */
+  export function enablePrintCapability(): void {
+    if (!printCapabilityEnabled) {
+      printCapabilityEnabled = true;
+      ensureInitialized();
+      // adding ctrl+P and cmd+P handler
+      document.addEventListener("keydown", (event: KeyboardEvent) => {
+        if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
+          microsoftTeams.print();
+          event.cancelBubble = true;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      });
+    }
+  }
+
+  /**
+   * default print handler
+   */
+  export function print(): void {
+    window.print();
   }
 
   /**
