@@ -3,7 +3,7 @@ declare interface String {
 }
 
 if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function(
+  String.prototype.startsWith = function (
     search: string,
     pos?: number
   ): boolean {
@@ -41,7 +41,7 @@ interface Window {
 /**
  * This is the root namespace for the JavaScript SDK.
  */
-namespace microsoftTeams {
+export namespace microsoftTeams {
   "use strict";
 
   const version = "1.3.6";
@@ -1240,13 +1240,13 @@ namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes

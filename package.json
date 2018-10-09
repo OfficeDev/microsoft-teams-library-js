@@ -38,10 +38,15 @@
     "karma-phantomjs-launcher": "1.0.2",
     "merge2": "1.0.2",
     "prettier": "^1.11.1",
+    "ts-loader": "^5.2.1",
     "tslint": "^5.8.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "2.5.0",
+    "typescript": "^2.5.0",
     "yargs": "^8.0.1"
   },
-  "files": ["dist/**", "README.md", "LICENSE"]
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE"
+  ]
 }

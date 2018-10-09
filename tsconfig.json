@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
-    "noEmitOnError": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noResolve": false, /* Required for typings to work properly */
     "target": "es5",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noResolve": false,
+    "outDir": "./dist/",
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "noImplicitReturns": true,
     "declaration": true
   },
   "files": [

@@ -1,0 +1,1 @@
+export { microsoftTeams } from './src/MicrosoftTeams';
