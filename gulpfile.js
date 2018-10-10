@@ -15,16 +15,15 @@ var uglify = require("gulp-uglify");
 var deployCdn = require("gulp-deploy-azure-cdn");
 var prettierPlugin = require("gulp-prettier-plugin");
 var KeyVault = require("azure-keyvault");
-var argv = require("yargs").option("version", { type: "string" }).argv; // version may look like a number, so force it to be a string
+var argv = require("yargs").option("version", {
+  type: "string"
+}).argv; // version may look like a number, so force it to be a string
 var AuthenticationContext = require("adal-node").AuthenticationContext;
 
 var buildDir = "./build/";
 var distDir = "./dist/";
 var libName = "microsoftTeams";
-var dtsHeaderTemplate = `
-declare module '@microsoft/teams-js' {
-    export = microsoftTeams;
-}
+var dtsHeaderTemplate = `export = microsoftTeams;
 `;
 
 /// global options
@@ -52,7 +51,11 @@ gulp.task("tslint", function() {
 gulp.task("prettier", () =>
   gulp
     .src(["./src/**/*.ts", "./test/**/*.ts", "./gulpfile.js"])
-    .pipe(prettierPlugin(undefined, { filter: true }))
+    .pipe(
+      prettierPlugin(undefined, {
+        filter: true
+      })
+    )
     // passing a function that returns base will write the files in-place
     .pipe(gulp.dest(file => file.base))
 );
@@ -80,13 +83,22 @@ gulp.task("ts", ["tslint"], function() {
       )
       .pipe(gulp.dest(buildDir))
       .pipe(uglify())
-      .pipe(rename({ suffix: ".min" }))
+      .pipe(
+        rename({
+          suffix: ".min"
+        })
+      )
       .pipe(gulp.dest(buildDir))
   ]);
 });
 
 gulp.task("test", ["ts"], function(done) {
-  new karma({ configFile: __dirname + "/karma.conf.js" }, done).start();
+  new karma(
+    {
+      configFile: __dirname + "/karma.conf.js"
+    },
+    done
+  ).start();
 });
 
 gulp.task("doc", function(done) {
