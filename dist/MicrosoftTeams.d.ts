@@ -1,7 +1,4 @@
-
-declare module '@microsoft/teams-js' {
-    export = microsoftTeams;
-}
+export = microsoftTeams;
 interface String {
     startsWith(search: string, pos?: number): boolean;
 }
