@@ -18,7 +18,7 @@ if (!String.prototype.startsWith) {
 var microsoftTeams;
 (function (microsoftTeams) {
     "use strict";
-    var version = "1.3.6";
+    var version = "1.3.7";
     var validOrigins = [
         "https://teams.microsoft.com",
         "https://teams.microsoft.us",
