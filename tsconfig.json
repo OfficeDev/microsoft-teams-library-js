@@ -9,10 +9,5 @@
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "declaration": true
-  },
-  "files": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "typings/index.d.ts"
-  ]
+  }
 }

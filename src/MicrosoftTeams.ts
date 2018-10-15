@@ -17,7 +17,10 @@ if (!String.prototype.startsWith) {
  * Shim in definitions used for browser-compat
  */
 interface MessageEvent {
-  // Needed for Chrome
+  origin?: any;
+  source?: any;
+  data?: any;
+  // Needed for Chrome1964
   originalEvent: MessageEvent;
 }
 
@@ -485,11 +488,11 @@ export namespace microsoftTeams {
   let initializeCalled = false;
 
   let isFramelessWindow = false;
-  let currentWindow: Window;
-  let parentWindow: Window;
+  let currentWindow: any | any;
+  let parentWindow: Window | any;
   let parentOrigin: string;
   let parentMessageQueue: MessageRequest[] = [];
-  let childWindow: Window;
+  let childWindow: Window | any;
   let childOrigin: string;
   let childMessageQueue: MessageRequest[] = [];
   let nextMessageId = 0;
@@ -1955,7 +1958,7 @@ export namespace microsoftTeams {
         : null;
   }
 
-  function flushMessageQueue(targetWindow: Window): void {
+  function flushMessageQueue(targetWindow: Window | any): void {
     let targetOrigin = getTargetOrigin(targetWindow);
     let targetMessageQueue = getTargetMessageQueue(targetWindow);
     while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
@@ -1976,7 +1979,7 @@ export namespace microsoftTeams {
   }
 
   function sendMessageRequest(
-    targetWindow: Window,
+    targetWindow: Window | any,
     actionName: string,
     // tslint:disable-next-line: no-any
     args?: any[]
@@ -2020,7 +2023,7 @@ export namespace microsoftTeams {
   }
 
   function sendMessageResponse(
-    targetWindow: Window,
+    targetWindow: Window | any,
     id: number,
     // tslint:disable-next-line:no-any
     args?: any[]

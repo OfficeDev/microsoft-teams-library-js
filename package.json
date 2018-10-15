@@ -10,7 +10,8 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "build": "gulp dist",
+    "install": "yarn install",
+    "build": "webpack",
     "test": "gulp test"
   },
   "license": "MIT",
@@ -42,6 +43,8 @@
     "tslint": "^5.8.0",
     "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.5.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
     "yargs": "^8.0.1"
   },
   "files": [
