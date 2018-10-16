@@ -2,8 +2,8 @@ declare interface String {
   startsWith(search: string, pos?: number): boolean;
 }
 
-if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function (
+if (!(String.prototype as any).startsWith) {
+  (String.prototype as any).startsWith = function (
     search: string,
     pos?: number
   ): boolean {
@@ -212,13 +212,13 @@ export namespace microsoftTeams {
       popOver = "popOver"
     }
 
-    let navBarMenuItemPressHandler: (id: String) => boolean;
+    let navBarMenuItemPressHandler: (id: string) => boolean;
     handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
 
-    let actionMenuItemPressHandler: (id: String) => boolean;
+    let actionMenuItemPressHandler: (id: string) => boolean;
     handlers["actionMenuItemPress"] = handleActionMenuItemPress;
 
-    let viewConfigItemPressHandler: (id: String) => boolean;
+    let viewConfigItemPressHandler: (id: string) => boolean;
     handlers["setModuleView"] = handleViewConfigItemPress;
 
     /**
@@ -236,7 +236,7 @@ export namespace microsoftTeams {
       sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
     }
 
-    function handleViewConfigItemPress(id: String): void {
+    function handleViewConfigItemPress(id: string): void {
       if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "viewConfigItemPress", [id]);
@@ -258,7 +258,7 @@ export namespace microsoftTeams {
       sendMessageRequest(parentWindow, "setNavBarMenu", [items]);
     }
 
-    function handleNavBarMenuItemPress(id: String): void {
+    function handleNavBarMenuItemPress(id: string): void {
       if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
@@ -292,7 +292,7 @@ export namespace microsoftTeams {
       sendMessageRequest(parentWindow, "showActionMenu", [params]);
     }
 
-    function handleActionMenuItemPress(id: String): void {
+    function handleActionMenuItemPress(id: string): void {
       if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
@@ -513,7 +513,7 @@ export namespace microsoftTeams {
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
    */
-  export function initialize(): void {
+  export function initialize(hostWindow: any = window): void {
     if (initializeCalled) {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
@@ -523,7 +523,7 @@ export namespace microsoftTeams {
     initializeCalled = true;
 
     // Undocumented field used to mock the window for unit tests
-    currentWindow = (this._window as Window) || window;
+    currentWindow = hostWindow;
 
     // Listen for messages post to our window
     let messageListener = (evt: MessageEvent) => processMessage(evt);
@@ -537,7 +537,7 @@ export namespace microsoftTeams {
 
     if (!parentWindow) {
       isFramelessWindow = true;
-      window.onNativeMessage = handleParentMessage;
+      (window as any).onNativeMessage = handleParentMessage;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -589,6 +589,13 @@ export namespace microsoftTeams {
       hostClientType = null;
       isFramelessWindow = false;
     };
+  }
+
+  /**
+   * Initializes the library. This must be called before any other SDK calls
+   * but after the frame is loaded successfully.
+   */
+  export function _uninitialize(): void {
   }
 
   /**
