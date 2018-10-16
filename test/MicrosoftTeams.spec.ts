@@ -1,4 +1,4 @@
-import { microsoftTeams } from "../src/MicrosoftTeams";
+import * as microsoftTeams from "../src/MicrosoftTeams";
 
 interface MessageRequest {
   id: number;
@@ -608,7 +608,7 @@ describe("MicrosoftTeams", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
+    spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");
@@ -625,7 +625,7 @@ describe("MicrosoftTeams", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
+    spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");

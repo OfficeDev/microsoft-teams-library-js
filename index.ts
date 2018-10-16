@@ -1,1 +1,2 @@
-export { microsoftTeams } from './src/MicrosoftTeams';
+import * as microsoftTeams from './src/MicrosoftTeams';
+export { microsoftTeams };
