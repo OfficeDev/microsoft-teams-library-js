@@ -101,28 +101,13 @@ gulp.task("test", ["ts"], function(done) {
   ).start();
 });
 
-gulp.task("doc", function(done) {
-  var parse = require("json-schema-to-markdown");
-  var schema = require("./src/MicrosoftTeams.schema.json");
-  var markdown = parse(schema);
-  fs.mkdir(buildDir, function() {
-    fs.mkdir(buildDir + "/doc", function() {
-      fs.writeFile(buildDir + "/doc/MicrosoftTeams.schema.md", markdown, done);
-    });
-  });
-});
-
-gulp.task("dist", ["ts", "doc"], function() {
-  var distFiles = [
-    buildDir + "/src/**/*.js",
-    buildDir + "/src/**/*.d.ts",
-    "./src/**/*.schema.json"
-  ];
+gulp.task("dist", ["ts"], function() {
+  var distFiles = [buildDir + "/src/**/*.js", buildDir + "/src/**/*.d.ts"];
 
   return gulp.src(distFiles).pipe(gulp.dest(distDir));
 });
 
-gulp.task("default", ["prettier", "ts", "test", "doc", "dist"]);
+gulp.task("default", ["prettier", "ts", "test", "dist"]);
 
 gulp.task("clean", function() {
   return del([buildDir, distDir]);
