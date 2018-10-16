@@ -3,7 +3,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function(
+  (String.prototype as any).startsWith = function (
     search: string,
     pos?: number
   ): boolean {
@@ -499,6 +499,7 @@ export namespace microsoftTeams {
   let callbacks: { [id: number]: Function } = {};
   let frameContext: string;
   let hostClientType: string;
+  let printCapabilityEnabled: boolean = false;
 
   let themeChangeHandler: (theme: string) => void;
   handlers["themeChange"] = handleThemeChange;
@@ -595,7 +596,32 @@ export namespace microsoftTeams {
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
    */
-  export function _uninitialize(): void {}
+  export function _uninitialize(): void { }
+  /**
+   * Enable print capability to support printing page using Ctrl+P and cmd+P
+   */
+  export function enablePrintCapability(): void {
+    if (!printCapabilityEnabled) {
+      printCapabilityEnabled = true;
+      ensureInitialized();
+      // adding ctrl+P and cmd+P handler
+      document.addEventListener("keydown", (event: KeyboardEvent) => {
+        if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
+          microsoftTeams.print();
+          event.cancelBubble = true;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      });
+    }
+  }
+
+  /**
+   * default print handler
+   */
+  export function print(): void {
+    window.print();
+  }
 
   /**
    * Retrieves the current context the frame is running in.
@@ -1249,13 +1275,13 @@ export namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-          top +
-          ", left=" +
-          left +
-          ", width=" +
-          width +
-          ", height=" +
-          height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes

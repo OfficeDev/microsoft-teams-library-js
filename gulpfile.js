@@ -15,16 +15,15 @@ var uglify = require("gulp-uglify");
 var deployCdn = require("gulp-deploy-azure-cdn");
 var prettierPlugin = require("gulp-prettier-plugin");
 var KeyVault = require("azure-keyvault");
-var argv = require("yargs").option("version", { type: "string" }).argv; // version may look like a number, so force it to be a string
+var argv = require("yargs").option("version", {
+  type: "string"
+}).argv; // version may look like a number, so force it to be a string
 var AuthenticationContext = require("adal-node").AuthenticationContext;
 
 var buildDir = "./build/";
 var distDir = "./dist/";
 var libName = "microsoftTeams";
-var dtsHeaderTemplate = `
-declare module '@microsoft/teams-js' {
-    export = microsoftTeams;
-}
+var dtsHeaderTemplate = `export = microsoftTeams;
 `;
 
 /// global options
@@ -52,7 +51,11 @@ gulp.task("tslint", function() {
 gulp.task("prettier", () =>
   gulp
     .src(["./src/**/*.ts", "./test/**/*.ts", "./gulpfile.js"])
-    .pipe(prettierPlugin(undefined, { filter: true }))
+    .pipe(
+      prettierPlugin(undefined, {
+        filter: true
+      })
+    )
     // passing a function that returns base will write the files in-place
     .pipe(gulp.dest(file => file.base))
 );
@@ -80,37 +83,31 @@ gulp.task("ts", ["tslint"], function() {
       )
       .pipe(gulp.dest(buildDir))
       .pipe(uglify())
-      .pipe(rename({ suffix: ".min" }))
+      .pipe(
+        rename({
+          suffix: ".min"
+        })
+      )
       .pipe(gulp.dest(buildDir))
   ]);
 });
 
 gulp.task("test", ["ts"], function(done) {
-  new karma({ configFile: __dirname + "/karma.conf.js" }, done).start();
+  new karma(
+    {
+      configFile: __dirname + "/karma.conf.js"
+    },
+    done
+  ).start();
 });
 
-gulp.task("doc", function(done) {
-  var parse = require("json-schema-to-markdown");
-  var schema = require("./src/MicrosoftTeams.schema.json");
-  var markdown = parse(schema);
-  fs.mkdir(buildDir, function() {
-    fs.mkdir(buildDir + "/doc", function() {
-      fs.writeFile(buildDir + "/doc/MicrosoftTeams.schema.md", markdown, done);
-    });
-  });
-});
-
-gulp.task("dist", ["ts", "doc"], function() {
-  var distFiles = [
-    buildDir + "/src/**/*.js",
-    buildDir + "/src/**/*.d.ts",
-    "./src/**/*.schema.json"
-  ];
+gulp.task("dist", ["ts"], function() {
+  var distFiles = [buildDir + "/src/**/*.js", buildDir + "/src/**/*.d.ts"];
 
   return gulp.src(distFiles).pipe(gulp.dest(distDir));
 });
 
-gulp.task("default", ["prettier", "ts", "test", "doc", "dist"]);
+gulp.task("default", ["prettier", "ts", "test", "dist"]);
 
 gulp.task("clean", function() {
   return del([buildDir, distDir]);

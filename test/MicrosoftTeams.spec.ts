@@ -561,6 +561,85 @@ describe("MicrosoftTeams", () => {
 
     sendMessage("settings.remove");
 
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).ctrlKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
+    expect(handlerCalled).toBeFalsy();
+  });
+
+  it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).metaKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
+    expect(handlerCalled).toBeFalsy();
+  });
+
+  it("print handler should successfully call default print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    microsoftTeams.enablePrintCapability();
+    spyOn(window, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+
+    microsoftTeams.print();
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it("Ctrl+P should successfully call print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    microsoftTeams.enablePrintCapability();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).ctrlKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it("Cmd+P should successfully call print handler", () => {
+    let handlerCalled = false;
+    microsoftTeams.initialize();
+    microsoftTeams.enablePrintCapability();
+    spyOn(microsoftTeams, "print").and.callFake((): void => {
+      handlerCalled = true;
+    });
+    let printEvent = new Event("keydown");
+    // tslint:disable:no-any
+    (printEvent as any).keyCode = 80;
+    (printEvent as any).metaKey = true;
+    // tslint:enable:no-any
+
+    document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);
   });
 
