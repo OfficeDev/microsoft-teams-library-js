@@ -95,8 +95,6 @@ describe("MicrosoftTeams", () => {
     messages = [];
     childMessages = [];
     childWindow.closed = false;
-
-    jasmine.clock().install();
   });
 
   afterEach(() => {
@@ -104,8 +102,6 @@ describe("MicrosoftTeams", () => {
     if (microsoftTeams._uninitialize) {
       microsoftTeams._uninitialize();
     }
-
-    jasmine.clock().uninstall();
   });
 
   it("should exist in the global namespace", () => {
@@ -113,7 +109,7 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should successfully initialize", () => {
-    microsoftTeams.initialize(window);
+    microsoftTeams.initialize(mockWindow);
 
     expect(processMessage).toBeDefined();
     expect(messages.length).toBe(1);
@@ -126,10 +122,9 @@ describe("MicrosoftTeams", () => {
     expect(initMessage.args[0]).toEqual("1.3.6");
   });
 
-  /*
   it("should allow multiple initialize calls", () => {
     for (let i = 0; i < 100; i++) {
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
     }
 
     // Still only one message actually sent, the extra calls just no-op'ed
@@ -240,7 +235,7 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should not make calls to unsupported domains", () => {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     let initMessage = findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
@@ -264,7 +259,7 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should successfully handle calls queued before init completes", () => {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     // Another call made before the init response
     microsoftTeams.getContext(() => {
@@ -566,7 +561,7 @@ describe("MicrosoftTeams", () => {
 
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
@@ -582,7 +577,7 @@ describe("MicrosoftTeams", () => {
 
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
@@ -598,7 +593,7 @@ describe("MicrosoftTeams", () => {
 
   it("print handler should successfully call default print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
     spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
@@ -611,7 +606,7 @@ describe("MicrosoftTeams", () => {
 
   it("Ctrl+P should successfully call print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
@@ -628,7 +623,7 @@ describe("MicrosoftTeams", () => {
 
   it("Cmd+P should successfully call print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
@@ -1051,10 +1046,10 @@ describe("MicrosoftTeams", () => {
       expect(windowOpenCalled).toBe(true);
 
       childWindow.closed = true;
-      jasmine.clock().tick(101);
-
-      expect(successResult).toBeUndefined();
-      expect(failureReason).toEqual("CancelledByUser");
+      setTimeout(() => {
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toEqual("CancelledByUser");
+      }, 101);
     });
 
     it("should successfully handle auth success", () => {
@@ -1317,7 +1312,7 @@ describe("MicrosoftTeams", () => {
     it("should not close auth window before notify success message has been sent", () => {
       let closeWindowSpy = spyOn(mockWindow, "close").and.callThrough();
 
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
@@ -1331,14 +1326,15 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeNull();
 
       // Wait 100ms for the message queue and 200ms for the close delay
-      jasmine.clock().tick(301);
-      expect(closeWindowSpy).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(closeWindowSpy).toHaveBeenCalled();
+      }, 301);
     });
 
     it("should not close auth window before notify failure message has been sent", () => {
       let closeWindowSpy = spyOn(mockWindow, "close").and.callThrough();
 
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
@@ -1352,8 +1348,9 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeNull();
 
       // Wait 100ms for the message queue and 200ms for the close delay
-      jasmine.clock().tick(301);
-      expect(closeWindowSpy).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(closeWindowSpy).toHaveBeenCalled();
+      }, 301);
     });
   });
 
@@ -1656,13 +1653,12 @@ describe("MicrosoftTeams", () => {
       expect(callbackCalled).toBe(true);
     });
   });
-  */
 
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
   ): void {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     const initMessage = findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
@@ -1703,5 +1699,4 @@ describe("MicrosoftTeams", () => {
       }
     } as MessageEvent);
   }
-
 });
