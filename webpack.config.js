@@ -1,9 +1,13 @@
 const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: './index.ts',
+  entry: {
+    'MicrosoftTeams': './index.ts',
+    'MicrosoftTeams.min': './index.ts'
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
   },
   devtool: "source-map",
@@ -20,6 +24,9 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: false
+    minimize: true,
+    minimizer: [new UglifyJsPlugin({
+      include: /\.min\.js$/
+    })]
   }
 };
