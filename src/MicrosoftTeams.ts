@@ -3,7 +3,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function (
+  (String.prototype as any).startsWith = function(
     search: string,
     pos?: number
   ): boolean {
@@ -595,8 +595,7 @@ export namespace microsoftTeams {
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
    */
-  export function _uninitialize(): void {
-  }
+  export function _uninitialize(): void {}
 
   /**
    * Retrieves the current context the frame is running in.
@@ -1250,13 +1249,13 @@ export namespace microsoftTeams {
         link.href,
         "_blank",
         "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+          top +
+          ", left=" +
+          left +
+          ", width=" +
+          width +
+          ", height=" +
+          height
       );
       if (childWindow) {
         // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
