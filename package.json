@@ -3,8 +3,8 @@
   "author": "Microsoft Teams",
   "version": "1.4.0-beta.3.8",
   "description": "Microsoft Client SDK for building app for Microsoft teams",
-  "main": "./dist/MicrosoftTeams.js",
-  "typings": "./dts/src/index.d.ts",
+  "main": "./dist/MicrosoftTeams.min.js",
+  "typings": "./dts/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
