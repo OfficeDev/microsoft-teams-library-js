@@ -1,1 +1,0 @@
-export { microsoftTeams } from './MicrosoftTeams';
