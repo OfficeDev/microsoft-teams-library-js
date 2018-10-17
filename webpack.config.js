@@ -3,8 +3,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: {
-    'MicrosoftTeams': './index.ts',
-    'MicrosoftTeams.min': './index.ts'
+    'MicrosoftTeams': './src/index.ts',
+    'MicrosoftTeams.min': './src/index.ts'
   },
   output: {
     filename: '[name].js',

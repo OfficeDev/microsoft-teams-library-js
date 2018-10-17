@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
+    "outDir": "./dist",
+    "declarationDir": "./dts",
+    "target": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noResolve": false,
-    "outDir": "./dist/",
     "noImplicitAny": false,
     "noEmitOnError": true,
     "noImplicitReturns": true,
+    "sourceMap": true,
     "declaration": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "./webpack.config.ts"
+  ]
 }
