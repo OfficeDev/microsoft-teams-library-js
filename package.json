@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "1.4.0-beta.3.8",
+  "version": "1.4.0-beta.3.9",
   "description": "Microsoft Client SDK for building app for Microsoft teams",
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dts/index.d.ts",
