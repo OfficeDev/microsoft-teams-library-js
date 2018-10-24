@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declarationDir": "./dts",
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
     "noResolve": false,

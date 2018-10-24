@@ -29,14 +29,14 @@ interface MessageEvent {
  * Hide from docs
  */
 interface TeamsNativeClient {
-  framelessPostMessage(msg: String): void;
+  framelessPostMessage(msg: string): void;
 }
 
 /**
  * @private
  * Hide from docs
  */
-interface Window {
+interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: MessageEvent): void;
 }
@@ -488,11 +488,11 @@ export namespace microsoftTeams {
   let initializeCalled = false;
 
   let isFramelessWindow = false;
-  let currentWindow: any | any;
+  let currentWindow: Window | any;
   let parentWindow: Window | any;
   let parentOrigin: string;
   let parentMessageQueue: MessageRequest[] = [];
-  let childWindow: Window | any;
+  let childWindow: Window;
   let childOrigin: string;
   let childMessageQueue: MessageRequest[] = [];
   let nextMessageId = 0;
@@ -538,7 +538,7 @@ export namespace microsoftTeams {
 
     if (!parentWindow) {
       isFramelessWindow = true;
-      (window as any).onNativeMessage = handleParentMessage;
+      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -838,17 +838,23 @@ export namespace microsoftTeams {
     sendMessageRequest(parentWindow, "openFilePreview", params);
   }
 
+  export const enum NotificationTypes {
+    fileDownloadStart = "fileDownloadStart",
+    fileDownloadComplete = "fileDownloadComplete"
+  }
+
   export interface ShowNotificationParameters {
     message: string;
-    isDownloadComplete: boolean;
+    notificationType: NotificationTypes;
   }
 
   /**
    * @private
    * Hide from docs.
    * ------
-   * download file.
-   * @param file The file to download.
+   * display notification API.
+   * @param message Notification message.
+   * @param notificationType Notification type
    */
   export function showNotification(
     showNotificationParameters: ShowNotificationParameters
@@ -856,7 +862,7 @@ export namespace microsoftTeams {
     ensureInitialized(frameContexts.content);
     const params = [
       showNotificationParameters.message,
-      showNotificationParameters.isDownloadComplete
+      showNotificationParameters.notificationType
     ];
     sendMessageRequest(parentWindow, "showNotification", params);
   }
@@ -2042,7 +2048,7 @@ export namespace microsoftTeams {
     let request = createMessageRequest(actionName, args);
     if (isFramelessWindow) {
       if (currentWindow && currentWindow.nativeInterface) {
-        currentWindow.nativeInterface.framelessPostMessage(
+        (currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
           JSON.stringify(request)
         );
       }
