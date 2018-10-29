@@ -10,7 +10,6 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "install": "yarn install",
     "build": "webpack",
     "test": "jest"
   },
