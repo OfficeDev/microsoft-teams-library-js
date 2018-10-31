@@ -2,8 +2,8 @@ declare interface String {
   startsWith(search: string, pos?: number): boolean;
 }
 
-if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function(
+if (!(String.prototype as any).startsWith) {
+  (String.prototype as any).startsWith = function(
     search: string,
     pos?: number
   ): boolean {
@@ -17,7 +17,10 @@ if (!String.prototype.startsWith) {
  * Shim in definitions used for browser-compat
  */
 interface MessageEvent {
-  // Needed for Chrome
+  origin?: any;
+  source?: any;
+  data?: any;
+  // Needed for Chrome1964
   originalEvent: MessageEvent;
 }
 
@@ -26,14 +29,14 @@ interface MessageEvent {
  * Hide from docs
  */
 interface TeamsNativeClient {
-  framelessPostMessage(msg: String): void;
+  framelessPostMessage(msg: string): void;
 }
 
 /**
  * @private
  * Hide from docs
  */
-interface Window {
+interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: MessageEvent): void;
 }
@@ -41,7 +44,7 @@ interface Window {
 /**
  * This is the root namespace for the JavaScript SDK.
  */
-namespace microsoftTeams {
+export namespace microsoftTeams {
   "use strict";
 
   const version = "1.3.6";
@@ -209,13 +212,13 @@ namespace microsoftTeams {
       popOver = "popOver"
     }
 
-    let navBarMenuItemPressHandler: (id: String) => boolean;
+    let navBarMenuItemPressHandler: (id: string) => boolean;
     handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
 
-    let actionMenuItemPressHandler: (id: String) => boolean;
+    let actionMenuItemPressHandler: (id: string) => boolean;
     handlers["actionMenuItemPress"] = handleActionMenuItemPress;
 
-    let viewConfigItemPressHandler: (id: String) => boolean;
+    let viewConfigItemPressHandler: (id: string) => boolean;
     handlers["setModuleView"] = handleViewConfigItemPress;
 
     /**
@@ -233,7 +236,7 @@ namespace microsoftTeams {
       sendMessageRequest(parentWindow, "setUpViews", [viewConfig]);
     }
 
-    function handleViewConfigItemPress(id: String): void {
+    function handleViewConfigItemPress(id: string): void {
       if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "viewConfigItemPress", [id]);
@@ -255,7 +258,7 @@ namespace microsoftTeams {
       sendMessageRequest(parentWindow, "setNavBarMenu", [items]);
     }
 
-    function handleNavBarMenuItemPress(id: String): void {
+    function handleNavBarMenuItemPress(id: string): void {
       if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "handleNavBarMenuItemPress", [id]);
@@ -289,7 +292,7 @@ namespace microsoftTeams {
       sendMessageRequest(parentWindow, "showActionMenu", [params]);
     }
 
-    function handleActionMenuItemPress(id: String): void {
+    function handleActionMenuItemPress(id: string): void {
       if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
         ensureInitialized();
         sendMessageRequest(parentWindow, "handleActionMenuItemPress", [id]);
@@ -485,8 +488,8 @@ namespace microsoftTeams {
   let initializeCalled = false;
 
   let isFramelessWindow = false;
-  let currentWindow: Window;
-  let parentWindow: Window;
+  let currentWindow: Window | any;
+  let parentWindow: Window | any;
   let parentOrigin: string;
   let parentMessageQueue: MessageRequest[] = [];
   let childWindow: Window;
@@ -511,7 +514,7 @@ namespace microsoftTeams {
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
    */
-  export function initialize(): void {
+  export function initialize(hostWindow: any = window): void {
     if (initializeCalled) {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
@@ -521,7 +524,7 @@ namespace microsoftTeams {
     initializeCalled = true;
 
     // Undocumented field used to mock the window for unit tests
-    currentWindow = (this._window as Window) || window;
+    currentWindow = hostWindow;
 
     // Listen for messages post to our window
     let messageListener = (evt: MessageEvent) => processMessage(evt);
@@ -535,7 +538,7 @@ namespace microsoftTeams {
 
     if (!parentWindow) {
       isFramelessWindow = true;
-      window.onNativeMessage = handleParentMessage;
+      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
     } else {
       // For iFrame scenario, add listener to listen 'message'
       currentWindow.addEventListener("message", messageListener, false);
@@ -589,6 +592,11 @@ namespace microsoftTeams {
     };
   }
 
+  /**
+   * Initializes the library. This must be called before any other SDK calls
+   * but after the frame is loaded successfully.
+   */
+  export function _uninitialize(): void {}
   /**
    * Enable print capability to support printing page using Ctrl+P and cmd+P
    */
@@ -828,6 +836,35 @@ namespace microsoftTeams {
     ];
 
     sendMessageRequest(parentWindow, "openFilePreview", params);
+  }
+
+  export const enum NotificationTypes {
+    fileDownloadStart = "fileDownloadStart",
+    fileDownloadComplete = "fileDownloadComplete"
+  }
+
+  export interface ShowNotificationParameters {
+    message: string;
+    notificationType: NotificationTypes;
+  }
+
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   * display notification API.
+   * @param message Notification message.
+   * @param notificationType Notification type
+   */
+  export function showNotification(
+    showNotificationParameters: ShowNotificationParameters
+  ): void {
+    ensureInitialized(frameContexts.content);
+    const params = [
+      showNotificationParameters.message,
+      showNotificationParameters.notificationType
+    ];
+    sendMessageRequest(parentWindow, "showNotification", params);
   }
 
   /**
@@ -1982,7 +2019,7 @@ namespace microsoftTeams {
         : null;
   }
 
-  function flushMessageQueue(targetWindow: Window): void {
+  function flushMessageQueue(targetWindow: Window | any): void {
     let targetOrigin = getTargetOrigin(targetWindow);
     let targetMessageQueue = getTargetMessageQueue(targetWindow);
     while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
@@ -2003,7 +2040,7 @@ namespace microsoftTeams {
   }
 
   function sendMessageRequest(
-    targetWindow: Window,
+    targetWindow: Window | any,
     actionName: string,
     // tslint:disable-next-line: no-any
     args?: any[]
@@ -2011,7 +2048,7 @@ namespace microsoftTeams {
     let request = createMessageRequest(actionName, args);
     if (isFramelessWindow) {
       if (currentWindow && currentWindow.nativeInterface) {
-        currentWindow.nativeInterface.framelessPostMessage(
+        (currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
           JSON.stringify(request)
         );
       }
@@ -2047,7 +2084,7 @@ namespace microsoftTeams {
   }
 
   function sendMessageResponse(
-    targetWindow: Window,
+    targetWindow: Window | any,
     id: number,
     // tslint:disable-next-line:no-any
     args?: any[]

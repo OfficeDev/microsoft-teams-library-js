@@ -1,11 +1,4 @@
-/// <reference path="../src/MicrosoftTeams.ts" />
-
-// Undocumented members only used for unit testing.
-declare namespace microsoftTeams {
-  let _window: Window;
-
-  function _uninitialize(): void;
-}
+import { microsoftTeams } from "../src/MicrosoftTeams";
 
 interface MessageRequest {
   id: number;
@@ -32,77 +25,76 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function(message: MessageRequest, targetOrigin: string): void {
+    postMessage: function (message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function(): void {
+    close: function (): void {
       return;
     },
     closed: false
   };
+
+  let mockWindow = {
+    outerWidth: 1024,
+    outerHeight: 768,
+    screenLeft: 0,
+    screenTop: 0,
+    addEventListener: function (
+      type: string,
+      listener: (ev: MessageEvent) => void,
+      useCapture?: boolean
+    ): void {
+      if (type === "message") {
+        processMessage = listener;
+      }
+    },
+    removeEventListener: function (
+      type: string,
+      listener: (ev: MessageEvent) => void,
+      useCapture?: boolean
+    ): void {
+      if (type === "message") {
+        processMessage = null;
+      }
+    },
+    location: {
+      origin: tabOrigin,
+      href: validOrigin,
+      assign: function (url: string): void {
+        return;
+      }
+    },
+    parent: {
+      postMessage: function (
+        message: MessageRequest,
+        targetOrigin: string
+      ): void {
+        if (message.func === "initialize") {
+          expect(targetOrigin).toEqual("*");
+        } else {
+          expect(targetOrigin).toEqual(validOrigin);
+        }
+
+        messages.push(message);
+      }
+    } as Window,
+    self: null as Window,
+    open: function (url: string, name: string, specs: string): Window {
+      return childWindow as Window;
+    },
+    close: function (): void {
+      return;
+    },
+    setInterval: (handler: Function, timeout: number): number =>
+      setInterval(handler, timeout)
+  };
+  mockWindow.self = mockWindow as Window;
 
   beforeEach(() => {
     processMessage = null;
     messages = [];
     childMessages = [];
     childWindow.closed = false;
-    let mockWindow = {
-      outerWidth: 1024,
-      outerHeight: 768,
-      screenLeft: 0,
-      screenTop: 0,
-      addEventListener: function(
-        type: string,
-        listener: (ev: MessageEvent) => void,
-        useCapture?: boolean
-      ): void {
-        if (type === "message") {
-          processMessage = listener;
-        }
-      },
-      removeEventListener: function(
-        type: string,
-        listener: (ev: MessageEvent) => void,
-        useCapture?: boolean
-      ): void {
-        if (type === "message") {
-          processMessage = null;
-        }
-      },
-      location: {
-        origin: tabOrigin,
-        href: validOrigin,
-        assign: function(url: string): void {
-          return;
-        }
-      },
-      parent: {
-        postMessage: function(
-          message: MessageRequest,
-          targetOrigin: string
-        ): void {
-          if (message.func === "initialize") {
-            expect(targetOrigin).toEqual("*");
-          } else {
-            expect(targetOrigin).toEqual(validOrigin);
-          }
-
-          messages.push(message);
-        }
-      } as Window,
-      self: null as Window,
-      open: function(url: string, name: string, specs: string): Window {
-        return childWindow as Window;
-      },
-      close: function(): void {
-        return;
-      },
-      setInterval: (handler: Function, timeout: number): number =>
-        setInterval(handler, timeout)
-    };
-    microsoftTeams._window = mockWindow.self = mockWindow as Window;
-
-    jasmine.clock().install();
   });
 
   afterEach(() => {
@@ -110,8 +102,6 @@ describe("MicrosoftTeams", () => {
     if (microsoftTeams._uninitialize) {
       microsoftTeams._uninitialize();
     }
-
-    jasmine.clock().uninstall();
   });
 
   it("should exist in the global namespace", () => {
@@ -119,7 +109,7 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should successfully initialize", () => {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     expect(processMessage).toBeDefined();
     expect(messages.length).toBe(1);
@@ -134,7 +124,7 @@ describe("MicrosoftTeams", () => {
 
   it("should allow multiple initialize calls", () => {
     for (let i = 0; i < 100; i++) {
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
     }
 
     // Still only one message actually sent, the extra calls just no-op'ed
@@ -189,7 +179,7 @@ describe("MicrosoftTeams", () => {
         callbackCalled = false;
         processMessage({
           origin: unSupportedDomain,
-          source: microsoftTeams._window.parent,
+          source: mockWindow.parent,
           data: {
             id: getContextMessage.id,
             args: [
@@ -229,7 +219,7 @@ describe("MicrosoftTeams", () => {
 
       processMessage({
         origin: supportedDomain,
-        source: microsoftTeams._window.parent,
+        source: mockWindow.parent,
         data: {
           id: getContextMessage.id,
           args: [
@@ -245,14 +235,14 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should not make calls to unsupported domains", () => {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     let initMessage = findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
 
     processMessage({
       origin: "https://some-malicious-site.com/",
-      source: microsoftTeams._window.parent,
+      source: mockWindow.parent,
       data: {
         id: initMessage.id,
         args: ["content"]
@@ -269,7 +259,7 @@ describe("MicrosoftTeams", () => {
   });
 
   it("should successfully handle calls queued before init completes", () => {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     // Another call made before the init response
     microsoftTeams.getContext(() => {
@@ -571,7 +561,7 @@ describe("MicrosoftTeams", () => {
 
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
@@ -587,7 +577,7 @@ describe("MicrosoftTeams", () => {
 
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     spyOn(microsoftTeams, "print").and.callFake((): void => {
       handlerCalled = true;
     });
@@ -603,7 +593,7 @@ describe("MicrosoftTeams", () => {
 
   it("print handler should successfully call default print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
     spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
@@ -616,9 +606,9 @@ describe("MicrosoftTeams", () => {
 
   it("Ctrl+P should successfully call print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
+    spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");
@@ -633,9 +623,9 @@ describe("MicrosoftTeams", () => {
 
   it("Cmd+P should successfully call print handler", () => {
     let handlerCalled = false;
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
+    spyOn(window, "print").and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event("keydown");
@@ -981,7 +971,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let windowOpenCalled = false;
-      spyOn(microsoftTeams._window, "open").and.callFake(
+      spyOn(mockWindow, "open").and.callFake(
         (url: string, name: string, specs: string): Window => {
           expect(url).toEqual("https://someurl/");
           expect(name).toEqual("_blank");
@@ -1005,7 +995,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let windowOpenCalled = false;
-      spyOn(microsoftTeams._window, "open").and.callFake(
+      spyOn(mockWindow, "open").and.callFake(
         (url: string, name: string, specs: string): Window => {
           expect(url).toEqual("https://someurl/");
           expect(name).toEqual("_blank");
@@ -1032,7 +1022,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let windowOpenCalled = false;
-      spyOn(microsoftTeams._window, "open").and.callFake(
+      spyOn(mockWindow, "open").and.callFake(
         (url: string, name: string, specs: string): Window => {
           expect(url).toEqual("https://someurl/");
           expect(name).toEqual("_blank");
@@ -1056,10 +1046,10 @@ describe("MicrosoftTeams", () => {
       expect(windowOpenCalled).toBe(true);
 
       childWindow.closed = true;
-      jasmine.clock().tick(101);
-
-      expect(successResult).toBeUndefined();
-      expect(failureReason).toEqual("CancelledByUser");
+      setTimeout(() => {
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toEqual("CancelledByUser");
+      }, 101);
     });
 
     it("should successfully handle auth success", () => {
@@ -1196,7 +1186,7 @@ describe("MicrosoftTeams", () => {
 
     it("should do window redirect if callbackUrl is for win32 Outlook", () => {
       let windowAssignSpyCalled = false;
-      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+      spyOn(mockWindow.location, "assign").and.callFake(
         (url: string): void => {
           windowAssignSpyCalled = true;
           expect(url).toEqual(
@@ -1216,7 +1206,7 @@ describe("MicrosoftTeams", () => {
 
     it("should do window redirect if callbackUrl is for win32 Outlook and no result param specified", () => {
       let windowAssignSpyCalled = false;
-      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+      spyOn(mockWindow.location, "assign").and.callFake(
         (url: string): void => {
           windowAssignSpyCalled = true;
           expect(url).toEqual(
@@ -1236,7 +1226,7 @@ describe("MicrosoftTeams", () => {
 
     it("should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments", () => {
       let windowAssignSpyCalled = false;
-      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+      spyOn(mockWindow.location, "assign").and.callFake(
         (url: string): void => {
           windowAssignSpyCalled = true;
           expect(url).toEqual(
@@ -1280,7 +1270,7 @@ describe("MicrosoftTeams", () => {
 
     it("should do window redirect if callbackUrl is for win32 Outlook and auth failure happens", () => {
       let windowAssignSpyCalled = false;
-      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+      spyOn(mockWindow.location, "assign").and.callFake(
         (url: string): void => {
           windowAssignSpyCalled = true;
           expect(url).toEqual(
@@ -1299,7 +1289,7 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should successfully notify auth failure if callbackUrl is not for win32 Outlook", () => {
-      spyOn(microsoftTeams._window.location, "assign").and.callFake(
+      spyOn(mockWindow.location, "assign").and.callFake(
         (url: string): void => {
           expect(url).toEqual(
             "https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure"
@@ -1320,12 +1310,9 @@ describe("MicrosoftTeams", () => {
     });
 
     it("should not close auth window before notify success message has been sent", () => {
-      let closeWindowSpy = spyOn(
-        microsoftTeams._window,
-        "close"
-      ).and.callThrough();
+      let closeWindowSpy = spyOn(mockWindow, "close").and.callThrough();
 
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
@@ -1339,17 +1326,15 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeNull();
 
       // Wait 100ms for the message queue and 200ms for the close delay
-      jasmine.clock().tick(301);
-      expect(closeWindowSpy).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(closeWindowSpy).toHaveBeenCalled();
+      }, 301);
     });
 
     it("should not close auth window before notify failure message has been sent", () => {
-      let closeWindowSpy = spyOn(
-        microsoftTeams._window,
-        "close"
-      ).and.callThrough();
+      let closeWindowSpy = spyOn(mockWindow, "close").and.callThrough();
 
-      microsoftTeams.initialize();
+      microsoftTeams.initialize(mockWindow);
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
@@ -1363,8 +1348,9 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeNull();
 
       // Wait 100ms for the message queue and 200ms for the close delay
-      jasmine.clock().tick(301);
-      expect(closeWindowSpy).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(closeWindowSpy).toHaveBeenCalled();
+      }, 301);
     });
   });
 
@@ -1672,7 +1658,7 @@ describe("MicrosoftTeams", () => {
     frameContext: string,
     hostClientType?: string
   ): void {
-    microsoftTeams.initialize();
+    microsoftTeams.initialize(mockWindow);
 
     const initMessage = findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
@@ -1694,7 +1680,7 @@ describe("MicrosoftTeams", () => {
   function respondToMessage(message: MessageRequest, ...args: any[]): void {
     processMessage({
       origin: validOrigin,
-      source: microsoftTeams._window.parent,
+      source: mockWindow.parent,
       data: {
         id: message.id,
         args: args
@@ -1706,7 +1692,7 @@ describe("MicrosoftTeams", () => {
   function sendMessage(func: string, ...args: any[]): void {
     processMessage({
       origin: validOrigin,
-      source: microsoftTeams._window.parent,
+      source: mockWindow.parent,
       data: {
         func: func,
         args: args
