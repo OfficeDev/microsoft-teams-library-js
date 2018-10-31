@@ -606,7 +606,7 @@ export function enablePrintCapability(): void {
     // adding ctrl+P and cmd+P handler
     document.addEventListener("keydown", (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
-        microsoftTeams.print();
+        print();
         event.cancelBubble = true;
         event.preventDefault();
         event.stopImmediatePropagation();
