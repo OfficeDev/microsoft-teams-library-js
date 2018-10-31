@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "noEmitOnError": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noResolve": false, /* Required for typings to work properly */
+    "outDir": "./dist",
+    "declarationDir": "./dts",
     "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noResolve": false,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "noImplicitReturns": true,
+    "sourceMap": true,
     "declaration": true
   },
-  "files": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "typings/index.d.ts"
+  "exclude": [
+    "node_modules",
+    "./test",
+    "./webpack.config.ts"
   ]
 }
