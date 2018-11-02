@@ -1,3 +1,4 @@
+"use strict";
 declare interface String {
   startsWith(search: string, pos?: number): boolean;
 }
@@ -40,12 +41,6 @@ interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: MessageEvent): void;
 }
-
-/**
- * This is the root namespace for the JavaScript SDK.
- */
-
-"use strict";
 
 const version = "1.3.6";
 
