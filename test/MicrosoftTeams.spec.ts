@@ -1,4 +1,4 @@
-import { microsoftTeams } from "../src/MicrosoftTeams";
+import * as microsoftTeams from "../src/MicrosoftTeams";
 
 interface MessageRequest {
   id: number;
@@ -25,10 +25,10 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function (message: MessageRequest, targetOrigin: string): void {
+    postMessage: function(message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function (): void {
+    close: function(): void {
       return;
     },
     closed: false
@@ -39,7 +39,7 @@ describe("MicrosoftTeams", () => {
     outerHeight: 768,
     screenLeft: 0,
     screenTop: 0,
-    addEventListener: function (
+    addEventListener: function(
       type: string,
       listener: (ev: MessageEvent) => void,
       useCapture?: boolean
@@ -48,7 +48,7 @@ describe("MicrosoftTeams", () => {
         processMessage = listener;
       }
     },
-    removeEventListener: function (
+    removeEventListener: function(
       type: string,
       listener: (ev: MessageEvent) => void,
       useCapture?: boolean
@@ -60,12 +60,12 @@ describe("MicrosoftTeams", () => {
     location: {
       origin: tabOrigin,
       href: validOrigin,
-      assign: function (url: string): void {
+      assign: function(url: string): void {
         return;
       }
     },
     parent: {
-      postMessage: function (
+      postMessage: function(
         message: MessageRequest,
         targetOrigin: string
       ): void {
@@ -79,10 +79,10 @@ describe("MicrosoftTeams", () => {
       }
     } as Window,
     self: null as Window,
-    open: function (url: string, name: string, specs: string): Window {
+    open: function(url: string, name: string, specs: string): Window {
       return childWindow as Window;
     },
-    close: function (): void {
+    close: function(): void {
       return;
     },
     setInterval: (handler: Function, timeout: number): number =>
@@ -562,9 +562,11 @@ describe("MicrosoftTeams", () => {
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
-      handlerCalled = true;
-    });
+    spyOn(microsoftTeams, "print").and.callFake(
+      (): void => {
+        handlerCalled = true;
+      }
+    );
     let printEvent = new Event("keydown");
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -578,9 +580,11 @@ describe("MicrosoftTeams", () => {
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
-    spyOn(microsoftTeams, "print").and.callFake((): void => {
-      handlerCalled = true;
-    });
+    spyOn(microsoftTeams, "print").and.callFake(
+      (): void => {
+        handlerCalled = true;
+      }
+    );
     let printEvent = new Event("keydown");
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -595,9 +599,11 @@ describe("MicrosoftTeams", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(window, "print").and.callFake((): void => {
-      handlerCalled = true;
-    });
+    spyOn(window, "print").and.callFake(
+      (): void => {
+        handlerCalled = true;
+      }
+    );
 
     microsoftTeams.print();
 
@@ -608,9 +614,11 @@ describe("MicrosoftTeams", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(window, "print").and.callFake((): void => {
-      handlerCalled = true;
-    });
+    spyOn(window, "print").and.callFake(
+      (): void => {
+        handlerCalled = true;
+      }
+    );
     let printEvent = new Event("keydown");
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -625,9 +633,11 @@ describe("MicrosoftTeams", () => {
     let handlerCalled = false;
     microsoftTeams.initialize(mockWindow);
     microsoftTeams.enablePrintCapability();
-    spyOn(window, "print").and.callFake((): void => {
-      handlerCalled = true;
-    });
+    spyOn(window, "print").and.callFake(
+      (): void => {
+        handlerCalled = true;
+      }
+    );
     let printEvent = new Event("keydown");
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
