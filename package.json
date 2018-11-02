@@ -45,5 +45,8 @@
       "tsx",
       "js"
     ]
+  },
+  "dependencies": {
+    "@microsoft/sp-page-context": "^1.6.0"
   }
 }
