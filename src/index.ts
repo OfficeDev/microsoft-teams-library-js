@@ -1,1 +1,1 @@
-export { microsoftTeams } from './MicrosoftTeams';
+export * from "./MicrosoftTeams";
