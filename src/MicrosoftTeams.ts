@@ -1,7 +1,4 @@
 "use strict";
-
-import { PageContext } from "@microsoft/sp-page-context";
-
 declare interface String {
   startsWith(search: string, pos?: number): boolean;
 }
@@ -1769,11 +1766,6 @@ export interface Context {
    * The type of the host client. Possible values are : android, ios, web, desktop
    */
   hostClientType?: HostClientType;
-
-  /**
-   * SharePoint context
-   */
-  sharePointContext?: PageContext;
 }
 
 export interface DeepLinkParameters {
