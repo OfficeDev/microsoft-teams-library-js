@@ -1766,6 +1766,11 @@ export interface Context {
    * The type of the host client. Possible values are : android, ios, web, desktop
    */
   hostClientType?: HostClientType;
+
+  /**
+   * SharePoint context
+   */
+  sharepoint?: any;
 }
 
 export interface DeepLinkParameters {
