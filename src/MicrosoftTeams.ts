@@ -1,3 +1,8 @@
+import {
+  ExecuteDeepLinkParameters,
+  ShowNotificationParameters
+} from "./MicrosoftTeams.interface";
+
 "use strict";
 declare interface String {
   startsWith(search: string, pos?: number): boolean;
@@ -832,16 +837,6 @@ export function openFilePreview(
   sendMessageRequest(parentWindow, "openFilePreview", params);
 }
 
-export const enum NotificationTypes {
-  fileDownloadStart = "fileDownloadStart",
-  fileDownloadComplete = "fileDownloadComplete"
-}
-
-export interface ShowNotificationParameters {
-  message: string;
-  notificationType: NotificationTypes;
-}
-
 /**
  * @private
  * Hide from docs.
@@ -859,6 +854,21 @@ export function showNotification(
     showNotificationParameters.notificationType
   ];
   sendMessageRequest(parentWindow, "showNotification", params);
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * execute deep link API.
+ * @param deepLink deep link.
+ */
+export function executeDeepLink(
+  deepLinkParameters: ExecuteDeepLinkParameters
+): void {
+  ensureInitialized(frameContexts.content);
+  const params = [deepLinkParameters.deepLink];
+  sendMessageRequest(parentWindow, "handleDeepLink", params);
 }
 
 /**
