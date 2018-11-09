@@ -868,7 +868,7 @@ export function executeDeepLink(
 ): void {
   ensureInitialized(frameContexts.content);
   const params = [deepLinkParameters.deepLink];
-  sendMessageRequest(parentWindow, "handleDeepLink", params);
+  sendMessageRequest(parentWindow, "executeDeepLink", params);
 }
 
 /**
