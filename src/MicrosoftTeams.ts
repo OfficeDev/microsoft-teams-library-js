@@ -9,7 +9,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function(
+  (String.prototype as any).startsWith = function (
     search: string,
     pos?: number
   ): boolean {
@@ -67,7 +67,7 @@ const validOrigins = [
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = "^";
-  let urlParts = url.split(".");
+  const urlParts = url.split(".");
   for (let j = 0; j < urlParts.length; j++) {
     urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
   }
@@ -526,7 +526,7 @@ export function initialize(hostWindow: any = window): void {
   currentWindow = hostWindow;
 
   // Listen for messages post to our window
-  let messageListener = (evt: MessageEvent) => processMessage(evt);
+  const messageListener = (evt: MessageEvent) => processMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -547,7 +547,7 @@ export function initialize(hostWindow: any = window): void {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     parentOrigin = "*";
-    let messageId = sendMessageRequest(parentWindow, "initialize", [version]);
+    const messageId = sendMessageRequest(parentWindow, "initialize", [version]);
     callbacks[messageId] = (context: string, clientType: string) => {
       frameContext = context;
       hostClientType = clientType;
@@ -595,7 +595,7 @@ export function initialize(hostWindow: any = window): void {
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function _uninitialize(): void {}
+export function _uninitialize(): void { }
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
@@ -629,7 +629,7 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  let messageId = sendMessageRequest(parentWindow, "getContext");
+  const messageId = sendMessageRequest(parentWindow, "getContext");
   callbacks[messageId] = callback;
 }
 
@@ -701,7 +701,7 @@ function handleBackButtonPress(): void {
 export function navigateBack(): void {
   ensureInitialized();
 
-  let messageId = sendMessageRequest(parentWindow, "navigateBack", []);
+  const messageId = sendMessageRequest(parentWindow, "navigateBack", []);
   callbacks[messageId] = (success: boolean) => {
     if (!success) {
       throw new Error(
@@ -727,7 +727,7 @@ export function navigateCrossDomain(url: string): void {
     frameContexts.task
   );
 
-  let messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [
+  const messageId = sendMessageRequest(parentWindow, "navigateCrossDomain", [
     url
   ]);
   callbacks[messageId] = (success: boolean) => {
@@ -751,7 +751,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  let messageId = sendMessageRequest(parentWindow, "getTabInstances", [
+  const messageId = sendMessageRequest(parentWindow, "getTabInstances", [
     tabInstanceParameters
   ]);
   callbacks[messageId] = callback;
@@ -788,7 +788,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  let messageId = sendMessageRequest(parentWindow, "getMruTabInstances", [
+  const messageId = sendMessageRequest(parentWindow, "getMruTabInstances", [
     tabInstanceParameters
   ]);
   callbacks[messageId] = callback;
@@ -898,7 +898,7 @@ export function uploadCustomApp(manifestBlob: Blob): void {
 export function navigateToTab(tabInstance: TabInstance): void {
   ensureInitialized();
 
-  let messageId = sendMessageRequest(parentWindow, "navigateToTab", [
+  const messageId = sendMessageRequest(parentWindow, "navigateToTab", [
     tabInstance
   ]);
   callbacks[messageId] = (success: boolean) => {
@@ -940,9 +940,9 @@ export namespace settings {
   export function getSettings(
     callback: (instanceSettings: Settings) => void
   ): void {
-    ensureInitialized(frameContexts.settings, frameContexts.remove);
+    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
 
-    let messageId = sendMessageRequest(parentWindow, "settings.getSettings");
+    const messageId = sendMessageRequest(parentWindow, "settings.getSettings");
     callbacks[messageId] = callback;
   }
 
@@ -952,11 +952,16 @@ export namespace settings {
    * @param settings The desired settings for this instance.
    */
   export function setSettings(instanceSettings: Settings): void {
-    ensureInitialized(frameContexts.settings);
+    ensureInitialized(frameContexts.content, frameContexts.settings);
 
-    sendMessageRequest(parentWindow, "settings.setSettings", [
+    const messageId = sendMessageRequest(parentWindow, "settings.setSettings", [
       instanceSettings
     ]);
+    callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
   }
 
   /**
@@ -990,7 +995,7 @@ export namespace settings {
   }
 
   function handleSave(result?: SaveParameters): void {
-    let saveEvent = new SaveEventImpl(result);
+    const saveEvent = new SaveEventImpl(result);
     if (saveHandler) {
       saveHandler(saveEvent);
     } else {
@@ -1103,7 +1108,7 @@ export namespace settings {
   }
 
   function handleRemove(): void {
-    let removeEvent = new RemoveEventImpl();
+    const removeEvent = new RemoveEventImpl();
     if (removeHandler) {
       removeHandler(removeEvent);
     } else {
@@ -1171,7 +1176,7 @@ export namespace authentication {
   export function authenticate(
     authenticateParameters?: AuthenticateParameters
   ): void {
-    let authenticateParams =
+    const authenticateParams =
       authenticateParameters !== undefined
         ? authenticateParameters
         : authParams;
@@ -1184,11 +1189,11 @@ export namespace authentication {
 
     if (hostClientType === HostClientType.desktop) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-      let link = document.createElement("a");
+      const link = document.createElement("a");
       link.href = authenticateParams.url;
 
       // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      let messageId = sendMessageRequest(
+      const messageId = sendMessageRequest(
         parentWindow,
         "authentication.authenticate",
         [link.href, authenticateParams.width, authenticateParams.height]
@@ -1217,7 +1222,7 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
 
-    let messageId = sendMessageRequest(
+    const messageId = sendMessageRequest(
       parentWindow,
       "authentication.getAuthToken",
       [authTokenRequest.resources]
@@ -1240,7 +1245,7 @@ export namespace authentication {
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
 
-    let messageId = sendMessageRequest(parentWindow, "authentication.getUser");
+    const messageId = sendMessageRequest(parentWindow, "authentication.getUser");
     callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
@@ -1282,7 +1287,7 @@ export namespace authentication {
     height = Math.min(height, currentWindow.outerHeight - 200);
 
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    let link = document.createElement("a");
+    const link = document.createElement("a");
     link.href = authParams.url;
 
     // We are running in the browser, so we need to center the new window ourselves
@@ -1302,13 +1307,13 @@ export namespace authentication {
       link.href,
       "_blank",
       "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+      top +
+      ", left=" +
+      left +
+      ", width=" +
+      width +
+      ", height=" +
+      height
     );
     if (childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -1342,7 +1347,7 @@ export namespace authentication {
       if (!childWindow || childWindow.closed) {
         handleFailure("CancelledByUser");
       } else {
-        let savedChildOrigin = childOrigin;
+        const savedChildOrigin = childOrigin;
         try {
           childOrigin = "*";
           sendMessageRequest(childWindow, "ping");
@@ -1444,7 +1449,7 @@ export namespace authentication {
     value?: string
   ): void {
     if (callbackUrl) {
-      let link = document.createElement("a");
+      const link = document.createElement("a");
       link.href = decodeURIComponent(callbackUrl);
       if (
         link.host &&
@@ -1479,7 +1484,7 @@ export namespace authentication {
    * @param value - the fragment value
    */
   function updateUrlParameter(uri: string, key: string, value: string): string {
-    let i = uri.indexOf("#");
+    const i = uri.indexOf("#");
     let hash = i === -1 ? "#" : uri.substr(i);
     hash = hash + "&" + key + (value !== "" ? "=" + value : "");
     uri = i === -1 ? uri : uri.substr(0, i);
@@ -1898,8 +1903,8 @@ function processMessage(evt: MessageEvent): void {
   }
 
   // Process only if the message is coming from a different window and a valid origin
-  let messageSource = evt.source || evt.originalEvent.source;
-  let messageOrigin = evt.origin || evt.originalEvent.origin;
+  const messageSource = evt.source || evt.originalEvent.source;
+  const messageOrigin = evt.origin || evt.originalEvent.origin;
   if (
     messageSource === currentWindow ||
     (messageOrigin !== currentWindow.location.origin &&
@@ -1976,7 +1981,7 @@ function handleChildMessage(evt: MessageEvent): void {
     const message = evt.data as MessageRequest;
     const handler = handlers[message.func];
     if (handler) {
-      let result = handler.apply(this, message.args);
+      const result = handler.apply(this, message.args);
       if (result) {
         sendMessageResponse(
           childWindow,
@@ -1986,7 +1991,7 @@ function handleChildMessage(evt: MessageEvent): void {
       }
     } else {
       // Proxy to parent
-      let messageId = sendMessageRequest(
+      const messageId = sendMessageRequest(
         parentWindow,
         message.func,
         message.args
@@ -2019,15 +2024,15 @@ function getTargetOrigin(targetWindow: Window): string {
 }
 
 function flushMessageQueue(targetWindow: Window | any): void {
-  let targetOrigin = getTargetOrigin(targetWindow);
-  let targetMessageQueue = getTargetMessageQueue(targetWindow);
+  const targetOrigin = getTargetOrigin(targetWindow);
+  const targetMessageQueue = getTargetMessageQueue(targetWindow);
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
   }
 }
 
 function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
-  let messageQueueMonitor = currentWindow.setInterval(() => {
+  const messageQueueMonitor = currentWindow.setInterval(() => {
     if (getTargetMessageQueue(targetWindow).length === 0) {
       clearInterval(messageQueueMonitor);
       callback();
@@ -2041,7 +2046,7 @@ function sendMessageRequest(
   // tslint:disable-next-line: no-any
   args?: any[]
 ): number {
-  let request = createMessageRequest(actionName, args);
+  const request = createMessageRequest(actionName, args);
   if (isFramelessWindow) {
     if (currentWindow && currentWindow.nativeInterface) {
       (currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
@@ -2049,7 +2054,7 @@ function sendMessageRequest(
       );
     }
   } else {
-    let targetOrigin = getTargetOrigin(targetWindow);
+    const targetOrigin = getTargetOrigin(targetWindow);
 
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
@@ -2085,8 +2090,8 @@ function sendMessageResponse(
   // tslint:disable-next-line:no-any
   args?: any[]
 ): void {
-  let response = createMessageResponse(id, args);
-  let targetOrigin = getTargetOrigin(targetWindow);
+  const response = createMessageResponse(id, args);
+  const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
     targetWindow.postMessage(response, targetOrigin);
   }
@@ -2164,7 +2169,7 @@ export namespace tasks {
   ): void {
     ensureInitialized(frameContexts.content);
 
-    let messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
+    const messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
       taskInfo
     ]);
     callbacks[messageId] = submitHandler;
