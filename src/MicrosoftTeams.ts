@@ -2176,7 +2176,6 @@ export namespace tasks {
   ): void {
     ensureInitialized(frameContexts.content, frameContexts.task);
 
-    // Send tasks.updateTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageRequest(parentWindow, "tasks.updateTask", [
       taskInfo,
       Array.isArray(appIds) ? appIds : [appIds]
