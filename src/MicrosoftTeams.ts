@@ -1,8 +1,3 @@
-import {
-  ExecuteDeepLinkParameters,
-  ShowNotificationParameters
-} from "./MicrosoftTeams.interface";
-
 "use strict";
 declare interface String {
   startsWith(search: string, pos?: number): boolean;
@@ -835,6 +830,16 @@ export function openFilePreview(
   ];
 
   sendMessageRequest(parentWindow, "openFilePreview", params);
+}
+
+export const enum NotificationTypes {
+  fileDownloadStart = "fileDownloadStart",
+  fileDownloadComplete = "fileDownloadComplete"
+}
+
+export interface ShowNotificationParameters {
+  message: string;
+  notificationType: NotificationTypes;
 }
 
 /**
