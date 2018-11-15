@@ -2169,10 +2169,18 @@ export namespace tasks {
    * Update height/width task info properties.
    * @param taskInfo An object containing width and height properties
    */
-  export function updateTask(taskInfo?: object): void {
+  export function updateTask(taskInfo: {width: string, height: string}): void {
     ensureInitialized(frameContexts.content, frameContexts.task);
+    const { width, height, ...extra } = taskInfo;
 
-    sendMessageRequest(parentWindow, "tasks.updateTask", [taskInfo]);
+    if (width && height && !Object.keys(extra).length) {
+      sendMessageRequest(parentWindow, "tasks.updateTask", [taskInfo]);
+
+    } else {
+      throw new Error(
+        "updateTask requires a taskInfo argument containing only width and height"
+      );
+    }
   }
 
   /**
