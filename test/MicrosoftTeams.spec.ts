@@ -1564,37 +1564,75 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("context validation", () => {
+    ["updateTask", "submitTask"].forEach(taskName => {
+      it(`should not allow calls to ${taskName} before initialization`, () => {
+        expect(() => microsoftTeams.tasks[taskName]()).toThrowError(
+          "The library has not yet been initialized"
+        );
+      });
+
+      it(`should not allow calls to ${taskName} from settings context`, () => {
+        initializeWithContext("settings");
+
+        expect(() => microsoftTeams.tasks[taskName]()).toThrowError(
+          "This call is not allowed in the 'settings' context"
+        );
+      });
+
+      it(`should not allow calls to ${taskName} from authentication context`, () => {
+        initializeWithContext("authentication");
+
+        expect(() => microsoftTeams.tasks[taskName]()).toThrowError(
+          "This call is not allowed in the 'authentication' context"
+        );
+      });
+
+      it(`should not allow calls to ${taskName} from remove context`, () => {
+        initializeWithContext("remove");
+
+        expect(() => microsoftTeams.tasks[taskName]()).toThrowError(
+          "This call is not allowed in the 'remove' context"
+        );
+      });
+    });
+  });
+
+  describe("tasks.updateTask", () => {
+    it("should successfully pass taskInfo and appIds parameters when called from task context", () => {
+      initializeWithContext("task");
+
+      microsoftTeams.tasks.updateTask({ width: "10", height: "10" }, [
+        "someAppId",
+        "someOtherAppId"
+      ]);
+
+      const updateTaskMessage = findMessageByFunc("tasks.updateTask");
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([
+        { width: "10", height: "10" },
+        ["someAppId", "someOtherAppId"]
+      ]);
+    });
+
+    it("should handle a single string passed as appIds parameter", () => {
+      initializeWithContext("task");
+
+      microsoftTeams.tasks.submitTask(
+        { width: "10", height: "10" },
+        "someAppId"
+      );
+
+      const submitTaskMessage = findMessageByFunc("tasks.completeTask");
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual([
+        { width: "10", height: "10" },
+        ["someAppId"]
+      ]);
+    });
+  });
+
   describe("tasks.submitTask", () => {
-    it("should not allow calls before initialization", () => {
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
-        "The library has not yet been initialized"
-      );
-    });
-
-    it("should not allow calls from settings context", () => {
-      initializeWithContext("settings");
-
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
-        "This call is not allowed in the 'settings' context"
-      );
-    });
-
-    it("should not allow calls from authentication context", () => {
-      initializeWithContext("authentication");
-
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
-        "This call is not allowed in the 'authentication' context"
-      );
-    });
-
-    it("should not allow calls from remove context", () => {
-      initializeWithContext("remove");
-
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
-        "This call is not allowed in the 'remove' context"
-      );
-    });
-
     it("should successfully pass result and appIds parameters when called from task context", () => {
       initializeWithContext("task");
 
