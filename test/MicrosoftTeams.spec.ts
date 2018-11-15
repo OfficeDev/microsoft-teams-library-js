@@ -1574,7 +1574,7 @@ describe("MicrosoftTeams", () => {
 
     it("should successfully pass taskInfo", () => {
       initializeWithContext("task");
-      const taskInfo = { width: "10", height: "10" };
+      const taskInfo = { width: 10, height: 10 };
 
       microsoftTeams.tasks.updateTask(taskInfo);
 
@@ -1585,7 +1585,7 @@ describe("MicrosoftTeams", () => {
 
     it("should throw if extra properties are provided", () => {
       initializeWithContext("task");
-      const taskInfo = { width: "10", height: "10", title: "anything" };
+      const taskInfo = { width: 10, height: 10, title: "anything" };
 
       expect(() => microsoftTeams.tasks.updateTask(taskInfo)).toThrowError(
         "updateTask requires a taskInfo argument containing only width and height"

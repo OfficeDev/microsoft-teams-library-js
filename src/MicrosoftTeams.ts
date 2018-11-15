@@ -2169,7 +2169,12 @@ export namespace tasks {
    * Update height/width task info properties.
    * @param taskInfo An object containing width and height properties
    */
-  export function updateTask(taskInfo: {width: string, height: string}): void {
+  export function updateTask(
+    taskInfo: {
+      width: TaskModuleDimension | Number,
+      height: TaskModuleDimension | Number
+    }
+  ): void {
     ensureInitialized(frameContexts.content, frameContexts.task);
     const { width, height, ...extra } = taskInfo;
 
