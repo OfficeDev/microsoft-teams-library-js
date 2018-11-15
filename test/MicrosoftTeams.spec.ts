@@ -1618,14 +1618,14 @@ describe("MicrosoftTeams", () => {
     it("should handle a single string passed as appIds parameter", () => {
       initializeWithContext("task");
 
-      microsoftTeams.tasks.submitTask(
+      microsoftTeams.tasks.updateTask(
         { width: "10", height: "10" },
         "someAppId"
       );
 
-      const submitTaskMessage = findMessageByFunc("tasks.completeTask");
-      expect(submitTaskMessage).not.toBeNull();
-      expect(submitTaskMessage.args).toEqual([
+      const updateTaskMessage = findMessageByFunc("tasks.updateTask");
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([
         { width: "10", height: "10" },
         ["someAppId"]
       ]);
