@@ -7,7 +7,3 @@ export interface ShowNotificationParameters {
   message: string;
   notificationType: NotificationTypes;
 }
-
-export interface ExecuteDeepLinkParameters {
-  deepLink: string;
-}

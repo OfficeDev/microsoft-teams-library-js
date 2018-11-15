@@ -861,13 +861,11 @@ export function showNotification(
  * Hide from docs.
  * ------
  * execute deep link API.
- * @param deepLinkParameters deep link parameters.
+ * @param deepLink deep link.
  */
-export function executeDeepLink(
-  deepLinkParameters: ExecuteDeepLinkParameters
-): void {
+export function executeDeepLink(deepLink: string): void {
   ensureInitialized(frameContexts.content);
-  const params = [deepLinkParameters.deepLink];
+  const params = [deepLink];
   const messageId = sendMessageRequest(parentWindow, "executeDeepLink", params);
   callbacks[messageId] = (success: boolean, result: string) => {
     if (!success) {
