@@ -870,8 +870,9 @@ export function showNotification(
  */
 export function executeDeepLink(deepLink: string): void {
   ensureInitialized(frameContexts.content);
-  const params = [deepLink];
-  const messageId = sendMessageRequest(parentWindow, "executeDeepLink", params);
+  const messageId = sendMessageRequest(parentWindow, "executeDeepLink", [
+    deepLink
+  ]);
   callbacks[messageId] = (success: boolean, result: string) => {
     if (!success) {
       throw new Error(result);
