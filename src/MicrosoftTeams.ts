@@ -2168,18 +2168,11 @@ export namespace tasks {
   /**
    * Update height/width task info properties.
    * @param taskInfo An object containing width and height properties
-   * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
-  export function updateTask(
-    taskInfo?: object,
-    appIds?: string | string[]
-  ): void {
+  export function updateTask(taskInfo?: object): void {
     ensureInitialized(frameContexts.content, frameContexts.task);
 
-    sendMessageRequest(parentWindow, "tasks.updateTask", [
-      taskInfo,
-      Array.isArray(appIds) ? appIds : [appIds]
-    ]);
+    sendMessageRequest(parentWindow, "tasks.updateTask", [taskInfo]);
   }
 
   /**
