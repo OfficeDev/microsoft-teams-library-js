@@ -1,3 +1,5 @@
+import { isTeamsDeepLink } from "./utils";
+
 "use strict";
 declare interface String {
   startsWith(search: string, pos?: number): boolean;
@@ -494,6 +496,7 @@ let callbacks: { [id: number]: Function } = {};
 let frameContext: string;
 let hostClientType: string;
 let printCapabilityEnabled: boolean = false;
+let implicitExecuteDeepLink: boolean = false;
 
 let themeChangeHandler: (theme: string) => void;
 handlers["themeChange"] = handleThemeChange;
@@ -607,6 +610,27 @@ export function enablePrintCapability(): void {
         event.stopImmediatePropagation();
       }
     });
+  }
+}
+
+/**
+ * Enable implicit teams deep link execution
+ */
+export function enableImplicitExecuteDeepLink(): void {
+  if (!implicitExecuteDeepLink) {
+    implicitExecuteDeepLink = true;
+    ensureInitialized();
+    // adding click handler to all deep links
+    const elements = document.getElementsByTagName("a");
+    for (let index = 0; index < elements.length; index++) {
+      if (isTeamsDeepLink(elements[index].href)) {
+        elements[index].onclick = event => {
+          executeDeepLink(elements[index].href);
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        };
+      }
+    }
   }
 }
 
