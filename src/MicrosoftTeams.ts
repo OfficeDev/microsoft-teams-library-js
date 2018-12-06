@@ -4,7 +4,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function (
+  (String.prototype as any).startsWith = function(
     search: string,
     pos?: number
   ): boolean {
@@ -590,7 +590,7 @@ export function initialize(hostWindow: any = window): void {
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function _uninitialize(): void { }
+export function _uninitialize(): void {}
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
@@ -1202,7 +1202,7 @@ export namespace authentication {
 
     if (hostClientType === HostClientType.desktop
       || hostClientType === HostClientType.android
-      || hostClientType == HostClientType.ios) {
+      || hostClientType === HostClientType.ios) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
       const link = document.createElement("a");
       link.href = authenticateParams.url;
@@ -1325,13 +1325,13 @@ export namespace authentication {
       link.href,
       "_blank",
       "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-      top +
-      ", left=" +
-      left +
-      ", width=" +
-      width +
-      ", height=" +
-      height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
     );
     if (childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
