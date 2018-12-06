@@ -1138,45 +1138,45 @@ describe("MicrosoftTeams", () => {
       expect(message.args[2]).toBe(authenticationParams.height);
     });
 
-    // it("should successfully pop up the auth window in the ios client", () => {
-    //   initializeWithContext("content", "ios");
+    it("should successfully pop up the auth window in the ios client", () => {
+      initializeWithContext("content", "ios");
 
-    //   let authenticationParams = {
-    //     url: "https://someUrl",
-    //     width: 100,
-    //     height: 200
-    //   };
-    //   microsoftTeams.authentication.authenticate(authenticationParams);
+      let authenticationParams = {
+        url: "https://someUrl",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
 
-    //   let message = findMessageByFunc("authentication.authenticate");
-    //   expect(message).not.toBeNull();
-    //   expect(message.args.length).toBe(3);
-    //   expect(message.args[0]).toBe(
-    //     authenticationParams.url.toLowerCase() + "/"
-    //   );
-    //   expect(message.args[1]).toBe(authenticationParams.width);
-    //   expect(message.args[2]).toBe(authenticationParams.height);
-    // });
+      let message = findMessageByFunc("authentication.authenticate");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toBe(
+        authenticationParams.url.toLowerCase() + "/"
+      );
+      expect(message.args[1]).toBe(authenticationParams.width);
+      expect(message.args[2]).toBe(authenticationParams.height);
+    });
 
-    // it("should successfully pop up the auth window in the android client", () => {
-    //   initializeWithContext("content", "android");
+    it("should successfully pop up the auth window in the android client", () => {
+      initializeWithContext("content", "android");
 
-    //   let authenticationParams = {
-    //     url: "https://someUrl",
-    //     width: 100,
-    //     height: 200
-    //   };
-    //   microsoftTeams.authentication.authenticate(authenticationParams);
+      let authenticationParams = {
+        url: "https://someUrl",
+        width: 100,
+        height: 200
+      };
+      microsoftTeams.authentication.authenticate(authenticationParams);
 
-    //   let message = findMessageByFunc("authentication.authenticate");
-    //   expect(message).not.toBeNull();
-    //   expect(message.args.length).toBe(3);
-    //   expect(message.args[0]).toBe(
-    //     authenticationParams.url.toLowerCase() + "/"
-    //   );
-    //   expect(message.args[1]).toBe(authenticationParams.width);
-    //   expect(message.args[2]).toBe(authenticationParams.height);
-    // });
+      let message = findMessageByFunc("authentication.authenticate");
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toBe(
+        authenticationParams.url.toLowerCase() + "/"
+      );
+      expect(message.args[1]).toBe(authenticationParams.width);
+      expect(message.args[2]).toBe(authenticationParams.height);
+    });
 
     it("should successfully handle auth success in the desktop client", () => {
       initializeWithContext("content", "desktop");
