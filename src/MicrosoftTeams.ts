@@ -1200,7 +1200,9 @@ export namespace authentication {
       frameContexts.task
     );
 
-    if (hostClientType === HostClientType.desktop) {
+    if (hostClientType === HostClientType.desktop
+      || hostClientType === HostClientType.android
+      || hostClientType === HostClientType.ios) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
       const link = document.createElement("a");
       link.href = authenticateParams.url;
