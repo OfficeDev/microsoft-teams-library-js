@@ -1804,14 +1804,14 @@ export interface Context {
   sharepoint?: any;
 
   /**
-   * The type of license for the current user.
+   * The type of license for the current users tenant.
    */
-  licenseType?: string;
+  tenantSKU?: string;
 
   /**
-   * The license category type for the current user.
+   * The license type for the current user.
    */
-  licenseCategoryType?: string;
+  userLicenseType?: string;
 }
 
 export interface DeepLinkParameters {
