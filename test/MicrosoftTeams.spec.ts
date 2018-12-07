@@ -1140,6 +1140,25 @@ describe("MicrosoftTeams", () => {
       });
     });
 
+    it("should successfully handle auth success in the desktop client", () => {	
+      initializeWithContext("content", "desktop");	
+       let successResult: string;	
+      let failureReason: string;	
+      let authenticationParams = {	
+        url: "https://someUrl",	
+        width: 100,	
+        height: 200,	
+        successCallback: (result: string) => (successResult = result),	
+        failureCallback: (reason: string) => (failureReason = reason)	
+      };	
+      microsoftTeams.authentication.authenticate(authenticationParams);	
+       let message = findMessageByFunc("authentication.authenticate");	
+      expect(message).not.toBeNull();	
+       respondToMessage(message, true, "someResult");	
+       expect(successResult).toBe("someResult");	
+      expect(failureReason).toBeUndefined();	
+    });
+
     it("should successfully handle auth failure in the desktop client", () => {
       initializeWithContext("content", "desktop");
 
