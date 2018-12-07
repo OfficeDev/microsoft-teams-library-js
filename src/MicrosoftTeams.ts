@@ -1739,7 +1739,7 @@ export interface Context {
   teamType?: TeamType;
 
   /**
-   * The root ShatePoint folder associated with the team.
+   * The root SharePoint folder associated with the team.
    */
   teamSiteUrl?: string;
 
