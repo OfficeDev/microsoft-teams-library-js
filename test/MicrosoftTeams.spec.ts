@@ -1140,50 +1140,55 @@ describe("MicrosoftTeams", () => {
       });
     });
 
-    it("should successfully handle auth success in the desktop client", () => {
-      initializeWithContext("content", "desktop");
+    ["android", "ios", "desktop"].forEach(hostClientType => {
+      it(`should successfully handle auth success in the ${hostClientType} client`, () => {
+        initializeWithContext("content", hostClientType);
 
-      let successResult: string;
-      let failureReason: string;
-      let authenticationParams = {
-        url: "https://someUrl",
-        width: 100,
-        height: 200,
-        successCallback: (result: string) => (successResult = result),
-        failureCallback: (reason: string) => (failureReason = reason)
-      };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+          url: "https://someUrl",
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => (successResult = result),
+          failureCallback: (reason: string) => (failureReason = reason)
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
 
-      let message = findMessageByFunc("authentication.authenticate");
-      expect(message).not.toBeNull();
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
 
-      respondToMessage(message, true, "someResult");
+        respondToMessage(message, true, "someResult");
 
-      expect(successResult).toBe("someResult");
-      expect(failureReason).toBeUndefined();
+        expect(successResult).toBe("someResult");
+        expect(failureReason).toBeUndefined();
+      });
     });
 
-    it("should successfully handle auth failure in the desktop client", () => {
-      initializeWithContext("content", "desktop");
+    ["android", "ios", "desktop"].forEach(hostClientType => {
+      it(`should successfully handle auth failure in the ${hostClientType} client`, () => {
+        initializeWithContext("content", hostClientType);
+        initializeWithContext("content", "desktop");
 
-      let successResult: string;
-      let failureReason: string;
-      let authenticationParams = {
-        url: "https://someUrl",
-        width: 100,
-        height: 200,
-        successCallback: (result: string) => (successResult = result),
-        failureCallback: (reason: string) => (failureReason = reason)
-      };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+          url: "https://someUrl",
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => (successResult = result),
+          failureCallback: (reason: string) => (failureReason = reason)
+        };
+        microsoftTeams.authentication.authenticate(authenticationParams);
 
-      let message = findMessageByFunc("authentication.authenticate");
-      expect(message).not.toBeNull();
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
 
-      respondToMessage(message, false, "someReason");
+        respondToMessage(message, false, "someReason");
 
-      expect(successResult).toBeUndefined();
-      expect(failureReason).toBe("someReason");
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toBe("someReason");
+      });
     });
 
     it("should successfully notify auth success", () => {
