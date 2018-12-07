@@ -1138,9 +1138,7 @@ describe("MicrosoftTeams", () => {
         expect(message.args[1]).toBe(authenticationParams.width);
         expect(message.args[2]).toBe(authenticationParams.height);
       });
-    });
 
-    ["android", "ios", "desktop"].forEach(hostClientType => {
       it(`should successfully handle auth success in the ${hostClientType} client`, () => {
         initializeWithContext("content", hostClientType);
 
@@ -1163,12 +1161,9 @@ describe("MicrosoftTeams", () => {
         expect(successResult).toBe("someResult");
         expect(failureReason).toBeUndefined();
       });
-    });
 
-    ["android", "ios", "desktop"].forEach(hostClientType => {
       it(`should successfully handle auth failure in the ${hostClientType} client`, () => {
         initializeWithContext("content", hostClientType);
-        initializeWithContext("content", "desktop");
 
         let successResult: string;
         let failureReason: string;
