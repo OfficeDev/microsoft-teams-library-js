@@ -27,7 +27,7 @@ To install the stable version:
 
 #### Production
 
-You can access [these files on unpkg](https://unpkg.com/@microsoft/teams-js@1.3.6/dist/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://unpkg.com/@microsoft/teams-js@1.4.0-beta.9/dist/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -47,10 +47,10 @@ Reference the library inside of your `.html` page using:
 
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
-<script src="https://unpkg.com/@microsoft/teams-js@1.3.6/dist/MicrosoftTeams.min.js" integrity="sha384-bw/tQKCO7OgnYN29MFvAaRlOI7YaLpqeRtWhE//yfPA9pFx5THAydRA7o43Vt2JS" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@microsoft/teams-js@1.4.0-beta.9/dist/MicrosoftTeams.min.js" integrity="sha384-wEKnQvQeXbo30jDLL1R90V0UW+RjonEDSoHs2agqyiNnjTmv+fpXLlqHp+lRAFQm" crossorigin="anonymous"></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@1.3.6/dist/MicrosoftTeams.min.js"></script>
+<script src="node_modules/@microsoft/teams-js@1.4.0-beta.9/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>
