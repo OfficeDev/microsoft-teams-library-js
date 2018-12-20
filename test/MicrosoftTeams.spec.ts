@@ -1566,6 +1566,35 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("tasks.updateTask", () => {
+    it("should not allow calls before initialization", () => {
+      // tslint:disable-next-line:no-any
+      expect(() => microsoftTeams.tasks.updateTask({} as any)).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should successfully pass taskInfo", () => {
+      initializeWithContext("task");
+      const taskInfo = { width: 10, height: 10 };
+
+      microsoftTeams.tasks.updateTask(taskInfo);
+
+      const updateTaskMessage = findMessageByFunc("tasks.updateTask");
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([taskInfo]);
+    });
+
+    it("should throw if extra properties are provided", () => {
+      initializeWithContext("task");
+      const taskInfo = { width: 10, height: 10, title: "anything" };
+
+      expect(() => microsoftTeams.tasks.updateTask(taskInfo)).toThrowError(
+        "updateTask requires a taskInfo argument containing only width and height"
+      );
+    });
+  });
+
   describe("tasks.submitTask", () => {
     it("should not allow calls before initialization", () => {
       expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
