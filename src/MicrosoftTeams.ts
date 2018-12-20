@@ -436,7 +436,7 @@ export interface UserJoinedTeamsInformation {
 }
 
 /**
- * Represends Team Information
+ * Represents Team Information
  */
 export interface TeamInformation {
   /**
@@ -1790,7 +1790,7 @@ export interface Context {
   userObjectId?: string;
 
   /**
-   * Indicates wheather team is archived.
+   * Indicates whether team is archived.
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
    */
   isTeamArchived?: boolean;
