@@ -2204,6 +2204,24 @@ export namespace tasks {
   }
 
   /**
+   * Update height/width task info properties.
+   * @param taskInfo An object containing width and height properties
+   */
+  export function updateTask(taskInfo: TaskInfo): void {
+    ensureInitialized(frameContexts.content, frameContexts.task);
+    const { width, height, ...extra } = taskInfo;
+
+    if (!Object.keys(extra).length) {
+      sendMessageRequest(parentWindow, "tasks.updateTask", [taskInfo]);
+
+    } else {
+      throw new Error(
+        "updateTask requires a taskInfo argument containing only width and height"
+      );
+    }
+  }
+
+  /**
    * Submit the task module.
    * @param result Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
