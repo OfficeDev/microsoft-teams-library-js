@@ -258,6 +258,15 @@ describe("MicrosoftTeams", () => {
     expect(messages.length).toBe(1);
   });
 
+  it("should return a context async", () => {
+    microsoftTeams.initialize(mockWindow);
+
+    // Another call made before the init response
+    microsoftTeams.getContextAsync().then(context => {
+      expect(context).not.toBeNull();
+    });
+  });
+
   it("should successfully handle calls queued before init completes", () => {
     microsoftTeams.initialize(mockWindow);
 
