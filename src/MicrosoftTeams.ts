@@ -629,6 +629,21 @@ export function getContext(callback: (context: Context) => void): void {
 }
 
 /**
+ * Retrieves the current context the frame is running in and returns it with a promise.
+ */
+export function getContextAsync(): Promise<Context> {
+  return new Promise<Context>((resolve, reject) => {
+    try {
+      getContext(context => {
+        resolve(context);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
  * Registers a handler for theme changes.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  * @param handler The handler to invoke when the user changes their theme.
