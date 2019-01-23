@@ -4,7 +4,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function (
+  (String.prototype as any).startsWith = function(
     search: string,
     pos?: number
   ): boolean {
@@ -504,6 +504,9 @@ handlers["fullScreenChange"] = handleFullScreenChange;
 let backButtonPressHandler: () => boolean;
 handlers["backButtonPress"] = handleBackButtonPress;
 
+let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+handlers["beforeUnload"] = handleBeforeUnload;
+
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
@@ -557,6 +560,7 @@ export function initialize(hostWindow: any = window): void {
       registerOnThemeChangeHandler(null);
       registerFullScreenHandler(null);
       registerBackButtonHandler(null);
+      registerBeforeUnloadHandler(null);
     }
 
     if (frameContext === frameContexts.settings) {
@@ -590,7 +594,7 @@ export function initialize(hostWindow: any = window): void {
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function _uninitialize(): void { }
+export function _uninitialize(): void {}
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
@@ -639,6 +643,8 @@ export function registerOnThemeChangeHandler(
   ensureInitialized();
 
   themeChangeHandler = handler;
+  handler &&
+    sendMessageRequest(parentWindow, "registerHandler", ["themeChange"]);
 }
 
 function handleThemeChange(theme: string): void {
@@ -662,6 +668,8 @@ export function registerFullScreenHandler(
   ensureInitialized();
 
   fullScreenChangeHandler = handler;
+  handler &&
+    sendMessageRequest(parentWindow, "registerHandler", ["fullScreen"]);
 }
 
 function handleFullScreenChange(isFullScreen: boolean): void {
@@ -681,6 +689,8 @@ export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
 
   backButtonPressHandler = handler;
+  handler &&
+    sendMessageRequest(parentWindow, "registerHandler", ["backButton"]);
 }
 
 function handleBackButtonPress(): void {
@@ -704,6 +714,31 @@ export function navigateBack(): void {
       );
     }
   };
+}
+
+/**
+ * Registers a handler to be called before the page is unloaded.
+ * @param handler The handler to invoke before the page is unloaded. If this handler returns true the page should
+ * invoke the readyToUnload function provided to it once it's ready to be unloaded.
+ */
+export function registerBeforeUnloadHandler(
+  handler: (readyToUnload: () => void) => boolean
+): void {
+  ensureInitialized();
+
+  beforeUnloadHandler = handler;
+  handler &&
+    sendMessageRequest(parentWindow, "registerHandler", ["beforeUnload"]);
+}
+
+function handleBeforeUnload(): void {
+  const readyToUnload = () => {
+    sendMessageRequest(parentWindow, "readyToUnload", []);
+  };
+
+  if (!beforeUnloadHandler || !beforeUnloadHandler(readyToUnload)) {
+    readyToUnload();
+  }
 }
 
 /**
@@ -990,6 +1025,7 @@ export namespace settings {
     ensureInitialized(frameContexts.settings);
 
     saveHandler = handler;
+    handler && sendMessageRequest(parentWindow, "registerHandler", ["save"]);
   }
 
   /**
@@ -1005,6 +1041,7 @@ export namespace settings {
     ensureInitialized(frameContexts.remove);
 
     removeHandler = handler;
+    handler && sendMessageRequest(parentWindow, "registerHandler", ["remove"]);
   }
 
   function handleSave(result?: SaveParameters): void {
@@ -1200,9 +1237,11 @@ export namespace authentication {
       frameContexts.task
     );
 
-    if (hostClientType === HostClientType.desktop
-      || hostClientType === HostClientType.android
-      || hostClientType === HostClientType.ios) {
+    if (
+      hostClientType === HostClientType.desktop ||
+      hostClientType === HostClientType.android ||
+      hostClientType === HostClientType.ios
+    ) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
       const link = document.createElement("a");
       link.href = authenticateParams.url;
@@ -1325,13 +1364,13 @@ export namespace authentication {
       link.href,
       "_blank",
       "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-      top +
-      ", left=" +
-      left +
-      ", width=" +
-      width +
-      ", height=" +
-      height
+        top +
+        ", left=" +
+        left +
+        ", width=" +
+        width +
+        ", height=" +
+        height
     );
     if (childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
@@ -2213,7 +2252,6 @@ export namespace tasks {
 
     if (!Object.keys(extra).length) {
       sendMessageRequest(parentWindow, "tasks.updateTask", [taskInfo]);
-
     } else {
       throw new Error(
         "updateTask requires a taskInfo argument containing only width and height"
