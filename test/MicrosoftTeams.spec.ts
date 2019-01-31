@@ -1695,6 +1695,61 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("registerBeforeUnloadHandler", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.registerBeforeUnloadHandler(() => {
+          return false;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully register a before unload handler", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      microsoftTeams.registerBeforeUnloadHandler(() => {
+        handlerInvoked = true;
+        return false;
+      });
+
+      sendMessage("beforeUnload");
+
+      expect(handlerInvoked).toBe(true);
+    });
+
+    it("should call readyToUnload automatically when no before unload handler is registered", () => {
+      initializeWithContext("content");
+
+      sendMessage("beforeUnload");
+
+      let readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).not.toBeNull();
+    });
+
+    it("should successfully register a before unload handler and not call readyToUnload if it returns true", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      let readyToUnloadFunc: () => void;
+      microsoftTeams.registerBeforeUnloadHandler(readyToUnload => {
+        readyToUnloadFunc = readyToUnload;
+        handlerInvoked = true;
+        return true;
+      });
+
+      sendMessage("beforeUnload");
+
+      let readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).toBeNull();
+      expect(handlerInvoked).toBe(true);
+
+      readyToUnloadFunc();
+      readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).not.toBeNull();
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
