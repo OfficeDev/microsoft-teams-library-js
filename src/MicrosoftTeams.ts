@@ -507,6 +507,9 @@ handlers["backButtonPress"] = handleBackButtonPress;
 let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 handlers["beforeUnload"] = handleBeforeUnload;
 
+let settingsChangeHandler: () => void;
+handlers["settingsChange"] = handleSettingsChange;
+
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
@@ -561,6 +564,7 @@ export function initialize(hostWindow: any = window): void {
       registerFullScreenHandler(null);
       registerBackButtonHandler(null);
       registerBeforeUnloadHandler(null);
+      registerOnSettingsChangeHandler(null);
     }
 
     if (frameContext === frameContexts.settings) {
@@ -738,6 +742,26 @@ function handleBeforeUnload(): void {
 
   if (!beforeUnloadHandler || !beforeUnloadHandler(readyToUnload)) {
     readyToUnload();
+  }
+}
+
+/**
+ * Registers a handler for when the user reconfigurated tab
+ * @param handler The handler to invoke when the user click on Settings.
+ */
+export function registerOnSettingsChangeHandler(
+  handler: () => void
+): void {
+  ensureInitialized(frameContexts.content);
+
+  settingsChangeHandler = handler;
+  handler && sendMessageRequest(parentWindow, "registerHandler", ["settingsChange"]);
+}
+
+
+function handleSettingsChange(): void {
+  if (settingsChangeHandler) {
+    settingsChangeHandler();
   }
 }
 
@@ -959,12 +983,10 @@ export function navigateToTab(tabInstance: TabInstance): void {
  * This object is usable only on the settings frame.
  */
 export namespace settings {
-  let settingsHandler: () => void;
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
   handlers["settings.save"] = handleSave;
   handlers["settings.remove"] = handleRemove;
-  handlers["settings.settings"] = settingsHandler;
 
   /**
    * Sets the validity state for the settings.
@@ -1044,20 +1066,6 @@ export namespace settings {
 
     removeHandler = handler;
     handler && sendMessageRequest(parentWindow, "registerHandler", ["remove"]);
-  }
-
-  /**
-   * Registers a handler for when the user reconfigurated tab
-   * to create or update the underlying resource powering the content.
-   * @param handler The handler to invoke when the user click on Settings.
-   */
-  export function registerOnSettingsHandler(
-    handler: () => void
-  ): void {
-    ensureInitialized(frameContexts.content);
-
-    settingsHandler = handler;
-    handler && sendMessageRequest(parentWindow, "registerHandler", ["settings"]);
   }
 
   function handleSave(result?: SaveParameters): void {
