@@ -507,8 +507,8 @@ handlers["backButtonPress"] = handleBackButtonPress;
 let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 handlers["beforeUnload"] = handleBeforeUnload;
 
-let settingsChangeHandler: () => void;
-handlers["settingsChange"] = handleSettingsChange;
+let changeSettingsHandler: () => void;
+handlers["changeSettings"] = handleChangeSettings;
 
 /**
  * Initializes the library. This must be called before any other SDK calls
@@ -564,7 +564,7 @@ export function initialize(hostWindow: any = window): void {
       registerFullScreenHandler(null);
       registerBackButtonHandler(null);
       registerBeforeUnloadHandler(null);
-      registerOnSettingsChangeHandler(null);
+      registerChangeSettingsHandler(null);
     }
 
     if (frameContext === frameContexts.settings) {
@@ -749,19 +749,19 @@ function handleBeforeUnload(): void {
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
  */
-export function registerOnSettingsChangeHandler(
+export function registerChangeSettingsHandler(
   handler: () => void
 ): void {
   ensureInitialized(frameContexts.content);
 
-  settingsChangeHandler = handler;
-  handler && sendMessageRequest(parentWindow, "registerHandler", ["settingsChange"]);
+  changeSettingsHandler = handler;
+  handler && sendMessageRequest(parentWindow, "registerHandler", ["changeSettings"]);
 }
 
 
-function handleSettingsChange(): void {
-  if (settingsChangeHandler) {
-    settingsChangeHandler();
+function handleChangeSettings(): void {
+  if (changeSettingsHandler) {
+    changeSettingsHandler();
   }
 }
 
