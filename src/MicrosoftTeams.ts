@@ -4,7 +4,7 @@ declare interface String {
 }
 
 if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function(
+  (String.prototype as any).startsWith = function (
     search: string,
     pos?: number
   ): boolean {
@@ -507,6 +507,9 @@ handlers["backButtonPress"] = handleBackButtonPress;
 let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 handlers["beforeUnload"] = handleBeforeUnload;
 
+let changeSettingsHandler: () => void;
+handlers["changeSettings"] = handleChangeSettings;
+
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
@@ -594,7 +597,7 @@ export function initialize(hostWindow: any = window): void {
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function _uninitialize(): void {}
+export function _uninitialize(): void { }
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
@@ -738,6 +741,26 @@ function handleBeforeUnload(): void {
 
   if (!beforeUnloadHandler || !beforeUnloadHandler(readyToUnload)) {
     readyToUnload();
+  }
+}
+
+/**
+ * Registers a handler for when the user reconfigurated tab
+ * @param handler The handler to invoke when the user click on Settings.
+ */
+export function registerChangeSettingsHandler(
+  handler: () => void
+): void {
+  ensureInitialized(frameContexts.content);
+
+  changeSettingsHandler = handler;
+  handler && sendMessageRequest(parentWindow, "registerHandler", ["changeSettings"]);
+}
+
+
+function handleChangeSettings(): void {
+  if (changeSettingsHandler) {
+    changeSettingsHandler();
   }
 }
 
@@ -1364,13 +1387,13 @@ export namespace authentication {
       link.href,
       "_blank",
       "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-        top +
-        ", left=" +
-        left +
-        ", width=" +
-        width +
-        ", height=" +
-        height
+      top +
+      ", left=" +
+      left +
+      ", width=" +
+      width +
+      ", height=" +
+      height
     );
     if (childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
