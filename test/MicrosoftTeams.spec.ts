@@ -1,6 +1,6 @@
 import * as microsoftTeams from "../src/MicrosoftTeams";
 
-interface MessageRequest {
+export interface MessageRequest {
   id: number;
   func: string;
   args?: any[]; // tslint:disable-line:no-any
