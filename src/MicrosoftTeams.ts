@@ -564,7 +564,6 @@ export function initialize(hostWindow: any = window): void {
       registerFullScreenHandler(null);
       registerBackButtonHandler(null);
       registerBeforeUnloadHandler(null);
-      registerChangeSettingsHandler(null);
     }
 
     if (frameContext === frameContexts.settings) {
