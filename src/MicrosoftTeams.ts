@@ -1,17 +1,4 @@
 "use strict";
-declare interface String {
-  startsWith(search: string, pos?: number): boolean;
-}
-
-if (!(String.prototype as any).startsWith) {
-  (String.prototype as any).startsWith = function (
-    search: string,
-    pos?: number
-  ): boolean {
-    return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-  };
-}
-
 /**
  * @private
  * Hide from docs
