@@ -2338,14 +2338,14 @@ export namespace conversationalSubEntity {
    * Allows the user to start a conversation with each subentity inside a tab
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param title The title of the conversation
-   * @param callback Callback with the conversation Id from Teams
    * @param conversationId The Id of the conversation
+   * @param callback Callback with the conversation Id from Teams
    */
   export function startConversation(
     subEntityId: string,
     title: string,
-    callback: (conversationId: string) => void,
-    conversationId?: string
+    conversationId?: string,
+    callback?: (conversationId: string) => void
   ): void {
     const messageId = sendMessageRequest(parentWindow, "startConversation", [
       subEntityId,
