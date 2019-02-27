@@ -2329,3 +2329,29 @@ export function getChatMembers(
   const messageId = sendMessageRequest(parentWindow, "getChatMembers");
   callbacks[messageId] = callback;
 }
+
+/**
+ * Namespace to interact with the conversational subEntities inside the tab
+ */
+export namespace conversationalSubEntity {
+  /**
+   * Allows the user to start a conversation with each subentity inside a tab
+   * @param subEntityId The Id of the subEntity where the conversation is taking place
+   * @param title The title of the conversation
+   * @param callback Callback with the conversation Id from Teams
+   * @param conversationId The Id of the conversation
+   */
+  export function startConversation(
+    subEntityId: string,
+    title: string,
+    callback: (conversationId: string) => void,
+    conversationId?: string
+  ): void {
+    const messageId = sendMessageRequest(parentWindow, "startConversation", [
+      subEntityId,
+      title,
+      conversationId
+    ]);
+    callbacks[messageId] = callback;
+  }
+}
