@@ -2336,6 +2336,9 @@ export function getChatMembers(
 export namespace conversations {
 
   /**
+   * @private
+   * Hide from docs
+   * --------------
    * Allows the user to start a conversation with each subentity inside a tab
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param title The title of the conversation
@@ -2354,6 +2357,9 @@ export namespace conversations {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------------
    * Allows the user to show the conversation in the right pane
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param title The title of the conversation
@@ -2372,6 +2378,9 @@ export namespace conversations {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * --------------
    * Allows the user to close the conversation in the right pane
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param conversationId The Id of the conversation
