@@ -2,7 +2,8 @@ export const enum HostClientType {
   desktop = "desktop",
   web = "web",
   android = "android",
-  ios = "ios"
+  ios = "ios",
+  rigel = "rigel"
 }
 
 /**
