@@ -2350,7 +2350,7 @@ export namespace conversations {
     /**
      * A function that is called if the pane is closed
      */
-    onCloseConversation?: () => void;
+    onCloseConversation?: (reason: string) => void;
   }
 
   /**
@@ -2371,11 +2371,11 @@ export namespace conversations {
       subEntityId,
       title
     ]);
-    callbacks[messageId] = (conversationId: string) => {
+    callbacks[messageId] = (conversationId?: string, reason?: string) => {
       if (conversationId) {
         conversationalSubEntity.onStartConversation(conversationId);
       } else {
-        conversationalSubEntity.onCloseConversation();
+        conversationalSubEntity.onCloseConversation(reason);
       }
     };
   }
@@ -2401,8 +2401,8 @@ export namespace conversations {
       title,
       conversationId
     ]);
-    callbacks[messageId] = () => {
-      conversationalSubEntity.onCloseConversation();
+    callbacks[messageId] = (reason?: string) => {
+      conversationalSubEntity.onCloseConversation(reason);
     };
   }
 
