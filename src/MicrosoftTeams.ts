@@ -2337,23 +2337,47 @@ export namespace conversations {
 
   /**
    * @private
+   * Hide from docs.
+   * ------
+   */
+  export interface ConversationalSubEntity {
+
+    /**
+     * A function that is called once the conversation Id has been created.
+     */
+    onStartConversation?: (conversationId: string) => void;
+
+    /**
+     * A function that is called if the pane is closed
+     */
+    onCloseConversation?: () => void;
+  }
+
+  /**
+   * @private
    * Hide from docs
    * --------------
    * Allows the user to start a conversation with each subentity inside a tab
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param title The title of the conversation
-   * @param callback Callback with the conversation Id from Teams
+   * @param conversationalSubEntity Callback containing the conversation Id and if the tab pane was closed
    */
   export function startConversation(
     subEntityId: string,
     title: string,
-    callback: (conversationId: string) => void
+    conversationalSubEntity: ConversationalSubEntity
   ): void {
     const messageId = sendMessageRequest(parentWindow, "startConversation", [
       subEntityId,
       title
     ]);
-    callbacks[messageId] = callback;
+    callbacks[messageId] = (conversationId: string) => {
+      if (conversationId) {
+        conversationalSubEntity.onStartConversation(conversationId);
+      } else {
+        conversationalSubEntity.onCloseConversation();
+      }
+    };
   }
 
   /**
@@ -2364,17 +2388,22 @@ export namespace conversations {
    * @param subEntityId The Id of the subEntity where the conversation is taking place
    * @param title The title of the conversation
    * @param conversationId The Id of the conversation
+   * @param conversationalSubEntity Callback containing if the tab pane was closed
    */
   export function showConversation(
     subEntityId: string,
     title: string,
-    conversationId: string
+    conversationId: string,
+    conversationalSubEntity: ConversationalSubEntity
   ): void {
-    sendMessageRequest(parentWindow, "showConversation", [
+    const messageId = sendMessageRequest(parentWindow, "showConversation", [
       subEntityId,
       title,
       conversationId
     ]);
+    callbacks[messageId] = () => {
+      conversationalSubEntity.onCloseConversation();
+    };
   }
 
   /**
@@ -2382,16 +2411,8 @@ export namespace conversations {
    * Hide from docs
    * --------------
    * Allows the user to close the conversation in the right pane
-   * @param subEntityId The Id of the subEntity where the conversation is taking place
-   * @param conversationId The Id of the conversation
    */
-  export function closeConversation(
-    subEntityId: string,
-    conversationId: string
-  ): void {
-    sendMessageRequest(parentWindow, "closeConversation", [
-      subEntityId,
-      conversationId
-    ]);
+  export function closeConversation(): void {
+    sendMessageRequest(parentWindow, "closeConversation");
   }
 }
