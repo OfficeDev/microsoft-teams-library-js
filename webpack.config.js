@@ -1,45 +1,45 @@
-const path = require('path')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const libraryName = 'microsoftTeams'
+const path = require ('path');
+const UglifyJsPlugin = require ('uglifyjs-webpack-plugin');
+const libraryName = 'microsoftTeams';
 
 module.exports = {
   entry: {
     MicrosoftTeams: './src/index.ts',
-    'MicrosoftTeams.min': './src/index.ts'
+    'MicrosoftTeams.min': './src/index.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve (__dirname, 'dist'),
     library: libraryName,
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
   devtool: 'source-map',
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   optimization: {
     minimize: true,
     minimizer: [
-      new UglifyJsPlugin({
+      new UglifyJsPlugin ({
         uglifyOptions: {
           /*
             inlining is broken sometimes where inlined function uses the same variable name as inlining function.
             See https://github.com/mishoo/UglifyJS2/issues/2842, https://github.com/mishoo/UglifyJS2/issues/2843
          */
-          compress: { inline: false }
+          compress: {reduce_funcs: false},
         },
-        include: /\.min\.js$/
-      })
-    ]
-  }
-}
+        include: /\.min\.js$/,
+      }),
+    ],
+  },
+};
