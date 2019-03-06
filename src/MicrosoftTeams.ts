@@ -29,7 +29,7 @@ interface ExtendedWindow extends Window {
   onNativeMessage(evt: MessageEvent): void;
 }
 
-const version = "1.4.0";
+const version = "1.4.1";
 
 const validOrigins = [
   "https://teams.microsoft.com",
