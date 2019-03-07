@@ -2231,6 +2231,40 @@ export interface TaskInfo {
   completionBotId?: string;
 }
 
+export class ChildWindowObject {
+  public postMessage(
+    message: any
+  ): void {
+    ensureInitialized(frameContexts.content);
+    sendMessageRequest(parentWindow, "messageFromParent", [
+      message
+    ]);
+  }
+
+  public addEventListener(type, listener) {
+    if (type == "message") {
+      handlers["messageFromChild"] = listener;
+    }
+  }
+}
+
+export class ParentWindowObject {
+  public postMessage(
+    message: any
+  ): void {
+    ensureInitialized(frameContexts.content);
+    sendMessageRequest(parentWindow, "messageFromChild", [
+      message
+    ]);
+  }
+
+  public addEventListener(type, listener) {
+    if (type == "message") {
+      handlers["messageFromParent"] = listener;
+    }
+  }
+}
+
 /**
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -2244,13 +2278,14 @@ export namespace tasks {
   export function startTask(
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string) => void
-  ): void {
+  ): ChildWindowObject {
     ensureInitialized(frameContexts.content);
 
     const messageId = sendMessageRequest(parentWindow, "tasks.startTask", [
       taskInfo
     ]);
     callbacks[messageId] = submitHandler;
+    return new ChildWindowObject();
   }
 
   /**
