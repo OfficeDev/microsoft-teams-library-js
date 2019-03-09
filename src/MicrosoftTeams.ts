@@ -2235,7 +2235,7 @@ export class ChildWindowObject {
   public postMessage(
     message: any
   ): void {
-    ensureInitialized(frameContexts.content);
+    ensureInitialized();
     sendMessageRequest(parentWindow, "messageForChild", [
       message
     ]);
@@ -2252,7 +2252,7 @@ export class ParentWindowObject {
   public postMessage(
     message: any
   ): void {
-    ensureInitialized(frameContexts.content);
+    ensureInitialized();
     sendMessageRequest(parentWindow, "messageForParent", [
       message
     ]);
