@@ -2236,14 +2236,14 @@ export class ChildWindowObject {
     message: any
   ): void {
     ensureInitialized(frameContexts.content);
-    sendMessageRequest(parentWindow, "messageFromParent", [
+    sendMessageRequest(parentWindow, "messageForChild", [
       message
     ]);
   }
 
   public addEventListener(type, listener) {
     if (type == "message") {
-      handlers["messageFromChild"] = listener;
+      handlers["messageForParent"] = listener;
     }
   }
 }
@@ -2253,14 +2253,14 @@ export class ParentWindowObject {
     message: any
   ): void {
     ensureInitialized(frameContexts.content);
-    sendMessageRequest(parentWindow, "messageFromChild", [
+    sendMessageRequest(parentWindow, "messageForParent", [
       message
     ]);
   }
 
   public addEventListener(type, listener) {
     if (type == "message") {
-      handlers["messageFromParent"] = listener;
+      handlers["messageForChild"] = listener;
     }
   }
 }
