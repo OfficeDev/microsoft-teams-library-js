@@ -2367,6 +2367,7 @@ export namespace conversations {
     title: string,
     conversationalSubEntity: ConversationalSubEntity
   ): void {
+    ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "startConversation", [
       subEntityId,
       title
@@ -2396,6 +2397,7 @@ export namespace conversations {
     conversationId: string,
     conversationalSubEntity: ConversationalSubEntity
   ): void {
+    ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "showConversation", [
       subEntityId,
       title,
@@ -2413,6 +2415,7 @@ export namespace conversations {
    * Allows the user to close the conversation in the right pane
    */
   export function closeConversation(): void {
+    ensureInitialized(frameContexts.content);
     sendMessageRequest(parentWindow, "closeConversation");
   }
 }
