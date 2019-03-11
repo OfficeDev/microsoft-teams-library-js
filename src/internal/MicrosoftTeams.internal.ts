@@ -1,87 +1,13 @@
 import { navigateBack } from "../public/MicrosoftTeams.public";
 import { validOriginRegExp } from "./constants";
+import { GlobalVars } from "./GlobalVars";
+import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./MicrosoftTeams.internal.interface";
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-
-/**
- * @private
- * Hide from docs
- * Shim in definitions used for browser-compat
- */
-export interface MessageEvent {
-  origin?: any;
-  source?: any;
-  data?: any;
-  // Needed for Chrome1964
-  originalEvent: MessageEvent;
-}
-
-/**
- * @private
- * Hide from docs
- */
-export interface TeamsNativeClient {
-  framelessPostMessage(msg: string): void;
-}
-
-/**
- * @private
- * Hide from docs
- */
-export interface ExtendedWindow extends Window {
-  nativeInterface: TeamsNativeClient;
-  onNativeMessage(evt: MessageEvent): void;
-}
-
-interface MessageRequest {
-  id: number;
-  func: string;
-  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
-}
-
-interface MessageResponse {
-  id: number;
-  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
-}
-
-export class GlobalVars {
-  public static initializeCalled = false;
-  public static currentWindow: Window | any;
-  public static parentWindow: Window | any;
-  public static isFramelessWindow = false;
-  public static parentOrigin: string;
-  public static frameContext: string;
-  public static childWindow: Window;
-  public static childOrigin: string;
-  public static parentMessageQueue: MessageRequest[] = [];
-  public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId = 0;
-  public static handlers: { [func: string]: Function } = {};
-  public static callbacks: { [id: number]: Function } = {};
-  public static hostClientType: string;
-  public static printCapabilityEnabled: boolean = false;
-  public static themeChangeHandler: (theme: string) => void;
-  public static fullScreenChangeHandler: (isFullScreen: boolean) => void;
-  public static backButtonPressHandler: () => boolean;
-  public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-  public static changeSettingsHandler: () => void;
-  public static handleParentMessage: any;
-}
-
-// This indicates whether initialize was called (started).
-// It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
-
-
-
 GlobalVars.handlers["themeChange"] = handleThemeChange;
-
-
 GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
-
 GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
-
 GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
-
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
 
 function handleThemeChange(theme: string): void {
