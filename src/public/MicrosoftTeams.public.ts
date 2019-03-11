@@ -484,7 +484,7 @@ export function navigateToTab(tabInstance: TabInstance): void {
  * This object is usable only on the settings frame.
  */
 export namespace settings {
-  let saveHandler: (evt: SaveEvent) => void;
+  debugger; let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
   GlobalVars.handlers["settings.save"] = handleSave;
   GlobalVars.handlers["settings.remove"] = handleRemove;

@@ -1,4 +1,5 @@
-import * as microsoftTeams from "../src/index";
+import * as microsoftTeams from "../src/public/MicrosoftTeams.public";
+import * as microsoftTeamsPrivate from "../src/private/MicrosoftTeams.private";
 
 interface MessageRequest {
   id: number;
@@ -812,7 +813,7 @@ describe("MicrosoftTeams", () => {
   it("should successfully open a file preview", () => {
     initializeWithContext("content");
 
-    microsoftTeams.openFilePreview({
+    microsoftTeamsPrivate.openFilePreview({
       entityId: "someEntityId",
       title: "someTitle",
       description: "someDescription",
@@ -1406,7 +1407,7 @@ describe("MicrosoftTeams", () => {
   describe("getUserJoinedTeams", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-        microsoftTeams.getUserJoinedTeams(() => {
+        microsoftTeamsPrivate.getUserJoinedTeams(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -1416,11 +1417,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        { favoriteTeamsOnly: true } as microsoftTeams.TeamInstanceParameters
+        { favoriteTeamsOnly: true } as microsoftTeamsPrivate.TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1433,11 +1434,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        { favoriteTeamsOnly: false } as microsoftTeams.TeamInstanceParameters
+        { favoriteTeamsOnly: false } as microsoftTeamsPrivate.TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1450,7 +1451,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(userJoinedTeamsInformation => {
+      microsoftTeamsPrivate.getUserJoinedTeams(userJoinedTeamsInformation => {
         callbackCalled = true;
       });
 
@@ -1464,11 +1465,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        {} as microsoftTeams.TeamInstanceParameters
+        {} as microsoftTeamsPrivate.TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1670,7 +1671,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully pass message and provided arguments", () => {
       initializeWithContext("content");
 
-      const id = microsoftTeams.sendCustomMessage("customMessage", [
+      const id = microsoftTeamsPrivate.sendCustomMessage("customMessage", [
         "arg1",
         2,
         3.0,
@@ -1687,7 +1688,7 @@ describe("MicrosoftTeams", () => {
   describe("getChatMembers", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-        microsoftTeams.getChatMembers(() => {
+        microsoftTeamsPrivate.getChatMembers(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -1697,7 +1698,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getChatMembers(chatMembersInformation => {
+      microsoftTeamsPrivate.getChatMembers(chatMembersInformation => {
         callbackCalled = true;
       });
 

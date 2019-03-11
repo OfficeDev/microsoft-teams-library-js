@@ -65,7 +65,7 @@ export class GlobalVars {
   public static backButtonPressHandler: () => boolean;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
-  static handleParentMessage: any;
+  public static handleParentMessage: any;
 }
 
 // This indicates whether initialize was called (started).
