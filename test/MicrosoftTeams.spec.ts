@@ -1,4 +1,4 @@
-import * as microsoftTeams from "../src/MicrosoftTeams";
+import * as microsoftTeams from "../src/index";
 
 interface MessageRequest {
   id: number;
