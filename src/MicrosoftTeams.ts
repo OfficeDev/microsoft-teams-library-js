@@ -47,6 +47,8 @@ const validOrigins = [
   "https://outlook-sdf.office.com"
 ];
 
+var parentWindowObj = null;
+
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = "^";
@@ -2249,10 +2251,16 @@ export class ChildWindowObject {
 }
 
 export class ParentWindowObject {
+  private static _instance: ParentWindowObject;
+  public static get Instance() {
+    // Do you need arguments? Make it a regular method instead.
+    return this._instance || (this._instance = new this());
+  }
+
   public postMessage(
     message: any
   ): void {
-    ensureInitialized();
+    ensureInitialized(frameContexts.task);
     sendMessageRequest(parentWindow, "messageForParent", [
       message
     ]);
