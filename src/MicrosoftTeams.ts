@@ -1,4 +1,8 @@
+import { version, validOriginRegExp, frameContexts } from "./internal/constants";
+
 "use strict";
+// ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+
 /**
  * @private
  * Hide from docs
@@ -29,63 +33,7 @@ interface ExtendedWindow extends Window {
   onNativeMessage(evt: MessageEvent): void;
 }
 
-const version = "1.4.1";
-
-const validOrigins = [
-  "https://teams.microsoft.com",
-  "https://teams.microsoft.us",
-  "https://int.teams.microsoft.com",
-  "https://devspaces.skype.com",
-  "https://ssauth.skype.com",
-  "http://dev.local", // local development
-  "http://dev.local:8080", // local development
-  "https://msft.spoppe.com",
-  "https://*.sharepoint.com",
-  "https://*.sharepoint-df.com",
-  "https://*.sharepointonline.com",
-  "https://outlook.office.com",
-  "https://outlook-sdf.office.com"
-];
-
-// This will return a reg expression a given url
-function generateRegExpFromUrl(url: string): string {
-  let urlRegExpPart = "^";
-  const urlParts = url.split(".");
-  for (let j = 0; j < urlParts.length; j++) {
-    urlRegExpPart += (j > 0 ? "[.]" : "") + urlParts[j].replace("*", "[^/^.]+");
-  }
-  urlRegExpPart += "$";
-  return urlRegExpPart;
-}
-
-// This will return a reg expression for list of url
-function generateRegExpFromUrls(urls: string[]): RegExp {
-  let urlRegExp = "";
-  for (let i = 0; i < urls.length; i++) {
-    urlRegExp += (i === 0 ? "" : "|") + generateRegExpFromUrl(urls[i]);
-  }
-  return new RegExp(urlRegExp);
-}
-
-const validOriginRegExp = generateRegExpFromUrls(validOrigins);
-
 const handlers: { [func: string]: Function } = {};
-
-// Ensure these declarations stay in sync with the framework.
-const frameContexts = {
-  settings: "settings",
-  content: "content",
-  authentication: "authentication",
-  remove: "remove",
-  task: "task"
-};
-
-export const enum HostClientType {
-  desktop = "desktop",
-  web = "web",
-  android = "android",
-  ios = "ios"
-}
 
 interface MessageRequest {
   id: number;
@@ -97,6 +45,306 @@ interface MessageResponse {
   id: number;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
 }
+
+// This indicates whether initialize was called (started).
+// It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
+let initializeCalled = false;
+
+let isFramelessWindow = false;
+let currentWindow: Window | any;
+let parentWindow: Window | any;
+let parentOrigin: string;
+let parentMessageQueue: MessageRequest[] = [];
+let childWindow: Window;
+let childOrigin: string;
+let childMessageQueue: MessageRequest[] = [];
+let nextMessageId = 0;
+let callbacks: { [id: number]: Function } = {};
+let frameContext: string;
+let hostClientType: string;
+let printCapabilityEnabled: boolean = false;
+
+let themeChangeHandler: (theme: string) => void;
+handlers["themeChange"] = handleThemeChange;
+
+let fullScreenChangeHandler: (isFullScreen: boolean) => void;
+handlers["fullScreenChange"] = handleFullScreenChange;
+
+let backButtonPressHandler: () => boolean;
+handlers["backButtonPress"] = handleBackButtonPress;
+
+let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+handlers["beforeUnload"] = handleBeforeUnload;
+
+let changeSettingsHandler: () => void;
+handlers["changeSettings"] = handleChangeSettings;
+
+function handleThemeChange(theme: string): void {
+  if (themeChangeHandler) {
+    themeChangeHandler(theme);
+  }
+
+  if (childWindow) {
+    sendMessageRequest(childWindow, "themeChange", [theme]);
+  }
+}
+
+function handleFullScreenChange(isFullScreen: boolean): void {
+  if (fullScreenChangeHandler) {
+    fullScreenChangeHandler(isFullScreen);
+  }
+}
+
+function handleBackButtonPress(): void {
+  if (!backButtonPressHandler || !backButtonPressHandler()) {
+    navigateBack();
+  }
+}
+
+function handleBeforeUnload(): void {
+  const readyToUnload = () => {
+    sendMessageRequest(parentWindow, "readyToUnload", []);
+  };
+
+  if (!beforeUnloadHandler || !beforeUnloadHandler(readyToUnload)) {
+    readyToUnload();
+  }
+}
+
+function handleChangeSettings(): void {
+  if (changeSettingsHandler) {
+    changeSettingsHandler();
+  }
+}
+
+function ensureInitialized(...expectedFrameContexts: string[]): void {
+  if (!initializeCalled) {
+    throw new Error("The library has not yet been initialized");
+  }
+
+  if (
+    frameContext &&
+    expectedFrameContexts &&
+    expectedFrameContexts.length > 0
+  ) {
+    let found = false;
+    for (let i = 0; i < expectedFrameContexts.length; i++) {
+      if (expectedFrameContexts[i] === frameContext) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      throw new Error(
+        "This call is not allowed in the '" + frameContext + "' context"
+      );
+    }
+  }
+}
+
+function processMessage(evt: MessageEvent): void {
+  // Process only if we received a valid message
+  if (!evt || !evt.data || typeof evt.data !== "object") {
+    return;
+  }
+
+  // Process only if the message is coming from a different window and a valid origin
+  const messageSource = evt.source || evt.originalEvent.source;
+  const messageOrigin = evt.origin || evt.originalEvent.origin;
+  if (
+    messageSource === currentWindow ||
+    (messageOrigin !== currentWindow.location.origin &&
+      !validOriginRegExp.test(messageOrigin.toLowerCase()))
+  ) {
+    return;
+  }
+
+  // Update our parent and child relationships based on this message
+  updateRelationships(messageSource, messageOrigin);
+
+  // Handle the message
+  if (messageSource === parentWindow) {
+    handleParentMessage(evt);
+  } else if (messageSource === childWindow) {
+    handleChildMessage(evt);
+  }
+}
+
+function updateRelationships(
+  messageSource: Window,
+  messageOrigin: string
+): void {
+  // Determine whether the source of the message is our parent or child and update our
+  // window and origin pointer accordingly
+  if (!parentWindow || messageSource === parentWindow) {
+    parentWindow = messageSource;
+    parentOrigin = messageOrigin;
+  } else if (!childWindow || messageSource === childWindow) {
+    childWindow = messageSource;
+    childOrigin = messageOrigin;
+  }
+
+  // Clean up pointers to closed parent and child windows
+  if (parentWindow && parentWindow.closed) {
+    parentWindow = null;
+    parentOrigin = null;
+  }
+  if (childWindow && childWindow.closed) {
+    childWindow = null;
+    childOrigin = null;
+  }
+
+  // If we have any messages in our queue, send them now
+  flushMessageQueue(parentWindow);
+  flushMessageQueue(childWindow);
+}
+
+function handleParentMessage(evt: MessageEvent): void {
+  if ("id" in evt.data) {
+    // Call any associated callbacks
+    const message = evt.data as MessageResponse;
+    const callback = callbacks[message.id];
+    if (callback) {
+      callback.apply(null, message.args);
+
+      // Remove the callback to ensure that the callback is called only once and to free up memory.
+      delete callbacks[message.id];
+    }
+  } else if ("func" in evt.data) {
+    // Delegate the request to the proper handler
+    const message = evt.data as MessageRequest;
+    const handler = handlers[message.func];
+    if (handler) {
+      // We don't expect any handler to respond at this point
+      handler.apply(this, message.args);
+    }
+  }
+}
+
+function handleChildMessage(evt: MessageEvent): void {
+  if ("id" in evt.data && "func" in evt.data) {
+    // Try to delegate the request to the proper handler
+    const message = evt.data as MessageRequest;
+    const handler = handlers[message.func];
+    if (handler) {
+      const result = handler.apply(this, message.args);
+      if (result) {
+        sendMessageResponse(
+          childWindow,
+          message.id,
+          Array.isArray(result) ? result : [result]
+        );
+      }
+    } else {
+      // Proxy to parent
+      const messageId = sendMessageRequest(
+        parentWindow,
+        message.func,
+        message.args
+      );
+
+      // tslint:disable-next-line:no-any
+      callbacks[messageId] = (...args: any[]) => {
+        if (childWindow) {
+          sendMessageResponse(childWindow, message.id, args);
+        }
+      };
+    }
+  }
+}
+
+function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
+  return targetWindow === parentWindow
+    ? parentMessageQueue
+    : targetWindow === childWindow
+      ? childMessageQueue
+      : [];
+}
+
+function getTargetOrigin(targetWindow: Window): string {
+  return targetWindow === parentWindow
+    ? parentOrigin
+    : targetWindow === childWindow
+      ? childOrigin
+      : null;
+}
+
+function flushMessageQueue(targetWindow: Window | any): void {
+  const targetOrigin = getTargetOrigin(targetWindow);
+  const targetMessageQueue = getTargetMessageQueue(targetWindow);
+  while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
+    targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
+  }
+}
+
+function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
+  const messageQueueMonitor = currentWindow.setInterval(() => {
+    if (getTargetMessageQueue(targetWindow).length === 0) {
+      clearInterval(messageQueueMonitor);
+      callback();
+    }
+  }, 100);
+}
+
+function sendMessageRequest(
+  targetWindow: Window | any,
+  actionName: string,
+  // tslint:disable-next-line: no-any
+  args?: any[]
+): number {
+  const request = createMessageRequest(actionName, args);
+  if (isFramelessWindow) {
+    if (currentWindow && currentWindow.nativeInterface) {
+      (currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
+        JSON.stringify(request)
+      );
+    }
+  } else {
+    const targetOrigin = getTargetOrigin(targetWindow);
+
+    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+    // queue the message and send it after the origin is established
+    if (targetWindow && targetOrigin) {
+      targetWindow.postMessage(request, targetOrigin);
+    } else {
+      getTargetMessageQueue(targetWindow).push(request);
+    }
+  }
+  return request.id;
+}
+
+function sendMessageResponse(
+  targetWindow: Window | any,
+  id: number,
+  // tslint:disable-next-line:no-any
+  args?: any[]
+): void {
+  const response = createMessageResponse(id, args);
+  const targetOrigin = getTargetOrigin(targetWindow);
+  if (targetWindow && targetOrigin) {
+    targetWindow.postMessage(response, targetOrigin);
+  }
+}
+
+// tslint:disable-next-line:no-any
+function createMessageRequest(func: string, args: any[]): MessageRequest {
+  return {
+    id: nextMessageId++,
+    func: func,
+    args: args || []
+  };
+}
+
+// tslint:disable-next-line:no-any
+function createMessageResponse(id: number, args: any[]): MessageResponse {
+  return {
+    id: id,
+    args: args || []
+  };
+}
+
+// ::::::::::::::::::::::: MicrosoftTeams SDK private API ::::::::::::::::::::
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.
@@ -283,6 +531,279 @@ export namespace menus {
 }
 
 /**
+ * @private
+ * Hide from docs
+ * --------
+ * Query parameters used when fetching team information
+ */
+export interface TeamInstanceParameters {
+  /**
+   * Flag allowing to select favorite teams only
+   */
+  favoriteTeamsOnly?: boolean;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * --------
+ * Information on userJoined Teams
+ */
+export interface UserJoinedTeamsInformation {
+  /**
+   * List of team information
+   */
+  userJoinedTeams: TeamInformation[];
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to retrieve information of all user joined teams
+ * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
+ * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+ */
+export function getUserJoinedTeams(
+  callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
+  teamInstanceParameters?: TeamInstanceParameters
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(parentWindow, "getUserJoinedTeams", [
+    teamInstanceParameters
+  ]);
+  callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ */
+export interface FilePreviewParameters {
+  /**
+   * The developer-defined unique ID for the file.
+   */
+  entityId: string;
+
+  /**
+   * The display name of the file.
+   */
+  title: string;
+
+  /**
+   * An optional description of the file.
+   */
+  description?: string;
+
+  /**
+   * The file extension; e.g. pptx, docx, etc.
+   */
+  type: string;
+
+  /**
+   * A url to the source of the file, used to open the content in the user's default browser
+   */
+  objectUrl: string;
+
+  /**
+   * Optional; an alternate self-authenticating url used to preview the file in Mobile clients and offer it for download by the user
+   */
+  downloadUrl?: string;
+
+  /**
+   * Optional; an alternate url optimized for previewing the file in Teams web and desktop clients
+   */
+  webPreviewUrl?: string;
+
+  /**
+   * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
+   */
+  webEditUrl?: string;
+
+  /**
+   * Optional; the base url of the site where the file is hosted
+   */
+  baseUrl?: string;
+
+  /**
+   * Optional; indicates whether the file should be opened in edit mode
+   */
+  editFile?: boolean;
+
+  /**
+   * Optional; the developer-defined unique ID for the sub-entity to return to when the file stage closes.
+   * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
+   */
+  subEntityId?: string;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * Opens a client-friendly preview of the specified file.
+ * @param file The file to preview.
+ */
+export function openFilePreview(
+  filePreviewParameters: FilePreviewParameters
+): void {
+  ensureInitialized(frameContexts.content);
+
+  const params = [
+    filePreviewParameters.entityId,
+    filePreviewParameters.title,
+    filePreviewParameters.description,
+    filePreviewParameters.type,
+    filePreviewParameters.objectUrl,
+    filePreviewParameters.downloadUrl,
+    filePreviewParameters.webPreviewUrl,
+    filePreviewParameters.webEditUrl,
+    filePreviewParameters.baseUrl,
+    filePreviewParameters.editFile,
+    filePreviewParameters.subEntityId
+  ];
+
+  sendMessageRequest(parentWindow, "openFilePreview", params);
+}
+
+export const enum NotificationTypes {
+  fileDownloadStart = "fileDownloadStart",
+  fileDownloadComplete = "fileDownloadComplete"
+}
+
+export interface ShowNotificationParameters {
+  message: string;
+  notificationType: NotificationTypes;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * display notification API.
+ * @param message Notification message.
+ * @param notificationType Notification type
+ */
+export function showNotification(
+  showNotificationParameters: ShowNotificationParameters
+): void {
+  ensureInitialized(frameContexts.content);
+  const params = [
+    showNotificationParameters.message,
+    showNotificationParameters.notificationType
+  ];
+  sendMessageRequest(parentWindow, "showNotification", params);
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * execute deep link API.
+ * @param deepLink deep link.
+ */
+export function executeDeepLink(deepLink: string): void {
+  ensureInitialized(frameContexts.content);
+  const messageId = sendMessageRequest(parentWindow, "executeDeepLink", [
+    deepLink
+  ]);
+  callbacks[messageId] = (success: boolean, result: string) => {
+    if (!success) {
+      throw new Error(result);
+    }
+  };
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * Upload a custom App manifest directly to both team and personal scopes.
+ * This method works just for the first party Apps.
+ */
+export function uploadCustomApp(manifestBlob: Blob): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(parentWindow, "uploadCustomApp", [
+    manifestBlob
+  ]);
+  callbacks[messageId] = (success: boolean, result: string) => {
+    if (!success) {
+      throw new Error(result);
+    }
+  };
+}
+
+/**
+ * @private
+ * Internal use only
+ * Sends a custom action message to Teams.
+ * @param actionName Specifies name of the custom action to be sent
+ * @param args Specifies additional arguments passed to the action
+ * @returns id of sent message
+ */
+export function sendCustomMessage(
+  actionName: string,
+  // tslint:disable-next-line:no-any
+  args?: any[]
+): number {
+  ensureInitialized();
+  return sendMessageRequest(parentWindow, actionName, args);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * --------
+ * Information about all members in a chat
+ */
+export interface ChatMembersInformation {
+  members: ThreadMember[];
+}
+
+/**
+ * @private
+ * Hide from docs
+ * --------
+ * Information about a chat member
+ */
+export interface ThreadMember {
+  /**
+   * The member's user principal name in the current tenant.
+   */
+  upn: string;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to retrieve information of all chat members
+ * Because a malicious party run your content in a browser, this value should
+ * be used only as a hint as to who the members are and never as proof of membership.
+ * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
+ */
+export function getChatMembers(
+  callback: (chatMembersInformation: ChatMembersInformation) => void
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(parentWindow, "getChatMembers");
+  callbacks[messageId] = callback;
+}
+
+// ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
+
+export const enum HostClientType {
+  desktop = "desktop",
+  web = "web",
+  android = "android",
+  ios = "ios"
+}
+
+/**
  * Represents information about tabs for an app
  */
 export interface TabInformation {
@@ -398,32 +919,6 @@ export interface TabInstanceParameters {
 }
 
 /**
- * @private
- * Hide from docs
- * --------
- * Query parameters used when fetching team information
- */
-export interface TeamInstanceParameters {
-  /**
-   * Flag allowing to select favorite teams only
-   */
-  favoriteTeamsOnly?: boolean;
-}
-
-/**
- * @private
- * Hide from docs
- * --------
- * Information on userJoined Teams
- */
-export interface UserJoinedTeamsInformation {
-  /**
-   * List of team information
-   */
-  userJoinedTeams: TeamInformation[];
-}
-
-/**
  * Represents Team Information
  */
 export interface TeamInformation {
@@ -464,39 +959,6 @@ export const enum TaskModuleDimension {
   Medium = "medium",
   Small = "small"
 }
-
-// This indicates whether initialize was called (started).
-// It does not indicate whether initialization is complete. That can be inferred by whether parentOrigin is set.
-let initializeCalled = false;
-
-let isFramelessWindow = false;
-let currentWindow: Window | any;
-let parentWindow: Window | any;
-let parentOrigin: string;
-let parentMessageQueue: MessageRequest[] = [];
-let childWindow: Window;
-let childOrigin: string;
-let childMessageQueue: MessageRequest[] = [];
-let nextMessageId = 0;
-let callbacks: { [id: number]: Function } = {};
-let frameContext: string;
-let hostClientType: string;
-let printCapabilityEnabled: boolean = false;
-
-let themeChangeHandler: (theme: string) => void;
-handlers["themeChange"] = handleThemeChange;
-
-let fullScreenChangeHandler: (isFullScreen: boolean) => void;
-handlers["fullScreenChange"] = handleFullScreenChange;
-
-let backButtonPressHandler: () => boolean;
-handlers["backButtonPress"] = handleBackButtonPress;
-
-let beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-handlers["beforeUnload"] = handleBeforeUnload;
-
-let changeSettingsHandler: () => void;
-handlers["changeSettings"] = handleChangeSettings;
 
 /**
  * Initializes the library. This must be called before any other SDK calls
@@ -638,16 +1100,6 @@ export function registerOnThemeChangeHandler(
     sendMessageRequest(parentWindow, "registerHandler", ["themeChange"]);
 }
 
-function handleThemeChange(theme: string): void {
-  if (themeChangeHandler) {
-    themeChangeHandler(theme);
-  }
-
-  if (childWindow) {
-    sendMessageRequest(childWindow, "themeChange", [theme]);
-  }
-}
-
 /**
  * Registers a handler for changes from or to full-screen view for a tab.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -663,12 +1115,6 @@ export function registerFullScreenHandler(
     sendMessageRequest(parentWindow, "registerHandler", ["fullScreen"]);
 }
 
-function handleFullScreenChange(isFullScreen: boolean): void {
-  if (fullScreenChangeHandler) {
-    fullScreenChangeHandler(isFullScreen);
-  }
-}
-
 /**
  * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
  * navigation stack should use this handler to navigate the user back within their frame. If an app finds
@@ -682,12 +1128,6 @@ export function registerBackButtonHandler(handler: () => boolean): void {
   backButtonPressHandler = handler;
   handler &&
     sendMessageRequest(parentWindow, "registerHandler", ["backButton"]);
-}
-
-function handleBackButtonPress(): void {
-  if (!backButtonPressHandler || !backButtonPressHandler()) {
-    navigateBack();
-  }
 }
 
 /**
@@ -722,16 +1162,6 @@ export function registerBeforeUnloadHandler(
     sendMessageRequest(parentWindow, "registerHandler", ["beforeUnload"]);
 }
 
-function handleBeforeUnload(): void {
-  const readyToUnload = () => {
-    sendMessageRequest(parentWindow, "readyToUnload", []);
-  };
-
-  if (!beforeUnloadHandler || !beforeUnloadHandler(readyToUnload)) {
-    readyToUnload();
-  }
-}
-
 /**
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
@@ -743,13 +1173,6 @@ export function registerChangeSettingsHandler(
 
   changeSettingsHandler = handler;
   handler && sendMessageRequest(parentWindow, "registerHandler", ["changeSettings"]);
-}
-
-
-function handleChangeSettings(): void {
-  if (changeSettingsHandler) {
-    changeSettingsHandler();
-  }
 }
 
 /**
@@ -799,26 +1222,6 @@ export function getTabInstances(
 }
 
 /**
- * @private
- * Hide from docs
- * ------
- * Allows an app to retrieve information of all user joined teams
- * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
- * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
- */
-export function getUserJoinedTeams(
-  callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
-  teamInstanceParameters?: TeamInstanceParameters
-): void {
-  ensureInitialized();
-
-  const messageId = sendMessageRequest(parentWindow, "getUserJoinedTeams", [
-    teamInstanceParameters
-  ]);
-  callbacks[messageId] = callback;
-}
-
-/**
  * Allows an app to retrieve the most recently used tabs for this user.
  * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
  * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
@@ -847,103 +1250,6 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl
   ]);
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
- * Opens a client-friendly preview of the specified file.
- * @param file The file to preview.
- */
-export function openFilePreview(
-  filePreviewParameters: FilePreviewParameters
-): void {
-  ensureInitialized(frameContexts.content);
-
-  const params = [
-    filePreviewParameters.entityId,
-    filePreviewParameters.title,
-    filePreviewParameters.description,
-    filePreviewParameters.type,
-    filePreviewParameters.objectUrl,
-    filePreviewParameters.downloadUrl,
-    filePreviewParameters.webPreviewUrl,
-    filePreviewParameters.webEditUrl,
-    filePreviewParameters.baseUrl,
-    filePreviewParameters.editFile,
-    filePreviewParameters.subEntityId
-  ];
-
-  sendMessageRequest(parentWindow, "openFilePreview", params);
-}
-
-export const enum NotificationTypes {
-  fileDownloadStart = "fileDownloadStart",
-  fileDownloadComplete = "fileDownloadComplete"
-}
-
-export interface ShowNotificationParameters {
-  message: string;
-  notificationType: NotificationTypes;
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
- * display notification API.
- * @param message Notification message.
- * @param notificationType Notification type
- */
-export function showNotification(
-  showNotificationParameters: ShowNotificationParameters
-): void {
-  ensureInitialized(frameContexts.content);
-  const params = [
-    showNotificationParameters.message,
-    showNotificationParameters.notificationType
-  ];
-  sendMessageRequest(parentWindow, "showNotification", params);
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
- * execute deep link API.
- * @param deepLink deep link.
- */
-export function executeDeepLink(deepLink: string): void {
-  ensureInitialized(frameContexts.content);
-  const messageId = sendMessageRequest(parentWindow, "executeDeepLink", [
-    deepLink
-  ]);
-  callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
- * Upload a custom App manifest directly to both team and personal scopes.
- * This method works just for the first party Apps.
- */
-export function uploadCustomApp(manifestBlob: Blob): void {
-  ensureInitialized();
-
-  const messageId = sendMessageRequest(parentWindow, "uploadCustomApp", [
-    manifestBlob
-  ]);
-  callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
 }
 
 /**
@@ -1885,313 +2191,6 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
-/**
- * @private
- * Hide from docs.
- * ------
- */
-export interface FilePreviewParameters {
-  /**
-   * The developer-defined unique ID for the file.
-   */
-  entityId: string;
-
-  /**
-   * The display name of the file.
-   */
-  title: string;
-
-  /**
-   * An optional description of the file.
-   */
-  description?: string;
-
-  /**
-   * The file extension; e.g. pptx, docx, etc.
-   */
-  type: string;
-
-  /**
-   * A url to the source of the file, used to open the content in the user's default browser
-   */
-  objectUrl: string;
-
-  /**
-   * Optional; an alternate self-authenticating url used to preview the file in Mobile clients and offer it for download by the user
-   */
-  downloadUrl?: string;
-
-  /**
-   * Optional; an alternate url optimized for previewing the file in Teams web and desktop clients
-   */
-  webPreviewUrl?: string;
-
-  /**
-   * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
-   */
-  webEditUrl?: string;
-
-  /**
-   * Optional; the base url of the site where the file is hosted
-   */
-  baseUrl?: string;
-
-  /**
-   * Optional; indicates whether the file should be opened in edit mode
-   */
-  editFile?: boolean;
-
-  /**
-   * Optional; the developer-defined unique ID for the sub-entity to return to when the file stage closes.
-   * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
-   */
-  subEntityId?: string;
-}
-
-function ensureInitialized(...expectedFrameContexts: string[]): void {
-  if (!initializeCalled) {
-    throw new Error("The library has not yet been initialized");
-  }
-
-  if (
-    frameContext &&
-    expectedFrameContexts &&
-    expectedFrameContexts.length > 0
-  ) {
-    let found = false;
-    for (let i = 0; i < expectedFrameContexts.length; i++) {
-      if (expectedFrameContexts[i] === frameContext) {
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      throw new Error(
-        "This call is not allowed in the '" + frameContext + "' context"
-      );
-    }
-  }
-}
-
-function processMessage(evt: MessageEvent): void {
-  // Process only if we received a valid message
-  if (!evt || !evt.data || typeof evt.data !== "object") {
-    return;
-  }
-
-  // Process only if the message is coming from a different window and a valid origin
-  const messageSource = evt.source || evt.originalEvent.source;
-  const messageOrigin = evt.origin || evt.originalEvent.origin;
-  if (
-    messageSource === currentWindow ||
-    (messageOrigin !== currentWindow.location.origin &&
-      !validOriginRegExp.test(messageOrigin.toLowerCase()))
-  ) {
-    return;
-  }
-
-  // Update our parent and child relationships based on this message
-  updateRelationships(messageSource, messageOrigin);
-
-  // Handle the message
-  if (messageSource === parentWindow) {
-    handleParentMessage(evt);
-  } else if (messageSource === childWindow) {
-    handleChildMessage(evt);
-  }
-}
-
-function updateRelationships(
-  messageSource: Window,
-  messageOrigin: string
-): void {
-  // Determine whether the source of the message is our parent or child and update our
-  // window and origin pointer accordingly
-  if (!parentWindow || messageSource === parentWindow) {
-    parentWindow = messageSource;
-    parentOrigin = messageOrigin;
-  } else if (!childWindow || messageSource === childWindow) {
-    childWindow = messageSource;
-    childOrigin = messageOrigin;
-  }
-
-  // Clean up pointers to closed parent and child windows
-  if (parentWindow && parentWindow.closed) {
-    parentWindow = null;
-    parentOrigin = null;
-  }
-  if (childWindow && childWindow.closed) {
-    childWindow = null;
-    childOrigin = null;
-  }
-
-  // If we have any messages in our queue, send them now
-  flushMessageQueue(parentWindow);
-  flushMessageQueue(childWindow);
-}
-
-function handleParentMessage(evt: MessageEvent): void {
-  if ("id" in evt.data) {
-    // Call any associated callbacks
-    const message = evt.data as MessageResponse;
-    const callback = callbacks[message.id];
-    if (callback) {
-      callback.apply(null, message.args);
-
-      // Remove the callback to ensure that the callback is called only once and to free up memory.
-      delete callbacks[message.id];
-    }
-  } else if ("func" in evt.data) {
-    // Delegate the request to the proper handler
-    const message = evt.data as MessageRequest;
-    const handler = handlers[message.func];
-    if (handler) {
-      // We don't expect any handler to respond at this point
-      handler.apply(this, message.args);
-    }
-  }
-}
-
-function handleChildMessage(evt: MessageEvent): void {
-  if ("id" in evt.data && "func" in evt.data) {
-    // Try to delegate the request to the proper handler
-    const message = evt.data as MessageRequest;
-    const handler = handlers[message.func];
-    if (handler) {
-      const result = handler.apply(this, message.args);
-      if (result) {
-        sendMessageResponse(
-          childWindow,
-          message.id,
-          Array.isArray(result) ? result : [result]
-        );
-      }
-    } else {
-      // Proxy to parent
-      const messageId = sendMessageRequest(
-        parentWindow,
-        message.func,
-        message.args
-      );
-
-      // tslint:disable-next-line:no-any
-      callbacks[messageId] = (...args: any[]) => {
-        if (childWindow) {
-          sendMessageResponse(childWindow, message.id, args);
-        }
-      };
-    }
-  }
-}
-
-function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
-  return targetWindow === parentWindow
-    ? parentMessageQueue
-    : targetWindow === childWindow
-      ? childMessageQueue
-      : [];
-}
-
-function getTargetOrigin(targetWindow: Window): string {
-  return targetWindow === parentWindow
-    ? parentOrigin
-    : targetWindow === childWindow
-      ? childOrigin
-      : null;
-}
-
-function flushMessageQueue(targetWindow: Window | any): void {
-  const targetOrigin = getTargetOrigin(targetWindow);
-  const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
-  }
-}
-
-function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
-  const messageQueueMonitor = currentWindow.setInterval(() => {
-    if (getTargetMessageQueue(targetWindow).length === 0) {
-      clearInterval(messageQueueMonitor);
-      callback();
-    }
-  }, 100);
-}
-
-function sendMessageRequest(
-  targetWindow: Window | any,
-  actionName: string,
-  // tslint:disable-next-line: no-any
-  args?: any[]
-): number {
-  const request = createMessageRequest(actionName, args);
-  if (isFramelessWindow) {
-    if (currentWindow && currentWindow.nativeInterface) {
-      (currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
-        JSON.stringify(request)
-      );
-    }
-  } else {
-    const targetOrigin = getTargetOrigin(targetWindow);
-
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      targetWindow.postMessage(request, targetOrigin);
-    } else {
-      getTargetMessageQueue(targetWindow).push(request);
-    }
-  }
-  return request.id;
-}
-
-/**
- * @private
- * Internal use only
- * Sends a custom action message to Teams.
- * @param actionName Specifies name of the custom action to be sent
- * @param args Specifies additional arguments passed to the action
- * @returns id of sent message
- */
-export function sendCustomMessage(
-  actionName: string,
-  // tslint:disable-next-line:no-any
-  args?: any[]
-): number {
-  ensureInitialized();
-  return sendMessageRequest(parentWindow, actionName, args);
-}
-
-function sendMessageResponse(
-  targetWindow: Window | any,
-  id: number,
-  // tslint:disable-next-line:no-any
-  args?: any[]
-): void {
-  const response = createMessageResponse(id, args);
-  const targetOrigin = getTargetOrigin(targetWindow);
-  if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(response, targetOrigin);
-  }
-}
-
-// tslint:disable-next-line:no-any
-function createMessageRequest(func: string, args: any[]): MessageRequest {
-  return {
-    id: nextMessageId++,
-    func: func,
-    args: args || []
-  };
-}
-
-// tslint:disable-next-line:no-any
-function createMessageResponse(id: number, args: any[]): MessageResponse {
-  return {
-    id: id,
-    args: args || []
-  };
-}
-
 export interface TaskInfo {
   /**
    * The url to be rendered in the webview/iframe.
@@ -2287,45 +2286,4 @@ export namespace tasks {
       Array.isArray(appIds) ? appIds : [appIds]
     ]);
   }
-}
-
-/**
- * @private
- * Hide from docs
- * --------
- * Information about all members in a chat
- */
-export interface ChatMembersInformation {
-  members: ThreadMember[];
-}
-
-/**
- * @private
- * Hide from docs
- * --------
- * Information about a chat member
- */
-export interface ThreadMember {
-  /**
-   * The member's user principal name in the current tenant.
-   */
-  upn: string;
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Allows an app to retrieve information of all chat members
- * Because a malicious party run your content in a browser, this value should
- * be used only as a hint as to who the members are and never as proof of membership.
- * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
- */
-export function getChatMembers(
-  callback: (chatMembersInformation: ChatMembersInformation) => void
-): void {
-  ensureInitialized();
-
-  const messageId = sendMessageRequest(parentWindow, "getChatMembers");
-  callbacks[messageId] = callback;
 }
