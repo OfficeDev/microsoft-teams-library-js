@@ -578,6 +578,26 @@ export function getUserJoinedTeams(
 
 /**
  * @private
+ * Hide from docs
+ * ------
+ * Allows an app to get the configuration setting value
+ * @param callback The callback to invoke when the value is retrieved.
+ * @param key The key for the config setting
+ */
+export function getConfigSetting(
+  callback: (value: string) => void,
+  key: string
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(parentWindow, "getConfigSetting", [
+    key
+  ]);
+  callbacks[messageId] = callback;
+}
+
+/**
+ * @private
  * Hide from docs.
  * ------
  */
@@ -2170,6 +2190,12 @@ export interface Context {
    * The license type for the current user.
    */
   userLicenseType?: string;
+
+  /**
+   * Current ring ID
+   * ------
+   */
+  ringId?: string;
 }
 
 export interface DeepLinkParameters {
