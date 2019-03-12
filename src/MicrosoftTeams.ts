@@ -2288,7 +2288,6 @@ export namespace tasks {
   }
 }
 
-
 /**
  * Namespace to interact with the conversational subEntities inside the tab
  */
@@ -2299,10 +2298,20 @@ export namespace conversations {
    * Hide from docs.
    * ------
    */
-  export interface ConversationalSubEntity {
+  export interface StartConversationRequest {
 
     /**
-     * A function that is called once the conversation Id has been created.
+     * The Id of the subEntity where the conversation is taking place
+     */
+    subEntityId: string;
+
+    /**
+     * The title of the conversation
+     */
+    title: string;
+
+    /**
+     * A function that is called once the conversation Id has been created
      */
     onStartConversation?: (conversationId: string) => void;
 
@@ -2314,28 +2323,36 @@ export namespace conversations {
 
   /**
    * @private
+   * Hide from docs.
+   * ------
+   */
+  export interface ShowConversationRequest extends StartConversationRequest {
+
+    /**
+     * The Id of the conversation
+     */
+    conversationId: string;
+  }
+
+  /**
+   * @private
    * Hide from docs
    * --------------
    * Allows the user to start a conversation with each subentity inside a tab
-   * @param subEntityId The Id of the subEntity where the conversation is taking place
-   * @param title The title of the conversation
-   * @param conversationalSubEntity Callback containing the conversation Id and if the tab pane was closed
+   * @param startConversationRequest Callback containing the conversation Id and if the tab pane was closed
    */
   export function startConversation(
-    subEntityId: string,
-    title: string,
-    conversationalSubEntity: ConversationalSubEntity
+    startConversationRequest: StartConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "startConversation", [
-      subEntityId,
-      title
+      startConversationRequest
     ]);
     callbacks[messageId] = (conversationId?: string, reason?: string) => {
       if (conversationId) {
-        conversationalSubEntity.onStartConversation(conversationId);
+        startConversationRequest.onStartConversation(conversationId);
       } else {
-        conversationalSubEntity.onCloseConversation(reason);
+        startConversationRequest.onCloseConversation(reason);
       }
     };
   }
@@ -2345,25 +2362,17 @@ export namespace conversations {
    * Hide from docs
    * --------------
    * Allows the user to show the conversation in the right pane
-   * @param subEntityId The Id of the subEntity where the conversation is taking place
-   * @param title The title of the conversation
-   * @param conversationId The Id of the conversation
-   * @param conversationalSubEntity Callback containing if the tab pane was closed
+   * @param showConversationRequest Callback containing if the tab pane was closed
    */
   export function showConversation(
-    subEntityId: string,
-    title: string,
-    conversationId: string,
-    conversationalSubEntity: ConversationalSubEntity
+    showConversationRequest: ShowConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "showConversation", [
-      subEntityId,
-      title,
-      conversationId
+      showConversationRequest
     ]);
     callbacks[messageId] = (reason?: string) => {
-      conversationalSubEntity.onCloseConversation(reason);
+      showConversationRequest.onCloseConversation(reason);
     };
   }
 
