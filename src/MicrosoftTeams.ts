@@ -2346,7 +2346,8 @@ export namespace conversations {
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "startConversation", [
-      startConversationRequest
+      startConversationRequest.subEntityId,
+      startConversationRequest.title
     ]);
     callbacks[messageId] = (conversationId?: string, reason?: string) => {
       if (conversationId) {
@@ -2369,7 +2370,9 @@ export namespace conversations {
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(parentWindow, "showConversation", [
-      showConversationRequest
+      showConversationRequest.subEntityId,
+      showConversationRequest.title,
+      showConversationRequest.conversationId
     ]);
     callbacks[messageId] = (reason?: string) => {
       showConversationRequest.onCloseConversation(reason);
