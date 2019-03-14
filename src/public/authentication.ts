@@ -1,7 +1,7 @@
-import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../internal/MicrosoftTeams.internal";
+import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/GlobalVars";
 import { frameContexts } from "../internal/constants";
-import { HostClientType } from "./MicrosoftTeams.public";
+import { HostClientType } from "./constants";
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  * This object is used for starting or completing authentication flows.

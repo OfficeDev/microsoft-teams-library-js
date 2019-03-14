@@ -1,7 +1,7 @@
-import { navigateBack } from "../public/MicrosoftTeams.public";
+import { navigateBack } from "../public/publicAPIs";
 import { validOriginRegExp } from "./constants";
 import { GlobalVars } from "./GlobalVars";
-import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./MicrosoftTeams.internal.interface";
+import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./interfaces";
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers["themeChange"] = handleThemeChange;

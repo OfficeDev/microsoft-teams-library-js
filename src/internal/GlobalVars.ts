@@ -1,4 +1,4 @@
-import { MessageRequest } from "./MicrosoftTeams.internal.interface";
+import { MessageRequest } from "./interfaces";
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;

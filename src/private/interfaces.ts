@@ -1,4 +1,4 @@
-import { TeamInformation } from "../public/MicrosoftTeams.public.interface";
+import { TeamInformation } from "../public/interfaces";
 /**
  * @private
  * Hide from docs

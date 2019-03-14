@@ -1,9 +1,11 @@
-import * as microsoftTeams from "../src/public/MicrosoftTeams.public";
-import * as microsoftTeamsPrivate from "../src/private/MicrosoftTeams.private";
+import * as microsoftTeams from "../src/public/publicAPIs";
+import * as microsoftTeamsPrivate from "../src/private/privateAPIs";
 import { settings as microsoftTeamsSettings } from "../src/public/settings";
 import { authentication as microsoftTeamsAuthentication } from "../src/public/authentication";
-import { TabInstanceParameters } from "../src/public/MicrosoftTeams.public.interface";
-import { TeamInstanceParameters } from "../src/private/MicrosoftTeams.private.interface";
+import { TabInstanceParameters, Context, TaskInfo } from "../src/public/interfaces";
+import { TeamInstanceParameters } from "../src/private/interfaces";
+import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
+import { tasks } from "../src/public/tasks";
 
 interface MessageRequest {
   id: number;
@@ -288,21 +290,21 @@ describe("MicrosoftTeams", () => {
   it("should successfully handle out of order calls", () => {
     initializeWithContext("content");
 
-    let actualContext1: microsoftTeams.Context;
+    let actualContext1: Context;
     microsoftTeams.getContext(context => {
       actualContext1 = context;
     });
 
     let getContextMessage1 = messages[messages.length - 1];
 
-    let actualContext2: microsoftTeams.Context;
+    let actualContext2: Context;
     microsoftTeams.getContext(context => {
       actualContext2 = context;
     });
 
     let getContextMessage2 = messages[messages.length - 1];
 
-    let actualContext3: microsoftTeams.Context;
+    let actualContext3: Context;
     microsoftTeams.getContext(context => {
       actualContext3 = context;
     });
@@ -314,19 +316,19 @@ describe("MicrosoftTeams", () => {
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let expectedContext1: microsoftTeams.Context = {
+    let expectedContext1: Context = {
       locale: "someLocale1",
       groupId: "someGroupId1",
       channelId: "someChannelId1",
       entityId: "someEntityId1"
     };
-    let expectedContext2: microsoftTeams.Context = {
+    let expectedContext2: Context = {
       locale: "someLocale2",
       groupId: "someGroupId2",
       channelId: "someChannelId2",
       entityId: "someEntityId2"
     };
-    let expectedContext3: microsoftTeams.Context = {
+    let expectedContext3: Context = {
       locale: "someLocale3",
       groupId: "someGroupId3",
       channelId: "someChannelId3",
@@ -355,12 +357,12 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: microsoftTeams.Context = {
+    let expectedContext: Context = {
       locale: "someLocale",
       groupId: "someGroupId",
       channelId: "someChannelId",
       entityId: "someEntityId",
-      teamType: microsoftTeams.TeamType.Edu,
+      teamType: TeamType.Edu,
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId"
     };
@@ -377,7 +379,7 @@ describe("MicrosoftTeams", () => {
   it("should successfully get context", () => {
     initializeWithContext("content");
 
-    let actualContext: microsoftTeams.Context;
+    let actualContext: Context;
     microsoftTeams.getContext(context => {
       actualContext = context;
     });
@@ -385,18 +387,18 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: microsoftTeams.Context = {
+    let expectedContext: Context = {
       locale: "someLocale",
       groupId: "someGroupId",
       channelId: "someChannelId",
       entityId: "someEntityId",
       isFullScreen: true,
-      teamType: microsoftTeams.TeamType.Staff,
+      teamType: TeamType.Staff,
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId",
-      userTeamRole: microsoftTeams.UserTeamRole.Admin,
+      userTeamRole: UserTeamRole.Admin,
       chatId: "someChatId",
-      hostClientType: microsoftTeams.HostClientType.web
+      hostClientType: HostClientType.web
     };
 
     respondToMessage(getContextMessage, expectedContext);
@@ -943,7 +945,7 @@ describe("MicrosoftTeams", () => {
         height: 200
       };
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
+      const taskInfo: TaskInfo = {};
       expect(() =>
         microsoftTeamsAuthentication.authenticate(authenticationParams)
       ).toThrowError(
@@ -1485,8 +1487,8 @@ describe("MicrosoftTeams", () => {
 
   describe("tasks.startTask", () => {
     it("should not allow calls before initialization", () => {
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "The library has not yet been initialized"
       );
     });
@@ -1494,8 +1496,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from settings context", () => {
       initializeWithContext("settings");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'settings' context"
       );
     });
@@ -1503,8 +1505,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from authentication context", () => {
       initializeWithContext("authentication");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'authentication' context"
       );
     });
@@ -1512,8 +1514,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from remove context", () => {
       initializeWithContext("remove");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'remove' context"
       );
     });
@@ -1521,8 +1523,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from task context", () => {
       initializeWithContext("task");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'task' context"
       );
     });
@@ -1530,17 +1532,17 @@ describe("MicrosoftTeams", () => {
     it("should pass along entire TaskInfo parameter", () => {
       initializeWithContext("content");
 
-      const taskInfo: microsoftTeams.TaskInfo = {
+      const taskInfo: TaskInfo = {
         card: "someCard",
         fallbackUrl: "someFallbackUrl",
-        height: microsoftTeams.TaskModuleDimension.Large,
-        width: microsoftTeams.TaskModuleDimension.Large,
+        height: TaskModuleDimension.Large,
+        width: TaskModuleDimension.Large,
         title: "someTitle",
         url: "someUrl",
         completionBotId: "someCompletionBotId"
       };
 
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      tasks.startTask(taskInfo, (err, result) => {
         return;
       });
 
@@ -1553,8 +1555,8 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled = false;
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      const taskInfo: TaskInfo = {};
+      tasks.startTask(taskInfo, (err, result) => {
         expect(err).toBeNull();
         expect(result).toBe("someResult");
         callbackCalled = true;
@@ -1570,8 +1572,8 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled = false;
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      const taskInfo: TaskInfo = {};
+      tasks.startTask(taskInfo, (err, result) => {
         expect(err).toBe("someError");
         expect(result).toBeUndefined();
         callbackCalled = true;
@@ -1587,7 +1589,7 @@ describe("MicrosoftTeams", () => {
   describe("tasks.updateTask", () => {
     it("should not allow calls before initialization", () => {
       // tslint:disable-next-line:no-any
-      expect(() => microsoftTeams.tasks.updateTask({} as any)).toThrowError(
+      expect(() => tasks.updateTask({} as any)).toThrowError(
         "The library has not yet been initialized"
       );
     });
@@ -1596,7 +1598,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("task");
       const taskInfo = { width: 10, height: 10 };
 
-      microsoftTeams.tasks.updateTask(taskInfo);
+      tasks.updateTask(taskInfo);
 
       const updateTaskMessage = findMessageByFunc("tasks.updateTask");
       expect(updateTaskMessage).not.toBeNull();
@@ -1607,7 +1609,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("task");
       const taskInfo = { width: 10, height: 10, title: "anything" };
 
-      expect(() => microsoftTeams.tasks.updateTask(taskInfo)).toThrowError(
+      expect(() => tasks.updateTask(taskInfo)).toThrowError(
         "updateTask requires a taskInfo argument containing only width and height"
       );
     });
@@ -1615,7 +1617,7 @@ describe("MicrosoftTeams", () => {
 
   describe("tasks.submitTask", () => {
     it("should not allow calls before initialization", () => {
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "The library has not yet been initialized"
       );
     });
@@ -1623,7 +1625,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from settings context", () => {
       initializeWithContext("settings");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'settings' context"
       );
     });
@@ -1631,7 +1633,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from authentication context", () => {
       initializeWithContext("authentication");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'authentication' context"
       );
     });
@@ -1639,7 +1641,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from remove context", () => {
       initializeWithContext("remove");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'remove' context"
       );
     });
@@ -1647,7 +1649,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully pass result and appIds parameters when called from task context", () => {
       initializeWithContext("task");
 
-      microsoftTeams.tasks.submitTask("someResult", [
+      tasks.submitTask("someResult", [
         "someAppId",
         "someOtherAppId"
       ]);
@@ -1663,7 +1665,7 @@ describe("MicrosoftTeams", () => {
     it("should handle a single string passed as appIds parameter", () => {
       initializeWithContext("task");
 
-      microsoftTeams.tasks.submitTask("someResult", "someAppId");
+      tasks.submitTask("someResult", "someAppId");
 
       const submitTaskMessage = findMessageByFunc("tasks.completeTask");
       expect(submitTaskMessage).not.toBeNull();

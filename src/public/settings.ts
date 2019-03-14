@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from "../internal/MicrosoftTeams.internal";
+import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/GlobalVars";
 import { frameContexts } from "../internal/constants";
 /**
