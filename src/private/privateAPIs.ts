@@ -144,3 +144,23 @@ export function getChatMembers(
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "getChatMembers");
   GlobalVars.callbacks[messageId] = callback;
 }
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to get the configuration setting value
+ * @param callback The callback to invoke when the value is retrieved.
+ * @param key The key for the config setting
+ */
+export function getConfigSetting(
+  callback: (value: string) => void,
+  key: string
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, "getConfigSetting", [
+    key
+  ]);
+  GlobalVars.callbacks[messageId] = callback;
+}
