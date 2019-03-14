@@ -8,6 +8,7 @@ import { frameContexts } from "../internal/constants";
  * This object is usable only on the content frame.
  */
 export namespace tasks {
+
   /**
    * Allows an app to open the task module.
    * @param taskInfo An object containing the parameters of the task module

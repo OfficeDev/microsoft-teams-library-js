@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../i
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { HostClientType } from "./constants";
+
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  * This object is used for starting or completing authentication flows.
@@ -11,6 +12,7 @@ export namespace authentication {
   let authWindowMonitor: number;
   GlobalVars.handlers["authentication.authenticate.success"] = handleSuccess;
   GlobalVars.handlers["authentication.authenticate.failure"] = handleFailure;
+
   /**
    * Registers the authentication GlobalVars.handlers
    * @param authenticateParameters A set of values that configure the authentication pop-up.
@@ -18,6 +20,7 @@ export namespace authentication {
   export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
     authParams = authenticateParameters;
   }
+
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    */
@@ -48,6 +51,7 @@ export namespace authentication {
       openAuthenticationWindow(authenticateParams);
     }
   }
+
   /**
    * @private
    * Hide from docs.
@@ -68,6 +72,7 @@ export namespace authentication {
       }
     };
   }
+
   /**
    * @private
    * Hide from docs.
@@ -86,6 +91,7 @@ export namespace authentication {
       }
     };
   }
+
   function closeAuthenticationWindow(): void {
     // Stop monitoring the authentication window
     stopAuthenticationWindowMonitor();
@@ -100,6 +106,7 @@ export namespace authentication {
       GlobalVars.childOrigin = null;
     }
   }
+
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
     authParams = authenticateParameters;
     // Close the previously opened window if we have one
@@ -140,6 +147,7 @@ export namespace authentication {
       handleFailure("FailedToOpenWindow");
     }
   }
+
   function stopAuthenticationWindowMonitor(): void {
     if (authWindowMonitor) {
       clearInterval(authWindowMonitor);
@@ -148,6 +156,7 @@ export namespace authentication {
     delete GlobalVars.handlers["initialize"];
     delete GlobalVars.handlers["navigateCrossDomain"];
   }
+
   function startAuthenticationWindowMonitor(): void {
     // Stop the previous window monitor if one is running
     stopAuthenticationWindowMonitor();
@@ -183,6 +192,7 @@ export namespace authentication {
       return false;
     };
   }
+
   /**
    * Notifies the frame that initiated this authentication request that the request was successful.
    * This function is usable only on the authentication window.
@@ -199,6 +209,7 @@ export namespace authentication {
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
+
   /**
    * Notifies the frame that initiated this authentication request that the request failed.
    * This function is usable only on the authentication window.
@@ -215,6 +226,7 @@ export namespace authentication {
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
+
   function handleSuccess(result?: string): void {
     try {
       if (authParams && authParams.successCallback) {
@@ -226,6 +238,7 @@ export namespace authentication {
       closeAuthenticationWindow();
     }
   }
+
   function handleFailure(reason?: string): void {
     try {
       if (authParams && authParams.failureCallback) {
@@ -237,6 +250,7 @@ export namespace authentication {
       closeAuthenticationWindow();
     }
   }
+
   /**
    * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
    * @param callbackUrl - the connectors url to redirect to
@@ -266,6 +280,7 @@ export namespace authentication {
       }
     }
   }
+
   /**
    * Appends either result or reason as a fragment to the 'callbackUrl'
    * @param uri - the url to modify
@@ -279,6 +294,7 @@ export namespace authentication {
     uri = i === -1 ? uri : uri.substr(0, i);
     return uri + hash;
   }
+
   export interface AuthenticateParameters {
     /**
      * The URL for the authentication pop-up.

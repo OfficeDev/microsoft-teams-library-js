@@ -26,7 +26,6 @@ export const enum UserTeamRole {
   Guest = 2
 }
 
-
 export const enum TaskModuleDimension {
   Large = "large",
   Medium = "medium",

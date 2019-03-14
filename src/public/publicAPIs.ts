@@ -95,6 +95,7 @@ export function initialize(hostWindow: any = window): void {
  * but after the frame is loaded successfully.
  */
 export function _uninitialize(): void { }
+
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
