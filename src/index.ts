@@ -1,1 +1,2 @@
-export * from "./MicrosoftTeams";
+export * from "./private/index";
+export * from "./public/index";
