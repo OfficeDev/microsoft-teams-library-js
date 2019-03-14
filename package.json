@@ -11,8 +11,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "jest",
-    "test-debug": "node --inspect node_modules/.bin/jest --runInBand ./test"
+    "test": "jest"
   },
   "license": "MIT",
   "devDependencies": {
