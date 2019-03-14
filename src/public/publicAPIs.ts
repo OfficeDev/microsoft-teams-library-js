@@ -1,5 +1,5 @@
 import { processMessage, ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";

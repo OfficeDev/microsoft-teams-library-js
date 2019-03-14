@@ -1,5 +1,5 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.

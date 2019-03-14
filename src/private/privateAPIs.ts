@@ -1,5 +1,5 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
 

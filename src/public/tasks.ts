@@ -1,6 +1,6 @@
 import { TaskInfo } from "./interfaces";
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 
 /**

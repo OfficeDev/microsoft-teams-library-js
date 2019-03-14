@@ -1,6 +1,6 @@
 import { navigateBack } from "../public/publicAPIs";
 import { validOriginRegExp } from "./constants";
-import { GlobalVars } from "./GlobalVars";
+import { GlobalVars } from "./globalVars";
 import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./interfaces";
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::

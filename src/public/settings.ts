@@ -1,5 +1,5 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 /**
  * Namespace to interact with the settings-specific part of the SDK.

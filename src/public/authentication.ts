@@ -1,5 +1,5 @@
 import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/GlobalVars";
+import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { HostClientType } from "./constants";
 /**
