@@ -12,9 +12,15 @@ export class ChildWindowObject implements IWindowObject {
     message: any
   ): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "messageForChild", [
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "messageForChild", [
       message
     ]);
+
+    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
   }
 
   public addEventListener(type, listener) {
@@ -35,9 +41,15 @@ export class ParentWindowObject implements IWindowObject {
     message: any
   ): void {
     ensureInitialized(frameContexts.task);
-    sendMessageRequest(GlobalVars.parentWindow, "messageForParent", [
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "messageForParent", [
       message
     ]);
+
+    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
+      if (!success) {
+        throw new Error(result);
+      }
+    };
   }
 
   public addEventListener(type, listener) {
