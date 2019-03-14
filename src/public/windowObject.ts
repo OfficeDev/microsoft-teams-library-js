@@ -1,6 +1,6 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
-import { frameContexts } from "../../dts/internal/constants";
+import { frameContexts } from "../internal/constants";
 
 export interface IWindowObject {
   postMessage(message): void;
