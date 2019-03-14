@@ -19,7 +19,7 @@ export namespace conversations {
     startConversationRequest: StartConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "startConversation", [
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.startConversation", [
       startConversationRequest.subEntityId,
       startConversationRequest.title
     ]);
@@ -43,7 +43,7 @@ export namespace conversations {
     showConversationRequest: ShowConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "showConversation", [
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.showConversation", [
       showConversationRequest.subEntityId,
       showConversationRequest.title,
       showConversationRequest.conversationId
@@ -61,6 +61,6 @@ export namespace conversations {
   */
   export function closeConversation(): void {
     ensureInitialized(frameContexts.content);
-    sendMessageRequest(GlobalVars.parentWindow, "closeConversation");
+    sendMessageRequest(GlobalVars.parentWindow, "conversations.closeConversation");
   }
 }
