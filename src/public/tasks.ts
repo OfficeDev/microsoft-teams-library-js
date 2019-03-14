@@ -2,6 +2,7 @@ import { TaskInfo } from "./interfaces";
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
+import { IWindowObject, ChildWindowObject } from "./windowObject";
 
 /**
  * Namespace to interact with the task module-specific part of the SDK.
@@ -17,13 +18,14 @@ export namespace tasks {
   export function startTask(
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string) => void
-  ): void {
+  ): IWindowObject {
     ensureInitialized(frameContexts.content);
 
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "tasks.startTask", [
       taskInfo
     ]);
     GlobalVars.callbacks[messageId] = submitHandler;
+    return new ChildWindowObject();
   }
 
   /**
