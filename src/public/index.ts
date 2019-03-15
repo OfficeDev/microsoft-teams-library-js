@@ -4,4 +4,4 @@ export * from "./interfaces";
 export * from "./publicAPIs";
 export * from "./settings";
 export * from "./tasks";
-export * from "./windowObject";
+export * from "./appWindow";

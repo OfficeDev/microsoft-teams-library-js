@@ -2,12 +2,12 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 
-export interface IWindowObject {
+export interface IAppWindow {
   postMessage(message): void;
   addEventListener(type: string, listener: Function): void;
 }
 
-export class ChildWindowObject implements IWindowObject {
+export class ChildAppWindow implements IAppWindow {
   public postMessage(
     message: any
   ): void {
@@ -23,16 +23,16 @@ export class ChildWindowObject implements IWindowObject {
     };
   }
 
-  public addEventListener(type, listener) {
-    if (type == "message") {
+  public addEventListener(type: string, listener: (message: any) => void): void {
+    if (type === "message") {
       GlobalVars.handlers["messageForParent"] = listener;
     }
   }
 }
 
-export class ParentWindowObject implements IWindowObject {
-  private static _instance: ParentWindowObject;
-  public static get Instance() {
+export class ParentAppWindow implements IAppWindow {
+  private static _instance: ParentAppWindow;
+  public static get Instance(): IAppWindow {
     // Do you need arguments? Make it a regular method instead.
     return this._instance || (this._instance = new this());
   }
@@ -52,8 +52,8 @@ export class ParentWindowObject implements IWindowObject {
     };
   }
 
-  public addEventListener(type, listener) {
-    if (type == "message") {
+  public addEventListener(type: string, listener: (message: any) => void): void {
+    if (type === "message") {
       GlobalVars.handlers["messageForChild"] = listener;
     }
   }
