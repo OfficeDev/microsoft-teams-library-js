@@ -1,6 +1,8 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const libraryName = 'microsoftTeams';
+var plugins = [];
+plugins.push(new DtsBundlePlugin());
 
 module.exports = {
   entry: {
@@ -26,7 +28,7 @@ module.exports = {
     }]
   },
   optimization: {
-    minimize: true,
+    minimize: false,
     minimizer: [new UglifyJsPlugin({
       uglifyOptions: {
         compress: {
@@ -36,5 +38,21 @@ module.exports = {
       },
       include: /\.min\.js$/
     })]
-  }
+  },
+  plugins: plugins
+};
+
+function DtsBundlePlugin() { }
+DtsBundlePlugin.prototype.apply = function (compiler) {
+  compiler.plugin('done', function () {
+    var dts = require('dts-bundle');
+
+    dts.bundle({
+      name: libraryName,
+      main: 'dtsTemp/index.d.ts',
+      out: '../dts/index.d.ts',
+      removeSource: true,
+      outputAsModuleFolder: true // to use npm in-package typings
+    });
+  });
 };

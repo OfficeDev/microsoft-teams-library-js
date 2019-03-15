@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.5",
     "del": "2.2.2",
+    "dts-bundle": "^0.7.3",
     "jest": "^23.6.0",
     "merge2": "1.0.2",
     "prettier": "^1.11.1",
