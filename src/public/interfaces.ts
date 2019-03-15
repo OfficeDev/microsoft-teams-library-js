@@ -283,6 +283,12 @@ export interface Context {
    * The license type for the current user.
    */
   userLicenseType?: string;
+
+  /**
+   * Current ring ID
+   * ------
+   */
+  ringId?: string;
 }
 
 export interface DeepLinkParameters {
