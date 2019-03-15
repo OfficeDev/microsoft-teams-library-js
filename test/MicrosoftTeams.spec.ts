@@ -1770,6 +1770,32 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("getConfigSetting", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeamsPrivate.getConfigSetting(() => {
+          return;
+        }, "key")
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should allow a valid parameter", () => {
+      initializeWithContext("content");
+
+      let callbackCalled: boolean = false;
+      microsoftTeamsPrivate.getConfigSetting(
+        (value: string) => {
+          callbackCalled = true;
+        }, "key"
+      );
+
+      let getConfigSettingMessage = findMessageByFunc("getConfigSetting");
+      expect(getConfigSettingMessage).not.toBeNull();
+      respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
