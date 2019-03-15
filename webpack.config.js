@@ -49,10 +49,10 @@ DtsBundlePlugin.prototype.apply = function (compiler) {
 
     dts.bundle({
       name: libraryName,
-      main: 'dtsTemp/index.d.ts',
-      out: '../dts/index.d.ts',
-      removeSource: true,
-      outputAsModuleFolder: true // to use npm in-package typings
+      main: 'dts/index.d.ts',
+      out: '../dist/MicrosoftTeams.d.ts',
+      removeSource: false,
+      outputAsModuleFolder: false // to use npm in-package typings
     });
   });
 };
