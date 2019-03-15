@@ -7,7 +7,6 @@ import { frameContexts } from "../internal/constants";
  * This object is usable only on the settings frame.
  */
 export namespace settings {
-  debugger;
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
   GlobalVars.handlers["settings.save"] = handleSave;
