@@ -20,8 +20,7 @@ export namespace conversations {
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.startConversation", [
-      startConversationRequest.subEntityId,
-      startConversationRequest.title
+      startConversationRequest
     ]);
     GlobalVars.callbacks[messageId] = (conversationId?: string, reason?: string) => {
       if (conversationId) {
@@ -44,9 +43,7 @@ export namespace conversations {
   ): void {
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.showConversation", [
-      showConversationRequest.subEntityId,
-      showConversationRequest.title,
-      showConversationRequest.conversationId
+      showConversationRequest
     ]);
     GlobalVars.callbacks[messageId] = (reason?: string) => {
       showConversationRequest.onCloseConversation(reason);
