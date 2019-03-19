@@ -31,7 +31,8 @@ export namespace authentication {
     ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
     if (GlobalVars.hostClientType === HostClientType.desktop ||
       GlobalVars.hostClientType === HostClientType.android ||
-      GlobalVars.hostClientType === HostClientType.ios) {
+      GlobalVars.hostClientType === HostClientType.ios ||
+      GlobalVars.hostClientType === HostClientType.rigel) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
       const link = document.createElement("a");
       link.href = authenticateParams.url;
