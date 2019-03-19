@@ -25,6 +25,28 @@ export function getUserJoinedTeams(
 
 /**
  * @private
+ * Hide from docs
+ * ------
+ * Place the tab into full-screen mode.
+ */
+export function enterFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "enterFullscreen", []);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Reverts the tab into normal-screen mode. 
+ */
+export function exitFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "exitFullscreen", []);
+}
+
+/**
+ * @private
  * Hide from docs.
  * ------
  * Opens a client-friendly preview of the specified file.
