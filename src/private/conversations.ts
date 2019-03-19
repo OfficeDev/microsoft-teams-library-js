@@ -19,9 +19,10 @@ export namespace conversations {
     startConversationRequest: StartConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.startConversation", [
-      startConversationRequest
-    ]);
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.startConversation", [{
+      title: startConversationRequest.title,
+      subEntityId: startConversationRequest.subEntityId
+    }]);
     GlobalVars.callbacks[messageId] = (conversationId?: string, reason?: string) => {
       if (conversationId) {
         startConversationRequest.onStartConversation(conversationId);
@@ -42,9 +43,11 @@ export namespace conversations {
     showConversationRequest: ShowConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.showConversation", [
-      showConversationRequest
-    ]);
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.showConversation", [{
+      title: showConversationRequest.title,
+      subEntityId: showConversationRequest.subEntityId,
+      conversationId: showConversationRequest.conversationId
+    }]);
     GlobalVars.callbacks[messageId] = (reason?: string) => {
       showConversationRequest.onCloseConversation(reason);
     };
