@@ -372,7 +372,7 @@ function createMessageResponse(id, args) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = __webpack_require__(9);
-exports.version = "1.4.2-beta.0";
+exports.version = "1.4.2-beta.1";
 exports.validOrigins = [
     "https://teams.microsoft.com",
     "https://teams.microsoft.us",
