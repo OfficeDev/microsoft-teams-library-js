@@ -10,7 +10,11 @@
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ]
   },
   "exclude": [
     "node_modules",
