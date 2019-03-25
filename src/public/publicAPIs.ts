@@ -126,7 +126,24 @@ export function print(): void {
  * Retrieves the current context the frame is running in.
  * @param callback The callback to invoke when the {@link Context} object is retrieved.
  */
-export function getContext(callback: (context: Context) => void): void {
+export function getContext(callback?: (context: Context) => void): void | Promise<Context> {
+  if (callback) {
+    getContextInternal(callback);
+  }
+  else {
+    return new Promise<Context>((resolve, reject) => {
+      try {
+        getContextInternal(context => {
+          resolve(context);
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+}
+
+function getContextInternal(callback: (context: Context) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "getContext");
@@ -275,6 +292,26 @@ export function getTabInstances(
  * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
  */
 export function getMruTabInstances(
+  callback: (tabInfo: TabInformation) => void,
+  tabInstanceParameters?: TabInstanceParameters
+): void | Promise<TabInformation> {
+  if (callback && typeof callback === "function") {
+    getMruTabInstancesInternal(callback, tabInstanceParameters);
+  }
+  else {
+    return new Promise<TabInformation>((resolve, reject) => {
+      try {
+        getMruTabInstancesInternal(tabInfo => {
+          resolve(tabInfo);
+        }, tabInstanceParameters);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+}
+
+export function getMruTabInstancesInternal(
   callback: (tabInfo: TabInformation) => void,
   tabInstanceParameters?: TabInstanceParameters
 ): void {

@@ -61,7 +61,24 @@ export namespace authentication {
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    * @param authTokenRequest A set of values that configure the token request.
    */
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
+  export function getAuthToken(authTokenRequest: AuthTokenRequest): void | Promise<String> {
+    if (authTokenRequest.successCallback) {
+      getAuthTokenInternal(authTokenRequest);
+    }
+    else {
+      return new Promise<String>((resolve, reject) => {
+        try {
+          authTokenRequest.successCallback = resolve;
+          authTokenRequest.failureCallback = reject;
+          getAuthTokenInternal(authTokenRequest);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+  }
+
+  function getAuthTokenInternal(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.getAuthToken", [authTokenRequest.resources]);
     GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
