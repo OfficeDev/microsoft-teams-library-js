@@ -25,6 +25,28 @@ export function getUserJoinedTeams(
 
 /**
  * @private
+ * Hide from docs
+ * ------
+ * Place the tab into full-screen mode.
+ */
+export function enterFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "enterFullscreen", []);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Reverts the tab into normal-screen mode. 
+ */
+export function exitFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "exitFullscreen", []);
+}
+
+/**
+ * @private
  * Hide from docs.
  * ------
  * Opens a client-friendly preview of the specified file.
@@ -142,5 +164,25 @@ export function getChatMembers(
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "getChatMembers");
+  GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to get the configuration setting value
+ * @param callback The callback to invoke when the value is retrieved.
+ * @param key The key for the config setting
+ */
+export function getConfigSetting(
+  callback: (value: string) => void,
+  key: string
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, "getConfigSetting", [
+    key
+  ]);
   GlobalVars.callbacks[messageId] = callback;
 }

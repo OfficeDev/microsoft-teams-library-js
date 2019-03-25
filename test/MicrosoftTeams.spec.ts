@@ -1770,6 +1770,130 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("getConfigSetting", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeamsPrivate.getConfigSetting(() => {
+          return;
+        }, "key")
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should allow a valid parameter", () => {
+      initializeWithContext("content");
+
+      let callbackCalled: boolean = false;
+      microsoftTeamsPrivate.getConfigSetting(
+        (value: string) => {
+          callbackCalled = true;
+        }, "key"
+      );
+
+      let getConfigSettingMessage = findMessageByFunc("getConfigSetting");
+      expect(getConfigSettingMessage).not.toBeNull();
+      respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
+
+  describe("enterFullscreen", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should not allow calls from task context", () => {
+      initializeWithContext("task");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'task' context"
+      );
+    });
+
+    it("should successfully enter fullscreen", () => {
+      initializeWithContext("content");
+
+      microsoftTeamsPrivate.enterFullscreen();
+
+      const enterFullscreenMessage = findMessageByFunc("enterFullscreen");
+      expect(enterFullscreenMessage).not.toBeNull();
+    });
+  });
+
+  describe("exitFullscreen", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should not allow calls from task context", () => {
+      initializeWithContext("task");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'task' context"
+      );
+    });
+
+    it("should successfully exit fullscreen", () => {
+      initializeWithContext("content");
+
+      microsoftTeamsPrivate.exitFullscreen();
+
+      const exitFullscreenMessage = findMessageByFunc("exitFullscreen");
+      expect(exitFullscreenMessage).not.toBeNull();
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string

@@ -263,7 +263,7 @@ export interface Context {
   isTeamArchived?: boolean;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
    */
   hostClientType?: HostClientType;
 
@@ -281,6 +281,12 @@ export interface Context {
    * The license type for the current user.
    */
   userLicenseType?: string;
+
+  /**
+   * Current ring ID
+   * ------
+   */
+  ringId?: string;
 }
 
 export interface DeepLinkParameters {
