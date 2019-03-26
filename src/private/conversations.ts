@@ -23,9 +23,12 @@ export namespace conversations {
       subEntityId: openConversationRequest.subEntityId,
       conversationId: openConversationRequest.conversationId
     }]);
-    GlobalVars.getConversationIdHandler = openConversationRequest.onCloseConversation;
-    GlobalVars.callbacks[messageId] = (conversationId?: string) => {
-      openConversationRequest.onStartConversation(conversationId);
+    GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
+    GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
+    GlobalVars.callbacks[messageId] = (status: boolean, reason: string) => {
+      if (!status) {
+        throw new Error(reason);
+      }
     };
   }
 

@@ -9,11 +9,18 @@ GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
 GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
 GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
-GlobalVars.handlers["getConversationId"] = handleConversationId;
+GlobalVars.handlers["onStartConversation"] = handleStartConversation;
+GlobalVars.handlers["onCloseConversation"] = handleCloseConversation;
 
-function handleConversationId(conversationId: string): void {
-  if (GlobalVars.getConversationIdHandler) {
-    GlobalVars.getConversationIdHandler(conversationId);
+function handleStartConversation(subEntityId: string, conversationId: string): void {
+  if (GlobalVars.onStartConversationHandler) {
+    GlobalVars.onStartConversationHandler(subEntityId, conversationId);
+  }
+}
+
+function handleCloseConversation(subEntityId: string, conversationId?: string): void {
+  if (GlobalVars.onCloseConversationHandler) {
+    GlobalVars.onCloseConversationHandler(subEntityId, conversationId);
   }
 }
 
