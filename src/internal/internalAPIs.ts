@@ -9,6 +9,13 @@ GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
 GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
 GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
+GlobalVars.handlers["getConversationId"] = handleConversationId;
+
+function handleConversationId(conversationId: string): void {
+  if (GlobalVars.getConversationIdHandler) {
+    GlobalVars.getConversationIdHandler(conversationId);
+  }
+}
 
 function handleThemeChange(theme: string): void {
   if (GlobalVars.themeChangeHandler) {

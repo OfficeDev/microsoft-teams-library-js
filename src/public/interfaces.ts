@@ -352,7 +352,7 @@ export interface TaskInfo {
  * Hide from docs.
  * ------
 */
-export interface StartConversationRequest {
+export interface OpenConversationRequest {
 
   /**
   * The Id of the subEntity where the conversation is taking place
@@ -365,6 +365,11 @@ export interface StartConversationRequest {
   title: string;
 
   /**
+  * The Id of the conversation
+  */
+  conversationId?: string;
+
+  /**
   * A function that is called once the conversation Id has been created
   */
   onStartConversation?: (conversationId: string) => void;
@@ -373,17 +378,4 @@ export interface StartConversationRequest {
   * A function that is called if the pane is closed
   */
   onCloseConversation?: (reason: string) => void;
-}
-
-/**
-* @private
-* Hide from docs.
-* ------
-*/
-export interface ShowConversationRequest extends StartConversationRequest {
-
-  /**
-  * The Id of the conversation
-  */
-  conversationId: string;
 }

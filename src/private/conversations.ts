@@ -1,7 +1,7 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
-import { StartConversationRequest, ShowConversationRequest } from "../public/interfaces";
+import { OpenConversationRequest } from "../public/interfaces";
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -12,44 +12,20 @@ export namespace conversations {
   * @private
   * Hide from docs
   * --------------
-  * Allows the user to start a conversation with each subentity inside a tab
-  * @param startConversationRequest Callback containing the conversation Id and if the tab pane was closed
+  * Allows the user to start or continue a conversation with each subentity inside a tab
   */
-  export function startConversation(
-    startConversationRequest: StartConversationRequest
+  export function openConversation(
+    openConversationRequest: OpenConversationRequest
   ): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.startConversation", [{
-      title: startConversationRequest.title,
-      subEntityId: startConversationRequest.subEntityId
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.openConversation", [{
+      title: openConversationRequest.title,
+      subEntityId: openConversationRequest.subEntityId,
+      conversationId: openConversationRequest.conversationId
     }]);
-    GlobalVars.callbacks[messageId] = (conversationId?: string, reason?: string) => {
-      if (conversationId) {
-        startConversationRequest.onStartConversation(conversationId);
-      } else {
-        startConversationRequest.onCloseConversation(reason);
-      }
-    };
-  }
-
-  /**
-  * @private
-  * Hide from docs
-  * --------------
-  * Allows the user to show the conversation in the right pane
-  * @param showConversationRequest Callback containing if the tab pane was closed
-  */
-  export function showConversation(
-    showConversationRequest: ShowConversationRequest
-  ): void {
-    ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.showConversation", [{
-      title: showConversationRequest.title,
-      subEntityId: showConversationRequest.subEntityId,
-      conversationId: showConversationRequest.conversationId
-    }]);
-    GlobalVars.callbacks[messageId] = (reason?: string) => {
-      showConversationRequest.onCloseConversation(reason);
+    GlobalVars.getConversationIdHandler = openConversationRequest.onCloseConversation;
+    GlobalVars.callbacks[messageId] = (conversationId?: string) => {
+      openConversationRequest.onStartConversation(conversationId);
     };
   }
 
