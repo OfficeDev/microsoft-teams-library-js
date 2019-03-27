@@ -4,6 +4,7 @@ import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
 import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
+import { registerGenericCallback } from "../internal/utils";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -134,6 +135,22 @@ export function getContext(callback: (context: Context) => void): void {
 }
 
 /**
+ * Retrieves the current context the frame is running in.
+ * @returns Promise<Context>
+ */
+export function getContextAsync(): Promise<Context> {
+  return new Promise<Context>((resolve, reject) => {
+    try {
+      getContext(context => {
+        resolve(context);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
  * Registers a handler for theme changes.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  * @param handler The handler to invoke when the user changes their theme.
@@ -186,13 +203,7 @@ export function navigateBack(): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateBack", []);
-  GlobalVars.callbacks[messageId] = (success: boolean) => {
-    if (!success) {
-      throw new Error(
-        "Back navigation is not supported in the current client or context."
-      );
-    }
-  };
+  registerGenericCallback(messageId, "Back navigation is not supported in the current client or context.");
 }
 
 /**
@@ -242,13 +253,7 @@ export function navigateCrossDomain(url: string): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateCrossDomain", [
     url
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean) => {
-    if (!success) {
-      throw new Error(
-        "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest."
-      );
-    }
-  };
+  registerGenericCallback(messageId, "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.");
 }
 
 /**
@@ -270,6 +275,26 @@ export function getTabInstances(
 }
 
 /**
+ * Allows an app to retrieve for this user tabs that are owned by this app.
+ * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
+ * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+ * @returns Promise {@link TabInformation} object.
+ */
+export function getTabInstancesAsync(
+  tabInstanceParameters?: TabInstanceParameters
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve, reject) => {
+    try {
+      getTabInstances(context => {
+        resolve(context);
+      }, tabInstanceParameters);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
  * Allows an app to retrieve the most recently used tabs for this user.
  * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
  * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
@@ -284,6 +309,25 @@ export function getMruTabInstances(
     tabInstanceParameters
   ]);
   GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * Allows an app to retrieve the most recently used tabs for this user.
+ * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
+ * @returns promise with {@link TabInformation} object.
+ */
+export function getMruTabInstancesAsync(
+  tabInstanceParameters?: TabInstanceParameters
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve, reject) => {
+    try {
+      getMruTabInstances(context => {
+        resolve(context);
+      }, tabInstanceParameters);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 /**
@@ -310,11 +354,5 @@ export function navigateToTab(tabInstance: TabInstance): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [
     tabInstance
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean) => {
-    if (!success) {
-      throw new Error(
-        "Invalid internalTabInstanceId and/or channelId were/was provided"
-      );
-    }
-  };
+  registerGenericCallback(messageId, "Invalid internalTabInstanceId and/or channelId were/was provided");
 }

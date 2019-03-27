@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
+import { registerGenericCallback, registerGenericCallbackAsync } from "../internal/utils";
 
 /**
  * @private
@@ -21,6 +22,28 @@ export function getUserJoinedTeams(
     teamInstanceParameters
   ]);
   GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to retrieve information of all user joined teams
+ * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
+ * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+ */
+export function getUserJoinedTeamsAsync(
+  teamInstanceParameters?: TeamInstanceParameters
+): Promise<UserJoinedTeamsInformation> {
+  return new Promise<UserJoinedTeamsInformation>((resolve, reject) => {
+    try {
+      getUserJoinedTeams(userJoinedTeamsInformation => {
+        resolve(userJoinedTeamsInformation);
+      }, teamInstanceParameters);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 /**
@@ -105,11 +128,28 @@ export function executeDeepLink(deepLink: string): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
     deepLink
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
+  registerGenericCallback(messageId);
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * execute deep link API.
+ * @param deepLink deep link.
+ */
+export function executeDeepLinkAsync(deepLink: string): Promise<boolean | string> {
+  return new Promise<boolean | string>((resolve, reject) => {
+    try {
+      ensureInitialized(frameContexts.content);
+      const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
+        deepLink
+      ]);
+      registerGenericCallbackAsync(messageId, resolve, reject);
+    } catch (error) {
+      reject(error);
     }
-  };
+  });
 }
 
 /**
@@ -125,11 +165,30 @@ export function uploadCustomApp(manifestBlob: Blob): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
     manifestBlob
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
+  registerGenericCallback(messageId);
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * Upload a custom App manifest directly to both team and personal scopes.
+ * This method works just for the first party Apps.
+ */
+export function uploadCustomAppAsync(manifestBlob: Blob): Promise<boolean | string> {
+  return new Promise<boolean | string>((resolve, reject) => {
+    try {
+      ensureInitialized();
+
+      const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
+        manifestBlob
+      ]);
+
+      registerGenericCallbackAsync(messageId, resolve, reject);
+    } catch (error) {
+      reject(error);
     }
-  };
+  });
 }
 
 /**
@@ -171,6 +230,28 @@ export function getChatMembers(
  * @private
  * Hide from docs
  * ------
+ * Allows an app to retrieve information of all chat members
+ * Because a malicious party run your content in a browser, this value should
+ * be used only as a hint as to who the members are and never as proof of membership.
+ * @returns Promise with ChatMembersInformation object.
+ */
+export function getChatMembersAsync(
+): Promise<ChatMembersInformation> {
+  return new Promise<ChatMembersInformation>((resolve, reject) => {
+    try {
+      getChatMembers(chatMembersInformation => {
+        resolve(chatMembersInformation);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
  * Allows an app to get the configuration setting value
  * @param callback The callback to invoke when the value is retrieved.
  * @param key The key for the config setting
@@ -185,4 +266,26 @@ export function getConfigSetting(
     key
   ]);
   GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to get the configuration setting value
+ * @param key The key for the config setting
+ * @returns Promise with config setting value
+ */
+export function getConfigSettingAsync(
+  key: string
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    try {
+      getConfigSetting(value => {
+        resolve(value);
+      }, key);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

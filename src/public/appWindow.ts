@@ -1,6 +1,7 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
+import { registerGenericCallback } from "../internal/utils";
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -16,11 +17,7 @@ export class ChildAppWindow implements IAppWindow {
       message
     ]);
 
-    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-      if (!success) {
-        throw new Error(result);
-      }
-    };
+    registerGenericCallback(messageId);
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
@@ -45,11 +42,7 @@ export class ParentAppWindow implements IAppWindow {
       message
     ]);
 
-    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-      if (!success) {
-        throw new Error(result);
-      }
-    };
+    registerGenericCallback(messageId);
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {

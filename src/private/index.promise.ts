@@ -6,15 +6,15 @@ export {
   ShowNotificationParameters,
   TeamInstanceParameters,
   ThreadMember,
-  UserJoinedTeamsInformation
+  UserJoinedTeamsInformation,
 } from "./interfaces";
 export {
   enterFullscreen,
   executeDeepLink,
   exitFullscreen,
-  getChatMembers,
-  getConfigSetting,
-  getUserJoinedTeams,
+  getChatMembersAsync as getChatMembers,
+  getConfigSettingAsync as getConfigSetting,
+  getUserJoinedTeamsAsync as getUserJoinedTeams,
   openFilePreview,
   sendCustomMessage,
   showNotification,

@@ -1,6 +1,7 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
+import { registerGenericCallback } from "../internal/utils";
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -44,11 +45,7 @@ export namespace settings {
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
       instanceSettings
     ]);
-    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-      if (!success) {
-        throw new Error(result);
-      }
-    };
+    registerGenericCallback(messageId);
   }
 
   /**
