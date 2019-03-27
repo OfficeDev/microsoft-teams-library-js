@@ -29,8 +29,8 @@ export function getUserJoinedTeams(
  * Hide from docs
  * ------
  * Allows an app to retrieve information of all user joined teams
- * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
  * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+ * @returns Promise with {@link TeamInstanceParameters} object.
  */
 export function getUserJoinedTeamsAsync(
   teamInstanceParameters?: TeamInstanceParameters
