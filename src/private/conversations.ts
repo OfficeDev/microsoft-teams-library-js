@@ -41,5 +41,7 @@ export namespace conversations {
   export function closeConversation(): void {
     ensureInitialized(frameContexts.content);
     sendMessageRequest(GlobalVars.parentWindow, "conversations.closeConversation");
+    GlobalVars.onCloseConversationHandler = null;
+    GlobalVars.onStartConversationHandler = null;
   }
 }

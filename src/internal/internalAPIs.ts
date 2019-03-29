@@ -9,8 +9,8 @@ GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
 GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
 GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
-GlobalVars.handlers["onStartConversation"] = handleStartConversation;
-GlobalVars.handlers["onCloseConversation"] = handleCloseConversation;
+GlobalVars.handlers["startConversation"] = handleStartConversation;
+GlobalVars.handlers["closeConversation"] = handleCloseConversation;
 
 function handleStartConversation(subEntityId: string, conversationId: string): void {
   if (GlobalVars.onStartConversationHandler) {
