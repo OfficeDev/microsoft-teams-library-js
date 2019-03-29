@@ -2,10 +2,11 @@ import * as microsoftTeams from "../src/public/publicAPIs";
 import * as microsoftTeamsPrivate from "../src/private/privateAPIs";
 import { settings as microsoftTeamsSettings } from "../src/public/settings";
 import { authentication as microsoftTeamsAuthentication } from "../src/public/authentication";
-import { TabInstanceParameters, Context, TaskInfo } from "../src/public/interfaces";
+import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest } from "../src/public/interfaces";
 import { TeamInstanceParameters } from "../src/private/interfaces";
 import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
 import { tasks } from "../src/public/tasks";
+import { conversations } from "../src/private/conversations";
 
 interface MessageRequest {
   id: number;
@@ -1605,7 +1606,7 @@ describe("MicrosoftTeams", () => {
       expect(updateTaskMessage.args).toEqual([taskInfo]);
     });
 
-    it("should throw if extra properties are provided", () => {
+    it("should throw an error if extra properties are provided", () => {
       initializeWithContext("task");
       const taskInfo = { width: 10, height: 10, title: "anything" };
 
@@ -1891,6 +1892,59 @@ describe("MicrosoftTeams", () => {
 
       const exitFullscreenMessage = findMessageByFunc("exitFullscreen");
       expect(exitFullscreenMessage).not.toBeNull();
+    });
+  });
+
+  describe("conversations.openConversation", () => {
+    it("should not allow calls before initialization", () => {
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+      expect(() => conversations.openConversation(conversationRequest)).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+      expect(() => conversations.openConversation(conversationRequest)).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should successfully pass conversationRequest", () => {
+      initializeWithContext("content");
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+
+      conversations.openConversation(conversationRequest);
+
+      const openConversationMessage = findMessageByFunc("conversations.openConversation");
+      expect(openConversationMessage).not.toBeNull();
+      expect(openConversationMessage.args).toEqual([conversationRequest]);
+    });
+  });
+
+  describe("conversations.closeConversation", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => conversations.closeConversation()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+      expect(() => conversations.closeConversation()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
     });
   });
 
