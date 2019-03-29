@@ -142,7 +142,6 @@ export function registerOnThemeChangeHandler(
   handler: (theme: string) => void
 ): void {
   ensureInitialized();
-
   GlobalVars.themeChangeHandler = handler;
   handler &&
     sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["themeChange"]);
