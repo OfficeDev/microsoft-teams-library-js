@@ -129,8 +129,6 @@ export interface TeamInformation {
    */
   userTeamRole?: UserTeamRole;
 }
-
-
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
@@ -347,4 +345,37 @@ export interface TaskInfo {
    * in the event payload.
    */
   completionBotId?: string;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+*/
+export interface OpenConversationRequest {
+
+  /**
+  * The Id of the subEntity where the conversation is taking place
+  */
+  subEntityId: string;
+
+  /**
+  * The title of the conversation
+  */
+  title: string;
+
+  /**
+  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+  */
+  conversationId?: string;
+
+  /**
+  * A function that is called once the conversation Id has been created
+  */
+  onStartConversation?: (subEntityId: string, conversationId: string) => void;
+
+  /**
+  * A function that is called if the pane is closed
+  */
+  onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }

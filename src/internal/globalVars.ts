@@ -25,4 +25,6 @@ export class GlobalVars {
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
   public static handleParentMessage: any;
+  public static onStartConversationHandler: (sunEntityId: string, conversationId: string) => void;
+  public static onCloseConversationHandler: (sunEntityId: string, conversationId?: string) => void;
 }
