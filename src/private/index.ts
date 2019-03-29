@@ -20,4 +20,6 @@ export {
   showNotification,
   uploadCustomApp
 } from "./privateAPIs";
-export * from "./conversations";
+export {
+  conversations
+} from "./conversations";
