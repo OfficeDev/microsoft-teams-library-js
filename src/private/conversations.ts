@@ -12,7 +12,7 @@ export namespace conversations {
   * @private
   * Hide from docs
   * --------------
-  * Allows the user to start or continue a conversation with each subentity inside a tab
+  * Allows the user to start or continue a conversation with each subentity inside the tab
   */
   export function openConversation(
     openConversationRequest: OpenConversationRequest
