@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
+import { registerGenericCallback } from "../internal/utils";
 
 /**
  * @private
@@ -105,11 +106,7 @@ export function executeDeepLink(deepLink: string): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
     deepLink
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
+  registerGenericCallback(messageId);
 }
 
 /**
@@ -125,11 +122,7 @@ export function uploadCustomApp(manifestBlob: Blob): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
     manifestBlob
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
+  registerGenericCallback(messageId);
 }
 
 /**
