@@ -45,7 +45,7 @@ export namespace settings {
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
       instanceSettings
     ]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler()
+    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   /**

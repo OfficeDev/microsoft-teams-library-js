@@ -20,10 +20,10 @@ export function generateRegExpFromUrls(urls: string[]): RegExp {
   return new RegExp(urlRegExp);
 }
 
-export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, result: string) => void {
-  return (success: boolean, result: string) => {
+export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
+  return (success: boolean, reason: string) => {
     if (!success) {
-      throw new Error(errorMessage ? errorMessage : result);
+      throw new Error(errorMessage ? errorMessage : reason);
     }
   };
 }

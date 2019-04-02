@@ -1,7 +1,7 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
-import { registerGenericCallback, getGenericOnCompleteHandler } from "../internal/utils";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -17,7 +17,7 @@ export class ChildAppWindow implements IAppWindow {
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "messageForChild", [
       message
     ]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler()
+    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
@@ -43,7 +43,7 @@ export class ParentAppWindow implements IAppWindow {
       message
     ]);
 
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler()
+    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {

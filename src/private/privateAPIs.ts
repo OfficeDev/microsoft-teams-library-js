@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
-import { registerGenericCallback, getGenericOnCompleteHandler } from "../internal/utils";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 /**
  * @private
@@ -106,7 +106,7 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
     deepLink
   ]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler()
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
@@ -122,7 +122,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
     manifestBlob
   ]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler()
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
