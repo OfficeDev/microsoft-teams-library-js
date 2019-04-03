@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
-import { registerGenericCallback } from "../internal/utils";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 /**
  * @private
@@ -101,12 +101,12 @@ export function showNotification(
  * execute deep link API.
  * @param deepLink deep link.
  */
-export function executeDeepLink(deepLink: string): void {
+export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(frameContexts.content);
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
     deepLink
   ]);
-  registerGenericCallback(messageId);
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
@@ -116,13 +116,13 @@ export function executeDeepLink(deepLink: string): void {
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  */
-export function uploadCustomApp(manifestBlob: Blob): void {
+export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
     manifestBlob
   ]);
-  registerGenericCallback(messageId);
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
