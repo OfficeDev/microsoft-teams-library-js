@@ -25,6 +25,7 @@ export namespace menus {
      */
     contentDescription?: string;
   }
+
   /**
    * Represents information about menu item for Action Menu and Navigation Bar Menu.
    */
@@ -58,6 +59,7 @@ export namespace menus {
      */
     public viewData: ViewData;
   }
+
   /**
    * Represents information about view to show on Navigation Bar Menu item selection
    */
@@ -75,6 +77,7 @@ export namespace menus {
      */
     listItems: MenuItem[];
   }
+
   /**
    * Represents information about type of list to display in Navigation Bar Menu.
    */
@@ -82,12 +85,14 @@ export namespace menus {
     dropDown = "dropDown",
     popOver = "popOver"
   }
+
   let navBarMenuItemPressHandler: (id: string) => boolean;
   GlobalVars.handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
   let actionMenuItemPressHandler: (id: string) => boolean;
   GlobalVars.handlers["actionMenuItemPress"] = handleActionMenuItemPress;
   let viewConfigItemPressHandler: (id: string) => boolean;
   GlobalVars.handlers["setModuleView"] = handleViewConfigItemPress;
+
   /**
    * Registers list of view configurations and it's handler.
    * Handler is responsible for listening selection of View Configuration.
@@ -99,12 +104,14 @@ export namespace menus {
     viewConfigItemPressHandler = handler;
     sendMessageRequest(GlobalVars.parentWindow, "setUpViews", [viewConfig]);
   }
+
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
       sendMessageRequest(GlobalVars.parentWindow, "viewConfigItemPress", [id]);
     }
   }
+
   /**
    * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, otherwise title will be shown.
    * @param items List of MenuItems for Navigation Bar Menu.
@@ -115,12 +122,14 @@ export namespace menus {
     navBarMenuItemPressHandler = handler;
     sendMessageRequest(GlobalVars.parentWindow, "setNavBarMenu", [items]);
   }
+
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
       sendMessageRequest(GlobalVars.parentWindow, "handleNavBarMenuItemPress", [id]);
     }
   }
+
   export interface ActionMenuParameters {
     /**
      * Display title for Action Menu
@@ -131,6 +140,7 @@ export namespace menus {
      */
     items: MenuItem[];
   }
+
   /**
    * Used to show Action Menu.
    * @param params Parameters for Menu Parameters
@@ -141,6 +151,7 @@ export namespace menus {
     actionMenuItemPressHandler = handler;
     sendMessageRequest(GlobalVars.parentWindow, "showActionMenu", [params]);
   }
+
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
