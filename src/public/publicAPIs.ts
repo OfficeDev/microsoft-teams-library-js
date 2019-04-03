@@ -4,7 +4,7 @@ import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
 import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
-import { registerGenericCallback } from "../internal/utils";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -182,11 +182,12 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  * Navigates back in the Teams client. See registerBackButtonHandler for more information on when
  * it's appropriate to use this method.
  */
-export function navigateBack(): void {
+export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateBack", []);
-  registerGenericCallback(messageId, "Back navigation is not supported in the current client or context.");
+  const errorMessage = "Back navigation is not supported in the current client or context.";
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
 /**
@@ -225,7 +226,7 @@ export function registerChangeSettingsHandler(
  * continue working.
  * @param url The URL to navigate the frame to.
  */
-export function navigateCrossDomain(url: string): void {
+export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(
     frameContexts.content,
     frameContexts.settings,
@@ -236,7 +237,8 @@ export function navigateCrossDomain(url: string): void {
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateCrossDomain", [
     url
   ]);
-  registerGenericCallback(messageId, "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.");
+  const errorMessage = "Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.";
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
 /**
@@ -292,11 +294,13 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * Navigates the Microsoft Teams app to the specified tab instance.
  * @param tabInstance The tab instance to navigate to.
  */
-export function navigateToTab(tabInstance: TabInstance): void {
+export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [
     tabInstance
   ]);
-  registerGenericCallback(messageId, "Invalid internalTabInstanceId and/or channelId were/was provided");
+
+  const errorMessage = "Invalid internalTabInstanceId and/or channelId were/was provided";
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
