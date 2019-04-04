@@ -1,28 +1,18 @@
-import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
-import { frameContexts } from "../internal/constants";
-import { registerGenericCallbackAsync } from "../internal/utils";
+import { getGenericOnCompleteHandlerAsync } from "../internal/utils";
+import { settings } from "./settings";
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
  */
-export namespace settings {
-  let saveHandler: (evt: SaveEvent) => void;
-  let removeHandler: (evt: RemoveEvent) => void;
-  GlobalVars.handlers["settings.save"] = handleSave;
-  GlobalVars.handlers["settings.remove"] = handleRemove;
-
+export namespace settingsAsync {
   /**
    * Sets the validity state for the settings.
    * The initial value is false, so the user cannot save the settings until this is called with true.
    * @param validityState Indicates whether the save or remove button is enabled for the user.
    */
   export function setValidityState(validityState: boolean): void {
-    ensureInitialized(frameContexts.settings, frameContexts.remove);
-    sendMessageRequest(GlobalVars.parentWindow, "settings.setValidityState", [
-      validityState
-    ]);
+    settings.setValidityState(validityState);
   }
 
   /**
@@ -32,9 +22,7 @@ export namespace settings {
   export function getSettings(): Promise<Settings> {
     return new Promise<Settings>((resolve, reject) => {
       try {
-        ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
-        const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.getSettings");
-        GlobalVars.callbacks[messageId] = resolve;
+        settings.getSettings(resolve);
       } catch (error) {
         reject(error);
       }
@@ -49,11 +37,7 @@ export namespace settings {
   export function setSettings(instanceSettings: Settings): Promise<boolean | string> {
     return new Promise<boolean | string>((resolve, reject) => {
       try {
-        ensureInitialized(frameContexts.content, frameContexts.settings);
-        const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
-          instanceSettings
-        ]);
-        registerGenericCallbackAsync(messageId, resolve, reject);
+        settings.setSettings(instanceSettings, getGenericOnCompleteHandlerAsync(resolve, reject));
       } catch (error) {
         reject(error);
       }
@@ -68,9 +52,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the save button.
    */
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
-    ensureInitialized(frameContexts.settings);
-    saveHandler = handler;
-    handler && sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["save"]);
+    settings.registerOnSaveHandler(handler);
   }
 
   /**
@@ -81,20 +63,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-    ensureInitialized(frameContexts.remove);
-    removeHandler = handler;
-    handler && sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["remove"]);
-  }
-
-  function handleSave(result?: SaveParameters): void {
-    const saveEvent = new SaveEventImpl(result);
-    if (saveHandler) {
-      saveHandler(saveEvent);
-    }
-    else {
-      // If no handler is registered, we assume success.
-      saveEvent.notifySuccess();
-    }
+    settings.registerOnRemoveHandler(handler);
   }
 
   export interface Settings {
@@ -154,69 +123,5 @@ export namespace settings {
      * Connector's webhook Url returned as arguments to settings.save event as part of user clicking on Save
      */
     webhookUrl?: string;
-  }
-
-  /**
-   * @private
-   * Hide from docs, since this class is not directly used.
-   */
-  class SaveEventImpl implements SaveEvent {
-    public notified: boolean = false;
-    public result: SaveParameters;
-    constructor(result?: SaveParameters) {
-      this.result = result ? result : {};
-    }
-    public notifySuccess(): void {
-      this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, "settings.save.success");
-      this.notified = true;
-    }
-    public notifyFailure(reason?: string): void {
-      this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, "settings.save.failure", [reason]);
-      this.notified = true;
-    }
-    private ensureNotNotified(): void {
-      if (this.notified) {
-        throw new Error("The SaveEvent may only notify success or failure once.");
-      }
-    }
-  }
-
-  function handleRemove(): void {
-    const removeEvent = new RemoveEventImpl();
-    if (removeHandler) {
-      removeHandler(removeEvent);
-    }
-    else {
-      // If no handler is registered, we assume success.
-      removeEvent.notifySuccess();
-    }
-  }
-
-  /**
-   * @private
-   * Hide from docs, since this class is not directly used.
-   */
-  class RemoveEventImpl implements RemoveEvent {
-    public notified: boolean = false;
-
-    public notifySuccess(): void {
-      this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, "settings.remove.success");
-      this.notified = true;
-    }
-
-    public notifyFailure(reason?: string): void {
-      this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, "settings.remove.failure", [reason]);
-      this.notified = true;
-    }
-
-    private ensureNotNotified(): void {
-      if (this.notified) {
-        throw new Error("The removeEvent may only notify success or failure once.");
-      }
-    }
   }
 }

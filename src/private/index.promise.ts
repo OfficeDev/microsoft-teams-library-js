@@ -10,7 +10,7 @@ export {
 } from "./interfaces";
 export {
   enterFullscreen,
-  executeDeepLink,
+  executeDeepLinkAsync as executeDeepLink,
   exitFullscreen,
   getChatMembersAsync as getChatMembers,
   getConfigSettingAsync as getConfigSetting,
@@ -18,5 +18,5 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
-  uploadCustomApp
+  uploadCustomAppAsync as uploadCustomApp
 } from "./privateAPIs";

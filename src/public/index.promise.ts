@@ -1,4 +1,4 @@
-export { authentication } from "./authentication.promise";
+export { authenticationAsync as authentication } from "./authentication.promise";
 export {
   HostClientType,
   TaskModuleDimension,
@@ -31,7 +31,7 @@ export {
   registerOnThemeChangeHandler,
   shareDeepLink
 } from "./publicAPIs";
-export { settings } from "./settings.promise";
+export { settingsAsync as settings } from "./settings.promise";
 export { tasks } from "./tasks";
 export {
   ChildAppWindow,

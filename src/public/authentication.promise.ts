@@ -1,56 +1,27 @@
-import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
-import { frameContexts } from "../internal/constants";
-import { HostClientType } from "./constants";
+import { authentication } from "./authentication";
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  * This object is used for starting or completing authentication flows.
  */
-export namespace authentication {
-  let authParams: AuthenticateParameters;
-  let authWindowMonitor: number;
-  GlobalVars.handlers["authentication.authenticate.success"] = handleSuccess;
-  GlobalVars.handlers["authentication.authenticate.failure"] = handleFailure;
-
-  /**
-   * Registers the authentication GlobalVars.handlers
-   * @param authenticateParameters A set of values that configure the authentication pop-up.
-   */
-  export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
-    authParams = authenticateParameters;
-  }
-
+export namespace authenticationAsync {
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    */
-  export function authenticate(authenticateParameters?: AuthenticateParameters): void {
-    const authenticateParams = authenticateParameters !== undefined
-      ? authenticateParameters
-      : authParams;
-    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
-    if (GlobalVars.hostClientType === HostClientType.desktop ||
-      GlobalVars.hostClientType === HostClientType.android ||
-      GlobalVars.hostClientType === HostClientType.ios ||
-      GlobalVars.hostClientType === HostClientType.rigel) {
-      // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-      const link = document.createElement("a");
-      link.href = authenticateParams.url;
-      // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate", [link.href, authenticateParams.width, authenticateParams.height]);
-      GlobalVars.callbacks[messageId] = (success: boolean, response: string) => {
-        if (success) {
-          authenticateParams.successCallback(response);
-        }
-        else {
-          authenticateParams.failureCallback(response);
-        }
-      };
-    }
-    else {
-      // Open an authentication window with the parameters provided by the caller.
-      openAuthenticationWindow(authenticateParams);
-    }
+  export function authenticate(authenticateParameters: AuthenticateParameters): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      try {
+        authentication.authenticate({
+          url: authenticateParameters.url,
+          height: authenticateParameters.height,
+          width: authenticateParameters.width,
+          successCallback: resolve,
+          failureCallback: reject
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   /**
@@ -61,19 +32,14 @@ export namespace authentication {
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    * @param authTokenRequest A set of values that configure the token request.
    */
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
+  export function getAuthToken(resources: string[]): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       try {
-        ensureInitialized();
-        const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.getAuthToken", [authTokenRequest.resources]);
-        GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-          if (success) {
-            resolve(result);
-          }
-          else {
-            reject(result);
-          }
-        };
+        authentication.getAuthToken({
+          resources: resources,
+          successCallback: resolve,
+          failureCallback: reject
+        })
       } catch (error) {
         reject(error);
       }
@@ -89,121 +55,11 @@ export namespace authentication {
   export function getUser(): Promise<UserProfile> {
     return new Promise<UserProfile>((resolve, reject) => {
       try {
-        ensureInitialized();
-        const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.getUser");
-        GlobalVars.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
-          if (success) {
-            resolve(result as UserProfile);
-          }
-          else {
-            reject(result as string);
-          }
-        }
+        authentication.getUser({ successCallback: resolve, failureCallback: reject });
       } catch (error) {
         reject(error);
       }
     });
-  }
-
-  function closeAuthenticationWindow(): void {
-    // Stop monitoring the authentication window
-    stopAuthenticationWindowMonitor();
-    // Try to close the authentication window and clear all properties associated with it
-    try {
-      if (GlobalVars.childWindow) {
-        GlobalVars.childWindow.close();
-      }
-    }
-    finally {
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
-    }
-  }
-
-  function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-    authParams = authenticateParameters;
-    // Close the previously opened window if we have one
-    closeAuthenticationWindow();
-    // Start with a sensible default size
-    let width = authParams.width || 600;
-    let height = authParams.height || 400;
-    // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-    width = Math.min(width, GlobalVars.currentWindow.outerWidth - 400);
-    height = Math.min(height, GlobalVars.currentWindow.outerHeight - 200);
-    // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement("a");
-    link.href = authParams.url;
-    // We are running in the browser, so we need to center the new window ourselves
-    let left: number = typeof GlobalVars.currentWindow.screenLeft !== "undefined"
-      ? GlobalVars.currentWindow.screenLeft
-      : GlobalVars.currentWindow.screenX;
-    let top: number = typeof GlobalVars.currentWindow.screenTop !== "undefined"
-      ? GlobalVars.currentWindow.screenTop
-      : GlobalVars.currentWindow.screenY;
-    left += GlobalVars.currentWindow.outerWidth / 2 - width / 2;
-    top += GlobalVars.currentWindow.outerHeight / 2 - height / 2;
-    // Open a child window with a desired set of standard browser features
-    GlobalVars.childWindow = GlobalVars.currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-      top +
-      ", left=" +
-      left +
-      ", width=" +
-      width +
-      ", height=" +
-      height);
-    if (GlobalVars.childWindow) {
-      // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-      startAuthenticationWindowMonitor();
-    }
-    else {
-      // If we failed to open the window, fail the authentication flow
-      handleFailure("FailedToOpenWindow");
-    }
-  }
-
-  function stopAuthenticationWindowMonitor(): void {
-    if (authWindowMonitor) {
-      clearInterval(authWindowMonitor);
-      authWindowMonitor = 0;
-    }
-    delete GlobalVars.handlers["initialize"];
-    delete GlobalVars.handlers["navigateCrossDomain"];
-  }
-
-  function startAuthenticationWindowMonitor(): void {
-    // Stop the previous window monitor if one is running
-    stopAuthenticationWindowMonitor();
-    // Create an interval loop that
-    // - Notifies the caller of failure if it detects that the authentication window is closed
-    // - Keeps pinging the authentication window while it is open to re-establish
-    //   contact with any pages along the authentication flow that need to communicate
-    //   with us
-    authWindowMonitor = GlobalVars.currentWindow.setInterval(() => {
-      if (!GlobalVars.childWindow || GlobalVars.childWindow.closed) {
-        handleFailure("CancelledByUser");
-      }
-      else {
-        const savedChildOrigin = GlobalVars.childOrigin;
-        try {
-          GlobalVars.childOrigin = "*";
-          sendMessageRequest(GlobalVars.childWindow, "ping");
-        }
-        finally {
-          GlobalVars.childOrigin = savedChildOrigin;
-        }
-      }
-    }, 100);
-    // Set up an initialize-message handler that gives the authentication window its frame context
-    GlobalVars.handlers["initialize"] = () => {
-      return [frameContexts.authentication, GlobalVars.hostClientType];
-    };
-    // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
-    // in the authentication window. We could at some point choose to implement this method via a call to
-    // authenticationWindow.location.href = url; however, we would first need to figure out how to
-    // validate the URL against the tab's list of valid domains.
-    GlobalVars.handlers["navigateCrossDomain"] = (url: string) => {
-      return false;
-    };
   }
 
   /**
@@ -214,13 +70,7 @@ export namespace authentication {
    * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, "result", result);
-    ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate.success", [
-      result
-    ]);
-    // Wait for the message to be sent before closing the window
-    waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
+    authentication.notifySuccess(result, callbackUrl);
   }
 
   /**
@@ -231,81 +81,7 @@ export namespace authentication {
    * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, "reason", reason);
-    ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate.failure", [
-      reason
-    ]);
-    // Wait for the message to be sent before closing the window
-    waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
-  }
-
-  function handleSuccess(result?: string): void {
-    try {
-      if (authParams && authParams.successCallback) {
-        authParams.successCallback(result);
-      }
-    }
-    finally {
-      authParams = null;
-      closeAuthenticationWindow();
-    }
-  }
-
-  function handleFailure(reason?: string): void {
-    try {
-      if (authParams && authParams.failureCallback) {
-        authParams.failureCallback(reason);
-      }
-    }
-    finally {
-      authParams = null;
-      closeAuthenticationWindow();
-    }
-  }
-
-  /**
-   * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
-   * @param callbackUrl - the connectors url to redirect to
-   * @param key - "result" in case of success and "reason" in case of failure
-   * @param value - the value of the passed result/reason parameter
-   */
-  function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
-    if (callbackUrl) {
-      const link = document.createElement("a");
-      link.href = decodeURIComponent(callbackUrl);
-      if (link.host &&
-        link.host !== window.location.host &&
-        link.host === "outlook.office.com" &&
-        link.search.indexOf("client_type=Win32_Outlook") > -1) {
-        if (key && key === "result") {
-          if (value) {
-            link.href = updateUrlParameter(link.href, "result", value);
-          }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
-        }
-        if (key && key === "reason") {
-          if (value) {
-            link.href = updateUrlParameter(link.href, "reason", value);
-          }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
-        }
-      }
-    }
-  }
-
-  /**
-   * Appends either result or reason as a fragment to the 'callbackUrl'
-   * @param uri - the url to modify
-   * @param key - the fragment key
-   * @param value - the fragment value
-   */
-  function updateUrlParameter(uri: string, key: string, value: string): string {
-    const i = uri.indexOf("#");
-    let hash = i === -1 ? "#" : uri.substr(i);
-    hash = hash + "&" + key + (value !== "" ? "=" + value : "");
-    uri = i === -1 ? uri : uri.substr(0, i);
-    return uri + hash;
+    authentication.notifyFailure(reason, callbackUrl);
   }
 
   export interface AuthenticateParameters {
@@ -321,25 +97,6 @@ export namespace authentication {
      * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
      */
     height?: number;
-    /**
-     * A function that is called if the authentication succeeds, with the result returned from the authentication pop-up.
-     */
-    successCallback?: (result?: string) => void;
-    /**
-     * A function that is called if the authentication fails, with the reason for the failure returned from the authentication pop-up.
-     */
-    failureCallback?: (reason?: string) => void;
-  }
-  /**
-   * @private
-   * Hide from docs.
-   * ------
-   */
-  export interface AuthTokenRequest {
-    /**
-     * An array of resource URIs identifying the target resources for which the token should be requested.
-     */
-    resources: string[];
   }
 
   /**

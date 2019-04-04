@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
-import { registerGenericCallbackAsync, getGenericOnCompleteHandler } from "../internal/utils";
+import { getGenericOnCompleteHandler, getGenericOnCompleteHandlerAsync } from "../internal/utils";
 
 /**
  * @private
@@ -141,11 +141,7 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
 export function executeDeepLinkAsync(deepLink: string): Promise<boolean | string> {
   return new Promise<boolean | string>((resolve, reject) => {
     try {
-      ensureInitialized(frameContexts.content);
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
-        deepLink
-      ]);
-      registerGenericCallbackAsync(messageId, resolve, reject);
+      executeDeepLink(deepLink, getGenericOnCompleteHandlerAsync(resolve, reject));
     } catch (error) {
       reject(error);
     }
@@ -178,13 +174,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 export function uploadCustomAppAsync(manifestBlob: Blob): Promise<boolean | string> {
   return new Promise<boolean | string>((resolve, reject) => {
     try {
-      ensureInitialized();
-
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
-        manifestBlob
-      ]);
-
-      registerGenericCallbackAsync(messageId, resolve, reject);
+      uploadCustomApp(manifestBlob, getGenericOnCompleteHandlerAsync(resolve, reject));
     } catch (error) {
       reject(error);
     }

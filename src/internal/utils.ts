@@ -20,13 +20,13 @@ export function generateRegExpFromUrls(urls: string[]): RegExp {
   return new RegExp(urlRegExp);
 }
 
-export function registerGenericCallbackAsync(messageId, resolve, reject, errorMessage?: string) {
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
+export function getGenericOnCompleteHandlerAsync(resolve, reject): (success: boolean, reason?: string) => void {
+  return (success: boolean, result: string) => {
     if (success) {
       resolve(success);
     }
     else {
-      reject(errorMessage ? errorMessage : result);
+      reject(result);
     }
   }
 }
