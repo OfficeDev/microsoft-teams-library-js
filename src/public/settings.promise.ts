@@ -1,7 +1,7 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
-import { registerGenericCallback } from "../internal/utils";
+import { registerGenericCallbackAsync } from "../internal/utils";
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -29,10 +29,16 @@ export namespace settings {
    * Gets the settings for the current instance.
    * @param callback The callback to invoke when the {@link Settings} object is retrieved.
    */
-  export function getSettings(callback: (instanceSettings: Settings) => void): void {
-    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.getSettings");
-    GlobalVars.callbacks[messageId] = callback;
+  export function getSettings(): Promise<Settings> {
+    return new Promise<Settings>((resolve, reject) => {
+      try {
+        ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
+        const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.getSettings");
+        GlobalVars.callbacks[messageId] = resolve;
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   /**
@@ -40,12 +46,18 @@ export namespace settings {
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
    * @param settings The desired settings for this instance.
    */
-  export function setSettings(instanceSettings: Settings): void {
-    ensureInitialized(frameContexts.content, frameContexts.settings);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
-      instanceSettings
-    ]);
-    registerGenericCallback(messageId);
+  export function setSettings(instanceSettings: Settings): Promise<boolean | string> {
+    return new Promise<boolean | string>((resolve, reject) => {
+      try {
+        ensureInitialized(frameContexts.content, frameContexts.settings);
+        const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
+          instanceSettings
+        ]);
+        registerGenericCallbackAsync(messageId, resolve, reject);
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   /**
