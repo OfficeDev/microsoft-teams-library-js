@@ -20,14 +20,6 @@ export function generateRegExpFromUrls(urls: string[]): RegExp {
   return new RegExp(urlRegExp);
 }
 
-export function registerGenericCallback(messageId, errorMessage?: string) {
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(errorMessage ? errorMessage : result);
-    }
-  };
-}
-
 export function registerGenericCallbackAsync(messageId, resolve, reject, errorMessage?: string) {
   GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
     if (success) {
@@ -35,6 +27,14 @@ export function registerGenericCallbackAsync(messageId, resolve, reject, errorMe
     }
     else {
       reject(errorMessage ? errorMessage : result);
+    }
+  }
+}
+
+export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
+  return (success: boolean, reason: string) => {
+    if (!success) {
+      throw new Error(errorMessage ? errorMessage : reason);
     }
   };
 }
