@@ -1,4 +1,12 @@
-import * as microsoftTeams from "../src/MicrosoftTeams";
+import * as microsoftTeams from "../src/public/publicAPIs";
+import * as microsoftTeamsPrivate from "../src/private/privateAPIs";
+import { settings as microsoftTeamsSettings } from "../src/public/settings";
+import { authentication as microsoftTeamsAuthentication } from "../src/public/authentication";
+import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest } from "../src/public/interfaces";
+import { TeamInstanceParameters } from "../src/private/interfaces";
+import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
+import { tasks } from "../src/public/tasks";
+import { conversations } from "../src/private/conversations";
 
 interface MessageRequest {
   id: number;
@@ -25,10 +33,10 @@ describe("MicrosoftTeams", () => {
   let childMessages: MessageRequest[];
 
   let childWindow = {
-    postMessage: function(message: MessageRequest, targetOrigin: string): void {
+    postMessage: function (message: MessageRequest, targetOrigin: string): void {
       childMessages.push(message);
     },
-    close: function(): void {
+    close: function (): void {
       return;
     },
     closed: false
@@ -39,7 +47,7 @@ describe("MicrosoftTeams", () => {
     outerHeight: 768,
     screenLeft: 0,
     screenTop: 0,
-    addEventListener: function(
+    addEventListener: function (
       type: string,
       listener: (ev: MessageEvent) => void,
       useCapture?: boolean
@@ -48,7 +56,7 @@ describe("MicrosoftTeams", () => {
         processMessage = listener;
       }
     },
-    removeEventListener: function(
+    removeEventListener: function (
       type: string,
       listener: (ev: MessageEvent) => void,
       useCapture?: boolean
@@ -60,12 +68,12 @@ describe("MicrosoftTeams", () => {
     location: {
       origin: tabOrigin,
       href: validOrigin,
-      assign: function(url: string): void {
+      assign: function (url: string): void {
         return;
       }
     },
     parent: {
-      postMessage: function(
+      postMessage: function (
         message: MessageRequest,
         targetOrigin: string
       ): void {
@@ -79,10 +87,10 @@ describe("MicrosoftTeams", () => {
       }
     } as Window,
     self: null as Window,
-    open: function(url: string, name: string, specs: string): Window {
+    open: function (url: string, name: string, specs: string): Window {
       return childWindow as Window;
     },
-    close: function(): void {
+    close: function (): void {
       return;
     },
     setInterval: (handler: Function, timeout: number): number =>
@@ -119,7 +127,7 @@ describe("MicrosoftTeams", () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe("initialize");
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual("1.3.6");
+    expect(initMessage.args[0]).toEqual("1.4.1");
   });
 
   it("should allow multiple initialize calls", () => {
@@ -143,7 +151,7 @@ describe("MicrosoftTeams", () => {
   it("should not allow calls from the wrong context", () => {
     initializeWithContext("content");
 
-    expect(() => microsoftTeams.settings.setValidityState(true)).toThrowError(
+    expect(() => microsoftTeamsSettings.setValidityState(true)).toThrowError(
       "This call is not allowed in the 'content' context"
     );
   });
@@ -283,21 +291,21 @@ describe("MicrosoftTeams", () => {
   it("should successfully handle out of order calls", () => {
     initializeWithContext("content");
 
-    let actualContext1: microsoftTeams.Context;
+    let actualContext1: Context;
     microsoftTeams.getContext(context => {
       actualContext1 = context;
     });
 
     let getContextMessage1 = messages[messages.length - 1];
 
-    let actualContext2: microsoftTeams.Context;
+    let actualContext2: Context;
     microsoftTeams.getContext(context => {
       actualContext2 = context;
     });
 
     let getContextMessage2 = messages[messages.length - 1];
 
-    let actualContext3: microsoftTeams.Context;
+    let actualContext3: Context;
     microsoftTeams.getContext(context => {
       actualContext3 = context;
     });
@@ -309,19 +317,19 @@ describe("MicrosoftTeams", () => {
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let expectedContext1: microsoftTeams.Context = {
+    let expectedContext1: Context = {
       locale: "someLocale1",
       groupId: "someGroupId1",
       channelId: "someChannelId1",
       entityId: "someEntityId1"
     };
-    let expectedContext2: microsoftTeams.Context = {
+    let expectedContext2: Context = {
       locale: "someLocale2",
       groupId: "someGroupId2",
       channelId: "someChannelId2",
       entityId: "someEntityId2"
     };
-    let expectedContext3: microsoftTeams.Context = {
+    let expectedContext3: Context = {
       locale: "someLocale3",
       groupId: "someGroupId3",
       channelId: "someChannelId3",
@@ -350,12 +358,12 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: microsoftTeams.Context = {
+    let expectedContext: Context = {
       locale: "someLocale",
       groupId: "someGroupId",
       channelId: "someChannelId",
       entityId: "someEntityId",
-      teamType: microsoftTeams.TeamType.Edu,
+      teamType: TeamType.Edu,
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId"
     };
@@ -372,7 +380,7 @@ describe("MicrosoftTeams", () => {
   it("should successfully get context", () => {
     initializeWithContext("content");
 
-    let actualContext: microsoftTeams.Context;
+    let actualContext: Context;
     microsoftTeams.getContext(context => {
       actualContext = context;
     });
@@ -380,18 +388,18 @@ describe("MicrosoftTeams", () => {
     let getContextMessage = findMessageByFunc("getContext");
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: microsoftTeams.Context = {
+    let expectedContext: Context = {
       locale: "someLocale",
       groupId: "someGroupId",
       channelId: "someChannelId",
       entityId: "someEntityId",
       isFullScreen: true,
-      teamType: microsoftTeams.TeamType.Staff,
+      teamType: TeamType.Staff,
       teamSiteUrl: "someSiteUrl",
       sessionId: "someSessionId",
-      userTeamRole: microsoftTeams.UserTeamRole.Admin,
+      userTeamRole: UserTeamRole.Admin,
       chatId: "someChatId",
-      hostClientType: microsoftTeams.HostClientType.web
+      hostClientType: HostClientType.web
     };
 
     respondToMessage(getContextMessage, expectedContext);
@@ -453,10 +461,23 @@ describe("MicrosoftTeams", () => {
     expect(handlerInvoked).toBe(true);
   });
 
+  it("should successfully register a change settings handler", () => {
+    initializeWithContext("content");
+    let handlerCalled = false;
+
+    microsoftTeams.registerChangeSettingsHandler(() => {
+      handlerCalled = true;
+    });
+
+    sendMessage("changeSettings", "");
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
   it("should successfully set validity state to true", () => {
     initializeWithContext("settings");
 
-    microsoftTeams.settings.setValidityState(true);
+    microsoftTeamsSettings.setValidityState(true);
 
     let message = findMessageByFunc("settings.setValidityState");
     expect(message).not.toBeNull();
@@ -467,7 +488,7 @@ describe("MicrosoftTeams", () => {
   it("should successfully set validity state to false", () => {
     initializeWithContext("settings");
 
-    microsoftTeams.settings.setValidityState(false);
+    microsoftTeamsSettings.setValidityState(false);
 
     let message = findMessageByFunc("settings.setValidityState");
     expect(message).not.toBeNull();
@@ -478,15 +499,15 @@ describe("MicrosoftTeams", () => {
   it("should successfully get settings", () => {
     initializeWithContext("settings");
 
-    let actualSettings: microsoftTeams.settings.Settings;
-    microsoftTeams.settings.getSettings(settings => {
+    let actualSettings: microsoftTeamsSettings.Settings;
+    microsoftTeamsSettings.getSettings(settings => {
       actualSettings = settings;
     });
 
     let message = findMessageByFunc("settings.getSettings");
     expect(message).not.toBeNull();
 
-    let expectedSettings: microsoftTeams.settings.Settings = {
+    let expectedSettings: microsoftTeamsSettings.Settings = {
       suggestedDisplayName: "someSuggestedDisplayName",
       contentUrl: "someContentUrl",
       websiteUrl: "someWebsiteUrl",
@@ -501,13 +522,13 @@ describe("MicrosoftTeams", () => {
   it("should successfully set settings", () => {
     initializeWithContext("settings");
 
-    let settings: microsoftTeams.settings.Settings = {
+    let settings: microsoftTeamsSettings.Settings = {
       suggestedDisplayName: "someSuggestedDisplayName",
       contentUrl: "someContentUrl",
       websiteUrl: "someWebsiteUrl",
       entityId: "someEntityId"
     };
-    microsoftTeams.settings.setSettings(settings);
+    microsoftTeamsSettings.setSettings(settings);
 
     let message = findMessageByFunc("settings.setSettings");
     expect(message).not.toBeNull();
@@ -519,7 +540,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("settings");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       handlerCalled = true;
     });
 
@@ -532,7 +553,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("settings");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       handlerCalled = true;
       expect(saveEvent.result["webhookUrl"]).not.toBeNull();
     });
@@ -550,7 +571,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("remove");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnRemoveHandler(removeEvent => {
+    microsoftTeamsSettings.registerOnRemoveHandler(removeEvent => {
       handlerCalled = true;
     });
 
@@ -653,10 +674,10 @@ describe("MicrosoftTeams", () => {
 
     let handler1Called = false;
     let handler2Called = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       handler1Called = true;
     });
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       handler2Called = true;
     });
 
@@ -680,7 +701,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("settings");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       saveEvent.notifySuccess();
       handlerCalled = true;
     });
@@ -697,7 +718,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("settings");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       saveEvent.notifyFailure("someReason");
       handlerCalled = true;
     });
@@ -725,7 +746,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("remove");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnRemoveHandler(removeEvent => {
+    microsoftTeamsSettings.registerOnRemoveHandler(removeEvent => {
       removeEvent.notifySuccess();
       handlerCalled = true;
     });
@@ -742,7 +763,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("remove");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnRemoveHandler(removeEvent => {
+    microsoftTeamsSettings.registerOnRemoveHandler(removeEvent => {
       removeEvent.notifyFailure("someReason");
       handlerCalled = true;
     });
@@ -760,7 +781,7 @@ describe("MicrosoftTeams", () => {
     initializeWithContext("settings");
 
     let handlerCalled = false;
-    microsoftTeams.settings.registerOnSaveHandler(saveEvent => {
+    microsoftTeamsSettings.registerOnSaveHandler(saveEvent => {
       saveEvent.notifySuccess();
       expect(() => saveEvent.notifySuccess()).toThrowError(
         "The SaveEvent may only notify success or failure once."
@@ -799,7 +820,7 @@ describe("MicrosoftTeams", () => {
   it("should successfully open a file preview", () => {
     initializeWithContext("content");
 
-    microsoftTeams.openFilePreview({
+    microsoftTeamsPrivate.openFilePreview({
       entityId: "someEntityId",
       title: "someTitle",
       description: "someDescription",
@@ -905,14 +926,14 @@ describe("MicrosoftTeams", () => {
 
   describe("authentication", () => {
     it("should not allow authentication.authenticate calls before initialization", () => {
-      const authenticationParams: microsoftTeams.authentication.AuthenticateParameters = {
+      const authenticationParams: microsoftTeamsAuthentication.AuthenticateParameters = {
         url: "https://someurl/",
         width: 100,
         height: 200
       };
 
       expect(() =>
-        microsoftTeams.authentication.authenticate(authenticationParams)
+        microsoftTeamsAuthentication.authenticate(authenticationParams)
       ).toThrowError("The library has not yet been initialized");
     });
 
@@ -925,9 +946,9 @@ describe("MicrosoftTeams", () => {
         height: 200
       };
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
+      const taskInfo: TaskInfo = {};
       expect(() =>
-        microsoftTeams.authentication.authenticate(authenticationParams)
+        microsoftTeamsAuthentication.authenticate(authenticationParams)
       ).toThrowError(
         "This call is not allowed in the 'authentication' context"
       );
@@ -941,7 +962,7 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
     });
 
     it("should allow authentication.authenticate calls from settings context", () => {
@@ -952,7 +973,7 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
     });
 
     it("should allow authentication.authenticate calls from remove context", () => {
@@ -963,7 +984,7 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
     });
 
     it("should allow authentication.authenticate calls from task context", () => {
@@ -974,7 +995,7 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
     });
 
     it("should successfully pop up the auth window", () => {
@@ -997,7 +1018,7 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
       expect(windowOpenCalled).toBe(true);
     });
 
@@ -1021,10 +1042,10 @@ describe("MicrosoftTeams", () => {
         width: 100,
         height: 200
       };
-      microsoftTeams.authentication.registerAuthenticationHandlers(
+      microsoftTeamsAuthentication.registerAuthenticationHandlers(
         authenticationParams
       );
-      microsoftTeams.authentication.authenticate();
+      microsoftTeamsAuthentication.authenticate();
       expect(windowOpenCalled).toBe(true);
     });
 
@@ -1052,7 +1073,7 @@ describe("MicrosoftTeams", () => {
         successCallback: (result: string) => (successResult = result),
         failureCallback: (reason: string) => (failureReason = reason)
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
       expect(windowOpenCalled).toBe(true);
 
       childWindow.closed = true;
@@ -1074,7 +1095,7 @@ describe("MicrosoftTeams", () => {
         successCallback: (result: string) => (successResult = result),
         failureCallback: (reason: string) => (failureReason = reason)
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
 
       processMessage({
         origin: tabOrigin,
@@ -1102,7 +1123,7 @@ describe("MicrosoftTeams", () => {
         successCallback: (result: string) => (successResult = result),
         failureCallback: (reason: string) => (failureReason = reason)
       };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+      microsoftTeamsAuthentication.authenticate(authenticationParams);
 
       processMessage({
         origin: tabOrigin,
@@ -1118,76 +1139,78 @@ describe("MicrosoftTeams", () => {
       expect(failureReason).toEqual("someReason");
     });
 
-    it("should successfully pop up the auth window in the desktop client", () => {
-      initializeWithContext("content", "desktop");
+    ["android", "ios", "desktop"].forEach(hostClientType => {
+      it(`should successfully pop up the auth window in the ${hostClientType} client`, () => {
+        initializeWithContext("content", hostClientType);
 
-      let authenticationParams = {
-        url: "https://someUrl",
-        width: 100,
-        height: 200
-      };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+        let authenticationParams = {
+          url: "https://someUrl",
+          width: 100,
+          height: 200
+        };
+        microsoftTeamsAuthentication.authenticate(authenticationParams);
 
-      let message = findMessageByFunc("authentication.authenticate");
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(3);
-      expect(message.args[0]).toBe(
-        authenticationParams.url.toLowerCase() + "/"
-      );
-      expect(message.args[1]).toBe(authenticationParams.width);
-      expect(message.args[2]).toBe(authenticationParams.height);
-    });
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(3);
+        expect(message.args[0]).toBe(
+          authenticationParams.url.toLowerCase() + "/"
+        );
+        expect(message.args[1]).toBe(authenticationParams.width);
+        expect(message.args[2]).toBe(authenticationParams.height);
+      });
 
-    it("should successfully handle auth success in the desktop client", () => {
-      initializeWithContext("content", "desktop");
+      it(`should successfully handle auth success in the ${hostClientType} client`, () => {
+        initializeWithContext("content", hostClientType);
 
-      let successResult: string;
-      let failureReason: string;
-      let authenticationParams = {
-        url: "https://someUrl",
-        width: 100,
-        height: 200,
-        successCallback: (result: string) => (successResult = result),
-        failureCallback: (reason: string) => (failureReason = reason)
-      };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+          url: "https://someUrl",
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => (successResult = result),
+          failureCallback: (reason: string) => (failureReason = reason)
+        };
+        microsoftTeamsAuthentication.authenticate(authenticationParams);
 
-      let message = findMessageByFunc("authentication.authenticate");
-      expect(message).not.toBeNull();
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
 
-      respondToMessage(message, true, "someResult");
+        respondToMessage(message, true, "someResult");
 
-      expect(successResult).toBe("someResult");
-      expect(failureReason).toBeUndefined();
-    });
+        expect(successResult).toBe("someResult");
+        expect(failureReason).toBeUndefined();
+      });
 
-    it("should successfully handle auth failure in the desktop client", () => {
-      initializeWithContext("content", "desktop");
+      it(`should successfully handle auth failure in the ${hostClientType} client`, () => {
+        initializeWithContext("content", hostClientType);
 
-      let successResult: string;
-      let failureReason: string;
-      let authenticationParams = {
-        url: "https://someUrl",
-        width: 100,
-        height: 200,
-        successCallback: (result: string) => (successResult = result),
-        failureCallback: (reason: string) => (failureReason = reason)
-      };
-      microsoftTeams.authentication.authenticate(authenticationParams);
+        let successResult: string;
+        let failureReason: string;
+        let authenticationParams = {
+          url: "https://someUrl",
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => (successResult = result),
+          failureCallback: (reason: string) => (failureReason = reason)
+        };
+        microsoftTeamsAuthentication.authenticate(authenticationParams);
 
-      let message = findMessageByFunc("authentication.authenticate");
-      expect(message).not.toBeNull();
+        let message = findMessageByFunc("authentication.authenticate");
+        expect(message).not.toBeNull();
 
-      respondToMessage(message, false, "someReason");
+        respondToMessage(message, false, "someReason");
 
-      expect(successResult).toBeUndefined();
-      expect(failureReason).toBe("someReason");
+        expect(successResult).toBeUndefined();
+        expect(failureReason).toBe("someReason");
+      });
     });
 
     it("should successfully notify auth success", () => {
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifySuccess("someResult");
+      microsoftTeamsAuthentication.notifySuccess("someResult");
       let message = findMessageByFunc("authentication.authenticate.success");
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
@@ -1207,7 +1230,7 @@ describe("MicrosoftTeams", () => {
 
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifySuccess(
+      microsoftTeamsAuthentication.notifySuccess(
         "someResult",
         "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
       );
@@ -1227,7 +1250,7 @@ describe("MicrosoftTeams", () => {
 
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifySuccess(
+      microsoftTeamsAuthentication.notifySuccess(
         null,
         "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
       );
@@ -1247,7 +1270,7 @@ describe("MicrosoftTeams", () => {
 
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifySuccess(
+      microsoftTeamsAuthentication.notifySuccess(
         "someResult",
         "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook"
       );
@@ -1257,7 +1280,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully notify auth success if callbackUrl is not for win32 Outlook", () => {
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifySuccess(
+      microsoftTeamsAuthentication.notifySuccess(
         "someResult",
         "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
       );
@@ -1270,7 +1293,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully notify auth failure", () => {
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifyFailure("someReason");
+      microsoftTeamsAuthentication.notifyFailure("someReason");
 
       let message = findMessageByFunc("authentication.authenticate.failure");
       expect(message).not.toBeNull();
@@ -1291,7 +1314,7 @@ describe("MicrosoftTeams", () => {
 
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifyFailure(
+      microsoftTeamsAuthentication.notifyFailure(
         "someReason",
         "https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations"
       );
@@ -1309,7 +1332,7 @@ describe("MicrosoftTeams", () => {
 
       initializeWithContext("authentication");
 
-      microsoftTeams.authentication.notifyFailure(
+      microsoftTeamsAuthentication.notifyFailure(
         "someReason",
         "https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration"
       );
@@ -1326,7 +1349,7 @@ describe("MicrosoftTeams", () => {
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
-      microsoftTeams.authentication.notifySuccess("someResult");
+      microsoftTeamsAuthentication.notifySuccess("someResult");
       let message = findMessageByFunc("authentication.authenticate.success");
       expect(message).toBeNull();
       expect(closeWindowSpy).not.toHaveBeenCalled();
@@ -1348,7 +1371,7 @@ describe("MicrosoftTeams", () => {
       let initMessage = findMessageByFunc("initialize");
       expect(initMessage).not.toBeNull();
 
-      microsoftTeams.authentication.notifyFailure("someReason");
+      microsoftTeamsAuthentication.notifyFailure("someReason");
       let message = findMessageByFunc("authentication.authenticate.failure");
       expect(message).toBeNull();
       expect(closeWindowSpy).not.toHaveBeenCalled();
@@ -1371,7 +1394,7 @@ describe("MicrosoftTeams", () => {
       microsoftTeams.getTabInstances(tabInfo => tabInfo);
       microsoftTeams.getTabInstances(
         tabInfo => tabInfo,
-        {} as microsoftTeams.TabInstanceParameters
+        {} as TabInstanceParameters
       );
     });
   });
@@ -1383,7 +1406,7 @@ describe("MicrosoftTeams", () => {
       microsoftTeams.getMruTabInstances(tabInfo => tabInfo);
       microsoftTeams.getMruTabInstances(
         tabInfo => tabInfo,
-        {} as microsoftTeams.TabInstanceParameters
+        {} as TabInstanceParameters
       );
     });
   });
@@ -1391,7 +1414,7 @@ describe("MicrosoftTeams", () => {
   describe("getUserJoinedTeams", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-        microsoftTeams.getUserJoinedTeams(() => {
+        microsoftTeamsPrivate.getUserJoinedTeams(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -1401,11 +1424,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        { favoriteTeamsOnly: true } as microsoftTeams.TeamInstanceParameters
+        { favoriteTeamsOnly: true } as TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1418,11 +1441,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        { favoriteTeamsOnly: false } as microsoftTeams.TeamInstanceParameters
+        { favoriteTeamsOnly: false } as TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1435,7 +1458,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(userJoinedTeamsInformation => {
+      microsoftTeamsPrivate.getUserJoinedTeams(userJoinedTeamsInformation => {
         callbackCalled = true;
       });
 
@@ -1449,11 +1472,11 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getUserJoinedTeams(
+      microsoftTeamsPrivate.getUserJoinedTeams(
         userJoinedTeamsInformation => {
           callbackCalled = true;
         },
-        {} as microsoftTeams.TeamInstanceParameters
+        {} as TeamInstanceParameters
       );
 
       let getUserJoinedTeamsMessage = findMessageByFunc("getUserJoinedTeams");
@@ -1465,8 +1488,8 @@ describe("MicrosoftTeams", () => {
 
   describe("tasks.startTask", () => {
     it("should not allow calls before initialization", () => {
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "The library has not yet been initialized"
       );
     });
@@ -1474,8 +1497,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from settings context", () => {
       initializeWithContext("settings");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'settings' context"
       );
     });
@@ -1483,8 +1506,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from authentication context", () => {
       initializeWithContext("authentication");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'authentication' context"
       );
     });
@@ -1492,8 +1515,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from remove context", () => {
       initializeWithContext("remove");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'remove' context"
       );
     });
@@ -1501,8 +1524,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from task context", () => {
       initializeWithContext("task");
 
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      expect(() => microsoftTeams.tasks.startTask(taskInfo)).toThrowError(
+      const taskInfo: TaskInfo = {};
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
         "This call is not allowed in the 'task' context"
       );
     });
@@ -1510,17 +1533,17 @@ describe("MicrosoftTeams", () => {
     it("should pass along entire TaskInfo parameter", () => {
       initializeWithContext("content");
 
-      const taskInfo: microsoftTeams.TaskInfo = {
+      const taskInfo: TaskInfo = {
         card: "someCard",
         fallbackUrl: "someFallbackUrl",
-        height: microsoftTeams.TaskModuleDimension.Large,
-        width: microsoftTeams.TaskModuleDimension.Large,
+        height: TaskModuleDimension.Large,
+        width: TaskModuleDimension.Large,
         title: "someTitle",
         url: "someUrl",
         completionBotId: "someCompletionBotId"
       };
 
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      tasks.startTask(taskInfo, (err, result) => {
         return;
       });
 
@@ -1533,8 +1556,8 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled = false;
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      const taskInfo: TaskInfo = {};
+      tasks.startTask(taskInfo, (err, result) => {
         expect(err).toBeNull();
         expect(result).toBe("someResult");
         callbackCalled = true;
@@ -1550,8 +1573,8 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled = false;
-      const taskInfo: microsoftTeams.TaskInfo = {};
-      microsoftTeams.tasks.startTask(taskInfo, (err, result) => {
+      const taskInfo: TaskInfo = {};
+      tasks.startTask(taskInfo, (err, result) => {
         expect(err).toBe("someError");
         expect(result).toBeUndefined();
         callbackCalled = true;
@@ -1564,9 +1587,38 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("tasks.updateTask", () => {
+    it("should not allow calls before initialization", () => {
+      // tslint:disable-next-line:no-any
+      expect(() => tasks.updateTask({} as any)).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should successfully pass taskInfo", () => {
+      initializeWithContext("task");
+      const taskInfo = { width: 10, height: 10 };
+
+      tasks.updateTask(taskInfo);
+
+      const updateTaskMessage = findMessageByFunc("tasks.updateTask");
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([taskInfo]);
+    });
+
+    it("should throw an error if extra properties are provided", () => {
+      initializeWithContext("task");
+      const taskInfo = { width: 10, height: 10, title: "anything" };
+
+      expect(() => tasks.updateTask(taskInfo)).toThrowError(
+        "updateTask requires a taskInfo argument containing only width and height"
+      );
+    });
+  });
+
   describe("tasks.submitTask", () => {
     it("should not allow calls before initialization", () => {
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "The library has not yet been initialized"
       );
     });
@@ -1574,7 +1626,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from settings context", () => {
       initializeWithContext("settings");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'settings' context"
       );
     });
@@ -1582,7 +1634,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from authentication context", () => {
       initializeWithContext("authentication");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'authentication' context"
       );
     });
@@ -1590,7 +1642,7 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls from remove context", () => {
       initializeWithContext("remove");
 
-      expect(() => microsoftTeams.tasks.submitTask()).toThrowError(
+      expect(() => tasks.submitTask()).toThrowError(
         "This call is not allowed in the 'remove' context"
       );
     });
@@ -1598,7 +1650,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully pass result and appIds parameters when called from task context", () => {
       initializeWithContext("task");
 
-      microsoftTeams.tasks.submitTask("someResult", [
+      tasks.submitTask("someResult", [
         "someAppId",
         "someOtherAppId"
       ]);
@@ -1614,7 +1666,7 @@ describe("MicrosoftTeams", () => {
     it("should handle a single string passed as appIds parameter", () => {
       initializeWithContext("task");
 
-      microsoftTeams.tasks.submitTask("someResult", "someAppId");
+      tasks.submitTask("someResult", "someAppId");
 
       const submitTaskMessage = findMessageByFunc("tasks.completeTask");
       expect(submitTaskMessage).not.toBeNull();
@@ -1626,7 +1678,7 @@ describe("MicrosoftTeams", () => {
     it("should successfully pass message and provided arguments", () => {
       initializeWithContext("content");
 
-      const id = microsoftTeams.sendCustomMessage("customMessage", [
+      const id = microsoftTeamsPrivate.sendCustomMessage("customMessage", [
         "arg1",
         2,
         3.0,
@@ -1643,7 +1695,7 @@ describe("MicrosoftTeams", () => {
   describe("getChatMembers", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-        microsoftTeams.getChatMembers(() => {
+        microsoftTeamsPrivate.getChatMembers(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -1653,7 +1705,7 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let callbackCalled: boolean = false;
-      microsoftTeams.getChatMembers(chatMembersInformation => {
+      microsoftTeamsPrivate.getChatMembers(chatMembersInformation => {
         callbackCalled = true;
       });
 
@@ -1661,6 +1713,238 @@ describe("MicrosoftTeams", () => {
       expect(getChatMembersMessage).not.toBeNull();
       respondToMessage(getChatMembersMessage, {});
       expect(callbackCalled).toBe(true);
+    });
+  });
+
+  describe("registerBeforeUnloadHandler", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeams.registerBeforeUnloadHandler(() => {
+          return false;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully register a before unload handler", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      microsoftTeams.registerBeforeUnloadHandler(() => {
+        handlerInvoked = true;
+        return false;
+      });
+
+      sendMessage("beforeUnload");
+
+      expect(handlerInvoked).toBe(true);
+    });
+
+    it("should call readyToUnload automatically when no before unload handler is registered", () => {
+      initializeWithContext("content");
+
+      sendMessage("beforeUnload");
+
+      let readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).not.toBeNull();
+    });
+
+    it("should successfully register a before unload handler and not call readyToUnload if it returns true", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      let readyToUnloadFunc: () => void;
+      microsoftTeams.registerBeforeUnloadHandler(readyToUnload => {
+        readyToUnloadFunc = readyToUnload;
+        handlerInvoked = true;
+        return true;
+      });
+
+      sendMessage("beforeUnload");
+
+      let readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).toBeNull();
+      expect(handlerInvoked).toBe(true);
+
+      readyToUnloadFunc();
+      readyToUnloadMessage = findMessageByFunc("readyToUnload");
+      expect(readyToUnloadMessage).not.toBeNull();
+    });
+  });
+
+  describe("getConfigSetting", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        microsoftTeamsPrivate.getConfigSetting(() => {
+          return;
+        }, "key")
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should allow a valid parameter", () => {
+      initializeWithContext("content");
+
+      let callbackCalled: boolean = false;
+      microsoftTeamsPrivate.getConfigSetting(
+        (value: string) => {
+          callbackCalled = true;
+        }, "key"
+      );
+
+      let getConfigSettingMessage = findMessageByFunc("getConfigSetting");
+      expect(getConfigSettingMessage).not.toBeNull();
+      respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
+
+  describe("enterFullscreen", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should not allow calls from task context", () => {
+      initializeWithContext("task");
+
+      expect(() => microsoftTeamsPrivate.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'task' context"
+      );
+    });
+
+    it("should successfully enter fullscreen", () => {
+      initializeWithContext("content");
+
+      microsoftTeamsPrivate.enterFullscreen();
+
+      const enterFullscreenMessage = findMessageByFunc("enterFullscreen");
+      expect(enterFullscreenMessage).not.toBeNull();
+    });
+  });
+
+  describe("exitFullscreen", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should not allow calls from authentication context", () => {
+      initializeWithContext("authentication");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context"
+      );
+    });
+
+    it("should not allow calls from remove context", () => {
+      initializeWithContext("remove");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'remove' context"
+      );
+    });
+
+    it("should not allow calls from task context", () => {
+      initializeWithContext("task");
+
+      expect(() => microsoftTeamsPrivate.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'task' context"
+      );
+    });
+
+    it("should successfully exit fullscreen", () => {
+      initializeWithContext("content");
+
+      microsoftTeamsPrivate.exitFullscreen();
+
+      const exitFullscreenMessage = findMessageByFunc("exitFullscreen");
+      expect(exitFullscreenMessage).not.toBeNull();
+    });
+  });
+
+  describe("conversations.openConversation", () => {
+    it("should not allow calls before initialization", () => {
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+      expect(() => conversations.openConversation(conversationRequest)).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+      expect(() => conversations.openConversation(conversationRequest)).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
+    });
+
+    it("should successfully pass conversationRequest", () => {
+      initializeWithContext("content");
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle"
+      };
+
+      conversations.openConversation(conversationRequest);
+
+      const openConversationMessage = findMessageByFunc("conversations.openConversation");
+      expect(openConversationMessage).not.toBeNull();
+      expect(openConversationMessage.args).toEqual([conversationRequest]);
+    });
+  });
+
+  describe("conversations.closeConversation", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() => conversations.closeConversation()).toThrowError(
+        "The library has not yet been initialized"
+      );
+    });
+
+    it("should not allow calls from settings context", () => {
+      initializeWithContext("settings");
+      expect(() => conversations.closeConversation()).toThrowError(
+        "This call is not allowed in the 'settings' context"
+      );
     });
   });
 
