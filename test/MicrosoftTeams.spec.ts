@@ -198,12 +198,17 @@ describe("MicrosoftTeams", () => {
   const supportedDomains = [
     "https://teams.microsoft.com",
     "https://teams.microsoft.us",
+    "https://gov.teams.microsoft.us",
+    "https://dod.teams.microsoft.us",
     "https://int.teams.microsoft.com",
     "https://devspaces.skype.com",
     "http://dev.local",
     "https://microsoft.sharepoint.com",
     "https://msft.spoppe.com",
-    "https://microsoft.sharepoint-df.com"
+    "https://microsoft.sharepoint-df.com",
+    "https://microsoft.sharepointonline.com",
+    "https://outlook.office.com",
+    "https://outlook-sdf.office.com"
   ];
 
   supportedDomains.forEach(supportedDomain => {

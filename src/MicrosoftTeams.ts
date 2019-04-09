@@ -34,6 +34,8 @@ const version = "1.4.1";
 const validOrigins = [
   "https://teams.microsoft.com",
   "https://teams.microsoft.us",
+  "https://gov.teams.microsoft.us",
+  "https://dod.teams.microsoft.us",
   "https://int.teams.microsoft.com",
   "https://devspaces.skype.com",
   "https://ssauth.skype.com",
