@@ -1,4 +1,4 @@
-import { processMessage, ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
+import { processMessage, ensureInitialized, sendMessageRequest, handleParentMessage } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
@@ -36,7 +36,7 @@ export function initialize(hostWindow: any = window): void {
 
   if (!GlobalVars.parentWindow) {
     GlobalVars.isFramelessWindow = true;
-    (window as ExtendedWindow).onNativeMessage = GlobalVars.handleParentMessage;
+    (window as ExtendedWindow).onNativeMessage = handleParentMessage;
   } else {
     // For iFrame scenario, add listener to listen 'message'
     GlobalVars.currentWindow.addEventListener("message", messageListener, false);
