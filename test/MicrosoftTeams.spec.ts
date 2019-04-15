@@ -394,17 +394,36 @@ describe("MicrosoftTeams", () => {
     expect(getContextMessage).not.toBeNull();
 
     let expectedContext: Context = {
-      locale: "someLocale",
       groupId: "someGroupId",
+      teamId: "someTeamId",
+      teamName: "someTeamName",
       channelId: "someChannelId",
+      channelName: "someChannelName",
       entityId: "someEntityId",
+      subEntityId: "someSubEntityId",
+      locale: "someLocale",
+      upn: "someUpn",
+      tid: "someTid",
+      theme: "someTheme",
       isFullScreen: true,
       teamType: TeamType.Staff,
       teamSiteUrl: "someSiteUrl",
+      teamSiteDomain: "someTeamSiteDomain",
+      teamSitePath: "someTeamSitePath",
+      channelRelativeUrl: "someChannelRelativeUrl",
       sessionId: "someSessionId",
       userTeamRole: UserTeamRole.Admin,
       chatId: "someChatId",
-      hostClientType: HostClientType.web
+      loginHint: "someLoginHint",
+      userPrincipalName: "someUserPrincipalName",
+      userObjectId: "someUserObjectId",
+      isTeamArchived: false,
+      hostClientType: HostClientType.web,
+      sharepoint: {},
+      tenantSKU: "someTenantSKU",
+      userLicenseType: "someUserLicenseType",
+      parentMessageId: "someParentMessageId",
+      ringId: "someRingId"
     };
 
     respondToMessage(getContextMessage, expectedContext);
