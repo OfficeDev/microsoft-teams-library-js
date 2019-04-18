@@ -291,6 +291,18 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 }
 
 /**
+ * execute deep link API.
+ * @param deepLink deep link.
+ */
+export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
+  ensureInitialized(frameContexts.content);
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
+    deepLink
+  ]);
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+}
+
+/**
  * Navigates the Microsoft Teams app to the specified tab instance.
  * @param tabInstance The tab instance to navigate to.
  */
@@ -304,3 +316,4 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   const errorMessage = "Invalid internalTabInstanceId and/or channelId were/was provided";
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
+

@@ -98,21 +98,6 @@ export function showNotification(
  * @private
  * Hide from docs.
  * ------
- * execute deep link API.
- * @param deepLink deep link.
- */
-export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content);
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
-    deepLink
-  ]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  */
