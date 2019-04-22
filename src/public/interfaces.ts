@@ -206,9 +206,19 @@ export interface Context {
   teamType?: TeamType;
 
   /**
-   * The root SharePoint folder associated with the team.
+   * The root SharePoint site associated with the team.
    */
   teamSiteUrl?: string;
+
+  /**
+   * The domain of the root SharePoint site associated with the team.
+   */
+  teamSiteDomain?: string;
+
+  /**
+   * The relative path to the SharePoint site associated with the team.
+   */
+  teamSitePath?: string;
 
   /**
    * The relative path to the SharePoint folder associated with the channel.
@@ -268,7 +278,7 @@ export interface Context {
   hostClientType?: HostClientType;
 
   /**
-   * SharePoint context
+   * SharePoint context. This is only available when hosted in SharePoint.
    */
   sharepoint?: any;
 
@@ -283,8 +293,13 @@ export interface Context {
   userLicenseType?: string;
 
   /**
+   * The ID of the parent message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  parentMessageId?: string;
+
+  /**
    * Current ring ID
-   * ------
    */
   ringId?: string;
 }

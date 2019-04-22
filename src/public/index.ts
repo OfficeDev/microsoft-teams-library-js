@@ -16,6 +16,7 @@ export {
 } from "./interfaces";
 export {
   enablePrintCapability,
+  executeDeepLink,
   getContext,
   getMruTabInstances,
   getTabInstances,

@@ -10,7 +10,6 @@ export {
 } from "./interfaces";
 export {
   enterFullscreen,
-  executeDeepLinkAsync as executeDeepLink,
   exitFullscreen,
   getChatMembersAsync as getChatMembers,
   getConfigSettingAsync as getConfigSetting,
