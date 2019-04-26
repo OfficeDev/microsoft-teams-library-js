@@ -123,10 +123,12 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var version = "1.4.1";
+var version = "1.4.2";
 var validOrigins = [
     "https://teams.microsoft.com",
     "https://teams.microsoft.us",
+    "https://gov.teams.microsoft.us",
+    "https://dod.teams.microsoft.us",
     "https://int.teams.microsoft.com",
     "https://devspaces.skype.com",
     "https://ssauth.skype.com",
