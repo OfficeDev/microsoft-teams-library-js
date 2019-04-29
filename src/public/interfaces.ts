@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, PageLoadFailReason } from "./constants";
 
 /**
 * Represents information about tabs for an app
@@ -395,6 +395,10 @@ export interface OpenConversationRequest {
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }
 
+export interface IAppLoadFailReason {
+  reason: PageLoadFailReason;
+  message: string;
+}
 
 export interface OnReadyEvent {
   /**
@@ -405,5 +409,5 @@ export interface OnReadyEvent {
    * Indicates that creation of the underlying resource failed and that the settings cannot be saved.
    * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
    */
-  notifyFailure(reason?: string): void;
+  notifyFailure(appLoadFailReason: IAppLoadFailReason): void;
 }

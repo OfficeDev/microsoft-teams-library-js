@@ -12,7 +12,8 @@ export {
   TabInstance,
   TabInstanceParameters,
   TaskInfo,
-  TeamInformation
+  TeamInformation,
+  OnReadyEvent
 } from "./interfaces";
 export {
   enablePrintCapability,

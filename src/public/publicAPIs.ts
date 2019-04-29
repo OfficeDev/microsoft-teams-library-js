@@ -3,7 +3,7 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, OnReadyEvent } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, OnReadyEvent, IAppLoadFailReason } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
 import { PageLoadFailReason } from "./constants";
 
@@ -323,10 +323,10 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 export class OnAppReadyEvent implements OnReadyEvent {
   public notifySuccess(): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [version]);
+    sendMessageRequest(GlobalVars.parentWindow, "onTabShow.success", [version]);
   } 
-  public notifyFailure(reason: PageLoadFailReason, errorMessage?: string): void {
+  public notifyFailure(appLoadFailReason: IAppLoadFailReason): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [reason, errorMessage]);
+    sendMessageRequest(GlobalVars.parentWindow, "onTabShow.failure", [appLoadFailReason.reason, appLoadFailReason.message]);
   }
 }
