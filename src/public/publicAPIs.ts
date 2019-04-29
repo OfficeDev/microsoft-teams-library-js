@@ -3,19 +3,20 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, OnReadyEvent } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
+import { PageLoadFailReason } from "./constants";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window): void {
+export function initialize(hostWindow: any = window): OnAppReadyEvent {
   if (GlobalVars.initializeCalled) {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
-    return;
+    return new OnAppReadyEvent();
   }
 
   GlobalVars.initializeCalled = true;
@@ -89,6 +90,8 @@ export function initialize(hostWindow: any = window): void {
     GlobalVars.hostClientType = null;
     GlobalVars.isFramelessWindow = false;
   };
+
+  return new OnAppReadyEvent();
 }
 
 /**
@@ -317,3 +320,13 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
+export class OnAppReadyEvent implements OnReadyEvent {
+  public notifySuccess(): void {
+    ensureInitialized();
+    sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [version]);
+  } 
+  public notifyFailure(reason: PageLoadFailReason, errorMessage?: string): void {
+    ensureInitialized();
+    sendMessageRequest(GlobalVars.parentWindow, "navigateToTab", [reason, errorMessage]);
+  }
+}

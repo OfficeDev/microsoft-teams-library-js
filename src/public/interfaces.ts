@@ -394,3 +394,16 @@ export interface OpenConversationRequest {
   */
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }
+
+
+export interface OnReadyEvent {
+  /**
+   * Indicates that the underlying resource has been created and the settings can be saved.
+   */
+  notifySuccess(): void;
+  /**
+   * Indicates that creation of the underlying resource failed and that the settings cannot be saved.
+   * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+   */
+  notifyFailure(reason?: string): void;
+}
