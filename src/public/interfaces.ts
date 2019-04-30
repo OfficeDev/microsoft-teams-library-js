@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, PageLoadFailReason } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, AppLoadFailReasonTypes } from "./constants";
 
 /**
 * Represents information about tabs for an app
@@ -396,11 +396,11 @@ export interface OpenConversationRequest {
 }
 
 export interface IAppLoadFailReason {
-  reason: PageLoadFailReason;
-  message: string;
+  reason: AppLoadFailReasonTypes;
+  message?: string;
 }
 
-export interface OnReadyEvent {
+export interface IAppLoadEvent {
   /**
    * Indicates that the underlying resource has been created and the settings can be saved.
    */

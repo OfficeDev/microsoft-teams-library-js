@@ -3,95 +3,93 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, OnReadyEvent, IAppLoadFailReason } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppLoadEvent, IAppLoadFailReason } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
-import { PageLoadFailReason } from "./constants";
+import { AppLoadFailReasonTypes } from "./constants";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window): OnAppReadyEvent {
-  if (GlobalVars.initializeCalled) {
-    // Independent components might not know whether the SDK is initialized so might call it to be safe.
-    // Just no-op if that happens to make it easier to use.
-    return new OnAppReadyEvent();
-  }
-
-  GlobalVars.initializeCalled = true;
+export function initialize(hostWindow: any = window): AppLoadEvent {
+  // Independent components might not know whether the SDK is initialized so might call it to be safe.
+  // Just no-op if that happens to make it easier to use.
+  if (!GlobalVars.initializeCalled) {
+    GlobalVars.initializeCalled = true;
 
 
-  // Undocumented field used to mock the window for unit tests
-  GlobalVars.currentWindow = hostWindow;
+    // Undocumented field used to mock the window for unit tests
+    GlobalVars.currentWindow = hostWindow;
 
-  // Listen for messages post to our window
-  const messageListener = (evt: MessageEvent) => processMessage(evt);
+    // Listen for messages post to our window
+    const messageListener = (evt: MessageEvent) => processMessage(evt);
 
-  // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-  // it's the window that opened us (i.e., window.opener)
-  GlobalVars.parentWindow =
-    GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-      ? GlobalVars.currentWindow.parent
-      : GlobalVars.currentWindow.opener;
+    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
+    // it's the window that opened us (i.e., window.opener)
+    GlobalVars.parentWindow =
+      GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
+        ? GlobalVars.currentWindow.parent
+        : GlobalVars.currentWindow.opener;
 
-  if (!GlobalVars.parentWindow) {
-    GlobalVars.isFramelessWindow = true;
-    (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-  } else {
-    // For iFrame scenario, add listener to listen 'message'
-    GlobalVars.currentWindow.addEventListener("message", messageListener, false);
-  }
+    if (!GlobalVars.parentWindow) {
+      GlobalVars.isFramelessWindow = true;
+      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
+    } else {
+      // For iFrame scenario, add listener to listen 'message'
+      GlobalVars.currentWindow.addEventListener("message", messageListener, false);
+    }
 
-  try {
-    // Send the initialized message to any origin, because at this point we most likely don't know the origin
-    // of the parent window, and this message contains no data that could pose a security risk.
-    GlobalVars.parentOrigin = "*";
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "initialize", [version]);
-    GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
-      GlobalVars.frameContext = context;
-      GlobalVars.hostClientType = clientType;
+    try {
+      // Send the initialized message to any origin, because at this point we most likely don't know the origin
+      // of the parent window, and this message contains no data that could pose a security risk.
+      GlobalVars.parentOrigin = "*";
+      const messageId = sendMessageRequest(GlobalVars.parentWindow, "initialize", [version]);
+      GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
+        GlobalVars.frameContext = context;
+        GlobalVars.hostClientType = clientType;
+      };
+    } finally {
+      GlobalVars.parentOrigin = null;
+    }
+
+    // Undocumented function used to clear state between unit tests
+    this._uninitialize = () => {
+      if (GlobalVars.frameContext) {
+        registerOnThemeChangeHandler(null);
+        registerFullScreenHandler(null);
+        registerBackButtonHandler(null);
+        registerBeforeUnloadHandler(null);
+      }
+
+      if (GlobalVars.frameContext === frameContexts.settings) {
+        settings.registerOnSaveHandler(null);
+      }
+
+      if (GlobalVars.frameContext === frameContexts.remove) {
+        settings.registerOnRemoveHandler(null);
+      }
+
+      if (!GlobalVars.isFramelessWindow) {
+        GlobalVars.currentWindow.removeEventListener("message", messageListener, false);
+      }
+
+      GlobalVars.initializeCalled = false;
+      GlobalVars.parentWindow = null;
+      GlobalVars.parentOrigin = null;
+      GlobalVars.parentMessageQueue = [];
+      GlobalVars.childWindow = null;
+      GlobalVars.childOrigin = null;
+      GlobalVars.childMessageQueue = [];
+      GlobalVars.nextMessageId = 0;
+      GlobalVars.callbacks = {};
+      GlobalVars.frameContext = null;
+      GlobalVars.hostClientType = null;
+      GlobalVars.isFramelessWindow = false;
     };
-  } finally {
-    GlobalVars.parentOrigin = null;
   }
 
-  // Undocumented function used to clear state between unit tests
-  this._uninitialize = () => {
-    if (GlobalVars.frameContext) {
-      registerOnThemeChangeHandler(null);
-      registerFullScreenHandler(null);
-      registerBackButtonHandler(null);
-      registerBeforeUnloadHandler(null);
-    }
-
-    if (GlobalVars.frameContext === frameContexts.settings) {
-      settings.registerOnSaveHandler(null);
-    }
-
-    if (GlobalVars.frameContext === frameContexts.remove) {
-      settings.registerOnRemoveHandler(null);
-    }
-
-    if (!GlobalVars.isFramelessWindow) {
-      GlobalVars.currentWindow.removeEventListener("message", messageListener, false);
-    }
-
-    GlobalVars.initializeCalled = false;
-    GlobalVars.parentWindow = null;
-    GlobalVars.parentOrigin = null;
-    GlobalVars.parentMessageQueue = [];
-    GlobalVars.childWindow = null;
-    GlobalVars.childOrigin = null;
-    GlobalVars.childMessageQueue = [];
-    GlobalVars.nextMessageId = 0;
-    GlobalVars.callbacks = {};
-    GlobalVars.frameContext = null;
-    GlobalVars.hostClientType = null;
-    GlobalVars.isFramelessWindow = false;
-  };
-
-  return new OnAppReadyEvent();
+  return new AppLoadEvent();
 }
 
 /**
@@ -320,11 +318,11 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
-export class OnAppReadyEvent implements OnReadyEvent {
+export class AppLoadEvent implements IAppLoadEvent {
   public notifySuccess(): void {
     ensureInitialized();
     sendMessageRequest(GlobalVars.parentWindow, "onTabShow.success", [version]);
-  } 
+  }
   public notifyFailure(appLoadFailReason: IAppLoadFailReason): void {
     ensureInitialized();
     sendMessageRequest(GlobalVars.parentWindow, "onTabShow.failure", [appLoadFailReason.reason, appLoadFailReason.message]);
