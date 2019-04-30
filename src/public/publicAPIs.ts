@@ -3,21 +3,20 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppLoadEvent, IAppLoadFailReason } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppInitializationEvent, IAppInitializationFailedRequest } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
-import { AppLoadFailReasonTypes } from "./constants";
+import { AppInitializationFailedReason } from "./constants";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window): AppLoadEvent {
+export function initialize(hostWindow: any = window): AppInitializationEvent {
   // Independent components might not know whether the SDK is initialized so might call it to be safe.
   // Just no-op if that happens to make it easier to use.
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
-
 
     // Undocumented field used to mock the window for unit tests
     GlobalVars.currentWindow = hostWindow;
@@ -89,7 +88,7 @@ export function initialize(hostWindow: any = window): AppLoadEvent {
     };
   }
 
-  return new AppLoadEvent();
+  return new AppInitializationEvent();
 }
 
 /**
@@ -318,13 +317,13 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
-export class AppLoadEvent implements IAppLoadEvent {
+export class AppInitializationEvent implements IAppInitializationEvent {
   public notifySuccess(): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "onTabShow.success", [version]);
+    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.success", [version]);
   }
-  public notifyFailure(appLoadFailReason: IAppLoadFailReason): void {
+  public notifyFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "onTabShow.failure", [appLoadFailReason.reason, appLoadFailReason.message]);
+    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.failure", [appInitializationFailedRequest.reason, appInitializationFailedRequest.message]);
   }
 }

@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, AppLoadFailReasonTypes } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, AppInitializationFailedReason } from "./constants";
 
 /**
 * Represents information about tabs for an app
@@ -395,19 +395,19 @@ export interface OpenConversationRequest {
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }
 
-export interface IAppLoadFailReason {
-  reason: AppLoadFailReasonTypes;
+export interface IAppInitializationFailedRequest {
+  reason: AppInitializationFailedReason;
   message?: string;
 }
 
-export interface IAppLoadEvent {
+export interface IAppInitializationEvent {
   /**
-   * Indicates that the underlying resource has been created and the settings can be saved.
+   * Indicates that the App initialization success and app is ready to interact.
    */
   notifySuccess(): void;
   /**
-   * Indicates that creation of the underlying resource failed and that the settings cannot be saved.
-   * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+   * Indicates that app initialization failed.
+   * @param appInitializationFailedRequest Specifies a reason for the failure with optional message.
    */
-  notifyFailure(appLoadFailReason: IAppLoadFailReason): void;
+  notifyFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void;
 }

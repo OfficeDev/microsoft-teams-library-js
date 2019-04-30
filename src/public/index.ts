@@ -13,7 +13,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
-  IAppLoadEvent
+  IAppInitializationEvent
 } from "./interfaces";
 export {
   enablePrintCapability,
