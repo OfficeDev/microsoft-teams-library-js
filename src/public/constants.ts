@@ -32,3 +32,9 @@ export const enum TaskModuleDimension {
   Medium = "medium",
   Small = "small"
 }
+
+export const enum AppInitializationFailedReason {
+  AuthFailed = "AuthFailed",
+  Timeout = "Timeout",
+  Other = "Other"
+}
