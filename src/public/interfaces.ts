@@ -399,15 +399,3 @@ export interface IAppInitializationFailedRequest {
   reason: AppInitializationFailedReason;
   message?: string;
 }
-
-export interface IAppInitializationEvent {
-  /**
-   * Indicates that the App initialization success and app is ready to interact.
-   */
-  notifySuccess(): void;
-  /**
-   * Indicates that app initialization failed.
-   * @param appInitializationFailedRequest Specifies a reason for the failure with optional message.
-   */
-  notifyFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void;
-}

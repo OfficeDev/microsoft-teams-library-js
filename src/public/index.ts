@@ -13,7 +13,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
-  IAppInitializationEvent
+  IAppInitializationFailedRequest
 } from "./interfaces";
 export {
   enablePrintCapability,
@@ -25,6 +25,9 @@ export {
   navigateBack,
   navigateCrossDomain,
   navigateToTab,
+  notifyAppLoad,
+  notifyAppInitializationSuccess,
+  notifyAppInitializationFailure,
   print,
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
