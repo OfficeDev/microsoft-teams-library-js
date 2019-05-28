@@ -3,7 +3,7 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppInitializationFailedRequest } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -11,7 +11,7 @@ import { getGenericOnCompleteHandler } from "../internal/utils";
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window) {
+export function initialize(hostWindow: any = window): void {
   // Independent components might not know whether the SDK is initialized so might call it to be safe.
   // Just no-op if that happens to make it easier to use.
   if (!GlobalVars.initializeCalled) {
@@ -86,30 +86,6 @@ export function initialize(hostWindow: any = window) {
       GlobalVars.isFramelessWindow = false;
     };
   }
-}
-
-/**
- * To notify app loaded to hide loading indicator
- */
-export function notifyAppLoad(): void {
-  ensureInitialized();
-  sendMessageRequest(GlobalVars.parentWindow, "appLoadCompleted", [version]);
-}
-
-/**
- * To notify app Initialization successs and ready for user interaction
- */
-export function notifyAppInitializationSuccess(): void {
-  ensureInitialized();
-  sendMessageRequest(GlobalVars.parentWindow, "appInitialization.success", [version]);
-}
-
-/**
- * To notify app Initialization failed
- */
-export function notifyAppInitializationFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void {
-  ensureInitialized();
-  sendMessageRequest(GlobalVars.parentWindow, "appInitialization.failure", [appInitializationFailedRequest.reason, appInitializationFailedRequest.message]);
 }
 
 /**

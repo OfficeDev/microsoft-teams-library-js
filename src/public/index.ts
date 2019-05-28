@@ -1,3 +1,4 @@
+export { appInitialization } from "./appInitialization";
 export { authentication } from "./authentication";
 export {
   HostClientType,
@@ -12,8 +13,7 @@ export {
   TabInstance,
   TabInstanceParameters,
   TaskInfo,
-  TeamInformation,
-  IAppInitializationFailedRequest
+  TeamInformation
 } from "./interfaces";
 export {
   enablePrintCapability,
@@ -25,9 +25,6 @@ export {
   navigateBack,
   navigateCrossDomain,
   navigateToTab,
-  notifyAppLoad,
-  notifyAppInitializationSuccess,
-  notifyAppInitializationFailure,
   print,
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
