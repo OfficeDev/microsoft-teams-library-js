@@ -6,6 +6,7 @@ import { settings } from "./settings";
 import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppInitializationEvent, IAppInitializationFailedRequest } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
 import { AppInitializationFailedReason } from "./constants";
+import { registerGetLogHandler } from "../private/privateAPIs";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -59,6 +60,7 @@ export function initialize(hostWindow: any = window): AppInitializationEvent {
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerGetLogHandler(null);
       }
 
       if (GlobalVars.frameContext === frameContexts.settings) {

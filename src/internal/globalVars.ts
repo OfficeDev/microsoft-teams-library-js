@@ -26,4 +26,5 @@ export class GlobalVars {
   public static changeSettingsHandler: () => void;
   public static onStartConversationHandler: (sunEntityId: string, conversationId: string) => void;
   public static onCloseConversationHandler: (sunEntityId: string, conversationId?: string) => void;
+  public static getLogHandler: () => string;
 }

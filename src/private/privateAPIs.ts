@@ -164,3 +164,30 @@ export function getConfigSetting(
   ]);
   GlobalVars.callbacks[messageId] = callback;
 }
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Registers a handler for getting app log. App should call the logMessages method to send the log to Teams client
+ * @param handler The handler to invoke to get the app log
+ */
+export function registerGetLogHandler(handler: () => string): void {
+  ensureInitialized();
+
+  GlobalVars.getLogHandler = handler;
+  handler && sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["getLog"]);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Sends the log mesasges to the Teams client. Should be used with registerGetLogHandler
+ * @param log app log to be sent to Teams client
+ */
+export function logMessages(log: string): void {
+  ensureInitialized();
+
+  sendMessageRequest(GlobalVars.parentWindow, "logMessages", [log]);
+}

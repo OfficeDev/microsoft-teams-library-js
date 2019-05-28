@@ -1972,6 +1972,57 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("registerGetLogHandler", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+      microsoftTeamsPrivate.registerGetLogHandler(() => {
+          return "";
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully register a get log handler", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      microsoftTeamsPrivate.registerGetLogHandler(() => {
+        handlerInvoked = true;
+        return "";
+      });
+
+      sendMessage("getLog");
+
+      expect(handlerInvoked).toBe(true);
+    });
+
+    it("should successfully register a get log handler and call logMessages", () => {
+      initializeWithContext("content");
+
+      let handlerInvoked = false;
+      const log: string = "1/1/2019 Info - App initialized";
+      microsoftTeamsPrivate.registerGetLogHandler(() => {
+        handlerInvoked = true;
+        return log;
+      });
+
+      sendMessage("getLog");
+
+      const logMessagesMessage = findMessageByFunc("logMessages");
+      expect(logMessagesMessage).not.toBeNull();
+      expect(logMessagesMessage.args).toEqual([log]);
+      expect(handlerInvoked).toBe(true);
+    });
+
+    it("should not call logMessages when no get log handler is registered", () => {
+      initializeWithContext("content");
+
+      sendMessage("getLog");
+
+      const logMessagesMessage = findMessageByFunc("logMessages");
+      expect(logMessagesMessage).toBeNull();
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
