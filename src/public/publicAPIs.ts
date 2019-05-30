@@ -188,6 +188,7 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
 }
 
 /**
+ * @private
  * Registers a handler to be called before the page is unloaded.
  * @param handler The handler to invoke before the page is unloaded. If this handler returns true the page should
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
