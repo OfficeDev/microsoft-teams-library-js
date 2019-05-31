@@ -319,7 +319,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @param query query to send to bot.
  * @param callback callback to invoke when data is retrieved from bot
  */
-export function sendQueryToBot(query: string, callback?: () => void): void{ // void for now
+export function sendQueryToBot(query: string, callback?: () => void): string { // void for now
     console.log("query provided " + query);
-
+    return query;
 }

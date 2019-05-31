@@ -1972,6 +1972,17 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  // query test
+  describe("sendQueryToBot", () => {
+    it("should return query", () => {
+      expect(microsoftTeams.sendQueryToBot("hi", () => {})).toBe("hi");
+    });
+    it("should fail because return query is different", () => {
+      expect(microsoftTeams.sendQueryToBot("hi", () => {})).not.toBe("hello");
+    });
+    
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
