@@ -313,3 +313,13 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   const errorMessage = "Invalid internalTabInstanceId and/or channelId were/was provided";
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
+
+/**
+ * Sends query to bot in order to retrieve data.
+ * @param query query to send to bot.
+ * @param callback callback to invoke when data is retrieved from bot
+ */
+export function sendQueryToBot(query: string, callback?: () => void): void{ // void for now
+    console.log("query provided " + query);
+
+}
