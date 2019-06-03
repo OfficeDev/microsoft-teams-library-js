@@ -394,3 +394,10 @@ export interface OpenConversationRequest {
   */
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }
+
+export interface BotAPIRequest {
+  /**
+   * Query to search for
+   */
+  query: string
+}
