@@ -1973,13 +1973,9 @@ describe("MicrosoftTeams", () => {
   });
 
   // query test
-  describe("sendQueryToBot", () => {
-    it("should return query", () => {
-      expect(microsoftTeams.getBotData("hi", () => {})).toBe("hi");
-    });
-    it("should fail because return query is different", () => {
-      expect(microsoftTeams.getBotData("hi", () => {})).not.toBe("hello");
-    });
+  describe("getBotData", () => {
+
+
   });
 
   function initializeWithContext(
