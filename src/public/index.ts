@@ -1,3 +1,4 @@
+export { appInitialization } from "./appInitialization";
 export { authentication } from "./authentication";
 export {
   HostClientType,
@@ -12,8 +13,7 @@ export {
   TabInstance,
   TabInstanceParameters,
   TaskInfo,
-  TeamInformation,
-  IAppInitializationEvent
+  TeamInformation
 } from "./interfaces";
 export {
   enablePrintCapability,

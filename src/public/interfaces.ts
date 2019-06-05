@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, AppInitializationFailedReason } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole } from "./constants";
 
 /**
 * Represents information about tabs for an app
@@ -393,21 +393,4 @@ export interface OpenConversationRequest {
   * A function that is called if the pane is closed
   */
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
-}
-
-export interface IAppInitializationFailedRequest {
-  reason: AppInitializationFailedReason;
-  message?: string;
-}
-
-export interface IAppInitializationEvent {
-  /**
-   * Indicates that the App initialization success and app is ready to interact.
-   */
-  notifySuccess(): void;
-  /**
-   * Indicates that app initialization failed.
-   * @param appInitializationFailedRequest Specifies a reason for the failure with optional message.
-   */
-  notifyFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void;
 }

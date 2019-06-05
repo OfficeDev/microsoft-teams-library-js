@@ -3,9 +3,8 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, IAppInitializationEvent, IAppInitializationFailedRequest } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
-import { AppInitializationFailedReason } from "./constants";
 import { registerGetLogHandler } from "../private/privateAPIs";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -13,7 +12,7 @@ import { registerGetLogHandler } from "../private/privateAPIs";
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window): AppInitializationEvent {
+export function initialize(hostWindow: any = window): void {
   // Independent components might not know whether the SDK is initialized so might call it to be safe.
   // Just no-op if that happens to make it easier to use.
   if (!GlobalVars.initializeCalled) {
@@ -89,8 +88,6 @@ export function initialize(hostWindow: any = window): AppInitializationEvent {
       GlobalVars.isFramelessWindow = false;
     };
   }
-
-  return new AppInitializationEvent();
 }
 
 /**
@@ -317,15 +314,4 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 
   const errorMessage = "Invalid internalTabInstanceId and/or channelId were/was provided";
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
-}
-
-export class AppInitializationEvent implements IAppInitializationEvent {
-  public notifySuccess(): void {
-    ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.success", [version]);
-  }
-  public notifyFailure(appInitializationFailedRequest: IAppInitializationFailedRequest): void {
-    ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.failure", [appInitializationFailedRequest.reason, appInitializationFailedRequest.message]);
-  }
 }
