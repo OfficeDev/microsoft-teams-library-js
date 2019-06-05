@@ -1974,7 +1974,21 @@ describe("MicrosoftTeams", () => {
 
   // query test
   describe("getBotData", () => {
-
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+      microsoftTeams.getBotData({ query: "" }, () => {
+        return;
+      })
+    ).toThrowError("The library has not yet been initialized");
+    });
+    it("should allow calls after initialization", () => {
+      initializeWithContext("content");
+      expect(() =>
+      microsoftTeams.getBotData({ query: "" }, () => {
+        return;
+      })
+    ).not.toThrowError();
+    });
 
   });
 

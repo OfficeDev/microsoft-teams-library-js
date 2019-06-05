@@ -399,5 +399,5 @@ export interface BotAPIRequest {
   /**
    * Query to search for
    */
-  query: string
+  query: string;
 }

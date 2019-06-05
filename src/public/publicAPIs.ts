@@ -320,7 +320,10 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @param callback callback to invoke when data is retrieved from bot
  */
 export function getBotData(botRequest: BotAPIRequest, callback?: (botResponse: any) => void): void { // void for now
+    ensureInitialized();
     // send request to teams
+
+    // SHOULD BE executeBotQuery - testing with getContext
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeBotQuery", [
       botRequest
     ]);
