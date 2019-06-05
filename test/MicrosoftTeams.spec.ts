@@ -1995,7 +1995,7 @@ describe("MicrosoftTeams", () => {
       expect(handlerInvoked).toBe(true);
     });
 
-    it("should successfully register a get log handler and call logMessages", () => {
+    it("getLog should call the get log handler and send the log", () => {
       initializeWithContext("content");
 
       let handlerInvoked = false;
@@ -2007,19 +2007,19 @@ describe("MicrosoftTeams", () => {
 
       sendMessage("getLog");
 
-      const logMessagesMessage = findMessageByFunc("logMessages");
-      expect(logMessagesMessage).not.toBeNull();
-      expect(logMessagesMessage.args).toEqual([log]);
+      const sendLogMessage = findMessageByFunc("sendLog");
+      expect(sendLogMessage).not.toBeNull();
+      expect(sendLogMessage.args).toEqual([log]);
       expect(handlerInvoked).toBe(true);
     });
 
-    it("should not call logMessages when no get log handler is registered", () => {
+    it("should not send log when no get log handler is registered", () => {
       initializeWithContext("content");
 
       sendMessage("getLog");
 
-      const logMessagesMessage = findMessageByFunc("logMessages");
-      expect(logMessagesMessage).toBeNull();
+      const sendLogMessage = findMessageByFunc("sendLog");
+      expect(sendLogMessage).toBeNull();
     });
   });
 

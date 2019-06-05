@@ -2,7 +2,6 @@ import { navigateBack } from "../public/publicAPIs";
 import { validOriginRegExp } from "./constants";
 import { GlobalVars } from "./globalVars";
 import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./interfaces";
-import { logMessages } from "../private/privateAPIs";
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers["themeChange"] = handleThemeChange;
@@ -67,7 +66,7 @@ function handleChangeSettings(): void {
 function handleGetLogRequest(): void {
   if (GlobalVars.getLogHandler) {
     const log: string = GlobalVars.getLogHandler();
-    logMessages(log);
+    sendMessageRequest(GlobalVars.parentWindow, "sendLog", [log]);
   }
 }
 
