@@ -395,9 +395,16 @@ export interface OpenConversationRequest {
   onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
 }
 
-export interface BotAPIRequest {
+export interface BotRequest {
   /**
    * Query to search for
    */
   query: string;
+}
+
+export interface BotResponse {
+  /**
+   * Data to return upon bot response
+   */
+  data: any;
 }

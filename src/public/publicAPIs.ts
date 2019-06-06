@@ -3,7 +3,7 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, BotAPIRequest } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, BotRequest, BotResponse } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -319,15 +319,14 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @param botRequest query to send to bot.
  * @param callback callback to invoke when data is retrieved from bot
  */
-export function getBotData(botRequest: BotAPIRequest, callback?: (botResponse: any) => void): void { // void for now
+export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (status: boolean, data: string | BotResponse) => void): void { // void for now
     ensureInitialized();
-    // send request to teams
 
-    // SHOULD BE executeBotQuery - testing with getContext
+    // send request to teams
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeBotQuery", [
       botRequest
     ]);
 
     // register handler for callback id
-    GlobalVars.callbacks[messageId] = callback ? callback : getGenericOnCompleteHandler();
+    GlobalVars.callbacks[messageId] = onBotResponse ? onBotResponse : getGenericOnCompleteHandler();
 }

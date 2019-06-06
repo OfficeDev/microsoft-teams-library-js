@@ -1973,10 +1973,10 @@ describe("MicrosoftTeams", () => {
   });
 
   // query test
-  describe("getBotData", () => {
+  describe("sendBotRequest", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      microsoftTeams.getBotData({ query: "" }, () => {
+      microsoftTeams.sendBotRequest({ query: "" }, () => {
         return;
       })
     ).toThrowError("The library has not yet been initialized");
@@ -1984,7 +1984,7 @@ describe("MicrosoftTeams", () => {
     it("should allow calls after initialization", () => {
       initializeWithContext("content");
       expect(() =>
-      microsoftTeams.getBotData({ query: "" }, () => {
+      microsoftTeams.sendBotRequest({ query: "" }, () => {
         return;
       })
     ).not.toThrowError();
