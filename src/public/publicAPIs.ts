@@ -315,9 +315,13 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 }
 
 /**
+ * @private
+ * Hide from docs until release.
+ * ------
+ * 
  * Sends query to bot in order to retrieve data.
  * @param botRequest query to send to bot.
- * @param callback callback to invoke when data is retrieved from bot
+ * @param onBotResponse callback to invoke when data is retrieved from bot
  */
 export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (status: boolean, data: string | BotResponse) => void): void { // void for now
     ensureInitialized();
