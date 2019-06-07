@@ -1955,6 +1955,22 @@ describe("MicrosoftTeams", () => {
       expect(openConversationMessage).not.toBeNull();
       expect(openConversationMessage.args).toEqual([conversationRequest]);
     });
+
+    it("should successfully pass conversationRequest in a personal scope", () => {
+      initializeWithContext("content");
+      const conversationRequest: OpenConversationRequest = {
+        "subEntityId": "someEntityId",
+        "title": "someTitle",
+        "threadId": "someThreadId",
+        "entityId": "someEntityId"
+      };
+
+      conversations.openConversation(conversationRequest);
+
+      const openConversationMessage = findMessageByFunc("conversations.openConversation");
+      expect(openConversationMessage).not.toBeNull();
+      expect(openConversationMessage.args).toEqual([conversationRequest]);
+    });
   });
 
   describe("conversations.closeConversation", () => {
