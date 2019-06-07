@@ -390,7 +390,7 @@ export interface OpenConversationRequest {
   threadId?: string;
 
   /**
-   * The Id of the tab. This is optional and should be specified whenever a conversation is started in a personal scope
+   * The entity Id of the tab
    */
   entityId: string;
 
