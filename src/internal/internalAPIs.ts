@@ -12,15 +12,15 @@ GlobalVars.handlers["changeSettings"] = handleChangeSettings;
 GlobalVars.handlers["startConversation"] = handleStartConversation;
 GlobalVars.handlers["closeConversation"] = handleCloseConversation;
 
-function handleStartConversation(subEntityId: string, conversationId: string, threadId: string): void {
+function handleStartConversation(subEntityId: string, conversationId: string, threadId: string, entityId: string): void {
   if (GlobalVars.onStartConversationHandler) {
-    GlobalVars.onStartConversationHandler(subEntityId, conversationId, threadId);
+    GlobalVars.onStartConversationHandler(subEntityId, conversationId, threadId, entityId);
   }
 }
 
-function handleCloseConversation(subEntityId: string, conversationId?: string, threadId?: string): void {
+function handleCloseConversation(subEntityId: string, conversationId?: string, threadId?: string, entityId?: string): void {
   if (GlobalVars.onCloseConversationHandler) {
-    GlobalVars.onCloseConversationHandler(subEntityId, conversationId, threadId);
+    GlobalVars.onCloseConversationHandler(subEntityId, conversationId, threadId, entityId);
   }
 }
 
