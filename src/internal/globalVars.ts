@@ -24,6 +24,6 @@ export class GlobalVars {
   public static backButtonPressHandler: () => boolean;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
-  public static onStartConversationHandler: (sunEntityId: string, conversationId: string, threadId: string, entityId: string) => void;
-  public static onCloseConversationHandler: (sunEntityId: string, conversationId?: string, threadId?: string, entityId?: string) => void;
+  public static onStartConversationHandler: (subEntityId: string, conversationId: string, threadId: string, entityId: string) => void;
+  public static onCloseConversationHandler: (subEntityId: string, conversationId?: string, threadId?: string, entityId?: string) => void;
 }
