@@ -1923,7 +1923,8 @@ describe("MicrosoftTeams", () => {
     it("should not allow calls before initialization", () => {
       const conversationRequest: OpenConversationRequest = {
         "subEntityId": "someEntityId",
-        "title": "someTitle"
+        "title": "someTitle",
+        "entityId": "someEntityId"
       };
       expect(() => conversations.openConversation(conversationRequest)).toThrowError(
         "The library has not yet been initialized"
@@ -1935,7 +1936,8 @@ describe("MicrosoftTeams", () => {
 
       const conversationRequest: OpenConversationRequest = {
         "subEntityId": "someEntityId",
-        "title": "someTitle"
+        "title": "someTitle",
+        "entityId": "someEntityId"
       };
       expect(() => conversations.openConversation(conversationRequest)).toThrowError(
         "This call is not allowed in the 'settings' context"
@@ -1946,7 +1948,8 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
       const conversationRequest: OpenConversationRequest = {
         "subEntityId": "someEntityId",
-        "title": "someTitle"
+        "title": "someTitle",
+        "entityId": "someEntityId"
       };
 
       conversations.openConversation(conversationRequest);
