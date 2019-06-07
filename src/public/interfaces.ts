@@ -385,6 +385,16 @@ export interface OpenConversationRequest {
   conversationId?: string;
 
   /**
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  threadId?: string;
+
+  /**
+   * The entity Id of the tab
+   */
+  entityId: string;
+
+  /**
   * A function that is called once the conversation Id has been created
   */
   onStartConversation?: (subEntityId: string, conversationId: string) => void;

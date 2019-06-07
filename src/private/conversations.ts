@@ -21,7 +21,9 @@ export namespace conversations {
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "conversations.openConversation", [{
       title: openConversationRequest.title,
       subEntityId: openConversationRequest.subEntityId,
-      conversationId: openConversationRequest.conversationId
+      conversationId: openConversationRequest.conversationId,
+      threadId: openConversationRequest.threadId,
+      entityId: openConversationRequest.entityId
     }]);
     GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
     GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
