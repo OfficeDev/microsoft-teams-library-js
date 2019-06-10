@@ -397,12 +397,12 @@ export interface OpenConversationRequest {
   /**
   * A function that is called once the conversation Id has been created
   */
-  onStartConversation?: (conversationSubEntityResponse: ConversationSubEntityResponse) => void;
+  onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
   * A function that is called if the pane is closed
   */
-  onCloseConversation?: (conversationSubEntityResponse: ConversationSubEntityResponse) => void;
+  onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
 /**
@@ -410,7 +410,7 @@ export interface OpenConversationRequest {
  * Hide from docs.
  * ------
 */
-export interface ConversationSubEntityResponse {
+export interface ConversationResponse {
 
   /**
   * The Id of the subEntity where the conversation is taking place
