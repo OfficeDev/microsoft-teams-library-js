@@ -14,13 +14,23 @@ GlobalVars.handlers["closeConversation"] = handleCloseConversation;
 
 function handleStartConversation(subEntityId: string, conversationId: string, channelId: string, entityId: string): void {
   if (GlobalVars.onStartConversationHandler) {
-    GlobalVars.onStartConversationHandler(subEntityId, conversationId, channelId, entityId);
+    GlobalVars.onStartConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId
+    });
   }
 }
 
 function handleCloseConversation(subEntityId: string, conversationId?: string, channelId?: string, entityId?: string): void {
   if (GlobalVars.onCloseConversationHandler) {
-    GlobalVars.onCloseConversationHandler(subEntityId, conversationId, channelId, entityId);
+    GlobalVars.onCloseConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId
+    });
   }
 }
 

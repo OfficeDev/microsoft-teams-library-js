@@ -397,10 +397,38 @@ export interface OpenConversationRequest {
   /**
   * A function that is called once the conversation Id has been created
   */
-  onStartConversation?: (subEntityId: string, conversationId: string) => void;
+  onStartConversation?: (conversationSubEntityCallback: ConversationSubEntityCallback) => void;
 
   /**
   * A function that is called if the pane is closed
   */
-  onCloseConversation?: (subEntityId: string, conversationId?: string) => void;
+  onCloseConversation?: (conversationSubEntityCallback: ConversationSubEntityCallback) => void;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+*/
+export interface ConversationSubEntityCallback {
+
+  /**
+  * The Id of the subEntity where the conversation is taking place
+  */
+  subEntityId: string;
+
+  /**
+  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+  */
+  conversationId?: string;
+
+  /**
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  channelId?: string;
+
+  /**
+   * The entity Id of the tab
+   */
+  entityId?: string;
 }
