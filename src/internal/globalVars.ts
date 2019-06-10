@@ -1,5 +1,5 @@
 import { MessageRequest } from "./interfaces";
-import { ConversationSubEntityCallback } from "../public/interfaces";
+import { ConversationSubEntityResponse } from "../public/interfaces";
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
@@ -25,6 +25,6 @@ export class GlobalVars {
   public static backButtonPressHandler: () => boolean;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
-  public static onStartConversationHandler: (conversationSubEntityCallback: ConversationSubEntityCallback) => void;
-  public static onCloseConversationHandler: (conversationSubEntityCallback: ConversationSubEntityCallback) => void;
+  public static onStartConversationHandler: (conversationSubEntityResponse: ConversationSubEntityResponse) => void;
+  public static onCloseConversationHandler: (conversationSubEntityResponse: ConversationSubEntityResponse) => void;
 }
