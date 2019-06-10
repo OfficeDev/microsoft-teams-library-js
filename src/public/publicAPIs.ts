@@ -318,12 +318,12 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @private
  * Hide from docs until release.
  * ------
- * 
  * Sends query to bot in order to retrieve data.
  * @param botRequest query to send to bot.
  * @param onBotResponse callback to invoke when data is retrieved from bot
+ * @param onError callback to invoke should an error occur
  */
-export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (status: boolean, data: string | BotResponse) => void): void { // void for now
+export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: string | BotResponse) => void, onError?: (error: string) => {}): void { // void for now
     ensureInitialized();
 
     // send request to teams
@@ -331,6 +331,12 @@ export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (status: 
       botRequest
     ]);
 
-    // register handler for callback id
-    GlobalVars.callbacks[messageId] = onBotResponse ? onBotResponse : getGenericOnCompleteHandler();
+    // register handler for callback id || onBotResponse ? onBotResponse : getGenericOnCompleteHandler();
+    GlobalVars.callbacks[messageId] = (success: boolean, response: any)  => {
+      if (success) {
+        onBotResponse(response);
+      } else {
+        onError(response);
+      }
+    };
 }
