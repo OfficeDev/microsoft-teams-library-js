@@ -1964,7 +1964,7 @@ describe("MicrosoftTeams", () => {
       const conversationRequest: OpenConversationRequest = {
         "subEntityId": "someEntityId",
         "title": "someTitle",
-        "threadId": "someThreadId",
+        "channelId": "someChannelId",
         "entityId": "someEntityId"
       };
 

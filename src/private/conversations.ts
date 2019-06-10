@@ -22,7 +22,7 @@ export namespace conversations {
       title: openConversationRequest.title,
       subEntityId: openConversationRequest.subEntityId,
       conversationId: openConversationRequest.conversationId,
-      threadId: openConversationRequest.threadId,
+      channelId: openConversationRequest.channelId,
       entityId: openConversationRequest.entityId
     }]);
     GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
