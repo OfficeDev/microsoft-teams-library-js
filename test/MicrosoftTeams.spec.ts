@@ -2,7 +2,7 @@ import * as microsoftTeams from "../src/public/publicAPIs";
 import * as microsoftTeamsPrivate from "../src/private/privateAPIs";
 import { settings as microsoftTeamsSettings } from "../src/public/settings";
 import { authentication as microsoftTeamsAuthentication } from "../src/public/authentication";
-import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest } from "../src/public/interfaces";
+import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest, BotRequest, BotResponse } from "../src/public/interfaces";
 import { TeamInstanceParameters } from "../src/private/interfaces";
 import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
 import { tasks } from "../src/public/tasks";
@@ -1972,7 +1972,6 @@ describe("MicrosoftTeams", () => {
     });
   });
 
-  // query test
   describe("sendBotRequest", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
@@ -1981,15 +1980,23 @@ describe("MicrosoftTeams", () => {
       })
     ).toThrowError("The library has not yet been initialized");
     });
-    it("should allow calls after initialization", () => {
+    it("should successfully send a request", () => {
       initializeWithContext("content");
-      expect(() =>
-      microsoftTeams.sendBotRequest({ query: "" }, () => {
-        return;
-      })
-    ).not.toThrowError();
-    });
+      let request = {
+        query: "some query"
+      };
 
+      let botResponse: BotResponse;
+      let error: string;
+
+      const handleBotResponse = (response: BotResponse) => (botResponse = response);
+      const handleError = (_error: string): any => (error = _error);
+
+      microsoftTeams.sendBotRequest(request, handleBotResponse, handleError);
+      let message = findMessageByFunc("executeBotQuery");
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+    });
   });
 
   function initializeWithContext(
