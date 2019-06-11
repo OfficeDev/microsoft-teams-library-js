@@ -16,36 +16,35 @@ export namespace bot {
  * @param onBotQueryResponse callback to invoke when data is retrieved from bot
  * @param onError callback to invoke should an error occur
  */
-export function sendQuery(botRequest: QueryRequest, onBotQueryResponse?: (data: QueryResponse) => void, onError?: (error: string) => {}): void { // void for now
-  ensureInitialized();
+  export function sendQuery(botRequest: QueryRequest, onBotQueryResponse?: (data: QueryResponse) => void, onError?: (error: string) => {}): void { // void for now
+    ensureInitialized();
 
-  // send request to teams
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.executeQuery", [
-    botRequest
-  ]);
+    // send request to teams
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.executeQuery", [
+      botRequest
+    ]);
 
-  // register handler for callback id
-  GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse)  => {
-    if (success) {
-      onBotQueryResponse(response as QueryResponse);
-    } else {
-      onError(response as string);
-    }
-  };
-}
+    // register handler for callback id
+    GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
+      if (success) {
+        onBotQueryResponse(response as QueryResponse);
+      } else {
+        onError(response as string);
+      }
+    };
+  }
 
-export interface QueryRequest {
-  /**
-   * Query to search for
-   */
-  query: string;
-}
+  export interface QueryRequest {
+    /**
+     * Query to search for
+     */
+    query: string;
+  }
 
-export interface QueryResponse {
-  /**
-   * Data to return upon bot response
-   */
-  data: any;
-}
-
+  export interface QueryResponse {
+    /**
+     * Data to return upon bot response
+     */
+    data: any;
+  }
 }
