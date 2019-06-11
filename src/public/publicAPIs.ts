@@ -323,7 +323,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @param onBotResponse callback to invoke when data is retrieved from bot
  * @param onError callback to invoke should an error occur
  */
-export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: string | BotResponse) => void, onError?: (error: string) => {}): void { // void for now
+export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: BotResponse) => void, onError?: (error: string) => {}): void { // void for now
     ensureInitialized();
 
     // send request to teams
@@ -334,7 +334,7 @@ export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: st
     // register handler for callback id
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | BotResponse)  => {
       if (success) {
-        onBotResponse(response);
+        onBotResponse(response as BotResponse);
       } else {
         onError(response as string);
       }
