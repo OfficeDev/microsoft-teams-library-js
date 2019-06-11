@@ -3,7 +3,7 @@ import { GlobalVars } from "../internal/globalVars";
 import { version, frameContexts } from "../internal/constants";
 import { ExtendedWindow, MessageEvent } from "../internal/interfaces";
 import { settings } from "./settings";
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, BotRequest, BotResponse } from "./interfaces";
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from "./interfaces";
 import { getGenericOnCompleteHandler } from "../internal/utils";
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -312,31 +312,4 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 
   const errorMessage = "Invalid internalTabInstanceId and/or channelId were/was provided";
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
-}
-
-/**
- * @private
- * Hide from docs until release.
- * ------
- * Sends query to bot in order to retrieve data.
- * @param botRequest query to send to bot.
- * @param onBotResponse callback to invoke when data is retrieved from bot
- * @param onError callback to invoke should an error occur
- */
-export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: BotResponse) => void, onError?: (error: string) => {}): void { // void for now
-    ensureInitialized();
-
-    // send request to teams
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeBotQuery", [
-      botRequest
-    ]);
-
-    // register handler for callback id
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | BotResponse)  => {
-      if (success) {
-        onBotResponse(response as BotResponse);
-      } else {
-        onError(response as string);
-      }
-    };
 }

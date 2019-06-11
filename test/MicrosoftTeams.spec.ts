@@ -2,10 +2,11 @@ import * as microsoftTeams from "../src/public/publicAPIs";
 import * as microsoftTeamsPrivate from "../src/private/privateAPIs";
 import { settings as microsoftTeamsSettings } from "../src/public/settings";
 import { authentication as microsoftTeamsAuthentication } from "../src/public/authentication";
-import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest, BotRequest, BotResponse } from "../src/public/interfaces";
+import { TabInstanceParameters, Context, TaskInfo, OpenConversationRequest } from "../src/public/interfaces";
 import { TeamInstanceParameters } from "../src/private/interfaces";
 import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
 import { tasks } from "../src/public/tasks";
+import { bot } from "../src/public/bot";
 import { conversations } from "../src/private/conversations";
 
 interface MessageRequest {
@@ -1975,7 +1976,7 @@ describe("MicrosoftTeams", () => {
   describe("sendBotRequest", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      microsoftTeams.sendBotRequest({ query: "" }, () => {
+      bot.sendQuery({ query: "" }, () => {
         return;
       })
     ).toThrowError("The library has not yet been initialized");
@@ -1986,17 +1987,17 @@ describe("MicrosoftTeams", () => {
         query: "some query"
       };
 
-      let botResponse: BotResponse;
+      let botResponse: bot.QueryResponse;
       let error: string;
 
-      const handleBotResponse = (response: BotResponse) => (botResponse = response);
+      const handleBotResponse = (response: bot.QueryResponse) => (botResponse = response);
       const handleError = (_error: string): any => (error = _error);
 
       // send message request
-      microsoftTeams.sendBotRequest(request, handleBotResponse, handleError);
+      bot.sendQuery(request, handleBotResponse, handleError);
 
       // find message request in jest
-      const message = findMessageByFunc("executeBotQuery");
+      const message = findMessageByFunc("bot.executeQuery");
 
       // check message is sending correct data
       expect(message).not.toBeUndefined();
@@ -2020,14 +2021,14 @@ describe("MicrosoftTeams", () => {
         query: "some broken query"
       };
 
-      let botResponse: BotResponse;
+      let botResponse: bot.QueryResponse;
       let error: string;
 
-      const handleBotResponse = (response: BotResponse) => (botResponse = response);
+      const handleBotResponse = (response: bot.QueryResponse) => (botResponse = response);
       const handleError = (_error: string): any => (error = _error);
 
-      microsoftTeams.sendBotRequest(request, handleBotResponse, handleError);
-      const message = findMessageByFunc("executeBotQuery");
+      bot.sendQuery(request, handleBotResponse, handleError);
+      const message = findMessageByFunc("bot.executeQuery");
       expect(message).not.toBeUndefined();
       expect(message.args).toContain(request);
 

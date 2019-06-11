@@ -13,9 +13,7 @@ export {
   TabInstance,
   TabInstanceParameters,
   TaskInfo,
-  TeamInformation,
-  BotRequest,
-  BotResponse
+  TeamInformation
 } from "./interfaces";
 export {
   enablePrintCapability,
@@ -33,11 +31,11 @@ export {
   registerChangeSettingsHandler,
   registerFullScreenHandler,
   registerOnThemeChangeHandler,
-  shareDeepLink,
-  sendBotRequest
+  shareDeepLink
 } from "./publicAPIs";
 export { settings } from "./settings";
 export { tasks } from "./tasks";
+export { bot } from "./bot";
 export {
   ChildAppWindow,
   IAppWindow,
