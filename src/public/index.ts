@@ -35,6 +35,7 @@ export {
 } from "./publicAPIs";
 export { settings } from "./settings";
 export { tasks } from "./tasks";
+export { bot } from "./bot";
 export {
   ChildAppWindow,
   IAppWindow,
