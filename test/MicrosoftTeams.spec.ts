@@ -2011,7 +2011,7 @@ describe("MicrosoftTeams", () => {
       respondToMessage(message, data.success, data.response);
 
       // check data is returned properly
-      expect(botResponse).toBe({ data: ["some", "queried", "items"] });
+      expect(botResponse).toEqual({ data: ["some", "queried", "items"] });
       expect(error).toBeUndefined();
     });
     it("should invoke error callback", () => {
