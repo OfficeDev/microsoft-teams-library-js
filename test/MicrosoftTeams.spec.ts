@@ -2002,18 +2002,16 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeUndefined();
       expect(message.args).toContain(request);
 
-      const _botResponse: BotResponse = { data: ["some", "queried", "items"] };
-
       // simulate response
       const data = {
         success: true,
-        response: _botResponse
+        response: { data: ["some", "queried", "items"] }
       };
 
       respondToMessage(message, data.success, data.response);
 
       // check data is returned properly
-      expect(botResponse).toBe(_botResponse);
+      expect(botResponse).toBe({ data: ["some", "queried", "items"] });
       expect(error).toBeUndefined();
     });
     it("should invoke error callback", () => {
@@ -2033,18 +2031,16 @@ describe("MicrosoftTeams", () => {
       expect(message).not.toBeUndefined();
       expect(message.args).toContain(request);
 
-      const _botResponse: string = "Something went wrong...";
-
       // simulate response
       const data = {
         success: false,
-        response: _botResponse
+        response: "Something went wrong..."
       };
 
       respondToMessage(message, data.success, data.response);
 
       // check data is returned properly
-      expect(error).toBe(_botResponse);
+      expect(error).toBe("Something went wrong...");
       expect(botResponse).toBeUndefined();
     });
   });
