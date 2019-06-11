@@ -332,11 +332,11 @@ export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: st
     ]);
 
     // register handler for callback id
-    GlobalVars.callbacks[messageId] = (success: boolean, response: any)  => {
+    GlobalVars.callbacks[messageId] = (success: boolean, response: string | BotResponse)  => {
       if (success) {
         onBotResponse(response);
       } else {
-        onError(response);
+        onError(response as string);
       }
     };
 }

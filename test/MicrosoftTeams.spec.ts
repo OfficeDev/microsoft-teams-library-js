@@ -1982,7 +1982,7 @@ describe("MicrosoftTeams", () => {
     });
     it("should successfully send a request", () => {
       initializeWithContext("content");
-      let request = {
+      const request = {
         query: "some query"
       };
 
@@ -1992,10 +1992,60 @@ describe("MicrosoftTeams", () => {
       const handleBotResponse = (response: BotResponse) => (botResponse = response);
       const handleError = (_error: string): any => (error = _error);
 
+      // send message request
       microsoftTeams.sendBotRequest(request, handleBotResponse, handleError);
-      let message = findMessageByFunc("executeBotQuery");
+
+      // find message request in jest
+      const message = findMessageByFunc("executeBotQuery");
+
+      // check message is sending correct data
       expect(message).not.toBeUndefined();
       expect(message.args).toContain(request);
+
+      const _botResponse: BotResponse = { data: ["some", "queried", "items"] };
+
+      // simulate response
+      const data = {
+        success: true,
+        response: _botResponse
+      };
+
+      respondToMessage(message, data.success, data.response);
+
+      // check data is returned properly
+      expect(botResponse).toBe(_botResponse);
+      expect(error).toBeUndefined();
+    });
+    it("should invoke error callback", () => {
+      initializeWithContext("content");
+      const request = {
+        query: "some broken query"
+      };
+
+      let botResponse: BotResponse;
+      let error: string;
+
+      const handleBotResponse = (response: BotResponse) => (botResponse = response);
+      const handleError = (_error: string): any => (error = _error);
+
+      microsoftTeams.sendBotRequest(request, handleBotResponse, handleError);
+      const message = findMessageByFunc("executeBotQuery");
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      const _botResponse: string = "Something went wrong...";
+
+      // simulate response
+      const data = {
+        success: false,
+        response: _botResponse
+      };
+
+      respondToMessage(message, data.success, data.response);
+
+      // check data is returned properly
+      expect(error).toBe(_botResponse);
+      expect(botResponse).toBeUndefined();
     });
   });
 
