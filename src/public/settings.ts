@@ -107,6 +107,10 @@ export namespace settings {
      * The developer-defined unique ID for the entity to which this content points.
      */
     entityId: string;
+    /**
+     * Sets the configuration name for Connector. For more reference: https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/connectors/connectors-creating#getsettings-response-properties
+     */
+    configName?: string;
   }
 
   export interface SaveEvent {
