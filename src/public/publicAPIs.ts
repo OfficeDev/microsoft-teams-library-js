@@ -331,7 +331,7 @@ export function sendBotRequest(botRequest: BotRequest, onBotResponse?: (data: st
       botRequest
     ]);
 
-    // register handler for callback id || onBotResponse ? onBotResponse : getGenericOnCompleteHandler();
+    // register handler for callback id
     GlobalVars.callbacks[messageId] = (success: boolean, response: any)  => {
       if (success) {
         onBotResponse(response);
