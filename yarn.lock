@@ -1189,6 +1189,13 @@ domexception@^1.0.1:
   dependencies:
     webidl-conversions "^4.0.2"
 
+dts-builder@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/dts-builder/-/dts-builder-1.1.6.tgz#eeaa3a07ee1cfbc3c64ec70e4f126cb467437918"
+  integrity sha512-HS5ZvUuGBpBkwTRNGZNQdcWbOvO0QOnFLYzO2GnhFuDbzMAan9onUpQmnk60v7Q0Uj575VrBxAnEGz4lahGO+Q==
+  dependencies:
+    mkdirp "^0.5.1"
+
 dts-bundle@^0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/dts-bundle/-/dts-bundle-0.7.3.tgz#372b7bb69c820782e6382f400739a69dced3d59a"
