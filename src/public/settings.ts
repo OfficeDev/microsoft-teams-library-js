@@ -1,13 +1,13 @@
 import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
  */
 export namespace settings {
-  debugger;
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
   GlobalVars.handlers["settings.save"] = handleSave;
@@ -40,16 +40,12 @@ export namespace settings {
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
    * @param settings The desired settings for this instance.
    */
-  export function setSettings(instanceSettings: Settings): void {
+  export function setSettings(instanceSettings: Settings, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(frameContexts.content, frameContexts.settings);
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "settings.setSettings", [
       instanceSettings
     ]);
-    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-      if (!success) {
-        throw new Error(result);
-      }
-    };
+    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   /**

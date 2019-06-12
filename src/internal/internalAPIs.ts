@@ -9,6 +9,30 @@ GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
 GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
 GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
+GlobalVars.handlers["startConversation"] = handleStartConversation;
+GlobalVars.handlers["closeConversation"] = handleCloseConversation;
+
+function handleStartConversation(subEntityId: string, conversationId: string, channelId: string, entityId: string): void {
+  if (GlobalVars.onStartConversationHandler) {
+    GlobalVars.onStartConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId
+    });
+  }
+}
+
+function handleCloseConversation(subEntityId: string, conversationId?: string, channelId?: string, entityId?: string): void {
+  if (GlobalVars.onCloseConversationHandler) {
+    GlobalVars.onCloseConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId
+    });
+  }
+}
 
 function handleThemeChange(theme: string): void {
   if (GlobalVars.themeChangeHandler) {

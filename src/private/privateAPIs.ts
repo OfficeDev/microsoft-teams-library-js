@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 import { frameContexts } from "../internal/constants";
 import { ChatMembersInformation, ShowNotificationParameters, FilePreviewParameters, TeamInstanceParameters, UserJoinedTeamsInformation } from "./interfaces";
+import { getGenericOnCompleteHandler } from "../internal/utils";
 
 /**
  * @private
@@ -21,6 +22,28 @@ export function getUserJoinedTeams(
     teamInstanceParameters
   ]);
   GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Place the tab into full-screen mode.
+ */
+export function enterFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "enterFullscreen", []);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Reverts the tab into normal-screen mode. 
+ */
+export function exitFullscreen() {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, "exitFullscreen", []);
 }
 
 /**
@@ -75,39 +98,16 @@ export function showNotification(
  * @private
  * Hide from docs.
  * ------
- * execute deep link API.
- * @param deepLink deep link.
- */
-export function executeDeepLink(deepLink: string): void {
-  ensureInitialized(frameContexts.content);
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, "executeDeepLink", [
-    deepLink
-  ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  */
-export function uploadCustomApp(manifestBlob: Blob): void {
+export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "uploadCustomApp", [
     manifestBlob
   ]);
-  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
-    if (!success) {
-      throw new Error(result);
-    }
-  };
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
@@ -142,5 +142,25 @@ export function getChatMembers(
   ensureInitialized();
 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, "getChatMembers");
+  GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to get the configuration setting value
+ * @param callback The callback to invoke when the value is retrieved.
+ * @param key The key for the config setting
+ */
+export function getConfigSetting(
+  callback: (value: string) => void,
+  key: string
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, "getConfigSetting", [
+    key
+  ]);
   GlobalVars.callbacks[messageId] = callback;
 }

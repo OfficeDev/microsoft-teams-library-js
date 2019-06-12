@@ -129,8 +129,6 @@ export interface TeamInformation {
    */
   userTeamRole?: UserTeamRole;
 }
-
-
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
@@ -208,9 +206,19 @@ export interface Context {
   teamType?: TeamType;
 
   /**
-   * The root SharePoint folder associated with the team.
+   * The root SharePoint site associated with the team.
    */
   teamSiteUrl?: string;
+
+  /**
+   * The domain of the root SharePoint site associated with the team.
+   */
+  teamSiteDomain?: string;
+
+  /**
+   * The relative path to the SharePoint site associated with the team.
+   */
+  teamSitePath?: string;
 
   /**
    * The relative path to the SharePoint folder associated with the channel.
@@ -265,12 +273,12 @@ export interface Context {
   isTeamArchived?: boolean;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
    */
   hostClientType?: HostClientType;
 
   /**
-   * SharePoint context
+   * SharePoint context. This is only available when hosted in SharePoint.
    */
   sharepoint?: any;
 
@@ -283,6 +291,17 @@ export interface Context {
    * The license type for the current user.
    */
   userLicenseType?: string;
+
+  /**
+   * The ID of the parent message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  parentMessageId?: string;
+
+  /**
+   * Current ring ID
+   */
+  ringId?: string;
 }
 
 export interface DeepLinkParameters {
@@ -341,4 +360,75 @@ export interface TaskInfo {
    * in the event payload.
    */
   completionBotId?: string;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+*/
+export interface OpenConversationRequest {
+
+  /**
+  * The Id of the subEntity where the conversation is taking place
+  */
+  subEntityId: string;
+
+  /**
+  * The title of the conversation
+  */
+  title: string;
+
+  /**
+  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+  */
+  conversationId?: string;
+
+  /**
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  channelId?: string;
+
+  /**
+   * The entity Id of the tab
+   */
+  entityId: string;
+
+  /**
+  * A function that is called once the conversation Id has been created
+  */
+  onStartConversation?: (conversationResponse: ConversationResponse) => void;
+
+  /**
+  * A function that is called if the pane is closed
+  */
+  onCloseConversation?: (conversationResponse: ConversationResponse) => void;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+*/
+export interface ConversationResponse {
+
+  /**
+  * The Id of the subEntity where the conversation is taking place
+  */
+  subEntityId: string;
+
+  /**
+  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+  */
+  conversationId?: string;
+
+  /**
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  channelId?: string;
+
+  /**
+   * The entity Id of the tab
+   */
+  entityId?: string;
 }

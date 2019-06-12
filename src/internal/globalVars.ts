@@ -1,4 +1,5 @@
 import { MessageRequest } from "./interfaces";
+import { ConversationResponse } from "../public/interfaces";
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
@@ -24,5 +25,6 @@ export class GlobalVars {
   public static backButtonPressHandler: () => boolean;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
-  public static handleParentMessage: any;
+  public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
+  public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
 }
