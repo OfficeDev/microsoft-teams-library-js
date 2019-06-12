@@ -42,9 +42,13 @@ export namespace bot {
   }
 
   export interface QueryResponse {
-    /**
-     * Data to return upon bot response
-     */
-    data: any;
+    attachments: IAttachment[],
+    layout: any;
+  }
+  export interface IAttachment {
+    card: any;
+    previewCard: any;
+    previewRawPayload: any,
+    rawPayload: any;
   }
 }
