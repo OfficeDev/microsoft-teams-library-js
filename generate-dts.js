@@ -2,7 +2,7 @@ const libraryName = 'microsoftTeams';
 const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
-const timeout = 2000;
+const timeout = 20000;
 
 function DtsBundlePlugin() { }
 DtsBundlePlugin.prototype.apply = function (compiler) {
@@ -12,7 +12,7 @@ DtsBundlePlugin.prototype.apply = function (compiler) {
     const dtsBuilder = require('dts-builder');
 
     dtsBuilder.generateBundles([{
-      name: 'teams-js',
+      name: 'microsoftTeams',
       alias: 'microsoftTeams',
       sourceDir: './dts',
       destDir: './dist'
@@ -25,14 +25,13 @@ DtsBundlePlugin.prototype.apply = function (compiler) {
 
 function patchDTS(callback) {
   const self = this;
-  console.log('Replacing the references to officeJsHelpers and regularizing it.');
-  fs.readFile('./dist/teams-js.d.ts', 'utf8', (err, data) => {
+  console.log('Replacing the references to teamsJs and regularizing it.');
+  fs.readFile('./dist/microsoftTeams.d.ts', 'utf8', (err, data) => {
     if (err) {
       return console.log(err);
     }
 
     const result = replace(data)
-      (/teamsJs/gm, 'microsoftTeams')
       (/declare module 'microsoftTeams'/gm, 'declare module \'@microsoft/teams-js\'')
       (/^import microsoftTeams.*/g, '')
       (/^var _default: void;/, '')
@@ -40,16 +39,22 @@ function patchDTS(callback) {
       (/^\s*[\r\n]/gm, '')
       ();
 
-    fs.writeFile('./dist/teams-js.d.ts', result, 'utf8', (err) => {
+    fs.writeFile('./dist/microsoftTeams.d.ts', result, 'utf8', (err) => {
       if (err) {
         return console.log(err);
       }
 
-      fs.rename('./dist/teams-js.d.ts', './/dist/MicrosoftTeams.d.ts', (err) => {
+      fs.rename('./dist/microsoftTeams.d.ts', './/dist/MicrosoftTeams.d.ts', (err) => {
         if (err) {
           console.log('ERROR: ' + err);
           throw err;
         }
+
+        rimraf('./dts', () => {
+          if (callback) {
+            callback();
+          }
+        });
       });
     });
   });
