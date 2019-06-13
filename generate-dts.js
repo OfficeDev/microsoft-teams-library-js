@@ -1,8 +1,7 @@
 const libraryName = 'microsoftTeams';
-const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
-const timeout = 20000;
+const timeout = 2000;
 
 function DtsBundlePlugin() { }
 DtsBundlePlugin.prototype.apply = function (compiler) {
@@ -12,8 +11,8 @@ DtsBundlePlugin.prototype.apply = function (compiler) {
     const dtsBuilder = require('dts-builder');
 
     dtsBuilder.generateBundles([{
-      name: 'microsoftTeams',
-      alias: 'microsoftTeams',
+      name: libraryName,
+      alias: libraryName,
       sourceDir: './dts',
       destDir: './dist'
     }]);
