@@ -28,15 +28,15 @@ export const enum UserTeamRole {
 }
 
 export const enum TaskModuleDimension {
-  Large = "large",
-  Medium = "medium",
-  Small = "small"
+    Large = 'large',
+    Medium = 'medium',
+    Small = 'small',
 }
 
 /**
  * The type of the channel with which the content is associated.
  */
 export const enum ChannelType {
-  Regular = "Regular",
-  Private = "Private"
+    Regular = 'Regular',
+    Private = 'Private',
 }
