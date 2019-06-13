@@ -4,7 +4,7 @@
   "version": "1.4.1",
   "description": "Microsoft Client SDK for building app for Microsoft teams",
   "main": "./dist/MicrosoftTeams.min.js",
-  "typings": "./dts/index.d.ts",
+  "typings": "./dist/MicrosoftTeams.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
@@ -17,6 +17,8 @@
   "devDependencies": {
     "@types/jest": "^23.3.5",
     "del": "2.2.2",
+    "dts-builder": "^1.1.6",
+    "dts-bundle": "^0.7.3",
     "jest": "^23.6.0",
     "merge2": "1.0.2",
     "prettier": "^1.11.1",
