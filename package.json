@@ -10,7 +10,9 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "yarn lint && webpack",
+    "lint": "eslint ./src/**/*.{js,ts}",
+    "doctor": "yarn lint --fix",
     "test": "jest"
   },
   "license": "MIT",
@@ -20,9 +22,11 @@
     "@typescript-eslint/parser": "^1.10.2",
     "del": "2.2.2",
     "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
     "jest": "^23.6.0",
     "merge2": "1.0.2",
-    "prettier": "^1.11.1",
+    "prettier": "^1.18.2",
     "ts-jest": "^23.10.4",
     "ts-loader": "^5.2.1",
     "tslint": "^5.8.0",
