@@ -29,7 +29,7 @@ module.exports = {
     }]
   },
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [new UglifyJsPlugin({
       uglifyOptions: {
         compress: {

@@ -8,7 +8,7 @@ function DtsBundlePlugin() { }
 DtsBundlePlugin.prototype.apply = function (compiler) {
   const self = this;
 
-  compiler.plugin('emit', (_compilation, callback) => {
+  compiler.plugin('done', (_compilation, callback) => {
     const dtsBuilder = require('dts-builder');
 
     dtsBuilder.generateBundles([{
