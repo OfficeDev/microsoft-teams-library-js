@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from "./constants";
 
 /**
 * Represents information about tabs for an app
@@ -155,6 +155,11 @@ export interface Context {
    * The name for the channel with which the content is associated.
    */
   channelName?: string;
+
+  /**
+   * The type of the channel with which the content is associated.
+   */
+  channelType?: ChannelType;
 
   /**
    * The developer-defined unique ID for the entity this content points to.

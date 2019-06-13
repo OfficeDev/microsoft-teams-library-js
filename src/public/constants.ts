@@ -32,3 +32,11 @@ export const enum TaskModuleDimension {
   Medium = "medium",
   Small = "small"
 }
+
+/**
+ * The type of the channel with which the content is associated.
+ */
+export const enum ChannelType {
+  Regular = "Regular",
+  Private = "Private"
+}
