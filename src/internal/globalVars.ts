@@ -1,5 +1,5 @@
-import { MessageRequest } from "./interfaces";
-import { ConversationResponse } from "../public/interfaces";
+import { MessageRequest } from './interfaces';
+import { ConversationResponse } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
