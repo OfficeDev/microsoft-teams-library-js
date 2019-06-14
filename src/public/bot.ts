@@ -64,7 +64,8 @@ export namespace bot {
 
   export interface QueryResponse {
     attachments: IAttachment[],
-    layout: any;
+    layout: any,
+    botId: string,
   }
   export interface IAttachment {
     card: any;
