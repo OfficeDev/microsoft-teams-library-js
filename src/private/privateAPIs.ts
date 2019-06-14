@@ -2,11 +2,11 @@ import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs'
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import {
-    ChatMembersInformation,
-    ShowNotificationParameters,
-    FilePreviewParameters,
-    TeamInstanceParameters,
-    UserJoinedTeamsInformation,
+  ChatMembersInformation,
+  ShowNotificationParameters,
+  FilePreviewParameters,
+  TeamInstanceParameters,
+  UserJoinedTeamsInformation,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 
@@ -19,13 +19,13 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
  * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
  */
 export function getUserJoinedTeams(
-    callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
-    teamInstanceParameters?: TeamInstanceParameters,
+  callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
+  teamInstanceParameters?: TeamInstanceParameters,
 ): void {
-    ensureInitialized();
+  ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getUserJoinedTeams', [teamInstanceParameters]);
-    GlobalVars.callbacks[messageId] = callback;
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getUserJoinedTeams', [teamInstanceParameters]);
+  GlobalVars.callbacks[messageId] = callback;
 }
 
 /**
@@ -35,8 +35,8 @@ export function getUserJoinedTeams(
  * Place the tab into full-screen mode.
  */
 export function enterFullscreen() {
-    ensureInitialized(frameContexts.content);
-    sendMessageRequest(GlobalVars.parentWindow, 'enterFullscreen', []);
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, 'enterFullscreen', []);
 }
 
 /**
@@ -46,8 +46,8 @@ export function enterFullscreen() {
  * Reverts the tab into normal-screen mode.
  */
 export function exitFullscreen() {
-    ensureInitialized(frameContexts.content);
-    sendMessageRequest(GlobalVars.parentWindow, 'exitFullscreen', []);
+  ensureInitialized(frameContexts.content);
+  sendMessageRequest(GlobalVars.parentWindow, 'exitFullscreen', []);
 }
 
 /**
@@ -58,23 +58,23 @@ export function exitFullscreen() {
  * @param file The file to preview.
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-    ensureInitialized(frameContexts.content);
+  ensureInitialized(frameContexts.content);
 
-    const params = [
-        filePreviewParameters.entityId,
-        filePreviewParameters.title,
-        filePreviewParameters.description,
-        filePreviewParameters.type,
-        filePreviewParameters.objectUrl,
-        filePreviewParameters.downloadUrl,
-        filePreviewParameters.webPreviewUrl,
-        filePreviewParameters.webEditUrl,
-        filePreviewParameters.baseUrl,
-        filePreviewParameters.editFile,
-        filePreviewParameters.subEntityId,
-    ];
+  const params = [
+    filePreviewParameters.entityId,
+    filePreviewParameters.title,
+    filePreviewParameters.description,
+    filePreviewParameters.type,
+    filePreviewParameters.objectUrl,
+    filePreviewParameters.downloadUrl,
+    filePreviewParameters.webPreviewUrl,
+    filePreviewParameters.webEditUrl,
+    filePreviewParameters.baseUrl,
+    filePreviewParameters.editFile,
+    filePreviewParameters.subEntityId,
+  ];
 
-    sendMessageRequest(GlobalVars.parentWindow, 'openFilePreview', params);
+  sendMessageRequest(GlobalVars.parentWindow, 'openFilePreview', params);
 }
 
 /**
@@ -86,9 +86,9 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
  * @param notificationType Notification type
  */
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
-    ensureInitialized(frameContexts.content);
-    const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-    sendMessageRequest(GlobalVars.parentWindow, 'showNotification', params);
+  ensureInitialized(frameContexts.content);
+  const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
+  sendMessageRequest(GlobalVars.parentWindow, 'showNotification', params);
 }
 
 /**
@@ -99,10 +99,10 @@ export function showNotification(showNotificationParameters: ShowNotificationPar
  * This method works just for the first party Apps.
  */
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized();
+  ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'uploadCustomApp', [manifestBlob]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'uploadCustomApp', [manifestBlob]);
+  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
@@ -114,12 +114,12 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @returns id of sent message
  */
 export function sendCustomMessage(
-    actionName: string,
-    // tslint:disable-next-line:no-any
-    args?: any[],
+  actionName: string,
+  // tslint:disable-next-line:no-any
+  args?: any[],
 ): number {
-    ensureInitialized();
-    return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
+  ensureInitialized();
+  return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
 }
 
 /**
@@ -132,10 +132,10 @@ export function sendCustomMessage(
  * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
  */
 export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
-    ensureInitialized();
+  ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getChatMembers');
-    GlobalVars.callbacks[messageId] = callback;
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getChatMembers');
+  GlobalVars.callbacks[messageId] = callback;
 }
 
 /**
@@ -147,8 +147,8 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
  * @param key The key for the config setting
  */
 export function getConfigSetting(callback: (value: string) => void, key: string): void {
-    ensureInitialized();
+  ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getConfigSetting', [key]);
-    GlobalVars.callbacks[messageId] = callback;
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getConfigSetting', [key]);
+  GlobalVars.callbacks[messageId] = callback;
 }
