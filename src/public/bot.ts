@@ -33,6 +33,27 @@ export namespace bot {
       }
     };
   }
+  /**
+   * @private
+   * Hide from docs until release.
+   * -----
+   * Retrieves list of support commands from bot
+   * @param onBotQueryResponse callback to invoke when data is retrieved from bot
+   * @param onError callback to invoke should an error occur
+   */
+  export function getSupportedCommands(onBotGetCommandsResponse?: (response: ICommand[]) => void, onError?:(error:string) => void): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.getSupportedCommands");
+
+    GlobalVars.callbacks[messageId] = (success: boolean, response:string|ICommand[]) => {
+      if(success) {
+        onBotGetCommandsResponse(response as ICommand[]);
+      } else {
+        onError(response as string);
+      }
+    }
+  }
 
   export interface QueryRequest {
     /**
@@ -43,12 +64,17 @@ export namespace bot {
 
   export interface QueryResponse {
     attachments: IAttachment[],
-    layout: any;
+    layout: any,
+    botId: string,
   }
   export interface IAttachment {
     card: any;
     previewCard: any;
     previewRawPayload: any,
     rawPayload: any;
+  }
+  export interface ICommand {
+    title: string;
+    id: string;
   }
 }

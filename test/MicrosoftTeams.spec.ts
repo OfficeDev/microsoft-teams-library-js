@@ -2065,6 +2065,70 @@ describe("MicrosoftTeams", () => {
     });
   });
 
+  describe("getSupportedCommands", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+      bot.getSupportedCommands(() => {
+        return;
+      })
+    ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully send a request", () => {
+      initializeWithContext("content");
+
+      let botResponse: bot.ICommand[];
+      let error:string;
+
+      const handleBotResponse = (response: bot.ICommand[]) => { botResponse = response };
+      const handleError = (_error: string) => { error = _error };
+
+      bot.getSupportedCommands(handleBotResponse, handleError);
+
+      const message = findMessageByFunc("bot.getSupportedCommands");
+      expect(message).not.toBeUndefined();
+      
+      // Simulate response 
+      const data = {
+        sucess: true,
+        response: [{title:'CMD1', id:'CMD1'}] 
+      }
+
+      respondToMessage(message, data.sucess, data.response);
+
+      // check data is returned properly
+      expect(botResponse).toEqual([{title:'CMD1', id:'CMD1'}]);
+      expect(error).toBeUndefined();
+    });
+
+    it("should invoke error callback", () => {
+      initializeWithContext("content");
+
+      let botResponse: bot.ICommand[];
+      let error: string;
+
+      const handleBotResponse = ( response: bot.ICommand[] ) => { botResponse = response };
+      const handleError = ( _error: string ) => { error = _error };
+
+      bot.getSupportedCommands(handleBotResponse, handleError);
+
+      const message = findMessageByFunc("bot.getSupportedCommands");
+      expect(message).not.toBeUndefined();
+
+      // Simulate response
+      const data = {
+        success: false,
+        response: "Something went wrong..."
+      };
+
+      respondToMessage(message, data.success, data.response);
+
+      // check data is returned properly
+      expect(error).toBe("Something went wrong...");
+      expect(botResponse).toBeUndefined();
+    });
+  });
+
   function initializeWithContext(
     frameContext: string,
     hostClientType?: string
