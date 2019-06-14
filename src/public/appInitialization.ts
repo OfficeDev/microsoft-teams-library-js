@@ -1,14 +1,14 @@
-import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
-import { version } from "../internal/constants";
+import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { GlobalVars } from '../internal/globalVars';
+import { version } from '../internal/constants';
 
 export namespace appInitialization {
   /**
- * To notify app loaded to hide loading indicator
- */
+   * To notify app loaded to hide loading indicator
+   */
   export function notifyAppLoaded(): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.appLoaded", [version]);
+    sendMessageRequest(GlobalVars.parentWindow, 'appInitialization.appLoaded', [version]);
   }
 
   /**
@@ -16,7 +16,7 @@ export namespace appInitialization {
    */
   export function notifySuccess(): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.success", [version]);
+    sendMessageRequest(GlobalVars.parentWindow, 'appInitialization.success', [version]);
   }
 
   /**
@@ -24,13 +24,16 @@ export namespace appInitialization {
    */
   export function notifyFailure(appInitializationFailedRequest: appInitialization.IFailedRequest): void {
     ensureInitialized();
-    sendMessageRequest(GlobalVars.parentWindow, "appInitialization.failure", [appInitializationFailedRequest.reason, appInitializationFailedRequest.message]);
+    sendMessageRequest(GlobalVars.parentWindow, 'appInitialization.failure', [
+      appInitializationFailedRequest.reason,
+      appInitializationFailedRequest.message,
+    ]);
   }
 
   export const enum FailedReason {
-    AuthFailed = "AuthFailed",
-    Timeout = "Timeout",
-    Other = "Other"
+    AuthFailed = 'AuthFailed',
+    Timeout = 'Timeout',
+    Other = 'Other',
   }
 
   export interface IFailedRequest {
