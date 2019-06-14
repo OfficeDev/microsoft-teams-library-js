@@ -1,5 +1,5 @@
-import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
+import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { GlobalVars } from '../internal/globalVars';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -79,15 +79,15 @@ export namespace menus {
    * Represents information about type of list to display in Navigation Bar Menu.
    */
   export enum MenuListType {
-    dropDown = "dropDown",
-    popOver = "popOver"
+    dropDown = 'dropDown',
+    popOver = 'popOver',
   }
   let navBarMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers["navBarMenuItemPress"] = handleNavBarMenuItemPress;
+  GlobalVars.handlers['navBarMenuItemPress'] = handleNavBarMenuItemPress;
   let actionMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers["actionMenuItemPress"] = handleActionMenuItemPress;
+  GlobalVars.handlers['actionMenuItemPress'] = handleActionMenuItemPress;
   let viewConfigItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers["setModuleView"] = handleViewConfigItemPress;
+  GlobalVars.handlers['setModuleView'] = handleViewConfigItemPress;
   /**
    * Registers list of view configurations and it's handler.
    * Handler is responsible for listening selection of View Configuration.
@@ -97,12 +97,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, "setUpViews", [viewConfig]);
+    sendMessageRequest(GlobalVars.parentWindow, 'setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, "viewConfigItemPress", [id]);
+      sendMessageRequest(GlobalVars.parentWindow, 'viewConfigItemPress', [id]);
     }
   }
   /**
@@ -113,12 +113,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, "setNavBarMenu", [items]);
+    sendMessageRequest(GlobalVars.parentWindow, 'setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, "handleNavBarMenuItemPress", [id]);
+      sendMessageRequest(GlobalVars.parentWindow, 'handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -139,12 +139,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, "showActionMenu", [params]);
+    sendMessageRequest(GlobalVars.parentWindow, 'showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, "handleActionMenuItemPress", [id]);
+      sendMessageRequest(GlobalVars.parentWindow, 'handleActionMenuItemPress', [id]);
     }
   }
 }

@@ -1,4 +1,4 @@
-export { menus } from "./menus";
+export { menus } from './menus';
 export {
   ChatMembersInformation,
   FilePreviewParameters,
@@ -7,7 +7,7 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
-} from "./interfaces";
+} from './interfaces';
 export {
   enterFullscreen,
   exitFullscreen,
@@ -17,8 +17,6 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
-  uploadCustomApp
-} from "./privateAPIs";
-export {
-  conversations
-} from "./conversations";
+  uploadCustomApp,
+} from './privateAPIs';
+export { conversations } from './conversations';

@@ -1,8 +1,8 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
 
 /**
-* Represents information about tabs for an app
-*/
+ * Represents information about tabs for an app
+ */
 export interface TabInformation {
   teamTabs: TabInstance[];
 }
@@ -342,12 +342,12 @@ export interface TaskInfo {
   /**
    * The requested height of the webview/iframe.
    */
-  height?: TaskModuleDimension | Number;
+  height?: TaskModuleDimension | number;
 
   /**
    * The requested width of the webview/iframe.
    */
-  width?: TaskModuleDimension | Number;
+  width?: TaskModuleDimension | number;
 
   /**
    * Title of the task module.
@@ -371,22 +371,21 @@ export interface TaskInfo {
  * @private
  * Hide from docs.
  * ------
-*/
+ */
 export interface OpenConversationRequest {
-
   /**
-  * The Id of the subEntity where the conversation is taking place
-  */
+   * The Id of the subEntity where the conversation is taking place
+   */
   subEntityId: string;
 
   /**
-  * The title of the conversation
-  */
+   * The title of the conversation
+   */
   title: string;
 
   /**
-  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-  */
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
   conversationId?: string;
 
   /**
@@ -400,13 +399,13 @@ export interface OpenConversationRequest {
   entityId: string;
 
   /**
-  * A function that is called once the conversation Id has been created
-  */
+   * A function that is called once the conversation Id has been created
+   */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
-  * A function that is called if the pane is closed
-  */
+   * A function that is called if the pane is closed
+   */
   onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
@@ -414,17 +413,16 @@ export interface OpenConversationRequest {
  * @private
  * Hide from docs.
  * ------
-*/
+ */
 export interface ConversationResponse {
-
   /**
-  * The Id of the subEntity where the conversation is taking place
-  */
+   * The Id of the subEntity where the conversation is taking place
+   */
   subEntityId: string;
 
   /**
-  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-  */
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
   conversationId?: string;
 
   /**
