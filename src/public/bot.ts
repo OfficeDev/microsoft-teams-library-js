@@ -41,14 +41,14 @@ export namespace bot {
    * @param onBotQueryResponse callback to invoke when data is retrieved from bot
    * @param onError callback to invoke should an error occur
    */
-  export function getSupportedCommands(onBotGetCommandResponse?: (response: ICommand[]) => void, onError?:(error:string) => void): void {
+  export function getSupportedCommands(onBotGetCommandsResponse?: (response: ICommand[]) => void, onError?:(error:string) => void): void {
     ensureInitialized();
 
     const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.getSupportedCommands");
 
     GlobalVars.callbacks[messageId] = (success: boolean, response:string|ICommand[]) => {
       if(success) {
-        onBotGetCommandResponse(response as ICommand[]);
+        onBotGetCommandsResponse(response as ICommand[]);
       } else {
         onError(response as string);
       }
