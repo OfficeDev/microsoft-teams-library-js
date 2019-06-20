@@ -18,7 +18,7 @@ export namespace bot {
   export function sendQuery(
     botRequest: QueryRequest,
     onBotQueryResponse?: (data: QueryResponse) => void,
-    onError?: (error: string) => {},
+    onError?: (error: string) => void
   ): void {
     // void for now
     ensureInitialized();
@@ -45,7 +45,7 @@ export namespace bot {
    */
   export function getSupportedCommands(
     onBotGetCommandsResponse?: (response: ICommand[]) => void,
-    onError?: (error: string) => void,
+    onError?: (error: string) => void
   ): void {
     ensureInitialized();
 
@@ -65,6 +65,7 @@ export namespace bot {
      * Query to search for
      */
     query: string;
+    commandId: string;
   }
 
   export interface QueryResponse {
