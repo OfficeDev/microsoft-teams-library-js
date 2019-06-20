@@ -1,4 +1,4 @@
-import { TeamInformation } from "../public/interfaces";
+import { TeamInformation } from '../public/interfaces';
 /**
  * @private
  * Hide from docs
@@ -23,8 +23,8 @@ export interface ThreadMember {
 }
 
 export const enum NotificationTypes {
-  fileDownloadStart = "fileDownloadStart",
-  fileDownloadComplete = "fileDownloadComplete"
+  fileDownloadStart = 'fileDownloadStart',
+  fileDownloadComplete = 'fileDownloadComplete',
 }
 
 export interface ShowNotificationParameters {

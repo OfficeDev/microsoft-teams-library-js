@@ -1,11 +1,6 @@
-export { appInitialization } from "./appInitialization";
-export { authentication } from "./authentication";
-export {
-  HostClientType,
-  TaskModuleDimension,
-  TeamType,
-  UserTeamRole
-} from "./constants";
+export { appInitialization } from './appInitialization';
+export { authentication } from './authentication';
+export { HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './constants';
 export {
   Context,
   DeepLinkParameters,
@@ -13,8 +8,8 @@ export {
   TabInstance,
   TabInstanceParameters,
   TaskInfo,
-  TeamInformation
-} from "./interfaces";
+  TeamInformation,
+} from './interfaces';
 export {
   enablePrintCapability,
   executeDeepLink,
@@ -31,6 +26,7 @@ export {
   registerChangeSettingsHandler,
   registerFullScreenHandler,
   registerOnThemeChangeHandler,
+<<<<<<< HEAD
   shareDeepLink
 } from "./publicAPIs";
 export { settings } from "./settings";
@@ -41,3 +37,10 @@ export {
   IAppWindow,
   ParentAppWindow
 } from "./appWindow";
+=======
+  shareDeepLink,
+} from './publicAPIs';
+export { settings } from './settings';
+export { tasks } from './tasks';
+export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
+>>>>>>> 4bb5ccbdf1397563e652aeaa2e9b5f055199d671

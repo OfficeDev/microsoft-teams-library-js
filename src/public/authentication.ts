@@ -1,7 +1,7 @@
-import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
-import { frameContexts } from "../internal/constants";
-import { HostClientType } from "./constants";
+import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from '../internal/internalAPIs';
+import { GlobalVars } from '../internal/globalVars';
+import { frameContexts } from '../internal/constants';
+import { HostClientType } from './constants';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -10,8 +10,8 @@ import { HostClientType } from "./constants";
 export namespace authentication {
   let authParams: AuthenticateParameters;
   let authWindowMonitor: number;
-  GlobalVars.handlers["authentication.authenticate.success"] = handleSuccess;
-  GlobalVars.handlers["authentication.authenticate.failure"] = handleFailure;
+  GlobalVars.handlers['authentication.authenticate.success'] = handleSuccess;
+  GlobalVars.handlers['authentication.authenticate.failure'] = handleFailure;
 
   /**
    * Registers the authentication GlobalVars.handlers
@@ -25,29 +25,31 @@ export namespace authentication {
    * Initiates an authentication request, which opens a new window with the specified settings.
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void {
-    const authenticateParams = authenticateParameters !== undefined
-      ? authenticateParameters
-      : authParams;
+    const authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
     ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
-    if (GlobalVars.hostClientType === HostClientType.desktop ||
+    if (
+      GlobalVars.hostClientType === HostClientType.desktop ||
       GlobalVars.hostClientType === HostClientType.android ||
       GlobalVars.hostClientType === HostClientType.ios ||
-      GlobalVars.hostClientType === HostClientType.rigel) {
+      GlobalVars.hostClientType === HostClientType.rigel
+    ) {
       // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = authenticateParams.url;
       // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate", [link.href, authenticateParams.width, authenticateParams.height]);
+      const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate', [
+        link.href,
+        authenticateParams.width,
+        authenticateParams.height,
+      ]);
       GlobalVars.callbacks[messageId] = (success: boolean, response: string) => {
         if (success) {
           authenticateParams.successCallback(response);
-        }
-        else {
+        } else {
           authenticateParams.failureCallback(response);
         }
       };
-    }
-    else {
+    } else {
       // Open an authentication window with the parameters provided by the caller.
       openAuthenticationWindow(authenticateParams);
     }
@@ -63,12 +65,13 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.getAuthToken", [authTokenRequest.resources]);
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.getAuthToken', [
+      authTokenRequest.resources,
+    ]);
     GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
       if (success) {
         authTokenRequest.successCallback(result);
-      }
-      else {
+      } else {
         authTokenRequest.failureCallback(result);
       }
     };
@@ -82,12 +85,11 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "authentication.getUser");
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.getUser');
     GlobalVars.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
-      }
-      else {
+      } else {
         userRequest.failureCallback(result as string);
       }
     };
@@ -101,8 +103,7 @@ export namespace authentication {
       if (GlobalVars.childWindow) {
         GlobalVars.childWindow.close();
       }
-    }
-    finally {
+    } finally {
       GlobalVars.childWindow = null;
       GlobalVars.childOrigin = null;
     }
@@ -119,33 +120,38 @@ export namespace authentication {
     width = Math.min(width, GlobalVars.currentWindow.outerWidth - 400);
     height = Math.min(height, GlobalVars.currentWindow.outerHeight - 200);
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = authParams.url;
     // We are running in the browser, so we need to center the new window ourselves
-    let left: number = typeof GlobalVars.currentWindow.screenLeft !== "undefined"
-      ? GlobalVars.currentWindow.screenLeft
-      : GlobalVars.currentWindow.screenX;
-    let top: number = typeof GlobalVars.currentWindow.screenTop !== "undefined"
-      ? GlobalVars.currentWindow.screenTop
-      : GlobalVars.currentWindow.screenY;
+    let left: number =
+      typeof GlobalVars.currentWindow.screenLeft !== 'undefined'
+        ? GlobalVars.currentWindow.screenLeft
+        : GlobalVars.currentWindow.screenX;
+    let top: number =
+      typeof GlobalVars.currentWindow.screenTop !== 'undefined'
+        ? GlobalVars.currentWindow.screenTop
+        : GlobalVars.currentWindow.screenY;
     left += GlobalVars.currentWindow.outerWidth / 2 - width / 2;
     top += GlobalVars.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
-    GlobalVars.childWindow = GlobalVars.currentWindow.open(link.href, "_blank", "toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=" +
-      top +
-      ", left=" +
-      left +
-      ", width=" +
-      width +
-      ", height=" +
-      height);
+    GlobalVars.childWindow = GlobalVars.currentWindow.open(
+      link.href,
+      '_blank',
+      'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
+        top +
+        ', left=' +
+        left +
+        ', width=' +
+        width +
+        ', height=' +
+        height,
+    );
     if (GlobalVars.childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
       startAuthenticationWindowMonitor();
-    }
-    else {
+    } else {
       // If we failed to open the window, fail the authentication flow
-      handleFailure("FailedToOpenWindow");
+      handleFailure('FailedToOpenWindow');
     }
   }
 
@@ -154,8 +160,8 @@ export namespace authentication {
       clearInterval(authWindowMonitor);
       authWindowMonitor = 0;
     }
-    delete GlobalVars.handlers["initialize"];
-    delete GlobalVars.handlers["navigateCrossDomain"];
+    delete GlobalVars.handlers['initialize'];
+    delete GlobalVars.handlers['navigateCrossDomain'];
   }
 
   function startAuthenticationWindowMonitor(): void {
@@ -168,28 +174,26 @@ export namespace authentication {
     //   with us
     authWindowMonitor = GlobalVars.currentWindow.setInterval(() => {
       if (!GlobalVars.childWindow || GlobalVars.childWindow.closed) {
-        handleFailure("CancelledByUser");
-      }
-      else {
+        handleFailure('CancelledByUser');
+      } else {
         const savedChildOrigin = GlobalVars.childOrigin;
         try {
-          GlobalVars.childOrigin = "*";
-          sendMessageRequest(GlobalVars.childWindow, "ping");
-        }
-        finally {
+          GlobalVars.childOrigin = '*';
+          sendMessageRequest(GlobalVars.childWindow, 'ping');
+        } finally {
           GlobalVars.childOrigin = savedChildOrigin;
         }
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    GlobalVars.handlers["initialize"] = () => {
+    GlobalVars.handlers['initialize'] = () => {
       return [frameContexts.authentication, GlobalVars.hostClientType];
     };
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    GlobalVars.handlers["navigateCrossDomain"] = (url: string) => {
+    GlobalVars.handlers['navigateCrossDomain'] = (url: string) => {
       return false;
     };
   }
@@ -202,11 +206,9 @@ export namespace authentication {
    * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, "result", result);
+    redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate.success", [
-      result
-    ]);
+    sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
@@ -219,11 +221,9 @@ export namespace authentication {
    * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, "reason", reason);
+    redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, "authentication.authenticate.failure", [
-      reason
-    ]);
+    sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
@@ -233,8 +233,7 @@ export namespace authentication {
       if (authParams && authParams.successCallback) {
         authParams.successCallback(result);
       }
-    }
-    finally {
+    } finally {
       authParams = null;
       closeAuthenticationWindow();
     }
@@ -245,8 +244,7 @@ export namespace authentication {
       if (authParams && authParams.failureCallback) {
         authParams.failureCallback(reason);
       }
-    }
-    finally {
+    } finally {
       authParams = null;
       closeAuthenticationWindow();
     }
@@ -260,23 +258,25 @@ export namespace authentication {
    */
   function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
     if (callbackUrl) {
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = decodeURIComponent(callbackUrl);
-      if (link.host &&
+      if (
+        link.host &&
         link.host !== window.location.host &&
-        link.host === "outlook.office.com" &&
-        link.search.indexOf("client_type=Win32_Outlook") > -1) {
-        if (key && key === "result") {
+        link.host === 'outlook.office.com' &&
+        link.search.indexOf('client_type=Win32_Outlook') > -1
+      ) {
+        if (key && key === 'result') {
           if (value) {
-            link.href = updateUrlParameter(link.href, "result", value);
+            link.href = updateUrlParameter(link.href, 'result', value);
           }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, "authSuccess", ""));
+          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, 'authSuccess', ''));
         }
-        if (key && key === "reason") {
+        if (key && key === 'reason') {
           if (value) {
-            link.href = updateUrlParameter(link.href, "reason", value);
+            link.href = updateUrlParameter(link.href, 'reason', value);
           }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, "authFailure", ""));
+          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, 'authFailure', ''));
         }
       }
     }
@@ -289,9 +289,9 @@ export namespace authentication {
    * @param value - the fragment value
    */
   function updateUrlParameter(uri: string, key: string, value: string): string {
-    const i = uri.indexOf("#");
-    let hash = i === -1 ? "#" : uri.substr(i);
-    hash = hash + "&" + key + (value !== "" ? "=" + value : "");
+    const i = uri.indexOf('#');
+    let hash = i === -1 ? '#' : uri.substr(i);
+    hash = hash + '&' + key + (value !== '' ? '=' + value : '');
     uri = i === -1 ? uri : uri.substr(0, i);
     return uri + hash;
   }
