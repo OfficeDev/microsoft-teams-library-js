@@ -164,17 +164,3 @@ export function getConfigSetting(
   ]);
   GlobalVars.callbacks[messageId] = callback;
 }
-
-/**
- * @private
- * Hide from docs
- * ------
- * Registers a handler for getting app log
- * @param handler The handler to invoke to get the app log
- */
-export function registerGetLogHandler(handler: () => string): void {
-  ensureInitialized();
-
-  GlobalVars.getLogHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["getLog"]);
-}

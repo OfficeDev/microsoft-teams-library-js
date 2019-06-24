@@ -7,6 +7,7 @@ import { TeamInstanceParameters } from "../src/private/interfaces";
 import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
 import { tasks } from "../src/public/tasks";
 import { conversations } from "../src/private/conversations";
+import { files } from "../src/private/files";
 
 interface MessageRequest {
   id: number;
@@ -1975,7 +1976,7 @@ describe("MicrosoftTeams", () => {
   describe("registerGetLogHandler", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      microsoftTeamsPrivate.registerGetLogHandler(() => {
+      files.registerGetLogHandler(() => {
           return "";
         })
       ).toThrowError("The library has not yet been initialized");
@@ -1985,12 +1986,12 @@ describe("MicrosoftTeams", () => {
       initializeWithContext("content");
 
       let handlerInvoked = false;
-      microsoftTeamsPrivate.registerGetLogHandler(() => {
+      files.registerGetLogHandler(() => {
         handlerInvoked = true;
         return "";
       });
 
-      sendMessage("getLog");
+      sendMessage("log.request");
 
       expect(handlerInvoked).toBe(true);
     });
@@ -2000,14 +2001,14 @@ describe("MicrosoftTeams", () => {
 
       let handlerInvoked = false;
       const log: string = "1/1/2019 Info - App initialized";
-      microsoftTeamsPrivate.registerGetLogHandler(() => {
+      files.registerGetLogHandler(() => {
         handlerInvoked = true;
         return log;
       });
 
-      sendMessage("getLog");
+      sendMessage("log.request");
 
-      const sendLogMessage = findMessageByFunc("sendLog");
+      const sendLogMessage = findMessageByFunc("log.receive");
       expect(sendLogMessage).not.toBeNull();
       expect(sendLogMessage.args).toEqual([log]);
       expect(handlerInvoked).toBe(true);
@@ -2016,9 +2017,9 @@ describe("MicrosoftTeams", () => {
     it("should not send log when no get log handler is registered", () => {
       initializeWithContext("content");
 
-      sendMessage("getLog");
+      sendMessage("log.request");
 
-      const sendLogMessage = findMessageByFunc("sendLog");
+      const sendLogMessage = findMessageByFunc("log.receive");
       expect(sendLogMessage).toBeNull();
     });
   });

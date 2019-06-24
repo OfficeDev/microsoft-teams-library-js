@@ -11,7 +11,6 @@ GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
 GlobalVars.handlers["changeSettings"] = handleChangeSettings;
 GlobalVars.handlers["startConversation"] = handleStartConversation;
 GlobalVars.handlers["closeConversation"] = handleCloseConversation;
-GlobalVars.handlers["getLog"] = handleGetLogRequest;
 
 function handleStartConversation(subEntityId: string, conversationId: string): void {
   if (GlobalVars.onStartConversationHandler) {
@@ -60,13 +59,6 @@ function handleBeforeUnload(): void {
 function handleChangeSettings(): void {
   if (GlobalVars.changeSettingsHandler) {
     GlobalVars.changeSettingsHandler();
-  }
-}
-
-function handleGetLogRequest(): void {
-  if (GlobalVars.getLogHandler) {
-    const log: string = GlobalVars.getLogHandler();
-    sendMessageRequest(GlobalVars.parentWindow, "sendLog", [log]);
   }
 }
 

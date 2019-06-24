@@ -1,4 +1,5 @@
 export { menus } from "./menus";
+export { files } from "./files";
 export {
   ChatMembersInformation,
   FilePreviewParameters,
@@ -17,8 +18,7 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
-  uploadCustomApp,
-  registerGetLogHandler
+  uploadCustomApp
 } from "./privateAPIs";
 export {
   conversations
