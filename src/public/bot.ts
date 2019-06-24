@@ -18,7 +18,7 @@ export namespace bot {
   export function sendQuery(
     botRequest: QueryRequest,
     onBotQueryResponse?: (data: QueryResponse) => void,
-    onError?: (error: string) => {},
+    onError?: (error: string) => void,
   ): void {
     // void for now
     ensureInitialized();
@@ -65,6 +65,7 @@ export namespace bot {
      * Query to search for
      */
     query: string;
+    commandId?: string;
   }
 
   export interface QueryResponse {
@@ -73,6 +74,7 @@ export namespace bot {
     botId: string;
   }
   export interface IAttachment {
+    // Will add better interfaces later
     card: any;
     previewCard: any;
     previewRawPayload: any;
