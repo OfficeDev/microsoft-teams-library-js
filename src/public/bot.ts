@@ -1,5 +1,5 @@
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { GlobalVars } from "../internal/globalVars";
+import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
 
 /**
  * @private
@@ -24,7 +24,7 @@ export namespace bot {
     ensureInitialized();
 
     // send request to teams
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.executeQuery', [botRequest]);
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.executeQuery", [botRequest]);
 
     // register handler for callback id
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
@@ -49,7 +49,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.getSupportedCommands');
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.getSupportedCommands");
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | ICommand[]) => {
       if (success) {
@@ -65,7 +65,7 @@ export namespace bot {
      * Query to search for
      */
     query: string;
-    commandId: string;
+    commandId?: string | string[] | null | undefined;
   }
 
   export interface QueryResponse {
