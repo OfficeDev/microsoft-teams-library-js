@@ -74,6 +74,7 @@ export namespace bot {
     botId: string;
   }
   export interface IAttachment {
+    // Will add better interfaces later
     card: any;
     previewCard: any;
     previewRawPayload: any;
