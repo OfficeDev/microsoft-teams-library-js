@@ -65,7 +65,7 @@ export namespace bot {
      * Query to search for
      */
     query: string;
-    commandId?: string | string[] | null | undefined;
+    commandId?: string;
   }
 
   export interface QueryResponse {
