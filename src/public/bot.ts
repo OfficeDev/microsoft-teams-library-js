@@ -1,5 +1,5 @@
-import { GlobalVars } from "../internal/globalVars";
-import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
+import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
 
 /**
  * @private
@@ -18,13 +18,13 @@ export namespace bot {
   export function sendQuery(
     botRequest: QueryRequest,
     onBotQueryResponse?: (data: QueryResponse) => void,
-    onError?: (error: string) => void
+    onError?: (error: string) => void,
   ): void {
     // void for now
     ensureInitialized();
 
     // send request to teams
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.executeQuery", [botRequest]);
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.executeQuery', [botRequest]);
 
     // register handler for callback id
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
@@ -45,11 +45,11 @@ export namespace bot {
    */
   export function getSupportedCommands(
     onBotGetCommandsResponse?: (response: ICommand[]) => void,
-    onError?: (error: string) => void
+    onError?: (error: string) => void,
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, "bot.getSupportedCommands");
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.getSupportedCommands');
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | ICommand[]) => {
       if (success) {
