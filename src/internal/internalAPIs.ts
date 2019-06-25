@@ -1,26 +1,46 @@
-import { navigateBack } from "../public/publicAPIs";
-import { validOriginRegExp } from "./constants";
-import { GlobalVars } from "./globalVars";
-import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./interfaces";
+import { navigateBack } from '../public/publicAPIs';
+import { validOriginRegExp } from './constants';
+import { GlobalVars } from './globalVars';
+import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from './interfaces';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-GlobalVars.handlers["themeChange"] = handleThemeChange;
-GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
-GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
-GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
-GlobalVars.handlers["changeSettings"] = handleChangeSettings;
-GlobalVars.handlers["startConversation"] = handleStartConversation;
-GlobalVars.handlers["closeConversation"] = handleCloseConversation;
+GlobalVars.handlers['themeChange'] = handleThemeChange;
+GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
+GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
+GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
+GlobalVars.handlers['changeSettings'] = handleChangeSettings;
+GlobalVars.handlers['startConversation'] = handleStartConversation;
+GlobalVars.handlers['closeConversation'] = handleCloseConversation;
 
-function handleStartConversation(subEntityId: string, conversationId: string): void {
+function handleStartConversation(
+  subEntityId: string,
+  conversationId: string,
+  channelId: string,
+  entityId: string,
+): void {
   if (GlobalVars.onStartConversationHandler) {
-    GlobalVars.onStartConversationHandler(subEntityId, conversationId);
+    GlobalVars.onStartConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId,
+    });
   }
 }
 
-function handleCloseConversation(subEntityId: string, conversationId?: string): void {
+function handleCloseConversation(
+  subEntityId: string,
+  conversationId?: string,
+  channelId?: string,
+  entityId?: string,
+): void {
   if (GlobalVars.onCloseConversationHandler) {
-    GlobalVars.onCloseConversationHandler(subEntityId, conversationId);
+    GlobalVars.onCloseConversationHandler({
+      subEntityId: subEntityId,
+      conversationId: conversationId,
+      channelId: channelId,
+      entityId: entityId,
+    });
   }
 }
 
@@ -30,7 +50,7 @@ function handleThemeChange(theme: string): void {
   }
 
   if (GlobalVars.childWindow) {
-    sendMessageRequest(GlobalVars.childWindow, "themeChange", [theme]);
+    sendMessageRequest(GlobalVars.childWindow, 'themeChange', [theme]);
   }
 }
 
@@ -48,7 +68,7 @@ function handleBackButtonPress(): void {
 
 function handleBeforeUnload(): void {
   const readyToUnload = () => {
-    sendMessageRequest(GlobalVars.parentWindow, "readyToUnload", []);
+    sendMessageRequest(GlobalVars.parentWindow, 'readyToUnload', []);
   };
 
   if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
@@ -64,14 +84,10 @@ function handleChangeSettings(): void {
 
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCalled) {
-    throw new Error("The library has not yet been initialized");
+    throw new Error('The library has not yet been initialized');
   }
 
-  if (
-    GlobalVars.frameContext &&
-    expectedFrameContexts &&
-    expectedFrameContexts.length > 0
-  ) {
+  if (GlobalVars.frameContext && expectedFrameContexts && expectedFrameContexts.length > 0) {
     let found = false;
     for (let i = 0; i < expectedFrameContexts.length; i++) {
       if (expectedFrameContexts[i] === GlobalVars.frameContext) {
@@ -81,16 +97,14 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
     }
 
     if (!found) {
-      throw new Error(
-        "This call is not allowed in the '" + GlobalVars.frameContext + "' context"
-      );
+      throw new Error("This call is not allowed in the '" + GlobalVars.frameContext + "' context");
     }
   }
 }
 
 export function processMessage(evt: MessageEvent): void {
   // Process only if we received a valid message
-  if (!evt || !evt.data || typeof evt.data !== "object") {
+  if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
   }
 
@@ -99,8 +113,7 @@ export function processMessage(evt: MessageEvent): void {
   const messageOrigin = evt.origin || evt.originalEvent.origin;
   if (
     messageSource === GlobalVars.currentWindow ||
-    (messageOrigin !== GlobalVars.currentWindow.location.origin &&
-      !validOriginRegExp.test(messageOrigin.toLowerCase()))
+    (messageOrigin !== GlobalVars.currentWindow.location.origin && !validOriginRegExp.test(messageOrigin.toLowerCase()))
   ) {
     return;
   }
@@ -116,10 +129,7 @@ export function processMessage(evt: MessageEvent): void {
   }
 }
 
-function updateRelationships(
-  messageSource: Window,
-  messageOrigin: string
-): void {
+function updateRelationships(messageSource: Window, messageOrigin: string): void {
   // Determine whether the source of the message is our parent or child and update our
   // window and origin pointer accordingly
   if (!GlobalVars.parentWindow || messageSource === GlobalVars.parentWindow) {
@@ -146,7 +156,7 @@ function updateRelationships(
 }
 
 export function handleParentMessage(evt: MessageEvent): void {
-  if ("id" in evt.data) {
+  if ('id' in evt.data) {
     // Call any associated GlobalVars.callbacks
     const message = evt.data as MessageResponse;
     const callback = GlobalVars.callbacks[message.id];
@@ -156,7 +166,7 @@ export function handleParentMessage(evt: MessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory.
       delete GlobalVars.callbacks[message.id];
     }
-  } else if ("func" in evt.data) {
+  } else if ('func' in evt.data) {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
     const handler = GlobalVars.handlers[message.func];
@@ -168,26 +178,18 @@ export function handleParentMessage(evt: MessageEvent): void {
 }
 
 function handleChildMessage(evt: MessageEvent): void {
-  if ("id" in evt.data && "func" in evt.data) {
+  if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler
     const message = evt.data as MessageRequest;
     const handler = GlobalVars.handlers[message.func];
     if (handler) {
       const result = handler.apply(this, message.args);
       if (result) {
-        sendMessageResponse(
-          GlobalVars.childWindow,
-          message.id,
-          Array.isArray(result) ? result : [result]
-        );
+        sendMessageResponse(GlobalVars.childWindow, message.id, Array.isArray(result) ? result : [result]);
       }
     } else {
       // Proxy to parent
-      const messageId = sendMessageRequest(
-        GlobalVars.parentWindow,
-        message.func,
-        message.args
-      );
+      const messageId = sendMessageRequest(GlobalVars.parentWindow, message.func, message.args);
 
       // tslint:disable-next-line:no-any
       GlobalVars.callbacks[messageId] = (...args: any[]) => {
@@ -203,16 +205,16 @@ function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
   return targetWindow === GlobalVars.parentWindow
     ? GlobalVars.parentMessageQueue
     : targetWindow === GlobalVars.childWindow
-      ? GlobalVars.childMessageQueue
-      : [];
+    ? GlobalVars.childMessageQueue
+    : [];
 }
 
 function getTargetOrigin(targetWindow: Window): string {
   return targetWindow === GlobalVars.parentWindow
     ? GlobalVars.parentOrigin
     : targetWindow === GlobalVars.childWindow
-      ? GlobalVars.childOrigin
-      : null;
+    ? GlobalVars.childOrigin
+    : null;
 }
 
 function flushMessageQueue(targetWindow: Window | any): void {
@@ -236,14 +238,12 @@ export function sendMessageRequest(
   targetWindow: Window | any,
   actionName: string,
   // tslint:disable-next-line: no-any
-  args?: any[]
+  args?: any[],
 ): number {
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
     if (GlobalVars.currentWindow && GlobalVars.currentWindow.nativeInterface) {
-      (GlobalVars.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
-        JSON.stringify(request)
-      );
+      (GlobalVars.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
     const targetOrigin = getTargetOrigin(targetWindow);
@@ -263,7 +263,7 @@ function sendMessageResponse(
   targetWindow: Window | any,
   id: number,
   // tslint:disable-next-line:no-any
-  args?: any[]
+  args?: any[],
 ): void {
   const response = createMessageResponse(id, args);
   const targetOrigin = getTargetOrigin(targetWindow);
@@ -277,7 +277,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: GlobalVars.nextMessageId++,
     func: func,
-    args: args || []
+    args: args || [],
   };
 }
 
@@ -285,6 +285,6 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
 function createMessageResponse(id: number, args: any[]): MessageResponse {
   return {
     id: id,
-    args: args || []
+    args: args || [],
   };
 }

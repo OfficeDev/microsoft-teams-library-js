@@ -1,4 +1,5 @@
-import { MessageRequest } from "./interfaces";
+import { MessageRequest } from './interfaces';
+import { ConversationResponse } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
@@ -24,7 +25,7 @@ export class GlobalVars {
   public static backButtonPressHandler: () => boolean;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
-  public static onStartConversationHandler: (sunEntityId: string, conversationId: string) => void;
-  public static onCloseConversationHandler: (sunEntityId: string, conversationId?: string) => void;
+  public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
+  public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
 }

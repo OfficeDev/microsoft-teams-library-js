@@ -1,9 +1,9 @@
 export const enum HostClientType {
-  desktop = "desktop",
-  web = "web",
-  android = "android",
-  ios = "ios",
-  rigel = "rigel"
+  desktop = 'desktop',
+  web = 'web',
+  android = 'android',
+  ios = 'ios',
+  rigel = 'rigel',
 }
 
 /**
@@ -15,7 +15,7 @@ export const enum TeamType {
   Edu = 1,
   Class = 2,
   Plc = 3,
-  Staff = 4
+  Staff = 4,
 }
 
 /**
@@ -24,11 +24,19 @@ export const enum TeamType {
 export const enum UserTeamRole {
   Admin = 0,
   User = 1,
-  Guest = 2
+  Guest = 2,
 }
 
 export const enum TaskModuleDimension {
-  Large = "large",
-  Medium = "medium",
-  Small = "small"
+  Large = 'large',
+  Medium = 'medium',
+  Small = 'small',
+}
+
+/**
+ * The type of the channel with which the content is associated.
+ */
+export const enum ChannelType {
+  Regular = 'Regular',
+  Private = 'Private',
 }

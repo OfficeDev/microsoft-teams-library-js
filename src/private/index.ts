@@ -1,5 +1,5 @@
-export { menus } from "./menus";
-export { files } from "./files";
+export { menus } from './menus';
+export { files } from './files';
 export {
   ChatMembersInformation,
   FilePreviewParameters,
@@ -8,7 +8,7 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
-} from "./interfaces";
+} from './interfaces';
 export {
   enterFullscreen,
   exitFullscreen,
@@ -18,8 +18,6 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
-  uploadCustomApp
-} from "./privateAPIs";
-export {
-  conversations
-} from "./conversations";
+  uploadCustomApp,
+} from './privateAPIs';
+export { conversations } from './conversations';
