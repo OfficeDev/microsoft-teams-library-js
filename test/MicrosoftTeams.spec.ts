@@ -7,6 +7,8 @@ import { TeamInstanceParameters } from "../src/private/interfaces";
 import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../src/public/constants";
 import { tasks } from "../src/public/tasks";
 import { conversations } from "../src/private/conversations";
+import { executeDeepLink } from "../src/public/publicAPIs";
+import { frameContexts } from "../src/internal/constants";
 
 interface MessageRequest {
   id: number;
@@ -1988,6 +1990,214 @@ describe("MicrosoftTeams", () => {
       expect(() => conversations.closeConversation()).toThrowError(
         "This call is not allowed in the 'settings' context"
       );
+    });
+  });
+
+  describe("executeDeepLink in content context ", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+      executeDeepLink( "dummyLink", () => {
+        return;
+      })
+    ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully send a request", () => {
+      initializeWithContext("content");
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true
+      };
+
+      respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+
+    it("should invoke error callback", () => {
+      initializeWithContext("content");
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: false,
+        error: "Something went wrong..."
+      };
+
+      respondToMessage(message, data.success, data.error);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(false);
+      expect(error).toBe("Something went wrong...");
+    });
+
+    it("should successfully send a request", () => {
+      initializeWithContext("content");
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true
+      };
+
+      respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+  });
+
+  describe("executeDeepLink in task module context ", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+      executeDeepLink( "dummyLink", () => {
+        return;
+      })
+    ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully send a request", () => {
+      initializeWithContext(frameContexts.task);
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true
+      };
+
+      respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+
+    it("should invoke error callback", () => {
+      initializeWithContext(frameContexts.task);
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: false,
+        error: "Something went wrong..."
+      };
+
+      respondToMessage(message, data.success, data.error);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(false);
+      expect(error).toBe("Something went wrong...");
+    });
+
+    it("should successfully send a request", () => {
+      initializeWithContext("content");
+      const request = "dummyDeepLink"
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => (requestResponse = status, error = reason);
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = findMessageByFunc("executeDeepLink");
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true
+      };
+
+      respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
     });
   });
 
