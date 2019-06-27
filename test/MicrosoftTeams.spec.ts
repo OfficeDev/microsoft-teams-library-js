@@ -2057,7 +2057,6 @@ describe("MicrosoftTeams", () => {
         success: false,
         error: "Something went wrong..."
       };
-
       respondToMessage(message, data.success, data.error);
 
       // check data is returned properly
