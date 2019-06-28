@@ -2087,7 +2087,6 @@ describe("MicrosoftTeams", () => {
       const data = {
         success: true
       };
-
       respondToMessage(message, data.success);
 
       // check data is returned properly
