@@ -10,12 +10,12 @@ export interface MessageResponse {
   args?: any[]; // tslint:disable-line:no-any
 }
 
-export class Utils{
+export class Utils {
   public tabOrigin = "https://example.com";
 
-public validOrigin = "https://teams.microsoft.com";
+  public validOrigin = "https://teams.microsoft.com";
 
-public mockWindow;
+  public mockWindow;
 
   // A list of this.messages the library sends to the app.
   public messages: MessageRequest[] = [];
@@ -96,52 +96,51 @@ public mockWindow;
   }
 
 
-public processMessage: (ev: MessageEvent) => void;
+  public processMessage: (ev: MessageEvent) => void;
 
-public initializeWithContext = (
-  frameContext: string,
-  hostClientType?: string
-): void => {
-  microsoftTeams1.initialize(this.mockWindow);
+  public initializeWithContext = (
+    frameContext: string,
+    hostClientType?: string
+  ): void => {
+    microsoftTeams1.initialize(this.mockWindow);
 
-  const initMessage = this.findMessageByFunc("initialize");
-  expect(initMessage).not.toBeNull();
+    const initMessage = this.findMessageByFunc("initialize");
+    expect(initMessage).not.toBeNull();
 
-  this.respondToMessage(initMessage, frameContext, hostClientType);
-}
-
-public findMessageByFunc = (func: string): MessageRequest => {
-  for (let i = 0; i < this.messages.length; i++) {
-    if (this.messages[i].func === func) {
-      return this.messages[i];
-    }
+    this.respondToMessage(initMessage, frameContext, hostClientType);
   }
 
-  return null;
-}
-
-// tslint:disable-next-line:no-any
-public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
-  this.processMessage({
-    origin: this.validOrigin,
-    source: this.mockWindow.parent,
-    data: {
-      id: message.id,
-      args: args
-    } as MessageResponse
-  } as MessageEvent);
-}
-
-// tslint:disable-next-line:no-any
-public sendMessage = (func: string, ...args: any[]): void => {
-  this.processMessage({
-    origin: this.validOrigin,
-    source: this.mockWindow.parent,
-    data: {
-      func: func,
-      args: args
+  public findMessageByFunc = (func: string): MessageRequest => {
+    for (let i = 0; i < this.messages.length; i++) {
+      if (this.messages[i].func === func) {
+        return this.messages[i];
+      }
     }
-  } as MessageEvent);
-}
 
+    return null;
+  }
+
+  // tslint:disable-next-line:no-any
+  public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
+    this.processMessage({
+      origin: this.validOrigin,
+      source: this.mockWindow.parent,
+      data: {
+        id: message.id,
+        args: args
+      } as MessageResponse
+    } as MessageEvent);
+  }
+
+  // tslint:disable-next-line:no-any
+  public sendMessage = (func: string, ...args: any[]): void => {
+    this.processMessage({
+      origin: this.validOrigin,
+      source: this.mockWindow.parent,
+      data: {
+        func: func,
+        args: args
+      }
+    } as MessageEvent);
+  }
 }

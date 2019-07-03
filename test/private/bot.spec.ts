@@ -24,10 +24,10 @@ describe("bot", () => {
   describe("sendBotRequest", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      bot.sendQuery({ query: "" }, () => {
-        return;
-      })
-    ).toThrowError("The library has not yet been initialized");
+        bot.sendQuery({ query: "" }, () => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
     });
     it("should successfully send a request", () => {
       utils.initializeWithContext("content");
@@ -97,17 +97,17 @@ describe("bot", () => {
   describe("getSupportedCommands", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      bot.getSupportedCommands(() => {
-        return;
-      })
-    ).toThrowError("The library has not yet been initialized");
+        bot.getSupportedCommands(() => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
     });
 
     it("should successfully send a request", () => {
       utils.initializeWithContext("content");
 
       let botResponse: bot.Command[];
-      let error:string;
+      let error: string;
 
       const handleBotResponse = (response: bot.Command[]) => { botResponse = response };
       const handleError = (_error: string) => { error = _error };
@@ -116,17 +116,17 @@ describe("bot", () => {
 
       const message = utils.findMessageByFunc("bot.getSupportedCommands");
       expect(message).not.toBeUndefined();
-      
+
       // Simulate response 
       const data = {
         sucess: true,
-        response: [{title:'CMD1', id:'CMD1'}] 
+        response: [{ title: 'CMD1', id: 'CMD1' }]
       }
 
       utils.respondToMessage(message, data.sucess, data.response);
 
       // check data is returned properly
-      expect(botResponse).toEqual([{title:'CMD1', id:'CMD1'}]);
+      expect(botResponse).toEqual([{ title: 'CMD1', id: 'CMD1' }]);
       expect(error).toBeUndefined();
     });
 
@@ -136,8 +136,8 @@ describe("bot", () => {
       let botResponse: bot.Command[];
       let error: string;
 
-      const handleBotResponse = ( response: bot.Command[] ) => { botResponse = response };
-      const handleError = ( _error: string ) => { error = _error };
+      const handleBotResponse = (response: bot.Command[]) => { botResponse = response };
+      const handleError = (_error: string) => { error = _error };
 
       bot.getSupportedCommands(handleBotResponse, handleError);
 

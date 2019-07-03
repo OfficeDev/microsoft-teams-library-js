@@ -249,10 +249,10 @@ describe("MicrosoftTeams-publicAPIs", () => {
   describe("executeDeepLink in content context ", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      executeDeepLink( "dummyLink", () => {
-        return;
-      })
-    ).toThrowError("The library has not yet been initialized");
+        executeDeepLink("dummyLink", () => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
     });
 
     it("should successfully send a request", () => {
@@ -351,10 +351,10 @@ describe("MicrosoftTeams-publicAPIs", () => {
   describe("executeDeepLink in task module context ", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-      executeDeepLink( "dummyLink", () => {
-        return;
-      })
-    ).toThrowError("The library has not yet been initialized");
+        executeDeepLink("dummyLink", () => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
     });
 
     it("should successfully send a request", () => {
@@ -452,7 +452,7 @@ describe("MicrosoftTeams-publicAPIs", () => {
     });
   });
 
-  
+
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     initialize(utils.mockWindow);
@@ -576,13 +576,13 @@ describe("MicrosoftTeams-publicAPIs", () => {
 
     it("should successfully share a deep link", () => {
       utils.initializeWithContext("content");
-  
+
       shareDeepLink({
         subEntityId: "someSubEntityId",
         subEntityLabel: "someSubEntityLabel",
         subEntityWebUrl: "someSubEntityWebUrl"
       });
-  
+
       let message = utils.findMessageByFunc("shareDeepLink");
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(3);
