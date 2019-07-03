@@ -26,21 +26,8 @@ export {
   registerChangeSettingsHandler,
   registerFullScreenHandler,
   registerOnThemeChangeHandler,
-<<<<<<< HEAD
-  shareDeepLink
-} from "./publicAPIs";
-export { settings } from "./settings";
-export { tasks } from "./tasks";
-export { bot } from "./bot";
-export {
-  ChildAppWindow,
-  IAppWindow,
-  ParentAppWindow
-} from "./appWindow";
-=======
   shareDeepLink,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
->>>>>>> 4bb5ccbdf1397563e652aeaa2e9b5f055199d671
