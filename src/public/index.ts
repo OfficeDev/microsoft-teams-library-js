@@ -1,6 +1,5 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
-export { bot } from './bot';
 export { HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './constants';
 export {
   Context,
