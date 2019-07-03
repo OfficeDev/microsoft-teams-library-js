@@ -66,26 +66,20 @@ export namespace bot {
   }
 
   export interface QueryResponse {
-<<<<<<< HEAD
     data: BotResults | BotAuth;
     type: string;
   }
 
   export interface BotResults {
-=======
->>>>>>> upstream/master
     attachments: Attachment[];
     layout: any;
     botId: string;
   }
 
-<<<<<<< HEAD
   export interface BotAuth {
     openUrlResult: any;
   }
 
-=======
->>>>>>> upstream/master
   export interface Attachment {
     card: any;
     previewCard: any;
