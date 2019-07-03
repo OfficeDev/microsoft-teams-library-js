@@ -1,3 +1,4 @@
+export { bot } from './bot';
 export { menus } from './menus';
 export {
   ChatMembersInformation,
