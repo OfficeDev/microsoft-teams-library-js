@@ -20,13 +20,10 @@ export namespace bot {
     onBotQueryResponse?: (data: QueryResponse) => void,
     onError?: (error: string) => void,
   ): void {
-    // void for now
     ensureInitialized();
 
-    // send request to teams
     const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.executeQuery', [botRequest]);
 
-    // register handler for callback id
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
       if (success) {
         onBotQueryResponse(response as QueryResponse);
@@ -44,16 +41,16 @@ export namespace bot {
    * @param onError callback to invoke should an error occur
    */
   export function getSupportedCommands(
-    onBotGetCommandsResponse?: (response: ICommand[]) => void,
+    onBotGetCommandsResponse?: (response: Command[]) => void,
     onError?: (error: string) => void,
   ): void {
     ensureInitialized();
 
     const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.getSupportedCommands');
 
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | ICommand[]) => {
+    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
       if (success) {
-        onBotGetCommandsResponse(response as ICommand[]);
+        onBotGetCommandsResponse(response as Command[]);
       } else {
         onError(response as string);
       }
@@ -69,19 +66,21 @@ export namespace bot {
   }
 
   export interface QueryResponse {
-    attachments: IAttachment[];
+    attachments: Attachment[];
     layout: any;
     botId: string;
   }
-  export interface IAttachment {
-    // Will add better interfaces later
+
+  export interface Attachment {
     card: any;
     previewCard: any;
     previewRawPayload: any;
     rawPayload: any;
   }
-  export interface ICommand {
+
+  export interface Command {
     title: string;
     id: string;
+    isInitialRun: boolean;
   }
 }

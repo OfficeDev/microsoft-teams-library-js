@@ -8,6 +8,8 @@ import { TeamType, UserTeamRole, HostClientType, TaskModuleDimension } from "../
 import { tasks } from "../src/public/tasks";
 import { bot } from "../src/public/bot";
 import { conversations } from "../src/private/conversations";
+import { executeDeepLink } from "../src/public/publicAPIs";
+import { frameContexts } from "../src/internal/constants";
 
 interface MessageRequest {
   id: number;
@@ -2077,10 +2079,10 @@ describe("MicrosoftTeams", () => {
     it("should successfully send a request", () => {
       initializeWithContext("content");
 
-      let botResponse: bot.ICommand[];
+      let botResponse: bot.Command[];
       let error:string;
 
-      const handleBotResponse = (response: bot.ICommand[]) => { botResponse = response };
+      const handleBotResponse = (response: bot.Command[]) => { botResponse = response };
       const handleError = (_error: string) => { error = _error };
 
       bot.getSupportedCommands(handleBotResponse, handleError);
@@ -2104,10 +2106,10 @@ describe("MicrosoftTeams", () => {
     it("should invoke error callback", () => {
       initializeWithContext("content");
 
-      let botResponse: bot.ICommand[];
+      let botResponse: bot.Command[];
       let error: string;
 
-      const handleBotResponse = ( response: bot.ICommand[] ) => { botResponse = response };
+      const handleBotResponse = ( response: bot.Command[] ) => { botResponse = response };
       const handleError = ( _error: string ) => { error = _error };
 
       bot.getSupportedCommands(handleBotResponse, handleError);
