@@ -95,7 +95,7 @@ export namespace bot {
   }
 
   export enum BotResponseType {
-    results = "results",
-    auth = "auth"
+    results = 'results',
+    auth = 'auth'
   }
 }
