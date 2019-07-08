@@ -1,5 +1,5 @@
-import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs";
-import { GlobalVars } from "../internal/globalVars";
+import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { GlobalVars } from '../internal/globalVars';
 
 /**
  * Namespace to interact with the logging part of the SDK.
@@ -9,13 +9,12 @@ import { GlobalVars } from "../internal/globalVars";
  * Hide from docs
  */
 export namespace logs {
-
-  GlobalVars.handlers["log.request"] = handleGetLogRequest;
+  GlobalVars.handlers['log.request'] = handleGetLogRequest;
 
   function handleGetLogRequest(): void {
     if (GlobalVars.getLogHandler) {
       const log: string = GlobalVars.getLogHandler();
-      sendMessageRequest(GlobalVars.parentWindow, "log.receive", [log]);
+      sendMessageRequest(GlobalVars.parentWindow, 'log.receive', [log]);
     }
   }
 
@@ -30,6 +29,6 @@ export namespace logs {
     ensureInitialized();
 
     GlobalVars.getLogHandler = handler;
-    handler && sendMessageRequest(GlobalVars.parentWindow, "registerHandler", ["log.request"]);
+    handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['log.request']);
   }
 }
