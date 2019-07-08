@@ -67,7 +67,7 @@ export namespace bot {
 
   export interface QueryResponse {
     data: BotResults | BotAuth;
-    type: string;
+    type: BotResponseType;
   }
 
   export interface BotResults {
@@ -92,5 +92,10 @@ export namespace bot {
     title: string;
     id: string;
     isInitialRun: boolean;
+  }
+
+  export enum BotResponseType {
+    results = "results",
+    auth = "auth"
   }
 }
