@@ -77,7 +77,8 @@ export namespace bot {
   }
 
   export interface BotAuth {
-    openUrlResult: any;
+    url: string;
+    title: string;
   }
 
   export interface Attachment {
