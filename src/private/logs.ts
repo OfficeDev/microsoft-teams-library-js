@@ -2,17 +2,17 @@ import { ensureInitialized, sendMessageRequest } from "../internal/internalAPIs"
 import { GlobalVars } from "../internal/globalVars";
 
 /**
- * Namespace to interact with the files part of the SDK.
- * This object is used to handle logs
+ * Namespace to interact with the logging part of the SDK.
+ * This object is used to send the app logs on demand to the host client
  *
  * @private
  * Hide from docs
  */
-export namespace files {
+export namespace logs {
 
   GlobalVars.handlers["log.request"] = handleGetLogRequest;
 
-  export function handleGetLogRequest(): void {
+  function handleGetLogRequest(): void {
     if (GlobalVars.getLogHandler) {
       const log: string = GlobalVars.getLogHandler();
       sendMessageRequest(GlobalVars.parentWindow, "log.receive", [log]);

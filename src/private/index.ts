@@ -1,5 +1,5 @@
 export { menus } from './menus';
-export { files } from './files';
+export { logs } from './logs';
 export {
   ChatMembersInformation,
   FilePreviewParameters,

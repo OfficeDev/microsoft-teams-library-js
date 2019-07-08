@@ -5,7 +5,7 @@ import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
 import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { files } from '../private/files';
+import { logs } from '../private/logs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -59,7 +59,7 @@ export function initialize(hostWindow: any = window): void {
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
-        files.registerGetLogHandler(null);
+        logs.registerGetLogHandler(null);
       }
 
       if (GlobalVars.frameContext === frameContexts.settings) {
