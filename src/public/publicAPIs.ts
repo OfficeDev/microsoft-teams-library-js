@@ -273,7 +273,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(frameContexts.content, frameContexts.task);
   const messageId = sendMessageRequest(GlobalVars.parentWindow, 'executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
