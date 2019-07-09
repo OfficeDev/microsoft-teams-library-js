@@ -66,9 +66,19 @@ export namespace bot {
   }
 
   export interface QueryResponse {
+    data: Results | Auth;
+    type: ResponseType;
+  }
+
+  export interface Results {
     attachments: Attachment[];
     layout: any;
     botId: string;
+  }
+
+  export interface Auth {
+    url: string;
+    title: string;
   }
 
   export interface Attachment {
@@ -82,5 +92,10 @@ export namespace bot {
     title: string;
     id: string;
     isInitialRun: boolean;
+  }
+
+  export enum ResponseType {
+    Results = 'Results',
+    Auth = 'Auth',
   }
 }
