@@ -27,4 +27,5 @@ export class GlobalVars {
   public static changeSettingsHandler: () => void;
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
+  public static getLogHandler: () => string;
 }
