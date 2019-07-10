@@ -166,4 +166,69 @@ describe("bot", () => {
       ).toThrowError("The library has not yet been initialized");
     });
   });
+
+  it("should successfully send a request", () => {
+    utils.initializeWithContext("content");
+    const request = {
+      url: "someUrl"
+    };
+
+    let botResponse: bot.Results;
+    let error: string;
+
+    const handleAuth = (response: bot.Results) => (botResponse = response);
+    const handleError = (_error: string): any => (error = _error);
+
+    // send message request
+    bot.authenticate(request, handleAuth, handleError);
+
+    // find message request in jest
+    const message = utils.findMessageByFunc("bot.authenticate");
+
+    // check message is sending correct data
+    expect(message).not.toBeUndefined();
+    expect(message.args).toContain(request);
+
+    // simulate response
+    const data = {
+      success: true,
+      response: { data: ["some", "queried", "items"] }
+    };
+
+    utils.respondToMessage(message, data.success, data.response);
+
+    // authenticate should also return data because first query
+    expect(botResponse).toEqual({ data: ["some", "queried", "items"] });
+    expect(error).toBeUndefined();
+  });
+
+  it("should invoke error callback on unauthorized", () => {
+    utils.initializeWithContext("content");
+    const request = {
+      url: "someUrl"
+    };
+
+    let botResponse: bot.Results;
+    let error: string;
+
+    const handleBotResponse = (response: bot.Results) => (botResponse = response);
+    const handleError = (_error: string): any => (error = _error);
+
+    bot.authenticate(request, handleBotResponse, handleError);
+    const message = utils.findMessageByFunc("bot.authenticate");
+    expect(message).not.toBeUndefined();
+    expect(message.args).toContain(request);
+
+    // simulate response
+    const data = {
+      success: false,
+      response: "Bot authorization was unsuccessful"
+    };
+
+    utils.respondToMessage(message, data.success, data.response);
+
+    // check data is returned properly
+    expect(error).toBe("Bot authorization was unsuccessful");
+    expect(botResponse).toBeUndefined();
+  });
 });
