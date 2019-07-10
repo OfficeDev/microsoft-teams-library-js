@@ -67,7 +67,7 @@ export namespace bot {
    */
   export function authenticate(
     authRequest: AuthRequest,
-    onAuth?: (data: Results) => void,
+    onAuth?: (results: Results) => void,
     onError?: (error: string) => void,
   ): void {
     ensureInitialized();
