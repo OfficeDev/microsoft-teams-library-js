@@ -107,10 +107,13 @@ export namespace bot {
     title: string;
   }
 
+<<<<<<< HEAD
   export interface AuthRequest {
     url: string;
   }
 
+=======
+>>>>>>> 7e736311c05f42310920babb8313b8c328f1e116
   export interface Attachment {
     card: any;
     previewCard: any;
