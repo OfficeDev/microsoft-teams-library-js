@@ -163,7 +163,7 @@ describe("bot", () => {
         query: "",
         commandId: "someCOmmand",
         url: "someUrl"
-      };  
+      };
       expect(() =>
         bot.authenticate(request, () => {
           return;
