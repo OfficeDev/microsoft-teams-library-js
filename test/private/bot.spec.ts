@@ -157,4 +157,13 @@ describe("bot", () => {
       expect(botResponse).toBeUndefined();
     });
   });
+  describe("authenticate", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        bot.authenticate({url: "someUrl"}, () => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+  });
 });

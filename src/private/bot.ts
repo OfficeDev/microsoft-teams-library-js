@@ -56,6 +56,32 @@ export namespace bot {
       }
     };
   }
+  /**
+   * @private
+   * Hide from docs until release.
+   * -----
+   * Authenticates a user for json tab
+   * @param authRequest callback to invoke when data is retrieved from bot
+   * @param onAuth callback to invoke when user is authenticated
+   * @param onError callback to invoke should an error occur
+   */
+  export function authenticate(
+    authRequest: AuthRequest,
+    onAuth?: (data: Results) => void,
+    onError?: (error: string) => void,
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.authenticate', [authRequest]);
+
+    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
+      if (success) {
+        onAuth(response as Results);
+      } else {
+        onError(response as string);
+      }
+    };
+  }
 
   export interface QueryRequest {
     /**
@@ -79,6 +105,10 @@ export namespace bot {
   export interface Auth {
     url: string;
     title: string;
+  }
+
+  export interface AuthRequest {
+    url: string;
   }
 
   export interface Attachment {
