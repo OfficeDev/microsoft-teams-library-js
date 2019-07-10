@@ -66,7 +66,7 @@ export namespace bot {
    * @param onError callback to invoke should an error occur
    */
   export function authenticate(
-    authRequest: AuthRequest,
+    authRequest: AuthQueryRequest,
     onAuth?: (results: Results) => void,
     onError?: (error: string) => void,
   ): void {
@@ -107,7 +107,7 @@ export namespace bot {
     title: string;
   }
 
-  export interface AuthRequest {
+  export interface AuthQueryRequest extends QueryRequest {
     url: string;
   }
 

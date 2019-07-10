@@ -159,8 +159,13 @@ describe("bot", () => {
   });
   describe("authenticate", () => {
     it("should not allow calls before initialization", () => {
+      const request = {
+        query: "",
+        commandId: "someCOmmand",
+        url: "someUrl"
+      };  
       expect(() =>
-        bot.authenticate({url: "someUrl"}, () => {
+        bot.authenticate(request, () => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -170,6 +175,8 @@ describe("bot", () => {
   it("should successfully send a request", () => {
     utils.initializeWithContext("content");
     const request = {
+      query: "",
+      commandId: "someCommand",
       url: "someUrl"
     };
 
@@ -205,6 +212,8 @@ describe("bot", () => {
   it("should invoke error callback on unauthorized", () => {
     utils.initializeWithContext("content");
     const request = {
+      query: "",
+      commandId: "someCommand",
       url: "someUrl"
     };
 
