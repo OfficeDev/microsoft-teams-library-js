@@ -67,7 +67,7 @@ export namespace bot {
    */
   export function authenticate(
     authRequest: AuthQueryRequest,
-    onAuth?: (results: Results) => void,
+    onSuccess?: (results: Results) => void,
     onError?: (error: string) => void,
   ): void {
     ensureInitialized();
@@ -76,7 +76,7 @@ export namespace bot {
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
       if (success) {
-        onAuth(response as Results);
+        onSuccess(response as Results);
       } else {
         onError(response as string);
       }
