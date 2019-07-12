@@ -121,7 +121,7 @@ export namespace bot {
   export interface Command {
     title: string;
     id: string;
-    isInitialRun: boolean;
+    initialRun: boolean;
   }
 
   export enum ResponseType {
