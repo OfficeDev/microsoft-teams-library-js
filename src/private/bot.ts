@@ -12,12 +12,12 @@ export namespace bot {
    * ------
    * Sends query to bot in order to retrieve data.
    * @param botRequest query to send to bot.
-   * @param onBotQueryResponse callback to invoke when data is retrieved from bot
+   * @param onSuccess callback to invoke when data is retrieved from bot
    * @param onError callback to invoke should an error occur
    */
   export function sendQuery(
     botRequest: QueryRequest,
-    onBotQueryResponse?: (data: QueryResponse) => void,
+    onSuccess?: (data: QueryResponse) => void,
     onError?: (error: string) => void,
   ): void {
     ensureInitialized();
@@ -26,7 +26,7 @@ export namespace bot {
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
       if (success) {
-        onBotQueryResponse(response as QueryResponse);
+        onSuccess(response as QueryResponse);
       } else {
         onError(response as string);
       }
@@ -37,11 +37,11 @@ export namespace bot {
    * Hide from docs until release.
    * -----
    * Retrieves list of support commands from bot
-   * @param onBotQueryResponse callback to invoke when data is retrieved from bot
+   * @param onSuccess callback to invoke when data is retrieved from bot
    * @param onError callback to invoke should an error occur
    */
   export function getSupportedCommands(
-    onBotGetCommandsResponse?: (response: Command[]) => void,
+    onSuccess?: (response: Command[]) => void,
     onError?: (error: string) => void,
   ): void {
     ensureInitialized();
@@ -50,7 +50,33 @@ export namespace bot {
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
       if (success) {
-        onBotGetCommandsResponse(response as Command[]);
+        onSuccess(response as Command[]);
+      } else {
+        onError(response as string);
+      }
+    };
+  }
+  /**
+   * @private
+   * Hide from docs until release.
+   * -----
+   * Authenticates a user for json tab
+   * @param authRequest callback to invoke when data is retrieved from bot
+   * @param onSuccess callback to invoke when user is authenticated
+   * @param onError callback to invoke should an error occur
+   */
+  export function authenticate(
+    authRequest: AuthQueryRequest,
+    onSuccess?: (results: Results) => void,
+    onError?: (error: string) => void,
+  ): void {
+    ensureInitialized();
+
+    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.authenticate', [authRequest]);
+
+    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
+      if (success) {
+        onSuccess(response as Results);
       } else {
         onError(response as string);
       }
@@ -81,6 +107,10 @@ export namespace bot {
     title: string;
   }
 
+  export interface AuthQueryRequest extends QueryRequest {
+    url: string;
+  }
+
   export interface Attachment {
     card: any;
     previewCard: any;
@@ -91,7 +121,7 @@ export namespace bot {
   export interface Command {
     title: string;
     id: string;
-    isInitialRun: boolean;
+    initialRun: boolean;
   }
 
   export enum ResponseType {
