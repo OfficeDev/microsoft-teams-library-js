@@ -92,7 +92,7 @@ export namespace bot {
     option?: {
       skip: number;
       count: number;
-    }
+    };
   }
 
   export interface QueryResponse {
