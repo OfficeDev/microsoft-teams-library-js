@@ -267,7 +267,8 @@ describe("MicrosoftTeams-privateAPIs", () => {
       entityId: "someEntityId",
       teamType: TeamType.Edu,
       teamSiteUrl: "someSiteUrl",
-      sessionId: "someSessionId"
+      sessionId: "someSessionId",
+      tabSessionId: "tabSessionId"
     };
 
     // Get many responses to the same message
