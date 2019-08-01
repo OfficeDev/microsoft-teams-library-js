@@ -97,6 +97,23 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(secondCallbackInvoked).toBe(true);
   });
 
+  it('should invoke callback immediatelly if initialization has already completed', () => {
+    initialize();
+    
+    expect(utils.processMessage).toBeDefined();
+    expect(utils.messages.length).toBe(1);
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(initMessage, 'content');
+
+    let callbackInvoked: boolean = false;
+    initialize(() => {
+      callbackInvoked = true;
+    });
+
+    expect(callbackInvoked).toBe(true);
+  });
+
   it('should successfully register a change settings handler', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
