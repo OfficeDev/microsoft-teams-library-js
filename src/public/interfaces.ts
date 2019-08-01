@@ -309,9 +309,9 @@ export interface Context {
   ringId?: string;
 
   /**
-   * Unique ID for the current Tab session for use in correlating telemetry data.
+   * Unique ID for the current session for use in correlating telemetry data.
    */
-  tabSessionId?: string;
+  appSessionId?: string;
 }
 
 export interface DeepLinkParameters {

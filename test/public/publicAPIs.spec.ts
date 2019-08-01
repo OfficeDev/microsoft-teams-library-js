@@ -125,7 +125,7 @@ describe("MicrosoftTeams-publicAPIs", () => {
       userLicenseType: "someUserLicenseType",
       parentMessageId: "someParentMessageId",
       ringId: "someRingId",
-      tabSessionId: "tabSessionId"
+      appSessionId: "appSessionId"
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
