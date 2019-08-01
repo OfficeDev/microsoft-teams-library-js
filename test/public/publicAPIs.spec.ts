@@ -186,10 +186,11 @@ describe('MicrosoftTeams-publicAPIs', () => {
       isTeamArchived: false,
       hostClientType: HostClientType.web,
       sharepoint: {},
-      tenantSKU: 'someTenantSKU',
-      userLicenseType: 'someUserLicenseType',
-      parentMessageId: 'someParentMessageId',
-      ringId: 'someRingId',
+      tenantSKU: "someTenantSKU",
+      userLicenseType: "someUserLicenseType",
+      parentMessageId: "someParentMessageId",
+      ringId: "someRingId",
+      appSessionId: "appSessionId"
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
