@@ -186,11 +186,11 @@ describe('MicrosoftTeams-publicAPIs', () => {
       isTeamArchived: false,
       hostClientType: HostClientType.web,
       sharepoint: {},
-      tenantSKU: "someTenantSKU",
-      userLicenseType: "someUserLicenseType",
-      parentMessageId: "someParentMessageId",
-      ringId: "someRingId",
-      appSessionId: "appSessionId"
+      tenantSKU: 'someTenantSKU',
+      userLicenseType: 'someUserLicenseType',
+      parentMessageId: 'someParentMessageId',
+      ringId: 'someRingId',
+      appSessionId: 'appSessionId',
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
@@ -509,11 +509,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     initialize();
-    spyOn(microsoftTeams, 'print').and.callFake(
-      (): void => {
-        handlerCalled = true;
-      },
-    );
+    spyOn(microsoftTeams, 'print').and.callFake((): void => {
+      handlerCalled = true;
+    });
     let printEvent = new Event('keydown');
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -527,11 +525,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     initialize();
-    spyOn(microsoftTeams, 'print').and.callFake(
-      (): void => {
-        handlerCalled = true;
-      },
-    );
+    spyOn(microsoftTeams, 'print').and.callFake((): void => {
+      handlerCalled = true;
+    });
     let printEvent = new Event('keydown');
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -546,11 +542,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     let handlerCalled = false;
     initialize();
     enablePrintCapability();
-    spyOn(window, 'print').and.callFake(
-      (): void => {
-        handlerCalled = true;
-      },
-    );
+    spyOn(window, 'print').and.callFake((): void => {
+      handlerCalled = true;
+    });
 
     print();
 
@@ -561,11 +555,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     let handlerCalled = false;
     initialize();
     enablePrintCapability();
-    spyOn(window, 'print').and.callFake(
-      (): void => {
-        handlerCalled = true;
-      },
-    );
+    spyOn(window, 'print').and.callFake((): void => {
+      handlerCalled = true;
+    });
     let printEvent = new Event('keydown');
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
@@ -580,11 +572,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     let handlerCalled = false;
     initialize();
     enablePrintCapability();
-    spyOn(window, 'print').and.callFake(
-      (): void => {
-        handlerCalled = true;
-      },
-    );
+    spyOn(window, 'print').and.callFake((): void => {
+      handlerCalled = true;
+    });
     let printEvent = new Event('keydown');
     // tslint:disable:no-any
     (printEvent as any).keyCode = 80;

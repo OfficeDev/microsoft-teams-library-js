@@ -13,6 +13,7 @@
     "build": "yarn lint && webpack",
     "lint": "eslint ./src/**/*.ts",
     "doctor": "yarn lint --fix",
+    "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },
   "license": "MIT",
