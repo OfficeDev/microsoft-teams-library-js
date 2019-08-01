@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "yarn lint && webpack",
-    "lint": "eslint ./src/**/*.{js,ts}",
+    "lint": "eslint ./src/**/*.ts",
     "doctor": "yarn lint --fix",
     "test": "jest"
   },

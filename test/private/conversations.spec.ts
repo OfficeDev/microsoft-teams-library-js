@@ -5,7 +5,6 @@ import { _uninitialize } from "../../src/public/publicAPIs";
 
 describe("conversations", () => {
   // Use to send a mock message from the app.
-
   const utils = new Utils();
 
   beforeEach(() => {

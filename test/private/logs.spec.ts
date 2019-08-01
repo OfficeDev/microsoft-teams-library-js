@@ -4,7 +4,6 @@ import { _uninitialize } from "../../src/public/publicAPIs";
 
 describe("logs", () => {
   // Use to send a mock message from the app.
-
   const utils = new Utils();
 
   beforeEach(() => {

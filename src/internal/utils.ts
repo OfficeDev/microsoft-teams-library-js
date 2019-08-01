@@ -1,5 +1,3 @@
-import { GlobalVars } from './globalVars';
-
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = '^';
@@ -21,7 +19,7 @@ export function generateRegExpFromUrls(urls: string[]): RegExp {
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
-  return (success: boolean, reason: string) => {
+  return (success: boolean, reason: string): void => {
     if (!success) {
       throw new Error(errorMessage ? errorMessage : reason);
     }

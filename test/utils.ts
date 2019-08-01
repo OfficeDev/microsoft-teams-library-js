@@ -102,7 +102,8 @@ export class Utils {
     frameContext: string,
     hostClientType?: string
   ): void => {
-    microsoftTeams1.initialize(this.mockWindow);
+    microsoftTeams1._initialize(this.mockWindow);
+    microsoftTeams1.initialize();
 
     const initMessage = this.findMessageByFunc("initialize");
     expect(initMessage).not.toBeNull();
