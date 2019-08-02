@@ -89,6 +89,10 @@ export namespace bot {
      */
     query: string;
     commandId?: string;
+    option?: {
+      skip: number;
+      count: number;
+    };
   }
 
   export interface QueryResponse {
