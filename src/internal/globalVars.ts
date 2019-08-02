@@ -1,5 +1,5 @@
 import { MessageRequest } from './interfaces';
-import { ConversationResponse } from '../public/interfaces';
+import { ConversationResponse, PreloadedAppContext } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
@@ -28,4 +28,5 @@ export class GlobalVars {
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
+  public static willLoadPreloadedAppHandler: (context: PreloadedAppContext) => void;
 }

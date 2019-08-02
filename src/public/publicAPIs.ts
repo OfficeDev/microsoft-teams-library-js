@@ -3,7 +3,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts } from '../internal/constants';
 import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from './interfaces';
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, PreloadedAppContext } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
@@ -289,4 +289,15 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+}
+
+/**
+ * @private
+ * @param handler The handler to invoke when a preloaded app is about to load.
+ */
+export function registerWillLoadPreloadedAppHandler(handler: (context: PreloadedAppContext) => void): void {
+  ensureInitialized();
+
+  GlobalVars.willLoadPreloadedAppHandler = handler;
+  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['willLoadPreloadedApp']);
 }

@@ -2,6 +2,7 @@ import { navigateBack } from '../public/publicAPIs';
 import { validOriginRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from './interfaces';
+import { PreloadedAppContext } from '../public/interfaces';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
@@ -11,6 +12,7 @@ GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
 GlobalVars.handlers['changeSettings'] = handleChangeSettings;
 GlobalVars.handlers['startConversation'] = handleStartConversation;
 GlobalVars.handlers['closeConversation'] = handleCloseConversation;
+GlobalVars.handlers['willLoadPreloadedApp'] = handleWillLoadPreloadedApp;
 
 function handleStartConversation(
   subEntityId: string,
@@ -51,6 +53,16 @@ function handleThemeChange(theme: string): void {
 
   if (GlobalVars.childWindow) {
     sendMessageRequest(GlobalVars.childWindow, 'themeChange', [theme]);
+  }
+}
+
+function handleWillLoadPreloadedApp(context: PreloadedAppContext): void {
+  if (GlobalVars.willLoadPreloadedAppHandler) {
+    GlobalVars.willLoadPreloadedAppHandler(context);
+  }
+
+  if (GlobalVars.childWindow) {
+    sendMessageRequest(GlobalVars.childWindow, 'willLoadPreloadedApp', [context]);
   }
 }
 
