@@ -34,7 +34,7 @@ export function getUserJoinedTeams(
  * ------
  * Place the tab into full-screen mode.
  */
-export function enterFullscreen() {
+export function enterFullscreen(): void {
   ensureInitialized(frameContexts.content);
   sendMessageRequest(GlobalVars.parentWindow, 'enterFullscreen', []);
 }
@@ -45,7 +45,7 @@ export function enterFullscreen() {
  * ------
  * Reverts the tab into normal-screen mode.
  */
-export function exitFullscreen() {
+export function exitFullscreen(): void {
   ensureInitialized(frameContexts.content);
   sendMessageRequest(GlobalVars.parentWindow, 'exitFullscreen', []);
 }

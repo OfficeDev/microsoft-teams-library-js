@@ -12,20 +12,18 @@ import { logs } from '../private/logs';
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  */
-export function initialize(hostWindow: any = window): void {
+export function initialize(callback?: () => void): void {
   // Independent components might not know whether the SDK is initialized so might call it to be safe.
   // Just no-op if that happens to make it easier to use.
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    // Undocumented field used to mock the window for unit tests
-    GlobalVars.currentWindow = hostWindow;
-
     // Listen for messages post to our window
-    const messageListener = (evt: MessageEvent) => processMessage(evt);
+    const messageListener = (evt: MessageEvent): void => processMessage(evt);
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
+    GlobalVars.currentWindow = GlobalVars.currentWindow || window;
     GlobalVars.parentWindow =
       GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
         ? GlobalVars.currentWindow.parent
@@ -47,6 +45,11 @@ export function initialize(hostWindow: any = window): void {
       GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
         GlobalVars.frameContext = context;
         GlobalVars.hostClientType = clientType;
+
+        // Notify all waiting callers that the initialization has completed
+        GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
+        GlobalVars.initializeCallbacks = [];
+        GlobalVars.initializeCompleted = true;
       };
     } finally {
       GlobalVars.parentOrigin = null;
@@ -75,6 +78,8 @@ export function initialize(hostWindow: any = window): void {
       }
 
       GlobalVars.initializeCalled = false;
+      GlobalVars.initializeCompleted = false;
+      GlobalVars.initializeCallbacks = [];
       GlobalVars.parentWindow = null;
       GlobalVars.parentOrigin = null;
       GlobalVars.parentMessageQueue = [];
@@ -88,11 +93,31 @@ export function initialize(hostWindow: any = window): void {
       GlobalVars.isFramelessWindow = false;
     };
   }
+
+  // Handle the callback if specified:
+  // 1. If initialization has already completed then just call it right away
+  // 2. If initialization hasn't completed then add it to the array of callbacks
+  //    that should be invoked once initialization does complete
+  if (callback) {
+    GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
+  }
 }
 
 /**
- * Initializes the library. This must be called before any other SDK calls
- * but after the frame is loaded successfully.
+ * @private
+ * Hide from docs.
+ * ------
+ * Undocumented function used to set a mock window for unit tests
+ */
+export function _initialize(hostWindow: any): void {
+  GlobalVars.currentWindow = hostWindow;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ * Undocumented function used to clear state between unit tests
  */
 export function _uninitialize(): void {}
 

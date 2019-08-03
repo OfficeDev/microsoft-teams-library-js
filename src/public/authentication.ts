@@ -193,7 +193,7 @@ export namespace authentication {
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    GlobalVars.handlers['navigateCrossDomain'] = (url: string) => {
+    GlobalVars.handlers['navigateCrossDomain'] = () => {
       return false;
     };
   }
