@@ -1,4 +1,4 @@
-import * as microsoftTeams1 from "../src/public/publicAPIs";
+import * as microsoftTeams1 from '../src/public/publicAPIs';
 export interface MessageRequest {
   id: number;
   func: string;
@@ -11,9 +11,9 @@ export interface MessageResponse {
 }
 
 export class Utils {
-  public tabOrigin = "https://example.com";
+  public tabOrigin = 'https://example.com';
 
-  public validOrigin = "https://teams.microsoft.com";
+  public validOrigin = 'https://teams.microsoft.com';
 
   public mockWindow;
 
@@ -34,81 +34,66 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (
-        type: string,
-        listener: (ev: MessageEvent) => void,
-        useCapture?: boolean
-      ): void {
-        if (type === "message") {
+      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+        if (type === 'message') {
           that.processMessage = listener;
         }
       },
-      removeEventListener: function (
-        type: string,
-        listener: (ev: MessageEvent) => void,
-        useCapture?: boolean
-      ): void {
-        if (type === "message") {
+      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+        if (type === 'message') {
           that.processMessage = null;
         }
       },
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function (url: string): void {
+        assign: function(url: string): void {
           return;
-        }
+        },
       },
       parent: {
-        postMessage: function (
-          message: MessageRequest,
-          targetOrigin: string
-        ): void {
-          if (message.func === "initialize") {
-            expect(targetOrigin).toEqual("*");
+        postMessage: function(message: MessageRequest, targetOrigin: string): void {
+          if (message.func === 'initialize') {
+            expect(targetOrigin).toEqual('*');
           } else {
             expect(targetOrigin).toEqual(that.validOrigin);
           }
           that.messages.push(message);
-        }
+        },
       } as Window,
       self: null as Window,
-      open: function (url: string, name: string, specs: string): Window {
+      open: function(url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
       },
-      close: function (): void {
+      close: function(): void {
         return;
       },
-      setInterval: (handler: Function, timeout: number): number =>
-        setInterval(handler, timeout)
+      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: function(message: MessageRequest, targetOrigin: string): void {
         that.childMessages.push(message);
       },
-      close: function (): void {
+      close: function(): void {
         return;
       },
-      closed: false
+      closed: false,
     };
   }
 
-
   public processMessage: (ev: MessageEvent) => void;
 
-  public initializeWithContext = (
-    frameContext: string,
-    hostClientType?: string
-  ): void => {
-    microsoftTeams1.initialize(this.mockWindow);
+  public initializeWithContext = (frameContext: string, hostClientType?: string): void => {
+    microsoftTeams1._initialize(this.mockWindow);
+    microsoftTeams1.initialize();
 
-    const initMessage = this.findMessageByFunc("initialize");
+    const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
-  }
+  };
 
   public findMessageByFunc = (func: string): MessageRequest => {
     for (let i = 0; i < this.messages.length; i++) {
@@ -118,7 +103,7 @@ export class Utils {
     }
 
     return null;
-  }
+  };
 
   // tslint:disable-next-line:no-any
   public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
@@ -127,10 +112,10 @@ export class Utils {
       source: this.mockWindow.parent,
       data: {
         id: message.id,
-        args: args
-      } as MessageResponse
+        args: args,
+      } as MessageResponse,
     } as MessageEvent);
-  }
+  };
 
   // tslint:disable-next-line:no-any
   public sendMessage = (func: string, ...args: any[]): void => {
@@ -139,8 +124,8 @@ export class Utils {
       source: this.mockWindow.parent,
       data: {
         func: func,
-        args: args
-      }
+        args: args,
+      },
     } as MessageEvent);
-  }
+  };
 }

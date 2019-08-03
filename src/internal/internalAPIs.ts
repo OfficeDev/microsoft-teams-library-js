@@ -67,7 +67,7 @@ function handleBackButtonPress(): void {
 }
 
 function handleBeforeUnload(): void {
-  const readyToUnload = () => {
+  const readyToUnload = (): void => {
     sendMessageRequest(GlobalVars.parentWindow, 'readyToUnload', []);
   };
 
@@ -192,7 +192,7 @@ function handleChildMessage(evt: MessageEvent): void {
       const messageId = sendMessageRequest(GlobalVars.parentWindow, message.func, message.args);
 
       // tslint:disable-next-line:no-any
-      GlobalVars.callbacks[messageId] = (...args: any[]) => {
+      GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
           sendMessageResponse(GlobalVars.childWindow, message.id, args);
         }
