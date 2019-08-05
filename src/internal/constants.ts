@@ -1,6 +1,6 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.4.1';
+export const version = '1.5.0';
 
 export const validOrigins = [
   'https://teams.microsoft.com',
