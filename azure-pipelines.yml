@@ -2,19 +2,10 @@ name: $(Date:yyyyMMdd)$(rev:rrr)
 
 trigger: 
   - master
-  
-jobs:
-  - job: Microsoft_Teams_Library
-    displayName: Microsoft Teams Library
-    cancelTimeoutInMinutes: 5
-    timeoutInMinutes: 60
-    pool:
-      name: Teamspace-Web-NonJoined
-    container: msteams
 
-    steps:
-      - script: |
-          yarn install
-          yarn test
-          yarn run build
-        displayName: 'yarn install, test and build'
+steps:
+  - script: |
+      yarn install
+      yarn test
+      yarn build
+    displayName: 'yarn install, test and build'
