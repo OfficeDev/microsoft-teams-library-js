@@ -1,0 +1,8 @@
+trigger: 
+  - master
+
+steps:
+- script: |
+    yarn install
+    yarn run build
+  displayName: 'yarn install and build'
