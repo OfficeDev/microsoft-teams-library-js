@@ -1,6 +1,13 @@
+name: $(Date:yyyyMMdd)$(rev:rrr)
+
 trigger: 
   - master
 
+jobs:
+  - job: Microsoft_Teams_Library 
+    displayName: Microsoft Teams Library
+    pool:
+      name: Hosted VS2017
 steps:
   - script: |
       yarn install
