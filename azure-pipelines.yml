@@ -4,5 +4,6 @@ trigger:
 steps:
 - script: |
     yarn install
+    yarn test
     yarn run build
-  displayName: 'yarn install and build'
+  displayName: 'yarn install, test and build'
