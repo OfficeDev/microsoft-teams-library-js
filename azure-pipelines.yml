@@ -1,5 +1,3 @@
-name: $(Date:yyyyMMdd)$(rev:rrr)
-
 trigger: 
   - master
 
