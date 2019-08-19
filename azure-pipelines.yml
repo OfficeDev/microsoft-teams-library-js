@@ -14,4 +14,4 @@ jobs:
           yarn install
           yarn test
           yarn build
-        displayName: 'yarn install, test and build'
+        displayName: yarn install, test and build
