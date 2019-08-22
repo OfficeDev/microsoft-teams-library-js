@@ -3,7 +3,13 @@ import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts } from '../internal/constants';
 import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, LoadContext } from './interfaces';
+import {
+  TabInformation,
+  TabInstanceParameters,
+  TabInstance, DeepLinkParameters,
+  Context,
+  LoadContext
+} from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
