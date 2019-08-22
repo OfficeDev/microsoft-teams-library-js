@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import * as microsoftTeams from "../../src/public/publicAPIs";
-import { TabInstanceParameters, Context, LoadContext } from "../../src/public/interfaces";
-import { TeamType, UserTeamRole, HostClientType } from "../../src/public/constants";
-import { executeDeepLink, navigateCrossDomain, getTabInstances, getMruTabInstances, shareDeepLink, registerLoadHandler, registerBeforeUnloadHandler, enablePrintCapability, registerChangeSettingsHandler, getContext, _uninitialize, registerBackButtonHandler, registerOnThemeChangeHandler, initialize } from "../../src/public/publicAPIs";
-import { frameContexts } from "../../src/internal/constants";
-=======
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import { TabInstanceParameters, Context } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
@@ -14,6 +7,7 @@ import {
   getTabInstances,
   getMruTabInstances,
   shareDeepLink,
+  registerLoadHandler,
   registerBeforeUnloadHandler,
   enablePrintCapability,
   registerChangeSettingsHandler,
@@ -25,7 +19,6 @@ import {
   initialize,
 } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
->>>>>>> master
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {
