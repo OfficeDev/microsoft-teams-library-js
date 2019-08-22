@@ -1,7 +1,7 @@
 import * as microsoftTeams from "../../src/public/publicAPIs";
-import { TabInstanceParameters, Context } from "../../src/public/interfaces";
+import { TabInstanceParameters, Context, LoadContext } from "../../src/public/interfaces";
 import { TeamType, UserTeamRole, HostClientType } from "../../src/public/constants";
-import { executeDeepLink, navigateCrossDomain, getTabInstances, getMruTabInstances, shareDeepLink, registerBeforeUnloadHandler, enablePrintCapability, registerChangeSettingsHandler, getContext, _uninitialize, registerBackButtonHandler, registerOnThemeChangeHandler, initialize } from "../../src/public/publicAPIs";
+import { executeDeepLink, navigateCrossDomain, getTabInstances, getMruTabInstances, shareDeepLink, registerLoadHandler, registerBeforeUnloadHandler, enablePrintCapability, registerChangeSettingsHandler, getContext, _uninitialize, registerBackButtonHandler, registerOnThemeChangeHandler, initialize } from "../../src/public/publicAPIs";
 import { frameContexts } from "../../src/internal/constants";
 import { Utils } from '../utils';
 
@@ -540,6 +540,29 @@ describe("MicrosoftTeams-publicAPIs", () => {
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);
+  });
+
+  describe("registerLoadHandler", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        registerLoadHandler(() => {
+          return false;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+    it("should successfully register handler", () => {
+      utils.initializeWithContext("content");
+
+      let handlerInvoked = false;
+      registerLoadHandler(() => {
+        handlerInvoked = true;
+        return false;
+      });
+
+      utils.sendMessage("load");
+
+      expect(handlerInvoked).toBe(true);
+    });
   });
 
   describe("registerBeforeUnloadHandler", () => {

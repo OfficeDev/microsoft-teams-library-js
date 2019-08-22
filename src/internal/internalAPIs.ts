@@ -1,18 +1,18 @@
 import { navigateBack } from '../public/publicAPIs';
+import { LoadContext } from '../public/interfaces';
 import { validOriginRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from './interfaces';
-import { PreloadedAppContext } from '../public/interfaces';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
 GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
 GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
+GlobalVars.handlers['load'] = handleLoad;
 GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
 GlobalVars.handlers['changeSettings'] = handleChangeSettings;
 GlobalVars.handlers['startConversation'] = handleStartConversation;
 GlobalVars.handlers['closeConversation'] = handleCloseConversation;
-GlobalVars.handlers['willLoadPreloadedApp'] = handleWillLoadPreloadedApp;
 
 function handleStartConversation(
   subEntityId: string,
@@ -56,16 +56,6 @@ function handleThemeChange(theme: string): void {
   }
 }
 
-function handleWillLoadPreloadedApp(context: PreloadedAppContext): void {
-  if (GlobalVars.willLoadPreloadedAppHandler) {
-    GlobalVars.willLoadPreloadedAppHandler(context);
-  }
-
-  if (GlobalVars.childWindow) {
-    sendMessageRequest(GlobalVars.childWindow, 'willLoadPreloadedApp', [context]);
-  }
-}
-
 function handleFullScreenChange(isFullScreen: boolean): void {
   if (GlobalVars.fullScreenChangeHandler) {
     GlobalVars.fullScreenChangeHandler(isFullScreen);
@@ -75,6 +65,16 @@ function handleFullScreenChange(isFullScreen: boolean): void {
 function handleBackButtonPress(): void {
   if (!GlobalVars.backButtonPressHandler || !GlobalVars.backButtonPressHandler()) {
     navigateBack();
+  }
+}
+
+function handleLoad(context: LoadContext): void {
+  if (GlobalVars.willLoadPreloadedAppHandler) {
+    GlobalVars.willLoadPreloadedAppHandler(context);
+  }
+
+  if (GlobalVars.childWindow) {
+    sendMessageRequest(GlobalVars.childWindow, 'load', [context]);
   }
 }
 

@@ -3,7 +3,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts } from '../internal/constants';
 import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, PreloadedAppContext } from './interfaces';
+import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context, LoadContext } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
@@ -59,6 +59,7 @@ export function initialize(hostWindow: any = window): void {
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
 
@@ -184,6 +185,18 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
 
 /**
  * @private
+ * Registers a handler to be called when the page has been requested to load.
+ * @param handler The handler to invoke when the page isloaded.
+ */
+export function registerLoadHandler(handler: (context: LoadContext) => void): void {
+  ensureInitialized();
+
+  GlobalVars.loadHandler = handler;
+  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['load']);
+}
+
+/**
+ * @private
  * Registers a handler to be called before the page is unloaded.
  * @param handler The handler to invoke before the page is unloaded. If this handler returns true the page should
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
@@ -291,13 +304,3 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
-/**
- * @private
- * @param handler The handler to invoke when a preloaded app is about to load.
- */
-export function registerWillLoadPreloadedAppHandler(handler: (context: PreloadedAppContext) => void): void {
-  ensureInitialized();
-
-  GlobalVars.willLoadPreloadedAppHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['willLoadPreloadedApp']);
-}

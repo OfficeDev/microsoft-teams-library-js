@@ -1,5 +1,5 @@
 import { MessageRequest } from './interfaces';
-import { ConversationResponse, PreloadedAppContext } from '../public/interfaces';
+import { ConversationResponse, LoadContext } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled = false;
   public static currentWindow: Window | any;
@@ -23,10 +23,10 @@ export class GlobalVars {
   public static themeChangeHandler: (theme: string) => void;
   public static fullScreenChangeHandler: (isFullScreen: boolean) => void;
   public static backButtonPressHandler: () => boolean;
+  public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
-  public static willLoadPreloadedAppHandler: (context: PreloadedAppContext) => void;
 }
