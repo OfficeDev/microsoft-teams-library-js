@@ -1,17 +1,19 @@
 import { MessageRequest } from './interfaces';
 import { ConversationResponse, LoadContext } from '../public/interfaces';
 export class GlobalVars {
-  public static initializeCalled = false;
+  public static initializeCalled: boolean = false;
+  public static initializeCompleted: boolean = false;
+  public static initializeCallbacks: { (): void }[] = [];
   public static currentWindow: Window | any;
   public static parentWindow: Window | any;
-  public static isFramelessWindow = false;
+  public static isFramelessWindow: boolean = false;
   public static parentOrigin: string;
   public static frameContext: string;
   public static childWindow: Window;
   public static childOrigin: string;
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId = 0;
+  public static nextMessageId: number = 0;
   public static handlers: {
     [func: string]: Function;
   } = {};

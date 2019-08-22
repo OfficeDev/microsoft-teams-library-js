@@ -149,7 +149,7 @@ export namespace settings {
   class SaveEventImpl implements SaveEvent {
     public notified: boolean = false;
     public result: SaveParameters;
-    constructor(result?: SaveParameters) {
+    public constructor(result?: SaveParameters) {
       this.result = result ? result : {};
     }
     public notifySuccess(): void {

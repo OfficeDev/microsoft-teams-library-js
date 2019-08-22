@@ -7,38 +7,42 @@ plugins.push(new DtsBundlePlugin());
 
 module.exports = {
   entry: {
-    'MicrosoftTeams': './src/index.ts',
-    'MicrosoftTeams.min': './src/index.ts'
+    MicrosoftTeams: './src/index.ts',
+    'MicrosoftTeams.min': './src/index.ts',
   },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     library: libraryName,
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
   },
   module: {
-    rules: [{
-      test: /\.tsx?$/,
-      use: 'ts-loader',
-      exclude: /node_modules/
-    }]
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
   },
   optimization: {
     minimize: true,
-    minimizer: [new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          reduce_funcs: false,
-          inline: false
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            reduce_funcs: false,
+            inline: false,
+          },
         },
-      },
-      include: /\.min\.js$/
-    })]
+        include: /\.min\.js$/,
+      }),
+    ],
   },
-  plugins: plugins
+  plugins: plugins,
 };

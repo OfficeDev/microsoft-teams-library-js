@@ -307,6 +307,11 @@ export interface Context {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * Unique ID for the current session for use in correlating telemetry data.
+   */
+  appSessionId?: string;
 }
 
 export interface DeepLinkParameters {
