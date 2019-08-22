@@ -6,7 +6,8 @@ import { settings } from './settings';
 import {
   TabInformation,
   TabInstanceParameters,
-  TabInstance, DeepLinkParameters,
+  TabInstance,
+  DeepLinkParameters,
   Context,
   LoadContext
 } from './interfaces';
@@ -334,4 +335,3 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
-
