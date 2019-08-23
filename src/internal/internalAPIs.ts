@@ -69,8 +69,8 @@ function handleBackButtonPress(): void {
 }
 
 function handleLoad(context: LoadContext): void {
-  if (GlobalVars.willLoadPreloadedAppHandler) {
-    GlobalVars.willLoadPreloadedAppHandler(context);
+  if (GlobalVars.loadHandler) {
+    GlobalVars.loadHandler(context);
   }
 
   if (GlobalVars.childWindow) {
