@@ -9,7 +9,7 @@ import {
   TabInstance,
   DeepLinkParameters,
   Context,
-  LoadContext
+  LoadContext,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
