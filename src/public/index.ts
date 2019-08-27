@@ -4,6 +4,7 @@ export { HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './c
 export {
   Context,
   DeepLinkParameters,
+  LoadContext,
   TabInformation,
   TabInstance,
   TabInstanceParameters,
@@ -25,6 +26,7 @@ export {
   registerBeforeUnloadHandler,
   registerChangeSettingsHandler,
   registerFullScreenHandler,
+  registerOnLoadHandler,
   registerOnThemeChangeHandler,
   shareDeepLink,
 } from './publicAPIs';
