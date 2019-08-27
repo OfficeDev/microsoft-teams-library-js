@@ -7,6 +7,7 @@ import {
   getTabInstances,
   getMruTabInstances,
   shareDeepLink,
+  registerOnLoadHandler,
   registerBeforeUnloadHandler,
   enablePrintCapability,
   registerChangeSettingsHandler,
@@ -600,6 +601,29 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);
+  });
+
+  describe("registerOnLoadHandler", () => {
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        registerOnLoadHandler(() => {
+          return false;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+    it("should successfully register handler", () => {
+      utils.initializeWithContext("content");
+
+      let handlerInvoked = false;
+      registerOnLoadHandler(() => {
+        handlerInvoked = true;
+        return false;
+      });
+
+      utils.sendMessage("load");
+
+      expect(handlerInvoked).toBe(true);
+    });
   });
 
   describe('registerBeforeUnloadHandler', () => {

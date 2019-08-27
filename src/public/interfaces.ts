@@ -440,3 +440,19 @@ export interface ConversationResponse {
    */
   entityId?: string;
 }
+
+/**
+ * @private
+ * Hide from docs.
+ */
+export interface LoadContext {
+  /**
+   * The enitity that is requested to be loaded
+   */
+  entityId: string;
+
+  /**
+   * The content URL that is requested to be loaded
+   */
+  contentUrl: string;
+}

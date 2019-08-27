@@ -1,4 +1,5 @@
 import { navigateBack } from '../public/publicAPIs';
+import { LoadContext } from '../public/interfaces';
 import { validOriginRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from './interfaces';
@@ -7,6 +8,7 @@ import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from '.
 GlobalVars.handlers['themeChange'] = handleThemeChange;
 GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
 GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
+GlobalVars.handlers['load'] = handleLoad;
 GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
 GlobalVars.handlers['changeSettings'] = handleChangeSettings;
 GlobalVars.handlers['startConversation'] = handleStartConversation;
@@ -63,6 +65,16 @@ function handleFullScreenChange(isFullScreen: boolean): void {
 function handleBackButtonPress(): void {
   if (!GlobalVars.backButtonPressHandler || !GlobalVars.backButtonPressHandler()) {
     navigateBack();
+  }
+}
+
+function handleLoad(context: LoadContext): void {
+  if (GlobalVars.loadHandler) {
+    GlobalVars.loadHandler(context);
+  }
+
+  if (GlobalVars.childWindow) {
+    sendMessageRequest(GlobalVars.childWindow, 'load', [context]);
   }
 }
 

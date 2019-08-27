@@ -1,5 +1,5 @@
 import { MessageRequest } from './interfaces';
-import { ConversationResponse } from '../public/interfaces';
+import { ConversationResponse, LoadContext } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -25,6 +25,7 @@ export class GlobalVars {
   public static themeChangeHandler: (theme: string) => void;
   public static fullScreenChangeHandler: (isFullScreen: boolean) => void;
   public static backButtonPressHandler: () => boolean;
+  public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static changeSettingsHandler: () => void;
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;

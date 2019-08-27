@@ -3,7 +3,14 @@ import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts } from '../internal/constants';
 import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
-import { TabInformation, TabInstanceParameters, TabInstance, DeepLinkParameters, Context } from './interfaces';
+import {
+  TabInformation,
+  TabInstanceParameters,
+  TabInstance,
+  DeepLinkParameters,
+  Context,
+  LoadContext,
+} from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
@@ -62,6 +69,7 @@ export function initialize(callback?: () => void): void {
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
 
@@ -205,6 +213,18 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
   const messageId = sendMessageRequest(GlobalVars.parentWindow, 'navigateBack', []);
   const errorMessage = 'Back navigation is not supported in the current client or context.';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+}
+
+/**
+ * @private
+ * Registers a handler to be called when the page has been requested to load.
+ * @param handler The handler to invoke when the page is loaded.
+ */
+export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+  ensureInitialized();
+
+  GlobalVars.loadHandler = handler;
+  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['load']);
 }
 
 /**
