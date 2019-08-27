@@ -26,7 +26,7 @@ export {
   registerBeforeUnloadHandler,
   registerChangeSettingsHandler,
   registerFullScreenHandler,
-  registerLoadHandler,
+  registerOnLoadHandler,
   registerOnThemeChangeHandler,
   shareDeepLink,
 } from './publicAPIs';

@@ -69,7 +69,7 @@ export function initialize(callback?: () => void): void {
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
-        registerLoadHandler(null);
+        registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
 
@@ -218,9 +218,9 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
 /**
  * @private
  * Registers a handler to be called when the page has been requested to load.
- * @param handler The handler to invoke when the page isloaded.
+ * @param handler The handler to invoke when the page is loaded.
  */
-export function registerLoadHandler(handler: (context: LoadContext) => void): void {
+export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   ensureInitialized();
 
   GlobalVars.loadHandler = handler;
