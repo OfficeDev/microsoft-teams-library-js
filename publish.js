@@ -20,7 +20,6 @@ async function publishAsync(version) {
     });
 
     console.log(`Successfully published package: ${result.stdout}`);
-
 }
 
 const exec = (cmd, opts) => {
@@ -48,6 +47,6 @@ const exec = (cmd, opts) => {
   }
 
   await exec(`npm install -g npm-cli-adduser`);
-  await exec(`npm-cli-adduser -r ${npmRegistry} -u teams_t1000 -p LincolnSquare19! -e t1000@microsoft.com`)
+  await exec(`npm-cli-adduser -r ${npmRegistry} -u ${process.env['NPM_USERNAME']} -p ${process.env['NPM_PASSWORD']} -e ${process.env['NPM_EMAIL']}`)
   await publishAsync(version);
 })();
