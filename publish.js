@@ -18,9 +18,12 @@ function publishAsync(version) {
       env: envOverride,
     });
 
+
+
     // Ensure already published packages are not republished.
     let alreadyPublished = false;
     proc.stderr.on('data', msg => {
+      console.log(msg.toString());
       // stderr stream comes in chunks of data, any one of which may contain the error code.
       alreadyPublished = alreadyPublished || msg.toString().includes('E403');
     });
