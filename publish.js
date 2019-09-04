@@ -18,8 +18,6 @@ function publishAsync(version) {
       env: envOverride,
     });
 
-
-
     // Ensure already published packages are not republished.
     let alreadyPublished = false;
     proc.stderr.on('data', msg => {
@@ -46,6 +44,28 @@ function publishAsync(version) {
     });
 }
 
+function addUser() {
+  return new Promise((resolve, reject) => {
+    
+    // npm-cli-adduser --registry https://example.com --username testUser --password testPass --email test@example.com
+
+
+    let proc = spawn('npm-cli-adduser', [`--registry=${npmRegistry}`, ,'--username=teams_t1000', '-password=LincolnSquare19!', '--email=t1000@microsoft.com']);
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        reject();
+      } else {
+        resolve();
+      }
+    });
+  })
+    .then(() => console.log(`Added user to the NPM Registry`))
+    .catch(e => {
+      throw new Error(`Failed to Added user to the NPM Registry - ${e}`);
+    });
+}
+
 (async () => {
   const packageJson = fs.read('./package.json', 'json');
   const version = packageJson.version;
@@ -55,6 +75,9 @@ function publishAsync(version) {
   } else {
     console.log('##vso[task.setvariable variable=uploadToCDN]true');
   }
+
+  // Add the npm user info in the server builds
+  await addUser();
 
   await publishAsync(version);
 })();
