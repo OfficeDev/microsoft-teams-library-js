@@ -1,10 +1,9 @@
 const fs = require('fs-jetpack');
-const { spawn } = require('cross-spawn');
+const cp = require("child_process");
 const npmRegistry = 'https://registry.npmjs.org';
-const packageFolder = __dirname;
 
-function publishAsync(version) {
-  return new Promise((resolve, reject) => {
+async function publishAsync(version) {
+ 
     let envOverride = Object.assign({}, process.env, {
       npm_config_registry: npmRegistry,
     });
@@ -13,58 +12,30 @@ function publishAsync(version) {
       return reject('packageInfo must be available');
     }
 
-    let proc = spawn('npm', ['publish', version.includes('beta') ? '--tag=beta': ''].filter(Boolean), {
-      cwd: packageFolder,
+    let cmd = version.includes('beta') ? 'npm publish --tag beta' : 'npm publish --tag latest';
+
+    let result = await exec(cmd, {
+      cwd: __dirname,
       env: envOverride,
     });
 
-    // Ensure already published packages are not republished.
-    let alreadyPublished = false;
-    proc.stderr.on('data', msg => {
-      console.log(msg.toString());
-      // stderr stream comes in chunks of data, any one of which may contain the error code.
-      alreadyPublished = alreadyPublished || msg.toString().includes('E403');
-    });
+    console.log(`Successfully published package: ${result.stdout}`);
 
-    proc.on('close', code => {
-      if (code !== 0) {
-        if (alreadyPublished) {
-          console.log(`${packageFolder}@${version} is already published.`);
-          resolve();
-        }
-        reject();
-      } else {
-        resolve();
-      }
-    });
-  })
-    .then(() => console.log(`Successfully published ${packageFolder}@${version}`))
-    .catch(e => {
-      throw new Error(`Failed to publish package ${packageFolder} to registry ${npmRegistry} - ${e}`);
-    });
 }
 
-function addUser() {
+const exec = (cmd, opts) => {
   return new Promise((resolve, reject) => {
-    
-    // npm-cli-adduser --registry https://example.com --username testUser --password testPass --email test@example.com
-
-
-    let proc = spawn('npm-cli-adduser', [`--registry=${npmRegistry}`, ,'--username=teams_t1000', '-password=LincolnSquare19!', '--email=t1000@microsoft.com']);
-
-    proc.on('close', code => {
-      if (code !== 0) {
-        reject();
-      } else {
-        resolve();
+    cp.exec(cmd, opts, (err, stdout, stderr) => {
+      if (err) {
+        return reject(err);
       }
+      resolve({
+        stdout,
+        stderr
+      });
     });
-  })
-    .then(() => console.log(`Added user to the NPM Registry`))
-    .catch(e => {
-      throw new Error(`Failed to Added user to the NPM Registry - ${e}`);
-    });
-}
+  });
+};
 
 (async () => {
   const packageJson = fs.read('./package.json', 'json');
@@ -76,8 +47,7 @@ function addUser() {
     console.log('##vso[task.setvariable variable=uploadToCDN]true');
   }
 
-  // Add the npm user info in the server builds
-  await addUser();
-
+  await exec(`npm install -g npm-cli-adduser`);
+  await exec(`npm-cli-adduser -r ${npmRegistry} -u teams_t1000 -p LincolnSquare19! -e t1000@microsoft.com`)
   await publishAsync(version);
 })();
