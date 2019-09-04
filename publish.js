@@ -13,7 +13,7 @@ function publishAsync(version) {
       return reject('packageInfo must be available');
     }
 
-    let proc = spawn('npm', ['publish'].filter(Boolean), {
+    let proc = spawn('npm', ['publish', version.includes('beta') ? '--tag=beta': ''].filter(Boolean), {
       cwd: packageFolder,
       env: envOverride,
     });
@@ -22,7 +22,7 @@ function publishAsync(version) {
     let alreadyPublished = false;
     proc.stderr.on('data', msg => {
       // stderr stream comes in chunks of data, any one of which may contain the error code.
-      alreadyPublished = alreadyPublished || `${msg}`.includes('E403');
+      alreadyPublished = alreadyPublished || msg.toString().includes('E403');
     });
 
     proc.on('close', code => {
