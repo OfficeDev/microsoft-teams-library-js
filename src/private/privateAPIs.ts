@@ -122,7 +122,6 @@ export function sendCustomMessage(
   return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
 }
 
-
 /**
  * @private
  * Internal use only
@@ -134,8 +133,8 @@ export function addCustomHandler(
   actionName: string,
   customHandler: (
     // tslint:disable-next-line:no-any
-    args?: any[]
-  ) => void
+    args?: any[],
+  ) => void,
 ): void {
   ensureInitialized();
   GlobalVars.handlers[actionName] = customHandler;
