@@ -8,10 +8,6 @@ async function publishAsync(version) {
       npm_config_registry: npmRegistry,
     });
 
-    if (!version) {
-      return reject('packageInfo must be available');
-    }
-
     let cmd = version.includes('beta') ? 'npm publish --tag beta' : 'npm publish --tag latest';
 
     let result = await exec(cmd, {
@@ -48,5 +44,7 @@ const exec = (cmd, opts) => {
 
   await exec(`npm install -g npm-cli-adduser`);
   await exec(`npm-cli-adduser -r ${npmRegistry} -u ${process.env['NPM_USERNAME']} -p ${process.env['NPM_PASSWORD']} -e ${process.env['NPM_EMAIL']}`)
-  await publishAsync(version);
+  await publishAsync(version).catch(e => {
+    throw new Error(`The version ${version} has already been published.`, e)
+  });
 })();
