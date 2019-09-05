@@ -38,6 +38,7 @@ const exec = (cmd, opts) => {
 
   if (version.includes('beta')) {
     console.log('Beta version of the package is in use. No need to upload to CDN.');
+    console.log('##vso[task.setvariable variable=uploadToCDN]true');
   } else {
     console.log('##vso[task.setvariable variable=uploadToCDN]true');
   }
