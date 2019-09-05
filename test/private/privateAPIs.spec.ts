@@ -7,6 +7,7 @@ import {
   openFilePreview,
   getUserJoinedTeams,
   sendCustomMessage,
+  addCustomHandler,
   getChatMembers,
   getConfigSetting,
   enterFullscreen,
@@ -98,6 +99,8 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'https://microsoft.sharepointonline.com',
     'https://outlook.office.com',
     'https://outlook-sdf.office.com',
+    'https://retailservices.teams.microsoft.com',
+    'https://tasks.office.com'
   ];
 
   supportedDomains.forEach(supportedDomain => {
@@ -382,6 +385,22 @@ describe('MicrosoftTeams-privateAPIs', () => {
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
       expect(id).toBe(message.id);
+    });
+  });
+
+  describe('addCustomHandler', () => {
+    it('should successfully pass message and provided arguments', () => {
+      utils.initializeWithContext('content');
+
+      let callbackCalled: boolean = false,
+        callbackArgs: any[] = null;
+      addCustomHandler('customMessage', (args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+      });
+
+      //TODO: send a custom message 'customMessage' to this window 
+      //and validate the callback called with correct args
     });
   });
 

@@ -122,6 +122,25 @@ export function sendCustomMessage(
   return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
 }
 
+
+/**
+ * @private
+ * Internal use only
+ * Adds a custom handler for an action
+ * @param actionName Specifies name of the action message to handle
+ * @param customHandler The callback to invoke when the action message is received
+ */
+export function addCustomHandler(
+  actionName: string,
+  customHandler: (
+    // tslint:disable-next-line:no-any
+    args?: any[]
+  ) => void
+): void {
+  ensureInitialized();
+  GlobalVars.handlers[actionName] = customHandler;
+}
+
 /**
  * @private
  * Hide from docs
