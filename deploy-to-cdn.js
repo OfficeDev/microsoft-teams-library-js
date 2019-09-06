@@ -24,7 +24,7 @@ function getConnectionString() {
 
   var credentials = new KeyVault.KeyVaultCredentials(authenticator);
   var keyVaultClient = new KeyVault.KeyVaultClient(credentials);
-  var secretName = argv.vaultSecretName;
+  var secretName = 'VersionedBuildContainerUrl';
   var secretIdentifier = vaultUri + '/secrets/' + secretName + '/';
   return keyVaultClient.getSecret(secretIdentifier, function(err, secretBundle) {
     if (err) throw err;
