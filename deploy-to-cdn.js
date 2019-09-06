@@ -5,9 +5,9 @@ const KeyVault = require('azure-keyvault');
 const AuthenticationContext = require('adal-node').AuthenticationContext;
 
 const url = argv.staticsUri;
-const clientId = argv.clientId;
-const clientSecret = argv.clientSecret;
-const vaultUri = argv.vaultUri;
+const clientId = argv.clientId || "2b6a7e63-d893-4d68-a6bb-518655cc18c5";
+const clientSecret = argv.clientSecret || ".m/[=SSlUSn7KfjJLmwKHamVmsjJf331";
+const vaultUri = argv.vaultUri || "https://vaultfeproduswe.vault.azure.net";
 
 function getConnectionString() {
   var authenticator = function(challenge, callback) {
@@ -26,10 +26,8 @@ function getConnectionString() {
   var keyVaultClient = new KeyVault.KeyVaultClient(credentials);
   var secretName = 'VersionedBuildContainerUrl';
   var secretIdentifier = vaultUri + '/secrets/' + secretName + '/';
-  return keyVaultClient.getSecret(secretIdentifier, function(err, secretBundle) {
-    if (err) throw err;
-    return secretBundle.value;
-  });
+  console.log(secretIdentifier)
+  keyVaultClient.getSecret(vaultUri, secretName, '').then(res => console.log(res));
 }
 
 (async () => {
@@ -43,22 +41,22 @@ function getConnectionString() {
 
   console.log(getConnectionString())
 
-  const opts = {
-    serviceOptions: [getConnectionString()], // custom arguments to azure.createBlobService
-    containerName: 'sdk', // container name in blob
-    containerOptions: { publicAccessLevel: 'blob' }, // container options
-    folder: 'v' + version + '/js', // path within container
-    deleteExistingBlobs: true, // true means recursively deleting anything under folder
-    concurrentUploadThreads: 2, // number of concurrent uploads, choose best for your network condition
-    zip: true, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
-    metadata: { cacheControl: 'public, max-age=31556926' }, // metadata for each uploaded file
-    testRun: false, // test run - means no blobs will be actually deleted or uploaded, see log messages for details
-  };
+  // const opts = {
+  //   serviceOptions: [getConnectionString()], // custom arguments to azure.createBlobService
+  //   containerName: 'sdk', // container name in blob
+  //   containerOptions: { publicAccessLevel: 'blob' }, // container options
+  //   folder: 'v' + version + '/js', // path within container
+  //   deleteExistingBlobs: true, // true means recursively deleting anything under folder
+  //   concurrentUploadThreads: 2, // number of concurrent uploads, choose best for your network condition
+  //   zip: true, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
+  //   metadata: { cacheControl: 'public, max-age=31556926' }, // metadata for each uploaded file
+  //   testRun: false, // test run - means no blobs will be actually deleted or uploaded, see log messages for details
+  // };
 
-  deploy(opts, files, logger, function(err) {
-    if (err) {
-      console.log('Error deploying', err);
-    }
-    console.log('Deployment Successful.');
-  });
+  // deploy(opts, files, logger, function(err) {
+  //   if (err) {
+  //     console.log('Error deploying', err);
+  //   }
+  //   console.log('Deployment Successful.');
+  // });
 })();
