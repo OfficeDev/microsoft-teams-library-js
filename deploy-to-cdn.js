@@ -1,30 +1,30 @@
 const { argv } = require('yargs');
-const { deploy } = require('deploy-azure-cdn');
+const deploy = require('deploy-azure-cdn');
 const KeyVault = require('azure-keyvault');
 const fs = require('fs-jetpack');
+const path = require("path");
 const AuthenticationContext = require('adal-node').AuthenticationContext;
 
-const url = argv.staticsUri;
 const clientId = argv.clientId;
 const clientSecret = argv.clientSecret;
 const vaultUri = argv.vaultUri;
 const secretName = argv.vaultSecretName;
 
 function getConnectionString() {
-  var authenticator = function(challenge, callback) {
-    var context = new AuthenticationContext(challenge.authorization);
+  const authenticator = function(challenge, callback) {
+    const context = new AuthenticationContext(challenge.authorization);
     return context.acquireTokenWithClientCredentials(challenge.resource, clientId, clientSecret, function(
       err,
       tokenResponse,
     ) {
       if (err) throw err;
-      var authorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
+      const authorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
       return callback(null, authorizationValue);
     });
   };
 
-  var credentials = new KeyVault.KeyVaultCredentials(authenticator);
-  var keyVaultClient = new KeyVault.KeyVaultClient(credentials);
+  const credentials = new KeyVault.KeyVaultCredentials(authenticator);
+  const keyVaultClient = new KeyVault.KeyVaultClient(credentials);
   return keyVaultClient.getSecret(vaultUri, secretName, '').then(res => res.value);
 }
 
@@ -34,12 +34,15 @@ function getConnectionString() {
 
   // if (version.includes('beta')) return;
 
+  const filePaths = [];
   const files = await fs.listAsync('./dist');
+  files.forEach(file => {
+    filePaths.push({path: path.resolve(__dirname, 'dist', file)});
+  })
   const logger = console.log;
 
   getConnectionString().then(connectionString => {
 
-    console.log(connectionString)
     const opts = {
       serviceOptions: [connectionString], // custom arguments to azure.createBlobService
       containerName: 'sdk', // container name in blob
@@ -52,7 +55,7 @@ function getConnectionString() {
       testRun: false, // test run - means no blobs will be actually deleted or uploaded, see log messages for details
     };
 
-    deploy(opts, files, logger, function(err) {
+    deploy(opts, filePaths, logger, function(err) {
       if (err) {
         console.log('Error deploying', err);
       }
