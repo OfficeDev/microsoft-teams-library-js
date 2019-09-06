@@ -5,9 +5,9 @@ const KeyVault = require('azure-keyvault');
 const AuthenticationContext = require('adal-node').AuthenticationContext;
 
 const url = argv.staticsUri;
-const clientId = argv.clientId || "2b6a7e63-d893-4d68-a6bb-518655cc18c5";
-const clientSecret = argv.clientSecret || ".m/[=SSlUSn7KfjJLmwKHamVmsjJf331";
-const vaultUri = argv.vaultUri || "https://vaultfeproduswe.vault.azure.net";
+const clientId = argv.clientId;
+const clientSecret = argv.clientSecret;
+const vaultUri = argv.vaultUri;
 
 function getConnectionString() {
   var authenticator = function(challenge, callback) {
