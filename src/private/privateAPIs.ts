@@ -111,30 +111,50 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * Sends a custom action message to Teams.
  * @param actionName Specifies name of the custom action to be sent
  * @param args Specifies additional arguments passed to the action
+ * @param callback Optionally specify a callback to receive response parameters from the parent
+ * @param shouldSendToChild Optionally specify whether to send the custom message to the child window
  * @returns id of sent message
  */
 export function sendCustomMessage(
   actionName: string,
   // tslint:disable-next-line:no-any
   args?: any[],
+  // tslint:disable-next-line:no-any
+  callback?: (...args: any[]) => void,
+  shouldSendToChild?: boolean,
 ): number {
   ensureInitialized();
-  return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
+
+  //by default send custom message to parent window
+  let targetWindow: Window = GlobalVars.parentWindow;
+  //check if message is meant for child
+  if (shouldSendToChild) {
+    //validate childWindow
+    if (!GlobalVars.childWindow) {
+      throw new Error('The child window has not yet been initialized or is not present');
+    }
+    targetWindow = GlobalVars.childWindow;
+  }
+  const messageId = sendMessageRequest(targetWindow, actionName, args);
+  if (typeof callback === 'function') {
+    GlobalVars.callbacks[messageId] = callback;
+  }
+  return messageId;
 }
 
 /**
  * @private
  * Internal use only
- * Adds a custom handler for an action
+ * Adds a custom handler for an action sent by a childWindow
  * @param actionName Specifies name of the action message to handle
- * @param customHandler The callback to invoke when the action message is received
+ * @param customHandler The callback to invoke when the action message is received. The return value is sent to the child
  */
 export function addCustomHandler(
   actionName: string,
   customHandler: (
     // tslint:disable-next-line:no-any
-    args?: any[],
-  ) => void,
+    ...args: any[]
+  ) => any[],
 ): void {
   ensureInitialized();
   GlobalVars.handlers[actionName] = customHandler;

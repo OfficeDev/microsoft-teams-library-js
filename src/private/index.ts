@@ -19,6 +19,7 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
+  addCustomHandler,
   uploadCustomApp,
 } from './privateAPIs';
 export { conversations } from './conversations';
