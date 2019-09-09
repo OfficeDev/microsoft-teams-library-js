@@ -21,7 +21,7 @@ module.exports = {
         allowExpressions: true,
       },
     ],
-    '@typescript-eslint/forbidden-url': [
+    'forbidden-url': [
       'error',
       {
         allowExpressions: true,
