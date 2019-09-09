@@ -2,6 +2,7 @@ import { generateRegExpFromUrls } from './utils';
 
 export const version = '1.4.1';
 
+/* tslint:disable: skip forbidden urls */
 export const validOrigins = [
   'https://teams.microsoft.com',
   'https://teams.microsoft.us',
@@ -19,6 +20,7 @@ export const validOrigins = [
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
 ];
+/* tslint:enable: skip forbidden urls */
 
 // Ensure these declarations stay in sync with the framework.
 export const frameContexts = {
