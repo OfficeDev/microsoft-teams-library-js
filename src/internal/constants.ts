@@ -2,7 +2,6 @@ import { generateRegExpFromUrls } from './utils';
 
 export const version = '1.4.1';
 
-/* tslint:disable: skip forbidden urls */
 export const validOrigins = [
   'https://teams.microsoft.com',
   'https://teams.microsoft.us',
@@ -11,7 +10,9 @@ export const validOrigins = [
   'https://int.teams.microsoft.com',
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
+  // tslint:disable-next-line: forbidden url
   'http://dev.local', // local development
+  // tslint:disable-next-line: forbidden url
   'http://dev.local:8080', // local development
   'https://msft.spoppe.com',
   'https://*.sharepoint.com',
@@ -20,7 +21,6 @@ export const validOrigins = [
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
 ];
-/* tslint:enable: skip forbidden urls */
 
 // Ensure these declarations stay in sync with the framework.
 export const frameContexts = {
