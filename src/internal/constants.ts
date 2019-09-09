@@ -11,9 +11,9 @@ export const validOrigins = [
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
   // tslint:disable-next-line: forbidden url
-  'http://dev.local', // local development
+  "http://dev.local", // local development
   // tslint:disable-next-line: forbidden url
-  'http://dev.local:8080', // local development
+  "http://dev.local:8080", // local development
   'https://msft.spoppe.com',
   'https://*.sharepoint.com',
   'https://*.sharepoint-df.com',
