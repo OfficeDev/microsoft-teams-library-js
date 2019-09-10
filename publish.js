@@ -8,7 +8,7 @@ async function publishAsync(version) {
       npm_config_registry: npmRegistry,
     });
 
-    let cmd = version.includes('beta') ? 'npm publish --tag beta' : 'npm publish --tag latest';
+    let cmd = version.includes('beta') ? 'npm publish --tag beta' : 'npm publish';
 
     let result = await exec(cmd, {
       cwd: __dirname,
