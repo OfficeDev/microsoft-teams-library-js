@@ -10,9 +10,7 @@ export const validOrigins = [
   'https://int.teams.microsoft.com',
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
-  // tslint:disable-next-line:forbidden-url
   'http://dev.local', // local development
-  // tslint:disable-next-line:forbidden-url
   'http://dev.local:8080', // local development
   'https://msft.spoppe.com',
   'https://*.sharepoint.com',

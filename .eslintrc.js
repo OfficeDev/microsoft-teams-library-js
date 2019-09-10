@@ -20,12 +20,6 @@ module.exports = {
       {
         allowExpressions: true,
       },
-    ],
-    'forbidden-url': [
-      'error',
-      {
-        allowExpressions: true,
-      },
     ]
   },
 };
