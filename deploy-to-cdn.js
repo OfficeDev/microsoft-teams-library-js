@@ -32,7 +32,7 @@ function getConnectionString() {
   const packageJson = fs.read('./package.json', 'json');
   const version = packageJson.version;
 
-  // if (version.includes('beta')) return;
+  if (version.includes('beta')) return;
 
   const filePaths = [];
   const files = await fs.listAsync('./dist');
@@ -42,7 +42,6 @@ function getConnectionString() {
   const logger = console.log;
 
   getConnectionString().then(connectionString => {
-
     const opts = {
       serviceOptions: [connectionString], // custom arguments to azure.createBlobService
       containerName: 'sdk', // container name in blob
