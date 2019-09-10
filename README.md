@@ -5,7 +5,7 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 [![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=master)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
 [![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=master)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=master)
 
-[![Build Status](https://domoreexp.visualstudio.com/Teamspace/_apis/build/status/microsoft-teams-library-sdk?branchName=master)](https://domoreexp.visualstudio.com/Teamspace/_build/latest?definitionId=3468&branchName=master)
+[![Build Status](https://domoreexp.visualstudio.com/Teamspace/_apis/build/status/microsoft-teams-library-sdk?branchName=master)](https://domoreexp.visualstudio.com/Teamspace/_build/latest?definitionId=3488&branchName=master)
 
 ## Getting Started
 

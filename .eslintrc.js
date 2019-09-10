@@ -20,6 +20,6 @@ module.exports = {
       {
         allowExpressions: true,
       },
-    ]
+    ],
   },
 };
