@@ -47,7 +47,7 @@ function getConnectionString() {
       containerName: 'sdk', // container name in blob
       containerOptions: { publicAccessLevel: 'blob' }, // container options
       folder: 'v' + version + '/js', // path within container
-      deleteExistingBlobs: true, // true means recursively deleting anything under folder
+      deleteExistingBlobs: false, // true means recursively deleting anything under folder
       concurrentUploadThreads: 2, // number of concurrent uploads, choose best for your network condition
       zip: true, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
       metadata: { cacheControl: 'public, max-age=31556926' }, // metadata for each uploaded file
