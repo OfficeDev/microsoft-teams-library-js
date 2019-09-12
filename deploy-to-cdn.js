@@ -2,7 +2,7 @@ const { argv } = require('yargs');
 const deploy = require('deploy-azure-cdn');
 const KeyVault = require('azure-keyvault');
 const fs = require('fs-jetpack');
-const path = require("path");
+const path = require('path');
 const AuthenticationContext = require('adal-node').AuthenticationContext;
 
 const clientId = argv.clientId;
@@ -55,9 +55,7 @@ function getConnectionString() {
     };
 
     deploy(opts, filePaths, logger, function(err) {
-      if (err) {
-        console.log('Error deploying', err);
-      }
+      if (err) throw err;
       console.log('Deployment Successful.');
     });
   });
