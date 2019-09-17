@@ -91,7 +91,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'https://dod.teams.microsoft.us',
     'https://int.teams.microsoft.com',
     'https://devspaces.skype.com',
-    'http://dev.local',
+    'https://local.teams.office.com',
     'https://microsoft.sharepoint.com',
     'https://msft.spoppe.com',
     'https://microsoft.sharepoint-df.com',
