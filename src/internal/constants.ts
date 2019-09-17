@@ -10,8 +10,8 @@ export const validOrigins = [
   'https://int.teams.microsoft.com',
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
-  'http://dev.local', // local development
-  'http://dev.local:8080', // local development
+  'https://local.teams.office.com', // local development
+  'https://local.teams.office.com:8080', // local development
   'https://msft.spoppe.com',
   'https://*.sharepoint.com',
   'https://*.sharepoint-df.com',
