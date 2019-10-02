@@ -2,7 +2,7 @@ import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
-import { Utils, MessageResponse } from '../utils';
+import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
   openFilePreview,
   getUserJoinedTeams,
@@ -12,6 +12,7 @@ import {
   getConfigSetting,
   enterFullscreen,
   exitFullscreen,
+  sendCustomMessageToChild,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -388,19 +389,74 @@ describe('MicrosoftTeams-privateAPIs', () => {
     });
   });
 
-  describe('addCustomHandler', () => {
+  describe('sendCustomMessageToChild', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
+      
+      //trigger child window setup
+      //trigger processing of message received from child
+      utils.processMessage({
+        origin: 'https://tasks.office.com',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: 'customAction1',
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
 
+      const customActionName = 'customMessageToChild1';
+      sendCustomMessageToChild(customActionName, ['arg1', 234, 12.3, true]);
+
+      let message = utils.findMessageInChildByFunc(customActionName);
+      expect(message).not.toBeNull();
+      expect(message.args).toEqual(['arg1', 234, 12.3, true]);
+    });
+  });
+
+  describe('addCustomHandler', () => {
+    it('should successfully pass message and provided arguments of customAction from parent', () => {
+      utils.initializeWithContext('content');
+
+      const customActionName = 'customAction1';
       let callbackCalled: boolean = false,
         callbackArgs: any[] = null;
-      addCustomHandler('customMessage', (args) => {
+      addCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
         callbackArgs = args;
+        return [];
       });
 
-      //TODO: send a custom message 'customMessage' to this window 
-      //and validate the callback called with correct args
+      utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
+      expect(callbackCalled).toBe(true);
+      expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
+    });
+
+    it('should successfully pass message and provided arguments of customAction from child', () => {
+      utils.initializeWithContext('content');
+
+      const customActionName = 'customAction2';
+      let callbackCalled: boolean = false,
+        callbackArgs: any[] = null;
+      addCustomHandler(customActionName, (...args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+        return [];
+      });
+
+      //trigger processing of message received from child
+      utils.processMessage({
+        origin: 'https://tasks.office.com',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: customActionName,
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
   });
 

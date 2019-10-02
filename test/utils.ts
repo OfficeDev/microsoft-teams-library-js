@@ -81,6 +81,7 @@ export class Utils {
       },
       closed: false,
     };
+    this.mockWindow.child = this.childWindow as Window;
   }
 
   public processMessage: (ev: MessageEvent) => void;
@@ -101,7 +102,17 @@ export class Utils {
         return this.messages[i];
       }
     }
+    return null;
+  };
 
+  public findMessageInChildByFunc = (func: string): MessageRequest => {
+    if(this.childMessages && this.childMessages.length){
+      for (let i = 0; i < this.childMessages.length; i++) {
+        if (this.childMessages[i].func === func) {
+          return this.childMessages[i];
+        }
+      }
+    }
     return null;
   };
 

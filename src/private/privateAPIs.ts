@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequest, sendCustomMessageRequest } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import {
@@ -112,7 +112,6 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @param actionName Specifies name of the custom action to be sent
  * @param args Specifies additional arguments passed to the action
  * @param callback Optionally specify a callback to receive response parameters from the parent
- * @param shouldSendToChild Optionally specify whether to send the custom message to the child window
  * @returns id of sent message
  */
 export function sendCustomMessage(
@@ -121,25 +120,38 @@ export function sendCustomMessage(
   args?: any[],
   // tslint:disable-next-line:no-any
   callback?: (...args: any[]) => void,
-  shouldSendToChild?: boolean,
 ): number {
   ensureInitialized();
 
-  //by default send custom message to parent window
-  let targetWindow: Window = GlobalVars.parentWindow;
-  //check if message is meant for child
-  if (shouldSendToChild) {
-    //validate childWindow
-    if (!GlobalVars.childWindow) {
-      throw new Error('The child window has not yet been initialized or is not present');
-    }
-    targetWindow = GlobalVars.childWindow;
-  }
-  const messageId = sendMessageRequest(targetWindow, actionName, args);
+  const messageId = sendMessageRequest(GlobalVars.parentWindow, actionName, args);
   if (typeof callback === 'function') {
-    GlobalVars.callbacks[messageId] = callback;
+    GlobalVars.callbacks[messageId] = (...args: any[]): void => {
+      callback.apply(null, args);
+    };
   }
   return messageId;
+}
+
+/**
+ * @private
+ * Internal use only
+ * Sends a custom action message to a child window or iframe.
+ * @param actionName Specifies name of the custom action to be sent
+ * @param args Specifies additional arguments passed to the action
+ * @returns id of sent message
+ */
+export function sendCustomMessageToChild(
+  actionName: string,
+  // tslint:disable-next-line:no-any
+  args?: any[],
+): void {
+  ensureInitialized();
+
+  //validate childWindow
+  if (!GlobalVars.childWindow) {
+    throw new Error('The child window has not yet been initialized or is not present');
+  }
+  sendCustomMessageRequest(GlobalVars.childWindow, actionName, args);
 }
 
 /**
@@ -157,7 +169,9 @@ export function addCustomHandler(
   ) => any[],
 ): void {
   ensureInitialized();
-  GlobalVars.handlers[actionName] = customHandler;
+  GlobalVars.handlers[actionName] = (...args: any[]) => {
+    return customHandler.apply(this, args);
+  };
 }
 
 /**

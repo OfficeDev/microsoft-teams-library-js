@@ -168,7 +168,7 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
 }
 
 export function handleParentMessage(evt: MessageEvent): void {
-  if ('id' in evt.data) {
+  if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated GlobalVars.callbacks
     const message = evt.data as MessageResponse;
     const callback = GlobalVars.callbacks[message.id];
@@ -178,7 +178,7 @@ export function handleParentMessage(evt: MessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory.
       delete GlobalVars.callbacks[message.id];
     }
-  } else if ('func' in evt.data) {
+  } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
     const handler = GlobalVars.handlers[message.func];
@@ -196,13 +196,12 @@ function handleChildMessage(evt: MessageEvent): void {
     const handler = GlobalVars.handlers[message.func];
     if (handler) {
       const result = handler.apply(this, message.args);
-      if (result) {
+      if (typeof result !== 'undefined') {
         sendMessageResponse(GlobalVars.childWindow, message.id, Array.isArray(result) ? result : [result]);
       }
     } else {
       // Proxy to parent
       const messageId = sendMessageRequest(GlobalVars.parentWindow, message.func, message.args);
-
       // tslint:disable-next-line:no-any
       GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
@@ -284,6 +283,30 @@ function sendMessageResponse(
   }
 }
 
+/**
+ * Send a custom message object that can be sent to child window,
+ * instead of a response message to a child
+ */
+export function sendCustomMessageRequest(
+  targetWindow: Window | any,
+  actionName: string,
+  // tslint:disable-next-line: no-any
+  args?: any[],
+): void {
+  const request = createCustomMessage(actionName, args);
+  if (!GlobalVars.isFramelessWindow) {
+    const targetOrigin = getTargetOrigin(targetWindow);
+
+    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+    // queue the message and send it after the origin is established
+    if (targetWindow && targetOrigin) {
+      targetWindow.postMessage(request, targetOrigin);
+    } else {
+      getTargetMessageQueue(targetWindow).push(request);
+    }
+  }
+}
+
 // tslint:disable-next-line:no-any
 function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
@@ -297,6 +320,18 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
 function createMessageResponse(id: number, args: any[]): MessageResponse {
   return {
     id: id,
+    args: args || [],
+  };
+}
+
+/**
+ * Creates a message object without any id, meant for custom actions being sent across frames by apps
+ */
+// tslint:disable-next-line:no-any
+function createCustomMessage(func: string, args: any[]): MessageRequest {
+  return {
+    id: null,
+    func: func,
     args: args || [],
   };
 }
