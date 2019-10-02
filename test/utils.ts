@@ -81,7 +81,6 @@ export class Utils {
       },
       closed: false,
     };
-    this.mockWindow.child = this.childWindow as Window;
   }
 
   public processMessage: (ev: MessageEvent) => void;
