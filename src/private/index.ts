@@ -19,6 +19,7 @@ export {
   openFilePreview,
   sendCustomMessage,
   showNotification,
+  sendCustomMessageToChild,
   addCustomHandler,
   uploadCustomApp,
 } from './privateAPIs';
