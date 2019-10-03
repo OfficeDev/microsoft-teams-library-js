@@ -18,8 +18,9 @@ export const validOrigins = [
   'https://*.sharepointonline.com',
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
-  'https://*.teams.microsoft.com',
-  'https://tasks.office.com',
+  'https://retailservices-dev.teams.microsoft.com', // Teams: Tasks(Dev) app
+  'https://retailservices.teams.microsoft.com', // Teams: Tasks app
+  'https://tasks.office.com', // Planner
 ];
 
 // Ensure these declarations stay in sync with the framework.
