@@ -1,7 +1,12 @@
-import { processMessage, ensureInitialized, sendMessageRequest, handleParentMessage } from '../internal/internalAPIs';
+import {
+  processMessage,
+  ensureInitialized,
+  sendMessageRequestToParent,
+  handleParentMessage,
+} from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, frameContexts } from '../internal/constants';
-import { ExtendedWindow, MessageEvent } from '../internal/interfaces';
+import { version, frameContexts, userOriginUrlValidationRegExp } from '../internal/constants';
+import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
 import {
   TabInformation,
@@ -11,22 +16,25 @@ import {
   Context,
   LoadContext,
 } from './interfaces';
-import { getGenericOnCompleteHandler } from '../internal/utils';
+import { getGenericOnCompleteHandler, generateRegExpFromUrls } from '../internal/utils';
 import { logs } from '../private/logs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
+ * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
+ * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
+ * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
-export function initialize(callback?: () => void): void {
+export function initialize(callback?: () => void, validMessageOrigins?: string[]): void {
   // Independent components might not know whether the SDK is initialized so might call it to be safe.
   // Just no-op if that happens to make it easier to use.
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
     // Listen for messages post to our window
-    const messageListener = (evt: MessageEvent): void => processMessage(evt);
+    const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
@@ -48,7 +56,7 @@ export function initialize(callback?: () => void): void {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
       // of the parent window, and this message contains no data that could pose a security risk.
       GlobalVars.parentOrigin = '*';
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, 'initialize', [version]);
+      const messageId = sendMessageRequestToParent('initialize', [version]);
       GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
         GlobalVars.frameContext = context;
         GlobalVars.hostClientType = clientType;
@@ -88,6 +96,7 @@ export function initialize(callback?: () => void): void {
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
       GlobalVars.initializeCallbacks = [];
+      GlobalVars.additionalValidOrigins = [];
       GlobalVars.parentWindow = null;
       GlobalVars.parentOrigin = null;
       GlobalVars.parentMessageQueue = [];
@@ -108,6 +117,18 @@ export function initialize(callback?: () => void): void {
   //    that should be invoked once initialization does complete
   if (callback) {
     GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
+  }
+
+  // Handle additional valid message origins if specified
+  if (Array.isArray(validMessageOrigins)) {
+    GlobalVars.additionalValidOrigins = GlobalVars.additionalValidOrigins.concat(
+      validMessageOrigins.filter((_origin: string) => {
+        return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
+      }),
+    );
+    if (GlobalVars.additionalValidOrigins.length > 0) {
+      GlobalVars.additionalValidOriginsRegexp = generateRegExpFromUrls(GlobalVars.additionalValidOrigins);
+    }
   }
 }
 
@@ -162,7 +183,7 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getContext');
+  const messageId = sendMessageRequestToParent('getContext');
   GlobalVars.callbacks[messageId] = callback;
 }
 
@@ -174,7 +195,7 @@ export function getContext(callback: (context: Context) => void): void {
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
   GlobalVars.themeChangeHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['themeChange']);
+  handler && sendMessageRequestToParent('registerHandler', ['themeChange']);
 }
 
 /**
@@ -186,7 +207,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
   ensureInitialized();
 
   GlobalVars.fullScreenChangeHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['fullScreen']);
+  handler && sendMessageRequestToParent('registerHandler', ['fullScreen']);
 }
 
 /**
@@ -200,7 +221,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
 
   GlobalVars.backButtonPressHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['backButton']);
+  handler && sendMessageRequestToParent('registerHandler', ['backButton']);
 }
 
 /**
@@ -210,7 +231,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'navigateBack', []);
+  const messageId = sendMessageRequestToParent('navigateBack', []);
   const errorMessage = 'Back navigation is not supported in the current client or context.';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
@@ -224,7 +245,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
   ensureInitialized();
 
   GlobalVars.loadHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['load']);
+  handler && sendMessageRequestToParent('registerHandler', ['load']);
 }
 
 /**
@@ -237,7 +258,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
   ensureInitialized();
 
   GlobalVars.beforeUnloadHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['beforeUnload']);
+  handler && sendMessageRequestToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -248,7 +269,7 @@ export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(frameContexts.content);
 
   GlobalVars.changeSettingsHandler = handler;
-  handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['changeSettings']);
+  handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
 }
 
 /**
@@ -262,7 +283,7 @@ export function registerChangeSettingsHandler(handler: () => void): void {
 export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'navigateCrossDomain', [url]);
+  const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
     'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
@@ -280,7 +301,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getTabInstances', [tabInstanceParameters]);
+  const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
   GlobalVars.callbacks[messageId] = callback;
 }
 
@@ -295,7 +316,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getMruTabInstances', [tabInstanceParameters]);
+  const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
   GlobalVars.callbacks[messageId] = callback;
 }
 
@@ -306,7 +327,7 @@ export function getMruTabInstances(
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
   ensureInitialized(frameContexts.content);
 
-  sendMessageRequest(GlobalVars.parentWindow, 'shareDeepLink', [
+  sendMessageRequestToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -319,7 +340,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'executeDeepLink', [deepLink]);
+  const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
@@ -330,7 +351,7 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
 export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'navigateToTab', [tabInstance]);
+  const messageId = sendMessageRequestToParent('navigateToTab', [tabInstance]);
 
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);

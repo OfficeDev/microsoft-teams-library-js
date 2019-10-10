@@ -1,5 +1,5 @@
 import { TaskInfo } from './interfaces';
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
@@ -17,7 +17,7 @@ export namespace tasks {
   export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
     ensureInitialized(frameContexts.content);
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'tasks.startTask', [taskInfo]);
+    const messageId = sendMessageRequestToParent('tasks.startTask', [taskInfo]);
     GlobalVars.callbacks[messageId] = submitHandler;
     return new ChildAppWindow();
   }
@@ -31,7 +31,7 @@ export namespace tasks {
     const { width, height, ...extra } = taskInfo;
 
     if (!Object.keys(extra).length) {
-      sendMessageRequest(GlobalVars.parentWindow, 'tasks.updateTask', [taskInfo]);
+      sendMessageRequestToParent('tasks.updateTask', [taskInfo]);
     } else {
       throw new Error('updateTask requires a taskInfo argument containing only width and height');
     }
@@ -46,9 +46,6 @@ export namespace tasks {
     ensureInitialized(frameContexts.content, frameContexts.task);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageRequest(GlobalVars.parentWindow, 'tasks.completeTask', [
-      result,
-      Array.isArray(appIds) ? appIds : [appIds],
-    ]);
+    sendMessageRequestToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 }

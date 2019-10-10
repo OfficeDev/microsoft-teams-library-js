@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -20,7 +20,7 @@ export namespace settings {
    */
   export function setValidityState(validityState: boolean): void {
     ensureInitialized(frameContexts.settings, frameContexts.remove);
-    sendMessageRequest(GlobalVars.parentWindow, 'settings.setValidityState', [validityState]);
+    sendMessageRequestToParent('settings.setValidityState', [validityState]);
   }
 
   /**
@@ -29,7 +29,7 @@ export namespace settings {
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
     ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'settings.getSettings');
+    const messageId = sendMessageRequestToParent('settings.getSettings');
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -43,7 +43,7 @@ export namespace settings {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(frameContexts.content, frameContexts.settings);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'settings.setSettings', [instanceSettings]);
+    const messageId = sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
     GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
@@ -57,7 +57,7 @@ export namespace settings {
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
     ensureInitialized(frameContexts.settings);
     saveHandler = handler;
-    handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['save']);
+    handler && sendMessageRequestToParent('registerHandler', ['save']);
   }
 
   /**
@@ -70,7 +70,7 @@ export namespace settings {
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
     ensureInitialized(frameContexts.remove);
     removeHandler = handler;
-    handler && sendMessageRequest(GlobalVars.parentWindow, 'registerHandler', ['remove']);
+    handler && sendMessageRequestToParent('registerHandler', ['remove']);
   }
 
   function handleSave(result?: SaveParameters): void {
@@ -154,12 +154,12 @@ export namespace settings {
     }
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, 'settings.save.success');
+      sendMessageRequestToParent('settings.save.success');
       this.notified = true;
     }
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, 'settings.save.failure', [reason]);
+      sendMessageRequestToParent('settings.save.failure', [reason]);
       this.notified = true;
     }
     private ensureNotNotified(): void {
@@ -188,13 +188,13 @@ export namespace settings {
 
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, 'settings.remove.success');
+      sendMessageRequestToParent('settings.remove.success');
       this.notified = true;
     }
 
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequest(GlobalVars.parentWindow, 'settings.remove.failure', [reason]);
+      sendMessageRequestToParent('settings.remove.failure', [reason]);
       this.notified = true;
     }
 

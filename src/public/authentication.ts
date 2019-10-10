@@ -1,4 +1,9 @@
-import { ensureInitialized, sendMessageRequest, waitForMessageQueue } from '../internal/internalAPIs';
+import {
+  ensureInitialized,
+  sendMessageRequestToParent,
+  waitForMessageQueue,
+  sendMessageEventToChild,
+} from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import { HostClientType } from './constants';
@@ -37,7 +42,7 @@ export namespace authentication {
       const link = document.createElement('a');
       link.href = authenticateParams.url;
       // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate', [
+      const messageId = sendMessageRequestToParent('authentication.authenticate', [
         link.href,
         authenticateParams.width,
         authenticateParams.height,
@@ -65,9 +70,7 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.getAuthToken', [
-      authTokenRequest.resources,
-    ]);
+    const messageId = sendMessageRequestToParent('authentication.getAuthToken', [authTokenRequest.resources]);
     GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
       if (success) {
         authTokenRequest.successCallback(result);
@@ -85,7 +88,7 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'authentication.getUser');
+    const messageId = sendMessageRequestToParent('authentication.getUser');
     GlobalVars.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
@@ -179,7 +182,7 @@ export namespace authentication {
         const savedChildOrigin = GlobalVars.childOrigin;
         try {
           GlobalVars.childOrigin = '*';
-          sendMessageRequest(GlobalVars.childWindow, 'ping');
+          sendMessageEventToChild('ping');
         } finally {
           GlobalVars.childOrigin = savedChildOrigin;
         }
@@ -208,7 +211,7 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate.success', [result]);
+    sendMessageRequestToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
@@ -223,7 +226,7 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(frameContexts.authentication);
-    sendMessageRequest(GlobalVars.parentWindow, 'authentication.authenticate.failure', [reason]);
+    sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }

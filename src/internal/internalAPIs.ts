@@ -2,7 +2,7 @@ import { navigateBack } from '../public/publicAPIs';
 import { LoadContext } from '../public/interfaces';
 import { validOriginRegExp } from './constants';
 import { GlobalVars } from './globalVars';
-import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from './interfaces';
+import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
@@ -52,7 +52,7 @@ function handleThemeChange(theme: string): void {
   }
 
   if (GlobalVars.childWindow) {
-    sendMessageRequest(GlobalVars.childWindow, 'themeChange', [theme]);
+    sendMessageEventToChild('themeChange', [theme]);
   }
 }
 
@@ -74,13 +74,13 @@ function handleLoad(context: LoadContext): void {
   }
 
   if (GlobalVars.childWindow) {
-    sendMessageRequest(GlobalVars.childWindow, 'load', [context]);
+    sendMessageEventToChild('load', [context]);
   }
 }
 
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
-    sendMessageRequest(GlobalVars.parentWindow, 'readyToUnload', []);
+    sendMessageRequestToParent('readyToUnload', []);
   };
 
   if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
@@ -114,19 +114,17 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
   }
 }
 
-export function processMessage(evt: MessageEvent): void {
+export function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
   }
 
   // Process only if the message is coming from a different window and a valid origin
+  // valid origins are either a pre-known
   const messageSource = evt.source || evt.originalEvent.source;
   const messageOrigin = evt.origin || evt.originalEvent.origin;
-  if (
-    messageSource === GlobalVars.currentWindow ||
-    (messageOrigin !== GlobalVars.currentWindow.location.origin && !validOriginRegExp.test(messageOrigin.toLowerCase()))
-  ) {
+  if (!shouldProcessMessage(messageSource, messageOrigin)) {
     return;
   }
 
@@ -139,6 +137,26 @@ export function processMessage(evt: MessageEvent): void {
   } else if (messageSource === GlobalVars.childWindow) {
     handleChildMessage(evt);
   }
+}
+
+/**
+ * Validates the message source and origin, if it should be processed
+ */
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+  // Process if message source is a different window and if origin is either
+  // whitelisted or marked as valid by user during initialization
+  if (messageSource === GlobalVars.currentWindow) {
+    return false;
+  } else if (messageOrigin === GlobalVars.currentWindow.location.origin) {
+    return true;
+  } else if (
+    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
+    (GlobalVars.additionalValidOriginsRegexp &&
+      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
@@ -167,7 +185,7 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   flushMessageQueue(GlobalVars.childWindow);
 }
 
-export function handleParentMessage(evt: MessageEvent): void {
+export function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated GlobalVars.callbacks
     const message = evt.data as MessageResponse;
@@ -189,23 +207,23 @@ export function handleParentMessage(evt: MessageEvent): void {
   }
 }
 
-function handleChildMessage(evt: MessageEvent): void {
+function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
-    // Try to delegate the request to the proper handler
+    // Try to delegate the request to the proper handler, if defined
     const message = evt.data as MessageRequest;
-    const handler = GlobalVars.handlers[message.func];
+    const handler = message.func ? GlobalVars.handlers[message.func] : null;
     if (handler) {
       const result = handler.apply(this, message.args);
       if (typeof result !== 'undefined') {
-        sendMessageResponse(GlobalVars.childWindow, message.id, Array.isArray(result) ? result : [result]);
+        sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
       }
     } else {
-      // Proxy to parent
-      const messageId = sendMessageRequest(GlobalVars.parentWindow, message.func, message.args);
+      // No handler, proxy to parent
+      const messageId = sendMessageRequestToParent(message.func, message.args);
       // tslint:disable-next-line:no-any
       GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
-          sendMessageResponse(GlobalVars.childWindow, message.id, args);
+          sendMessageResponseToChild(message.id, args);
         }
       };
     }
@@ -245,12 +263,15 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
   }, 100);
 }
 
-export function sendMessageRequest(
-  targetWindow: Window | any,
+/**
+ * TODO: hardcode to only parent
+ */
+export function sendMessageRequestToParent(
   actionName: string,
   // tslint:disable-next-line: no-any
   args?: any[],
 ): number {
+  const targetWindow = GlobalVars.parentWindow;
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
     if (GlobalVars.currentWindow && GlobalVars.currentWindow.nativeInterface) {
@@ -270,12 +291,15 @@ export function sendMessageRequest(
   return request.id;
 }
 
-function sendMessageResponse(
-  targetWindow: Window | any,
+/**
+ * TODO: hardcode to only child
+ */
+function sendMessageResponseToChild(
   id: number,
   // tslint:disable-next-line:no-any
   args?: any[],
 ): void {
+  const targetWindow = GlobalVars.childWindow;
   const response = createMessageResponse(id, args);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
@@ -287,23 +311,21 @@ function sendMessageResponse(
  * Send a custom message object that can be sent to child window,
  * instead of a response message to a child
  */
-export function sendCustomMessageRequest(
-  targetWindow: Window | any,
+export function sendMessageEventToChild(
   actionName: string,
   // tslint:disable-next-line: no-any
   args?: any[],
 ): void {
-  const request = createCustomMessage(actionName, args);
-  if (!GlobalVars.isFramelessWindow) {
-    const targetOrigin = getTargetOrigin(targetWindow);
+  const targetWindow = GlobalVars.childWindow;
+  const customEvent = createMessageEvent(actionName, args);
+  const targetOrigin = getTargetOrigin(targetWindow);
 
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      targetWindow.postMessage(request, targetOrigin);
-    } else {
-      getTargetMessageQueue(targetWindow).push(request);
-    }
+  // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+  // queue the message and send it after the origin is established
+  if (targetWindow && targetOrigin) {
+    targetWindow.postMessage(customEvent, targetOrigin);
+  } else {
+    getTargetMessageQueue(targetWindow).push(customEvent);
   }
 }
 
@@ -325,12 +347,11 @@ function createMessageResponse(id: number, args: any[]): MessageResponse {
 }
 
 /**
- * Creates a message object without any id, meant for custom actions being sent across frames by apps
+ * Creates a message object without any id, used for custom actions being sent to child frame/window
  */
 // tslint:disable-next-line:no-any
-function createCustomMessage(func: string, args: any[]): MessageRequest {
+function createMessageEvent(func: string, args: any[]): MessageRequest {
   return {
-    id: null,
     func: func,
     args: args || [],
   };

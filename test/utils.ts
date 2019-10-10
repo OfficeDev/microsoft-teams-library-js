@@ -34,12 +34,12 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = listener;
         }
       },
-      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = null;
         }
@@ -47,12 +47,12 @@ export class Utils {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function(url: string): void {
+        assign: function (url: string): void {
           return;
         },
       },
       parent: {
-        postMessage: function(message: MessageRequest, targetOrigin: string): void {
+        postMessage: function (message: MessageRequest, targetOrigin: string): void {
           if (message.func === 'initialize') {
             expect(targetOrigin).toEqual('*');
           } else {
@@ -62,10 +62,10 @@ export class Utils {
         },
       } as Window,
       self: null as Window,
-      open: function(url: string, name: string, specs: string): Window {
+      open: function (url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
@@ -73,10 +73,10 @@ export class Utils {
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function(message: MessageRequest, targetOrigin: string): void {
+      postMessage: function (message: MessageRequest, targetOrigin: string): void {
         that.childMessages.push(message);
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       closed: false,
@@ -85,9 +85,9 @@ export class Utils {
 
   public processMessage: (ev: MessageEvent) => void;
 
-  public initializeWithContext = (frameContext: string, hostClientType?: string): void => {
+  public initializeWithContext = (frameContext: string, hostClientType?: string, callback?: () => void, validMessageOrigins?: string[]): void => {
     microsoftTeams1._initialize(this.mockWindow);
-    microsoftTeams1.initialize();
+    microsoftTeams1.initialize(callback, validMessageOrigins);
 
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
@@ -105,7 +105,7 @@ export class Utils {
   };
 
   public findMessageInChildByFunc = (func: string): MessageRequest => {
-    if(this.childMessages && this.childMessages.length){
+    if (this.childMessages && this.childMessages.length) {
       for (let i = 0; i < this.childMessages.length; i++) {
         if (this.childMessages[i].func === func) {
           return this.childMessages[i];

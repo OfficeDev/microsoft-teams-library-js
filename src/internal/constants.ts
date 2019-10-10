@@ -18,9 +18,7 @@ export const validOrigins = [
   'https://*.sharepointonline.com',
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
-  'https://retailservices-dev.teams.microsoft.com', // Teams: Tasks(Dev) app
-  'https://retailservices.teams.microsoft.com', // Teams: Tasks app
-  'https://tasks.office.com', // Planner
+  'https://*.teams.microsoft.com',
 ];
 
 // Ensure these declarations stay in sync with the framework.
@@ -33,3 +31,8 @@ export const frameContexts = {
 };
 
 export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
+
+/**
+ * USer specified message origins should satisfy this test
+ */
+export const userOriginUrlValidationRegExp = /^https\:\/\//;

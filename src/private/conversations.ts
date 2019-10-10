@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import { OpenConversationRequest } from '../public/interfaces';
@@ -15,7 +15,7 @@ export namespace conversations {
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): void {
     ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'conversations.openConversation', [
+    const messageId = sendMessageRequestToParent('conversations.openConversation', [
       {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
@@ -41,7 +41,7 @@ export namespace conversations {
    */
   export function closeConversation(): void {
     ensureInitialized(frameContexts.content);
-    sendMessageRequest(GlobalVars.parentWindow, 'conversations.closeConversation');
+    sendMessageRequestToParent('conversations.closeConversation');
     GlobalVars.onCloseConversationHandler = null;
     GlobalVars.onStartConversationHandler = null;
   }
