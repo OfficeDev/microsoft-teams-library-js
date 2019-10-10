@@ -108,7 +108,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 /**
  * @private
  * Internal use only
- * Sends a custom action message to Teams.
+ * Sends a custom action MessageRequest to Teams or parent window
  * @param actionName Specifies name of the custom action to be sent
  * @param args Specifies additional arguments passed to the action
  * @param callback Optionally specify a callback to receive response parameters from the parent
@@ -135,7 +135,7 @@ export function sendCustomMessage(
 /**
  * @private
  * Internal use only
- * Sends a custom action message to a child iframe, only if you are not using auth popup.
+ * Sends a custom action MessageEvent to a child iframe/window, only if you are not using auth popup.
  * Otherwise it will go to the auth popup (which becomes the child)
  * @param actionName Specifies name of the custom action to be sent
  * @param args Specifies additional arguments passed to the action

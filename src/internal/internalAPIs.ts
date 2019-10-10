@@ -264,7 +264,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
 }
 
 /**
- * TODO: hardcode to only parent
+ * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
 export function sendMessageRequestToParent(
   actionName: string,
@@ -292,7 +292,7 @@ export function sendMessageRequestToParent(
 }
 
 /**
- * TODO: hardcode to only child
+ * Send a response to child for a message request that was from child
  */
 function sendMessageResponseToChild(
   id: number,
