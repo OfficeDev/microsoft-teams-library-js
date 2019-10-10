@@ -1,8 +1,9 @@
 import { navigateBack } from '../public/publicAPIs';
 import { LoadContext } from '../public/interfaces';
-import { validOriginRegExp } from './constants';
+import { validOriginRegExp, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
+import { generateRegExpFromUrls } from './utils';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
@@ -227,6 +228,32 @@ function handleChildMessage(evt: DOMMessageEvent): void {
         }
       };
     }
+  }
+}
+
+/**
+ * Processes the valid origins specifuied by the user, de-duplicates and converts them into a regexp
+ * which is used later for message source/origin validation
+ */
+export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
+  let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
+    validMessageOrigins.filter((_origin: string) => {
+      return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
+    }),
+  );
+  let dedupUrls: { [url: string]: boolean } = {};
+  combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
+    if (dedupUrls[_originUrl]) {
+      return false;
+    }
+    dedupUrls[_originUrl] = true;
+    return true;
+  });
+  GlobalVars.additionalValidOrigins = combinedOriginUrls;
+  if (GlobalVars.additionalValidOrigins.length > 0) {
+    GlobalVars.additionalValidOriginsRegexp = generateRegExpFromUrls(GlobalVars.additionalValidOrigins);
+  } else {
+    GlobalVars.additionalValidOriginsRegexp = null;
   }
 }
 

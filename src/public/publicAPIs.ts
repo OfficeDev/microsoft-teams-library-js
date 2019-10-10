@@ -3,9 +3,10 @@ import {
   ensureInitialized,
   sendMessageRequestToParent,
   handleParentMessage,
+  processAdditionalValidOrigins,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, frameContexts, userOriginUrlValidationRegExp } from '../internal/constants';
+import { version, frameContexts } from '../internal/constants';
 import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
 import {
@@ -16,7 +17,7 @@ import {
   Context,
   LoadContext,
 } from './interfaces';
-import { getGenericOnCompleteHandler, generateRegExpFromUrls } from '../internal/utils';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -111,24 +112,17 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
     };
   }
 
+  // Handle additional valid message origins if specified
+  if (Array.isArray(validMessageOrigins)) {
+    processAdditionalValidOrigins(validMessageOrigins);
+  }
+
   // Handle the callback if specified:
   // 1. If initialization has already completed then just call it right away
   // 2. If initialization hasn't completed then add it to the array of callbacks
   //    that should be invoked once initialization does complete
   if (callback) {
     GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
-  }
-
-  // Handle additional valid message origins if specified
-  if (Array.isArray(validMessageOrigins)) {
-    GlobalVars.additionalValidOrigins = GlobalVars.additionalValidOrigins.concat(
-      validMessageOrigins.filter((_origin: string) => {
-        return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
-      }),
-    );
-    if (GlobalVars.additionalValidOrigins.length > 0) {
-      GlobalVars.additionalValidOriginsRegexp = generateRegExpFromUrls(GlobalVars.additionalValidOrigins);
-    }
   }
 }
 
