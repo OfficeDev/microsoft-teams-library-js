@@ -312,6 +312,16 @@ export interface Context {
    * Unique ID for the current session for use in correlating telemetry data.
    */
   appSessionId?: string;
+
+  /**
+   * Represents whether calling is allowed for the current logged in User
+   */
+  isCallingAllowed?: boolean;
+
+  /**
+   * Represents whether PSTN calling is allowed for the current logged in User
+   */
+  isPSTNCallingAllowed?: boolean;
 }
 
 export interface DeepLinkParameters {
