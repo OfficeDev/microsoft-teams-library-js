@@ -321,7 +321,7 @@ export interface Context {
   /**
    * Represents whether PSTN calling is allowed for the current logged in User
    */
-  isPSTNCallingAllowed?: boolean
+  isPSTNCallingAllowed?: boolean;
 }
 
 export interface DeepLinkParameters {
