@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent, sendMessageEventToChild } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { frameContexts } from '../internal/constants';
 import {
@@ -24,7 +24,7 @@ export function getUserJoinedTeams(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getUserJoinedTeams', [teamInstanceParameters]);
+  const messageId = sendMessageRequestToParent('getUserJoinedTeams', [teamInstanceParameters]);
   GlobalVars.callbacks[messageId] = callback;
 }
 
@@ -36,7 +36,7 @@ export function getUserJoinedTeams(
  */
 export function enterFullscreen(): void {
   ensureInitialized(frameContexts.content);
-  sendMessageRequest(GlobalVars.parentWindow, 'enterFullscreen', []);
+  sendMessageRequestToParent('enterFullscreen', []);
 }
 
 /**
@@ -47,7 +47,7 @@ export function enterFullscreen(): void {
  */
 export function exitFullscreen(): void {
   ensureInitialized(frameContexts.content);
-  sendMessageRequest(GlobalVars.parentWindow, 'exitFullscreen', []);
+  sendMessageRequestToParent('exitFullscreen', []);
 }
 
 /**
@@ -74,7 +74,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.subEntityId,
   ];
 
-  sendMessageRequest(GlobalVars.parentWindow, 'openFilePreview', params);
+  sendMessageRequestToParent('openFilePreview', params);
 }
 
 /**
@@ -88,7 +88,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
   ensureInitialized(frameContexts.content);
   const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-  sendMessageRequest(GlobalVars.parentWindow, 'showNotification', params);
+  sendMessageRequestToParent('showNotification', params);
 }
 
 /**
@@ -101,25 +101,78 @@ export function showNotification(showNotificationParameters: ShowNotificationPar
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'uploadCustomApp', [manifestBlob]);
+  const messageId = sendMessageRequestToParent('uploadCustomApp', [manifestBlob]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
  * @private
  * Internal use only
- * Sends a custom action message to Teams.
+ * Sends a custom action MessageRequest to Teams or parent window
  * @param actionName Specifies name of the custom action to be sent
  * @param args Specifies additional arguments passed to the action
+ * @param callback Optionally specify a callback to receive response parameters from the parent
  * @returns id of sent message
  */
 export function sendCustomMessage(
   actionName: string,
   // tslint:disable-next-line:no-any
   args?: any[],
+  // tslint:disable-next-line:no-any
+  callback?: (...args: any[]) => void,
 ): number {
   ensureInitialized();
-  return sendMessageRequest(GlobalVars.parentWindow, actionName, args);
+
+  const messageId = sendMessageRequestToParent(actionName, args);
+  if (typeof callback === 'function') {
+    GlobalVars.callbacks[messageId] = (...args: any[]): void => {
+      callback.apply(null, args);
+    };
+  }
+  return messageId;
+}
+
+/**
+ * @private
+ * Internal use only
+ * Sends a custom action MessageEvent to a child iframe/window, only if you are not using auth popup.
+ * Otherwise it will go to the auth popup (which becomes the child)
+ * @param actionName Specifies name of the custom action to be sent
+ * @param args Specifies additional arguments passed to the action
+ * @returns id of sent message
+ */
+export function sendCustomEvent(
+  actionName: string,
+  // tslint:disable-next-line:no-any
+  args?: any[],
+): void {
+  ensureInitialized();
+
+  //validate childWindow
+  if (!GlobalVars.childWindow) {
+    throw new Error('The child window has not yet been initialized or is not present');
+  }
+  sendMessageEventToChild(actionName, args);
+}
+
+/**
+ * @private
+ * Internal use only
+ * Adds a handler for an action sent by a child window or parent window
+ * @param actionName Specifies name of the action message to handle
+ * @param customHandler The callback to invoke when the action message is received. The return value is sent to the child
+ */
+export function registerCustomHandler(
+  actionName: string,
+  customHandler: (
+    // tslint:disable-next-line:no-any
+    ...args: any[]
+  ) => any[],
+): void {
+  ensureInitialized();
+  GlobalVars.handlers[actionName] = (...args: any[]) => {
+    return customHandler.apply(this, args);
+  };
 }
 
 /**
@@ -134,7 +187,7 @@ export function sendCustomMessage(
 export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getChatMembers');
+  const messageId = sendMessageRequestToParent('getChatMembers');
   GlobalVars.callbacks[messageId] = callback;
 }
 
@@ -149,6 +202,6 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
 export function getConfigSetting(callback: (value: string) => void, key: string): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequest(GlobalVars.parentWindow, 'getConfigSetting', [key]);
+  const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
   GlobalVars.callbacks[messageId] = callback;
 }

@@ -3,6 +3,8 @@ import { ConversationResponse, LoadContext } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
+  public static additionalValidOrigins: string[] = [];
+  public static additionalValidOriginsRegexp: RegExp = null;
   public static initializeCallbacks: { (): void }[] = [];
   public static currentWindow: Window | any;
   public static parentWindow: Window | any;
