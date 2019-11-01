@@ -3,12 +3,12 @@
  * Hide from docs
  * Shim in definitions used for browser-compat
  */
-export interface MessageEvent {
+export interface DOMMessageEvent {
   origin?: any;
   source?: any;
   data?: any;
   // Needed for Chrome1964
-  originalEvent: MessageEvent;
+  originalEvent: DOMMessageEvent;
 }
 
 /**
@@ -25,11 +25,11 @@ export interface TeamsNativeClient {
  */
 export interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
-  onNativeMessage(evt: MessageEvent): void;
+  onNativeMessage(evt: DOMMessageEvent): void;
 }
 
 export interface MessageRequest {
-  id: number;
+  id?: number;
   func: string;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
 }
@@ -37,4 +37,12 @@ export interface MessageRequest {
 export interface MessageResponse {
   id: number;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
+}
+
+/**
+ * Meant for Message objects that are sent to children without id
+ */
+export interface DOMMessageEvent {
+  func: string;
+  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
 }

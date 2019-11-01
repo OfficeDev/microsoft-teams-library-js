@@ -1,4 +1,4 @@
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
@@ -97,12 +97,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, 'setUpViews', [viewConfig]);
+    sendMessageRequestToParent('setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, 'viewConfigItemPress', [id]);
+      sendMessageRequestToParent('viewConfigItemPress', [id]);
     }
   }
   /**
@@ -113,12 +113,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, 'setNavBarMenu', [items]);
+    sendMessageRequestToParent('setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, 'handleNavBarMenuItemPress', [id]);
+      sendMessageRequestToParent('handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -139,12 +139,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    sendMessageRequest(GlobalVars.parentWindow, 'showActionMenu', [params]);
+    sendMessageRequestToParent('showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequest(GlobalVars.parentWindow, 'handleActionMenuItemPress', [id]);
+      sendMessageRequestToParent('handleActionMenuItemPress', [id]);
     }
   }
 }

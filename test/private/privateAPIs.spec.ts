@@ -2,15 +2,17 @@ import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
-import { Utils, MessageResponse } from '../utils';
+import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
   openFilePreview,
   getUserJoinedTeams,
   sendCustomMessage,
+  registerCustomHandler,
   getChatMembers,
   getConfigSetting,
   enterFullscreen,
   exitFullscreen,
+  sendCustomEvent,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -53,11 +55,12 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'http://microsoft.sharepoint-df.com',
     'https://a.b.sharepoint.com',
     'https://a.b.c.sharepoint.com',
+    'http://invalid.origin.com'
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('content', null, null, ['http://invalid.origin.com']);
       let callbackCalled = false;
       getContext(() => {
         callbackCalled = true;
@@ -98,11 +101,14 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'https://microsoft.sharepointonline.com',
     'https://outlook.office.com',
     'https://outlook-sdf.office.com',
+    'https://retailservices.teams.microsoft.com',
+    'https://tasks.office.com',
+    'https://www.example.com',
   ];
 
   supportedDomains.forEach(supportedDomain => {
     it('should allow utils.messages from supported domain ' + supportedDomain, () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('content', null, null, ['https://tasks.office.com', 'https://www.example.com']);
       let callbackCalled = false;
       getContext(() => {
         callbackCalled = true;
@@ -129,13 +135,29 @@ describe('MicrosoftTeams-privateAPIs', () => {
   });
 
   it('should not make calls to unsupported domains', () => {
-    initialize();
+    initialize(null, ['http://some-invalid-origin.com']);
 
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
     utils.processMessage({
-      origin: 'https://some-malicious-site.com/',
+      origin: 'https://some-malicious-site.com',
+      source: utils.mockWindow.parent,
+      data: {
+        id: initMessage.id,
+        args: ['content'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // Try to make a call
+    let callbackCalled = false;
+    getContext(() => {
+      callbackCalled = true;
+      return;
+    });
+
+    utils.processMessage({
+      origin: 'http://some-invalid-origin.com',
       source: utils.mockWindow.parent,
       data: {
         id: initMessage.id,
@@ -145,11 +167,14 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     // Try to make a call
     getContext(() => {
+      callbackCalled = true;
       return;
     });
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
+    expect(callbackCalled).toBe(false);
+
   });
 
   it('should successfully handle calls queued before init completes', () => {
@@ -382,6 +407,104 @@ describe('MicrosoftTeams-privateAPIs', () => {
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
       expect(id).toBe(message.id);
+    });
+  });
+
+  describe('sendCustomMessageToChild', () => {
+    it('should successfully pass message and provided arguments', () => {
+      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+
+      //trigger child window setup
+      //trigger processing of message received from child
+      utils.processMessage({
+        origin: 'https://tasks.office.com',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: 'customAction1',
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
+
+      const customActionName = 'customMessageToChild1';
+      sendCustomEvent(customActionName, ['arg1', 234, 12.3, true]);
+
+      let message = utils.findMessageInChildByFunc(customActionName);
+      expect(message).not.toBeNull();
+      expect(message.args).toEqual(['arg1', 234, 12.3, true]);
+    });
+  });
+
+  describe('addCustomHandler', () => {
+    it('should successfully pass message and provided arguments of customAction from parent', () => {
+      utils.initializeWithContext('content');
+
+      const customActionName = 'customAction1';
+      let callbackCalled: boolean = false,
+        callbackArgs: any[] = null;
+      registerCustomHandler(customActionName, (...args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+        return [];
+      });
+
+      utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
+      expect(callbackCalled).toBe(true);
+      expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
+    });
+
+    it('should successfully pass message and provided arguments of customAction from child', () => {
+      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+
+      const customActionName = 'customAction2';
+      let callbackCalled: boolean = false,
+        callbackArgs: any[] = null;
+      registerCustomHandler(customActionName, (...args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+        return [];
+      });
+
+      //trigger processing of message received from child
+      utils.processMessage({
+        origin: 'https://tasks.office.com',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: customActionName,
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
+    });
+
+    it('should not process be invoked due to invalid origin message from child window', () => {
+      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+
+      const customActionName = 'customAction2';
+      let callbackCalled: boolean = false,
+        callbackArgs: any[] = null;
+      registerCustomHandler(customActionName, (...args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+        return [];
+      });
+
+      //trigger processing of message received from child
+      utils.processMessage({
+        origin: 'https://tasks.office.net',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: customActionName,
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
+
+      expect(callbackCalled).toBe(false);
+      expect(callbackArgs).toBeNull();
     });
   });
 

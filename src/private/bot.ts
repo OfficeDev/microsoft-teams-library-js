@@ -1,5 +1,5 @@
 import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, sendMessageRequest } from '../internal/internalAPIs';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 
 /**
  * @private
@@ -22,7 +22,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.executeQuery', [botRequest]);
+    const messageId = sendMessageRequestToParent('bot.executeQuery', [botRequest]);
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
       if (success) {
@@ -46,7 +46,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.getSupportedCommands');
+    const messageId = sendMessageRequestToParent('bot.getSupportedCommands');
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
       if (success) {
@@ -72,7 +72,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequest(GlobalVars.parentWindow, 'bot.authenticate', [authRequest]);
+    const messageId = sendMessageRequestToParent('bot.authenticate', [authRequest]);
 
     GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
       if (success) {
