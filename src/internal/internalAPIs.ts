@@ -123,8 +123,8 @@ export function processMessage(evt: DOMMessageEvent): void {
 
   // Process only if the message is coming from a different window and a valid origin
   // valid origins are either a pre-known
-  const messageSource = evt.source || evt.originalEvent.source;
-  const messageOrigin = evt.origin || evt.originalEvent.origin;
+  const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
+  const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
     return;
   }
@@ -144,11 +144,16 @@ export function processMessage(evt: DOMMessageEvent): void {
  * Validates the message source and origin, if it should be processed
  */
 function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
-  // Process if message source is a different window and if origin is either
-  // whitelisted or marked as valid by user during initialization
-  if (messageSource === GlobalVars.currentWindow) {
+  // Process if message source is a different window and if origin is either in
+  // Teams' pre-known whitelist or supplied as valid origin by user during initialization
+  if (GlobalVars.currentWindow && messageSource === GlobalVars.currentWindow) {
     return false;
-  } else if (messageOrigin === GlobalVars.currentWindow.location.origin) {
+  } else if (
+    GlobalVars.currentWindow &&
+    GlobalVars.currentWindow.location &&
+    messageOrigin &&
+    messageOrigin === GlobalVars.currentWindow.location.origin
+  ) {
     return true;
   } else if (
     validOriginRegExp.test(messageOrigin.toLowerCase()) ||
