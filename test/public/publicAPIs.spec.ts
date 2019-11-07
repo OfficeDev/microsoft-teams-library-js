@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { TabInstanceParameters, Context } from '../../src/public/interfaces';
+import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import {
   executeDeepLink,
@@ -17,6 +17,7 @@ import {
   registerBackButtonHandler,
   registerOnThemeChangeHandler,
   initialize,
+  setFrameContext
 } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
 import { Utils } from '../utils';
@@ -696,5 +697,20 @@ describe('MicrosoftTeams-publicAPIs', () => {
       readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).not.toBeNull();
     });
+  });
+
+  it('should successfully frame context', () => {
+    utils.initializeWithContext('content');
+
+    let url: FrameContext = {
+      contentURL: 'someContentURL',
+      websiteURL: 'someWebsiteURL',
+    };
+    setFrameContext(url);
+
+    let message = utils.findMessageByFunc('setFrameContext');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe(url);
   });
 });

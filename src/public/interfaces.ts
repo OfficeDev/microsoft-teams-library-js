@@ -466,3 +466,19 @@ export interface LoadContext {
    */
   contentUrl: string;
 }
+
+/**
+ * @private
+ * Hide from docs.
+ */
+export interface FrameContext {
+  /**
+   * The current URL that needs to be used in the iframe if the tab is reloaded
+   */
+  contentURL: string;
+
+  /**
+   * The current URL that needs to be used for opening the website when the user clicks on 'Go to website'
+   */
+  websiteURL: string;
+}
