@@ -4,6 +4,10 @@ import {
   sendMessageRequestToParent,
   handleParentMessage,
   processAdditionalValidOrigins,
+  handleMessageValidation,
+  initializeCallback,
+  unRegisterHandlers,
+  handleInitialize,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts } from '../internal/constants';
@@ -19,7 +23,6 @@ import {
   FrameContext,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { logs } from '../private/logs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -40,19 +43,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
-    GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-    GlobalVars.parentWindow =
-      GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-        ? GlobalVars.currentWindow.parent
-        : GlobalVars.currentWindow.opener;
-
-    if (!GlobalVars.parentWindow) {
-      GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-    } else {
-      // For iFrame scenario, add listener to listen 'message'
-      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
-    }
+    handleInitialize(messageListener);
 
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -74,57 +65,11 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
     // Undocumented function used to clear state between unit tests
     this._uninitialize = () => {
-      if (GlobalVars.frameContext) {
-        registerOnThemeChangeHandler(null);
-        registerFullScreenHandler(null);
-        registerBackButtonHandler(null);
-        registerBeforeUnloadHandler(null);
-        registerOnLoadHandler(null);
-        logs.registerGetLogHandler(null);
-      }
-
-      if (GlobalVars.frameContext === frameContexts.settings) {
-        settings.registerOnSaveHandler(null);
-      }
-
-      if (GlobalVars.frameContext === frameContexts.remove) {
-        settings.registerOnRemoveHandler(null);
-      }
-
-      if (!GlobalVars.isFramelessWindow) {
-        GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-      }
-
-      GlobalVars.initializeCalled = false;
-      GlobalVars.initializeCompleted = false;
-      GlobalVars.initializeCallbacks = [];
-      GlobalVars.additionalValidOrigins = [];
-      GlobalVars.parentWindow = null;
-      GlobalVars.parentOrigin = null;
-      GlobalVars.parentMessageQueue = [];
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
-      GlobalVars.childMessageQueue = [];
-      GlobalVars.nextMessageId = 0;
-      GlobalVars.callbacks = {};
-      GlobalVars.frameContext = null;
-      GlobalVars.hostClientType = null;
-      GlobalVars.isFramelessWindow = false;
+      unRegisterHandlers(messageListener);
     };
   }
-
-  // Handle additional valid message origins if specified
-  if (Array.isArray(validMessageOrigins)) {
-    processAdditionalValidOrigins(validMessageOrigins);
-  }
-
-  // Handle the callback if specified:
-  // 1. If initialization has already completed then just call it right away
-  // 2. If initialization hasn't completed then add it to the array of callbacks
-  //    that should be invoked once initialization does complete
-  if (callback) {
-    GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
-  }
+  handleMessageValidation(validMessageOrigins);
+  initializeCallback(callback);
 }
 
 /**
@@ -355,4 +300,55 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 export function setFrameContext(url: FrameContext): void {
   ensureInitialized(frameContexts.content);
   sendMessageRequestToParent('setFrameContext', [url]);
+}
+
+/**
+ * Initializes the library with the content URL and the website URL everytime a page navigation has happened.
+ * but after the frame is loaded successfully.
+ * @param url The website and content URL to be used while navigating to a new page
+ * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
+ * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
+ * https: protocol otherwise they will be ignored. Example: https://www.example.com
+ */
+export function initializeWithFrameContext(
+  url: FrameContext,
+  callback?: () => void,
+  validMessageOrigins?: string[],
+): void {
+  // Independent components might not know whether the SDK is initialized so might call it to be safe.
+  // Just no-op if that happens to make it easier to use.
+  if (!GlobalVars.initializeCalled) {
+    GlobalVars.initializeCalled = true;
+
+    // Listen for messages post to our window
+    const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
+
+    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
+    // it's the window that opened us (i.e., window.opener)
+    handleInitialize(messageListener);
+
+    try {
+      // Send the initialized message to any origin, because at this point we most likely don't know the origin
+      // of the parent window, and this message contains no data that could pose a security risk.
+      GlobalVars.parentOrigin = '*';
+      const messageId = sendMessageRequestToParent('initialize', [version, url]);
+      GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
+        GlobalVars.frameContext = context;
+        GlobalVars.hostClientType = clientType;
+
+        // Notify all waiting callers that the initialization has completed
+        GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
+        GlobalVars.initializeCallbacks = [];
+        GlobalVars.initializeCompleted = true;
+      };
+    } finally {
+      GlobalVars.parentOrigin = null;
+    }
+    // Undocumented function used to clear state between unit tests
+    this._uninitialize = () => {
+      unRegisterHandlers(messageListener);
+    };
+  }
+  handleMessageValidation(validMessageOrigins);
+  initializeCallback(callback);
 }
