@@ -1,18 +1,9 @@
-import {
-  navigateBack,
-  registerOnThemeChangeHandler,
-  registerFullScreenHandler,
-  registerBackButtonHandler,
-  registerBeforeUnloadHandler,
-  registerOnLoadHandler,
-} from '../public/publicAPIs';
+import { navigateBack } from '../public/publicAPIs';
 import { LoadContext } from '../public/interfaces';
-import { validOriginRegExp, userOriginUrlValidationRegExp, frameContexts } from './constants';
+import { validOriginRegExp, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 import { generateRegExpFromUrls } from './utils';
-import { settings } from '../public/settings';
-import { logs } from '../private/logs';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
@@ -396,89 +387,4 @@ function createMessageEvent(func: string, args: any[]): MessageRequest {
     func: func,
     args: args || [],
   };
-}
-
-/**
- * Handle additional valid message origins if specified
- * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
- * https: protocol otherwise they will be ignored. Example: https://www.example.com
- */
-export function handleMessageValidation(validMessageOrigins?: string[]): void {
-  if (Array.isArray(validMessageOrigins)) {
-    processAdditionalValidOrigins(validMessageOrigins);
-  }
-}
-
-/**
- * Handle the callback if specified:
-  1. If initialization has already completed then just call it right away
-  2. If initialization hasn't completed then add it to the array of callbacks
-     that should be invoked once initialization does complete
- * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
- */
-export function initializeCallback(callback?: () => void): void {
-  if (callback) {
-    GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
-  }
-}
-
-/**
- * Unregister the handlers for the UTs
- * @param messageListener Listen for messages post to pur window
- */
-export function unRegisterHandlers(messageListener): void {
-  if (GlobalVars.frameContext) {
-    registerOnThemeChangeHandler(null);
-    registerFullScreenHandler(null);
-    registerBackButtonHandler(null);
-    registerBeforeUnloadHandler(null);
-    registerOnLoadHandler(null);
-    logs.registerGetLogHandler(null);
-  }
-  if (GlobalVars.frameContext === frameContexts.settings) {
-    settings.registerOnSaveHandler(null);
-  }
-
-  if (GlobalVars.frameContext === frameContexts.remove) {
-    settings.registerOnRemoveHandler(null);
-  }
-
-  if (!GlobalVars.isFramelessWindow) {
-    GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-  }
-  GlobalVars.initializeCalled = false;
-  GlobalVars.initializeCompleted = false;
-  GlobalVars.initializeCallbacks = [];
-  GlobalVars.additionalValidOrigins = [];
-  GlobalVars.parentWindow = null;
-  GlobalVars.parentOrigin = null;
-  GlobalVars.parentMessageQueue = [];
-  GlobalVars.childWindow = null;
-  GlobalVars.childOrigin = null;
-  GlobalVars.childMessageQueue = [];
-  GlobalVars.nextMessageId = 0;
-  GlobalVars.callbacks = {};
-  GlobalVars.frameContext = null;
-  GlobalVars.hostClientType = null;
-  GlobalVars.isFramelessWindow = false;
-}
-
-/**
- * Initialize the parent window
- * @param messageListener Listen for messages post to pur window
- */
-export function handleInitialize(messageListener): void {
-  GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-  GlobalVars.parentWindow =
-    GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-      ? GlobalVars.currentWindow.parent
-      : GlobalVars.currentWindow.opener;
-
-  if (!GlobalVars.parentWindow) {
-    GlobalVars.isFramelessWindow = true;
-    (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-  } else {
-    // For iFrame scenario, add listener to listen 'message'
-    GlobalVars.currentWindow.addEventListener('message', messageListener, false);
-  }
 }
