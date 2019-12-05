@@ -16,6 +16,7 @@ import {
   DeepLinkParameters,
   Context,
   LoadContext,
+  FrameContext,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -349,4 +350,18 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+}
+
+export function setFrameContext(frameContext: FrameContext): void {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequestToParent('setFrameContext', [frameContext]);
+}
+
+export function initializeWithFrameContext(
+  frameContext: FrameContext,
+  callback?: () => void,
+  validMessageOrigins?: string[],
+): void {
+  initialize(callback, validMessageOrigins);
+  setFrameContext(frameContext);
 }
