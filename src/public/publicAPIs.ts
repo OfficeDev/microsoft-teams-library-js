@@ -352,16 +352,16 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
-export function setFrameContext(url: FrameContext): void {
+export function setFrameContext(frameContext: FrameContext): void {
   ensureInitialized(frameContexts.content);
-  sendMessageRequestToParent('setFrameContext', [url]);
+  sendMessageRequestToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(
-  url: FrameContext,
+  frameContext: FrameContext,
   callback?: () => void,
   validMessageOrigins?: string[],
 ): void {
   initialize(callback, validMessageOrigins);
-  setFrameContext(url);
+  setFrameContext(frameContext);
 }

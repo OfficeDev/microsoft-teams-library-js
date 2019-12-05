@@ -17,7 +17,8 @@ import {
   registerBackButtonHandler,
   registerOnThemeChangeHandler,
   initialize,
-  setFrameContext
+  setFrameContext,
+  initializeWithFrameContext
 } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
 import { Utils } from '../utils';
@@ -702,15 +703,37 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should successfully frame context', () => {
     utils.initializeWithContext('content');
 
-    let url: FrameContext = {
-      contentURL: 'someContentURL',
-      websiteURL: 'someWebsiteURL',
+    let frameContext: FrameContext = {
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
     };
-    setFrameContext(url);
+    setFrameContext(frameContext);
 
     let message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe(url);
+    expect(message.args[0]).toBe(frameContext);
+  });
+
+  it('should successfully initialize and set the frame context', () => {
+    let frameContext: FrameContext = {
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
+    };
+    utils.initializeWithContext('content');
+    initializeWithFrameContext(frameContext);
+    expect(utils.processMessage).toBeDefined();
+    expect(utils.messages.length).toBe(2);
+
+    let initMessage = utils.findMessageByFunc('initialize');
+    expect(initMessage).not.toBeNull();
+    expect(initMessage.id).toBe(0);
+    expect(initMessage.func).toBe('initialize');
+    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args[0]).toEqual('1.5.2');
+    let message = utils.findMessageByFunc('setFrameContext');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe(frameContext);
   });
 });
