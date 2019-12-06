@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { TabInstanceParameters, Context } from '../../src/public/interfaces';
+import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import {
   executeDeepLink,
@@ -17,6 +17,8 @@ import {
   registerBackButtonHandler,
   registerOnThemeChangeHandler,
   initialize,
+  setFrameContext,
+  initializeWithFrameContext
 } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
 import { Utils } from '../utils';
@@ -696,5 +698,42 @@ describe('MicrosoftTeams-publicAPIs', () => {
       readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).not.toBeNull();
     });
+  });
+
+  it('should successfully frame context', () => {
+    utils.initializeWithContext('content');
+
+    let frameContext: FrameContext = {
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
+    };
+    setFrameContext(frameContext);
+
+    let message = utils.findMessageByFunc('setFrameContext');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe(frameContext);
+  });
+
+  it('should successfully initialize and set the frame context', () => {
+    let frameContext: FrameContext = {
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
+    };
+    utils.initializeWithContext('content');
+    initializeWithFrameContext(frameContext);
+    expect(utils.processMessage).toBeDefined();
+    expect(utils.messages.length).toBe(2);
+
+    let initMessage = utils.findMessageByFunc('initialize');
+    expect(initMessage).not.toBeNull();
+    expect(initMessage.id).toBe(0);
+    expect(initMessage.func).toBe('initialize');
+    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args[0]).toEqual('1.5.2');
+    let message = utils.findMessageByFunc('setFrameContext');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe(frameContext);
   });
 });
