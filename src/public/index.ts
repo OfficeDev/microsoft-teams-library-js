@@ -18,6 +18,7 @@ export {
   getMruTabInstances,
   getTabInstances,
   initialize,
+  initializeWithFrameContext,
   navigateBack,
   navigateCrossDomain,
   navigateToTab,
@@ -28,9 +29,8 @@ export {
   registerFullScreenHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
-  shareDeepLink,
   setFrameContext,
-  initializeWithFrameContext,
+  shareDeepLink,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
