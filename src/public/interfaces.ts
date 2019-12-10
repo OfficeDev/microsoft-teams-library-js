@@ -325,7 +325,6 @@ export interface Context {
 
   /**
    * The OneNote section ID that is linked to the channel.
-   * Used in Class/Staff/PLC teams.
    */
   defaultOneNoteSectionId?: string;
 }
