@@ -472,3 +472,15 @@ export interface LoadContext {
    */
   contentUrl: string;
 }
+
+export interface FrameContext {
+  /**
+   * The current URL that needs to be used in the iframe if the tab is reloaded
+   */
+  contentUrl: string;
+
+  /**
+   * The current URL that needs to be used for opening the website when the user clicks on 'Go to website'
+   */
+  websiteUrl: string;
+}
