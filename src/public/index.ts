@@ -18,6 +18,7 @@ export {
   getMruTabInstances,
   getTabInstances,
   initialize,
+  isInTeams,
   navigateBack,
   navigateCrossDomain,
   navigateToTab,

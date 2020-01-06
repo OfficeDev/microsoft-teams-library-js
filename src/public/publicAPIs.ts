@@ -112,7 +112,31 @@ export function initialize(callback?: () => void): void {
 }
 
 /**
- * @private
+ * Checks whether the page is currently hosted by Teams. This method will only work reliably
+ * in the authentication popup after initialization has completed.
+ */
+export function isInTeams(): boolean {
+  ensureInitialized();
+
+  if (window.parent === window.self && window.nativeInterface) {
+    // In Teams mobile client
+    return true;
+  } else if (window.parent !== window.self && (window.name === 'embedded-page-container' || window.name === 'extension-tab-frame')) {
+    // In Teams web/desktop client
+    return true;
+  } else if (GlobalVars.initializeCompleted) {
+    // If initialization has completed successfully then we are in Teams
+    return true;
+  } else {
+    if (window.opener) {
+      console.warn('This method will only work reliably in the Teams authentication popup after initialization has completed');
+    }
+    return false;
+  }
+}
+
+/**
+ * @privatef
  * Hide from docs.
  * ------
  * Undocumented function used to set a mock window for unit tests
