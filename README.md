@@ -27,7 +27,7 @@ To install the stable version:
 
 #### Production
 
-You can access [these files on unpkg](https://statics.teams.microsoft.com/sdk/v1.5.2/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://statics.teams.microsoft.com/sdk/v1.6.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
