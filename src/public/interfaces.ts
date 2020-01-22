@@ -419,6 +419,11 @@ export interface OpenConversationRequest {
   entityId: string;
 
   /**
+   * The subtext of the tab
+   */
+  subtext?: string;
+
+  /**
    * A function that is called once the conversation Id has been created
    */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
