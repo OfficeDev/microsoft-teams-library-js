@@ -1,35 +1,48 @@
-import { navigateBack } from "../public/publicAPIs";
-import { validOriginRegExp } from "./constants";
-import { GlobalVars } from "./globalVars";
-import { MessageResponse, MessageRequest, ExtendedWindow, MessageEvent } from "./interfaces";
+import { navigateBack } from '../public/publicAPIs';
+import { LoadContext } from '../public/interfaces';
+import { validOriginRegExp, userOriginUrlValidationRegExp } from './constants';
+import { GlobalVars } from './globalVars';
+import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
+import { generateRegExpFromUrls } from './utils';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-GlobalVars.handlers["themeChange"] = handleThemeChange;
-GlobalVars.handlers["fullScreenChange"] = handleFullScreenChange;
-GlobalVars.handlers["backButtonPress"] = handleBackButtonPress;
-GlobalVars.handlers["beforeUnload"] = handleBeforeUnload;
-GlobalVars.handlers["changeSettings"] = handleChangeSettings;
-GlobalVars.handlers["startConversation"] = handleStartConversation;
-GlobalVars.handlers["closeConversation"] = handleCloseConversation;
+GlobalVars.handlers['themeChange'] = handleThemeChange;
+GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
+GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
+GlobalVars.handlers['load'] = handleLoad;
+GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
+GlobalVars.handlers['changeSettings'] = handleChangeSettings;
+GlobalVars.handlers['startConversation'] = handleStartConversation;
+GlobalVars.handlers['closeConversation'] = handleCloseConversation;
 
-function handleStartConversation(subEntityId: string, conversationId: string, channelId: string, entityId: string): void {
+function handleStartConversation(
+  subEntityId: string,
+  conversationId: string,
+  channelId: string,
+  entityId: string,
+): void {
   if (GlobalVars.onStartConversationHandler) {
     GlobalVars.onStartConversationHandler({
       subEntityId: subEntityId,
       conversationId: conversationId,
       channelId: channelId,
-      entityId: entityId
+      entityId: entityId,
     });
   }
 }
 
-function handleCloseConversation(subEntityId: string, conversationId?: string, channelId?: string, entityId?: string): void {
+function handleCloseConversation(
+  subEntityId: string,
+  conversationId?: string,
+  channelId?: string,
+  entityId?: string,
+): void {
   if (GlobalVars.onCloseConversationHandler) {
     GlobalVars.onCloseConversationHandler({
       subEntityId: subEntityId,
       conversationId: conversationId,
       channelId: channelId,
-      entityId: entityId
+      entityId: entityId,
     });
   }
 }
@@ -40,7 +53,7 @@ function handleThemeChange(theme: string): void {
   }
 
   if (GlobalVars.childWindow) {
-    sendMessageRequest(GlobalVars.childWindow, "themeChange", [theme]);
+    sendMessageEventToChild('themeChange', [theme]);
   }
 }
 
@@ -56,9 +69,19 @@ function handleBackButtonPress(): void {
   }
 }
 
+function handleLoad(context: LoadContext): void {
+  if (GlobalVars.loadHandler) {
+    GlobalVars.loadHandler(context);
+  }
+
+  if (GlobalVars.childWindow) {
+    sendMessageEventToChild('load', [context]);
+  }
+}
+
 function handleBeforeUnload(): void {
-  const readyToUnload = () => {
-    sendMessageRequest(GlobalVars.parentWindow, "readyToUnload", []);
+  const readyToUnload = (): void => {
+    sendMessageRequestToParent('readyToUnload', []);
   };
 
   if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
@@ -74,14 +97,10 @@ function handleChangeSettings(): void {
 
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCalled) {
-    throw new Error("The library has not yet been initialized");
+    throw new Error('The library has not yet been initialized');
   }
 
-  if (
-    GlobalVars.frameContext &&
-    expectedFrameContexts &&
-    expectedFrameContexts.length > 0
-  ) {
+  if (GlobalVars.frameContext && expectedFrameContexts && expectedFrameContexts.length > 0) {
     let found = false;
     for (let i = 0; i < expectedFrameContexts.length; i++) {
       if (expectedFrameContexts[i] === GlobalVars.frameContext) {
@@ -91,27 +110,22 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
     }
 
     if (!found) {
-      throw new Error(
-        "This call is not allowed in the '" + GlobalVars.frameContext + "' context"
-      );
+      throw new Error("This call is not allowed in the '" + GlobalVars.frameContext + "' context");
     }
   }
 }
 
-export function processMessage(evt: MessageEvent): void {
+export function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
-  if (!evt || !evt.data || typeof evt.data !== "object") {
+  if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
   }
 
   // Process only if the message is coming from a different window and a valid origin
-  const messageSource = evt.source || evt.originalEvent.source;
-  const messageOrigin = evt.origin || evt.originalEvent.origin;
-  if (
-    messageSource === GlobalVars.currentWindow ||
-    (messageOrigin !== GlobalVars.currentWindow.location.origin &&
-      !validOriginRegExp.test(messageOrigin.toLowerCase()))
-  ) {
+  // valid origins are either a pre-known
+  const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
+  const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
+  if (!shouldProcessMessage(messageSource, messageOrigin)) {
     return;
   }
 
@@ -126,10 +140,32 @@ export function processMessage(evt: MessageEvent): void {
   }
 }
 
-function updateRelationships(
-  messageSource: Window,
-  messageOrigin: string
-): void {
+/**
+ * Validates the message source and origin, if it should be processed
+ */
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+  // Process if message source is a different window and if origin is either in
+  // Teams' pre-known whitelist or supplied as valid origin by user during initialization
+  if (GlobalVars.currentWindow && messageSource === GlobalVars.currentWindow) {
+    return false;
+  } else if (
+    GlobalVars.currentWindow &&
+    GlobalVars.currentWindow.location &&
+    messageOrigin &&
+    messageOrigin === GlobalVars.currentWindow.location.origin
+  ) {
+    return true;
+  } else if (
+    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
+    (GlobalVars.additionalValidOriginsRegexp &&
+      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function updateRelationships(messageSource: Window, messageOrigin: string): void {
   // Determine whether the source of the message is our parent or child and update our
   // window and origin pointer accordingly
   if (!GlobalVars.parentWindow || messageSource === GlobalVars.parentWindow) {
@@ -155,8 +191,8 @@ function updateRelationships(
   flushMessageQueue(GlobalVars.childWindow);
 }
 
-export function handleParentMessage(evt: MessageEvent): void {
-  if ("id" in evt.data) {
+export function handleParentMessage(evt: DOMMessageEvent): void {
+  if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated GlobalVars.callbacks
     const message = evt.data as MessageResponse;
     const callback = GlobalVars.callbacks[message.id];
@@ -166,7 +202,7 @@ export function handleParentMessage(evt: MessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory.
       delete GlobalVars.callbacks[message.id];
     }
-  } else if ("func" in evt.data) {
+  } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
     const handler = GlobalVars.handlers[message.func];
@@ -177,35 +213,52 @@ export function handleParentMessage(evt: MessageEvent): void {
   }
 }
 
-function handleChildMessage(evt: MessageEvent): void {
-  if ("id" in evt.data && "func" in evt.data) {
-    // Try to delegate the request to the proper handler
+function handleChildMessage(evt: DOMMessageEvent): void {
+  if ('id' in evt.data && 'func' in evt.data) {
+    // Try to delegate the request to the proper handler, if defined
     const message = evt.data as MessageRequest;
-    const handler = GlobalVars.handlers[message.func];
+    const handler = message.func ? GlobalVars.handlers[message.func] : null;
     if (handler) {
       const result = handler.apply(this, message.args);
-      if (result) {
-        sendMessageResponse(
-          GlobalVars.childWindow,
-          message.id,
-          Array.isArray(result) ? result : [result]
-        );
+      if (typeof result !== 'undefined') {
+        sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
       }
     } else {
-      // Proxy to parent
-      const messageId = sendMessageRequest(
-        GlobalVars.parentWindow,
-        message.func,
-        message.args
-      );
-
+      // No handler, proxy to parent
+      const messageId = sendMessageRequestToParent(message.func, message.args);
       // tslint:disable-next-line:no-any
-      GlobalVars.callbacks[messageId] = (...args: any[]) => {
+      GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
-          sendMessageResponse(GlobalVars.childWindow, message.id, args);
+          sendMessageResponseToChild(message.id, args);
         }
       };
     }
+  }
+}
+
+/**
+ * Processes the valid origins specifuied by the user, de-duplicates and converts them into a regexp
+ * which is used later for message source/origin validation
+ */
+export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
+  let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
+    validMessageOrigins.filter((_origin: string) => {
+      return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
+    }),
+  );
+  let dedupUrls: { [url: string]: boolean } = {};
+  combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
+    if (dedupUrls[_originUrl]) {
+      return false;
+    }
+    dedupUrls[_originUrl] = true;
+    return true;
+  });
+  GlobalVars.additionalValidOrigins = combinedOriginUrls;
+  if (GlobalVars.additionalValidOrigins.length > 0) {
+    GlobalVars.additionalValidOriginsRegexp = generateRegExpFromUrls(GlobalVars.additionalValidOrigins);
+  } else {
+    GlobalVars.additionalValidOriginsRegexp = null;
   }
 }
 
@@ -213,16 +266,16 @@ function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
   return targetWindow === GlobalVars.parentWindow
     ? GlobalVars.parentMessageQueue
     : targetWindow === GlobalVars.childWindow
-      ? GlobalVars.childMessageQueue
-      : [];
+    ? GlobalVars.childMessageQueue
+    : [];
 }
 
 function getTargetOrigin(targetWindow: Window): string {
   return targetWindow === GlobalVars.parentWindow
     ? GlobalVars.parentOrigin
     : targetWindow === GlobalVars.childWindow
-      ? GlobalVars.childOrigin
-      : null;
+    ? GlobalVars.childOrigin
+    : null;
 }
 
 function flushMessageQueue(targetWindow: Window | any): void {
@@ -242,18 +295,19 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
   }, 100);
 }
 
-export function sendMessageRequest(
-  targetWindow: Window | any,
+/**
+ * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+ */
+export function sendMessageRequestToParent(
   actionName: string,
   // tslint:disable-next-line: no-any
-  args?: any[]
+  args?: any[],
 ): number {
+  const targetWindow = GlobalVars.parentWindow;
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
     if (GlobalVars.currentWindow && GlobalVars.currentWindow.nativeInterface) {
-      (GlobalVars.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(
-        JSON.stringify(request)
-      );
+      (GlobalVars.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
     const targetOrigin = getTargetOrigin(targetWindow);
@@ -269,16 +323,41 @@ export function sendMessageRequest(
   return request.id;
 }
 
-function sendMessageResponse(
-  targetWindow: Window | any,
+/**
+ * Send a response to child for a message request that was from child
+ */
+function sendMessageResponseToChild(
   id: number,
   // tslint:disable-next-line:no-any
-  args?: any[]
+  args?: any[],
 ): void {
+  const targetWindow = GlobalVars.childWindow;
   const response = createMessageResponse(id, args);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
     targetWindow.postMessage(response, targetOrigin);
+  }
+}
+
+/**
+ * Send a custom message object that can be sent to child window,
+ * instead of a response message to a child
+ */
+export function sendMessageEventToChild(
+  actionName: string,
+  // tslint:disable-next-line: no-any
+  args?: any[],
+): void {
+  const targetWindow = GlobalVars.childWindow;
+  const customEvent = createMessageEvent(actionName, args);
+  const targetOrigin = getTargetOrigin(targetWindow);
+
+  // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+  // queue the message and send it after the origin is established
+  if (targetWindow && targetOrigin) {
+    targetWindow.postMessage(customEvent, targetOrigin);
+  } else {
+    getTargetMessageQueue(targetWindow).push(customEvent);
   }
 }
 
@@ -287,7 +366,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: GlobalVars.nextMessageId++,
     func: func,
-    args: args || []
+    args: args || [],
   };
 }
 
@@ -295,6 +374,17 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
 function createMessageResponse(id: number, args: any[]): MessageResponse {
   return {
     id: id,
-    args: args || []
+    args: args || [],
+  };
+}
+
+/**
+ * Creates a message object without any id, used for custom actions being sent to child frame/window
+ */
+// tslint:disable-next-line:no-any
+function createMessageEvent(func: string, args: any[]): MessageRequest {
+  return {
+    func: func,
+    args: args || [],
   };
 }

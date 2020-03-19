@@ -1,8 +1,8 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole } from "./constants";
+import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
 
 /**
-* Represents information about tabs for an app
-*/
+ * Represents information about tabs for an app
+ */
 export interface TabInformation {
   teamTabs: TabInstance[];
 }
@@ -157,6 +157,11 @@ export interface Context {
   channelName?: string;
 
   /**
+   * The type of the channel with which the content is associated.
+   */
+  channelType?: ChannelType;
+
+  /**
    * The developer-defined unique ID for the entity this content points to.
    */
   entityId: string;
@@ -302,6 +307,26 @@ export interface Context {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * Unique ID for the current session for use in correlating telemetry data.
+   */
+  appSessionId?: string;
+
+  /**
+   * Represents whether calling is allowed for the current logged in User
+   */
+  isCallingAllowed?: boolean;
+
+  /**
+   * Represents whether PSTN calling is allowed for the current logged in User
+   */
+  isPSTNCallingAllowed?: boolean;
+
+  /**
+   * The OneNote section ID that is linked to the channel.
+   */
+  defaultOneNoteSectionId?: string;
 }
 
 export interface DeepLinkParameters {
@@ -337,12 +362,12 @@ export interface TaskInfo {
   /**
    * The requested height of the webview/iframe.
    */
-  height?: TaskModuleDimension | Number;
+  height?: TaskModuleDimension | number;
 
   /**
    * The requested width of the webview/iframe.
    */
-  width?: TaskModuleDimension | Number;
+  width?: TaskModuleDimension | number;
 
   /**
    * Title of the task module.
@@ -366,22 +391,21 @@ export interface TaskInfo {
  * @private
  * Hide from docs.
  * ------
-*/
+ */
 export interface OpenConversationRequest {
-
   /**
-  * The Id of the subEntity where the conversation is taking place
-  */
+   * The Id of the subEntity where the conversation is taking place
+   */
   subEntityId: string;
 
   /**
-  * The title of the conversation
-  */
+   * The title of the conversation
+   */
   title: string;
 
   /**
-  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-  */
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
   conversationId?: string;
 
   /**
@@ -395,13 +419,13 @@ export interface OpenConversationRequest {
   entityId: string;
 
   /**
-  * A function that is called once the conversation Id has been created
-  */
+   * A function that is called once the conversation Id has been created
+   */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
-  * A function that is called if the pane is closed
-  */
+   * A function that is called if the pane is closed
+   */
   onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
@@ -409,17 +433,16 @@ export interface OpenConversationRequest {
  * @private
  * Hide from docs.
  * ------
-*/
+ */
 export interface ConversationResponse {
-
   /**
-  * The Id of the subEntity where the conversation is taking place
-  */
+   * The Id of the subEntity where the conversation is taking place
+   */
   subEntityId: string;
 
   /**
-  * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-  */
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
   conversationId?: string;
 
   /**
@@ -431,4 +454,32 @@ export interface ConversationResponse {
    * The entity Id of the tab
    */
   entityId?: string;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ */
+export interface LoadContext {
+  /**
+   * The enitity that is requested to be loaded
+   */
+  entityId: string;
+
+  /**
+   * The content URL that is requested to be loaded
+   */
+  contentUrl: string;
+}
+
+export interface FrameContext {
+  /**
+   * The current URL that needs to be used in the iframe if the tab is reloaded
+   */
+  contentUrl: string;
+
+  /**
+   * The current URL that needs to be used for opening the website when the user clicks on 'Go to website'
+   */
+  websiteUrl: string;
 }
