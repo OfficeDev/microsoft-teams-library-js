@@ -322,6 +322,11 @@ export interface Context {
    * Represents whether PSTN calling is allowed for the current logged in User
    */
   isPSTNCallingAllowed?: boolean;
+
+  /**
+   * The OneNote section ID that is linked to the channel.
+   */
+  defaultOneNoteSectionId?: string;
 }
 
 export interface DeepLinkParameters {
