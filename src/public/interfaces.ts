@@ -142,7 +142,7 @@ export interface LocaleInfo {
     longTime: string;
     calendar: string;
     firstDayOfWeek: string;
-  }
+  };
 }
 
 export interface Context {
