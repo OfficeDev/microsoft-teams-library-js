@@ -19,6 +19,13 @@ export const validOrigins = [
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
   'https://*.teams.microsoft.com',
+  'https://www.office.com',
+  'https://word.office.com',
+  'https://excel.office.com',
+  'https://powerpoint.office.com',
+  'https://www.officeppe.com',
+  'https://*.www.office.com',
+  'http://127.0.0.1:5000', // local Development
 ];
 
 // Ensure these declarations stay in sync with the framework.
