@@ -1,6 +1,6 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.6.0';
+export const version = '1.7.0-beta.0';
 /**
  * List of supported Host origins
  */
