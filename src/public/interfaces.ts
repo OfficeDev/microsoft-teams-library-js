@@ -483,3 +483,15 @@ export interface FrameContext {
    */
   websiteUrl: string;
 }
+
+export interface NotificationPayload {
+  /**
+   *  The path to which the trouter notification was sent
+   */
+  subPath: string;
+
+  /**
+   *  The payload which was sent from trouter to the 1P app for post processing.
+   */
+  payload: string;
+}

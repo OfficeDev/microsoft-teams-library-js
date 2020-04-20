@@ -20,6 +20,7 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
+import { notifications } from '../private/notifications';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -81,6 +82,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         registerBeforeUnloadHandler(null);
         registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
+        notifications.registerTrouterNotifications(null);
       }
 
       if (GlobalVars.frameContext === frameContexts.settings) {
