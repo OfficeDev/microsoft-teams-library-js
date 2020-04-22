@@ -21,7 +21,7 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 
-// ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
+// ::::::::::::::::::::::: MicrosoftTeams SDK public API ab::::::::::::::::::::
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
