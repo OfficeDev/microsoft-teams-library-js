@@ -584,6 +584,10 @@ export const enum ErrorCode {
   User aborted the request
   */
   USER_ABORT = 900,
+  /**
+  Platform code is old and doesn't implement this API
+  */
+  OLD_PLATFORM = 1000,
 }
 
 export interface StringResponse {

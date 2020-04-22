@@ -43,17 +43,6 @@ export function enterFullscreen(): void {
  * @private
  * Hide from docs
  * ------
- * Place the tab into full-screen mode.
- */
-export function showAlert(title: string, message: string): void {
-  ensureInitialized(frameContexts.content);
-  sendMessageRequestToParent('showAlert', [title, message]);
-}
-
-/**
- * @private
- * Hide from docs
- * ------
  * Reverts the tab into normal-screen mode.
  */
 export function exitFullscreen(): void {
@@ -202,6 +191,13 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
   GlobalVars.callbacks[messageId] = callback;
 }
 
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Fetches the SDK version upto which client supports the Teams JS SDK APIs
+ * @param callback The callback to invoke when the version is retrieved.
+ */
 export function getClientSupportedVersion(callback: (version: number) => void): void {
   ensureInitialized();
   const messageId = sendMessageRequestToParent('getClientSupportedVersion');

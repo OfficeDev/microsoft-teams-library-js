@@ -1,5 +1,6 @@
 import { getClientSupportedVersion } from './private/privateAPIs';
 import { Error } from './public/interfaces';
+import { ErrorCode } from '@microsoft/teams-js';
 
 export namespace VersionUtils {
   var commandVersion = {};
@@ -43,7 +44,7 @@ export namespace VersionUtils {
 
   export function getUpgradeErrorObject(): Error {
     return {
-      errorCode: 100,
+      errorCode: ErrorCode.OLD_PLATFORM,
       description: 'The operation is not supported. Try upgrading build',
     };
   }
