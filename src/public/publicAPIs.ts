@@ -165,7 +165,7 @@ export function enablePrintCapability(): void {
 }
 
 /**
- * default print handler
+ * default print handler test
  */
 export function print(): void {
   window.print();
