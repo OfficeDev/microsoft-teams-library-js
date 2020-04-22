@@ -8,7 +8,7 @@ export interface TabInformation {
 }
 
 /**
- * Represents information about a tab instance
+ * Represents information about a tab instance ab
  */
 export interface TabInstance {
   /**

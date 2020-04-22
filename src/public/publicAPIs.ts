@@ -23,7 +23,7 @@ import { logs } from '../private/logs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ab::::::::::::::::::::
 /**
- * Initializes the library. This must be called before any other SDK calls
+ * Initializes the library. This must be called before any other SDK calls ab
  * but after the frame is loaded successfully.
  * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
  * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
