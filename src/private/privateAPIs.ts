@@ -43,6 +43,17 @@ export function enterFullscreen(): void {
  * @private
  * Hide from docs
  * ------
+ * Place the tab into full-screen mode.
+ */
+export function showAlert(title: string, message: string): void {
+  ensureInitialized(frameContexts.content);
+  sendMessageRequestToParent('showAlert', [title, message]);
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
  * Reverts the tab into normal-screen mode.
  */
 export function exitFullscreen(): void {
@@ -188,6 +199,12 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getChatMembers');
+  GlobalVars.callbacks[messageId] = callback;
+}
+
+export function getClientSupportedVersion(callback: (version: number) => void): void {
+  ensureInitialized();
+  const messageId = sendMessageRequestToParent('getClientSupportedVersion');
   GlobalVars.callbacks[messageId] = callback;
 }
 

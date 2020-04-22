@@ -8,7 +8,7 @@ export interface TabInformation {
 }
 
 /**
- * Represents information about a tab instance ab
+ * Represents information about a tab instance
  */
 export interface TabInstance {
   /**
@@ -482,4 +482,128 @@ export interface FrameContext {
    * The current URL that needs to be used for opening the website when the user clicks on 'Go to website'
    */
   websiteUrl: string;
+}
+
+export interface LocationResponse {
+  /**
+  Location object which contains coordinates, accuracy
+  */
+  location?: Location;
+  /**
+  Error object with error description
+  */
+  error?: Error;
+}
+
+export interface Location {
+  /**
+  Coordinates of the location
+  */
+  coords: Coordinates;
+  /**
+  Accuracy of the coordinates captured
+  */
+  accuracy: number;
+  /**
+  Time stamp when the location was captured
+  */
+  timestamp: number;
+}
+
+export interface Coordinates {
+  /**
+  Latitude of the location
+  */
+  latitude: number;
+  /**
+  Longitude of the location
+  */
+  longitude: number;
+}
+
+export interface LocationImageRequest {
+  /**
+  Coordinates of the location
+  */
+  coords: Coordinates;
+  /**
+  Horizontal size in pixels
+  */
+  sizeX: number;
+  /**
+  Vertical size in pixels
+  */
+  sizeY: number;
+}
+
+export interface Error {
+  /**
+  error code
+  */
+  errorCode: ErrorCode | number;
+  /**
+  Message for status code success or error if any
+  */
+  description: string;
+}
+
+export const enum ErrorCode {
+  /**
+  Sufficient permissions are not available
+  */
+  PERMISSION_DENIED = 100,
+  /**
+  Faced Network error
+  */
+  NETWORK_ERROR = 200,
+  /**
+  Hardware doesn't support this capability
+  */
+  NO_HW_SUPPORT = 300,
+  /**
+  One or more arguments are invalid
+  */
+  INVALID_ARGUMENTS = 400,
+  /**
+  User is not authorized for this operation
+  */
+  UNAUTHORIZED_USER_OPERATION = 500,
+  /**
+  Could not complete the operation due to insufficient resources
+  */
+  INSUFFICIENT_RESOURCES = 600,
+  /**
+  Platform throttled the request because of API was invoked too frequently
+  */
+  THROTTLE = 700,
+  /**
+  Request timed out
+  */
+  TIMEOUT = 800,
+  /**
+  User aborted the request
+  */
+  USER_ABORT = 900,
+}
+
+export interface StringResponse {
+  /**
+   * result
+   */
+  result?: string;
+  /**
+   * error
+   */
+  error?: Error;
+}
+
+export interface BoolResponse {
+  /**
+   * result
+   */
+  result?: boolean;
+  /**
+   * error
+   */
+  error?: Error;
 }

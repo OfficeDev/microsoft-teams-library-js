@@ -17,13 +17,19 @@ import {
   Context,
   LoadContext,
   FrameContext,
+  LocationResponse,
+  Coordinates,
+  LocationImageRequest,
+  StringResponse,
+  BoolResponse,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
+import { VersionUtils } from '../VersionUtils';
 
-// ::::::::::::::::::::::: MicrosoftTeams SDK public API ab::::::::::::::::::::
+// ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
- * Initializes the library. This must be called before any other SDK calls ab
+ * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
  * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
@@ -169,6 +175,99 @@ export function enablePrintCapability(): void {
  */
 export function print(): void {
   window.print();
+}
+
+/**
+ * Retrives current user location
+ * @param callback Callback to invoke when current user location is fetched
+ */
+export function getCurrentLocation(callback: (location: LocationResponse) => void): void {
+  VersionUtils.IsCommandHandledOnPlatform('getCurrentLocation', (compatible: boolean) => {
+    if (compatible) {
+      ensureInitialized();
+      const messageId = sendMessageRequestToParent('getCurrentLocation');
+      GlobalVars.callbacks[messageId] = callback;
+    } else {
+      callback({
+        error: VersionUtils.getUpgradeErrorObject(),
+      });
+    }
+  });
+}
+
+/**
+ * Opens map app where user can choose a location which is returned in this API
+ * @param callback Callback to invoke when user has chosen the location on map
+ */
+export function chooseLocationOnMap(callback: (response: LocationResponse) => void): void {
+  VersionUtils.IsCommandHandledOnPlatform('chooseLocationOnMap', (compatible: boolean) => {
+    if (compatible) {
+      ensureInitialized();
+      const messageId = sendMessageRequestToParent('chooseLocationOnMap');
+      GlobalVars.callbacks[messageId] = callback;
+    } else {
+      callback({
+        error: VersionUtils.getUpgradeErrorObject(),
+      });
+    }
+  });
+}
+
+/**
+ * Fetches the address for given coordinates
+ * @param coords {@link Coordinates} for which address needs to be fetched
+ * @param callback Callback to invoke when address is fetched
+ */
+export function getLocationAddress(coords: Coordinates, callback: (response: StringResponse) => void): void {
+  VersionUtils.IsCommandHandledOnPlatform('getLocationAddress', (compatible: boolean) => {
+    if (compatible) {
+      ensureInitialized();
+      const messageId = sendMessageRequestToParent('getLocationAddress', [coords]);
+      GlobalVars.callbacks[messageId] = callback;
+    } else {
+      callback({
+        error: VersionUtils.getUpgradeErrorObject(),
+      });
+    }
+  });
+}
+
+/**
+ * Fetches the map image for given coordinates
+ * @param mapRequest {@link LocationImageRequest} request containing location coordinates and image size needed
+ * @param callback Callback to invoke when map image is fetched
+ */
+export function getLocationMapImage(request: LocationImageRequest, callback: (response: StringResponse) => void): void {
+  VersionUtils.IsCommandHandledOnPlatform('getLocationMapImage', (compatible: boolean) => {
+    if (compatible) {
+      ensureInitialized();
+      const messageId = sendMessageRequestToParent('getLocationMapImage', [request]);
+      GlobalVars.callbacks[messageId] = callback;
+    } else {
+      callback({
+        error: VersionUtils.getUpgradeErrorObject(),
+      });
+    }
+  });
+}
+
+/**
+ * Shows the location on map corresponding to the given coordinates
+ * @param coords {@link Coordinates} whose location needs to be shown on map
+ * @param callback Callback to invoke when the location is opened on map
+ */
+export function showLocationOnMap(coords: Coordinates, callback: (response: BoolResponse) => void): void {
+  VersionUtils.IsCommandHandledOnPlatform('showLocationOnMap', (compatible: boolean) => {
+    if (compatible) {
+      ensureInitialized();
+      const messageId = sendMessageRequestToParent('showLocationOnMap', [coords]);
+      GlobalVars.callbacks[messageId] = callback;
+    } else {
+      callback({
+        error: VersionUtils.getUpgradeErrorObject(),
+      });
+    }
+  });
 }
 
 /**
