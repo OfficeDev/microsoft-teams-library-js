@@ -7,6 +7,8 @@ import {
   FilePreviewParameters,
   TeamInstanceParameters,
   UserJoinedTeamsInformation,
+  AttachmentInputs,
+  AttachmentResult,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 
@@ -204,4 +206,22 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
 
   const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
   GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to select an attachment using camera/gallery
+ * @param attachmentInputParams The input params to customize the attachment to be selected
+ * @param result The callback to invoke after fetching the attachment
+ */
+export function selectAttachment(
+  attachmentInputs: AttachmentInputs,
+  result: (attachmentResult: AttachmentResult) => void,
+): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  const params = [attachmentInputs];
+  const messageId = sendMessageRequestToParent('selectAttachment', params);
+  GlobalVars.callbacks[messageId] = result;
 }

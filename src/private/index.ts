@@ -22,5 +22,6 @@ export {
   sendCustomEvent,
   registerCustomHandler,
   uploadCustomApp,
+  selectAttachment,
 } from './privateAPIs';
 export { conversations } from './conversations';
