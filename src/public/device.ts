@@ -1,8 +1,5 @@
-import {
-  ensureInitialized,
-  sendMessageRequestToParent,
-} from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 export namespace device {
   /**
    *  Error object
@@ -64,14 +61,14 @@ export namespace device {
     error?: Error;
   }
 
-  /** 
-   * Launch camera, capture image or choose image from gallery  
-   * Return the image as a File object to the callback. 
-   * In case of error, the error attribute will be populated with an Error obejct. 
-   */  
+  /**
+   * Launch camera, capture image or choose image from gallery
+   * Return the image as a File object to the callback.
+   * In case of error, the error attribute will be populated with an Error obejct.
+   */
   export function getImage(callback: (file: File) => void): void {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('device.getImage');
-    GlobalVars.callbacks[messageId] = callback;  
+    GlobalVars.callbacks[messageId] = callback;
   }
 }
