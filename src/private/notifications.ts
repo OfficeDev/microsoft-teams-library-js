@@ -10,7 +10,7 @@ import { NotificationPayload } from '../public/interfaces';
  * Hide from docs
  */
 export namespace notifications {
-  GlobalVars.handlers['notification.recieved'] = handleProcessNotifications;
+  GlobalVars.handlers['trouter.notification.recieved'] = handleProcessNotifications;
 
   function handleProcessNotifications(payload: NotificationPayload): void {
     if (GlobalVars.notificationHandler) {
@@ -29,6 +29,6 @@ export namespace notifications {
     ensureInitialized();
 
     GlobalVars.notificationHandler = handler;
-    handler && sendMessageRequestToParent('registerTrouter', []);
+    handler && sendMessageRequestToParent('trouter.register', []);
   }
 }
