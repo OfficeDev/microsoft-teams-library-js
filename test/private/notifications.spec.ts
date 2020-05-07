@@ -43,7 +43,7 @@ describe('logs', () => {
         return;
       });
 
-      utils.sendMessage('trouter.notification.recieved');
+      utils.sendMessage('trouter.notificationRecieved');
       expect(handlerInvoked).toBe(true);
     });
 
@@ -55,7 +55,7 @@ describe('logs', () => {
         handlerInvoked(notificationPayload);
       });
 
-      utils.sendMessage('trouter.notification.recieved');
+      utils.sendMessage('trouter.notificationRecieved');
       expect(handlerInvoked).toBeCalledWith(notificationPayload);
     });
 
@@ -63,7 +63,7 @@ describe('logs', () => {
       utils.initializeWithContext('content');
       let handlerInvoked = jest.fn();
 
-      utils.sendMessage('trouter.notification.received');
+      utils.sendMessage('trouter.notificationRecieved');
 
       expect(handlerInvoked).not.toBeCalled();
     });

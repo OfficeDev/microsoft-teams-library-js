@@ -10,7 +10,7 @@ import { NotificationPayload } from '../public/interfaces';
  * Hide from docs
  */
 export namespace notifications {
-  GlobalVars.handlers['trouter.notification.recieved'] = handleProcessNotifications;
+  GlobalVars.handlers['trouter.notificationRecieved'] = handleProcessNotifications;
 
   function handleProcessNotifications(payload: NotificationPayload): void {
     if (GlobalVars.notificationHandler) {
