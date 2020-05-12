@@ -134,16 +134,14 @@ export interface TeamInformation {
  * Represents OS locale info used for formatting date and time data
  */
 export interface LocaleInfo {
+  platform: string;
   regionalFormat: string;
-  date: {
-    shortDate: string;
-    longDate: string;
-    shortTime: string;
-    longTime: string;
-    calendar: string;
-    firstDayOfWeek: string;
-  };
+  shortDate: string;
+  longDate: string;
+  shortTime: string;
+  longTime: string;
 }
+
 
 export interface Context {
   /**
@@ -200,7 +198,7 @@ export interface Context {
    * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
    * time format configuration
    */
-  localeInfo?: LocaleInfo;
+  osLocaleInfo?: LocaleInfo;
 
   /**
    * @deprecated Use loginHint or userPrincipalName.
