@@ -142,7 +142,6 @@ export interface LocaleInfo {
   longTime: string;
 }
 
-
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
