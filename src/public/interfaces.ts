@@ -134,7 +134,7 @@ export interface TeamInformation {
  * Represents OS locale info used for formatting date and time data
  */
 export interface LocaleInfo {
-  platform: string;
+  platform: 'windows' | 'macos';
   regionalFormat: string;
   shortDate: string;
   longDate: string;
