@@ -77,7 +77,6 @@ describe('device', () => {
     utils.initializeWithContext(frameContexts.content);
     let files = null;
     device.getImages((f: device.File[]) => {
-      console.log('device.getImages callback...' + (typeof f));
       files = f;
     });
 
@@ -114,7 +113,6 @@ describe('device', () => {
     utils.initializeWithContext(frameContexts.content);
     let files = null;
     device.getImages((f: device.File[]) => {
-      console.log('device.getImages callback...' + (typeof f));
       files = f;
     });
 
