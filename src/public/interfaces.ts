@@ -129,6 +129,19 @@ export interface TeamInformation {
    */
   userTeamRole?: UserTeamRole;
 }
+
+/**
+ * Represents OS locale info used for formatting date and time data
+ */
+export interface LocaleInfo {
+  platform: 'windows' | 'macos';
+  regionalFormat: string;
+  shortDate: string;
+  longDate: string;
+  shortTime: string;
+  longTime: string;
+}
+
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
@@ -168,7 +181,8 @@ export interface Context {
 
   /**
    * The developer-defined unique ID for the sub-entity this content points to.
-   * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
+   * This field should be used to restore to a specific state within an entity,
+   * such as scrolling to or activating a specific piece of content.
    */
   subEntityId?: string;
 
@@ -177,6 +191,13 @@ export interface Context {
    * languageId-countryId (for example, en-us).
    */
   locale: string;
+
+  /**
+   * More detailed locale info from the user's OS if available. Can be used together with
+   * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
+   * time format configuration
+   */
+  osLocaleInfo?: LocaleInfo;
 
   /**
    * @deprecated Use loginHint or userPrincipalName.
