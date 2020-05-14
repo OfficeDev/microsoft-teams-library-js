@@ -29,7 +29,7 @@ export namespace device {
   }
 
   export enum FileFormat {
-    Base64 = "base64"
+    Base64 = 'base64',
   }
 
   /**
@@ -82,7 +82,7 @@ export namespace device {
   export function getImages(callback: (files: File[]) => void): void {
     if (!callback) {
       throw new Error('[device.getImages] Callback cannot be null');
-    } 
+    }
     ensureInitialized(frameContexts.content);
     const messageId = sendMessageRequestToParent('device.getImages');
     GlobalVars.callbacks[messageId] = callback;
