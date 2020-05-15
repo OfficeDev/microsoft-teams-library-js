@@ -1,6 +1,10 @@
 import { generateRegExpFromUrls } from './utils';
 
 export const version = '1.6.0';
+/**
+ * This is the SDK version when all SDK APIs started to check platform compatibility for the APIs.
+ */
+export const defaultSDKVersionForCompatCheck = '1.6.0';
 
 export const validOrigins = [
   'https://teams.microsoft.com',

@@ -484,58 +484,6 @@ export interface FrameContext {
   websiteUrl: string;
 }
 
-export interface LocationResponse {
-  /**
-  Location object which contains coordinates, accuracy
-  */
-  location?: Location;
-  /**
-  Error object with error description
-  */
-  error?: Error;
-}
-
-export interface Location {
-  /**
-  Coordinates of the location
-  */
-  coords: Coordinates;
-  /**
-  Accuracy of the coordinates captured
-  */
-  accuracy: number;
-  /**
-  Time stamp when the location was captured
-  */
-  timestamp: number;
-}
-
-export interface Coordinates {
-  /**
-  Latitude of the location
-  */
-  latitude: number;
-  /**
-  Longitude of the location
-  */
-  longitude: number;
-}
-
-export interface LocationImageRequest {
-  /**
-  Coordinates of the location
-  */
-  coords: Coordinates;
-  /**
-  Horizontal size in pixels
-  */
-  sizeX: number;
-  /**
-  Vertical size in pixels
-  */
-  sizeY: number;
-}
-
 export interface Error {
   /**
   error code
@@ -549,45 +497,41 @@ export interface Error {
 
 export const enum ErrorCode {
   /**
-  Sufficient permissions are not available
+  Permissions denied by user
   */
-  PERMISSION_DENIED = 100,
+  PERMISSION_DENIED = 1000,
   /**
-  Faced Network error
+  Network issue
   */
-  NETWORK_ERROR = 200,
+  NETWORK_ERROR = 2000,
   /**
-  Hardware doesn't support this capability
+  Underlying hardware doesn't support the capability
   */
-  NO_HW_SUPPORT = 300,
+  NO_HW_SUPPORT = 3000,
   /**
   One or more arguments are invalid
   */
-  INVALID_ARGUMENTS = 400,
+  INVALID_ARGUMENTS = 4000,
   /**
   User is not authorized for this operation
   */
-  UNAUTHORIZED_USER_OPERATION = 500,
+  UNAUTHORIZED_USER_OPERATION = 5000,
   /**
   Could not complete the operation due to insufficient resources
   */
-  INSUFFICIENT_RESOURCES = 600,
+  INSUFFICIENT_RESOURCES = 6000,
   /**
   Platform throttled the request because of API was invoked too frequently
   */
-  THROTTLE = 700,
+  THROTTLE = 7000,
   /**
-  Request timed out
+  User aborted the operation
   */
-  TIMEOUT = 800,
-  /**
-  User aborted the request
-  */
-  USER_ABORT = 900,
+  USER_ABORT = 8000,
   /**
   Platform code is old and doesn't implement this API
   */
-  OLD_PLATFORM = 1000,
+  OLD_PLATFORM = 9000,
 }
 
 export interface StringResponse {

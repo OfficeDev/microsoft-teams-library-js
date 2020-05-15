@@ -23,6 +23,7 @@ export class GlobalVars {
     [id: number]: Function;
   } = {};
   public static hostClientType: string;
+  public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled: boolean = false;
   public static themeChangeHandler: (theme: string) => void;
   public static fullScreenChangeHandler: (isFullScreen: boolean) => void;

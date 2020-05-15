@@ -31,11 +31,6 @@ export {
   registerOnThemeChangeHandler,
   setFrameContext,
   shareDeepLink,
-  getCurrentLocation,
-  chooseLocationOnMap,
-  getLocationAddress,
-  getLocationMapImage,
-  showLocationOnMap,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
