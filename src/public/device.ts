@@ -28,6 +28,9 @@ export namespace device {
     UserCancelled = 3,
   }
 
+  /**
+   * Enum for file formats supported
+   */
   export enum FileFormat {
     Base64 = 'base64',
   }
