@@ -118,7 +118,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
 /**
  * Checks whether the platform has knowledge of this API by doing a comparison
  * on API required version and platform supported version of the SDK
- * @param requiredVersion
+ * @param requiredVersion SDK version required by the API
  */
 export function IsAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   if (!GlobalVars.initializeCalled) {
