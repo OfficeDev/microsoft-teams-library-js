@@ -20,8 +20,9 @@ import {
   FrameContext,
   BoolResponse,
 } from './interfaces';
-import { getGenericOnCompleteHandler, getUpgradeErrorObject } from '../internal/utils';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
+import { ErrorCode } from '@microsoft/teams-js';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -190,7 +191,10 @@ export function sampleAPI(callback: (response: BoolResponse) => void): void {
     GlobalVars.callbacks[messageId] = callback;
   } else {
     callback({
-      error: getUpgradeErrorObject(),
+      error: {
+        errorCode: ErrorCode.OLD_PLATFORM,
+        description: 'API not supported on platform. Upgrading Teams app may resolve this issue.',
+      },
     });
   }
 }

@@ -1,5 +1,3 @@
-import { ErrorCode, Error } from '@microsoft/teams-js';
-
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = '^';
@@ -73,11 +71,4 @@ export function compareSDKVersions(v1: string, v2: string): number {
     }
   }
   return 0;
-}
-
-export function getUpgradeErrorObject(): Error {
-  return {
-    errorCode: ErrorCode.OLD_PLATFORM,
-    description: 'This API is not supported as platform build is old. Upgrading platform build may resolve this issue.',
-  };
 }
