@@ -1,6 +1,6 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { NotificationPayload } from '../public/interfaces';
+import { TrouterNotificationPayload } from '../public/interfaces';
 
 /**
  * Namespace to interact with the notifications to-from the SDK.
@@ -12,7 +12,7 @@ import { NotificationPayload } from '../public/interfaces';
 export namespace notifications {
   GlobalVars.handlers['trouter.notificationRecieved'] = handleProcessNotifications;
 
-  function handleProcessNotifications(payload: NotificationPayload): void {
+  function handleProcessNotifications(payload: TrouterNotificationPayload): void {
     if (GlobalVars.notificationHandler) {
       GlobalVars.notificationHandler(payload);
     }
@@ -25,7 +25,7 @@ export namespace notifications {
    * Registers a handler for processing trouter notifications
    * @param handler The handler to process notifications by 1P app
    */
-  export function registerTrouterNotifications(handler: (notification: NotificationPayload) => void): void {
+  export function registerTrouterNotifications(handler: (notification: TrouterNotificationPayload) => void): void {
     ensureInitialized();
 
     GlobalVars.notificationHandler = handler;

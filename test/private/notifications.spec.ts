@@ -1,14 +1,14 @@
 import { notifications } from '../../src/private/notifications';
 import { Utils } from '../utils';
 import { _uninitialize } from '../../src/public/publicAPIs';
-import { NotificationPayload } from '../../src/public/interfaces';
+import { TrouterNotificationPayload } from '../../src/public/interfaces';
 
 describe('logs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
-  const notificationPayload: NotificationPayload =  {
+  const notificationPayload: TrouterNotificationPayload =  {
     payload : "{ \"eventId\" : 1500,  \"environment\" : \"Production\"}", 
-    subPath : 'shifts'
+    subPath : '/shifts'
   }
 
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('logs', () => {
     }
   });
 
-  describe('registerTrouterNotificagions', () => {
+  describe('registerTrouterNotifications', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
       notifications.registerTrouterNotifications((notificationPayload) => {
@@ -51,7 +51,7 @@ describe('logs', () => {
       utils.initializeWithContext('content');
     
       let handlerInvoked = jest.fn();
-      notifications.registerTrouterNotifications((notifications: NotificationPayload) => {
+      notifications.registerTrouterNotifications((notifications: TrouterNotificationPayload) => {
         handlerInvoked(notificationPayload);
       });
 

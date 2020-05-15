@@ -484,7 +484,7 @@ export interface FrameContext {
   websiteUrl: string;
 }
 
-export interface NotificationPayload {
+export interface TrouterNotificationPayload {
   /**
    *  The path to which the trouter notification was sent
    */
