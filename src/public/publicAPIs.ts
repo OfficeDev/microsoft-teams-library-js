@@ -19,10 +19,10 @@ import {
   LoadContext,
   FrameContext,
   BoolResponse,
+  ErrorCode,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
-import { ErrorCode } from '@microsoft/teams-js';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
