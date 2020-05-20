@@ -143,7 +143,7 @@ export interface Attachment {
   /**
    * Type of the attachment
    */
-  attachmentType: AttachmentType;
+  attachmentMimeType: string;
 }
 
 /**
@@ -260,6 +260,8 @@ export const enum Source {
  */
 export const enum AttachmentType {
   Image = 1,
+  //todo: remove video while creating the PR
+  Video = 2,
 }
 
 // todo: merge it with error common with location after those changes are checked in
@@ -312,4 +314,18 @@ export const enum ErrorCode {
   Platform code is old and doesn't implement this API
   */
   OLD_PLATFORM = 1000,
+}
+
+/**
+ * Input to getAttachment API
+ */
+export interface FileUri {
+  /**
+   * Content uri of the file to read
+   */
+  localUri: string;
+  /**
+   * chunk sequence to read a particular chunk
+   */
+  chunkSequence?: number;
 }

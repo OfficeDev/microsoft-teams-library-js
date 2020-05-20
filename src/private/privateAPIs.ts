@@ -9,8 +9,10 @@ import {
   UserJoinedTeamsInformation,
   AttachmentInputs,
   AttachmentResult,
+  FileUri,
+  Error,
 } from './interfaces';
-import { getGenericOnCompleteHandler } from '../internal/utils';
+import { getGenericOnCompleteHandler, generateGUID } from '../internal/utils';
 
 /**
  * @private
@@ -223,5 +225,20 @@ export function selectAttachment(
   ensureInitialized(frameContexts.content, frameContexts.task);
   const params = [attachmentInputs];
   const messageId = sendMessageRequestToParent('selectAttachment', params);
+  GlobalVars.callbacks[messageId] = result;
+}
+
+export function getAttachment(input: FileUri, result: (data: string) => void): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  let actionName = generateGUID();
+  const params = [actionName, input];
+  sendMessageRequestToParent('getAttachment', params);
+  GlobalVars.handlers['getAttachment' + actionName] = result;
+}
+
+export function viewImages(uriList: string[], result: (error: Error) => void): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  const params = [uriList];
+  const messageId = sendMessageRequestToParent('viewImages', params);
   GlobalVars.callbacks[messageId] = result;
 }

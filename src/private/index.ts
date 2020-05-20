@@ -9,6 +9,7 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
+  Error,
 } from './interfaces';
 export {
   enterFullscreen,
@@ -23,5 +24,7 @@ export {
   registerCustomHandler,
   uploadCustomApp,
   selectAttachment,
+  getAttachment,
+  viewImages,
 } from './privateAPIs';
 export { conversations } from './conversations';
