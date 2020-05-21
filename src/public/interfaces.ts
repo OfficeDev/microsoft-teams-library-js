@@ -128,6 +128,21 @@ export interface TeamInformation {
    * Role of current user in the team
    */
   userTeamRole?: UserTeamRole;
+
+  /**
+   * The type of the team.
+   */
+  teamType?: TeamType;
+
+  /**
+   * The locked status of the team
+   */
+  isTeamLocked?: boolean;
+
+  /**
+   * The archived status of the team
+   */
+  isTeamArchived?: boolean;
 }
 
 /**
