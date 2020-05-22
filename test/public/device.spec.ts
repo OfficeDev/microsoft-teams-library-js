@@ -1,5 +1,5 @@
 import { device } from '../../src/public/device' 
-import { FramelessPostUtils } from '../framelessPostUtils';
+import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
@@ -8,7 +8,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
  * Test cases for device APIs
  */
 describe('device', () => {
-  const utils = new FramelessPostUtils();
+  const utils = new FramelessPostMocks();
   
   beforeEach(() => {
     utils.messages = [];
@@ -29,12 +29,6 @@ describe('device', () => {
   it('should not allow device.getImages calls before initialization', () => {
     expect(() => device.getImages(emptyCallback)).toThrowError(
       'The library has not yet been initialized',
-    );
-  });
-  it('should not allow device.getImages calls for task frame context', () => {
-    utils.initializeWithContext(frameContexts.task);
-    expect(() => device.getImages(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'task' context",
     );
   });
   it('should not allow device.getImages calls for authentication frame context', () => {
@@ -66,6 +60,13 @@ describe('device', () => {
       '[device.getImages] Callback cannot be null',
     );
   });
+  it('device.getImages call in task frameContext workst', () => {
+    utils.initializeWithContext(frameContexts.task);
+    device.getImages(emptyCallback);
+    let message = utils.findMessageByFunc('device.getImages');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(0);
+  });
   it('device.getImages call in content frameContext works', () => {
     utils.initializeWithContext(frameContexts.content);
     device.getImages(emptyCallback);
@@ -75,8 +76,9 @@ describe('device', () => {
   });
   it('device.getImages calls with successful result', () => {
     utils.initializeWithContext(frameContexts.content);
-    let files = null;
-    device.getImages((f: device.File[]) => {
+    let files, error;
+    device.getImages((e: device.ErrorCode, f: device.File[]) => {
+      error = e;
       files = f;
     });
 
@@ -86,7 +88,6 @@ describe('device', () => {
 
     let callbackId = message.id;
     let filesArray = [{
-        statusCode: device.StatusCode.Success,
         content: 'base64encodedImage',
         format: device.FileFormat.Base64,
         mimeType: 'image/png',
@@ -95,14 +96,13 @@ describe('device', () => {
     utils.sendMessageFromNativeToParent({
       data: {
         id: callbackId,
-        args: [filesArray]
+        args: [undefined, filesArray]
       }
     } as DOMMessageEvent)
 
     expect(files.length).toBe(1);
     let file = files[0];
     expect(file).not.toBeNull();
-    expect(file.statusCode).toBe(device.StatusCode.Success);
     expect(file.format).toBe(device.FileFormat.Base64);
     expect(file.mimeType).toBe('image/png');
     expect(file.content).not.toBeNull();
@@ -111,8 +111,9 @@ describe('device', () => {
   });
   it('device.getImages calls with error', () => {
     utils.initializeWithContext(frameContexts.content);
-    let files = null;
-    device.getImages((f: device.File[]) => {
+    let files, error;
+    device.getImages((e: device.ErrorCode, f: device.File[]) => {
+      error = e;
       files = f;
     });
 
@@ -121,24 +122,14 @@ describe('device', () => {
     expect(message.args.length).toBe(0);
 
     let callbackId = message.id;
-    let filesArray = [{
-        statusCode: device.StatusCode.PermissionError,
-        content: null
-      } as device.File];
     utils.sendMessageFromNativeToParent({
       data: {
         id: callbackId,
-        args: [filesArray]
+        args: [1]
       }
     } as DOMMessageEvent)
 
-    expect(files.length).toBe(1);
-    let file = files[0];
-    expect(file).not.toBeNull();
-    expect(file.statusCode).toBe(device.StatusCode.PermissionError);
-    expect(file.format).toBeFalsy();
-    expect(file.content).toBeFalsy();
-    expect(file.size).toBeFalsy();
-    expect(file.mimeType).toBeFalsy();
+    expect(files).toBeFalsy();
+    expect(error).toBe(1);
   });
 });

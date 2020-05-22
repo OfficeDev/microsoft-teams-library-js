@@ -8,11 +8,9 @@ import { frameContexts } from '../internal/constants';
  */
 export namespace device {
   /**
-   * Status codes for device APIs
-   * @see File
+   * Error codes for device APIs
    */
-  export enum StatusCode {
-    Success = 0,
+  export enum ErrorCode {
     /**
      * Missing required permission to perform the action
      */
@@ -37,19 +35,11 @@ export namespace device {
 
   /**
    * File object that can be used to represent image or video or audio
-   * The object will have "statusCode" as defined in StatusCode enum
-   * The user of this API should check "statusCode" to be "Success" before reading the "content"
-   * In case of other status codes, app can decide to show an error message to the user
-   * @see StatusCode
    */
   export interface File {
     /**
-     * Status code
-     */
-    statusCode: StatusCode;
-
-    /**
-     *  Content of the file
+     * Content of the file
+     * App needs to convert this to dataUrl, if this has to be used directly in HTML tags
      */
     content?: string;
 
@@ -64,7 +54,7 @@ export namespace device {
     size?: number;
 
     /**
-     * MIME type
+     * MIME type. This can be used for constructing a dataUrl, if needed.
      */
     mimeType?: string;
 
@@ -75,18 +65,19 @@ export namespace device {
   }
 
   /**
-   * Launch camera, capture image or choose image from gallery and return the images as a File[] object to the callback
-   * File object returned will have status codes to call out error scenarios
-   * App can check against the StatusCode enum to find out the exact cause and present
-   * the user with appropriate error message. App should also do a `statusCode == Success` check before accessing the content
-   * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one
+   * Launch camera, capture image or choose image from gallery and return the images as a File[] object to the callback.
+   * File object returned will have error codes to call out error scenarios.
+   * App should first check the error. If it is present the user can be updated with appropriate error message.
+   * If error is null or undefined, then files will have the required result.
+   * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
    * @see File
+   * @see ErrorCode
    */
-  export function getImages(callback: (files: File[]) => void): void {
+  export function getImages(callback: (error: ErrorCode, files: File[]) => void): void {
     if (!callback) {
       throw new Error('[device.getImages] Callback cannot be null');
     }
-    ensureInitialized(frameContexts.content);
+    ensureInitialized(frameContexts.content, frameContexts.task);
     const messageId = sendMessageRequestToParent('device.getImages');
     GlobalVars.callbacks[messageId] = callback;
   }
