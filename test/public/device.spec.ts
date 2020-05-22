@@ -93,7 +93,7 @@ describe('device', () => {
         mimeType: 'image/png',
         size: 300,
       } as device.File];
-    utils.sendMessageFromNativeToParent({
+    utils.respondToMessage({
       data: {
         id: callbackId,
         args: [undefined, filesArray]
@@ -122,7 +122,7 @@ describe('device', () => {
     expect(message.args.length).toBe(0);
 
     let callbackId = message.id;
-    utils.sendMessageFromNativeToParent({
+    utils.respondToMessage({
       data: {
         id: callbackId,
         args: [1]
