@@ -1,5 +1,5 @@
 import { MessageRequest } from './interfaces';
-import { ConversationResponse, LoadContext, NotificationPayload } from '../public/interfaces';
+import { ConversationResponse, LoadContext, TrouterNotificationPayload } from '../public/interfaces';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -33,5 +33,5 @@ export class GlobalVars {
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
-  public static notificationHandler: (notificationPayload: NotificationPayload) => void;
+  public static notificationHandler: (notificationPayload: TrouterNotificationPayload) => void;
 }
