@@ -4,13 +4,17 @@ import { frameContexts } from '../internal/constants';
 
 /**
  * Namespace for device related APIs. These are implemented only for mobile (Android and iOS)
- * On desktop, these APIs will be a noop.
+ * On desktop, these APIs are not implemented and the callback will received an error code.
  */
 export namespace device {
   /**
    * Error codes for device APIs
    */
   export enum ErrorCode {
+    /**
+     * API not supported.
+     */
+    NotSupported = -1,
     /**
      * Missing required permission to perform the action
      */
@@ -70,12 +74,17 @@ export namespace device {
    * App should first check the error. If it is present the user can be updated with appropriate error message.
    * If error is null or undefined, then files will have the required result.
    * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
+   * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    * @see File
    * @see ErrorCode
    */
   export function getImages(callback: (error: ErrorCode, files: File[]) => void): void {
     if (!callback) {
       throw new Error('[device.getImages] Callback cannot be null');
+    }
+    if (!GlobalVars.isFramelessWindow) {
+      callback(ErrorCode.NotSupported, undefined);
+      return;
     }
     ensureInitialized(frameContexts.content, frameContexts.task);
     const messageId = sendMessageRequestToParent('device.getImages');
