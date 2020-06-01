@@ -4,7 +4,7 @@ import {
   sendMessageRequestToParent,
   handleParentMessage,
   processAdditionalValidOrigins,
-  IsAPISupportedByPlatform,
+  isAPISupportedByPlatform,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts, defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -180,13 +180,13 @@ export function print(): void {
 }
 
 /**
- * This is a sample API which demonstrates the usage of IsAPISupportedByPlatform API
+ * This is a sample API which demonstrates the usage of isAPISupportedByPlatform API
  * TODO: Remove this API before check-in
  * @param callback Callback to invoke when API processing is done
  */
 export function sampleAPI(callback: (response: BoolResponse) => void): void {
   ensureInitialized();
-  if (IsAPISupportedByPlatform('1.7')) {
+  if (isAPISupportedByPlatform('1.7')) {
     const messageId = sendMessageRequestToParent('sampleAPI');
     GlobalVars.callbacks[messageId] = callback;
   } else {

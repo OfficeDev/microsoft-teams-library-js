@@ -120,10 +120,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  * on API required version and platform supported version of the SDK
  * @param requiredVersion SDK version required by the API
  */
-export function IsAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
-  if (!GlobalVars.initializeCalled) {
-    throw new Error('The library has not yet been initialized');
-  }
+export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   let value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
   if (isNaN(value)) return false;
   return value >= 0 ? true : false;
