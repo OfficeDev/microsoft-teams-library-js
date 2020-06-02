@@ -4,7 +4,6 @@ import {
   sendMessageRequestToParent,
   handleParentMessage,
   processAdditionalValidOrigins,
-  isAPISupportedByPlatform,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { version, frameContexts, defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -18,8 +17,6 @@ import {
   Context,
   LoadContext,
   FrameContext,
-  BoolResponse,
-  ErrorCode,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -177,26 +174,6 @@ export function enablePrintCapability(): void {
  */
 export function print(): void {
   window.print();
-}
-
-/**
- * This is a sample API which demonstrates the usage of isAPISupportedByPlatform API
- * TODO: Remove this API before check-in
- * @param callback Callback to invoke when API processing is done
- */
-export function sampleAPI(callback: (response: BoolResponse) => void): void {
-  ensureInitialized();
-  if (isAPISupportedByPlatform('1.7')) {
-    const messageId = sendMessageRequestToParent('sampleAPI');
-    GlobalVars.callbacks[messageId] = callback;
-  } else {
-    callback({
-      error: {
-        errorCode: ErrorCode.OLD_PLATFORM,
-        description: 'API not supported on platform. Upgrading Teams app may resolve this issue.',
-      },
-    });
-  }
 }
 
 /**

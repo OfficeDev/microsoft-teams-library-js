@@ -520,7 +520,7 @@ export interface FrameContext {
   websiteUrl: string;
 }
 
-export interface Error {
+export interface SdkError {
   /**
   error code
   */
@@ -528,7 +528,7 @@ export interface Error {
   /**
   Message for status code success or error if any
   */
-  description: string;
+  description?: string;
 }
 
 export const enum ErrorCode {
@@ -568,26 +568,4 @@ export const enum ErrorCode {
   Platform code is old and doesn't implement this API
   */
   OLD_PLATFORM = 9000,
-}
-
-export interface StringResponse {
-  /**
-   * result
-   */
-  result?: string;
-  /**
-   * error
-   */
-  error?: Error;
-}
-
-export interface BoolResponse {
-  /**
-   * result
-   */
-  result?: boolean;
-  /**
-   * error
-   */
-  error?: Error;
 }
