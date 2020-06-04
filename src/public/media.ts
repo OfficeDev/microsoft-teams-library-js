@@ -73,15 +73,15 @@ export interface File {
  * @see File
  * @see ErrorCode
  */
-export function captureImage(callback: (error: ErrorCode, files: File[]) => void): void {
+export function getImage(callback: (error: ErrorCode, files: File[]) => void): void {
   if (!callback) {
-    throw new Error('[captureImage] Callback cannot be null');
+    throw new Error('[getImage] Callback cannot be null');
   }
   ensureInitialized(frameContexts.content, frameContexts.task);
   if (!GlobalVars.isFramelessWindow) {
     callback(ErrorCode.NotSupported, undefined);
     return;
   }
-  const messageId = sendMessageRequestToParent('captureImage');
+  const messageId = sendMessageRequestToParent('getImage');
   GlobalVars.callbacks[messageId] = callback;
 }

@@ -1,4 +1,4 @@
-import { captureImage, ErrorCode, File, FileFormat } from '../../src/public/media' 
+import { getImage, ErrorCode, File, FileFormat } from '../../src/public/media' 
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
@@ -26,63 +26,63 @@ describe('media', () => {
 
   let emptyCallback = () => {};
 
-  it('should not allow captureImage calls before initialization', () => {
-    expect(() => captureImage(emptyCallback)).toThrowError(
+  it('should not allow getImage calls before initialization', () => {
+    expect(() => getImage(emptyCallback)).toThrowError(
       'The library has not yet been initialized',
     );
   });
-  it('should not allow captureImage calls for authentication frame context', () => {
+  it('should not allow getImage calls for authentication frame context', () => {
     utils.initializeWithContext(frameContexts.authentication);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => getImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'authentication' context",
     );
   });
-  it('should not allow captureImage calls for remove frame context', () => {
+  it('should not allow getImage calls for remove frame context', () => {
     utils.initializeWithContext(frameContexts.remove);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => getImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'remove' context",
     );
   });
-  it('should not allow captureImage calls for settings frame context', () => {
+  it('should not allow getImage calls for settings frame context', () => {
     utils.initializeWithContext(frameContexts.settings);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => getImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'settings' context",
     );
   });
-  it('should not allow captureImage calls with null callback', () => {
-    expect(() => captureImage(null)).toThrowError(
-      '[captureImage] Callback cannot be null',
+  it('should not allow getImage calls with null callback', () => {
+    expect(() => getImage(null)).toThrowError(
+      '[getImage] Callback cannot be null',
     );
   });
-  it('should not allow captureImage calls with null callback after init context', () => {
+  it('should not allow getImage calls with null callback after init context', () => {
     utils.initializeWithContext(frameContexts.content);
-    expect(() => captureImage(null)).toThrowError(
-      '[captureImage] Callback cannot be null',
+    expect(() => getImage(null)).toThrowError(
+      '[getImage] Callback cannot be null',
     );
   });
-  it('captureImage call in task frameContext workst', () => {
+  it('getImage call in task frameContext workst', () => {
     utils.initializeWithContext(frameContexts.task);
-    captureImage(emptyCallback);
-    let message = utils.findMessageByFunc('captureImage');
+    getImage(emptyCallback);
+    let message = utils.findMessageByFunc('getImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
   });
-  it('captureImage call in content frameContext works', () => {
+  it('getImage call in content frameContext works', () => {
     utils.initializeWithContext(frameContexts.content);
-    captureImage(emptyCallback);
-    let message = utils.findMessageByFunc('captureImage');
+    getImage(emptyCallback);
+    let message = utils.findMessageByFunc('getImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
   });
-  it('captureImage calls with successful result', () => {
+  it('getImage calls with successful result', () => {
     utils.initializeWithContext(frameContexts.content);
     let files, error;
-    captureImage((e: ErrorCode, f: File[]) => {
+    getImage((e: ErrorCode, f: File[]) => {
       error = e;
       files = f;
     });
 
-    let message = utils.findMessageByFunc('captureImage');
+    let message = utils.findMessageByFunc('getImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
 
@@ -109,15 +109,15 @@ describe('media', () => {
     expect(file.size).not.toBeNull();
     expect(typeof file.size === 'number').toBeTruthy();
   });
-  it('captureImage calls with error', () => {
+  it('getImage calls with error', () => {
     utils.initializeWithContext(frameContexts.content);
     let files, error;
-    captureImage((e: ErrorCode, f: File[]) => {
+    getImage((e: ErrorCode, f: File[]) => {
       error = e;
       files = f;
     });
 
-    let message = utils.findMessageByFunc('captureImage');
+    let message = utils.findMessageByFunc('getImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
 

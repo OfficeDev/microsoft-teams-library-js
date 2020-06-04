@@ -35,4 +35,4 @@ export {
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage, ErrorCode, File, FileFormat } from './media';
+export { getImage, ErrorCode, File, FileFormat } from './media';
