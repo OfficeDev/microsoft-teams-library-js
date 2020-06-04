@@ -61,16 +61,17 @@ export namespace authentication {
   }
 
   /**
-   * @private
-   * Hide from docs.
-   * ------
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    * @param authTokenRequest A set of values that configure the token request.
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('authentication.getAuthToken', [authTokenRequest.resources]);
+    const messageId = sendMessageRequestToParent('authentication.getAuthToken', [
+      authTokenRequest.resources,
+      authTokenRequest.claims,
+      authTokenRequest.silent,
+    ]);
     GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
       if (success) {
         authTokenRequest.successCallback(result);
@@ -321,16 +322,20 @@ export namespace authentication {
      */
     failureCallback?: (reason?: string) => void;
   }
-  /**
-   * @private
-   * Hide from docs.
-   * ------
-   */
+
   export interface AuthTokenRequest {
     /**
-     * An array of resource URIs identifying the target resources for which the token should be requested.
+     * An optional list of resource for which to acquire the access token; only used for full trust apps.
      */
-    resources: string[];
+    resources?: string[];
+    /**
+     * An optional list of claims which to pass to AAD when requesting the access token.
+     */
+    claims?: string[];
+    /**
+     * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
+     */
+    silent?: boolean;
     /**
      * A function that is called if the token request succeeds, with the resulting token.
      */
@@ -340,6 +345,7 @@ export namespace authentication {
      */
     failureCallback?: (reason: string) => void;
   }
+
   /**
    * @private
    * Hide from docs.
@@ -355,6 +361,7 @@ export namespace authentication {
      */
     failureCallback?: (reason: string) => void;
   }
+
   /**
    * @private
    * Hide from docs.
