@@ -524,7 +524,7 @@ export interface SdkError {
   /**
   error code
   */
-  errorCode: ErrorCode | number;
+  errorCode: ErrorCode;
   /**
   Optional description for the error. This may contain useful information for web-app developers.
   This string will not be localized and is not for end-user consumption.
