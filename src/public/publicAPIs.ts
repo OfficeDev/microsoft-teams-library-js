@@ -59,14 +59,14 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       // of the parent window, and this message contains no data that could pose a security risk.
       GlobalVars.parentOrigin = '*';
       const messageId = sendMessageRequestToParent('initialize', [version]);
-      GlobalVars.callbacks[messageId] = (context: string, clientType: string, props: {}) => {
+      GlobalVars.callbacks[messageId] = (
+        context: string,
+        clientType: string,
+        clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
+      ) => {
         GlobalVars.frameContext = context;
         GlobalVars.hostClientType = clientType;
-        if (props && props.hasOwnProperty('clientSupportedSDKVersion')) {
-          GlobalVars.clientSupportedSDKVersion = props['clientSupportedSDKVersion'];
-        } else {
-          GlobalVars.clientSupportedSDKVersion = defaultSDKVersionForCompatCheck;
-        }
+        GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
         // Notify all waiting callers that the initialization has completed
         GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());

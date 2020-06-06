@@ -529,7 +529,7 @@ export interface SdkError {
   Optional description for the error. This may contain useful information for web-app developers.
   This string will not be localized and is not for end-user consumption.
   */
-  description?: string;
+  message?: string;
 }
 
 export const enum ErrorCode {

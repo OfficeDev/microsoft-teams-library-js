@@ -121,9 +121,11 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  * @param requiredVersion SDK version required by the API
  */
 export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
-  let value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
-  if (isNaN(value)) return false;
-  return value >= 0 ? true : false;
+  const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
+  if (isNaN(value)) {
+    return false;
+  }
+  return value >= 0;
 }
 
 export function processMessage(evt: DOMMessageEvent): void {

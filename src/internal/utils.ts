@@ -42,10 +42,12 @@ export function getGenericOnCompleteHandler(errorMessage?: string): (success: bo
  *    compareSDKVersions('2.0', 2.0) returns NaN
  */
 export function compareSDKVersions(v1: string, v2: string): number {
-  if (typeof v1 !== 'string' || typeof v2 !== 'string') return NaN;
+  if (typeof v1 !== 'string' || typeof v2 !== 'string') {
+    return NaN;
+  }
 
-  let v1parts = v1.split('.'),
-    v2parts = v2.split('.');
+  const v1parts = v1.split('.');
+  const v2parts = v2.split('.');
 
   function isValidPart(x: string): boolean {
     // input has to have one or more digits
@@ -58,8 +60,12 @@ export function compareSDKVersions(v1: string, v2: string): number {
   }
 
   // Make length of both parts equal
-  while (v1parts.length < v2parts.length) v1parts.push('0');
-  while (v2parts.length < v1parts.length) v2parts.push('0');
+  while (v1parts.length < v2parts.length) {
+    v1parts.push('0');
+  }
+  while (v2parts.length < v1parts.length) {
+    v2parts.push('0');
+  }
 
   for (let i = 0; i < v1parts.length; ++i) {
     if (v1parts[i] == v2parts[i]) {
