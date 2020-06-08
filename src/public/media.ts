@@ -3,7 +3,23 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { frameContexts } from '../internal/constants';
 
 /**
- * Error codes for device APIs
+ * Remove this before commit. Will be replaced by SdkError from versioning PR.
+ */
+export interface SdkError {
+  /**
+  error code
+  */
+  errorCode: ErrorCode | number;
+  /**
+  Optional description for the error. This may contain useful information for web-app developers.
+  This string will not be localized and is not for end-user consumption.
+  */
+  description?: string;
+}
+
+/**
+ * Remove this before commit. Will be replaced by ErrorCode from versioning PR.
+ * Add required error codes into ErrorCode from versioning PR then.
  */
 export enum ErrorCode {
   /**
@@ -71,17 +87,18 @@ export interface File {
  * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
  * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
  * @see File
- * @see ErrorCode
+ * @see SdkError
  */
-export function getImage(callback: (error: ErrorCode, files: File[]) => void): void {
+export function captureImage(callback: (error: SdkError, files: File[]) => void): void {
   if (!callback) {
-    throw new Error('[getImage] Callback cannot be null');
+    throw new Error('[captureImage] Callback cannot be null');
   }
   ensureInitialized(frameContexts.content, frameContexts.task);
   if (!GlobalVars.isFramelessWindow) {
-    callback(ErrorCode.NotSupported, undefined);
+    let notSupportedError: SdkError = { errorCode: ErrorCode.NotSupported };
+    callback(notSupportedError, undefined);
     return;
   }
-  const messageId = sendMessageRequestToParent('getImage');
+  const messageId = sendMessageRequestToParent('captureImage');
   GlobalVars.callbacks[messageId] = callback;
 }
