@@ -1,4 +1,4 @@
-import { captureImage, SdkError, ErrorCode, File, FileFormat } from '../../src/public/media' 
+import { captureImage, SdkError, ErrorCode, File, FileFormat } from '../../src/public/index' 
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { frameContexts } from '../../src/internal/constants';
