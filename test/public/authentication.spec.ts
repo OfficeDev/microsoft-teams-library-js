@@ -465,4 +465,76 @@ describe('authentication', () => {
       expect(closeWindowSpy).toHaveBeenCalled();
     }, 301);
   });
+
+  it('should not allow getAuthToken calls before initialization', () => {
+    const authTokenRequest: authentication.AuthTokenRequest = {
+      resources: ['https://someresource/'],
+      claims: ['some_claim'],
+      silent: false,
+      failureCallback: () => {
+        fail();
+      },
+      successCallback: () => {
+        fail();
+      },
+    };
+
+    expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
+      'The library has not yet been initialized',
+    );
+  });
+
+  it('should successfully return getAuthToken in case of success', done => {
+    utils.initializeWithContext('content');
+
+    const authTokenRequest: authentication.AuthTokenRequest = {
+      resources: ['https://someresource/'],
+      claims: ['some_claim'],
+      silent: false,
+      failureCallback: () => {
+        fail();
+      },
+      successCallback: result => {
+        expect(result).toEqual('token');
+        done();
+      },
+    };
+
+    authentication.getAuthToken(authTokenRequest);
+
+    const message = utils.findMessageByFunc('authentication.getAuthToken');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(3);
+    expect(message.args[0]).toEqual(['https://someresource/']);
+    expect(message.args[1]).toEqual(['some_claim']);
+    expect(message.args[2]).toEqual(false);
+
+    utils.respondToMessage(message, true, 'token');
+  });
+
+  it('should successfully return error from getAuthToken in case of failure', done => {
+    utils.initializeWithContext('content');
+
+    const authTokenRequest: authentication.AuthTokenRequest = {
+      resources: ['https://someresource/'],
+      failureCallback: error => {
+        expect(error).toEqual('error');
+        done();
+      },
+      successCallback: () => {
+        fail();
+      },
+    };
+
+    authentication.getAuthToken(authTokenRequest);
+
+    const message = utils.findMessageByFunc('authentication.getAuthToken');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(3);
+    expect(message.args[0]).toEqual(['https://someresource/']);
+    expect(message.args[1]).toEqual(undefined);
+    expect(message.args[2]).toEqual(undefined);
+
+    utils.respondToMessage(message, false, 'error');
+  });
 });
