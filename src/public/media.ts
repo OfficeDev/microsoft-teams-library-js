@@ -54,7 +54,7 @@ export enum FileFormat {
 export interface File {
   /**
    * Content of the file
-   * App needs to convert this to dataUrl, if this has to be used directly in HTML tags
+   * App needs to convert this to dataUrl, if this must be used directly in HTML tags
    */
   content?: string;
 

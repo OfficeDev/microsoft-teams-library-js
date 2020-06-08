@@ -35,4 +35,4 @@ export {
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage as getImage, SdkError, ErrorCode, File, FileFormat } from './media';
+export { captureImage, SdkError, ErrorCode, File, FileFormat } from './media';
