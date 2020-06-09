@@ -534,6 +534,14 @@ export interface SdkError {
 
 export const enum ErrorCode {
   /**
+   * API not supported in the current platform.
+   */
+  NOT_SUPPORTED_ON_PLATFORM = 100,
+  /**
+   * Internal error encountered while performing the required operation.
+   */
+  INTERNAL_ERROR = 500,
+  /**
   Permissions denied by user
   */
   PERMISSION_DENIED = 1000,

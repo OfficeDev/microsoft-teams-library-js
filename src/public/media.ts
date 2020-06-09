@@ -1,45 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { SdkError, ErrorCode } from './interfaces';
+import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { frameContexts } from '../internal/constants';
-
-/**
- * Remove this before commit. Will be replaced by SdkError from versioning PR.
- */
-export interface SdkError {
-  /**
-  error code
-  */
-  errorCode: ErrorCode | number;
-  /**
-  Optional description for the error. This may contain useful information for web-app developers.
-  This string will not be localized and is not for end-user consumption.
-  */
-  description?: string;
-}
-
-/**
- * Remove this before commit. Will be replaced by ErrorCode from versioning PR.
- * Add required error codes into ErrorCode from versioning PR then.
- */
-export enum ErrorCode {
-  /**
-   * API not supported.
-   */
-  NotSupported = -1,
-  /**
-   * Missing required permission to perform the action
-   */
-  PermissionError = 1,
-  /**
-   * Error encountered while performing the required operation.
-   * e.g. Camera failed, compression failed etc
-   */
-  InternalError = 2,
-  /**
-   * User cancelled the action
-   */
-  UserCancelled = 3,
-}
 
 /**
  * Enum for file formats supported
@@ -94,11 +56,19 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
     throw new Error('[captureImage] Callback cannot be null');
   }
   ensureInitialized(frameContexts.content, frameContexts.task);
+
+  if (!isAPISupportedByPlatform('1.7')) {
+    let oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    callback(oldPlatformError, undefined);
+    return;
+  }
+
   if (!GlobalVars.isFramelessWindow) {
-    let notSupportedError: SdkError = { errorCode: ErrorCode.NotSupported };
+    let notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
     callback(notSupportedError, undefined);
     return;
   }
+
   const messageId = sendMessageRequestToParent('captureImage');
   GlobalVars.callbacks[messageId] = callback;
 }

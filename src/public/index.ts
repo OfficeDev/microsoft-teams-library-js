@@ -4,7 +4,9 @@ export { HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './c
 export {
   Context,
   DeepLinkParameters,
+  ErrorCode,
   LoadContext,
+  SdkError,
   TabInformation,
   TabInstance,
   TabInstanceParameters,
@@ -35,4 +37,4 @@ export {
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage, SdkError, ErrorCode, File, FileFormat } from './media';
+export { captureImage, File, FileFormat } from './media';

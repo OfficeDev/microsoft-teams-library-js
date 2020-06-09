@@ -9,6 +9,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
  */
 describe('media', () => {
   const utils = new FramelessPostMocks();
+  const minVersionForCaptureImage = '1.7.0';
   
   beforeEach(() => {
     utils.messages = [];
@@ -26,29 +27,6 @@ describe('media', () => {
 
   let emptyCallback = () => {};
 
-  it('should not allow captureImage calls before initialization', () => {
-    expect(() => captureImage(emptyCallback)).toThrowError(
-      'The library has not yet been initialized',
-    );
-  });
-  it('should not allow captureImage calls for authentication frame context', () => {
-    utils.initializeWithContext(frameContexts.authentication);
-    expect(() => captureImage(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'authentication' context",
-    );
-  });
-  it('should not allow captureImage calls for remove frame context', () => {
-    utils.initializeWithContext(frameContexts.remove);
-    expect(() => captureImage(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'remove' context",
-    );
-  });
-  it('should not allow captureImage calls for settings frame context', () => {
-    utils.initializeWithContext(frameContexts.settings);
-    expect(() => captureImage(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'settings' context",
-    );
-  });
   it('should not allow captureImage calls with null callback', () => {
     expect(() => captureImage(null)).toThrowError(
       '[captureImage] Callback cannot be null',
@@ -56,12 +34,49 @@ describe('media', () => {
   });
   it('should not allow captureImage calls with null callback after init context', () => {
     utils.initializeWithContext(frameContexts.content);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
     expect(() => captureImage(null)).toThrowError(
       '[captureImage] Callback cannot be null',
     );
   });
-  it('captureImage call in task frameContext workst', () => {
+  it('should not allow captureImage calls before initialization', () => {
+    expect(() => captureImage(emptyCallback)).toThrowError(
+      'The library has not yet been initialized',
+    );
+  });
+  it('captureImage call in default version of platform support fails', () => {
     utils.initializeWithContext(frameContexts.task);
+    let error;
+    captureImage((e: SdkError, f: File[]) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+  });
+  it('should not allow captureImage calls for authentication frame context', () => {
+    utils.initializeWithContext(frameContexts.authentication);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
+    expect(() => captureImage(emptyCallback)).toThrowError(
+      "This call is not allowed in the 'authentication' context",
+    );
+  });
+  it('should not allow captureImage calls for remove frame context', () => {
+    utils.initializeWithContext(frameContexts.remove);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
+    expect(() => captureImage(emptyCallback)).toThrowError(
+      "This call is not allowed in the 'remove' context",
+    );
+  });
+  it('should not allow captureImage calls for settings frame context', () => {
+    utils.initializeWithContext(frameContexts.settings);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
+    expect(() => captureImage(emptyCallback)).toThrowError(
+      "This call is not allowed in the 'settings' context",
+    );
+  });
+  it('captureImage call in task frameContext works', () => {
+    utils.initializeWithContext(frameContexts.task);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
     captureImage(emptyCallback);
     let message = utils.findMessageByFunc('captureImage');
     expect(message).not.toBeNull();
@@ -69,6 +84,7 @@ describe('media', () => {
   });
   it('captureImage call in content frameContext works', () => {
     utils.initializeWithContext(frameContexts.content);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
     captureImage(emptyCallback);
     let message = utils.findMessageByFunc('captureImage');
     expect(message).not.toBeNull();
@@ -76,6 +92,7 @@ describe('media', () => {
   });
   it('captureImage calls with successful result', () => {
     utils.initializeWithContext(frameContexts.content);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
     captureImage((e: SdkError, f: File[]) => {
       error = e;
@@ -112,6 +129,7 @@ describe('media', () => {
   });
   it('captureImage calls with error', () => {
     utils.initializeWithContext(frameContexts.content);
+    utils.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
     captureImage((e: SdkError, f: File[]) => {
       error = e;
@@ -126,11 +144,11 @@ describe('media', () => {
     utils.respondToMessage({
       data: {
         id: callbackId,
-        args: [{errorCode: ErrorCode.PermissionError}]
+        args: [{errorCode: ErrorCode.PERMISSION_DENIED}]
       }
     } as DOMMessageEvent)
 
     expect(files).toBeFalsy();
-    expect(error.errorCode).toBe(ErrorCode.PermissionError);
+    expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
   });
 });
