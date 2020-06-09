@@ -1,9 +1,9 @@
 import { navigateBack } from '../public/publicAPIs';
 import { LoadContext } from '../public/interfaces';
-import { validOriginRegExp, userOriginUrlValidationRegExp } from './constants';
+import { validOriginRegExp, userOriginUrlValidationRegExp, defaultSDKVersionForCompatCheck } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
-import { generateRegExpFromUrls } from './utils';
+import { generateRegExpFromUrls, compareSDKVersions } from './utils';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
@@ -113,6 +113,19 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
       throw new Error("This call is not allowed in the '" + GlobalVars.frameContext + "' context");
     }
   }
+}
+
+/**
+ * Checks whether the platform has knowledge of this API by doing a comparison
+ * on API required version and platform supported version of the SDK
+ * @param requiredVersion SDK version required by the API
+ */
+export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
+  const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
+  if (isNaN(value)) {
+    return false;
+  }
+  return value >= 0;
 }
 
 export function processMessage(evt: DOMMessageEvent): void {

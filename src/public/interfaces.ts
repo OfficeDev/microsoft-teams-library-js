@@ -519,3 +519,54 @@ export interface FrameContext {
    */
   websiteUrl: string;
 }
+
+export interface SdkError {
+  /**
+  error code
+  */
+  errorCode: ErrorCode;
+  /**
+  Optional description for the error. This may contain useful information for web-app developers.
+  This string will not be localized and is not for end-user consumption.
+  */
+  message?: string;
+}
+
+export const enum ErrorCode {
+  /**
+  Permissions denied by user
+  */
+  PERMISSION_DENIED = 1000,
+  /**
+  Network issue
+  */
+  NETWORK_ERROR = 2000,
+  /**
+  Underlying hardware doesn't support the capability
+  */
+  NO_HW_SUPPORT = 3000,
+  /**
+  One or more arguments are invalid
+  */
+  INVALID_ARGUMENTS = 4000,
+  /**
+  User is not authorized for this operation
+  */
+  UNAUTHORIZED_USER_OPERATION = 5000,
+  /**
+  Could not complete the operation due to insufficient resources
+  */
+  INSUFFICIENT_RESOURCES = 6000,
+  /**
+  Platform throttled the request because of API was invoked too frequently
+  */
+  THROTTLE = 7000,
+  /**
+  User aborted the operation
+  */
+  USER_ABORT = 8000,
+  /**
+  Platform code is old and doesn't implement this API
+  */
+  OLD_PLATFORM = 9000,
+}
