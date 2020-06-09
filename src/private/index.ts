@@ -23,8 +23,8 @@ export {
   sendCustomEvent,
   registerCustomHandler,
   uploadCustomApp,
-  selectAttachment,
-  getAttachment,
+  selectMedia,
+  getMedia,
   viewImages,
 } from './privateAPIs';
 export { conversations } from './conversations';

@@ -122,36 +122,27 @@ export interface UserJoinedTeamsInformation {
 }
 
 /**
- * @private
- * Hide from docs
- * --------
- * Attachment object returned by the platform
+ * media object returned by the platform
  */
-export interface Attachment {
+export interface Media {
   /**
-   * Base 64 encoded attachment
+   * Base 64 encoded media
    */
-  encodedAttachment: string;
+  encodedData: string;
   /**
-   * size of the attachment
+   * size of the media
    */
   size: number;
   /**
    * Platform's uri in string format
    */
-  localPath: string;
+  uri: string;
   /**
-   * Type of the attachment
+   * mime type of the media
    */
-  attachmentMimeType: string;
+  mimeType: string;
 }
 
-/**
- * @private
- * Hide from docs
- * --------
- * todo: merge it with error common with location after those changes are checked in
- */
 export interface Error {
   /**
   error code
@@ -164,49 +155,43 @@ export interface Error {
 }
 
 /**
- * @private
- * Hide from docs
- * --------
- * Attachment Result object returned as the result of select attachment API
+ * Media Result object returned as the result of select media API
  */
-export interface AttachmentResult {
+export interface MediaResult {
   /**
    * List of attachments returned by the platform
    */
-  attachments: Attachment[];
+  attachments: Media[];
   /**
-   * Error while selecting attachment returned by the platform
+   * Error while selecting media returned by the platform
    */
   error: Error;
 }
 
 /**
- * @private
- * Hide from docs
- * --------
- * Input parameter supplied to the select Attachment API
+ * Input parameter supplied to the select Media API
  */
-export interface AttachmentInputs {
+export interface MediaInputs {
   /**
-   * List of attachment types allowed to be selected
+   * List of media types allowed to be selected
    */
-  attachmentTypes: AttachmentType[];
+  mediaTypes: MediaType[];
   /**
-   * max limit of attachments allowed to be selected in one go, max limit is 10. Keep the max limit low to support low end devices.
+   * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
    */
-  maxAttachmentCount: number;
+  maxMediaCount: number;
   /**
-   * Additional properties for customization of select Attachment in mobile devices
+   * Additional properties for customization of select media in mobile devices
    */
-  props?: AttachmentProps;
+  imageProps?: ImageProps;
 }
 
 /**
- *  All properties in AttachmentProps are optional and have default values
+ *  All properties in ImageProps are optional and have default values
  */
-export interface AttachmentProps {
+export interface ImageProps {
   /**
-   * Optional; Lets the developer specify the attachment source, more than one can be specified.
+   * Optional; Lets the developer specify the image source, more than one can be specified.
    * Default value is both camera and gallery
    */
   sources?: Source[];
@@ -238,7 +223,7 @@ export interface AttachmentProps {
 }
 
 /**
- * The modes in which camera can be launched in select Attachment API
+ * The modes in which camera can be launched in select Media API
  */
 export const enum Mode {
   Photo = 1,
@@ -256,15 +241,17 @@ export const enum Source {
 }
 
 /**
- * Specifies the type of attachment
+ * Specifies the type of Media
  */
-export const enum AttachmentType {
+export const enum MediaType {
   Image = 1,
   //todo: remove video while creating the PR
   Video = 2,
 }
 
-// todo: merge it with error common with location after those changes are checked in
+/**
+ *
+ */
 export const enum ErrorCode {
   /**
   Sufficient permissions are not available
@@ -287,7 +274,7 @@ export const enum ErrorCode {
    */
   FILE_NOT_FOUND = 404,
   /**
-   * The attachment selected is too big and has exceeded our size boundries
+   * The Media selected is too big and has exceeded our size boundries
    */
   SIZE_EXCEEDED = 405,
   /**
@@ -314,18 +301,36 @@ export const enum ErrorCode {
   Platform code is old and doesn't implement this API
   */
   OLD_PLATFORM = 1000,
+  /**
+  Generic error if a new error type is encountered
+  */
+  GENERIC = 1100,
 }
 
 /**
- * Input to getAttachment API
+ * Input to getMedia API
  */
-export interface FileUri {
+export interface MediaUri {
   /**
    * Content uri of the file to read
    */
-  localUri: string;
+  uri: string;
   /**
    * chunk sequence to read a particular chunk
    */
   chunkSequence?: number;
+}
+
+/**
+ * Output of getMedia API
+ */
+export interface MediaChunk {
+  /**
+   * Base 64 data for the requested uri
+   */
+  chunk: string;
+  /**
+   * chunk sequence number​
+   */
+  chunkSequence: number;
 }
