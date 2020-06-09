@@ -558,35 +558,207 @@ export const enum ErrorCode {
   */
   PERMISSION_DENIED = 1000,
   /**
-  Network issue
-  */
+   * Network issue
+   */
   NETWORK_ERROR = 2000,
   /**
-  Underlying hardware doesn't support the capability
-  */
+   * Underlying hardware doesn't support the capability
+   */
   NO_HW_SUPPORT = 3000,
   /**
-  One or more arguments are invalid
-  */
+   * One or more arguments are invalid
+   */
   INVALID_ARGUMENTS = 4000,
   /**
-  User is not authorized for this operation
-  */
+   * User is not authorized for this operation
+   */
   UNAUTHORIZED_USER_OPERATION = 5000,
   /**
-  Could not complete the operation due to insufficient resources
-  */
+   * Could not complete the operation due to insufficient resources
+   */
   INSUFFICIENT_RESOURCES = 6000,
   /**
-  Platform throttled the request because of API was invoked too frequently
-  */
+   * Platform throttled the request because of API was invoked too frequently
+   */
   THROTTLE = 7000,
   /**
-  User aborted the operation
-  */
+   * User aborted the operation
+   */
   USER_ABORT = 8000,
   /**
-  Platform code is old and doesn't implement this API
-  */
+   * Platform code is old and doesn't implement this API
+   */
   OLD_PLATFORM = 9000,
+  /**
+   * The file specified was not found on the given location
+   */
+  FILE_NOT_FOUND = 404,
+  /**
+   * The return value is too big and has exceeded our size boundries
+   */
+  SIZE_EXCEEDED = 10000,
+  /**
+   * Generic error in case of unknown
+   */
+  GENERIC_ERROR = 11000,
+}
+
+/**
+ * media object returned by the platform
+ */
+export interface Media {
+  /**
+   * Base 64 encoded media
+   */
+  encodedData: string;
+
+  /**
+   * size of the media
+   */
+  size: number;
+
+  /**
+   * Platform's uri in string format
+   */
+  uri: string;
+
+  /**
+   * mime type of the media
+   */
+  mimeType: string;
+}
+
+/**
+ * Media Result object returned as the result of select media API
+ */
+export interface MediaResult {
+  /**
+   * List of attachments returned by the platform
+   */
+  attachments: Media[];
+
+  /**
+   * Error while selecting media returned by the platform
+   */
+  error: SdkError;
+}
+
+/**
+ * Input parameter supplied to the select Media API
+ */
+export interface MediaInputs {
+  /**
+   * List of media types allowed to be selected
+   */
+  mediaTypes: MediaType[];
+
+  /**
+   * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
+   */
+  maxMediaCount: number;
+
+  /**
+   * Additional properties for customization of select media in mobile devices
+   */
+  imageProps?: ImageProps;
+}
+
+/**
+ *  All properties in ImageProps are optional and have default values
+ */
+export interface ImageProps {
+  /**
+   * Optional; Lets the developer specify the image source, more than one can be specified.
+   * Default value is both camera and gallery
+   */
+  sources?: Source[];
+
+  /**
+   * Optional; Specify in which mode the camera will be opened.
+   * Default value is Photo
+   */
+  startMode?: Mode;
+
+  /**
+   * Optional; indicate if inking on the selected Image is allowed or not
+   * Default value is true
+   */
+  ink?: boolean;
+
+  /**
+   * Optional; indicate if user is allowed to move between front and back camera
+   * Default value is true
+   */
+  cameraSwitcher?: boolean;
+
+  /**
+   * Optional; indicate if putting text stickers on the selected Image is allowed or not
+   * Default value is true
+   */
+  textSticker?: boolean;
+
+  /**
+   * Optional; indicate if image filtering mode is enabled on the selected image
+   * Default value is false
+   */
+  enableFilter?: boolean;
+}
+
+/**
+ * The modes in which camera can be launched in select Media API
+ */
+export const enum Mode {
+  Photo = 1,
+  Document = 2,
+  Whiteboard = 3,
+  BusinessCard = 4,
+  //todo: Remove Video before PR
+  Video = 5,
+}
+
+/**
+ * Specifies the image source
+ */
+export const enum Source {
+  Camera = 1,
+  Gallery = 2,
+}
+
+/**
+ * Specifies the type of Media
+ */
+export const enum MediaType {
+  Image = 1,
+  //todo: Remove Video before PR
+  Video = 2,
+}
+
+/**
+ * Input to getMedia API
+ */
+export interface MediaUri {
+  /**
+   * Content uri of the file to read
+   */
+  uri: string;
+
+  /**
+   * chunk sequence to read a particular chunk
+   */
+  chunkSequence?: number;
+}
+
+/**
+ * Output of getMedia API
+ */
+export interface MediaChunk {
+  /**
+   * Base 64 data for the requested uri
+   */
+  chunk: string;
+
+  /**
+   * chunk sequence number​
+   */
+  chunkSequence: number;
 }

@@ -17,8 +17,13 @@ import {
   Context,
   LoadContext,
   FrameContext,
+  MediaInputs,
+  MediaResult,
+  MediaUri,
+  MediaChunk,
+  SdkError,
 } from './interfaces';
-import { getGenericOnCompleteHandler } from '../internal/utils';
+import { getGenericOnCompleteHandler, generateGUID } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 
@@ -382,4 +387,42 @@ export function initializeWithFrameContext(
 ): void {
   initialize(callback, validMessageOrigins);
   setFrameContext(frameContext);
+}
+
+/**
+ * Select an attachment using camera/gallery
+ * @param mediaInputs The input params to customize the media to be selected
+ * @param result The callback to invoke after fetching the media
+ */
+export function selectMedia(mediaInputs: MediaInputs, result: (mediaResult: MediaResult) => void): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  const params = [mediaInputs];
+  const messageId = sendMessageRequestToParent('selectMedia', params);
+  GlobalVars.callbacks[messageId] = result;
+}
+
+/**
+ * Gets the media in chunks irrespecitve of size
+ * Caller has to assemble them using chunk sequence number and decode from base 64 to byte array
+ * @param input uri to be fetched
+ * @param result base 64 data in chunks with sequence number, sequence number =-1 means end of file
+ */
+export function getMedia(input: MediaUri, result: (data: MediaChunk) => void): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  let actionName = generateGUID();
+  const params = [actionName, input];
+  input && result && sendMessageRequestToParent('getMedia', params);
+  GlobalVars.handlers['getMedia' + actionName] = result;
+}
+
+/**
+ * View images using native image viewer
+ * @param uriList urilist of images to be viewed - can be content uri or server url
+ * @param result returns back error if encountered
+ */
+export function viewImages(uriList: string[], result: (error: SdkError) => void): void {
+  ensureInitialized(frameContexts.content, frameContexts.task);
+  const params = [uriList];
+  const messageId = sendMessageRequestToParent('viewImages', params);
+  GlobalVars.callbacks[messageId] = result;
 }

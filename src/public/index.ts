@@ -33,6 +33,9 @@ export {
   registerOnThemeChangeHandler,
   setFrameContext,
   shareDeepLink,
+  selectMedia,
+  getMedia,
+  viewImages,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';

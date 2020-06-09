@@ -7,13 +7,8 @@ import {
   FilePreviewParameters,
   TeamInstanceParameters,
   UserJoinedTeamsInformation,
-  MediaInputs,
-  MediaResult,
-  MediaUri,
-  Error,
-  MediaChunk,
 } from './interfaces';
-import { getGenericOnCompleteHandler, generateGUID } from '../internal/utils';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 
 /**
  * @private
@@ -209,54 +204,4 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
 
   const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
   GlobalVars.callbacks[messageId] = callback;
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Select an attachment using camera/gallery
- * @param mediaInputs The input params to customize the media to be selected
- * @param result The callback to invoke after fetching the media
- */
-export function selectMedia(mediaInputs: MediaInputs, result: (mediaResult: MediaResult) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
-
-  const params = [mediaInputs];
-  const messageId = sendMessageRequestToParent('selectMedia', params);
-  GlobalVars.callbacks[messageId] = result;
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * gets the media in chunks irrespecitve of size
- * Caller has to assemble them using chunk sequence number and decode from base 64 to byte array
- * @param input uri to be fetched
- * @param result base 64 data in chunks with sequence number, sequence number =-1 means end of file
- */
-export function getMedia(input: MediaUri, result: (data: MediaChunk) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
-
-  let actionName = generateGUID();
-  const params = [actionName, input];
-  input && result && sendMessageRequestToParent('getMedia', params);
-  GlobalVars.handlers['getMedia' + actionName] = result;
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- *  View images using native image viewer
- * @param uriList list of images to be viewed
- * @param result returns back error if encountered
- */
-export function viewImages(uriList: string[], result: (error: Error) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
-
-  const params = [uriList];
-  const messageId = sendMessageRequestToParent('viewImages', params);
-  GlobalVars.callbacks[messageId] = result;
 }
