@@ -6,7 +6,7 @@ import {
   processAdditionalValidOrigins,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, frameContexts } from '../internal/constants';
+import { version, frameContexts, defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
 import {
@@ -59,9 +59,14 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       // of the parent window, and this message contains no data that could pose a security risk.
       GlobalVars.parentOrigin = '*';
       const messageId = sendMessageRequestToParent('initialize', [version]);
-      GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
+      GlobalVars.callbacks[messageId] = (
+        context: string,
+        clientType: string,
+        clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
+      ) => {
         GlobalVars.frameContext = context;
         GlobalVars.hostClientType = clientType;
+        GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
         // Notify all waiting callers that the initialization has completed
         GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
