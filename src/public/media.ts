@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { frameContexts } from '../internal/constants';
+import { frameContexts, captureImageMobileSupportVersion } from '../internal/constants';
 
 /**
  * Enum for file formats supported
@@ -57,7 +57,7 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
   }
   ensureInitialized(frameContexts.content, frameContexts.task);
 
-  if (!isAPISupportedByPlatform('1.7')) {
+  if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
     let oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, undefined);
     return;

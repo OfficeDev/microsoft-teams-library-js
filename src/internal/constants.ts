@@ -7,6 +7,11 @@ export const version = '1.6.0';
 export const defaultSDKVersionForCompatCheck = '1.6.0';
 
 /**
+ * This is the SDK version when captureImage API is supported on mobile.
+ */
+export const captureImageMobileSupportVersion = '1.7.0';
+
+/**
  * List of supported Host origins
  */
 export const validOrigins = [
