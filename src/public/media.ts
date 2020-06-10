@@ -57,15 +57,15 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
   }
   ensureInitialized(frameContexts.content, frameContexts.task);
 
-  if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
-    let oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-    callback(oldPlatformError, undefined);
-    return;
-  }
-
   if (!GlobalVars.isFramelessWindow) {
     let notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
     callback(notSupportedError, undefined);
+    return;
+  }
+
+  if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
+    let oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    callback(oldPlatformError, undefined);
     return;
   }
 
