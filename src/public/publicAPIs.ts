@@ -420,7 +420,7 @@ export function getMedia(input: MediaUri, result: (data: MediaChunk) => void): v
  * @param uriList urilist of images to be viewed - can be content uri or server url
  * @param result returns back error if encountered
  */
-export function viewImages(uriList: string[], result: (error: SdkError) => void): void {
+export function viewImages(uriList: string[], result: (error?: SdkError) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
   const params = [uriList];
   const messageId = sendMessageRequestToParent('viewImages', params);

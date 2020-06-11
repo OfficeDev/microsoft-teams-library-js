@@ -640,7 +640,7 @@ export interface MediaResult {
   /**
    * Error while selecting media returned by the platform
    */
-  error: SdkError;
+  error?: SdkError;
 }
 
 /**
@@ -761,4 +761,8 @@ export interface MediaChunk {
    * chunk sequence number​
    */
   chunkSequence: number;
+  /**
+   * Error if any
+   */
+  error?: SdkError;
 }
