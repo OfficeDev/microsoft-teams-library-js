@@ -1,7 +1,12 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { frameContexts, captureImageMobileSupportVersion } from '../internal/constants';
+import { frameContexts } from '../internal/constants';
+
+/**
+ * This is the SDK version when captureImage API is supported on mobile.
+ */
+const captureImageMobileSupportVersion = '1.7.0';
 
 /**
  * Enum for file formats supported
@@ -18,22 +23,22 @@ export interface File {
    * Content of the file
    * App needs to convert this to dataUrl, if this must be used directly in HTML tags
    */
-  content?: string;
+  content: string;
 
   /**
    *  Format of the content
    */
-  format?: FileFormat;
+  format: FileFormat;
 
   /**
    * Size of the file in KB
    */
-  size?: number;
+  size: number;
 
   /**
    * MIME type. This can be used for constructing a dataUrl, if needed.
    */
-  mimeType?: string;
+  mimeType: string;
 
   /**
    * Optional: Name of the file
@@ -58,13 +63,13 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
   ensureInitialized(frameContexts.content, frameContexts.task);
 
   if (!GlobalVars.isFramelessWindow) {
-    let notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
     callback(notSupportedError, undefined);
     return;
   }
 
   if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
-    let oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, undefined);
     return;
   }

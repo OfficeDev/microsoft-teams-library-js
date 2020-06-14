@@ -528,7 +528,7 @@ export interface SdkError {
   /**
   Optional description for the error. This may contain useful information for web-app developers.
   This string will not be localized and is not for end-user consumption. 
-  App should not dependend on the string content. The exact value may change. This is only for debugging purposes.
+  App should not depend on the string content. The exact value may change. This is only for debugging purposes.
   */
   message?: string;
 }
