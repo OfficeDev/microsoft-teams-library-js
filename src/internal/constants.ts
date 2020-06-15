@@ -1,10 +1,10 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.6.0';
+export const version = '1.7.0-beta.1';
 /**
  * This is the SDK version when all SDK APIs started to check platform compatibility for the APIs.
  */
-export const defaultSDKVersionForCompatCheck = '1.6.0';
+export const defaultSDKVersionForCompatCheck = '1.7.0-beta.1';
 
 /**
  * List of supported Host origins
