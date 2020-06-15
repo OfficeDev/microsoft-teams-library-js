@@ -19,11 +19,11 @@ To install the stable version:
 
 #### npm
 
-`npm install --save @microsoft/teams-js@1.7.0-beta.1`
+`npm install --save @microsoft/teams-js@1.7.0-beta.2`
 
 #### yarn
 
-`yarn add @microsoft/teams-js@1.7.0-beta.1`
+`yarn add @microsoft/teams-js@1.7.0-beta.2`
 
 ## Usage
 

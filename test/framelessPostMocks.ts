@@ -48,7 +48,7 @@ export class FramelessPostMocks {
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
     this.respondToInitMessage(initMessage, frameContext, hostClientType);
-    expect(GlobalVars.clientSupportedSDKVersion).toEqual('1.7.0-beta.1');
+    expect(GlobalVars.clientSupportedSDKVersion).toEqual('1.6.0');
   };
 
   /**
