@@ -281,7 +281,13 @@ export function registerChangeSettingsHandler(handler: () => void): void {
  * @param url The URL to navigate the frame to.
  */
 export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.sidePanel, frameContexts.settings, frameContexts.remove, frameContexts.task);
+  ensureInitialized(
+    frameContexts.content,
+    frameContexts.sidePanel,
+    frameContexts.settings,
+    frameContexts.remove,
+    frameContexts.task,
+  );
 
   const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
