@@ -35,16 +35,6 @@ export const validOrigins = [
   'http://127.0.0.1:5000', // local Development
 ];
 
-// Ensure these declarations stay in sync with the framework.
-export const frameContexts = {
-  settings: 'settings',
-  content: 'content',
-  authentication: 'authentication',
-  remove: 'remove',
-  task: 'task',
-  sidePanel: 'sidePanel',
-};
-
 export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
 
 /**

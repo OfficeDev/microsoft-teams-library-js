@@ -6,6 +6,16 @@ export const enum HostClientType {
   rigel = 'rigel',
 }
 
+// Ensure these declarations stay in sync with the framework.
+export const enum FrameContexts {
+  settings = 'settings',
+  content = 'content',
+  authentication = 'authentication',
+  remove = 'remove',
+  task = 'task',
+  sidePanel = 'sidePanel',
+}
+
 /**
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).

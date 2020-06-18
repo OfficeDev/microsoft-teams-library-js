@@ -20,7 +20,7 @@ import {
   setFrameContext,
   initializeWithFrameContext
 } from '../../src/public/publicAPIs';
-import { frameContexts } from '../../src/internal/constants';
+import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {
@@ -540,7 +540,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
@@ -571,7 +571,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke error callback', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;

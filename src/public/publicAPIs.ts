@@ -6,7 +6,7 @@ import {
   processAdditionalValidOrigins,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, frameContexts, defaultSDKVersionForCompatCheck } from '../internal/constants';
+import { version, defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
 import { settings } from './settings';
 import {
@@ -20,6 +20,7 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
+import { FrameContexts } from './constants';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -88,11 +89,11 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         logs.registerGetLogHandler(null);
       }
 
-      if (GlobalVars.frameContext === frameContexts.settings) {
+      if (GlobalVars.frameContext === FrameContexts.settings) {
         settings.registerOnSaveHandler(null);
       }
 
-      if (GlobalVars.frameContext === frameContexts.remove) {
+      if (GlobalVars.frameContext === FrameContexts.remove) {
         settings.registerOnRemoveHandler(null);
       }
 
@@ -266,7 +267,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
 
   GlobalVars.changeSettingsHandler = handler;
   handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
@@ -282,11 +283,11 @@ export function registerChangeSettingsHandler(handler: () => void): void {
  */
 export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(
-    frameContexts.content,
-    frameContexts.sidePanel,
-    frameContexts.settings,
-    frameContexts.remove,
-    frameContexts.task,
+    FrameContexts.content,
+    FrameContexts.sidePanel,
+    FrameContexts.settings,
+    FrameContexts.remove,
+    FrameContexts.task,
   );
 
   const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
@@ -331,7 +332,7 @@ export function getMruTabInstances(
  * @param deepLinkParameters ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  ensureInitialized(frameContexts.content, frameContexts.sidePanel);
+  ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
   sendMessageRequestToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
@@ -345,7 +346,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.sidePanel, frameContexts.task);
+  ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
   const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
@@ -364,7 +365,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
   sendMessageRequestToParent('setFrameContext', [frameContext]);
 }
 

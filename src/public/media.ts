@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { frameContexts } from '../internal/constants';
+import { FrameContexts } from './constants';
 
 /**
  * This is the SDK version when captureImage API is supported on mobile.
@@ -60,7 +60,7 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
   if (!callback) {
     throw new Error('[captureImage] Callback cannot be null');
   }
-  ensureInitialized(frameContexts.content, frameContexts.task);
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
 
   if (!GlobalVars.isFramelessWindow) {
     const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
