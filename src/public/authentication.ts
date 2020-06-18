@@ -31,7 +31,13 @@ export namespace authentication {
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void {
     const authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
-    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
+    ensureInitialized(
+      frameContexts.content,
+      frameContexts.sidePanel,
+      frameContexts.settings,
+      frameContexts.remove,
+      frameContexts.task,
+    );
     if (
       GlobalVars.hostClientType === HostClientType.desktop ||
       GlobalVars.hostClientType === HostClientType.android ||

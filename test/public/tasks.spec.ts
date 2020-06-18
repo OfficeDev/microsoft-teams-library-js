@@ -57,7 +57,29 @@ describe('tasks', () => {
       expect(() => tasks.startTask(taskInfo)).toThrowError("This call is not allowed in the 'task' context");
     });
 
-    it('should pass along entire TaskInfo parameter', () => {
+    it('should pass along entire TaskInfo parameter in sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+
+      const taskInfo: TaskInfo = {
+        card: 'someCard',
+        fallbackUrl: 'someFallbackUrl',
+        height: TaskModuleDimension.Large,
+        width: TaskModuleDimension.Large,
+        title: 'someTitle',
+        url: 'someUrl',
+        completionBotId: 'someCompletionBotId',
+      };
+
+      tasks.startTask(taskInfo, () => {
+        return;
+      });
+
+      const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+      expect(startTaskMessage).not.toBeNull();
+      expect(startTaskMessage.args).toEqual([taskInfo]);
+    });
+
+    it('should pass along entire TaskInfo parameter in content', () => {
       utils.initializeWithContext('content');
 
       const taskInfo: TaskInfo = {
@@ -120,7 +142,18 @@ describe('tasks', () => {
       expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully pass taskInfo', () => {
+    it('should successfully pass taskInfo in sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+      const taskInfo = { width: 10, height: 10 };
+
+      tasks.updateTask(taskInfo);
+
+      const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([taskInfo]);
+    });
+
+    it('should successfully pass taskInfo in task context', () => {
       utils.initializeWithContext('task');
       const taskInfo = { width: 10, height: 10 };
 
@@ -162,6 +195,16 @@ describe('tasks', () => {
       utils.initializeWithContext('remove');
 
       expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'remove' context");
+    });
+
+    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+
+      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
+
+      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', () => {

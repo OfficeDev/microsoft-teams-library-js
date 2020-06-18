@@ -281,7 +281,13 @@ export function registerChangeSettingsHandler(handler: () => void): void {
  * @param url The URL to navigate the frame to.
  */
 export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
+  ensureInitialized(
+    frameContexts.content,
+    frameContexts.sidePanel,
+    frameContexts.settings,
+    frameContexts.remove,
+    frameContexts.task,
+  );
 
   const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
@@ -325,7 +331,7 @@ export function getMruTabInstances(
  * @param deepLinkParameters ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(frameContexts.content, frameContexts.sidePanel);
 
   sendMessageRequestToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
@@ -339,7 +345,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
+  ensureInitialized(frameContexts.content, frameContexts.sidePanel, frameContexts.task);
   const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }

@@ -42,6 +42,7 @@ export const frameContexts = {
   authentication: 'authentication',
   remove: 'remove',
   task: 'task',
+  sidePanel: 'sidePanel',
 };
 
 export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
