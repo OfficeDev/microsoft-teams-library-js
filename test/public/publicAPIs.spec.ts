@@ -255,6 +255,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
       navigateCrossDomain('https://valid.origin.com');
     });
 
+    it('should allow calls from sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+
+      navigateCrossDomain('https://valid.origin.com');
+    });
+
     it('should allow calls from settings context', () => {
       utils.initializeWithContext('settings');
 
@@ -393,6 +399,108 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     it('should successfully send a request', () => {
       utils.initializeWithContext('content');
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true,
+      };
+      utils.respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+  });
+
+  describe('executeDeepLink in sidePanel context ', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        executeDeepLink('dummyLink', () => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully send a request', () => {
+      utils.initializeWithContext('sidePanel');
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true,
+      };
+
+      utils.respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+
+    it('should invoke error callback', () => {
+      utils.initializeWithContext('sidePanel');
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: false,
+        error: 'Something went wrong...',
+      };
+      utils.respondToMessage(message, data.success, data.error);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(false);
+      expect(error).toBe('Something went wrong...');
+    });
+
+    it('should successfully send a request', () => {
+      utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
@@ -660,8 +768,25 @@ describe('MicrosoftTeams-publicAPIs', () => {
       expect(readyToUnloadMessage).not.toBeNull();
     });
 
-    it('should successfully share a deep link', () => {
+    it('should successfully share a deep link in content context', () => {
       utils.initializeWithContext('content');
+
+      shareDeepLink({
+        subEntityId: 'someSubEntityId',
+        subEntityLabel: 'someSubEntityLabel',
+        subEntityWebUrl: 'someSubEntityWebUrl',
+      });
+
+      let message = utils.findMessageByFunc('shareDeepLink');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toBe('someSubEntityId');
+      expect(message.args[1]).toBe('someSubEntityLabel');
+      expect(message.args[2]).toBe('someSubEntityWebUrl');
+    });
+
+    it('should successfully share a deep link in sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
 
       shareDeepLink({
         subEntityId: 'someSubEntityId',
