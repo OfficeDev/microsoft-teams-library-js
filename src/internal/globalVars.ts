@@ -1,5 +1,6 @@
 import { MessageRequest } from './interfaces';
 import { ConversationResponse, LoadContext } from '../public/interfaces';
+import { FrameContexts } from '../public';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -10,7 +11,7 @@ export class GlobalVars {
   public static parentWindow: Window | any;
   public static isFramelessWindow: boolean = false;
   public static parentOrigin: string;
-  public static frameContext: string;
+  public static frameContext: FrameContexts;
   public static childWindow: Window;
   public static childOrigin: string;
   public static parentMessageQueue: MessageRequest[] = [];

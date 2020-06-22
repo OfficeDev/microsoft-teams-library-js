@@ -61,7 +61,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       GlobalVars.parentOrigin = '*';
       const messageId = sendMessageRequestToParent('initialize', [version]);
       GlobalVars.callbacks[messageId] = (
-        context: string,
+        context: FrameContexts,
         clientType: string,
         clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
       ) => {
@@ -188,7 +188,7 @@ export function getContext(callback: (context: Context) => void): void {
   GlobalVars.callbacks[messageId] = (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
-      context.frameContext = GlobalVars.frameContext as FrameContexts;
+      context.frameContext = GlobalVars.frameContext;
     }
     callback(context);
   };
