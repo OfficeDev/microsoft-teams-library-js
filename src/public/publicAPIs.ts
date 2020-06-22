@@ -185,7 +185,13 @@ export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getContext');
-  GlobalVars.callbacks[messageId] = callback;
+  GlobalVars.callbacks[messageId] = (context: Context) => {
+    if (!context.frameContext) {
+      // Fallback logic for frameContext properties
+      context.frameContext = GlobalVars.frameContext as FrameContexts;
+    }
+    callback(context);
+  };
 }
 
 /**

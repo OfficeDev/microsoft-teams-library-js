@@ -216,6 +216,55 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);
+    expect(actualContext.frameContext).toBe(FrameContexts.content);
+  });
+
+  it('should successfully get frame context in side panel', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context when returned from client', () => {
+    utils.initializeWithContext(FrameContexts.content);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context in side panel with fallback logic if not returned from client', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   it('should successfully register a back button handler and call navigateBack if it returns false', () => {
