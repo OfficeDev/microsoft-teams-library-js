@@ -1,6 +1,6 @@
 import { ensureInitialized, sendMessageRequestToParent, sendMessageEventToChild } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { frameContexts } from '../internal/constants';
+import { FrameContexts } from '../public/constants';
 import {
   ChatMembersInformation,
   ShowNotificationParameters,
@@ -35,7 +35,7 @@ export function getUserJoinedTeams(
  * Place the tab into full-screen mode.
  */
 export function enterFullscreen(): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
   sendMessageRequestToParent('enterFullscreen', []);
 }
 
@@ -46,7 +46,7 @@ export function enterFullscreen(): void {
  * Reverts the tab into normal-screen mode.
  */
 export function exitFullscreen(): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
   sendMessageRequestToParent('exitFullscreen', []);
 }
 
@@ -58,7 +58,7 @@ export function exitFullscreen(): void {
  * @param file The file to preview.
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
 
   const params = [
     filePreviewParameters.entityId,
@@ -86,7 +86,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
  * @param notificationType Notification type
  */
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content);
   const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
   sendMessageRequestToParent('showNotification', params);
 }

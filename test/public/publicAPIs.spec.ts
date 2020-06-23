@@ -20,7 +20,7 @@ import {
   setFrameContext,
   initializeWithFrameContext
 } from '../../src/public/publicAPIs';
-import { frameContexts } from '../../src/internal/constants';
+import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {
@@ -216,6 +216,55 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);
+    expect(actualContext.frameContext).toBe(FrameContexts.content);
+  });
+
+  it('should successfully get frame context in side panel', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context when returned from client', () => {
+    utils.initializeWithContext(FrameContexts.content);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context in side panel with fallback logic if not returned from client', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   it('should successfully register a back button handler and call navigateBack if it returns false', () => {
@@ -540,7 +589,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
@@ -571,7 +620,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke error callback', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
