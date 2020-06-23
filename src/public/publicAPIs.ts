@@ -392,27 +392,30 @@ export function initializeWithFrameContext(
 /**
  * Select an attachment using camera/gallery
  * @param mediaInputs The input params to customize the media to be selected
- * @param result The callback to invoke after fetching the media
+ * @param callback The callback to invoke after fetching the media
  */
-export function selectMedia(mediaInputs: MediaInputs, result: (mediaResult: MediaResult) => void): void {
+export function selectMedia(
+  mediaInputs: MediaInputs,
+  callback: (error: SdkError, mediaResult: MediaResult) => void,
+): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
   const params = [mediaInputs];
   const messageId = sendMessageRequestToParent('selectMedia', params);
-  GlobalVars.callbacks[messageId] = result;
+  GlobalVars.callbacks[messageId] = callback;
 }
 
 /**
  * Gets the media in chunks irrespecitve of size
  * Caller has to assemble them using chunk sequence number and decode from base 64 to byte array
  * @param input uri to be fetched
- * @param result base 64 data in chunks with sequence number, sequence number =-1 means end of file
+ * @param callback contains encoded base 64 data in chunks with sequence number, sequence number =-1 means end of file
  */
-export function getMedia(input: MediaUri, result: (data: MediaChunk) => void): void {
+export function getMedia(input: MediaUri, callback: (error: SdkError, data: MediaChunk) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
   let actionName = generateGUID();
   const params = [actionName, input];
-  input && result && sendMessageRequestToParent('getMedia', params);
-  GlobalVars.handlers['getMedia' + actionName] = result;
+  input && callback && sendMessageRequestToParent('getMedia', params);
+  GlobalVars.handlers['getMedia' + actionName] = callback;
 }
 
 /**
@@ -420,9 +423,9 @@ export function getMedia(input: MediaUri, result: (data: MediaChunk) => void): v
  * @param uriList urilist of images to be viewed - can be content uri or server url
  * @param result returns back error if encountered
  */
-export function viewImages(uriList: string[], result: (error?: SdkError) => void): void {
+export function viewImages(uriList: string[], callback: (error?: SdkError) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
   const params = [uriList];
   const messageId = sendMessageRequestToParent('viewImages', params);
-  GlobalVars.callbacks[messageId] = result;
+  GlobalVars.callbacks[messageId] = callback;
 }

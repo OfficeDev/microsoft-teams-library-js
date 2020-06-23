@@ -636,11 +636,6 @@ export interface MediaResult {
    * List of attachments returned by the platform
    */
   attachments: Media[];
-
-  /**
-   * Error while selecting media returned by the platform
-   */
-  error?: SdkError;
 }
 
 /**
@@ -761,8 +756,4 @@ export interface MediaChunk {
    * chunk sequence number​
    */
   chunkSequence: number;
-  /**
-   * Error if any
-   */
-  error?: SdkError;
 }
