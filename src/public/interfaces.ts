@@ -1,4 +1,5 @@
 import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
@@ -317,6 +318,11 @@ export interface Context {
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel
    */
   hostClientType?: HostClientType;
+
+  /**
+   * The context where tab url is loaded (content, task, setting, remove, sidePanel)
+   */
+  frameContext?: FrameContexts;
 
   /**
    * SharePoint context. This is only available when hosted in SharePoint.
