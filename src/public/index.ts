@@ -33,11 +33,9 @@ export {
   registerOnThemeChangeHandler,
   setFrameContext,
   shareDeepLink,
-  selectMedia,
-  getMedia,
-  viewImages,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { captureImage, File, FileFormat } from './media';
+export { selectMedia, getMedia, viewImages } from './attachments';
