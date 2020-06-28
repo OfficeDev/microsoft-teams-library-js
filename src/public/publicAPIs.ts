@@ -335,17 +335,6 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 }
 
 /**
- * Shows the location on map corresponding to the given coordinates
- * @param coords {@link Coordinates} whose location needs to be shown on map
- * @param callback Callback to invoke when the location is opened on map
- */
-export function showLocationOnMap(coords: Coordinates, callback: (response: string) => void): void {
-  ensureInitialized();
-  const messageId = sendMessageRequestToParent('showLocationOnMap', [coords]);
-  GlobalVars.callbacks[messageId] = callback;
-}
-
-/**
  * execute deep link API.
  * @param deepLink deep link.
  */
