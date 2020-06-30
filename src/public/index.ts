@@ -38,4 +38,4 @@ export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { captureImage, File, FileFormat } from './media';
-export { selectMedia, getMedia, viewImages } from './attachments';
+export { selectMedia, viewImages, Media } from './attachments';

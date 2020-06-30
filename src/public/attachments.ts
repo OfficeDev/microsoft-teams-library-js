@@ -7,26 +7,63 @@ import { generateGUID } from '../internal/utils';
 /**
  * Media object returned by the select Media API
  */
-export interface Media {
+export class Media {
   /**
    * Base 64 encoded media
    */
-  encodedData: string;
+  public preview: string;
 
   /**
    * size of the media
    */
-  size: number;
+  public size: number;
 
   /**
-   * Platform's uri in string format
+   * GUID id serving as key for the Map on platform that provides the local uri corresponding to the key
    */
-  uri: string;
+  public id: string;
 
   /**
    * mime type of the media
    */
-  mimeType: string;
+  public mimeType: string;
+
+  /**
+   * Gets the media in chunks irrespecitve of size, these chunks are assembled and sent back to the webapp as file/blob
+   * @param callback returns blob of media
+   */
+  public getMedia(callback: (error: SdkError, blob: Blob) => void): void {
+    ensureInitialized(frameContexts.content, frameContexts.task);
+    let actionName = generateGUID();
+    let helper: MediaHelper = {
+      mediaMimeType: this.mimeType,
+      assembleAttachment: [],
+    };
+    const params = [actionName, this.id];
+    GlobalVars.getMediaHandler = callback;
+    this.id && callback && sendMessageRequestToParent('getMedia', params);
+    function handleGetMediaRequest(response: string): void {
+      if (GlobalVars.getMediaHandler) {
+        let mediaResult: MediaResult = JSON.parse(response);
+        if (mediaResult.error) {
+          GlobalVars.getMediaHandler(mediaResult.error, null);
+        } else {
+          if (mediaResult.mediaChunk) {
+            if (mediaResult.mediaChunk.chunkSequence <= 0) {
+              let file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+              GlobalVars.getMediaHandler(mediaResult.error, file);
+            } else {
+              let assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+              helper.assembleAttachment.push(assemble);
+            }
+          } else {
+            GlobalVars.getMediaHandler({ errorCode: ErrorCode.GENERIC_ERROR, message: 'data receieved is null' }, null);
+          }
+        }
+      }
+    }
+    GlobalVars.handlers['getMedia' + actionName] = handleGetMediaRequest;
+  }
 }
 
 /**
@@ -36,7 +73,7 @@ export interface MediaInputs {
   /**
    * List of media types allowed to be selected
    */
-  mediaTypes: MediaType[];
+  mediaType: MediaType;
 
   /**
    * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
@@ -117,21 +154,8 @@ export const enum MediaType {
   Image = 1,
   //todo: Remove Video before PR
   Video = 2,
-}
-
-/**
- * Input to getMedia API
- */
-export interface MediaUri {
-  /**
-   * Content uri of the file to read
-   */
-  uri: string;
-
-  /**
-   * chunk sequence to read a particular chunk
-   */
-  chunkSequence?: number;
+  // Both image and video
+  Gallery = 3,
 }
 
 /**
@@ -164,6 +188,16 @@ interface MediaResult {
   mediaChunk: MediaChunk;
 }
 
+export interface ImageUri {
+  value: string;
+  type: ImageUriType;
+}
+
+export const enum ImageUriType {
+  ID = 1,
+  URL = 2,
+}
+
 /**
  * Helper object to assembled media chunks
  */
@@ -193,67 +227,15 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 }
 
 /**
- * Gets the media in chunks irrespecitve of size, these chunks are assembled and sent back to the webapp as file/blob
- * @param input uri to be fetched
- * @param mimeType mimeType of file requested
- * @param callback returns blob of media
- */
-export function getMedia(input: MediaUri, mimeType: string, callback: (error: SdkError, blob: Blob) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
-  let actionName = generateGUID();
-  let helper: MediaHelper = {
-    mediaMimeType: mimeType,
-    assembleAttachment: [],
-  };
-  const params = [actionName, input];
-  GlobalVars.getMediaHandler = callback;
-  input && callback && sendMessageRequestToParent('getMedia', params);
-  function handleGetMediaRequest(response: string): void {
-    if (GlobalVars.getMediaHandler) {
-      let mediaResult: MediaResult = JSON.parse(response);
-      if (mediaResult.error) {
-        sendGetMediaResponse(mediaResult.error, null, helper);
-      } else {
-        if (mediaResult.mediaChunk) {
-          if (mediaResult.mediaChunk.chunkSequence <= 0) {
-            let file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-            sendGetMediaResponse(mediaResult.error, file, helper);
-          } else {
-            let assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-            helper.assembleAttachment.push(assemble);
-          }
-        } else {
-          sendGetMediaResponse({ errorCode: ErrorCode.GENERIC_ERROR, message: 'data receieved is null' }, null, helper);
-        }
-      }
-    }
-  }
-
-  GlobalVars.handlers['getMedia' + actionName] = handleGetMediaRequest;
-}
-
-/**
  * View images using native image viewer
  * @param uriList urilist of images to be viewed - can be content uri or server url
  * @param result returns back error if encountered
  */
-export function viewImages(uriList: string[], callback: (error?: SdkError) => void): void {
+export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {
   ensureInitialized(frameContexts.content, frameContexts.task);
   const params = [uriList];
   const messageId = sendMessageRequestToParent('viewImages', params);
   GlobalVars.callbacks[messageId] = callback;
-}
-
-/**
- * Assembles the media file
- * The response comes back in chunks, this function is responsible for stitching them back together and sending the file back to user
- *
- * @param response is a JSON string of type MediaResult
- */
-
-function sendGetMediaResponse(error: SdkError, blob: Blob, helper: MediaHelper): void {
-  helper = null;
-  GlobalVars.getMediaHandler(error, blob);
 }
 
 /**
