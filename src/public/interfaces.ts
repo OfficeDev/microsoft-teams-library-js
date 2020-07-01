@@ -597,8 +597,4 @@ export const enum ErrorCode {
    * The return value is too big and has exceeded our size boundries
    */
   SIZE_EXCEEDED = 10000,
-  /**
-   * Generic error in case of unknown
-   */
-  GENERIC_ERROR = 11000,
 }

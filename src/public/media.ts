@@ -23,16 +23,16 @@ export enum FileFormat {
  */
 export class File {
   /**
-   * Format of the content
-   */
-  public format: FileFormat;
-
-  /**
    * Content of the file. When format is Base64, this is the base64 content
    * When format is URI, this is the URI
    * When format is base64 and app needs to use this directly in HTML tags, it should convert this to dataUrl.
    */
   public content: string;
+
+  /**
+   * Format of the content
+   */
+  public format: FileFormat;
 
   /**
    * Size of the file in KB
@@ -122,7 +122,7 @@ export class Media extends File {
               helper.assembleAttachment.push(assemble);
             }
           } else {
-            callback({ errorCode: ErrorCode.GENERIC_ERROR, message: 'data receieved is null' }, null);
+            callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
           }
         }
       }
@@ -225,6 +225,22 @@ export const enum MediaType {
 }
 
 /**
+ * Input for view images API
+ */
+export interface ImageUri {
+  value: string;
+  type: ImageUriType;
+}
+
+/**
+ * ID contains a mapping for content uri on platform's side, URL is generic
+ */
+export const enum ImageUriType {
+  ID = 1,
+  URL = 2,
+}
+
+/**
  * Media chunks an output of getMedia API from platform
  */
 export interface MediaChunk {
@@ -254,16 +270,6 @@ interface MediaResult {
   mediaChunk: MediaChunk;
 }
 
-export interface ImageUri {
-  value: string;
-  type: ImageUriType;
-}
-
-export const enum ImageUriType {
-  ID = 1,
-  URL = 2,
-}
-
 /**
  * Helper object to assembled media chunks
  */
@@ -275,9 +281,9 @@ export interface AssembleAttachment {
 /**
  * Helper class for assembling media
  */
-class MediaHelper {
-  public mediaMimeType: string;
-  public assembleAttachment: AssembleAttachment[];
+interface MediaHelper {
+  mediaMimeType: string;
+  assembleAttachment: AssembleAttachment[];
 }
 
 /**
