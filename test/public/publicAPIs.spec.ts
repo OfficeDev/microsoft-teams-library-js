@@ -211,12 +211,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
       parentMessageId: 'someParentMessageId',
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
+      meetingId: 'dummyMeetingId'
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);
     expect(actualContext.frameContext).toBe(FrameContexts.content);
+    expect(actualContext.meetingId).toBe('dummyMeetingId');
   });
 
   it('should successfully get frame context in side panel', () => {
