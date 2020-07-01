@@ -366,6 +366,11 @@ export interface Context {
   isPSTNCallingAllowed?: boolean;
 
   /**
+   * Meeting Id used by tab when running in meeting context
+   */
+  meetingId?: string;
+
+  /**
    * The OneNote section ID that is linked to the channel.
    */
   defaultOneNoteSectionId?: string;
