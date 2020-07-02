@@ -24,7 +24,7 @@ export enum FileFormat {
 export class File {
   /**
    * Content of the file. When format is Base64, this is the base64 content
-   * When format is URI, this is the URI
+   * When format is ID, this is id mapping to the URI
    * When format is base64 and app needs to use this directly in HTML tags, it should convert this to dataUrl.
    */
   public content: string;
@@ -88,9 +88,7 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
 export class Media extends File {
   /**
    * A preview of the file which is a lightweight representation.
-   * In case of images this can be a thumbnail in base64 encoding.
-   * In case of video this could be a gif with some preview. In case of audio, this could be
-   * few seconds of the actual audio clip.
+   * In case of images this will be a thumbnail in base64 encoding.
    */
   public preview: string;
 
