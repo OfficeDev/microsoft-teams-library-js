@@ -14,6 +14,7 @@ export const enum FrameContexts {
   remove = 'remove',
   task = 'task',
   sidePanel = 'sidePanel',
+  stageView = 'stageView'
 }
 
 /**
