@@ -72,6 +72,17 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
+  it('should allow authentication.authenticate calls from sidePanel context', () => {
+    utils.initializeWithContext('sidePanel');
+
+    const authenticationParams = {
+      url: 'https://someurl/',
+      width: 100,
+      height: 200,
+    };
+    authentication.authenticate(authenticationParams);
+  });
+
   it('should allow authentication.authenticate calls from remove context', () => {
     utils.initializeWithContext('remove');
 

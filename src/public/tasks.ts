@@ -1,7 +1,7 @@
 import { TaskInfo } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { frameContexts } from '../internal/constants';
+import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
 
 /**
@@ -15,7 +15,7 @@ export namespace tasks {
    * @param submitHandler Handler to call when the task module is completed
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
-    ensureInitialized(frameContexts.content);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
     const messageId = sendMessageRequestToParent('tasks.startTask', [taskInfo]);
     GlobalVars.callbacks[messageId] = submitHandler;
@@ -27,7 +27,7 @@ export namespace tasks {
    * @param taskInfo An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    ensureInitialized(frameContexts.content, frameContexts.task);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
     const { width, height, ...extra } = taskInfo;
 
     if (!Object.keys(extra).length) {
@@ -43,7 +43,7 @@ export namespace tasks {
    * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    ensureInitialized(frameContexts.content, frameContexts.task);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageRequestToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);

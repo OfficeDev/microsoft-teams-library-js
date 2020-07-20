@@ -1,4 +1,5 @@
 import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
@@ -319,6 +320,11 @@ export interface Context {
   hostClientType?: HostClientType;
 
   /**
+   * The context where tab url is loaded (content, task, setting, remove, sidePanel)
+   */
+  frameContext?: FrameContexts;
+
+  /**
    * SharePoint context. This is only available when hosted in SharePoint.
    */
   sharepoint?: any;
@@ -358,6 +364,11 @@ export interface Context {
    * Represents whether PSTN calling is allowed for the current logged in User
    */
   isPSTNCallingAllowed?: boolean;
+
+  /**
+   * Meeting Id used by tab when running in meeting context
+   */
+  meetingId?: string;
 
   /**
    * The OneNote section ID that is linked to the channel.

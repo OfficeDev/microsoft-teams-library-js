@@ -20,7 +20,7 @@ import {
   setFrameContext,
   initializeWithFrameContext
 } from '../../src/public/publicAPIs';
-import { frameContexts } from '../../src/internal/constants';
+import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {
@@ -211,11 +211,62 @@ describe('MicrosoftTeams-publicAPIs', () => {
       parentMessageId: 'someParentMessageId',
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
+      meetingId: 'dummyMeetingId'
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);
+    expect(actualContext.frameContext).toBe(FrameContexts.content);
+    expect(actualContext.meetingId).toBe('dummyMeetingId');
+  });
+
+  it('should successfully get frame context in side panel', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context when returned from client', () => {
+    utils.initializeWithContext(FrameContexts.content);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+  });
+
+  it('should successfully get frame context in side panel with fallback logic if not returned from client', () => {
+    utils.initializeWithContext(FrameContexts.sidePanel);
+
+    let actualContext: Context;
+    getContext(context => {
+      actualContext = context;
+    });
+
+    let getContextMessage = utils.findMessageByFunc('getContext');
+    expect(getContextMessage).not.toBeNull();
+
+    utils.respondToMessage(getContextMessage, {});
+
+    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   it('should successfully register a back button handler and call navigateBack if it returns false', () => {
@@ -251,6 +302,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     it('should allow calls from content context', () => {
       utils.initializeWithContext('content');
+
+      navigateCrossDomain('https://valid.origin.com');
+    });
+
+    it('should allow calls from sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
 
       navigateCrossDomain('https://valid.origin.com');
     });
@@ -422,7 +479,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  describe('executeDeepLink in task module context ', () => {
+  describe('executeDeepLink in sidePanel context ', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
         executeDeepLink('dummyLink', () => {
@@ -432,7 +489,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
@@ -463,7 +520,109 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke error callback', () => {
-      utils.initializeWithContext(frameContexts.task);
+      utils.initializeWithContext('sidePanel');
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: false,
+        error: 'Something went wrong...',
+      };
+      utils.respondToMessage(message, data.success, data.error);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(false);
+      expect(error).toBe('Something went wrong...');
+    });
+
+    it('should successfully send a request', () => {
+      utils.initializeWithContext('sidePanel');
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true,
+      };
+      utils.respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+  });
+
+  describe('executeDeepLink in task module context ', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        executeDeepLink('dummyLink', () => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully send a request', () => {
+      utils.initializeWithContext(FrameContexts.task);
+      const request = 'dummyDeepLink';
+
+      let requestResponse: boolean;
+      let error: string;
+
+      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
+
+      // send message request
+      executeDeepLink(request, onComplete);
+
+      // find message request in jest
+      const message = utils.findMessageByFunc('executeDeepLink');
+
+      // check message is sending correct data
+      expect(message).not.toBeUndefined();
+      expect(message.args).toContain(request);
+
+      // simulate response
+      const data = {
+        success: true,
+      };
+
+      utils.respondToMessage(message, data.success);
+
+      // check data is returned properly
+      expect(requestResponse).toBe(true);
+      expect(error).toBeUndefined();
+    });
+
+    it('should invoke error callback', () => {
+      utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
@@ -660,8 +819,25 @@ describe('MicrosoftTeams-publicAPIs', () => {
       expect(readyToUnloadMessage).not.toBeNull();
     });
 
-    it('should successfully share a deep link', () => {
+    it('should successfully share a deep link in content context', () => {
       utils.initializeWithContext('content');
+
+      shareDeepLink({
+        subEntityId: 'someSubEntityId',
+        subEntityLabel: 'someSubEntityLabel',
+        subEntityWebUrl: 'someSubEntityWebUrl',
+      });
+
+      let message = utils.findMessageByFunc('shareDeepLink');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toBe('someSubEntityId');
+      expect(message.args[1]).toBe('someSubEntityLabel');
+      expect(message.args[2]).toBe('someSubEntityWebUrl');
+    });
+
+    it('should successfully share a deep link in sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
 
       shareDeepLink({
         subEntityId: 'someSubEntityId',

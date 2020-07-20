@@ -1,7 +1,7 @@
 import { captureImage, SdkError, ErrorCode, File, FileFormat } from '../../src/public/index' 
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
-import { frameContexts } from '../../src/internal/constants';
+import { FrameContexts } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
 
@@ -35,7 +35,7 @@ describe('media', () => {
     );
   });
   it('should not allow captureImage calls with null callback after init context', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     expect(() => captureImage(null)).toThrowError(
       '[captureImage] Callback cannot be null',
@@ -47,7 +47,7 @@ describe('media', () => {
     );
   });
   it('captureImage call in default version of platform support fails', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let error;
     captureImage((e: SdkError, f: File[]) => {
       error = e;
@@ -56,28 +56,28 @@ describe('media', () => {
     expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
   });
   it('should not allow captureImage calls for authentication frame context', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.authentication);
+    mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     expect(() => captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'authentication' context",
     );
   });
   it('should not allow captureImage calls for remove frame context', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.remove);
+    mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     expect(() => captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'remove' context",
     );
   });
   it('should not allow captureImage calls for settings frame context', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.settings);
+    mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     expect(() => captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'settings' context",
     );
   });
   it('should not allow captureImage calls in desktop', () => {
-    desktopPlatformMock.initializeWithContext(frameContexts.content);
+    desktopPlatformMock.initializeWithContext(FrameContexts.content);
     let error;
     captureImage((e: SdkError, f: File[]) => {
       error = e;
@@ -86,7 +86,7 @@ describe('media', () => {
     expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
   });
   it('captureImage call in task frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     captureImage(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('captureImage');
@@ -94,7 +94,7 @@ describe('media', () => {
     expect(message.args.length).toBe(0);
   });
   it('captureImage call in content frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     captureImage(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('captureImage');
@@ -102,7 +102,7 @@ describe('media', () => {
     expect(message.args.length).toBe(0);
   });
   it('captureImage calls with successful result', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
     captureImage((e: SdkError, f: File[]) => {
@@ -139,7 +139,7 @@ describe('media', () => {
     expect(typeof file.size === 'number').toBeTruthy();
   });
   it('captureImage calls with error', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
     captureImage((e: SdkError, f: File[]) => {

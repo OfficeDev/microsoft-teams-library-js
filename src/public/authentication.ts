@@ -5,8 +5,7 @@ import {
   sendMessageEventToChild,
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { frameContexts } from '../internal/constants';
-import { HostClientType } from './constants';
+import { FrameContexts, HostClientType } from './constants';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -31,7 +30,13 @@ export namespace authentication {
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void {
     const authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
-    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
+    ensureInitialized(
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.task,
+    );
     if (
       GlobalVars.hostClientType === HostClientType.desktop ||
       GlobalVars.hostClientType === HostClientType.android ||
@@ -191,7 +196,7 @@ export namespace authentication {
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
     GlobalVars.handlers['initialize'] = () => {
-      return [frameContexts.authentication, GlobalVars.hostClientType];
+      return [FrameContexts.authentication, GlobalVars.hostClientType];
     };
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
@@ -211,7 +216,7 @@ export namespace authentication {
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
-    ensureInitialized(frameContexts.authentication);
+    ensureInitialized(FrameContexts.authentication);
     sendMessageRequestToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
@@ -226,7 +231,7 @@ export namespace authentication {
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
-    ensureInitialized(frameContexts.authentication);
+    ensureInitialized(FrameContexts.authentication);
     sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));

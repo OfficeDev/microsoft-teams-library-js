@@ -1,6 +1,6 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
-export { HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './constants';
+export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './constants';
 export {
   Context,
   DeepLinkParameters,

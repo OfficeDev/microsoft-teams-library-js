@@ -1,6 +1,6 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { frameContexts } from '../internal/constants';
+import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 
 /**
@@ -19,7 +19,7 @@ export namespace settings {
    * @param validityState Indicates whether the save or remove button is enabled for the user.
    */
   export function setValidityState(validityState: boolean): void {
-    ensureInitialized(frameContexts.settings, frameContexts.remove);
+    ensureInitialized(FrameContexts.settings, FrameContexts.remove);
     sendMessageRequestToParent('settings.setValidityState', [validityState]);
   }
 
@@ -28,7 +28,7 @@ export namespace settings {
    * @param callback The callback to invoke when the {@link Settings} object is retrieved.
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
-    ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove);
+    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
     const messageId = sendMessageRequestToParent('settings.getSettings');
     GlobalVars.callbacks[messageId] = callback;
   }
@@ -42,7 +42,7 @@ export namespace settings {
     instanceSettings: Settings,
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
-    ensureInitialized(frameContexts.content, frameContexts.settings);
+    ensureInitialized(FrameContexts.content, FrameContexts.settings);
     const messageId = sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
     GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
@@ -55,7 +55,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the save button.
    */
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
-    ensureInitialized(frameContexts.settings);
+    ensureInitialized(FrameContexts.settings);
     saveHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['save']);
   }
@@ -68,7 +68,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-    ensureInitialized(frameContexts.remove);
+    ensureInitialized(FrameContexts.remove);
     removeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remove']);
   }
