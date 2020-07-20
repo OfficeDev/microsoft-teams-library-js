@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { frameContexts } from '../internal/constants';
+import { FrameContexts } from './constants';
 
 export interface LocationProps {
   /**
@@ -46,7 +46,7 @@ export function getLocation(props: LocationProps, callback: (error: SdkError, lo
   if (!callback) {
     throw new Error('[getLocation] Callback cannot be null');
   }
-  ensureInitialized(frameContexts.content, frameContexts.task);
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
 
   if (!isAPISupportedByPlatform('1.7.0')) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
@@ -67,7 +67,7 @@ export function showLocation(location: Location, callback: (error: SdkError, sta
   if (!callback) {
     throw new Error('[showLocation] Callback cannot be null');
   }
-  ensureInitialized(frameContexts.content, frameContexts.task);
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
 
   if (!isAPISupportedByPlatform('1.7.0')) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
