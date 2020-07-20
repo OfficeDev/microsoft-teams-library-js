@@ -60,7 +60,7 @@ export function getLocation(props: LocationProps, callback: (error: SdkError, lo
  * @param location {@link Location} which needs to be shown on map
  * @param callback Callback to invoke when the location is opened on map
  */
-export function showLocation(location: Location, callback: (error: SdkError) => void): void {
+export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
   if (!callback) {
     throw new Error('[showLocation] Callback cannot be null');
   }
@@ -68,7 +68,7 @@ export function showLocation(location: Location, callback: (error: SdkError) => 
 
   if (!isAPISupportedByPlatform('1.7.0')) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-    callback(oldPlatformError);
+    callback(oldPlatformError, undefined);
     return;
   }
 
