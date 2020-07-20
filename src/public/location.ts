@@ -1,6 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { frameContexts } from '../internal/constants';
 
 export interface LocationProps {
   /**
@@ -11,9 +12,11 @@ export interface LocationProps {
   allowChooseLocation: boolean;
   /**
   whether selected location should be shown to user on map or not.
-  If allowChooseLocation is true, this parameter will be ignored by platform
+  If allowChooseLocation is true, this parameter will be ignored by platform.
+  If allowChooseLocation is false, and this paramater is not provided, default 
+  value will be false.
   */
-  showMap: boolean;
+  showMap?: boolean;
 }
 
 export interface Location {
@@ -41,9 +44,9 @@ export interface Location {
  */
 export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void {
   if (!callback) {
-    throw new Error('[getCurrentLocation] Callback cannot be null');
+    throw new Error('[getLocation] Callback cannot be null');
   }
-  ensureInitialized();
+  ensureInitialized(frameContexts.content, frameContexts.task);
 
   if (!isAPISupportedByPlatform('1.7.0')) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
@@ -64,7 +67,7 @@ export function showLocation(location: Location, callback: (error: SdkError, sta
   if (!callback) {
     throw new Error('[showLocation] Callback cannot be null');
   }
-  ensureInitialized();
+  ensureInitialized(frameContexts.content, frameContexts.task);
 
   if (!isAPISupportedByPlatform('1.7.0')) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
