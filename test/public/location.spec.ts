@@ -6,7 +6,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
 
 /**
- * Test cases for device APIs
+ * Test cases for location APIs
  */
 describe('location', () => {
   const mobilePlatformMock = new FramelessPostMocks();
