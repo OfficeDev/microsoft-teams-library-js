@@ -3,12 +3,17 @@ import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { generateGUID } from '../internal/utils';
-import { createFile, decodeAttachment } from '../internal/mediaUtil';
+import { createFile, decodeAttachment, validSelectMediaInputs, validGetMediaInputs } from '../internal/mediaUtil';
 
 /**
  * This is the SDK version when captureImage API is supported on mobile.
  */
 const captureImageMobileSupportVersion = '1.7.0';
+
+/**
+ * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
+ */
+const mediaAPIVersion = '1.8.0';
 
 /**
  * Enum for file formats supported
@@ -88,7 +93,7 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
 export class Media extends File {
   /**
    * A preview of the file which is a lightweight representation.
-   * In case of images this will be a thumbnail in base64 encoding.
+   * In case of images this will be a thumbnail/compressed image in base64 encoding.
    */
   public preview: string;
 
@@ -97,7 +102,19 @@ export class Media extends File {
    * @param callback returns blob of media
    */
   public getMedia(callback: (error: SdkError, blob: Blob) => void): void {
+    if (!callback) {
+      throw new Error('[get Media] Callback cannot be null');
+    }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      callback(oldPlatformError, null);
+      return;
+    } else if (!validGetMediaInputs(this.mimeType, this.format, this.content)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput, null);
+      return;
+    }
     let actionName = generateGUID();
     let helper: MediaHelper = {
       mediaMimeType: this.mimeType,
@@ -135,7 +152,7 @@ export class Media extends File {
  */
 export interface MediaInputs {
   /**
-   * List of media types allowed to be selected
+   * Only one media type can be selected at a time
    */
   mediaType: MediaType;
 
@@ -199,8 +216,6 @@ export const enum Mode {
   Document = 2,
   Whiteboard = 3,
   BusinessCard = 4,
-  //todo: Remove Video before PR
-  Video = 5,
 }
 
 /**
@@ -216,10 +231,9 @@ export const enum Source {
  */
 export const enum MediaType {
   Image = 1,
-  //todo: Remove Video before PR
   Video = 2,
-  // Both image and video
-  Gallery = 3,
+  ImageAndVideo = 3,
+  Audio = 4,
 }
 
 /**
@@ -290,7 +304,20 @@ interface MediaHelper {
  * @param callback The callback to invoke after fetching the media
  */
 export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError, attachments: Media[]) => void): void {
+  if (!callback) {
+    throw new Error('[select Media] Callback cannot be null');
+  }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
+  if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    callback(oldPlatformError, null);
+    return;
+  } else if (!validSelectMediaInputs(mediaInputs)) {
+    const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    callback(invalidInput, null);
+    return;
+  }
+
   const params = [mediaInputs];
   const messageId = sendMessageRequestToParent('selectMedia', params);
   GlobalVars.callbacks[messageId] = callback;
@@ -299,10 +326,20 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 /**
  * View images using native image viewer
  * @param uriList urilist of images to be viewed - can be content uri or server url
- * @param result returns back error if encountered
+ * @param result returns back error if encountered, there will be no callback in case of success
  */
 export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {
+  if (!callback) {
+    throw new Error('[view images] Callback cannot be null');
+  }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+  if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    callback(oldPlatformError);
+    return;
+  }
+
   const params = [uriList];
   const messageId = sendMessageRequestToParent('viewImages', params);
   GlobalVars.callbacks[messageId] = callback;

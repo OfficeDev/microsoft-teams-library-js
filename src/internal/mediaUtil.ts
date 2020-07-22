@@ -1,4 +1,5 @@
-import { AssembleAttachment, MediaChunk } from '../public/media';
+import { AssembleAttachment, MediaChunk, MediaInputs, FileFormat } from '../public/media';
+
 /**
  * Helper function to create a blob from media chunks based on their sequence
  */
@@ -36,4 +37,24 @@ export function decodeAttachment(attachment: MediaChunk, mimeType: string): Asse
     file: blob,
   };
   return assemble;
+}
+
+/**
+ * Returns true if the mediaInput params are valid and false otherwise
+ */
+export function validSelectMediaInputs(mediaInputs: MediaInputs): boolean {
+  if (mediaInputs == null || mediaInputs.maxMediaCount > 10) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Returns true if the get Media params are valid and false otherwise
+ */
+export function validGetMediaInputs(mimeType: string, format: FileFormat, content: string): boolean {
+  if (mimeType == null || format == null || format != FileFormat.ID || content == null) {
+    return false;
+  }
+  return true;
 }
