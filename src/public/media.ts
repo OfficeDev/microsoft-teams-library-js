@@ -3,7 +3,13 @@ import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { generateGUID } from '../internal/utils';
-import { createFile, decodeAttachment, validSelectMediaInputs, validGetMediaInputs } from '../internal/mediaUtil';
+import {
+  createFile,
+  decodeAttachment,
+  validSelectMediaInputs,
+  validGetMediaInputs,
+  validViewImagesInput,
+} from '../internal/mediaUtil';
 
 /**
  * This is the SDK version when captureImage API is supported on mobile.
@@ -337,6 +343,10 @@ export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => 
   if (!isAPISupportedByPlatform(mediaAPIVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError);
+    return;
+  } else if (!validViewImagesInput(uriList)) {
+    const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    callback(invalidInput);
     return;
   }
 

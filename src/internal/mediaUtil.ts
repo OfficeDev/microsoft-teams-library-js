@@ -1,4 +1,4 @@
-import { AssembleAttachment, MediaChunk, MediaInputs, FileFormat } from '../public/media';
+import { AssembleAttachment, MediaChunk, MediaInputs, FileFormat, ImageUri } from '../public/media';
 
 /**
  * Helper function to create a blob from media chunks based on their sequence
@@ -54,6 +54,16 @@ export function validSelectMediaInputs(mediaInputs: MediaInputs): boolean {
  */
 export function validGetMediaInputs(mimeType: string, format: FileFormat, content: string): boolean {
   if (mimeType == null || format == null || format != FileFormat.ID || content == null) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Returns true if the view images param is valid and false otherwise
+ */
+export function validViewImagesInput(uriList: ImageUri[]): boolean {
+  if (uriList == null || uriList.length <= 0) {
     return false;
   }
   return true;
