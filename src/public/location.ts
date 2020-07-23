@@ -3,6 +3,11 @@ import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 
+/**
+ * This is the SDK version when captureImage API is supported on mobile.
+ */
+export const locationAPIsRequiredVersion = '1.8.0';
+
 export interface LocationProps {
   /**
   whether user can alter location or not
@@ -48,7 +53,7 @@ export function getLocation(props: LocationProps, callback: (error: SdkError, lo
   }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-  if (!isAPISupportedByPlatform('1.7.0')) {
+  if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, undefined);
     return;
@@ -69,7 +74,7 @@ export function showLocation(location: Location, callback: (error: SdkError, sta
   }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-  if (!isAPISupportedByPlatform('1.7.0')) {
+  if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, undefined);
     return;
