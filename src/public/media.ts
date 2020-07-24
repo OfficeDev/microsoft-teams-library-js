@@ -331,7 +331,7 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 
 /**
  * View images using native image viewer
- * @param uriList urilist of images to be viewed - can be content uri or server url
+ * @param uriList urilist of images to be viewed - can be content uri or server url. supports upto 10 Images in one go
  * @param result returns back error if encountered, there will be no callback in case of success
  */
 export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {

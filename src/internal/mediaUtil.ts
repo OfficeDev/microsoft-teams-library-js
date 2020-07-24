@@ -63,7 +63,7 @@ export function validGetMediaInputs(mimeType: string, format: FileFormat, conten
  * Returns true if the view images param is valid and false otherwise
  */
 export function validViewImagesInput(uriList: ImageUri[]): boolean {
-  if (uriList == null || uriList.length <= 0) {
+  if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
     return false;
   }
   return true;
