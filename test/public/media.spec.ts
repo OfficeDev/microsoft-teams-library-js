@@ -179,7 +179,7 @@ describe('media', () => {
   });
 
   it('should not allow selectMedia calls with null mediaInputs', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaError: SdkError;
     selectMedia(null, (error: SdkError, attachments: Media[]) => {
@@ -190,7 +190,7 @@ describe('media', () => {
   });
 
   it('should not allow selectMedia calls with invalid mediaInputs', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaInputs: MediaInputs = {
       mediaType: MediaType.Image,
@@ -205,7 +205,7 @@ describe('media', () => {
   });
 
   it('selectMedia call in default version of platform support fails', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let mediaError: SdkError;
     let mediaInputs: MediaInputs = {
       mediaType: MediaType.Image,
@@ -219,7 +219,7 @@ describe('media', () => {
   });
 
   it('selectMedia call in task frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaInputs: MediaInputs = {
       mediaType: MediaType.Image,
@@ -232,7 +232,7 @@ describe('media', () => {
   });
 
   it('selectMedia call in content frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaInputs: MediaInputs = {
       mediaType: MediaType.Image,
@@ -245,7 +245,7 @@ describe('media', () => {
   });
 
   it('selectMedia calls with successful result', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaAttachments: Media[], mediaError: SdkError;
     let mediaInputs: MediaInputs = {
@@ -288,7 +288,7 @@ describe('media', () => {
   });
 
   it('selectMedia calls with error', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaAttachments: Media[], mediaError: SdkError;
     let mediaInputs: MediaInputs = {
@@ -330,7 +330,7 @@ describe('media', () => {
   });
 
   it('should not allow getMedia calls with invalid media mimetype', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let media: Media = new Media();
     let mediaError: SdkError;
@@ -345,7 +345,7 @@ describe('media', () => {
   });
 
   it('should not allow getMedia calls with invalid media content', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let media: Media = new Media();
     let mediaError: SdkError;
@@ -360,7 +360,7 @@ describe('media', () => {
   });
 
   it('should not allow getMedia calls with invalid media file format', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let media: Media = new Media();
     let mediaError: SdkError;
@@ -375,7 +375,7 @@ describe('media', () => {
   });
 
   it('getmedia call in default version of platform support fails', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let media: Media = new Media();
     let mediaError: SdkError;
     media.content = "1234567";
@@ -389,7 +389,7 @@ describe('media', () => {
   });
 
   it('getmedia call in task frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let media: Media = new Media();
     media.content = "1234567";
@@ -402,7 +402,7 @@ describe('media', () => {
   });
 
   it('getMedia calls with successful result', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let file: Blob, mediaError: SdkError;
     let media: Media = new Media();
@@ -431,7 +431,7 @@ describe('media', () => {
   });
 
   it('getMedia calls with error', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let file: Blob, mediaError: SdkError;
     let media: Media = new Media();
@@ -474,7 +474,7 @@ describe('media', () => {
   });
 
   it('should not allow viewImages calls with null imageuris', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaError: SdkError;
     viewImages(null, (error: SdkError) => {
@@ -485,7 +485,7 @@ describe('media', () => {
   });
 
   it('should not allow viewImages calls with invalid imageuris', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let uris: ImageUri[] = [];
     let mediaError: SdkError;
@@ -497,7 +497,7 @@ describe('media', () => {
   });
 
   it('viewImages call in default version of platform support fails', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let mediaError: SdkError;
     let uris: ImageUri[] = [];
     let uri: ImageUri = {
@@ -513,7 +513,7 @@ describe('media', () => {
   });
 
   it('viewImages call in task frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let uris: ImageUri[] = [];
     let uri: ImageUri = {
@@ -528,7 +528,7 @@ describe('media', () => {
   });
 
   it('viewImages call in content frameContext works', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let uris: ImageUri[] = [];
     let uri: ImageUri = {
@@ -543,7 +543,7 @@ describe('media', () => {
   });
 
   it('viewImages calls with error', () => {
-    mobilePlatformMock.initializeWithContext(frameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let mediaError: SdkError;
     let uris: ImageUri[] = [];
