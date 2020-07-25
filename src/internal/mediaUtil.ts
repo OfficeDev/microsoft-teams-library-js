@@ -4,6 +4,9 @@ import { AssembleAttachment, MediaChunk, MediaInputs, FileFormat, ImageUri } fro
  * Helper function to create a blob from media chunks based on their sequence
  */
 export function createFile(assembleAttachment: AssembleAttachment[], mimeType: string): Blob {
+  if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
+    return null;
+  }
   let file: Blob;
   let sequence = 1;
   assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
@@ -25,14 +28,17 @@ export function createFile(assembleAttachment: AssembleAttachment[], mimeType: s
  * Converts base 64 encoded string to byte array and then into an array of blobs
  */
 export function decodeAttachment(attachment: MediaChunk, mimeType: string): AssembleAttachment {
-  let decoded = atob(attachment.chunk);
-  let byteNumbers = new Array(decoded.length);
+  if (attachment == null || mimeType == null) {
+    return null;
+  }
+  const decoded = atob(attachment.chunk);
+  const byteNumbers = new Array(decoded.length);
   for (let i = 0; i < decoded.length; i++) {
     byteNumbers[i] = decoded.charCodeAt(i);
   }
-  let byteArray = new Uint8Array(byteNumbers);
-  let blob: Blob = new Blob([byteArray], { type: mimeType });
-  let assemble: AssembleAttachment = {
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob: Blob = new Blob([byteArray], { type: mimeType });
+  const assemble: AssembleAttachment = {
     sequence: attachment.chunkSequence,
     file: blob,
   };
@@ -42,7 +48,7 @@ export function decodeAttachment(attachment: MediaChunk, mimeType: string): Asse
 /**
  * Returns true if the mediaInput params are valid and false otherwise
  */
-export function validSelectMediaInputs(mediaInputs: MediaInputs): boolean {
+export function validateSelectMediaInputs(mediaInputs: MediaInputs): boolean {
   if (mediaInputs == null || mediaInputs.maxMediaCount > 10) {
     return false;
   }
@@ -52,7 +58,7 @@ export function validSelectMediaInputs(mediaInputs: MediaInputs): boolean {
 /**
  * Returns true if the get Media params are valid and false otherwise
  */
-export function validGetMediaInputs(mimeType: string, format: FileFormat, content: string): boolean {
+export function validateGetMediaInputs(mimeType: string, format: FileFormat, content: string): boolean {
   if (mimeType == null || format == null || format != FileFormat.ID || content == null) {
     return false;
   }
@@ -62,7 +68,7 @@ export function validGetMediaInputs(mimeType: string, format: FileFormat, conten
 /**
  * Returns true if the view images param is valid and false otherwise
  */
-export function validViewImagesInput(uriList: ImageUri[]): boolean {
+export function validateViewImagesInput(uriList: ImageUri[]): boolean {
   if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
     return false;
   }

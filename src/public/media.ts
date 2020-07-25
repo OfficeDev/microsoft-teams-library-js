@@ -6,9 +6,9 @@ import { generateGUID } from '../internal/utils';
 import {
   createFile,
   decodeAttachment,
-  validSelectMediaInputs,
-  validGetMediaInputs,
-  validViewImagesInput,
+  validateSelectMediaInputs,
+  validateGetMediaInputs,
+  validateViewImagesInput,
 } from '../internal/mediaUtil';
 
 /**
@@ -116,13 +116,13 @@ export class Media extends File {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, null);
       return;
-    } else if (!validGetMediaInputs(this.mimeType, this.format, this.content)) {
+    } else if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
       callback(invalidInput, null);
       return;
     }
-    let actionName = generateGUID();
-    let helper: MediaHelper = {
+    const actionName = generateGUID();
+    const helper: MediaHelper = {
       mediaMimeType: this.mimeType,
       assembleAttachment: [],
     };
@@ -130,16 +130,19 @@ export class Media extends File {
     this.content && callback && sendMessageRequestToParent('getMedia', params);
     function handleGetMediaRequest(response: string): void {
       if (callback) {
-        let mediaResult: MediaResult = JSON.parse(response);
+        const mediaResult: MediaResult = JSON.parse(response);
         if (mediaResult.error) {
           callback(mediaResult.error, null);
         } else {
           if (mediaResult.mediaChunk) {
+            // If the chunksequence number is less than equal to 0 implies EOF
+            // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
             if (mediaResult.mediaChunk.chunkSequence <= 0) {
-              let file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+              const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
               callback(mediaResult.error, file);
             } else {
-              let assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+              // Keep pushing chunks into assemble attachment
+              const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
               helper.assembleAttachment.push(assemble);
             }
           } else {
@@ -238,7 +241,7 @@ export const enum Source {
 export const enum MediaType {
   Image = 1,
   Video = 2,
-  ImageAndVideo = 3,
+  ImageOrVideo = 3,
   Audio = 4,
 }
 
@@ -318,7 +321,7 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, null);
     return;
-  } else if (!validSelectMediaInputs(mediaInputs)) {
+  } else if (!validateSelectMediaInputs(mediaInputs)) {
     const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
     callback(invalidInput, null);
     return;
@@ -344,7 +347,7 @@ export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => 
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError);
     return;
-  } else if (!validViewImagesInput(uriList)) {
+  } else if (!validateViewImagesInput(uriList)) {
     const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
     callback(invalidInput);
     return;

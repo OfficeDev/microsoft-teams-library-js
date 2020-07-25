@@ -374,7 +374,7 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
   });
 
-  it('getmedia call in default version of platform support fails', () => {
+  it('getMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let media: Media = new Media();
     let mediaError: SdkError;
@@ -388,7 +388,7 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
   });
 
-  it('getmedia call in task frameContext works', () => {
+  it('getMedia call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPIVersion);
     let media: Media = new Media();
