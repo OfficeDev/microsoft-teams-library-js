@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = '^';
@@ -77,4 +78,11 @@ export function compareSDKVersions(v1: string, v2: string): number {
     }
   }
   return 0;
+}
+
+/**
+ * Generates a GUID
+ */
+export function generateGUID(): string {
+  return uuid.v4();
 }
