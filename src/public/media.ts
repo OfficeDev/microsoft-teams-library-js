@@ -19,7 +19,7 @@ const captureImageMobileSupportVersion = '1.7.0';
 /**
  * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
  */
-const mediaAPIVersion = '1.8.0';
+const mediaAPISupportVersion = '1.8.0';
 
 /**
  * Enum for file formats supported
@@ -112,7 +112,7 @@ export class Media extends File {
       throw new Error('[get Media] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+    if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, null);
       return;
@@ -133,6 +133,7 @@ export class Media extends File {
         const mediaResult: MediaResult = JSON.parse(response);
         if (mediaResult.error) {
           callback(mediaResult.error, null);
+          GlobalVars.handlers['getMedia' + actionName] = null;
         } else {
           if (mediaResult.mediaChunk) {
             // If the chunksequence number is less than equal to 0 implies EOF
@@ -140,6 +141,7 @@ export class Media extends File {
             if (mediaResult.mediaChunk.chunkSequence <= 0) {
               const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
               callback(mediaResult.error, file);
+              GlobalVars.handlers['getMedia' + actionName] = null;
             } else {
               // Keep pushing chunks into assemble attachment
               const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -147,6 +149,7 @@ export class Media extends File {
             }
           } else {
             callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+            GlobalVars.handlers['getMedia' + actionName] = null;
           }
         }
       }
@@ -317,7 +320,7 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
     throw new Error('[select Media] Callback cannot be null');
   }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
-  if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+  if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, null);
     return;
@@ -343,7 +346,7 @@ export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => 
   }
   ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-  if (!isAPISupportedByPlatform(mediaAPIVersion)) {
+  if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError);
     return;
