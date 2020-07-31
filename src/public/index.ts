@@ -37,4 +37,4 @@ export {
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage, File, FileFormat } from './media';
+export { captureImage, File, FileFormat, selectMedia, viewImages, Media } from './media';
