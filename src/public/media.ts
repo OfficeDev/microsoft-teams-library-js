@@ -350,7 +350,25 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 
   const params = [mediaInputs];
   const messageId = sendMessageRequestToParent('selectMedia', params);
-  GlobalVars.callbacks[messageId] = callback;
+
+  // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+  GlobalVars.callbacks[messageId] = (err: SdkError, attachs: Media[]) => {
+    let mediaArray: Media[] = null;
+    if (attachs) {
+      mediaArray = [];
+      for (let attachment of attachs) {
+        const media = new Media();
+        media.content = attachment.content;
+        media.format = attachment.format;
+        media.mimeType = attachment.mimeType;
+        media.name = attachment.name;
+        media.preview = attachment.preview;
+        media.size = attachment.size;
+        mediaArray.push(media);
+      }
+    }
+    callback(err, mediaArray);
+  };
 }
 
 /**
