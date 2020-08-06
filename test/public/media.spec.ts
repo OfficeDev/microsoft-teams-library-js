@@ -285,6 +285,7 @@ describe('media', () => {
     expect(media.content).not.toBeNull();
     expect(media.size).not.toBeNull();
     expect(typeof media.size === 'number').toBeTruthy();
+    expect(media.getMedia).toBeDefined();
   });
 
   it('selectMedia calls with error', () => {
