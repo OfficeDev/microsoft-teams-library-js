@@ -97,6 +97,18 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
  * Media object returned by the select Media API
  */
 export class Media extends File {
+  constructor(that: Media = null) {
+    super();
+    if (that) {
+      this.content = that.content;
+      this.format = that.format;
+      this.mimeType = that.mimeType;
+      this.name = that.name;
+      this.preview = that.preview;
+      this.size = that.size;
+    }
+  }
+
   /**
    * A preview of the file which is a lightweight representation.
    * In case of images this will be a thumbnail/compressed image in base64 encoding.
@@ -350,7 +362,19 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 
   const params = [mediaInputs];
   const messageId = sendMessageRequestToParent('selectMedia', params);
-  GlobalVars.callbacks[messageId] = callback;
+
+  // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+  GlobalVars.callbacks[messageId] = (err: SdkError, localAttachments: Media[]) => {
+    if (!localAttachments) {
+      callback(err, null);
+      return;
+    }
+    let mediaArray: Media[] = [];
+    for (let attachment of localAttachments) {
+      mediaArray.push(new Media(attachment));
+    }
+    callback(err, mediaArray);
+  };
 }
 
 /**
