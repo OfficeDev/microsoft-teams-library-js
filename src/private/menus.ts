@@ -40,7 +40,7 @@ export namespace menus {
     /**
      * Display icon of the menu item. The icon value must be a string having SVG icon content.
      */
-    public icon?: string;
+    public icon: string;
     /**
      * Selected state display icon of the menu item. The icon value must be a string having SVG icon content.
      */
