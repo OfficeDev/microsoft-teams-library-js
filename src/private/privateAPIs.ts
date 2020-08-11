@@ -1,6 +1,7 @@
 import { ensureInitialized, sendMessageRequestToParent, sendMessageEventToChild } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from '../public/constants';
+import { SdkError, ErrorCode } from '../public/interfaces';
 import {
   ChatMembersInformation,
   ShowNotificationParameters,
@@ -57,7 +58,14 @@ export function exitFullscreen(): void {
  * Opens a client-friendly preview of the specified file.
  * @param file The file to preview.
  */
-export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
+export function openFilePreview(
+  filePreviewParameters: FilePreviewParameters,
+  callback: (error?: SdkError) => void = error => {
+    if (error) {
+      throw error;
+    }
+  },
+): void {
   ensureInitialized(FrameContexts.content);
 
   const params = [
@@ -74,7 +82,20 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.subEntityId,
   ];
 
-  sendMessageRequestToParent('openFilePreview', params);
+  const messageId = sendMessageRequestToParent('openFilePreview', params);
+  GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
+    if (!success) {
+      if (result === 'App does not have the required permissions for this operation') {
+        const permissionDeniedError: SdkError = { errorCode: ErrorCode.PERMISSION_DENIED, message: result };
+        callback(permissionDeniedError);
+      } else {
+        const internalError: SdkError = { errorCode: ErrorCode.INTERNAL_ERROR, message: result };
+        callback(internalError);
+      }
+    } else {
+      callback();
+    }
+  };
 }
 
 /**

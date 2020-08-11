@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
+import { Context, SdkError, ErrorCode } from '../../src/public/interfaces';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
@@ -55,7 +55,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'http://microsoft.sharepoint-df.com',
     'https://a.b.sharepoint.com',
     'https://a.b.c.sharepoint.com',
-    'http://invalid.origin.com'
+    'http://invalid.origin.com',
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
@@ -174,7 +174,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
     expect(callbackCalled).toBe(false);
-
   });
 
   it('should successfully handle calls queued before init completes', () => {
@@ -289,10 +288,8 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(callbackCalled).toBe(1);
   });
 
-  it('should successfully open a file preview', () => {
-    utils.initializeWithContext('content');
-
-    openFilePreview({
+  describe('openFilePreview', () => {
+    const file = {
       entityId: 'someEntityId',
       title: 'someTitle',
       description: 'someDescription',
@@ -304,22 +301,75 @@ describe('MicrosoftTeams-privateAPIs', () => {
       baseUrl: 'someBaseUrl',
       editFile: true,
       subEntityId: 'someSubEntityId',
+    };
+
+    it('should successfully open a file preview', () => {
+      utils.initializeWithContext('content');
+
+      openFilePreview(file);
+
+      const message = utils.findMessageByFunc('openFilePreview');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(11);
+      expect(message.args[0]).toBe(file.entityId);
+      expect(message.args[1]).toBe(file.title);
+      expect(message.args[2]).toBe(file.description);
+      expect(message.args[3]).toBe(file.type);
+      expect(message.args[4]).toBe(file.objectUrl);
+      expect(message.args[5]).toBe(file.downloadUrl);
+      expect(message.args[6]).toBe(file.webPreviewUrl);
+      expect(message.args[7]).toBe(file.webEditUrl);
+      expect(message.args[8]).toBe(file.baseUrl);
+      expect(message.args[9]).toBe(file.editFile);
+      expect(message.args[10]).toBe(file.subEntityId);
     });
 
-    let message = utils.findMessageByFunc('openFilePreview');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(11);
-    expect(message.args[0]).toBe('someEntityId');
-    expect(message.args[1]).toBe('someTitle');
-    expect(message.args[2]).toBe('someDescription');
-    expect(message.args[3]).toBe('someType');
-    expect(message.args[4]).toBe('someObjectUrl');
-    expect(message.args[5]).toBe('someDownloadUrl');
-    expect(message.args[6]).toBe('someWebPreviewUrl');
-    expect(message.args[7]).toBe('someWebEditUrl');
-    expect(message.args[8]).toBe('someBaseUrl');
-    expect(message.args[9]).toBe(true);
-    expect(message.args[10]).toBe('someSubEntityId');
+    it('should invoke callback with correct values when provided in permission denied error case', () => {
+      utils.initializeWithContext('content');
+
+      let callbackError: SdkError;
+      openFilePreview(file, error => {
+        callbackError = error;
+      });
+
+      const message = utils.findMessageByFunc('openFilePreview');
+      expect(message).not.toBeNull();
+      utils.respondToMessage(message, false, 'App does not have the required permissions for this operation');
+      expect(callbackError.message).toEqual('App does not have the required permissions for this operation');
+      expect(callbackError.errorCode).toEqual(ErrorCode.PERMISSION_DENIED);
+    });
+
+    it('should invoke callback with correct values when provided in other error cases', () => {
+      utils.initializeWithContext('content');
+
+      let callbackError: SdkError;
+      openFilePreview(file, error => {
+        callbackError = error;
+      });
+
+      const message = utils.findMessageByFunc('openFilePreview');
+      expect(message).not.toBeNull();
+      utils.respondToMessage(message, false, 'Some other error');
+
+      expect(callbackError).toBeDefined();
+      expect(callbackError.message).toEqual('Some other error');
+      expect(callbackError.errorCode).toEqual(ErrorCode.INTERNAL_ERROR);
+    });
+
+    it('should invoke callback with correct values when provided in other error cases', () => {
+      utils.initializeWithContext('content');
+
+      let callbackSuccess = false;
+      openFilePreview(file, error => {
+        callbackSuccess = !error;
+      });
+
+      const message = utils.findMessageByFunc('openFilePreview');
+      expect(message).not.toBeNull();
+      utils.respondToMessage(message, true);
+
+      expect(callbackSuccess).toBe(true);
+    });
   });
 
   describe('getUserJoinedTeams', () => {
@@ -334,7 +384,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow a valid optional parameter set to true', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getUserJoinedTeams(
         () => {
           callbackCalled = true;
@@ -351,7 +401,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow a valid optional parameter set to false', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getUserJoinedTeams(
         () => {
           callbackCalled = true;
@@ -368,7 +418,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow a missing optional parameter', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getUserJoinedTeams(() => {
         callbackCalled = true;
       });
@@ -382,7 +432,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow a missing and valid optional parameter', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getUserJoinedTeams(
         () => {
           callbackCalled = true;
@@ -440,7 +490,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       const customActionName = 'customAction1';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -457,7 +507,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -484,7 +534,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -520,7 +570,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should successfully get chat members', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getChatMembers(() => {
         callbackCalled = true;
       });
@@ -544,7 +594,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow a valid parameter', () => {
       utils.initializeWithContext('content');
 
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       getConfigSetting(() => {
         callbackCalled = true;
       }, 'key');
