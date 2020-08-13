@@ -92,27 +92,27 @@ describe('mediaUtil', () => {
    * Validate Get Media Input
    */
   it('test validateGetMediaInputs with all null params', () => {
-    const result = validateGetMediaInputs(null, null, null);
+    const result = validateGetMediaInputs(null, null, null, 0);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with null format and content', () => {
-    const result = validateGetMediaInputs("image/jpeg", null, null);
+    const result = validateGetMediaInputs("image/jpeg", null, null, 0);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with null content', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, null);
+    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, null, 0);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with invalid params', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.Base64, "Something not null");
+    const result = validateGetMediaInputs("image/jpeg", FileFormat.Base64, "Something not null", 0);
     expect(result).toBeFalsy();
   });
 
   it('test success case for validate get media input function', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, "Something not null");
+    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, "Something not null", 10);
     expect(result).toBeTruthy();
   });
 
