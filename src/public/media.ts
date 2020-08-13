@@ -9,6 +9,7 @@ import {
   validateSelectMediaInputs,
   validateGetMediaInputs,
   validateViewImagesInput,
+  fiftyMbInKb,
 } from '../internal/mediaUtil';
 
 /**
@@ -129,9 +130,12 @@ export class Media extends File {
       callback(oldPlatformError, null);
       return;
     }
-    if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, null);
+    if (!validateGetMediaInputs(this.mimeType, this.format, this.content, this.size)) {
+      let errorName: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      if (this.size > fiftyMbInKb) {
+        errorName = { errorCode: ErrorCode.SIZE_EXCEEDED };
+      }
+      callback(errorName, null);
       return;
     }
     const actionName = generateGUID();
@@ -380,7 +384,7 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 /**
  * View images using native image viewer
  * @param uriList urilist of images to be viewed - can be content uri or server url. supports upto 10 Images in one go
- * @param result returns back error if encountered, there will be no callback in case of success
+ * @param callback returns back error if encountered, in case of success null is returned
  */
 export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {
   if (!callback) {
