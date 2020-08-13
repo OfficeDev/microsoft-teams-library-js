@@ -97,6 +97,18 @@ export function captureImage(callback: (error: SdkError, files: File[]) => void)
  * Media object returned by the select Media API
  */
 export class Media extends File {
+  constructor(that: Media = null) {
+    super();
+    if (that) {
+      this.content = that.content;
+      this.format = that.format;
+      this.mimeType = that.mimeType;
+      this.name = that.name;
+      this.preview = that.preview;
+      this.size = that.size;
+    }
+  }
+
   /**
    * A preview of the file which is a lightweight representation.
    * In case of images this will be a thumbnail/compressed image in base64 encoding.
@@ -116,7 +128,8 @@ export class Media extends File {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, null);
       return;
-    } else if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
+    }
+    if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
       callback(invalidInput, null);
       return;
@@ -177,6 +190,11 @@ export interface MediaInputs {
    * Additional properties for customization of select media in mobile devices
    */
   imageProps?: ImageProps;
+
+  /**
+   * Additional properties for audio capture flows.
+   */
+  audioProps?: AudioProps;
 }
 
 /**
@@ -193,7 +211,7 @@ export interface ImageProps {
    * Optional; Specify in which mode the camera will be opened.
    * Default value is Photo
    */
-  startMode?: Mode;
+  startMode?: CameraStartMode;
 
   /**
    * Optional; indicate if inking on the selected Image is allowed or not
@@ -221,9 +239,20 @@ export interface ImageProps {
 }
 
 /**
+ *  All properties in AudioProps are optional and have default values in the platform
+ */
+export interface AudioProps {
+  /**
+   * Optional; the maximum duration in minutes after which the recording should terminate automatically.
+   * Default value is defined by the platform serving the API.
+   */
+  maxDuration?: number;
+}
+
+/**
  * The modes in which camera can be launched in select Media API
  */
-export const enum Mode {
+export const enum CameraStartMode {
   Photo = 1,
   Document = 2,
   Whiteboard = 3,
@@ -243,8 +272,8 @@ export const enum Source {
  */
 export const enum MediaType {
   Image = 1,
-  Video = 2,
-  ImageOrVideo = 3,
+  // Video = 2, // Not implemented yet
+  // ImageOrVideo = 3, // Not implemented yet
   Audio = 4,
 }
 
@@ -324,7 +353,8 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError, null);
     return;
-  } else if (!validateSelectMediaInputs(mediaInputs)) {
+  }
+  if (!validateSelectMediaInputs(mediaInputs)) {
     const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
     callback(invalidInput, null);
     return;
@@ -332,7 +362,19 @@ export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError
 
   const params = [mediaInputs];
   const messageId = sendMessageRequestToParent('selectMedia', params);
-  GlobalVars.callbacks[messageId] = callback;
+
+  // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+  GlobalVars.callbacks[messageId] = (err: SdkError, localAttachments: Media[]) => {
+    if (!localAttachments) {
+      callback(err, null);
+      return;
+    }
+    let mediaArray: Media[] = [];
+    for (let attachment of localAttachments) {
+      mediaArray.push(new Media(attachment));
+    }
+    callback(err, mediaArray);
+  };
 }
 
 /**
@@ -350,7 +392,8 @@ export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => 
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     callback(oldPlatformError);
     return;
-  } else if (!validateViewImagesInput(uriList)) {
+  }
+  if (!validateViewImagesInput(uriList)) {
     const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
     callback(invalidInput);
     return;
