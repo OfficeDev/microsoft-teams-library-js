@@ -325,6 +325,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     expect(() => media.getMedia(null)).toThrowError(
       '[get Media] Callback cannot be null',
     );
@@ -338,6 +339,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = null;
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
@@ -353,6 +355,7 @@ describe('media', () => {
     media.content = null;
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
@@ -368,6 +371,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.Base64;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
@@ -382,6 +386,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
@@ -396,6 +401,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('getMedia');
     expect(message).not.toBeNull();
@@ -410,6 +416,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
       file = blob;
@@ -439,6 +446,7 @@ describe('media', () => {
     media.content = "1234567";
     media.mimeType = "image/jpeg";
     media.format = FileFormat.ID;
+    media.size = 10;
     media.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
       file = blob;
