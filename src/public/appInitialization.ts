@@ -29,7 +29,7 @@ export namespace appInitialization {
     ]);
   }
 
-  export const enum FailedReason {
+  export enum FailedReason {
     AuthFailed = 'AuthFailed',
     Timeout = 'Timeout',
     Other = 'Other',
