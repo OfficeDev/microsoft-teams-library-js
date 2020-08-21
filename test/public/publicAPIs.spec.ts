@@ -18,7 +18,9 @@ import {
   registerOnThemeChangeHandler,
   initialize,
   setFrameContext,
-  initializeWithFrameContext
+  initializeWithFrameContext,
+  registerAppButtonClickHandler,
+  registerAppButtonHoverHandler
 } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -126,6 +128,32 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     utils.sendMessage('changeSettings', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it('should successfully register a app button click handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    registerAppButtonClickHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('appButtonClick', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it('should successfully register a app button hover handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    registerAppButtonHoverHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('appButtonHover', '');
 
     expect(handlerCalled).toBeTruthy();
   });
