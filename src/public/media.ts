@@ -252,7 +252,7 @@ export interface AudioProps {
 /**
  * The modes in which camera can be launched in select Media API
  */
-export const enum CameraStartMode {
+export enum CameraStartMode {
   Photo = 1,
   Document = 2,
   Whiteboard = 3,
@@ -262,7 +262,7 @@ export const enum CameraStartMode {
 /**
  * Specifies the image source
  */
-export const enum Source {
+export enum Source {
   Camera = 1,
   Gallery = 2,
 }
@@ -270,7 +270,7 @@ export const enum Source {
 /**
  * Specifies the type of Media
  */
-export const enum MediaType {
+export enum MediaType {
   Image = 1,
   // Video = 2, // Not implemented yet
   // ImageOrVideo = 3, // Not implemented yet
@@ -288,7 +288,7 @@ export interface ImageUri {
 /**
  * ID contains a mapping for content uri on platform's side, URL is generic
  */
-export const enum ImageUriType {
+export enum ImageUriType {
   ID = 1,
   URL = 2,
 }
