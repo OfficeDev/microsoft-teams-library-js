@@ -544,7 +544,7 @@ export interface SdkError {
   message?: string;
 }
 
-export const enum ErrorCode {
+export enum ErrorCode {
   /**
    * API not supported in the current platform.
    */

@@ -22,7 +22,7 @@ export interface ThreadMember {
   upn: string;
 }
 
-export const enum NotificationTypes {
+export enum NotificationTypes {
   fileDownloadStart = 'fileDownloadStart',
   fileDownloadComplete = 'fileDownloadComplete',
 }
