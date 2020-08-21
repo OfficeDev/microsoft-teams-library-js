@@ -38,6 +38,9 @@ export enum UserTeamRole {
   Guest = 2,
 }
 
+/**
+ * Task module dimension enum
+ */
 export enum TaskModuleDimension {
   Large = 'large',
   Medium = 'medium',
