@@ -35,4 +35,6 @@ export class GlobalVars {
   public static onStartConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
+  public static appButtonClickHandler: () => void;
+  public static appButtonHoverHandler: () => void;
 }
