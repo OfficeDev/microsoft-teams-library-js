@@ -31,6 +31,8 @@ export {
   registerFullScreenHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
+  registerAppButtonClickHandler,
+  registerAppButtonHoverHandler,
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
