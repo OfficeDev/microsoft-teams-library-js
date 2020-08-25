@@ -65,7 +65,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual('1.7.0');
+    expect(initMessage.args[0]).toEqual('1.8.0-beta.3');
   });
 
   it('should allow multiple initialize calls', () => {
@@ -934,7 +934,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual('1.7.0');
+    expect(initMessage.args[0]).toEqual('1.8.0-beta.3');
     let message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
