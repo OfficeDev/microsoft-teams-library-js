@@ -31,11 +31,13 @@ export {
   registerFullScreenHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
+  registerAppButtonClickHandler,
+  registerAppButtonHoverHandler,
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage, File, FileFormat } from './media';
+export { captureImage, File, FileFormat, selectMedia, viewImages, Media } from './media';
 export { LocationProps, Location, getLocation, showLocation } from './location';

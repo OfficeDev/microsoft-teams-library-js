@@ -218,6 +218,30 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
 }
 
 /**
+ * Registers a handler for clicking the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when the personal app button is clicked in the app bar.
+ */
+export function registerAppButtonClickHandler(handler: () => void): void {
+  ensureInitialized();
+
+  GlobalVars.appButtonClickHandler = handler;
+  handler && sendMessageRequestToParent('registerHandler', ['appButtonClick']);
+}
+
+/**
+ * Registers a handler for hovering the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when the personal app button is hovered in the app bar.
+ */
+export function registerAppButtonHoverHandler(handler: () => void): void {
+  ensureInitialized();
+
+  GlobalVars.appButtonHoverHandler = handler;
+  handler && sendMessageRequestToParent('registerHandler', ['appButtonHover']);
+}
+
+/**
  * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
  * navigation stack should use this handler to navigate the user back within their frame. If an app finds
  * that after running its back button handler it cannot handle the event it should call the navigateBack
@@ -352,7 +376,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
+  ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.settings, FrameContexts.task);
   const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }

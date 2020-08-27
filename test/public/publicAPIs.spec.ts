@@ -18,7 +18,9 @@ import {
   registerOnThemeChangeHandler,
   initialize,
   setFrameContext,
-  initializeWithFrameContext
+  initializeWithFrameContext,
+  registerAppButtonClickHandler,
+  registerAppButtonHoverHandler
 } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -63,7 +65,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual('1.6.0');
+    expect(initMessage.args[0]).toEqual('1.7.0');
   });
 
   it('should allow multiple initialize calls', () => {
@@ -126,6 +128,32 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     utils.sendMessage('changeSettings', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it('should successfully register a app button click handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    registerAppButtonClickHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('appButtonClick', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it('should successfully register a app button hover handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    registerAppButtonHoverHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('appButtonHover', '');
 
     expect(handlerCalled).toBeTruthy();
   });
@@ -906,7 +934,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
-    expect(initMessage.args[0]).toEqual('1.6.0');
+    expect(initMessage.args[0]).toEqual('1.7.0');
     let message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);

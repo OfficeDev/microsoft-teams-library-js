@@ -544,7 +544,7 @@ export interface SdkError {
   message?: string;
 }
 
-export const enum ErrorCode {
+export enum ErrorCode {
   /**
    * API not supported in the current platform.
    */
@@ -558,35 +558,43 @@ export const enum ErrorCode {
   */
   PERMISSION_DENIED = 1000,
   /**
-  Network issue
-  */
+   * Network issue
+   */
   NETWORK_ERROR = 2000,
   /**
-  Underlying hardware doesn't support the capability
-  */
+   * Underlying hardware doesn't support the capability
+   */
   NO_HW_SUPPORT = 3000,
   /**
-  One or more arguments are invalid
-  */
+   * One or more arguments are invalid
+   */
   INVALID_ARGUMENTS = 4000,
   /**
-  User is not authorized for this operation
-  */
+   * User is not authorized for this operation
+   */
   UNAUTHORIZED_USER_OPERATION = 5000,
   /**
-  Could not complete the operation due to insufficient resources
-  */
+   * Could not complete the operation due to insufficient resources
+   */
   INSUFFICIENT_RESOURCES = 6000,
   /**
-  Platform throttled the request because of API was invoked too frequently
-  */
+   * Platform throttled the request because of API was invoked too frequently
+   */
   THROTTLE = 7000,
   /**
-  User aborted the operation
-  */
+   * User aborted the operation
+   */
   USER_ABORT = 8000,
   /**
-  Platform code is old and doesn't implement this API
-  */
+   * Platform code is old and doesn't implement this API
+   */
   OLD_PLATFORM = 9000,
+  /**
+   * The file specified was not found on the given location
+   */
+  FILE_NOT_FOUND = 404,
+  /**
+   * The return value is too big and has exceeded our size boundries
+   */
+  SIZE_EXCEEDED = 10000,
 }
