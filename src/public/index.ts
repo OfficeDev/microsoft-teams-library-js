@@ -37,4 +37,19 @@ export {
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
-export { captureImage, File, FileFormat, selectMedia, viewImages, Media } from './media';
+export {
+  AudioProps,
+  CameraStartMode,
+  File,
+  FileFormat,
+  ImageProps,
+  ImageUri,
+  ImageUriType,
+  Media,
+  MediaInputs,
+  MediaType,
+  Source,
+  captureImage,
+  selectMedia,
+  viewImages,
+} from './media';
