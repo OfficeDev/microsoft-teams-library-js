@@ -407,3 +407,11 @@ export function initializeWithFrameContext(
   initialize(callback, validMessageOrigins);
   setFrameContext(frameContext);
 }
+
+/**
+ * Notifies teams client to escape focus from hosted content
+ */
+export function returnFocus(): void {
+  ensureInitialized();
+  sendMessageRequestToParent('returnFocus');
+}

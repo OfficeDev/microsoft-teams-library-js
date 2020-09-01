@@ -9,6 +9,7 @@ import {
   shareDeepLink,
   registerOnLoadHandler,
   registerBeforeUnloadHandler,
+  returnFocus,
   enablePrintCapability,
   registerChangeSettingsHandler,
   getContext,
@@ -20,7 +21,7 @@ import {
   setFrameContext,
   initializeWithFrameContext,
   registerAppButtonClickHandler,
-  registerAppButtonHoverHandler
+  registerAppButtonHoverHandler,
 } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -104,7 +105,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('should invoke callback immediatelly if initialization has already completed', () => {
     initialize();
-    
+
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
 
@@ -239,7 +240,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       parentMessageId: 'someParentMessageId',
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
-      meetingId: 'dummyMeetingId'
+      meetingId: 'dummyMeetingId',
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
@@ -792,16 +793,16 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBe(true);
   });
 
-  describe("registerOnLoadHandler", () => {
-    it("should not allow calls before initialization", () => {
+  describe('registerOnLoadHandler', () => {
+    it('should not allow calls before initialization', () => {
       expect(() =>
         registerOnLoadHandler(() => {
           return false;
-        })
-      ).toThrowError("The library has not yet been initialized");
+        }),
+      ).toThrowError('The library has not yet been initialized');
     });
-    it("should successfully register handler", () => {
-      utils.initializeWithContext("content");
+    it('should successfully register handler', () => {
+      utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       registerOnLoadHandler(() => {
@@ -809,7 +810,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         return false;
       });
 
-      utils.sendMessage("load");
+      utils.sendMessage('load');
 
       expect(handlerInvoked).toBe(true);
     });
@@ -845,6 +846,15 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
       let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).not.toBeNull();
+    });
+
+    it('should successfully call returnFocus', () => {
+      utils.initializeWithContext('content');
+      returnFocus();
+
+      const message = utils.findMessageByFunc('returnFocus');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(0);
     });
 
     it('should successfully share a deep link in content context', () => {

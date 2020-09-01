@@ -33,6 +33,7 @@ export {
   registerOnThemeChangeHandler,
   registerAppButtonClickHandler,
   registerAppButtonHoverHandler,
+  returnFocus,
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
