@@ -379,6 +379,11 @@ export interface Context {
    * Indication whether the tab is in a pop out window
    */
   isMultiWindow?: boolean;
+
+  /**
+   * Personal app icon y coordinate position
+   */
+  appIconPosition?: number;
 }
 
 export interface DeepLinkParameters {
