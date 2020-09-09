@@ -223,22 +223,34 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  * @param handler The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
-  ensureInitialized();
+  ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonClickHandler = handler;
   handler && sendMessageRequestToParent('registerHandler', ['appButtonClick']);
 }
 
 /**
- * Registers a handler for hovering the app button.
+ * Registers a handler for entering hover of the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
- * @param handler The handler to invoke when the personal app button is hovered in the app bar.
+ * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
  */
-export function registerAppButtonHoverHandler(handler: () => void): void {
-  ensureInitialized();
+export function registerAppButtonHoverEnterHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
 
-  GlobalVars.appButtonHoverHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonHover']);
+  GlobalVars.appButtonHoverEnterHandler = handler;
+  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverEnter']);
+}
+
+/**
+ * Registers a handler for exiting hover of the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
+ */
+export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
+
+  GlobalVars.appButtonHoverLeaveHandler = handler;
+  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverLeave']);
 }
 
 /**
