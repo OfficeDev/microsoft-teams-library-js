@@ -32,7 +32,8 @@ export {
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
   registerAppButtonClickHandler,
-  registerAppButtonHoverHandler,
+  registerAppButtonHoverEnterHandler,
+  registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';

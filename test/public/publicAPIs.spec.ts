@@ -20,7 +20,8 @@ import {
   setFrameContext,
   initializeWithFrameContext,
   registerAppButtonClickHandler,
-  registerAppButtonHoverHandler
+  registerAppButtonHoverEnterHandler,
+  registerAppButtonHoverLeaveHandler
 } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -146,15 +147,28 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully register a app button hover handler', () => {
+  it('should successfully register a app button hover enter handler', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerAppButtonHoverHandler(() => {
+    registerAppButtonHoverEnterHandler(() => {
       handlerCalled = true;
     });
 
-    utils.sendMessage('appButtonHover', '');
+    utils.sendMessage('appButtonHoverEnter', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
+  it('should successfully register a app button hover leave handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    registerAppButtonHoverLeaveHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('appButtonHoverLeave', '');
 
     expect(handlerCalled).toBeTruthy();
   });

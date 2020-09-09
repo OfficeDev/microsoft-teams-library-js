@@ -36,5 +36,6 @@ export class GlobalVars {
   public static onCloseConversationHandler: (conversationResponse: ConversationResponse) => void;
   public static getLogHandler: () => string;
   public static appButtonClickHandler: () => void;
-  public static appButtonHoverHandler: () => void;
+  public static appButtonHoverEnterHandler: () => void;
+  public static appButtonHoverLeaveHandler: () => void;
 }
