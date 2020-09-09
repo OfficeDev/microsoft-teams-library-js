@@ -15,7 +15,8 @@ GlobalVars.handlers['changeSettings'] = handleChangeSettings;
 GlobalVars.handlers['startConversation'] = handleStartConversation;
 GlobalVars.handlers['closeConversation'] = handleCloseConversation;
 GlobalVars.handlers['appButtonClick'] = handleAppButtonClick;
-GlobalVars.handlers['appButtonHover'] = handleAppButtonHover;
+GlobalVars.handlers['appButtonHoverEnter'] = handleAppButtonHoverEnter;
+GlobalVars.handlers['appButtonHoverLeave'] = handleAppButtonHoverLeave;
 
 function handleStartConversation(
   subEntityId: string,
@@ -103,9 +104,15 @@ function handleAppButtonClick(): void {
   }
 }
 
-function handleAppButtonHover(): void {
-  if (GlobalVars.appButtonHoverHandler) {
-    GlobalVars.appButtonHoverHandler();
+function handleAppButtonHoverEnter(): void {
+  if (GlobalVars.appButtonHoverEnterHandler) {
+    GlobalVars.appButtonHoverEnterHandler();
+  }
+}
+
+function handleAppButtonHoverLeave(): void {
+  if (GlobalVars.appButtonHoverLeaveHandler) {
+    GlobalVars.appButtonHoverLeaveHandler();
   }
 }
 
