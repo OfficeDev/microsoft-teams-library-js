@@ -374,6 +374,16 @@ export interface Context {
    * The OneNote section ID that is linked to the channel.
    */
   defaultOneNoteSectionId?: string;
+
+  /**
+   * Indication whether the tab is in a pop out window
+   */
+  isMultiWindow?: boolean;
+
+  /**
+   * Personal app icon y coordinate position
+   */
+  appIconPosition?: number;
 }
 
 export interface DeepLinkParameters {
