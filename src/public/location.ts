@@ -4,9 +4,9 @@ import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform
 import { FrameContexts } from './constants';
 
 /**
- * This is the SDK version when captureImage API is supported on mobile.
+ * This is the SDK version when location APIs (getLocation and showLocation) are supported.
  */
-export const locationAPIsRequiredVersion = '1.8.0';
+export const locationAPIsRequiredVersion = '1.9.0';
 
 export interface LocationProps {
   /**

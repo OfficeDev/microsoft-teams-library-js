@@ -56,9 +56,4 @@ export {
   selectMedia,
   viewImages,
 } from './media';
-export { 
-  LocationProps, 
-  Location, 
-  getLocation, 
-  showLocation
-} from './location';
+export { LocationProps, Location, getLocation, showLocation } from './location';
