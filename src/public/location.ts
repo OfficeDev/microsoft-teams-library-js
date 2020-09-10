@@ -58,7 +58,11 @@ export function getLocation(props: LocationProps, callback: (error: SdkError, lo
     callback(oldPlatformError, undefined);
     return;
   }
-
+  if (!props) {
+    const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    callback(invalidInput, undefined);
+    return;
+  }
   const messageId = sendMessageRequestToParent('getLocation', [props]);
   GlobalVars.callbacks[messageId] = callback;
 }
@@ -79,7 +83,11 @@ export function showLocation(location: Location, callback: (error: SdkError, sta
     callback(oldPlatformError, undefined);
     return;
   }
-
+  if (!location) {
+    const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    callback(invalidInput, undefined);
+    return;
+  }
   const messageId = sendMessageRequestToParent('showLocation', [location]);
   GlobalVars.callbacks[messageId] = callback;
 }

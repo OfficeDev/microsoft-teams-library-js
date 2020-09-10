@@ -79,6 +79,16 @@ describe('location', () => {
       "This call is not allowed in the 'settings' context",
     );
   });
+  it('should not allow getLocation calls without props', () => {
+    desktopPlatformMock.initializeWithContext(FrameContexts.content);
+    desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+    let error;
+    getLocation(undefined, (e: SdkError, l: Location) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+  }); 
   it('should allow getLocation calls in desktop', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -208,6 +218,16 @@ describe('location', () => {
       "This call is not allowed in the 'settings' context",
     );
   });
+  it('should not allow showLocation calls without props', () => {
+    desktopPlatformMock.initializeWithContext(FrameContexts.content);
+    desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+    let error;
+    showLocation(null, (e: SdkError, v: boolean) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+  });   
   it('should allow showLocation calls in desktop', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
