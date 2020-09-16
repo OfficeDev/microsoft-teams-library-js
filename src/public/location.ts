@@ -50,7 +50,7 @@ export namespace location {
    */
   export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void {
     if (!callback) {
-      throw new Error('[getLocation] Callback cannot be null');
+      throw new Error('[location.getLocation] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
@@ -64,7 +64,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('getLocation', [props]);
+    const messageId = sendMessageRequestToParent('location.getLocation', [props]);
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -75,7 +75,7 @@ export namespace location {
    */
   export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
     if (!callback) {
-      throw new Error('[showLocation] Callback cannot be null');
+      throw new Error('[location.showLocation] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
@@ -89,7 +89,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('showLocation', [location]);
+    const messageId = sendMessageRequestToParent('location.showLocation', [location]);
     GlobalVars.callbacks[messageId] = callback;
   }
 }

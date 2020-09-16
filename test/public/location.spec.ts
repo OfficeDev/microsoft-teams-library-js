@@ -33,14 +33,14 @@ describe('location', () => {
 
   it('should not allow getLocation calls with null callback', () => {
     expect(() => location.getLocation(defaultLocationProps, null)).toThrowError(
-      '[getLocation] Callback cannot be null',
+      '[location.getLocation] Callback cannot be null',
     );
   });
   it('should not allow getLocation calls with null callback after init context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.getLocation(defaultLocationProps, null)).toThrowError(
-      '[getLocation] Callback cannot be null',
+      '[location.getLocation] Callback cannot be null',
     );
   });
   it('should not allow getLocation calls before initialization', () => {
@@ -92,7 +92,7 @@ describe('location', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.getLocation(defaultLocationProps, emptyCallback);
-    let message = desktopPlatformMock.findMessageByFunc('getLocation');
+    let message = desktopPlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -101,7 +101,7 @@ describe('location', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.getLocation(defaultLocationProps, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('getLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -110,7 +110,7 @@ describe('location', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.getLocation(defaultLocationProps, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('getLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -124,7 +124,7 @@ describe('location', () => {
       loc = l;
     });
 
-    let message = mobilePlatformMock.findMessageByFunc('getLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -153,7 +153,7 @@ describe('location', () => {
       loc = l;
     });
 
-    let message = mobilePlatformMock.findMessageByFunc('getLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -172,14 +172,14 @@ describe('location', () => {
 
   it('should not allow showLocation calls with null callback', () => {
     expect(() => location.showLocation(defaultLocation, null)).toThrowError(
-      '[showLocation] Callback cannot be null',
+      '[location.showLocation] Callback cannot be null',
     );
   });
   it('should not allow showLocation calls with null callback after init context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.showLocation(defaultLocation, null)).toThrowError(
-      '[showLocation] Callback cannot be null',
+      '[location.showLocation] Callback cannot be null',
     );
   });
   it('should not allow showLocation calls before initialization', () => {
@@ -231,7 +231,7 @@ describe('location', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.showLocation(defaultLocation, emptyCallback);
-    let message = desktopPlatformMock.findMessageByFunc('showLocation');
+    let message = desktopPlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -240,7 +240,7 @@ describe('location', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.showLocation(defaultLocation, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('showLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -249,7 +249,7 @@ describe('location', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     location.showLocation(defaultLocation, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('showLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -263,7 +263,7 @@ describe('location', () => {
       value = v;
     });
 
-    let message = mobilePlatformMock.findMessageByFunc('showLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -288,7 +288,7 @@ describe('location', () => {
       value = v;
     });
 
-    let message = mobilePlatformMock.findMessageByFunc('showLocation');
+    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
