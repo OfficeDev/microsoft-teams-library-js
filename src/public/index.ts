@@ -56,3 +56,4 @@ export {
   selectMedia,
   viewImages,
 } from './media';
+export { location } from './location';

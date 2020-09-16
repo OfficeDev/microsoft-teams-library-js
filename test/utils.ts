@@ -1,4 +1,6 @@
 import * as microsoftTeams1 from '../src/public/publicAPIs';
+import { GlobalVars } from '../src/internal/globalVars';
+import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 export interface MessageRequest {
   id: number;
   func: string;
@@ -93,6 +95,7 @@ export class Utils {
     expect(initMessage).not.toBeNull();
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
+    expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {
@@ -138,4 +141,11 @@ export class Utils {
       },
     } as MessageEvent);
   };
+
+  /**
+   * To be called after initializeWithContext to set the clientSupportedSDKVersion
+   */
+  public setClientSupportedSDKVersion = (version: string) => {
+    GlobalVars.clientSupportedSDKVersion = version;
+  }
 }
