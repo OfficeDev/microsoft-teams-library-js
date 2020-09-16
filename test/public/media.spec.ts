@@ -1,10 +1,10 @@
-import { captureImage, SdkError, ErrorCode, File, FileFormat, selectMedia, Media, viewImages } from '../../src/public/index'
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
-import { MediaInputs, MediaType, ImageUri, ImageUriType } from '../../src/public/media';
+import { media } from '../../src/public/media';
 
 /**
  * Test cases for device APIs
@@ -32,26 +32,26 @@ describe('media', () => {
   let emptyCallback = () => {};
 
   it('should not allow captureImage calls with null callback', () => {
-    expect(() => captureImage(null)).toThrowError(
+    expect(() => media.captureImage(null)).toThrowError(
       '[captureImage] Callback cannot be null',
     );
   });
   it('should not allow captureImage calls with null callback after init context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => captureImage(null)).toThrowError(
+    expect(() => media.captureImage(null)).toThrowError(
       '[captureImage] Callback cannot be null',
     );
   });
   it('should not allow captureImage calls before initialization', () => {
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => media.captureImage(emptyCallback)).toThrowError(
       'The library has not yet been initialized',
     );
   });
   it('captureImage call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let error;
-    captureImage((e: SdkError, f: File[]) => {
+    media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
     });
     expect(error).not.toBeNull();
@@ -60,28 +60,28 @@ describe('media', () => {
   it('should not allow captureImage calls for authentication frame context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => media.captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'authentication' context",
     );
   });
   it('should not allow captureImage calls for remove frame context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => media.captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'remove' context",
     );
   });
   it('should not allow captureImage calls for settings frame context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => captureImage(emptyCallback)).toThrowError(
+    expect(() => media.captureImage(emptyCallback)).toThrowError(
       "This call is not allowed in the 'settings' context",
     );
   });
   it('should not allow captureImage calls in desktop', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
     let error;
-    captureImage((e: SdkError, f: File[]) => {
+    media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
     });
     expect(error).not.toBeNull();
@@ -90,7 +90,7 @@ describe('media', () => {
   it('captureImage call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    captureImage(emptyCallback);
+    media.captureImage(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('captureImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
@@ -98,7 +98,7 @@ describe('media', () => {
   it('captureImage call in content frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    captureImage(emptyCallback);
+    media.captureImage(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('captureImage');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
@@ -107,7 +107,7 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
-    captureImage((e: SdkError, f: File[]) => {
+    media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
       files = f;
     });
@@ -119,10 +119,10 @@ describe('media', () => {
     let callbackId = message.id;
     let filesArray = [{
         content: 'base64encodedImage',
-        format: FileFormat.Base64,
+        format: media.FileFormat.Base64,
         mimeType: 'image/png',
         size: 300,
-      } as File];
+      } as media.File];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -134,7 +134,7 @@ describe('media', () => {
     expect(files.length).toBe(1);
     let file = files[0];
     expect(file).not.toBeNull();
-    expect(file.format).toBe(FileFormat.Base64);
+    expect(file.format).toBe(media.FileFormat.Base64);
     expect(file.mimeType).toBe('image/png');
     expect(file.content).not.toBeNull();
     expect(file.size).not.toBeNull();
@@ -144,7 +144,7 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
     let files, error;
-    captureImage((e: SdkError, f: File[]) => {
+    media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
       files = f;
     });
@@ -169,11 +169,11 @@ describe('media', () => {
    * Select Media tests
    */
   it('should not allow selectMedia calls with null callback', () => {
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 5,
     };
-    expect(() => selectMedia(mediaInputs, null)).toThrowError(
+    expect(() => media.selectMedia(mediaInputs, null)).toThrowError(
       '[select Media] Callback cannot be null',
     );
   });
@@ -182,7 +182,7 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaError: SdkError;
-    selectMedia(null, (error: SdkError, attachments: Media[]) => {
+    media.selectMedia(null, (error: SdkError, attachments: media.Media[]) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -192,12 +192,12 @@ describe('media', () => {
   it('should not allow selectMedia calls with invalid mediaInputs', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 11,
     };
     let mediaError: SdkError;
-    selectMedia(mediaInputs, (error: SdkError, attachments: Media[]) => {
+    media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -207,11 +207,11 @@ describe('media', () => {
   it('selectMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let mediaError: SdkError;
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 10,
     };
-    selectMedia(mediaInputs, (error: SdkError, attachments: Media[]) => {
+    media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -221,11 +221,11 @@ describe('media', () => {
   it('selectMedia call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 10,
     };
-    selectMedia(mediaInputs, emptyCallback);
+    media.selectMedia(mediaInputs, emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('selectMedia');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -234,11 +234,11 @@ describe('media', () => {
   it('selectMedia call in content frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 10,
     };
-    selectMedia(mediaInputs, emptyCallback);
+    media.selectMedia(mediaInputs, emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('selectMedia');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -247,12 +247,12 @@ describe('media', () => {
   it('selectMedia calls with successful result', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let mediaAttachments: Media[], mediaError: SdkError;
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaAttachments: media.Media[], mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 10,
     };
-    selectMedia(mediaInputs, (e: SdkError, m: Media[]) => {
+    media.selectMedia(mediaInputs, (e: SdkError, m: media.Media[]) => {
       mediaError = e;
       mediaAttachments = m;
     });
@@ -265,10 +265,10 @@ describe('media', () => {
     let filesArray = [{
       content: 'base64encodedImage',
       preview: null,
-      format: FileFormat.ID,
+      format: media.FileFormat.ID,
       mimeType: 'image/jpeg',
       size: 300,
-    } as Media];
+    } as media.Media];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -278,25 +278,25 @@ describe('media', () => {
 
     expect(mediaError).toBeFalsy();
     expect(mediaAttachments.length).toBe(1);
-    let media = mediaAttachments[0];
-    expect(media).not.toBeNull();
-    expect(media.format).toBe(FileFormat.ID);
-    expect(media.mimeType).toBe('image/jpeg');
-    expect(media.content).not.toBeNull();
-    expect(media.size).not.toBeNull();
-    expect(typeof media.size === 'number').toBeTruthy();
-    expect(media.getMedia).toBeDefined();
+    let mediaAttachment = mediaAttachments[0];
+    expect(mediaAttachment).not.toBeNull();
+    expect(mediaAttachment.format).toBe(media.FileFormat.ID);
+    expect(mediaAttachment.mimeType).toBe('image/jpeg');
+    expect(mediaAttachment.content).not.toBeNull();
+    expect(mediaAttachment.size).not.toBeNull();
+    expect(typeof mediaAttachment.size === 'number').toBeTruthy();
+    expect(mediaAttachment.getMedia).toBeDefined();
   });
 
   it('selectMedia calls with error', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let mediaAttachments: Media[], mediaError: SdkError;
-    let mediaInputs: MediaInputs = {
-      mediaType: MediaType.Image,
+    let mediaAttachments: media.Media[], mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
       maxMediaCount: 10,
     };
-    selectMedia(mediaInputs, (e: SdkError, m: Media[]) => {
+    media.selectMedia(mediaInputs, (e: SdkError, m: media.Media[]) => {
       mediaError = e;
       mediaAttachments = m;
     });
@@ -321,11 +321,11 @@ describe('media', () => {
    * Get Media tests
    */
   it('should not allow getMedia calls with null callback', () => {
-    let media: Media = new Media();
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    expect(() => media.getMedia(null)).toThrowError(
+    let mediaOutput: media.Media = new media.Media();
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    expect(() => mediaOutput.getMedia(null)).toThrowError(
       '[get Media] Callback cannot be null',
     );
   });
@@ -333,12 +333,12 @@ describe('media', () => {
   it('should not allow getMedia calls with invalid media mimetype', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let media: Media = new Media();
+    let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    media.content = "1234567";
-    media.mimeType = null;
-    media.format = FileFormat.ID;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = null;
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -348,12 +348,12 @@ describe('media', () => {
   it('should not allow getMedia calls with invalid media content', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let media: Media = new Media();
+    let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    media.content = null;
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    mediaOutput.content = null;
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -363,12 +363,12 @@ describe('media', () => {
   it('should not allow getMedia calls with invalid media file format', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let media: Media = new Media();
+    let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.Base64;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.Base64;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -377,12 +377,12 @@ describe('media', () => {
 
   it('getMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
-    let media: Media = new Media();
+    let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -392,11 +392,11 @@ describe('media', () => {
   it('getMedia call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let media: Media = new Media();
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    media.getMedia(emptyCallback);
+    let mediaOutput: media.Media = new media.Media();
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('getMedia');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
@@ -406,11 +406,11 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let file: Blob, mediaError: SdkError;
-    let media: Media = new Media();
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    let mediaOutput: media.Media = new media.Media();
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
       file = blob;
     });
@@ -435,11 +435,11 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let file: Blob, mediaError: SdkError;
-    let media: Media = new Media();
-    media.content = "1234567";
-    media.mimeType = "image/jpeg";
-    media.format = FileFormat.ID;
-    media.getMedia((error: SdkError, blob: Blob) => {
+    let mediaOutput: media.Media = new media.Media();
+    mediaOutput.content = "1234567";
+    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.format = media.FileFormat.ID;
+    mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
       file = blob;
     });
@@ -463,13 +463,13 @@ describe('media', () => {
    * View Images
    */
   it('should not allow viewImages calls with null callback', () => {
-    let uris: ImageUri[] = [];
-    let uri: ImageUri = {
+    let uris: media.ImageUri[] = [];
+    let uri: media.ImageUri = {
       value: "https://www.w3schools.com/images/picture.jpg",
-      type: ImageUriType.URL
+      type: media.ImageUriType.URL
     };
     uris.push(uri);
-    expect(() => viewImages(uris, null)).toThrowError(
+    expect(() => media.viewImages(uris, null)).toThrowError(
       '[view images] Callback cannot be null',
     );
   });
@@ -478,7 +478,7 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaError: SdkError;
-    viewImages(null, (error: SdkError) => {
+    media.viewImages(null, (error: SdkError) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -488,9 +488,9 @@ describe('media', () => {
   it('should not allow viewImages calls with invalid imageuris', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let uris: ImageUri[] = [];
+    let uris: media.ImageUri[] = [];
     let mediaError: SdkError;
-    viewImages(uris, (error: SdkError) => {
+    media.viewImages(uris, (error: SdkError) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -500,13 +500,13 @@ describe('media', () => {
   it('viewImages call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let mediaError: SdkError;
-    let uris: ImageUri[] = [];
-    let uri: ImageUri = {
+    let uris: media.ImageUri[] = [];
+    let uri: media.ImageUri = {
       value: "https://www.w3schools.com/images/picture.jpg",
-      type: ImageUriType.URL
+      type: media.ImageUriType.URL
     };
     uris.push(uri);
-    viewImages(uris, (error: SdkError) => {
+    media.viewImages(uris, (error: SdkError) => {
       mediaError = error;
     });
     expect(mediaError).not.toBeNull();
@@ -516,13 +516,13 @@ describe('media', () => {
   it('viewImages call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let uris: ImageUri[] = [];
-    let uri: ImageUri = {
+    let uris: media.ImageUri[] = [];
+    let uri: media.ImageUri = {
       value: "https://www.w3schools.com/images/picture.jpg",
-      type: ImageUriType.URL
+      type: media.ImageUriType.URL
     };
     uris.push(uri);
-    viewImages(uris, emptyCallback);
+    media.viewImages(uris, emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('viewImages');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -531,13 +531,13 @@ describe('media', () => {
   it('viewImages call in content frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-    let uris: ImageUri[] = [];
-    let uri: ImageUri = {
+    let uris: media.ImageUri[] = [];
+    let uri: media.ImageUri = {
       value: "https://www.w3schools.com/images/picture.jpg",
-      type: ImageUriType.URL
+      type: media.ImageUriType.URL
     };
     uris.push(uri);
-    viewImages(uris, emptyCallback);
+    media.viewImages(uris, emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('viewImages');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -547,13 +547,13 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaError: SdkError;
-    let uris: ImageUri[] = [];
-    let uri: ImageUri = {
+    let uris: media.ImageUri[] = [];
+    let uri: media.ImageUri = {
       value: "1234567",
-      type: ImageUriType.ID
+      type: media.ImageUriType.ID
     };
     uris.push(uri);
-    viewImages(uris, (error: SdkError) => {
+    media.viewImages(uris, (error: SdkError) => {
       mediaError = error;
     });
 
