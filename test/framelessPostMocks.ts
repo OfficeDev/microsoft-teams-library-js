@@ -1,6 +1,7 @@
 import * as microsoftTeams1 from '../src/public/publicAPIs';
 import { ExtendedWindow, MessageRequest, MessageResponse, DOMMessageEvent } from '../src/internal/interfaces';
 import { GlobalVars } from '../src/internal/globalVars';
+import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
@@ -48,7 +49,7 @@ export class FramelessPostMocks {
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
     this.respondToInitMessage(initMessage, frameContext, hostClientType);
-    expect(GlobalVars.clientSupportedSDKVersion).toEqual('1.6.0');
+    expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
   };
 
   /**
