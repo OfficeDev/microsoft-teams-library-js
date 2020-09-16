@@ -1,5 +1,5 @@
 import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile } from '../../src/internal/mediaUtil';
-import { MediaInputs, MediaType, FileFormat, ImageUri, ImageUriType, MediaChunk, AssembleAttachment } from '../../src/public/media';
+import { media } from '../../src/public/media';
 
 describe('mediaUtil', () => {
 
@@ -22,15 +22,15 @@ describe('mediaUtil', () => {
   });
 
   it('test createFile success', () => {
-    const assemble1: AssembleAttachment = decodeAttachment({
+    const assemble1: media.AssembleAttachment = decodeAttachment({
       chunk: btoa("abc"),
       chunkSequence: 1
     }, "image/jpeg");
-    const assemble2: AssembleAttachment = decodeAttachment({
+    const assemble2: media.AssembleAttachment = decodeAttachment({
       chunk: btoa("xyz"),
       chunkSequence: 2
     }, "image/jpeg");
-    const assembleAttachment: AssembleAttachment[] = [];
+    const assembleAttachment: media.AssembleAttachment[] = [];
     assembleAttachment.push(assemble1);
     assembleAttachment.push(assemble2);
     const result = createFile(assembleAttachment, "image/jpeg");
@@ -51,7 +51,7 @@ describe('mediaUtil', () => {
   });
 
   it('test decodeAttachment failure with null mimetype', () => {
-    const chunk: MediaChunk = {
+    const chunk: media.MediaChunk = {
       chunk: "abc",
       chunkSequence: 1
     };
@@ -60,7 +60,7 @@ describe('mediaUtil', () => {
   });
 
   it('test decodeAttachment success', () => {
-    const chunk: MediaChunk = {
+    const chunk: media.MediaChunk = {
       chunk: btoa("abc"),
       chunkSequence: 1
     };
@@ -77,13 +77,13 @@ describe('mediaUtil', () => {
   });
 
   it('test validateSelectMediaInputs failure with invalid param', () => {
-    const mediaInput: MediaInputs = { mediaType: MediaType.Image, maxMediaCount: 50 };
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, maxMediaCount: 50 };
     const result = validateSelectMediaInputs(mediaInput);
     expect(result).toBeFalsy();
   });
 
   it('test success case for validate select media input function', () => {
-    const mediaInput: MediaInputs = { mediaType: MediaType.Image, maxMediaCount: 10 };
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, maxMediaCount: 10 };
     const result = validateSelectMediaInputs(mediaInput);
     expect(result).toBeTruthy();
   });
@@ -102,17 +102,17 @@ describe('mediaUtil', () => {
   });
 
   it('test validateGetMediaInputs with null content', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, null);
+    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.ID, null);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with invalid params', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.Base64, "Something not null");
+    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.Base64, "Something not null");
     expect(result).toBeFalsy();
   });
 
   it('test success case for validate get media input function', () => {
-    const result = validateGetMediaInputs("image/jpeg", FileFormat.ID, "Something not null");
+    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.ID, "Something not null");
     expect(result).toBeTruthy();
   });
 
@@ -130,9 +130,9 @@ describe('mediaUtil', () => {
   });
 
   it('test success case for validateViewImagesInput', () => {
-    const uriList: ImageUri[] = [];
-    const imageUri: ImageUri = {
-      type: ImageUriType.ID,
+    const uriList: media.ImageUri[] = [];
+    const imageUri: media.ImageUri = {
+      type: media.ImageUriType.ID,
       value: "Something not null"
     }
     uriList.push(imageUri);
