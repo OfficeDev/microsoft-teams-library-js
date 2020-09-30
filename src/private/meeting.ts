@@ -10,20 +10,20 @@ export namespace meeting {
    */
   export interface MeetingRoomInfo {
     /**
-    * endpoint id of the meeting room.
-    */
+     * endpoint id of the meeting room.
+     */
     endpointId: string;
     /**
-    * device name of the meeting room.
-    */
+     * device name of the meeting room.
+     */
     deviceName: string;
     /**
-    * client type of the meeting room.
-    */
+     * client type of the meeting room.
+     */
     clientType: string;
     /**
-    * client version of the meeting room.
-    */
+     * client version of the meeting room.
+     */
     clientVersion: string;
   }
   /**
