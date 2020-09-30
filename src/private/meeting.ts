@@ -5,29 +5,31 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
+   *
    * Data structure to represent a meeting room.
    */
   export interface MeetingRoomInfo {
     /**
-        endpoint id of the meeting room.
-        */
+    * endpoint id of the meeting room.
+    */
     endpointId: string;
     /**
-        device name of the meeting room.
-        */
+    * device name of the meeting room.
+    */
     deviceName: string;
     /**
-        client type of the meeting room.
-        */
+    * client type of the meeting room.
+    */
     clientType: string;
     /**
-        client version of the meeting room.
-        */
+    * client version of the meeting room.
+    */
     clientVersion: string;
   }
   /**
    * @private
    * Hide from docs
+   *
    * Data structure to represent capabilities of a meeting room.
    */
   export interface MeetingRoomCapability {
@@ -48,6 +50,7 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
+   *
    * Data structure to represent states of a meeting room.
    */
   export interface MeetingRoomState {
@@ -81,6 +84,7 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
+   *
    * Fetch the meeting room info that paired with current client.
    * @param callback Callback to invoke when the meeting room info is fetched.
    */
@@ -93,6 +97,7 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
+   *
    * Send a command to paired meeting room.
    * @param commandName The command name.
    * @param callback Callback to invoke when the command response returns.
@@ -115,6 +120,7 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
+   *
    * Registers a handler for meeting room capabilities update.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the capabilities of meeting room update.
