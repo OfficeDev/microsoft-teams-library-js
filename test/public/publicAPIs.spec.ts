@@ -21,7 +21,8 @@ import {
   initializeWithFrameContext,
   registerAppButtonClickHandler,
   registerAppButtonHoverEnterHandler,
-  registerAppButtonHoverLeaveHandler
+  registerAppButtonHoverLeaveHandler,
+  returnFocus
 } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -918,6 +919,19 @@ describe('MicrosoftTeams-publicAPIs', () => {
       expect(readyToUnloadMessage).not.toBeNull();
     });
   });
+
+  describe('returnFocus', () => {
+    it('should successfully returnFocus', () => {
+      utils.initializeWithContext('content');
+
+      returnFocus(true);
+
+      let returnFocusMessage = utils.findMessageByFunc('returnFocus');
+      expect(returnFocusMessage).not.toBeNull();
+      expect(returnFocusMessage.args.length).toBe(1);
+      expect(returnFocusMessage.args[0]).toBe(true);
+    });
+  })
 
   it('should successfully frame context', () => {
     utils.initializeWithContext('content');
