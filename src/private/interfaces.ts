@@ -120,3 +120,77 @@ export interface UserJoinedTeamsInformation {
    */
   userJoinedTeams: TeamInformation[];
 }
+
+/**
+ * @private
+ * Hide from docs
+ *
+ * Data structure to represent a meeting room.
+ */
+export interface MeetingRoomInfo {
+  /**
+   * endpoint id of the meeting room.
+   */
+  endpointId: string;
+  /**
+   * device name of the meeting room.
+   */
+  deviceName: string;
+  /**
+   * client type of the meeting room.
+   */
+  clientType: string;
+  /**
+   * client version of the meeting room.
+   */
+  clientVersion: string;
+}
+/**
+ * @private
+ * Hide from docs
+ *
+ * Data structure to represent capabilities of a meeting room.
+ */
+export interface MeetingRoomCapability {
+  /**
+   * media control capabilities, value can be "toggleMute", "toggleCamera", "toggleCaptions", "volume".
+   */
+  mediaControls: string[];
+  /**
+   * main stage layout control capabilities, value can be "showVideoGallery", "showContent", "showVideoGalleryAndContent", "showLargeGallery", "showTogether".
+   */
+  stageLayoutControls: string[];
+  /**
+   * meeting control capabilities, value can be "leaveMeeting".
+   */
+  meetingControls: string[];
+}
+
+/**
+ * @private
+ * Hide from docs
+ *
+ * Data structure to represent states of a meeting room.
+ */
+export interface MeetingRoomState {
+  /**
+   * current mute state, true: mute, false: unmute.
+   */
+  toggleMute: boolean;
+  /**
+   * current camera state, true: camera on, false: camera off.
+   */
+  toggleCamera: boolean;
+  /**
+   * current captions state, true: captions on, false: captions off.
+   */
+  toggleCaptions: boolean;
+  /**
+   * current main stage layout state, value can be one of "Gallery", "Content + gallery", "Content", "Large gallery" and "Together mode".
+   */
+  stageLayout: string;
+  /**
+   * current leaveMeeting state, true: leave, false: no-op.
+   */
+  leaveMeeting: boolean;
+}

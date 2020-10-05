@@ -9,6 +9,9 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
+  MeetingRoomInfo,
+  MeetingRoomCapability,
+  MeetingRoomState,
 } from './interfaces';
 export {
   enterFullscreen,
@@ -24,3 +27,4 @@ export {
   uploadCustomApp,
 } from './privateAPIs';
 export { conversations } from './conversations';
+export { meeting } from './meeting';

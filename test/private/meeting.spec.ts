@@ -3,13 +3,14 @@ import { FramelessPostMocks } from '../framelessPostMocks';
 import { meeting } from '../../src/private/meeting'
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { MeetingRoomCapability, MeetingRoomInfo, MeetingRoomState } from '../../src/private/interfaces';
 
 describe('meetings', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils()
-  const meetingRoomInfo: meeting.MeetingRoomInfo = {endpointId: "123-456", deviceName: "conference room 001",clientType: "norden", clientVersion: "v-2020-09-28"};
-  const meetingRoomCapability: meeting.MeetingRoomCapability = {mediaControls: ["toggleMute", "toggleCamera"], stageLayoutControls: ["showVideoGallery", "showContent"], meetingControls: []};
-  const meetingRoomState: meeting.MeetingRoomState = {toggleMute: true, toggleCamera: false, toggleCaptions: false, stageLayout: "Gallery", leaveMeeting: false};
+  const meetingRoomInfo: MeetingRoomInfo = {endpointId: "123-456", deviceName: "conference room 001",clientType: "norden", clientVersion: "v-2020-09-28"};
+  const meetingRoomCapability: MeetingRoomCapability = {mediaControls: ["toggleMute", "toggleCamera"], stageLayoutControls: ["showVideoGallery", "showContent"], meetingControls: []};
+  const meetingRoomState: MeetingRoomState = {toggleMute: true, toggleCamera: false, toggleCaptions: false, stageLayout: "Gallery", leaveMeeting: false};
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -31,7 +32,7 @@ describe('meetings', () => {
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        meeting.getPairedMeetingRoomInfo((meetingRoomInfo: meeting.MeetingRoomInfo) => {}),
+        meeting.getPairedMeetingRoomInfo((meetingRoomInfo: MeetingRoomInfo) => {}),
       ).toThrowError('The library has not yet been initialized');
     });
 
@@ -39,8 +40,8 @@ describe('meetings', () => {
       mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let returnedMeetingRoomInfo: meeting.MeetingRoomInfo = null;
-      meeting.getPairedMeetingRoomInfo((meetingRoomInfo: meeting.MeetingRoomInfo) => {
+      let returnedMeetingRoomInfo: MeetingRoomInfo = null;
+      meeting.getPairedMeetingRoomInfo((meetingRoomInfo: MeetingRoomInfo) => {
         handlerInvoked = true;
         returnedMeetingRoomInfo = meetingRoomInfo;
       });
@@ -162,7 +163,7 @@ describe('meetings', () => {
 
       let handlerInvoked = false;
       let returnedCapabilities;
-      meeting.registerMeetingRoomCapabilitiesUpdateHandler((capabilities: meeting.MeetingRoomCapability) => {
+      meeting.registerMeetingRoomCapabilitiesUpdateHandler((capabilities: MeetingRoomCapability) => {
         handlerInvoked = true;
         returnedCapabilities = capabilities;
       });
@@ -222,7 +223,7 @@ describe('meetings', () => {
 
       let handlerInvoked = false;
       let returnedStates;
-      meeting.registerMeetingRoomStatesUpdateHandler((states: meeting.MeetingRoomState) => {
+      meeting.registerMeetingRoomStatesUpdateHandler((states: MeetingRoomState) => {
         handlerInvoked = true;
         returnedStates = states;
       });
