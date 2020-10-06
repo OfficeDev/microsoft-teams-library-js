@@ -3,7 +3,6 @@ import { TabInstanceParameters, Context, FrameContext } from '../../src/public/i
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import {
   executeDeepLink,
-  navigateCrossDomain,
   getTabInstances,
   getMruTabInstances,
   shareDeepLink,
@@ -23,6 +22,7 @@ import {
   registerAppButtonHoverEnterHandler,
   registerAppButtonHoverLeaveHandler
 } from '../../src/public/publicAPIs';
+import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
@@ -916,6 +916,19 @@ describe('MicrosoftTeams-publicAPIs', () => {
       readyToUnloadFunc();
       readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).not.toBeNull();
+    });
+  });
+
+  describe('returnFocus', () => {
+    it('should successfully returnFocus', () => {
+      utils.initializeWithContext('content');
+
+      returnFocus(true);
+
+      let returnFocusMessage = utils.findMessageByFunc('returnFocus');
+      expect(returnFocusMessage).not.toBeNull();
+      expect(returnFocusMessage.args.length).toBe(1);
+      expect(returnFocusMessage.args[0]).toBe(true);
     });
   });
 
