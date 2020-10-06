@@ -36,7 +36,6 @@ export {
   registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
-  returnFocus,
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';

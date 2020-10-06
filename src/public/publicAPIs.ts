@@ -394,16 +394,6 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
 }
 
 /**
- * Return focus to the main Teams app. Will focus search bar if navigating foward and app bar if navigating back.
- * @param navigateForward Determines the direction to focus in teams app.
- */
-export function returnFocus(navigateForward?: boolean): void {
-  ensureInitialized();
-
-  sendMessageRequestToParent('returnFocus', [navigateForward]);
-}
-
-/**
  * Navigates the Microsoft Teams app to the specified tab instance.
  * @param tabInstance The tab instance to navigate to.
  */
