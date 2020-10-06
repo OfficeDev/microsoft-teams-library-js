@@ -39,6 +39,7 @@ export {
 } from './publicAPIs';
 export { settings } from './settings';
 export { tasks } from './tasks';
+export { navigation } from './navigation';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
