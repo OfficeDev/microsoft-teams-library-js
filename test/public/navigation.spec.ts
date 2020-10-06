@@ -12,7 +12,7 @@ describe('navigation', () => {
 
       navigation.returnFocus(true);
 
-      let returnFocusMessage = utils.findMessageByFunc('returnFocus');
+      let returnFocusMessage = utils.findMessageByFunc('navigation.returnFocus');
       expect(returnFocusMessage).not.toBeNull();
       expect(returnFocusMessage.args.length).toBe(1);
       expect(returnFocusMessage.args[0]).toBe(true);
