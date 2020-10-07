@@ -1,4 +1,4 @@
-import { navigateBack } from '../public/publicAPIs';
+import { navigateBack } from '../../src/public/navigation';
 import { LoadContext } from '../public/interfaces';
 import { validOriginRegExp, userOriginUrlValidationRegExp, defaultSDKVersionForCompatCheck } from './constants';
 import { GlobalVars } from './globalVars';
