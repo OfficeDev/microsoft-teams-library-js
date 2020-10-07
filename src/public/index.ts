@@ -21,9 +21,6 @@ export {
   getTabInstances,
   initialize,
   initializeWithFrameContext,
-  navigateBack,
-  navigateCrossDomain,
-  navigateToTab,
   print,
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
@@ -37,6 +34,7 @@ export {
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
+export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
