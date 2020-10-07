@@ -1,3 +1,16 @@
+# teamsjs App SDK
+
+## Merging changes made in the original repo
+```powershell
+# Do once, adds a link to the original repo. Do *ONE* of these
+git remote add upstream https://github.com/OfficeDev/microsoft-teams-library-js.git # HTTPS
+git remote add upstream git@github.com:OfficeDev/microsoft-teams-library-js.git # SSH
+
+# Do every time we want to merge
+git fetch upstream
+git merge upstream/master
+```
+
 # [Microsoft Teams JavaScript Library](https://msdn.microsoft.com/en-us/microsoft-teams/)
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://msdn.microsoft.com/en-us/microsoft-teams/). For documentation, see [Reference: Microsoft Teams JavaScript library](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
