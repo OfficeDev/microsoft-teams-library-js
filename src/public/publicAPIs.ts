@@ -357,7 +357,8 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.sidePanel,
     FrameContexts.settings,
     FrameContexts.task,
-    FrameContexts.stage);
+    FrameContexts.stage,
+  );
   const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
   GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
