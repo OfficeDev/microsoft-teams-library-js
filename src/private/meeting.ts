@@ -1,8 +1,82 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { MeetingRoomCapability, MeetingRoomInfo, MeetingRoomState } from './interfaces';
+import { SdkError } from '../public/interfaces';
 
 export namespace meeting {
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Data structure to represent a meeting room.
+   */
+  export interface MeetingRoomInfo {
+    /**
+     * Endpoint id of the meeting room.
+     */
+    endpointId: string;
+    /**
+     * Device name of the meeting room.
+     */
+    deviceName: string;
+    /**
+     * Client type of the meeting room.
+     */
+    clientType: string;
+    /**
+     * Client version of the meeting room.
+     */
+    clientVersion: string;
+  }
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Data structure to represent capabilities of a meeting room.
+   */
+  export interface MeetingRoomCapability {
+    /**
+     * Media control capabilities, value can be "toggleMute", "toggleCamera", "toggleCaptions", "volume".
+     */
+    mediaControls: string[];
+    /**
+     * Main stage layout control capabilities, value can be "showVideoGallery", "showContent", "showVideoGalleryAndContent", "showLargeGallery", "showTogether".
+     */
+    stageLayoutControls: string[];
+    /**
+     * Meeting control capabilities, value can be "leaveMeeting".
+     */
+    meetingControls: string[];
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Data structure to represent states of a meeting room.
+   */
+  export interface MeetingRoomState {
+    /**
+     * Current mute state, true: mute, false: unmute.
+     */
+    toggleMute: boolean;
+    /**
+     * Current camera state, true: camera on, false: camera off.
+     */
+    toggleCamera: boolean;
+    /**
+     * Current captions state, true: captions on, false: captions off.
+     */
+    toggleCaptions: boolean;
+    /**
+     * Current main stage layout state, value can be one of "Gallery", "Content + gallery", "Content", "Large gallery" and "Together mode".
+     */
+    stageLayout: string;
+    /**
+     * Current leaveMeeting state, true: leave, false: no-op.
+     */
+    leaveMeeting: boolean;
+  }
+
   let meetingRoomCapabilitiesUpdateHandler: (capabilities: MeetingRoomCapability) => void;
   GlobalVars.handlers['meeting.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
   let meetingRoomStatesUpdateHandler: (states: MeetingRoomState) => void;
@@ -15,7 +89,9 @@ export namespace meeting {
    * Fetch the meeting room info that paired with current client.
    * @param callback Callback to invoke when the meeting room info is fetched.
    */
-  export function getPairedMeetingRoomInfo(callback: (meetingRoomInfo: MeetingRoomInfo) => void): void {
+  export function getPairedMeetingRoomInfo(
+    callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
+  ): void {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('meeting.getPairedMeetingRoomInfo');
     GlobalVars.callbacks[messageId] = callback;
@@ -29,10 +105,7 @@ export namespace meeting {
    * @param commandName The command name.
    * @param callback Callback to invoke when the command response returns.
    */
-  export function sendCommandToPairedMeetingRoom(
-    commandName: string,
-    callback: (errorCode: number, message?: string) => void,
-  ): void {
+  export function sendCommandToPairedMeetingRoom(commandName: string, callback: (sdkError: SdkError) => void): void {
     if (!commandName || commandName.length == 0) {
       throw new Error('[meeting.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
     }
@@ -83,7 +156,6 @@ export namespace meeting {
     if (meetingRoomCapabilitiesUpdateHandler != null) {
       ensureInitialized();
       meetingRoomCapabilitiesUpdateHandler(capabilities);
-      sendMessageRequestToParent('meeting.handleMeetingRoomCapabilitiesUpdate', [capabilities]);
     }
   }
 
@@ -91,7 +163,6 @@ export namespace meeting {
     if (meetingRoomStatesUpdateHandler != null) {
       ensureInitialized();
       meetingRoomStatesUpdateHandler(states);
-      sendMessageRequestToParent('meeting.handleMeetingRoomStatesUpdate', [states]);
     }
   }
 }

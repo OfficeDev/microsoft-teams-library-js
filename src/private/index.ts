@@ -9,9 +9,6 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
-  MeetingRoomInfo,
-  MeetingRoomCapability,
-  MeetingRoomState,
 } from './interfaces';
 export {
   enterFullscreen,
