@@ -46,6 +46,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
     FrameContexts.settings,
     FrameContexts.remove,
     FrameContexts.task,
+    FrameContexts.stage
   );
 
   const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
