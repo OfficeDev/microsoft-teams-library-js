@@ -13,7 +13,7 @@ import { FrameContexts } from './constants';
  * @param navigateForward Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  ensureInitialized();
+  ensureInitialized(FrameContexts.content);
 
   sendMessageRequestToParent('returnFocus', [navigateForward]);
 }
