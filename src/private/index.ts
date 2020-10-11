@@ -24,4 +24,4 @@ export {
   uploadCustomApp,
 } from './privateAPIs';
 export { conversations } from './conversations';
-export { meeting } from './meeting';
+export { meetingRoom } from './meetingRoom';

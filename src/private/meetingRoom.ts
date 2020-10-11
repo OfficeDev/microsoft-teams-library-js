@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
 
-export namespace meeting {
+export namespace meetingRoom {
   /**
    * @private
    * Hide from docs
@@ -27,6 +27,56 @@ export namespace meeting {
      */
     clientVersion: string;
   }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Enum used to indicate meeting room capabilities.
+   */
+  export enum Capability {
+    /**
+     * Media control capability: toggle mute.
+     */
+    TOGGLE_MUTE = 'toggleMute',
+    /**
+     * Media control capability: toggle camera.
+     */
+    TOGGLE_CAMERA = 'toggleCamera',
+    /**
+     * Media control capability: toggle captions.
+     */
+    TOGGLE_CAPTIONS = 'toggleCaptions',
+    /**
+     * Media control capability: volume ajustion.
+     */
+    VOLUME = 'volume',
+    /**
+     * Stage layout control capability: show gallery mode.
+     */
+    SHOW_VIDEO_GALLERY = 'showVideoGallery',
+    /**
+     * Stage layout control capability: show content mode.
+     */
+    SHOW_CONTENT = 'showContent',
+    /**
+     * Stage layout control capability: show content + gallery mode.
+     */
+    SHOW_VIDEO_GALLERY_AND_CONTENT = 'showVideoGalleryAndContent',
+    /**
+     * Stage layout control capability: show laryge gallery mode.
+     */
+    SHOW_LARGE_GALLERY = 'showLargeGallery',
+    /**
+     * Stage layout control capability: show together mode.
+     */
+    SHOW_TOGETHER = 'showTogether',
+    /**
+     * Meeting control capability: leave meeting.
+     */
+    LEAVE_MEETING = 'leaveMeeting',
+  }
+
   /**
    * @private
    * Hide from docs
@@ -46,6 +96,35 @@ export namespace meeting {
      * Meeting control capabilities, value can be "leaveMeeting".
      */
     meetingControls: string[];
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Enum used to indicate meeting room state of stage layout.
+   */
+  export enum StageLayoutState {
+    /**
+     * Stage layout in gallery mode.
+     */
+    GALLERY = 'Gallery',
+    /**
+     * Stage layout in content + gallery mode.
+     */
+    CONTENT_GALLERY = 'Content + gallery',
+    /**
+     * Stage layout in content mode.
+     */
+    CONTENT = 'Content',
+    /**
+     * Stage layout in large gallery mode.
+     */
+    LARGE_GALLERY = 'Large gallery',
+    /**
+     * Stage layout in together mode.
+     */
+    TOGETHER_MODE = 'Together mode',
   }
 
   /**
@@ -77,10 +156,8 @@ export namespace meeting {
     leaveMeeting: boolean;
   }
 
-  let meetingRoomCapabilitiesUpdateHandler: (capabilities: MeetingRoomCapability) => void;
-  GlobalVars.handlers['meeting.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
-  let meetingRoomStatesUpdateHandler: (states: MeetingRoomState) => void;
-  GlobalVars.handlers['meeting.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
+  GlobalVars.handlers['meetingRoom.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
+  GlobalVars.handlers['meetingRoom.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
 
   /**
    * @private
@@ -93,7 +170,7 @@ export namespace meeting {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getPairedMeetingRoomInfo');
+    const messageId = sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -107,13 +184,13 @@ export namespace meeting {
    */
   export function sendCommandToPairedMeetingRoom(commandName: string, callback: (sdkError: SdkError) => void): void {
     if (!commandName || commandName.length == 0) {
-      throw new Error('[meeting.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
+      throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
     }
     if (!callback) {
-      throw new Error('[meeting.sendCommandToPairedMeetingRoom] Callback cannot be null');
+      throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.sendCommandToPairedMeetingRoom', [commandName]);
+    const messageId = sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName]);
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -129,11 +206,11 @@ export namespace meeting {
     handler: (capabilities: MeetingRoomCapability) => void,
   ): void {
     if (!handler) {
-      throw new Error('[meeting.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
+      throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    meetingRoomCapabilitiesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meeting.meetingRoomCapabilitiesUpdate']);
+    GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
+    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -145,24 +222,24 @@ export namespace meeting {
    */
   export function registerMeetingRoomStatesUpdateHandler(handler: (states: MeetingRoomState) => void): void {
     if (!handler) {
-      throw new Error('[meeting.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
+      throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    meetingRoomStatesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meeting.meetingRoomStatesUpdate']);
+    GlobalVars.meetingRoomStatesUpdateHandler = handler;
+    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 
   function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {
-    if (meetingRoomCapabilitiesUpdateHandler != null) {
+    if (GlobalVars.meetingRoomCapabilitiesUpdateHandler != null) {
       ensureInitialized();
-      meetingRoomCapabilitiesUpdateHandler(capabilities);
+      GlobalVars.meetingRoomCapabilitiesUpdateHandler(capabilities);
     }
   }
 
   function handleMeetingRoomStatesUpdate(states: MeetingRoomState): void {
-    if (meetingRoomStatesUpdateHandler != null) {
+    if (GlobalVars.meetingRoomStatesUpdateHandler != null) {
       ensureInitialized();
-      meetingRoomStatesUpdateHandler(states);
+      GlobalVars.meetingRoomStatesUpdateHandler(states);
     }
   }
 }

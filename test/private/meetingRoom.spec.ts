@@ -1,25 +1,25 @@
 import { Utils } from '../utils';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { meeting } from '../../src/private/meeting';
+import { meetingRoom } from '../../src/private/meetingRoom';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 
-describe('meetings', () => {
+describe('meetingRoom', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils();
-  const meetingRoomInfo: meeting.MeetingRoomInfo = {
+  const meetingRoomInfo: meetingRoom.MeetingRoomInfo = {
     endpointId: '123-456',
     deviceName: 'conference room 001',
     clientType: 'norden',
     clientVersion: 'v-2020-09-28',
   };
-  const meetingRoomCapability: meeting.MeetingRoomCapability = {
+  const meetingRoomCapability: meetingRoom.MeetingRoomCapability = {
     mediaControls: ['toggleMute', 'toggleCamera'],
     stageLayoutControls: ['showVideoGallery', 'showContent'],
     meetingControls: [],
   };
-  const meetingRoomState: meeting.MeetingRoomState = {
+  const meetingRoomState: meetingRoom.MeetingRoomState = {
     toggleMute: true,
     toggleCamera: false,
     toggleCaptions: false,
@@ -47,22 +47,22 @@ describe('meetings', () => {
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.getPairedMeetingRoomInfo(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meetingRoom.getPairedMeetingRoomInfo(() => {})).toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully get meeting room info on mobile', () => {
       mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let returnedMeetingRoomInfo: meeting.MeetingRoomInfo = null;
+      let returnedMeetingRoomInfo: meetingRoom.MeetingRoomInfo = null;
       let returnedSdkError: SdkError;
-      meeting.getPairedMeetingRoomInfo((sdkError: SdkError, meetingRoomInfo: meeting.MeetingRoomInfo) => {
+      meetingRoom.getPairedMeetingRoomInfo((sdkError: SdkError, meetingRoomInfo: meetingRoom.MeetingRoomInfo) => {
         handlerInvoked = true;
         returnedMeetingRoomInfo = meetingRoomInfo;
         returnedSdkError = sdkError;
       });
 
-      let message = mobilePlatformMock.findMessageByFunc('meeting.getPairedMeetingRoomInfo');
+      let message = mobilePlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
 
@@ -86,15 +86,15 @@ describe('meetings', () => {
       mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let returnedMeetingRoomInfo: meeting.MeetingRoomInfo = null;
+      let returnedMeetingRoomInfo: meetingRoom.MeetingRoomInfo = null;
       let returnedSdkError: SdkError;
-      meeting.getPairedMeetingRoomInfo((sdkError: SdkError, meetingRoomInfo: meeting.MeetingRoomInfo) => {
+      meetingRoom.getPairedMeetingRoomInfo((sdkError: SdkError, meetingRoomInfo: meetingRoom.MeetingRoomInfo) => {
         handlerInvoked = true;
         returnedMeetingRoomInfo = meetingRoomInfo;
         returnedSdkError = sdkError;
       });
 
-      let message = mobilePlatformMock.findMessageByFunc('meeting.getPairedMeetingRoomInfo');
+      let message = mobilePlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
 
@@ -115,9 +115,9 @@ describe('meetings', () => {
     it('should allow getPairedMeetingRoomInfo calls on desktop', () => {
       desktopPlatformMock.initializeWithContext('content');
 
-      meeting.getPairedMeetingRoomInfo(emptyCallback);
+      meetingRoom.getPairedMeetingRoomInfo(emptyCallback);
 
-      let message = desktopPlatformMock.findMessageByFunc('meeting.getPairedMeetingRoomInfo');
+      let message = desktopPlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
     });
@@ -125,29 +125,29 @@ describe('meetings', () => {
 
   describe('sendCommandToPairedMeetingRoom', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.sendCommandToPairedMeetingRoom('mute', emptyCallback)).toThrowError(
+      expect(() => meetingRoom.sendCommandToPairedMeetingRoom('mute', emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with null command name', () => {
       mobilePlatformMock.initializeWithContext('content');
-      expect(() => meeting.sendCommandToPairedMeetingRoom(null, emptyCallback)).toThrowError(
-        '[meeting.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
+      expect(() => meetingRoom.sendCommandToPairedMeetingRoom(null, emptyCallback)).toThrowError(
+        '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
     it('should not allow calls with empty command name', () => {
       mobilePlatformMock.initializeWithContext('content');
-      expect(() => meeting.sendCommandToPairedMeetingRoom('', emptyCallback)).toThrowError(
-        '[meeting.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
+      expect(() => meetingRoom.sendCommandToPairedMeetingRoom('', emptyCallback)).toThrowError(
+        '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
     it('should not allow calls with null callback', () => {
       mobilePlatformMock.initializeWithContext('content');
-      expect(() => meeting.sendCommandToPairedMeetingRoom('mute', null)).toThrowError(
-        '[meeting.sendCommandToPairedMeetingRoom] Callback cannot be null',
+      expect(() => meetingRoom.sendCommandToPairedMeetingRoom('mute', null)).toThrowError(
+        '[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null',
       );
     });
 
@@ -156,12 +156,12 @@ describe('meetings', () => {
 
       let handlerInvoked = false;
       let returnedSdkError: SdkError;
-      meeting.sendCommandToPairedMeetingRoom('mute', (sdkError: SdkError) => {
+      meetingRoom.sendCommandToPairedMeetingRoom('mute', (sdkError: SdkError) => {
         handlerInvoked = true;
         returnedSdkError = sdkError;
       });
 
-      let message = mobilePlatformMock.findMessageByFunc('meeting.sendCommandToPairedMeetingRoom');
+      let message = mobilePlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe('mute');
@@ -182,9 +182,9 @@ describe('meetings', () => {
     it('should successfully send commands on desktop', () => {
       desktopPlatformMock.initializeWithContext('content');
 
-      meeting.sendCommandToPairedMeetingRoom('mute', emptyCallback);
+      meetingRoom.sendCommandToPairedMeetingRoom('mute', emptyCallback);
 
-      let message = desktopPlatformMock.findMessageByFunc('meeting.sendCommandToPairedMeetingRoom');
+      let message = desktopPlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe('mute');
@@ -193,13 +193,13 @@ describe('meetings', () => {
 
   describe('registerMeetingRoomCapabilitiesUpdateHandler', () => {
     it('should not allow calls with null callback ', () => {
-      expect(() => meeting.registerMeetingRoomCapabilitiesUpdateHandler(null)).toThrowError(
-        '[meeting.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null',
+      expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(null)).toThrowError(
+        '[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null',
       );
     });
 
     it('should not allow calls before initialization ', () => {
-      expect(() => meeting.registerMeetingRoomCapabilitiesUpdateHandler(emptyCallback)).toThrowError(
+      expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -209,7 +209,7 @@ describe('meetings', () => {
 
       let handlerInvoked = false;
       let returnedCapabilities;
-      meeting.registerMeetingRoomCapabilitiesUpdateHandler((capabilities: meeting.MeetingRoomCapability) => {
+      meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler((capabilities: meetingRoom.MeetingRoomCapability) => {
         handlerInvoked = true;
         returnedCapabilities = capabilities;
       });
@@ -217,11 +217,11 @@ describe('meetings', () => {
       let messageForRegister = mobilePlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('meeting.meetingRoomCapabilitiesUpdate');
+      expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomCapabilitiesUpdate');
 
       mobilePlatformMock.respondToMessage({
         data: {
-          func: 'meeting.meetingRoomCapabilitiesUpdate',
+          func: 'meetingRoom.meetingRoomCapabilitiesUpdate',
           args: [meetingRoomCapability],
         },
       } as DOMMessageEvent);
@@ -235,24 +235,24 @@ describe('meetings', () => {
     it('should successful register capabilities update handler on desktop', () => {
       desktopPlatformMock.initializeWithContext('content');
 
-      meeting.registerMeetingRoomCapabilitiesUpdateHandler(emptyCallback);
+      meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyCallback);
 
       let messageForRegister = desktopPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('meeting.meetingRoomCapabilitiesUpdate');
+      expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomCapabilitiesUpdate');
     });
   });
 
   describe('registerMeetingRoomStatesUpdateHandler', () => {
     it('should not allow calls with null callback ', () => {
-      expect(() => meeting.registerMeetingRoomStatesUpdateHandler(null)).toThrowError(
-        '[meeting.registerMeetingRoomStatesUpdateHandler] Handler cannot be null',
+      expect(() => meetingRoom.registerMeetingRoomStatesUpdateHandler(null)).toThrowError(
+        '[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null',
       );
     });
 
     it('should not allow calls before initialization ', () => {
-      expect(() => meeting.registerMeetingRoomStatesUpdateHandler(emptyCallback)).toThrowError(
+      expect(() => meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -262,7 +262,7 @@ describe('meetings', () => {
 
       let handlerInvoked = false;
       let returnedStates;
-      meeting.registerMeetingRoomStatesUpdateHandler((states: meeting.MeetingRoomState) => {
+      meetingRoom.registerMeetingRoomStatesUpdateHandler((states: meetingRoom.MeetingRoomState) => {
         handlerInvoked = true;
         returnedStates = states;
       });
@@ -270,11 +270,11 @@ describe('meetings', () => {
       let messageForRegister = mobilePlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('meeting.meetingRoomStatesUpdate');
+      expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomStatesUpdate');
 
       mobilePlatformMock.respondToMessage({
         data: {
-          func: 'meeting.meetingRoomStatesUpdate',
+          func: 'meetingRoom.meetingRoomStatesUpdate',
           args: [meetingRoomState],
         },
       } as DOMMessageEvent);
@@ -290,12 +290,12 @@ describe('meetings', () => {
     it('should successful register states update handler on desktop', () => {
       desktopPlatformMock.initializeWithContext('content');
 
-      meeting.registerMeetingRoomStatesUpdateHandler(emptyCallback);
+      meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyCallback);
 
       let messageForRegister = desktopPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('meeting.meetingRoomStatesUpdate');
+      expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomStatesUpdate');
     });
   });
 });
