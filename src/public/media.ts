@@ -76,7 +76,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[captureImage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     if (!GlobalVars.isFramelessWindow) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
@@ -124,7 +124,7 @@ export namespace media {
       if (!callback) {
         throw new Error('[get Media] Callback cannot be null');
       }
-      ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
         const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
         callback(oldPlatformError, null);
@@ -352,7 +352,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[select Media] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
     if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, null);
@@ -390,7 +390,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[view images] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };

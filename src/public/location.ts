@@ -52,7 +52,7 @@ export namespace location {
     if (!callback) {
       throw new Error('[location.getLocation] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
@@ -77,7 +77,7 @@ export namespace location {
     if (!callback) {
       throw new Error('[location.showLocation] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.stage);
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
