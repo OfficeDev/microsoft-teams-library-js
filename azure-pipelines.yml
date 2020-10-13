@@ -1,0 +1,33 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: YarnInstaller@3
+  inputs:
+    versionSpec: '1.x'
+  displayName: 'Yarn 1.x'
+- task: Yarn@3
+  inputs:
+    Arguments: 'install'
+  displayName: 'yarn install'
+- task: Yarn@3
+  inputs:
+    Arguments: 'build'
+  displayName: 'yarn build'
+- task: Yarn@3
+  inputs:
+    Arguments: 'test'
+  displayName: 'yarn test'
+- task: Yarn@3
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'Manual'))
+  inputs:
+    Arguments: 'publish'
+  displayName: 'yarn publish'
