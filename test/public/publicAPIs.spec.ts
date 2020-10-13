@@ -373,6 +373,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
       navigateCrossDomain('https://valid.origin.com');
     });
 
+    it('should allow calls from stage context', () => {
+      utils.initializeWithContext('stage');
+
+      navigateCrossDomain('https://valid.origin.com');
+    });
+
     it('should successfully navigate cross-origin', () => {
       utils.initializeWithContext('content');
 
