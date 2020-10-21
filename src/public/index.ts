@@ -42,3 +42,4 @@ export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
+export { barCode } from './barCode';
