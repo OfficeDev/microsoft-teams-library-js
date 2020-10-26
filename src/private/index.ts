@@ -26,3 +26,4 @@ export {
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
+export { meetingAudio } from './meetingAudio';
