@@ -3,11 +3,11 @@
   "author": "Microsoft Teams",
   "version": "0.0.1",
   "description": "Microsoft Client SDK for building app for Microsoft teams",
-  "main": "./dist/MicrosoftTeams.min.js",
-  "typings": "./dist/MicrosoftTeams.d.ts",
+  "main": "./dist/teamsjs.js",
+  "typings": "./dist/teamsjs.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
+    "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
     "build": "yarn lint && webpack",
