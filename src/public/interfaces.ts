@@ -596,6 +596,10 @@ export enum ErrorCode {
    */
   USER_ABORT = 8000,
   /**
+   * Could not detect the barcode in the given time interval
+   */
+  SCAN_TIME_OUT = 8001,
+  /**
    * Platform code is old and doesn't implement this API
    */
   OLD_PLATFORM = 9000,
