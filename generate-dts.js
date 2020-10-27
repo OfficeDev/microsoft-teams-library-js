@@ -34,8 +34,8 @@ function patchDTS(callback) {
       return console.log(err);
     }
 
-    const result = replace(data)(/declare module 'teamsjs'/gm, "declare module '@microsoft/teamsjs-app-sdk'")(
-      /^import teamsjs.*/g,
+    const result = replace(data)(new RegExp(`declare module '${libraryName}'`, 'gm'), "declare module '@microsoft/teamsjs-app-sdk'")(
+      new RegExp(`import ${libraryName}.*`, 'g'),
       '',
     )(/^var _default: void;/, '')(/export default _default;/, '')(/^\s*[\r\n]/gm, '')();
 
