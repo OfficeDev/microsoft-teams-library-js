@@ -2,8 +2,8 @@
   "name": "@microsoft/teamsjs-app-sdk",
   "author": "Microsoft Teams",
   "version": "0.0.1",
-  "description": "Microsoft Client SDK for building app for Microsoft teams",
-  "main": "./dist/teamsjs.js",
+  "description": "teamsjs App SDK for building teamsjs apps",
+  "main": "./dist/teamsjs.min.js",
   "typings": "./dist/teamsjs.d.ts",
   "repository": {
     "type": "git",
