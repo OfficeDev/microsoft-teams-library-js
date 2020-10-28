@@ -25,7 +25,7 @@ export namespace media {
   /**
    * This is the SDK version when scan barcode API is supported on all three platforms android, iOS and web.
    */
-  export const scanBarCodeAPIRequiredVersion = '2.0.0';
+  export const scanBarCodeAPIRequiredVersion = '1.9.0';
 
   /**
    * Enum for file formats supported
