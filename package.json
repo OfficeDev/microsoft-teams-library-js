@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teamsjs-app-sdk",
   "author": "Microsoft Teams",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "teamsjs App SDK for building teamsjs apps",
   "main": "./dist/teamsjs.min.js",
   "typings": "./dist/teamsjs.d.ts",
