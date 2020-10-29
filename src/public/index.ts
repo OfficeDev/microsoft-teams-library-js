@@ -13,27 +13,7 @@ export {
   TaskInfo,
   TeamInformation,
 } from './interfaces';
-export {
-  enablePrintCapability,
-  executeDeepLink,
-  getContext,
-  getMruTabInstances,
-  getTabInstances,
-  initialize,
-  initializeWithFrameContext,
-  print,
-  registerBackButtonHandler,
-  registerBeforeUnloadHandler,
-  registerChangeSettingsHandler,
-  registerFullScreenHandler,
-  registerOnLoadHandler,
-  registerOnThemeChangeHandler,
-  registerAppButtonClickHandler,
-  registerAppButtonHoverEnterHandler,
-  registerAppButtonHoverLeaveHandler,
-  setFrameContext,
-  shareDeepLink,
-} from './publicAPIs';
+export { core } from './publicAPIs';
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';

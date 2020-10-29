@@ -1,4 +1,4 @@
-const libraryName = 'microsoftTeams';
+const libraryName = 'teamsjsAppSDK';
 const fs = require('fs');
 const rimraf = require('rimraf');
 const timeout = 2000;
@@ -28,23 +28,23 @@ DtsBundlePlugin.prototype.apply = function(compiler) {
 
 function patchDTS(callback) {
   const self = this;
-  console.log('Replacing the references to teamsJs and regularizing it.');
-  fs.readFile('./dist/microsoftTeams.d.ts', 'utf8', (err, data) => {
+  console.log('Replacing the references to teamsjsAppSDKJs and regularizing it.');
+  fs.readFile('./dist/teamsjsAppSDK.d.ts', 'utf8', (err, data) => {
     if (err) {
       return console.log(err);
     }
 
-    const result = replace(data)(/declare module 'microsoftTeams'/gm, "declare module '@microsoft/teams-js'")(
-      /^import microsoftTeams.*/g,
+    const result = replace(data)(/declare module 'teamsjsAppSDK'/gm, "declare module '@microsoft/teamsjsAppSDK-js'")(
+      /^import teamsjsAppSDK.*/g,
       '',
     )(/^var _default: void;/, '')(/export default _default;/, '')(/^\s*[\r\n]/gm, '')();
 
-    fs.writeFile('./dist/microsoftTeams.d.ts', result, 'utf8', err => {
+    fs.writeFile('./dist/teamsjsAppSDK.d.ts', result, 'utf8', err => {
       if (err) {
         return console.log(err);
       }
 
-      fs.rename('./dist/microsoftTeams.d.ts', './/dist/MicrosoftTeams.d.ts', err => {
+      fs.rename('./dist/teamsjsAppSDK.d.ts', './/dist/teamsjsAppSDK.d.ts', err => {
         if (err) {
           console.log('ERROR: ' + err);
           throw err;

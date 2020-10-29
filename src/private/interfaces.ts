@@ -69,12 +69,12 @@ export interface FilePreviewParameters {
   downloadUrl?: string;
 
   /**
-   * Optional; an alternate url optimized for previewing the file in Teams web and desktop clients
+   * Optional; an alternate url optimized for previewing the file in web and desktop clients
    */
   webPreviewUrl?: string;
 
   /**
-   * Optional; an alternate url that allows editing of the file in Teams web and desktop clients
+   * Optional; an alternate url that allows editing of the file in web and desktop clients
    */
   webEditUrl?: string;
 

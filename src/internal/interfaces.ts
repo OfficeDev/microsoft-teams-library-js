@@ -15,7 +15,7 @@ export interface DOMMessageEvent {
  * @private
  * Hide from docs
  */
-export interface TeamsNativeClient {
+export interface teamsjsAppSDKNativeClient {
   framelessPostMessage(msg: string): void;
 }
 
@@ -24,7 +24,7 @@ export interface TeamsNativeClient {
  * Hide from docs
  */
 export interface ExtendedWindow extends Window {
-  nativeInterface: TeamsNativeClient;
+  nativeInterface: teamsjsAppSDKNativeClient;
   onNativeMessage(evt: DOMMessageEvent): void;
 }
 

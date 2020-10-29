@@ -5,7 +5,7 @@ import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 import { generateRegExpFromUrls, compareSDKVersions } from './utils';
 
-// ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+// ::::::::::::::::::::teamsjsAppSDK SDK Internal :::::::::::::::::
 GlobalVars.handlers['themeChange'] = handleThemeChange;
 GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
 GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
@@ -179,7 +179,7 @@ export function processMessage(evt: DOMMessageEvent): void {
  */
 function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
-  // Teams' pre-known whitelist or supplied as valid origin by user during initialization
+  // teamsjsAppSDK' pre-known whitelist or supplied as valid origin by user during initialization
   if (GlobalVars.currentWindow && messageSource === GlobalVars.currentWindow) {
     return false;
   } else if (

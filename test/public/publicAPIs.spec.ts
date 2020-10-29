@@ -1,33 +1,13 @@
-import * as microsoftTeams from '../../src/public/publicAPIs';
+import * as teamsjsAppSDK from '../../src/public/publicAPIs';
 import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
-import {
-  executeDeepLink,
-  getTabInstances,
-  getMruTabInstances,
-  shareDeepLink,
-  registerOnLoadHandler,
-  registerBeforeUnloadHandler,
-  enablePrintCapability,
-  registerChangeSettingsHandler,
-  getContext,
-  _initialize,
-  _uninitialize,
-  registerBackButtonHandler,
-  registerOnThemeChangeHandler,
-  initialize,
-  setFrameContext,
-  initializeWithFrameContext,
-  registerAppButtonClickHandler,
-  registerAppButtonHoverEnterHandler,
-  registerAppButtonHoverLeaveHandler
-} from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
 
-describe('MicrosoftTeams-publicAPIs', () => {
+describe('teamsjsAppSDK-publicAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
@@ -38,26 +18,26 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    core._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 
   it('should not allow calls before initialization', () => {
     expect(() =>
-      getContext(() => {
+      core.getContext(() => {
         return;
       }),
     ).toThrowError('The library has not yet been initialized');
   });
 
   it('should successfully initialize', () => {
-    initialize();
+    core.initialize();
 
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
@@ -72,7 +52,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('should allow multiple initialize calls', () => {
     for (let i = 0; i < 100; i++) {
-      initialize();
+      core.initialize();
     }
 
     // Still only one message actually sent, the extra calls just no-op'ed
@@ -82,12 +62,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('should invoke all callbacks once initialization completes', () => {
     let firstCallbackInvoked: boolean = false;
-    initialize(() => {
+    core.initialize(() => {
       firstCallbackInvoked = true;
     });
 
     let secondCallbackInvoked: boolean = false;
-    initialize(() => {
+    core.initialize(() => {
       secondCallbackInvoked = true;
     });
 
@@ -104,8 +84,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(secondCallbackInvoked).toBe(true);
   });
 
-  it('should invoke callback immediatelly if initialization has already completed', () => {
-    initialize();
+  it('should invoke callback immediately if initialization has already completed', () => {
+    core.initialize();
     
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
@@ -114,7 +94,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.respondToMessage(initMessage, 'content');
 
     let callbackInvoked: boolean = false;
-    initialize(() => {
+    core.initialize(() => {
       callbackInvoked = true;
     });
 
@@ -125,7 +105,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerChangeSettingsHandler(() => {
+    core.registerChangeSettingsHandler(() => {
       handlerCalled = true;
     });
 
@@ -138,7 +118,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerAppButtonClickHandler(() => {
+    core.registerAppButtonClickHandler(() => {
       handlerCalled = true;
     });
 
@@ -151,7 +131,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerAppButtonHoverEnterHandler(() => {
+    core.registerAppButtonHoverEnterHandler(() => {
       handlerCalled = true;
     });
 
@@ -164,7 +144,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerAppButtonHoverLeaveHandler(() => {
+    core.registerAppButtonHoverLeaveHandler(() => {
       handlerCalled = true;
     });
 
@@ -177,7 +157,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
 
     let newTheme: string;
-    registerOnThemeChangeHandler(theme => {
+    core.registerOnThemeChangeHandler(theme => {
       newTheme = theme;
     });
 
@@ -199,7 +179,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
 
     let handlerInvoked = false;
-    registerBackButtonHandler(() => {
+    core.registerBackButtonHandler(() => {
       handlerInvoked = true;
       return true;
     });
@@ -215,7 +195,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
 
     let actualContext: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext = context;
     });
 
@@ -268,7 +248,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext(FrameContexts.sidePanel);
 
     let actualContext: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext = context;
     });
 
@@ -284,7 +264,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext(FrameContexts.content);
 
     let actualContext: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext = context;
     });
 
@@ -300,7 +280,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext(FrameContexts.sidePanel);
 
     let actualContext: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext = context;
     });
 
@@ -316,7 +296,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
 
     let handlerInvoked = false;
-    registerBackButtonHandler(() => {
+    core.registerBackButtonHandler(() => {
       handlerInvoked = true;
       return false;
     });
@@ -412,8 +392,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should allow a missing and valid optional parameter', () => {
       utils.initializeWithContext('content');
 
-      getTabInstances(tabInfo => tabInfo);
-      getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      core.getTabInstances(tabInfo => tabInfo);
+      core.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
     });
   });
 
@@ -421,15 +401,15 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should allow a missing and valid optional parameter', () => {
       utils.initializeWithContext('content');
 
-      getMruTabInstances(tabInfo => tabInfo);
-      getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      core.getMruTabInstances(tabInfo => tabInfo);
+      core.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
     });
   });
 
   describe('executeDeepLink in content context ', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        executeDeepLink('dummyLink', () => {
+        core.executeDeepLink('dummyLink', () => {
           return;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -445,7 +425,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -476,7 +456,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -507,7 +487,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -531,7 +511,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe('executeDeepLink in sidePanel context ', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        executeDeepLink('dummyLink', () => {
+        core.executeDeepLink('dummyLink', () => {
           return;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -547,7 +527,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -578,7 +558,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -609,7 +589,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -633,7 +613,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe('executeDeepLink in task module context ', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        executeDeepLink('dummyLink', () => {
+        core.executeDeepLink('dummyLink', () => {
           return;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -649,7 +629,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -680,7 +660,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -712,7 +692,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
 
       // send message request
-      executeDeepLink(request, onComplete);
+      core.executeDeepLink(request, onComplete);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -736,8 +716,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    initialize();
-    spyOn(microsoftTeams, 'print').and.callFake((): void => {
+    core.initialize();
+    spyOn(teamsjsAppSDK.core, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -752,8 +732,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
-    initialize();
-    spyOn(microsoftTeams, 'print').and.callFake((): void => {
+    core.initialize();
+    spyOn(teamsjsAppSDK.core, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -768,8 +748,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('print handler should successfully call default print handler', () => {
     let handlerCalled = false;
-    initialize();
-    enablePrintCapability();
+    core.initialize();
+    core.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -781,8 +761,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('Ctrl+P should successfully call print handler', () => {
     let handlerCalled = false;
-    initialize();
-    enablePrintCapability();
+    core.initialize();
+    core.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -798,8 +778,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   it('Cmd+P should successfully call print handler', () => {
     let handlerCalled = false;
-    initialize();
-    enablePrintCapability();
+    core.initialize();
+    core.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -816,7 +796,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe("registerOnLoadHandler", () => {
     it("should not allow calls before initialization", () => {
       expect(() =>
-        registerOnLoadHandler(() => {
+      core.registerOnLoadHandler(() => {
           return false;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -825,7 +805,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       utils.initializeWithContext("content");
 
       let handlerInvoked = false;
-      registerOnLoadHandler(() => {
+      core.registerOnLoadHandler(() => {
         handlerInvoked = true;
         return false;
       });
@@ -839,7 +819,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe('registerBeforeUnloadHandler', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        registerBeforeUnloadHandler(() => {
+      core.registerBeforeUnloadHandler(() => {
           return false;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -849,7 +829,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      registerBeforeUnloadHandler(() => {
+      core.registerBeforeUnloadHandler(() => {
         handlerInvoked = true;
         return false;
       });
@@ -871,7 +851,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should successfully share a deep link in content context', () => {
       utils.initializeWithContext('content');
 
-      shareDeepLink({
+      core.shareDeepLink({
         subEntityId: 'someSubEntityId',
         subEntityLabel: 'someSubEntityLabel',
         subEntityWebUrl: 'someSubEntityWebUrl',
@@ -888,7 +868,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should successfully share a deep link in sidePanel context', () => {
       utils.initializeWithContext('sidePanel');
 
-      shareDeepLink({
+      core.shareDeepLink({
         subEntityId: 'someSubEntityId',
         subEntityLabel: 'someSubEntityLabel',
         subEntityWebUrl: 'someSubEntityWebUrl',
@@ -907,7 +887,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
       let handlerInvoked = false;
       let readyToUnloadFunc: () => void;
-      registerBeforeUnloadHandler(readyToUnload => {
+      core.registerBeforeUnloadHandler(readyToUnload => {
         readyToUnloadFunc = readyToUnload;
         handlerInvoked = true;
         return true;
@@ -945,7 +925,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
-    setFrameContext(frameContext);
+    core.setFrameContext(frameContext);
 
     let message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
@@ -959,7 +939,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       websiteUrl: 'someWebsiteUrl',
     };
     utils.initializeWithContext('content');
-    initializeWithFrameContext(frameContext);
+    core.initializeWithFrameContext(frameContext);
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(2);
 

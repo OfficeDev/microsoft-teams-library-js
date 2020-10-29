@@ -1,14 +1,14 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const libraryName = 'microsoftTeams';
+const libraryName = 'teamsjsAppSDK';
 var plugins = [];
 const DtsBundlePlugin = require('./generate-dts');
 plugins.push(new DtsBundlePlugin());
 
 module.exports = {
   entry: {
-    MicrosoftTeams: './src/index.ts',
-    'MicrosoftTeams.min': './src/index.ts',
+    teamsjsAppSDK: './src/index.ts',
+    'teamsjsAppSDK.min': './src/index.ts',
   },
   output: {
     filename: '[name].js',

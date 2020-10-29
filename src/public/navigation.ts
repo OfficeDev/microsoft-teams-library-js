@@ -9,8 +9,8 @@ import { FrameContexts } from './constants';
  */
 
 /**
- * Return focus to the main Teams app. Will focus search bar if navigating foward and app bar if navigating back.
- * @param navigateForward Determines the direction to focus in teams app.
+ * Return focus to the main teamsjs app. Will focus search bar if navigating foward and app bar if navigating back.
+ * @param navigateForward Determines the direction to focus in teamsjs app.
  */
 export function returnFocus(navigateForward?: boolean): void {
   ensureInitialized(FrameContexts.content);
@@ -19,7 +19,7 @@ export function returnFocus(navigateForward?: boolean): void {
 }
 
 /**
- * Navigates the Microsoft Teams app to the specified tab instance.
+ * Navigates the Microsoft teamsjs app to the specified tab instance.
  * @param tabInstance The tab instance to navigate to.
  */
 export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
@@ -56,7 +56,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
 }
 
 /**
- * Navigates back in the Teams client. See registerBackButtonHandler for more information on when
+ * Navigates back in the teamsjs client. See registerBackButtonHandler for more information on when
  * it's appropriate to use this method.
  */
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
