@@ -1,13 +1,13 @@
 {
   "name": "@microsoft/teamsjs-app-sdk",
-  "author": "Microsoft teamsjsAppSDK",
-  "version": "0.0.1",
-  "description": "Microsoft Client SDK for building app",
-  "main": "./dist/teamsjsAppSDK.min.js",
-  "typings": "./dist/teamsjsAppSDK.d.ts",
+  "author": "Microsoft teamsjs",
+  "version": "0.0.2",
+  "description": "teamsjs App SDK for building teamsjs apps",
+  "main": "./dist/teamsjs.min.js",
+  "typings": "./dist/teamsjs.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
+    "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
     "build": "yarn lint && webpack",

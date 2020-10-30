@@ -1,4 +1,4 @@
-const libraryName = 'teamsjsAppSDK';
+const libraryName = 'teamsjs';
 const fs = require('fs');
 const rimraf = require('rimraf');
 const timeout = 2000;
@@ -34,17 +34,17 @@ function patchDTS(callback) {
       return console.log(err);
     }
 
-    const result = replace(data)(/declare module 'teamsjsAppSDK'/gm, "declare module '@microsoft/teamsjsAppSDK-js'")(
-      /^import teamsjsAppSDK.*/g,
+    const result = replace(data)(new RegExp(`declare module '${libraryName}'`, 'gm'), "declare module '@microsoft/teamsjs-app-sdk'")(
+      new RegExp(`import ${libraryName}.*`, 'g'),
       '',
     )(/^var _default: void;/, '')(/export default _default;/, '')(/^\s*[\r\n]/gm, '')();
 
-    fs.writeFile('./dist/teamsjsAppSDK.d.ts', result, 'utf8', err => {
+    fs.writeFile(`./dist/${libraryName}.d.ts`, result, 'utf8', err => {
       if (err) {
         return console.log(err);
       }
 
-      fs.rename('./dist/teamsjsAppSDK.d.ts', './/dist/teamsjsAppSDK.d.ts', err => {
+      fs.rename(`./dist/${libraryName}.d.ts`, `.//dist/${libraryName}.d.ts`, err => {
         if (err) {
           console.log('ERROR: ' + err);
           throw err;

@@ -11,7 +11,12 @@ git fetch upstream
 git merge upstream/master
 ```
 
-# [Microsoft teamsjsAppSDK JavaScript Library](https://msdn.microsoft.com/en-us/microsoft-teams/)
+## BREAKING CHANGES
+
+## Original Repo
+[https://github.com/OfficeDev/microsoft-teams-library-js](OfficeDev/microsoft-teams-library-js)
+
+# [Microsoft Teams JavaScript Library](https://msdn.microsoft.com/en-us/microsoft-teams/)
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://msdn.microsoft.com/en-us/microsoft-teams/). For documentation, see [Reference: Microsoft teamsjsAppSDK JavaScript library](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
