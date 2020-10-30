@@ -1,4 +1,3 @@
-import * as teamsjsAppSDK from '../../src/public/publicAPIs';
 import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import { core } from '../../src/public/publicAPIs';
@@ -717,7 +716,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     core.initialize();
-    spyOn(teamsjsAppSDK.core, 'print').and.callFake((): void => {
+    spyOn(core, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -733,7 +732,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
     let handlerCalled = false;
     core.initialize();
-    spyOn(teamsjsAppSDK.core, 'print').and.callFake((): void => {
+    spyOn(core, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');

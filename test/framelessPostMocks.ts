@@ -1,4 +1,4 @@
-import * as teamsjsAppSDK from '../src/public/publicAPIs';
+import { core } from '../src/public/publicAPIs';
 import { ExtendedWindow, MessageRequest, MessageResponse, DOMMessageEvent } from '../src/internal/interfaces';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
@@ -43,8 +43,8 @@ export class FramelessPostMocks {
   }
 
   public initializeWithContext = (frameContext: string, hostClientType?: string, callback?: () => void, validMessageOrigins?: string[]): void => {
-    teamsjsAppSDK.core._initialize(this.mockWindow);
-    teamsjsAppSDK.core.initialize(callback, validMessageOrigins);
+    core._initialize(this.mockWindow);
+    core.initialize(callback, validMessageOrigins);
     expect(GlobalVars.isFramelessWindow).toBeTruthy();
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();

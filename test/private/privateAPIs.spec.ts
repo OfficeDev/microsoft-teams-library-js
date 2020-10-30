@@ -1,4 +1,4 @@
-import * as teamsjsAppSDK from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
@@ -14,7 +14,6 @@ import {
   exitFullscreen,
   sendCustomEvent,
 } from '../../src/private/privateAPIs';
-import { core } from '../../src/public/publicAPIs';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -39,7 +38,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should exist in the global namespace', () => {
-    expect(teamsjsAppSDK).toBeDefined();
+    expect(core).toBeDefined();
   });
 
   const unSupportedDomains = [
