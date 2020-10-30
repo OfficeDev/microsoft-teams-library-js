@@ -1,6 +1,6 @@
 import { bot } from '../../src/private/bot';
 import { Utils } from '../utils';
-import { _uninitialize } from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 
 describe('bot', () => {
   // Use to send a mock message from the app.
@@ -16,8 +16,8 @@ describe('bot', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 

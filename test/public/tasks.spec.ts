@@ -2,7 +2,7 @@ import { TaskInfo } from '../../src/public/interfaces';
 import { TaskModuleDimension } from '../../src/public/constants';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
-import { _uninitialize } from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 
 describe('tasks', () => {
   // Use to send a mock message from the app.
@@ -18,8 +18,8 @@ describe('tasks', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 
