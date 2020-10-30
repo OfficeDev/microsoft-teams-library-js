@@ -259,11 +259,11 @@ export namespace core {
   }
 
   /**
-   * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
+   * Registers a handler for user presses of the App client's back button. Experiences that maintain an internal
    * navigation stack should use this handler to navigate the user back within their frame. If an app finds
    * that after running its back button handler it cannot handle the event it should call the navigateBack
-   * method to ask the teamsjsAppSDK client to handle it instead.
-   * @param handler The handler to invoke when the user presses their Team client's back button.
+   * method to ask the teamsjs App SDK client to handle it instead.
+   * @param handler The handler to invoke when the user presses their App client's back button.
    */
   export function registerBackButtonHandler(handler: () => boolean): void {
     ensureInitialized();
