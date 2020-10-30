@@ -13,7 +13,7 @@ git merge upstream/master
 
 ## BREAKING CHANGES
 
-The JavaScript library "teams-js" has been renamed to "teamsjs-js"
+The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
 
 ## Original Repo
 [https://github.com/OfficeDev/microsoft-teams-library-js](OfficeDev/microsoft-teams-library-js)
@@ -39,11 +39,11 @@ To install the stable version:
 
 #### npm
 
-`npm install --save @microsoft/teamsjs-js`
+`npm install --save @microsoft/teamsjs-app-sdk`
 
 #### yarn
 
-`yarn add @microsoft/teamsjs-js`
+`yarn add @microsoft/teamsjs-app-sdk`
 
 #### Production
 
@@ -58,7 +58,7 @@ Install either using npm or yarn
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
-import { core } from "@microsoft/teamsjs-js";
+import { core } from "@microsoft/teamsjs-app-sdk";
 ```
 
 ### As a Script Tag
@@ -70,7 +70,7 @@ Reference the library inside of your `.html` page using:
 <script src="https://statics.teams.cdn.office.net/sdk/v1.7.0/js/teamsjs.min.js" integrity="sha384-00JbifySIlPvW32u9rSurgu8PujfL6XFdV9iNn4ZWyurJJ33MFvpwPqmCHDq9ADv" crossorigin="anonymous"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teamsjs-js@1.7.0/dist/teamsjs.min.js"></script>
+<script src="node_modules/@microsoft/teamsjs-app-sdk@1.7.0/dist/teamsjs.min.js"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via local) -->
 <script src="teamsjs.min.js"></script>
