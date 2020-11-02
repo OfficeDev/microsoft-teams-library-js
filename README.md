@@ -14,6 +14,7 @@ git merge upstream/master
 ## BREAKING CHANGES
 
 The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
+  - All the public API functions have been moved under 'core' namespace
 
 ## Original Repo
 [https://github.com/OfficeDev/microsoft-teams-library-js](OfficeDev/microsoft-teams-library-js)

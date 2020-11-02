@@ -56,7 +56,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
 }
 
 /**
- * Navigates back in the teamsjs client. See registerBackButtonHandler for more information on when
+ * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
  * it's appropriate to use this method.
  */
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {

@@ -25,13 +25,13 @@ import { FrameContexts } from './constants';
 /**
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
- * @param callback Optionally specify a callback to invoke when teamsjsApp SDK has successfully initialized
+ * @param callback Optionally specify a callback to invoke when teamsjs App SDK has successfully initialized
  * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
  * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
 
 /**
- * Namespace to interact with the core part of the teamsjsApp SDK.
+ * Namespace to interact with the core part of the teamsjs App SDK.
  * This object is used for starting or completing authentication flows.
  */
 export namespace core {
@@ -259,11 +259,11 @@ export namespace core {
   }
 
   /**
-   * Registers a handler for user presses of the App client's back button. Experiences that maintain an internal
+   * Registers a handler for user presses of the App's back button. Experiences that maintain an internal
    * navigation stack should use this handler to navigate the user back within their frame. If an app finds
    * that after running its back button handler it cannot handle the event it should call the navigateBack
-   * method to ask the teamsjs App SDK client to handle it instead.
-   * @param handler The handler to invoke when the user presses their App client's back button.
+   * method to ask the teamsjs App SDK to handle it instead.
+   * @param handler The handler to invoke when the user presses their client's back button.
    */
   export function registerBackButtonHandler(handler: () => boolean): void {
     ensureInitialized();
@@ -310,9 +310,9 @@ export namespace core {
 
   /**
    * Allows an app to retrieve for this user tabs that are owned by this app.
-   * If no TabInstanceParameters are passed, the app defaults to favorite teamsjsApp and favorite channels.
+   * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
    * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
-   * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teamsjsApp or channels.
+   * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teamsjs App.
    */
   export function getTabInstances(
     callback: (tabInfo: TabInformation) => void,
