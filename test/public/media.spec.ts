@@ -1,5 +1,5 @@
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
@@ -19,13 +19,13 @@ describe('media', () => {
     mobilePlatformMock.messages = [];
 
     // Set a mock window for testing
-    _initialize(mobilePlatformMock.mockWindow);
+    core._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 

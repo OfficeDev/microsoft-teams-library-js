@@ -28,13 +28,13 @@ DtsBundlePlugin.prototype.apply = function(compiler) {
 
 function patchDTS(callback) {
   const self = this;
-  console.log('Replacing the references to teamsJs and regularizing it.');
+  console.log('Replacing the references to teamsjsJs and regularizing it.');
   fs.readFile(`./dist/${libraryName}.d.ts`, 'utf8', (err, data) => {
     if (err) {
       return console.log(err);
     }
 
-    const result = replace(data)(new RegExp(`declare module '${libraryName}'`, 'gm'), "declare module '@microsoft/teamsjs-app-sdk'")(
+    const result = replace(data)(new RegExp(`declare module '${libraryName}'`, 'gm'), `declare module '@microsoft/${libraryName}'`)(
       new RegExp(`import ${libraryName}.*`, 'g'),
       '',
     )(/^var _default: void;/, '')(/export default _default;/, '')(/^\s*[\r\n]/gm, '')();

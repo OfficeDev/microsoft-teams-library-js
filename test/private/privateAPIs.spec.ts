@@ -1,4 +1,4 @@
-import * as microsoftTeams from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
@@ -14,9 +14,8 @@ import {
   exitFullscreen,
   sendCustomEvent,
 } from '../../src/private/privateAPIs';
-import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
-describe('MicrosoftTeams-privateAPIs', () => {
+describe('teamsjsAppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
 
   const utils = new Utils();
@@ -28,18 +27,18 @@ describe('MicrosoftTeams-privateAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    core._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 
   it('should exist in the global namespace', () => {
-    expect(microsoftTeams).toBeDefined();
+    expect(core).toBeDefined();
   });
 
   const unSupportedDomains = [
@@ -62,7 +61,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, () => {
       utils.initializeWithContext('content', null, null, ['http://invalid.origin.com']);
       let callbackCalled = false;
-      getContext(() => {
+      core.getContext(() => {
         callbackCalled = true;
       });
 
@@ -110,7 +109,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should allow utils.messages from supported domain ' + supportedDomain, () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com', 'https://www.example.com']);
       let callbackCalled = false;
-      getContext(() => {
+      core.getContext(() => {
         callbackCalled = true;
       });
 
@@ -135,7 +134,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
   });
 
   it('should not make calls to unsupported domains', () => {
-    initialize(null, ['http://some-invalid-origin.com']);
+    core.initialize(null, ['http://some-invalid-origin.com']);
 
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
@@ -151,7 +150,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     // Try to make a call
     let callbackCalled = false;
-    getContext(() => {
+    core.getContext(() => {
       callbackCalled = true;
       return;
     });
@@ -166,7 +165,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    getContext(() => {
+    core.getContext(() => {
       callbackCalled = true;
       return;
     });
@@ -178,10 +177,10 @@ describe('MicrosoftTeams-privateAPIs', () => {
   });
 
   it('should successfully handle calls queued before init completes', () => {
-    initialize();
+    core.initialize();
 
     // Another call made before the init response
-    getContext(() => {
+    core.getContext(() => {
       return;
     });
 
@@ -203,21 +202,21 @@ describe('MicrosoftTeams-privateAPIs', () => {
     utils.initializeWithContext('content');
 
     let actualContext1: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext1 = context;
     });
 
     let getContextMessage1 = utils.messages[utils.messages.length - 1];
 
     let actualContext2: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext2 = context;
     });
 
     let getContextMessage2 = utils.messages[utils.messages.length - 1];
 
     let actualContext3: Context;
-    getContext(context => {
+    core.getContext(context => {
       actualContext3 = context;
     });
 
@@ -262,7 +261,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     utils.initializeWithContext('content');
 
     let callbackCalled = 0;
-    getContext(() => {
+    core.getContext(() => {
       callbackCalled++;
     });
 

@@ -1,4 +1,4 @@
-import * as microsoftTeams1 from '../src/public/publicAPIs';
+import { core } from '../src/public/publicAPIs';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 export interface MessageRequest {
@@ -88,8 +88,8 @@ export class Utils {
   public processMessage: (ev: MessageEvent) => void;
 
   public initializeWithContext = (frameContext: string, hostClientType?: string, callback?: () => void, validMessageOrigins?: string[]): void => {
-    microsoftTeams1._initialize(this.mockWindow);
-    microsoftTeams1.initialize(callback, validMessageOrigins);
+    core._initialize(this.mockWindow);
+    core.initialize(callback, validMessageOrigins);
 
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();

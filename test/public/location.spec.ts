@@ -1,6 +1,6 @@
 import { ErrorCode, location, SdkError } from '../../src/public/index' 
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
 import { FrameContexts } from '../../src/public/constants';
@@ -19,13 +19,13 @@ describe('location', () => {
     mobilePlatformMock.messages = [];
 
     // Set a mock window for testing
-    _initialize(mobilePlatformMock.mockWindow);
+    core._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 
