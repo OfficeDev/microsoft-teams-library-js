@@ -105,6 +105,17 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
+  it('should allow authentication.authenticate calls from stage context', () => {
+    utils.initializeWithContext('stage');
+
+    const authenticationParams = {
+      url: 'https://someurl/',
+      width: 100,
+      height: 200,
+    };
+    authentication.authenticate(authenticationParams);
+  });
+
   it('should successfully pop up the auth window', () => {
     utils.initializeWithContext('content');
 
