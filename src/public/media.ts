@@ -9,6 +9,7 @@ import {
   validateSelectMediaInputs,
   validateGetMediaInputs,
   validateViewImagesInput,
+  validateScanBarCodeInput,
 } from '../internal/mediaUtil';
 
 export namespace media {
@@ -23,9 +24,9 @@ export namespace media {
   const mediaAPISupportVersion = '1.8.0';
 
   /**
-   * This is the SDK version when scan barcode API is supported on all three platforms android, iOS and web.
+   * This is the SDK version when scanBarCode API is supported on mobile.
    */
-  export const scanBarCodeAPIRequiredVersion = '1.9.0';
+  const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
   /**
    * Enum for file formats supported
@@ -414,44 +415,44 @@ export namespace media {
   }
 
   /**
-   * Optional BarCode configuration which can be passed as input to the Scan Bar Code API to customize barcode scanning experience.
-   * All properties in BarCodeConfig are optional and have default values in the platform.
+   * Optional barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
+   * All properties in BarCodeConfig are optional and have default values in the platform
    */
   export interface BarCodeConfig {
     /**
-     * Optional; Lets the developer to specify the type of barcode which can be scanned.
-     * Default value is All i.e Both One Dimensional and Two Dimensional(only QR code) can be scanned
+     * Optional; Lets the developer specify the type of barcode to be scanned
+     * Default value is All i.e one dimensional and two dimensional(only QRcode) barcodes can be scanned
      */
     barCodeType?: BarCodeType;
     /**
-     * Optional; Lets the developer to specify the bar code scan time out interval in seconds.
+     * Optional; Lets the developer specify the scan timeout interval in seconds.
      * Default value is 30 seconds and max value is 60 seconds
      */
     timeOutIntervalInSec?: number;
   }
 
   /**
-   * Specifies the types of barcode which are supported by Barcode API
+   * Specifies the types of barcode which are supported by scanBarCode API
    */
   export enum BarCodeType {
     /**
-     * Both One dimensional and two dimensional barcode types are supported
+     * One dimensional barcode types and QRcode are supported
      */
     All = 1,
     /**
-     * Only One dimensional barcode type are supported
+     * All One dimensional barcode types are supported
      */
     OneDimensional = 2,
     /**
-     * Only Two dimensional barcode types are supported. Only QR code will be supported in Phase 1.
+     * Currently, only QRcode is supported from two dimensional barcode types.
      */
     TwoDimensional = 3,
   }
 
   /**
-   * Scan Barcode/QR code
-   * @param callback callback to invoke after scanning the barcode/QR code
-   * @param config optional input configuration to customize the bar code scanning experience
+   * Scan Barcode/QRcode using camera
+   * @param callback callback to invoke after scanning the barcode
+   * @param config optional input configuration to customize the barcode scanning experience
    */
   export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
     if (!callback) {
@@ -459,11 +460,18 @@ export namespace media {
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!isAPISupportedByPlatform(scanBarCodeAPIRequiredVersion)) {
+    if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, undefined);
+      callback(oldPlatformError, null);
       return;
     }
+
+    if (!validateScanBarCodeInput(config)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput, null);
+      return;
+    }
+
     const messageId = sendMessageRequestToParent('media.scanBarCode', [config]);
     GlobalVars.callbacks[messageId] = callback;
   }
