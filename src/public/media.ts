@@ -425,7 +425,7 @@ export namespace media {
      */
     barCodeType?: BarCodeType;
     /**
-     * Optional; Lets the developer specify the scan timeout interval in seconds.
+     * Optional; Lets the developer specify the scan timeout interval in seconds
      * Default value is 30 seconds and max value is 60 seconds
      */
     timeOutIntervalInSec?: number;
@@ -444,7 +444,7 @@ export namespace media {
      */
     OneDimensional = 2,
     /**
-     * Currently, only QRcode is supported from two dimensional barcode types.
+     * Currently, only QRcode is supported from two dimensional barcode types
      */
     TwoDimensional = 3,
   }
