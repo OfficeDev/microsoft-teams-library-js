@@ -304,11 +304,12 @@ describe('MicrosoftTeams-privateAPIs', () => {
       baseUrl: 'someBaseUrl',
       editFile: true,
       subEntityId: 'someSubEntityId',
+      viewerAction: 'view',
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(11);
+    expect(message.args.length).toBe(12);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -320,6 +321,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[8]).toBe('someBaseUrl');
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
+    expect(message.args[11]).toBe('view');
   });
 
   describe('getUserJoinedTeams', () => {
