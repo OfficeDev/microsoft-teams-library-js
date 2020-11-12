@@ -1,6 +1,6 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
-export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole } from './constants';
+export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
   Context,
   DeepLinkParameters,
@@ -21,9 +21,6 @@ export {
   getTabInstances,
   initialize,
   initializeWithFrameContext,
-  navigateBack,
-  navigateCrossDomain,
-  navigateToTab,
   print,
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
@@ -37,6 +34,7 @@ export {
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
+export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
