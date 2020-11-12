@@ -38,43 +38,43 @@ export namespace meetingRoom {
     /**
      * Media control capability: toggle mute.
      */
-    TOGGLE_MUTE = 'toggleMute',
+    ToggleMute = 'toggleMute',
     /**
      * Media control capability: toggle camera.
      */
-    TOGGLE_CAMERA = 'toggleCamera',
+    ToggleCamera = 'toggleCamera',
     /**
      * Media control capability: toggle captions.
      */
-    TOGGLE_CAPTIONS = 'toggleCaptions',
+    ToggleCaptions = 'toggleCaptions',
     /**
      * Media control capability: volume ajustion.
      */
-    VOLUME = 'volume',
+    Volume = 'volume',
     /**
      * Stage layout control capability: show gallery mode.
      */
-    SHOW_VIDEO_GALLERY = 'showVideoGallery',
+    ShowVideoGallery = 'showVideoGallery',
     /**
      * Stage layout control capability: show content mode.
      */
-    SHOW_CONTENT = 'showContent',
+    ShowContent = 'showContent',
     /**
      * Stage layout control capability: show content + gallery mode.
      */
-    SHOW_VIDEO_GALLERY_AND_CONTENT = 'showVideoGalleryAndContent',
+    ShowVideoGalleryAndContent = 'showVideoGalleryAndContent',
     /**
      * Stage layout control capability: show laryge gallery mode.
      */
-    SHOW_LARGE_GALLERY = 'showLargeGallery',
+    ShowLargeGallery = 'showLargeGallery',
     /**
      * Stage layout control capability: show together mode.
      */
-    SHOW_TOGETHER = 'showTogether',
+    ShowTogether = 'showTogether',
     /**
      * Meeting control capability: leave meeting.
      */
-    LEAVE_MEETING = 'leaveMeeting',
+    LeaveMeeting = 'leaveMeeting',
   }
 
   /**
@@ -108,23 +108,23 @@ export namespace meetingRoom {
     /**
      * Stage layout in gallery mode.
      */
-    GALLERY = 'Gallery',
+    Gallery = 'Gallery',
     /**
      * Stage layout in content + gallery mode.
      */
-    CONTENT_GALLERY = 'Content + gallery',
+    ContentGallery = 'Content + gallery',
     /**
      * Stage layout in content mode.
      */
-    CONTENT = 'Content',
+    Content = 'Content',
     /**
      * Stage layout in large gallery mode.
      */
-    LARGE_GALLERY = 'Large gallery',
+    LargeGallery = 'Large gallery',
     /**
      * Stage layout in together mode.
      */
-    TOGETHER_MODE = 'Together mode',
+    TogetherMode = 'Together mode',
   }
 
   /**
