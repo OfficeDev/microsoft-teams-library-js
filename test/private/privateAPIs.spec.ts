@@ -1,6 +1,6 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
-import { TeamInstanceParameters } from '../../src/private/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -174,7 +174,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
     expect(callbackCalled).toBe(false);
-
   });
 
   it('should successfully handle calls queued before init completes', () => {
@@ -304,7 +303,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       baseUrl: 'someBaseUrl',
       editFile: true,
       subEntityId: 'someSubEntityId',
-      viewerAction: 'view',
+      viewerAction: ViewerActionTypes.view,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');

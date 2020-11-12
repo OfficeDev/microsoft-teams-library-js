@@ -37,6 +37,17 @@ export interface ShowNotificationParameters {
  * Hide from docs.
  * ------
  */
+export enum ViewerActionTypes {
+  view = 'view',
+  edit = 'edit',
+  editNew = 'editNew',
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ */
 export interface FilePreviewParameters {
   /**
    * The developer-defined unique ID for the file.
@@ -98,7 +109,7 @@ export interface FilePreviewParameters {
   /**
    * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
    */
-  viewerAction?: 'view' | 'edit' | 'editNew';
+  viewerAction?: ViewerActionTypes;
 }
 
 /**
