@@ -596,7 +596,7 @@ export enum ErrorCode {
    */
   USER_ABORT = 8000,
   /**
-   * Could not complete the operation in a given time interval
+   * Could not complete the operation in the given time interval
    */
   OPERATION_TIMED_OUT = 8001,
   /**

@@ -79,16 +79,16 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
  * Returns true if the scan barcode param is valid and false otherwise
  */
 export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): boolean {
-  if (barCodeConfig != null) {
+  if (barCodeConfig) {
     if (
-      barCodeConfig.barCodeType != null &&
+      barCodeConfig.barCodeType &&
       (barCodeConfig.barCodeType < media.BarCodeType.All ||
         barCodeConfig.barCodeType > media.BarCodeType.TwoDimensional)
     ) {
       return false;
     }
     if (
-      barCodeConfig.timeOutIntervalInSec != null &&
+      barCodeConfig.timeOutIntervalInSec &&
       (barCodeConfig.timeOutIntervalInSec <= 0 || barCodeConfig.timeOutIntervalInSec > 60)
     ) {
       return false;

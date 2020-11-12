@@ -718,7 +718,7 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let barCodeConfig: any = {
       barCodeType: "4",
-      timeOutIntervalInSec: 40
+      timeOutIntervalInSec: 30
     };
     let mediaError: SdkError;
     media.scanBarCode((e: SdkError, d: string) => {
@@ -733,7 +733,7 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let barCodeConfig: any = {
       barCodeType: media.BarCodeType.All,
-      timeOutIntervalInSec: 0
+      timeOutIntervalInSec: -1
     };
     let mediaError: SdkError;
     media.scanBarCode((e: SdkError, d: string) => {
