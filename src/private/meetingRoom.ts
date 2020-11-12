@@ -102,35 +102,6 @@ export namespace meetingRoom {
    * @private
    * Hide from docs
    *
-   * Enum used to indicate meeting room state of stage layout.
-   */
-  export enum StageLayoutState {
-    /**
-     * Stage layout in gallery mode.
-     */
-    Gallery = 'Gallery',
-    /**
-     * Stage layout in content + gallery mode.
-     */
-    ContentGallery = 'Content + gallery',
-    /**
-     * Stage layout in content mode.
-     */
-    Content = 'Content',
-    /**
-     * Stage layout in large gallery mode.
-     */
-    LargeGallery = 'Large gallery',
-    /**
-     * Stage layout in together mode.
-     */
-    TogetherMode = 'Together mode',
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
    * Data structure to represent states of a meeting room.
    */
   export interface MeetingRoomState {
