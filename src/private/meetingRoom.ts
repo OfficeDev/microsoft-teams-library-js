@@ -38,43 +38,43 @@ export namespace meetingRoom {
     /**
      * Media control capability: toggle mute.
      */
-    ToggleMute = 'toggleMute',
+    toggleMute = 'toggleMute',
     /**
      * Media control capability: toggle camera.
      */
-    ToggleCamera = 'toggleCamera',
+    toggleCamera = 'toggleCamera',
     /**
      * Media control capability: toggle captions.
      */
-    ToggleCaptions = 'toggleCaptions',
+    toggleCaptions = 'toggleCaptions',
     /**
      * Media control capability: volume ajustion.
      */
-    Volume = 'volume',
+    volume = 'volume',
     /**
      * Stage layout control capability: show gallery mode.
      */
-    ShowVideoGallery = 'showVideoGallery',
+    showVideoGallery = 'showVideoGallery',
     /**
      * Stage layout control capability: show content mode.
      */
-    ShowContent = 'showContent',
+    showContent = 'showContent',
     /**
      * Stage layout control capability: show content + gallery mode.
      */
-    ShowVideoGalleryAndContent = 'showVideoGalleryAndContent',
+    showVideoGalleryAndContent = 'showVideoGalleryAndContent',
     /**
      * Stage layout control capability: show laryge gallery mode.
      */
-    ShowLargeGallery = 'showLargeGallery',
+    showLargeGallery = 'showLargeGallery',
     /**
      * Stage layout control capability: show together mode.
      */
-    ShowTogether = 'showTogether',
+    showTogether = 'showTogether',
     /**
      * Meeting control capability: leave meeting.
      */
-    LeaveMeeting = 'leaveMeeting',
+    leaveMeeting = 'leaveMeeting',
   }
 
   /**
