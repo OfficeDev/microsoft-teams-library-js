@@ -1,0 +1,8 @@
+{
+  "name": "teamsjs-test-app",
+  "version": "0.0.1",
+  "dependencies": {
+    "cross-env": "7.0.2",
+    "teamsjs-app-sdk": "0.0.5"
+  }
+}
