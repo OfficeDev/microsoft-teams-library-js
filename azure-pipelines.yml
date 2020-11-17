@@ -20,14 +20,14 @@ steps:
   displayName: 'yarn install'
 - task: Yarn@3
   inputs:
-    Arguments: 'build'
-  displayName: 'yarn build'
+    Arguments: 'build-sdk'
+  displayName: 'yarn build-sdk'
 - task: Yarn@3
   inputs:
-    Arguments: 'test'
-  displayName: 'yarn test'
+    Arguments: 'test-sdk'
+  displayName: 'yarn test-sdk'
 - task: Yarn@3
   condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'Manual'))
   inputs:
-    Arguments: 'publish'
-  displayName: 'yarn publish'
+    Arguments: 'publish-sdk'
+  displayName: 'yarn publish-sdk'

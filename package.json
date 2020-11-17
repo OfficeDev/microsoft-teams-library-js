@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
+    "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)",
     "publish-sdk": "yarn publish teamsjs-app-sdk"
   }
 }
