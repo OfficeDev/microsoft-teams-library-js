@@ -1,5 +1,4 @@
 {
-  "private": true,
   "author": "Microsoft teamsjs",
   "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
   "repository": {
@@ -7,6 +6,7 @@
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
-    "build-sdk": "yarn --cwd ./teamsjs-app-sdk lint && webpack"
+    "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
+    "publish-sdk": "yarn publish teamsjs-app-sdk"
   }
 }
