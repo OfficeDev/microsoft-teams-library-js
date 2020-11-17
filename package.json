@@ -1,4 +1,5 @@
 {
+  "private": true,
   "author": "Microsoft teamsjs",
   "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
   "repository": {
