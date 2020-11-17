@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noResolve": false,
+    "removeComments": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "keyofStringsOnly": true,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "lib": [
+      "es6",
+      "dom",
+      "esnext.asynciterable",
+      "dom.iterable",
+      "webworker",
+      "ES2016.Array.Include"
+    ],
+    "typeRoots": [ "types", "node_modules/@types" ],
+    // Project References options https://www.typescriptlang.org/docs/handbook/project-references.html#composite
+    "composite": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "**/dist/*",
+    "node_modules/**"
+  ]
+}

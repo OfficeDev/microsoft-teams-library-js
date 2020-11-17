@@ -1,4 +1,12 @@
 {
   "private": true,
-  "workspaces": ["teamsjs-app-sdk", "teamsjs-test-app"]
+  "author": "Microsoft teamsjs",
+  "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
+  },
+  "scripts": {
+    
+  }
 }
