@@ -713,11 +713,24 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.OPERATION_TIMED_OUT);
   });
 
-  it('should not allow scanBarCode calls with invalid barcode type', () => {
+  it('should allow scanBarCode calls when barCodeType is not passed in config param', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: media.BarCodeConfig = {
+      timeOutIntervalInSec: 30
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).toBeFalsy();
+  });
+
+  it('should not allow scanBarCode calls with invalid barCodeType', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let barCodeConfig: any = {
-      barCodeType: "4",
+      barCodeType: 0,
       timeOutIntervalInSec: 30
     };
     let mediaError: SdkError;
@@ -728,12 +741,26 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
   });
 
-  it('should not allow scanBarCode calls with invalid timeout interval in seconds', () => {
+  it('should allow scanBarCode calls when barCodeType is undefined', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: any = {
+      barCodeType: undefined,
+      timeOutIntervalInSec: 30
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).toBeFalsy();
+  });
+
+  it('should not allow scanBarCode calls with invalid timeOutIntervalInSec', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let barCodeConfig: any = {
       barCodeType: media.BarCodeType.All,
-      timeOutIntervalInSec: -1
+      timeOutIntervalInSec: 0
     };
     let mediaError: SdkError;
     media.scanBarCode((e: SdkError, d: string) => {
@@ -741,5 +768,32 @@ describe('media', () => {
     }, barCodeConfig);
     expect(mediaError).not.toBeNull();
     expect(mediaError.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+  });
+
+  it('should allow scanBarCode calls when timeOutIntervalInSec is undefined', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: any = {
+      barCodeType: media.BarCodeType.All,
+      timeOutIntervalInSec: undefined
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).toBeFalsy();
+  });
+
+  it('should allow scanBarCode calls when timeOutIntervalInSec is not passed in config params', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: media.BarCodeConfig = {
+      barCodeType: media.BarCodeType.All
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).toBeFalsy();
   });
 });
