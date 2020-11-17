@@ -1,6 +1,7 @@
 import { MessageRequest } from './interfaces';
 import { ConversationResponse, LoadContext } from '../public/interfaces';
 import { FrameContexts } from '../public';
+import { meetingRoom } from '../private/meetingRoom';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -38,4 +39,6 @@ export class GlobalVars {
   public static appButtonClickHandler: () => void;
   public static appButtonHoverEnterHandler: () => void;
   public static appButtonHoverLeaveHandler: () => void;
+  public static meetingRoomCapabilitiesUpdateHandler: (capabilities: meetingRoom.MeetingRoomCapability) => void;
+  public static meetingRoomStatesUpdateHandler: (states: meetingRoom.MeetingRoomState) => void;
 }
