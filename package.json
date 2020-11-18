@@ -1,4 +1,5 @@
 {
+  "name": "teamsjs-app-sdk-monorepo",
   "private": true,
   "author": "Microsoft teamsjs",
   "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
