@@ -13,6 +13,8 @@ git merge upstream/master
 
 ## BREAKING CHANGES
 
+v0.0.6: This project is now a monorepo. You can find the teamsjs App SDK project under teamsjs-app-sdk/ and the teamsjs Test App under examples/teamsjs-test-app.
+
 The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
   - All the public API functions have been moved under 'core' namespace
 
@@ -29,10 +31,11 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 ## Getting Started
 
 1.  Clone the repo
-2.  Navigate to the repo root
-3.  `yarn install`
-4.  `yarn build`
-5.  to run Unit test `yarn test`
+2.  Navigate to the repo root and run `yarn install`
+3.  `yarn build-sdk` from repo root 
+4.  to run Unit test `yarn test-sdk` 
+
+  TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
 
 ### Installation
 

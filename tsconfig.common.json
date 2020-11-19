@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "declarationDir": "./dts",
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,8 +11,6 @@
     "declaration": true
   },
   "exclude": [
-    "node_modules",
-    "./test",
-    "./webpack.config.ts"
+    "node_modules"
   ]
 }

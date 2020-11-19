@@ -1,62 +1,15 @@
 {
-  "name": "@microsoft/teamsjs-app-sdk",
+  "name": "teamsjs-app-sdk-monorepo",
+  "private": true,
   "author": "Microsoft teamsjs",
-  "version": "0.0.5",
-  "description": "teamsjs App SDK for building teamsjs apps",
-  "main": "./dist/teamsjs.min.js",
-  "typings": "./dist/teamsjs.d.ts",
+  "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
-    "build": "yarn lint && webpack",
-    "lint": "eslint ./src/**/*.ts",
-    "doctor": "yarn lint --fix",
-    "prettier": "prettier --write '**/*.{ts,js,css,html}'",
-    "test": "jest"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@typescript-eslint/eslint-plugin": "^1.10.2",
-    "@typescript-eslint/parser": "^1.10.2",
-    "azure-keyvault": "^3.0.4",
-    "del": "2.2.2",
-    "deploy-azure-cdn": "^2.1.0",
-    "dts-builder": "^1.1.6",
-    "dts-bundle": "^0.7.3",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "fs-jetpack": "^2.2.2",
-    "jest": "^23.6.0",
-    "merge2": "1.0.2",
-    "prettier": "^1.18.2",
-    "ts-jest": "^23.10.4",
-    "ts-loader": "^5.2.1",
-    "tslint": "^5.8.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.5.0",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2",
-    "yargs": "^8.0.1"
-  },
-  "files": [
-    "dist/**",
-    "dts/**",
-    "README.md",
-    "LICENSE"
-  ],
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ]
+    "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
+    "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)",
+    "publish-sdk": "yarn publish teamsjs-app-sdk"
   }
 }
