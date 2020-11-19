@@ -13,7 +13,7 @@ git merge upstream/master
 
 ## BREAKING CHANGES
 
-[TODO: INSERT DATE OF NEW VERSION PUBLISH]: This project is now a monorepo. You can find the teamsjs App SDK project under teamsjs-app-sdk/ and the teamsjs Test App under examples/teamsjs-test-app.
+v0.0.6: This project is now a monorepo. You can find the teamsjs App SDK project under teamsjs-app-sdk/ and the teamsjs Test App under examples/teamsjs-test-app.
 
 The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
   - All the public API functions have been moved under 'core' namespace
