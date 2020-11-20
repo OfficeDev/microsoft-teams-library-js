@@ -9,6 +9,7 @@ export {
   TeamInstanceParameters,
   ThreadMember,
   UserJoinedTeamsInformation,
+  ViewerActionTypes,
 } from './interfaces';
 export {
   enterFullscreen,

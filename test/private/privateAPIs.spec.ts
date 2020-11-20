@@ -1,6 +1,6 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context } from '../../src/public/interfaces';
-import { TeamInstanceParameters } from '../../src/private/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -174,7 +174,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
     expect(callbackCalled).toBe(false);
-
   });
 
   it('should successfully handle calls queued before init completes', () => {
@@ -304,11 +303,12 @@ describe('MicrosoftTeams-privateAPIs', () => {
       baseUrl: 'someBaseUrl',
       editFile: true,
       subEntityId: 'someSubEntityId',
+      viewerAction: ViewerActionTypes.view,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(11);
+    expect(message.args.length).toBe(12);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -320,6 +320,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[8]).toBe('someBaseUrl');
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
+    expect(message.args[11]).toBe('view');
   });
 
   describe('getUserJoinedTeams', () => {
