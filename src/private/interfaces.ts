@@ -37,6 +37,17 @@ export interface ShowNotificationParameters {
  * Hide from docs.
  * ------
  */
+export enum ViewerActionTypes {
+  view = 'view',
+  edit = 'edit',
+  editNew = 'editNew',
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ */
 export interface FilePreviewParameters {
   /**
    * The developer-defined unique ID for the file.
@@ -84,6 +95,7 @@ export interface FilePreviewParameters {
   baseUrl?: string;
 
   /**
+   * Deprecated; prefer using viewerAction instead
    * Optional; indicates whether the file should be opened in edit mode
    */
   editFile?: boolean;
@@ -93,6 +105,11 @@ export interface FilePreviewParameters {
    * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
    */
   subEntityId?: string;
+
+  /**
+   * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
+   */
+  viewerAction?: ViewerActionTypes;
 }
 
 /**
