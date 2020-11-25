@@ -420,33 +420,10 @@ export namespace media {
    */
   export interface BarCodeConfig {
     /**
-     * Optional; Lets the developer specify the type of barcode to be scanned
-     * Default value is All i.e both one dimensional and two dimensional(only QRcode) barcodes can be scanned
-     */
-    barCodeType?: BarCodeType;
-    /**
      * Optional; Lets the developer specify the scan timeout interval in seconds
      * Default value is 30 seconds and max allowed value is 60 seconds
      */
     timeOutIntervalInSec?: number;
-  }
-
-  /**
-   * Specifies the types of barcode which are supported by scanBarCode API
-   */
-  export enum BarCodeType {
-    /**
-     * One dimensional barcode types and QRcode are supported
-     */
-    All = 1,
-    /**
-     * All One dimensional barcode types are supported
-     */
-    OneDimensional = 2,
-    /**
-     * Currently, only QRcode is supported from two dimensional barcode types
-     */
-    TwoDimensional = 3,
   }
 
   /**

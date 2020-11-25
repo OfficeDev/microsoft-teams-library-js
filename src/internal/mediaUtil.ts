@@ -81,17 +81,9 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
 export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
-      barCodeConfig.barCodeType !== null &&
-      barCodeConfig.barCodeType !== undefined &&
-      (barCodeConfig.barCodeType < media.BarCodeType.All ||
-        barCodeConfig.barCodeType > media.BarCodeType.TwoDimensional)
-    ) {
-      return false;
-    }
-    if (
-      barCodeConfig.timeOutIntervalInSec !== null &&
-      barCodeConfig.timeOutIntervalInSec !== undefined &&
-      (barCodeConfig.timeOutIntervalInSec <= 0 || barCodeConfig.timeOutIntervalInSec > 60)
+      barCodeConfig.timeOutIntervalInSec === null ||
+      barCodeConfig.timeOutIntervalInSec <= 0 ||
+      barCodeConfig.timeOutIntervalInSec > 60
     ) {
       return false;
     }
