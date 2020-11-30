@@ -93,8 +93,8 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
   return true;
 }
 
-export function callGetMediaViaHandlers(requiredVersion: string): boolean {
-  const value = compareSDKVersions(requiredVersion, GlobalVars.clientSupportedSDKVersion);
+export function callGetMediaViaCallback(requiredVersion: string): boolean {
+  const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
   if (isNaN(value)) {
     return false;
   }
