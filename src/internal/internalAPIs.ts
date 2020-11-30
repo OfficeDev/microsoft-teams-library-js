@@ -232,9 +232,13 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     const callback = GlobalVars.callbacks[message.id];
     if (callback) {
       callback.apply(null, message.args);
-
-      // Remove the callback to ensure that the callback is called only once and to free up memory.
-      delete GlobalVars.callbacks[message.id];
+      if (
+        !('isPartialResponse' in evt.data) ||
+        !(typeof evt.data.isPartialResponse === 'boolean') ||
+        !(evt.data.isPartialResponse === true)
+      ) {
+        delete GlobalVars.callbacks[message.id];
+      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler

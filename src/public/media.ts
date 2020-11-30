@@ -10,6 +10,7 @@ import {
   validateGetMediaInputs,
   validateViewImagesInput,
   validateScanBarCodeInput,
+  callGetMediaViaCallbacks,
 } from '../internal/mediaUtil';
 
 export namespace media {
@@ -141,6 +142,46 @@ export namespace media {
         callback(invalidInput, null);
         return;
       }
+      if (callGetMediaViaCallbacks('2.0.0')) {
+        this.getMediaViaCallback(callback);
+      } else {
+        this.getMediaViaHandler(callback);
+      }
+    }
+
+    private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
+      const helper: MediaHelper = {
+        mediaMimeType: this.mimeType,
+        assembleAttachment: [],
+      };
+      const params = [this.content];
+      const actionName = sendMessageRequestToParent('getMedia', params);
+      function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
+        if (callback) {
+          if (mediaResult && mediaResult.error) {
+            callback(mediaResult.error, null);
+          } else {
+            if (mediaResult && mediaResult.mediaChunk) {
+              // If the chunksequence number is less than equal to 0 implies EOF
+              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+              if (mediaResult.mediaChunk.chunkSequence <= 0) {
+                const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+                callback(mediaResult.error, file);
+              } else {
+                // Keep pushing chunks into assemble attachment
+                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+                helper.assembleAttachment.push(assemble);
+              }
+            } else {
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+            }
+          }
+        }
+      }
+      GlobalVars.callbacks[actionName] = handleGetMediaCallbackRequest;
+    }
+
+    private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
