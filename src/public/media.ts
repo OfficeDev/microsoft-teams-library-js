@@ -142,6 +142,7 @@ export namespace media {
         callback(invalidInput, null);
         return;
       }
+      // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
       if (callGetMediaViaCallback('2.0.0')) {
         this.getMediaViaCallback(callback);
       } else {
