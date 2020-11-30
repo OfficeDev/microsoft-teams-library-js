@@ -10,7 +10,7 @@ import {
   validateGetMediaInputs,
   validateViewImagesInput,
   validateScanBarCodeInput,
-  callGetMediaViaCallbacks,
+  callGetMediaViaHandlers,
 } from '../internal/mediaUtil';
 
 export namespace media {
@@ -142,10 +142,10 @@ export namespace media {
         callback(invalidInput, null);
         return;
       }
-      if (callGetMediaViaCallbacks('2.0.0')) {
-        this.getMediaViaCallback(callback);
-      } else {
+      if (callGetMediaViaHandlers('2.0.0')) {
         this.getMediaViaHandler(callback);
+      } else {
+        this.getMediaViaCallback(callback);
       }
     }
 
