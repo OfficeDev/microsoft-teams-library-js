@@ -232,6 +232,8 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     const callback = GlobalVars.callbacks[message.id];
     if (callback) {
       callback.apply(null, message.args);
+
+      // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
         delete GlobalVars.callbacks[message.id];
       }
