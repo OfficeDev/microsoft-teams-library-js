@@ -232,11 +232,7 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     const callback = GlobalVars.callbacks[message.id];
     if (callback) {
       callback.apply(null, message.args);
-      if (
-        !('isPartialResponse' in evt.data) ||
-        !(typeof evt.data.isPartialResponse === 'boolean') ||
-        !(evt.data.isPartialResponse === true)
-      ) {
+      if (!isPartialResponse(evt)) {
         delete GlobalVars.callbacks[message.id];
       }
     }
@@ -249,6 +245,14 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
       handler.apply(this, message.args);
     }
   }
+}
+
+function isPartialResponse(evt: DOMMessageEvent): boolean {
+  return (
+    'isPartialResponse' in evt.data &&
+    typeof evt.data.isPartialResponse === 'boolean' &&
+    evt.data.isPartialResponse === true
+  );
 }
 
 function handleChildMessage(evt: DOMMessageEvent): void {

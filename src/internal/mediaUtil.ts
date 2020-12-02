@@ -1,6 +1,4 @@
 import { media } from '../public/media';
-import { GlobalVars } from './globalVars';
-import { compareSDKVersions } from './utils';
 
 /**
  * Helper function to create a blob from media chunks based on their sequence
@@ -91,12 +89,4 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
     }
   }
   return true;
-}
-
-export function callGetMediaViaCallback(requiredVersion: string): boolean {
-  const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
-  if (isNaN(value)) {
-    return false;
-  }
-  return value >= 0;
 }

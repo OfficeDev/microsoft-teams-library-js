@@ -10,7 +10,6 @@ import {
   validateGetMediaInputs,
   validateViewImagesInput,
   validateScanBarCodeInput,
-  callGetMediaViaCallback,
 } from '../internal/mediaUtil';
 
 export namespace media {
@@ -23,6 +22,11 @@ export namespace media {
    * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
    */
   const mediaAPISupportVersion = '1.8.0';
+
+  /**
+   * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
+   */
+  const getMediaCallbackSupportVersion = '2.0.0';
 
   /**
    * This is the SDK version when scanBarCode API is supported on mobile.
@@ -143,7 +147,7 @@ export namespace media {
         return;
       }
       // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-      if (callGetMediaViaCallback('2.0.0')) {
+      if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
         this.getMediaViaCallback(callback);
       } else {
         this.getMediaViaHandler(callback);
@@ -155,8 +159,8 @@ export namespace media {
         mediaMimeType: this.mimeType,
         assembleAttachment: [],
       };
-      const params = [this.content];
-      const actionName = sendMessageRequestToParent('getMedia', params);
+      const localUriId = [this.content];
+      const messageId = sendMessageRequestToParent('getMedia', localUriId);
       function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
         if (callback) {
           if (mediaResult && mediaResult.error) {
@@ -179,7 +183,7 @@ export namespace media {
           }
         }
       }
-      GlobalVars.callbacks[actionName] = handleGetMediaCallbackRequest;
+      GlobalVars.callbacks[messageId] = handleGetMediaCallbackRequest;
     }
 
     private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
@@ -195,7 +199,7 @@ export namespace media {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
             callback(mediaResult.error, null);
-            GlobalVars.handlers['getMedia' + actionName] = null;
+            delete GlobalVars.handlers['getMedia' + actionName];
           } else {
             if (mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
@@ -203,7 +207,7 @@ export namespace media {
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
                 callback(mediaResult.error, file);
-                GlobalVars.handlers['getMedia' + actionName] = null;
+                delete GlobalVars.handlers['getMedia' + actionName];
               } else {
                 // Keep pushing chunks into assemble attachment
                 const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -211,7 +215,7 @@ export namespace media {
               }
             } else {
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
-              GlobalVars.handlers['getMedia' + actionName] = null;
+              delete GlobalVars.handlers['getMedia' + actionName];
             }
           }
         }
