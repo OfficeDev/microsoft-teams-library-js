@@ -428,6 +428,7 @@ export namespace media {
 
   /**
    * Scan Barcode/QRcode using camera
+   * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    * @param callback callback to invoke after scanning the barcode
    * @param config optional input configuration to customize the barcode scanning experience
    */
@@ -436,6 +437,12 @@ export namespace media {
       throw new Error('[media.scanBarCode] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    if (!GlobalVars.isFramelessWindow) {
+      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      callback(notSupportedError, undefined);
+      return;
+    }
 
     if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };

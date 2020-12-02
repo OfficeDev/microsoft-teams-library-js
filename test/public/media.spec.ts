@@ -737,4 +737,14 @@ describe('media', () => {
     }, barCodeConfig);
     expect(mediaError).toBeFalsy();
   });
+
+  it('should not allow scanBarCode calls in desktop', () => {
+    desktopPlatformMock.initializeWithContext(FrameContexts.content);
+    let error;
+    media.scanBarCode((e: SdkError, d: string) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
+  });
 });
