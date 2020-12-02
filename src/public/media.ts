@@ -440,7 +440,7 @@ export namespace media {
 
     if (!GlobalVars.isFramelessWindow) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      callback(notSupportedError, undefined);
+      callback(notSupportedError, null);
       return;
     }
 
