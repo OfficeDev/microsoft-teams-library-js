@@ -428,7 +428,7 @@ export namespace media {
 
   /**
    * Scan Barcode/QRcode using camera
-   * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    * @param callback callback to invoke after scanning the barcode
    * @param config optional input configuration to customize the barcode scanning experience
    */
