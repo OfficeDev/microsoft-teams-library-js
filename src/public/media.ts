@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { FrameContexts, HostClientType } from './constants';
 import { generateGUID } from '../internal/utils';
 import {
   createFile,
@@ -484,7 +484,11 @@ export namespace media {
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!GlobalVars.isFramelessWindow) {
+    if (
+      GlobalVars.hostClientType === HostClientType.desktop ||
+      GlobalVars.hostClientType === HostClientType.web ||
+      GlobalVars.hostClientType === HostClientType.rigel
+    ) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
       callback(notSupportedError, null);
       return;
