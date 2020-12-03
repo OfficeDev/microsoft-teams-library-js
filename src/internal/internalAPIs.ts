@@ -250,11 +250,7 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
 }
 
 function isPartialResponse(evt: DOMMessageEvent): boolean {
-  return (
-    'isPartialResponse' in evt.data &&
-    typeof evt.data.isPartialResponse === 'boolean' &&
-    evt.data.isPartialResponse === true
-  );
+  return evt.data.isPartialResponse === true;
 }
 
 function handleChildMessage(evt: DOMMessageEvent): void {
