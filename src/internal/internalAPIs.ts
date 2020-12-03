@@ -233,8 +233,10 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     if (callback) {
       callback.apply(null, message.args);
 
-      // Remove the callback to ensure that the callback is called only once and to free up memory.
-      delete GlobalVars.callbacks[message.id];
+      // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
+      if (!isPartialResponse(evt)) {
+        delete GlobalVars.callbacks[message.id];
+      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -245,6 +247,10 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
       handler.apply(this, message.args);
     }
   }
+}
+
+function isPartialResponse(evt: DOMMessageEvent): boolean {
+  return evt.data.isPartialResponse === true;
 }
 
 function handleChildMessage(evt: DOMMessageEvent): void {

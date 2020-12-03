@@ -24,6 +24,11 @@ export namespace media {
   const mediaAPISupportVersion = '1.8.0';
 
   /**
+   * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
+   */
+  const getMediaCallbackSupportVersion = '2.0.0';
+
+  /**
    * This is the SDK version when scanBarCode API is supported on mobile.
    */
   const scanBarCodeAPIMobileSupportVersion = '1.9.0';
@@ -141,6 +146,47 @@ export namespace media {
         callback(invalidInput, null);
         return;
       }
+      // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+      if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
+        this.getMediaViaCallback(callback);
+      } else {
+        this.getMediaViaHandler(callback);
+      }
+    }
+
+    private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
+      const helper: MediaHelper = {
+        mediaMimeType: this.mimeType,
+        assembleAttachment: [],
+      };
+      const localUriId = [this.content];
+      const messageId = sendMessageRequestToParent('getMedia', localUriId);
+      function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
+        if (callback) {
+          if (mediaResult && mediaResult.error) {
+            callback(mediaResult.error, null);
+          } else {
+            if (mediaResult && mediaResult.mediaChunk) {
+              // If the chunksequence number is less than equal to 0 implies EOF
+              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+              if (mediaResult.mediaChunk.chunkSequence <= 0) {
+                const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+                callback(mediaResult.error, file);
+              } else {
+                // Keep pushing chunks into assemble attachment
+                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+                helper.assembleAttachment.push(assemble);
+              }
+            } else {
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+            }
+          }
+        }
+      }
+      GlobalVars.callbacks[messageId] = handleGetMediaCallbackRequest;
+    }
+
+    private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
@@ -153,7 +199,7 @@ export namespace media {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
             callback(mediaResult.error, null);
-            GlobalVars.handlers['getMedia' + actionName] = null;
+            delete GlobalVars.handlers['getMedia' + actionName];
           } else {
             if (mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
@@ -161,7 +207,7 @@ export namespace media {
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
                 callback(mediaResult.error, file);
-                GlobalVars.handlers['getMedia' + actionName] = null;
+                delete GlobalVars.handlers['getMedia' + actionName];
               } else {
                 // Keep pushing chunks into assemble attachment
                 const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -169,7 +215,7 @@ export namespace media {
               }
             } else {
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
-              GlobalVars.handlers['getMedia' + actionName] = null;
+              delete GlobalVars.handlers['getMedia' + actionName];
             }
           }
         }
