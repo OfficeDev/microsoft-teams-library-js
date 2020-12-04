@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { FrameContexts, HostClientType } from './constants';
 import { generateGUID } from '../internal/utils';
 import {
   createFile,
@@ -474,6 +474,7 @@ export namespace media {
 
   /**
    * Scan Barcode/QRcode using camera
+   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    * @param callback callback to invoke after scanning the barcode
    * @param config optional input configuration to customize the barcode scanning experience
    */
@@ -482,6 +483,16 @@ export namespace media {
       throw new Error('[media.scanBarCode] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    if (
+      GlobalVars.hostClientType === HostClientType.desktop ||
+      GlobalVars.hostClientType === HostClientType.web ||
+      GlobalVars.hostClientType === HostClientType.rigel
+    ) {
+      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      callback(notSupportedError, null);
+      return;
+    }
 
     if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
