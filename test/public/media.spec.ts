@@ -1,6 +1,6 @@
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
-import { FrameContexts } from '../../src/public/constants';
+import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
@@ -736,5 +736,15 @@ describe('media', () => {
       mediaError = e;
     }, barCodeConfig);
     expect(mediaError).toBeFalsy();
+  });
+
+  it('should not allow scanBarCode calls in desktop', () => {
+    desktopPlatformMock.initializeWithContext(FrameContexts.content, HostClientType.desktop);
+    let error;
+    media.scanBarCode((e: SdkError, d: string) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
   });
 });
