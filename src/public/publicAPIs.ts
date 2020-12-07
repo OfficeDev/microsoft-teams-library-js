@@ -46,12 +46,13 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         ? GlobalVars.currentWindow.parent
         : GlobalVars.currentWindow.opener;
 
+    // Listen to messages from the parent or child frame.
+    // Frameless windows will only receive this event from child frames.
+    GlobalVars.currentWindow.addEventListener('message', messageListener, false);
+
     if (!GlobalVars.parentWindow) {
       GlobalVars.isFramelessWindow = true;
       (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-    } else {
-      // For iFrame scenario, add listener to listen 'message'
-      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
     }
 
     try {
