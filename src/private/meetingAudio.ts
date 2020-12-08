@@ -19,7 +19,7 @@ export namespace meetingAudio {
    * Hide from docs
    * ------
    * Allows an app to toggle the incoming audio speaker setting for the meeting user from mute to unmute or vice-versa
-   * @param callback Callback contains 1 parameter of type IToggleClientAudio. This parameter is an object which contains error or type SdkError or null and result of type boolean or null 
+   * @param callback Callback contains 1 parameter of type IToggleClientAudio. This parameter is an object which contains error or type SdkError or null and result of type boolean or null
    */
   export function toggleIncomingClientAudio(callback: (response: IToggleClientAudio) => void): void {
     if (!callback) {
