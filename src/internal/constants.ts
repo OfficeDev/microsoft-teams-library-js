@@ -1,6 +1,6 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.7.0';
+export const version = '1.9.0-beta.3';
 /**
  * This is the SDK version when all SDK APIs started to check platform compatibility for the APIs.
  */
