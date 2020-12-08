@@ -39,10 +39,10 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((sdkError: SdkError | null, result: boolean | null) => {
+      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
         callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = sdkError;
+        returnedResult = responseObject.result;
+        returnedSdkError = responseObject.error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
@@ -66,10 +66,10 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((sdkError: SdkError | null, result: boolean | null) => {
+      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
         callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = sdkError;
+        returnedResult = responseObject.result;
+        returnedSdkError = responseObject.error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
