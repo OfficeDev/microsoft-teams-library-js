@@ -54,7 +54,7 @@ export class Utils {
         },
       },
       parent: {
-        postMessage: function (message: MessageRequest, targetOrigin: string): void {
+        postMessage: function(message: MessageRequest, targetOrigin: string): void {
           if (message.func === 'initialize') {
             expect(targetOrigin).toEqual('*');
           } else {
@@ -63,6 +63,12 @@ export class Utils {
           that.messages.push(message);
         },
       } as Window,
+      nativeInterface: {
+        framelessPostMessage: function(message: string): void {
+          let msg = JSON.parse(message);
+          that.messages.push(msg);
+        },
+      },
       self: null as Window,
       open: function (url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
@@ -96,6 +102,15 @@ export class Utils {
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
     expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
+  };
+
+  public initializeAsFrameless = (callback?: () => void, validMessageOrigins?: string[]): Window => {
+    const parent = this.mockWindow.parent;
+    this.mockWindow.parent = null;
+
+    microsoftTeams1.initialize(callback, validMessageOrigins);
+
+    return parent;
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {

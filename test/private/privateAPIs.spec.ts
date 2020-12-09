@@ -15,6 +15,7 @@ import {
   sendCustomEvent,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
+import { GlobalVars } from '../../src/internal/globalVars';
 
 describe('MicrosoftTeams-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -321,6 +322,26 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
+  });
+
+  it('should treat messages to frameless windows as coming from the child', () => {
+    const parent = utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 0,
+        func: 'themeChange',
+        args: ['testTheme'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // The frameless window should send a response back to the child window
+    expect(utils.childMessages.length).toBe(1);
+
+    utils.mockWindow.parent = parent;
   });
 
   describe('getUserJoinedTeams', () => {

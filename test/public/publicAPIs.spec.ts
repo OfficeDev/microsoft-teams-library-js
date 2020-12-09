@@ -70,6 +70,15 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.args[0]).toEqual(version);
   });
 
+  it('should listen to frame messages for frameless window', () => {
+    const parent = utils.initializeAsFrameless();
+
+    expect(utils.processMessage).toBeDefined();
+    expect(utils.messages.length).toBe(1);
+
+    utils.mockWindow.parent = parent;
+  });
+
   it('should allow multiple initialize calls', () => {
     for (let i = 0; i < 100; i++) {
       initialize();
