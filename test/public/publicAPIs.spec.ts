@@ -36,6 +36,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.messages = [];
     utils.childMessages = [];
     utils.childWindow.closed = false;
+    utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
     _initialize(utils.mockWindow);
@@ -71,12 +72,10 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should listen to frame messages for frameless window', () => {
-    const parent = utils.initializeAsFrameless();
+    utils.initializeAsFrameless();
 
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
-
-    utils.mockWindow.parent = parent;
   });
 
   it('should allow multiple initialize calls', () => {

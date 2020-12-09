@@ -26,11 +26,24 @@ export class Utils {
   public childMessages: MessageRequest[] = [];
 
   public childWindow;
+  public parentWindow: Window;
 
   public constructor() {
     let that = this;
     this.messages = [];
     this.childMessages = [];
+
+    this.parentWindow = {
+      postMessage: function(message: MessageRequest, targetOrigin: string): void {
+        if (message.func === 'initialize') {
+          expect(targetOrigin).toEqual('*');
+        } else {
+          expect(targetOrigin).toEqual(that.validOrigin);
+        }
+        that.messages.push(message);
+      },
+    } as Window;
+
     this.mockWindow = {
       outerWidth: 1024,
       outerHeight: 768,
@@ -53,20 +66,10 @@ export class Utils {
           return;
         },
       },
-      parent: {
-        postMessage: function(message: MessageRequest, targetOrigin: string): void {
-          if (message.func === 'initialize') {
-            expect(targetOrigin).toEqual('*');
-          } else {
-            expect(targetOrigin).toEqual(that.validOrigin);
-          }
-          that.messages.push(message);
-        },
-      } as Window,
+      parent: this.parentWindow,
       nativeInterface: {
         framelessPostMessage: function(message: string): void {
-          let msg = JSON.parse(message);
-          that.messages.push(msg);
+          that.messages.push(JSON.parse(message));
         },
       },
       self: null as Window,
@@ -104,13 +107,9 @@ export class Utils {
     expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
   };
 
-  public initializeAsFrameless = (callback?: () => void, validMessageOrigins?: string[]): Window => {
-    const parent = this.mockWindow.parent;
+  public initializeAsFrameless = (callback?: () => void, validMessageOrigins?: string[]): void => {
     this.mockWindow.parent = null;
-
     microsoftTeams1.initialize(callback, validMessageOrigins);
-
-    return parent;
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {

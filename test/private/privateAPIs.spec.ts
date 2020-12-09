@@ -27,6 +27,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     utils.messages = [];
     utils.childMessages = [];
     utils.childWindow.closed = false;
+    utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
     _initialize(utils.mockWindow);
@@ -325,7 +326,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
-    const parent = utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
     utils.processMessage({
@@ -340,8 +341,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     // The frameless window should send a response back to the child window
     expect(utils.childMessages.length).toBe(1);
-
-    utils.mockWindow.parent = parent;
   });
 
   describe('getUserJoinedTeams', () => {
