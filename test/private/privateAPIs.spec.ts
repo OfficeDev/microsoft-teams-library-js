@@ -15,7 +15,6 @@ import {
   sendCustomEvent,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
-import { GlobalVars } from '../../src/internal/globalVars';
 
 describe('MicrosoftTeams-privateAPIs', () => {
   // Use to send a mock message from the app.
