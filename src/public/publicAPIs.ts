@@ -97,9 +97,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         settings.registerOnRemoveHandler(null);
       }
 
-      if (!GlobalVars.isFramelessWindow) {
-        GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-      }
+      GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
 
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
