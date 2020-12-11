@@ -1,6 +1,6 @@
-import { meeting } from "../../src/private/meeting";
+import { meeting } from "../../src/public/meeting";
 import { SdkError, ErrorCode } from "../../src/public/interfaces";
-import { DOMMessageEvent } from "../../src/internal/interfaces";
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from "../framelessPostMocks";
 import { _initialize, _uninitialize } from "../../src/public/publicAPIs";
 
@@ -39,10 +39,10 @@ describe("meeting", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meeting.toggleIncomingClientAudio((responseObject: meeting.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
         callbackCalled = true;
-        returnedResult = responseObject.result;
-        returnedSdkError = responseObject.error;
+        returnedResult = result;
+        returnedSdkError = error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
@@ -52,7 +52,7 @@ describe("meeting", () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ error: null, result: true }],
+          args: [null, true],
         }
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
@@ -66,10 +66,10 @@ describe("meeting", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meeting.toggleIncomingClientAudio((responseObject: meeting.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
         callbackCalled = true;
-        returnedResult = responseObject.result;
-        returnedSdkError = responseObject.error;
+        returnedResult = result;
+        returnedSdkError = error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
@@ -78,7 +78,7 @@ describe("meeting", () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{error: { errorCode: ErrorCode.INTERNAL_ERROR }, result: null}]
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
         }
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
