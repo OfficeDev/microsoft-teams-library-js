@@ -1,6 +1,6 @@
 import { meeting } from "../../src/public/meeting";
 import { SdkError, ErrorCode } from "../../src/public/interfaces";
-import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { DOMMessageEvent } from "../../src/internal/interfaces";
 import { FramelessPostMocks } from "../framelessPostMocks";
 import { _initialize, _uninitialize } from "../../src/public/publicAPIs";
 
