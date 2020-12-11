@@ -1,10 +1,10 @@
-import { meetingAudio } from "../../src/private/meetingAudio";
+import { meeting } from "../../src/private/meeting";
 import { SdkError, ErrorCode } from "../../src/public/interfaces";
 import { DOMMessageEvent } from "../../src/internal/interfaces";
 import { FramelessPostMocks } from "../framelessPostMocks";
 import { _initialize, _uninitialize } from "../../src/public/publicAPIs";
 
-describe("meetingRoom", () => {
+describe("meeting", () => {
   const desktopPlatformMock = new FramelessPostMocks();
 
   beforeEach(() => {
@@ -21,13 +21,13 @@ describe("meetingRoom", () => {
 
   describe("toggleIncomingClientAudio", () => {
     it('should not allow toggle incoming client audio calls with null callback', () => {
-      expect(() => meetingAudio.toggleIncomingClientAudio(null)).toThrowError(
+      expect(() => meeting.toggleIncomingClientAudio(null)).toThrowError(
         '[toggle incoming client audio] Callback cannot be null',
       );
     });
     it("should not allow calls before initialization", () => {
       expect(() =>
-        meetingAudio.toggleIncomingClientAudio(() => {
+        meeting.toggleIncomingClientAudio(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -39,7 +39,7 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((responseObject: meeting.IToggleClientAudio) => {
         callbackCalled = true;
         returnedResult = responseObject.result;
         returnedSdkError = responseObject.error;
@@ -66,7 +66,7 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((responseObject: meeting.IToggleClientAudio) => {
         callbackCalled = true;
         returnedResult = responseObject.result;
         returnedSdkError = responseObject.error;

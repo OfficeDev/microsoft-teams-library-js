@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
 
-export namespace meetingAudio {
+export namespace meeting {
   export interface IToggleClientAudio {
     /**
      * error can either contain an error of type SdkError, incase of an error, or null when toggle is successful
