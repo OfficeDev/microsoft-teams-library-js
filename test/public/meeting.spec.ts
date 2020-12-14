@@ -1,10 +1,10 @@
-import { meetingAudio } from "../../src/private/meetingAudio";
+import { meeting } from "../../src/public/meeting";
 import { SdkError, ErrorCode } from "../../src/public/interfaces";
 import { DOMMessageEvent } from "../../src/internal/interfaces";
 import { FramelessPostMocks } from "../framelessPostMocks";
 import { _initialize, _uninitialize } from "../../src/public/publicAPIs";
 
-describe("meetingRoom", () => {
+describe("meeting", () => {
   const desktopPlatformMock = new FramelessPostMocks();
 
   beforeEach(() => {
@@ -21,13 +21,13 @@ describe("meetingRoom", () => {
 
   describe("toggleIncomingClientAudio", () => {
     it('should not allow toggle incoming client audio calls with null callback', () => {
-      expect(() => meetingAudio.toggleIncomingClientAudio(null)).toThrowError(
+      expect(() => meeting.toggleIncomingClientAudio(null)).toThrowError(
         '[toggle incoming client audio] Callback cannot be null',
       );
     });
     it("should not allow calls before initialization", () => {
       expect(() =>
-        meetingAudio.toggleIncomingClientAudio(() => {
+        meeting.toggleIncomingClientAudio(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -39,10 +39,10 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
         callbackCalled = true;
-        returnedResult = responseObject.result;
-        returnedSdkError = responseObject.error;
+        returnedResult = result;
+        returnedSdkError = error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
@@ -52,7 +52,7 @@ describe("meetingRoom", () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ error: null, result: true }],
+          args: [null, true],
         }
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
@@ -66,10 +66,10 @@ describe("meetingRoom", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meetingAudio.toggleIncomingClientAudio((responseObject: meetingAudio.IToggleClientAudio) => {
+      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
         callbackCalled = true;
-        returnedResult = responseObject.result;
-        returnedSdkError = responseObject.error;
+        returnedResult = result;
+        returnedSdkError = error;
       });
 
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
@@ -78,7 +78,7 @@ describe("meetingRoom", () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{error: { errorCode: ErrorCode.INTERNAL_ERROR }, result: null}]
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
         }
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
