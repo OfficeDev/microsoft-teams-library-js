@@ -47,8 +47,10 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         : GlobalVars.currentWindow.opener;
 
     // Listen to messages from the parent or child frame.
-    // Frameless windows will only receive this event from child frames.
-    GlobalVars.currentWindow.addEventListener('message', messageListener, false);
+    // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
+    if (GlobalVars.parentWindow || validMessageOrigins) {
+      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
+    }
 
     if (!GlobalVars.parentWindow) {
       GlobalVars.isFramelessWindow = true;
