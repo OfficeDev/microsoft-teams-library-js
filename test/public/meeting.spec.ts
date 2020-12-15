@@ -48,7 +48,6 @@ describe("meeting", () => {
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
       expect(toggleIncomingClientAudioMessage).not.toBeNull();
       let callbackId = toggleIncomingClientAudioMessage.id;
-      // desktopPlatformMock.respondToMessage(toggleIncomingClientAudioMessage, {});
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -75,6 +74,73 @@ describe("meeting", () => {
       let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
       expect(toggleIncomingClientAudioMessage).not.toBeNull();
       let callbackId = toggleIncomingClientAudioMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
+        }
+      } as DOMMessageEvent);
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).not.toBeNull();
+      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      expect(returnedResult).toBe(null);
+    });
+  });
+  describe("getIncomingClientAudio", () => {
+    it('should not allow get incoming client audio calls with null callback', () => {
+      expect(() => meeting.getIncomingClientAudio(null)).toThrowError(
+        '[get incoming client audio state] Callback cannot be null',
+      );
+    });
+    it("should not allow calls before initialization", () => {
+      expect(() =>
+        meeting.getIncomingClientAudio(() => {
+          return;
+        })
+      ).toThrowError("The library has not yet been initialized");
+    });
+
+    it("should successfully get the incoming client audio state", () => {
+      desktopPlatformMock.initializeWithContext("content");
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedResult: boolean | null;
+      meeting.getIncomingClientAudio((error: SdkError, result: boolean) => {
+        callbackCalled = true;
+        returnedResult = result;
+        returnedSdkError = error;
+      });
+
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudio");
+      expect(getIncomingClientAudioMessage).not.toBeNull();
+      let callbackId = getIncomingClientAudioMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [null, true],
+        }
+      } as DOMMessageEvent);
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).toBeNull();
+      expect(returnedResult).toBe(true);
+    });
+
+    it("should return error code 500", () => {
+      desktopPlatformMock.initializeWithContext("content");
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedResult: boolean | null;
+      meeting.getIncomingClientAudio((error: SdkError, result: boolean) => {
+        callbackCalled = true;
+        returnedResult = result;
+        returnedSdkError = error;
+      });
+
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudio");
+      expect(getIncomingClientAudioMessage).not.toBeNull();
+      let callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
