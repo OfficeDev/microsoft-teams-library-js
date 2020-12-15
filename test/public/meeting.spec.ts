@@ -86,15 +86,15 @@ describe("meeting", () => {
       expect(returnedResult).toBe(null);
     });
   });
-  describe("getIncomingClientAudio", () => {
+  describe("getIncomingClientAudioState", () => {
     it('should not allow get incoming client audio calls with null callback', () => {
-      expect(() => meeting.getIncomingClientAudio(null)).toThrowError(
+      expect(() => meeting.getIncomingClientAudioState(null)).toThrowError(
         '[get incoming client audio state] Callback cannot be null',
       );
     });
     it("should not allow calls before initialization", () => {
       expect(() =>
-        meeting.getIncomingClientAudio(() => {
+        meeting.getIncomingClientAudioState(() => {
           return;
         })
       ).toThrowError("The library has not yet been initialized");
@@ -106,13 +106,13 @@ describe("meeting", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meeting.getIncomingClientAudio((error: SdkError, result: boolean) => {
+      meeting.getIncomingClientAudioState((error: SdkError, result: boolean) => {
         callbackCalled = true;
         returnedResult = result;
         returnedSdkError = error;
       });
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudio");
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudioState");
       expect(getIncomingClientAudioMessage).not.toBeNull();
       let callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
@@ -132,13 +132,13 @@ describe("meeting", () => {
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedResult: boolean | null;
-      meeting.getIncomingClientAudio((error: SdkError, result: boolean) => {
+      meeting.getIncomingClientAudioState((error: SdkError, result: boolean) => {
         callbackCalled = true;
         returnedResult = result;
         returnedSdkError = error;
       });
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudio");
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudioState");
       expect(getIncomingClientAudioMessage).not.toBeNull();
       let callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({

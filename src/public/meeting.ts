@@ -10,12 +10,14 @@ export namespace meeting {
    * result can either contain the true/false value, incase of a successful toggle or null when the fetching fails
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
-  export function getIncomingClientAudio(callback: (error: SdkError | null, result: boolean | null) => void): void {
+  export function getIncomingClientAudioState(
+    callback: (error: SdkError | null, result: boolean | null) => void,
+  ): void {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('getIncomingClientAudio');
+    const messageId = sendMessageRequestToParent('getIncomingClientAudioState');
     GlobalVars.callbacks[messageId] = callback;
   }
 
