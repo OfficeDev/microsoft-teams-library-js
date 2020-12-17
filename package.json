@@ -2,7 +2,7 @@
   "name": "teamsjs-app-sdk-monorepo",
   "private": true,
   "author": "Microsoft teamsjs",
-  "workspaces": [ "teamsjs-app-sdk", "teamsjs-test-app" ],
+  "workspaces": [ "teamsjs-app-sdk", "examples/teamsjs-test-app" ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
@@ -10,6 +10,8 @@
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
     "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)",
-    "publish-sdk": "yarn publish teamsjs-app-sdk"
+    "publish-sdk": "yarn publish teamsjs-app-sdk",
+    "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
+    "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)"
   }
 }

@@ -1,5 +1,7 @@
 # teamsjs App SDK
 
+Welcome to the teamsjs App SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root.
+
 ## Merging changes made in the original repo
 ```powershell
 # Do once, adds a link to the original repo. Do *ONE* of these
@@ -11,17 +13,10 @@ git fetch upstream
 git merge upstream/master
 ```
 
-## BREAKING CHANGES
-
-v0.0.6: This project is now a monorepo. You can find the teamsjs App SDK project under teamsjs-app-sdk/ and the teamsjs Test App under examples/teamsjs-test-app.
-
-The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
-  - All the public API functions have been moved under 'core' namespace
-
 ## Original Repo
 [https://github.com/OfficeDev/microsoft-teams-library-js](OfficeDev/microsoft-teams-library-js)
 
-# [Microsoft Teams JavaScript Library](https://msdn.microsoft.com/en-us/microsoft-teams/)
+### [Microsoft Teams JavaScript Library](https://msdn.microsoft.com/en-us/microsoft-teams/)
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://msdn.microsoft.com/en-us/microsoft-teams/). For documentation, see [Reference: Microsoft teamsjs App SDK JavaScript library](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
@@ -37,7 +32,7 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
   TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
 
-### Installation
+## Installation
 
 To install the stable version:
 
@@ -79,6 +74,10 @@ Reference the library inside of your `.html` page using:
 <!-- Microsoft teamsjs App JavaScript API (via local) -->
 <script src="teamsjs.min.js"></script>
 ```
+
+## Examples
+
+To explore the APIs, please see the [teamsjs Test App](./examples/teamsjs-test-app/README.md) located in our examples/ folder.
 
 ## Contributing
 
