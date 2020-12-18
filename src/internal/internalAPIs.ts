@@ -202,7 +202,11 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
   // Determine whether the source of the message is our parent or child and update our
   // window and origin pointer accordingly
-  if (!GlobalVars.parentWindow || GlobalVars.parentWindow.closed || messageSource === GlobalVars.parentWindow) {
+  // For frameless windows (i.e mobile), there is no parent frame, so the message must be from the child.
+  if (
+    !GlobalVars.isFramelessWindow &&
+    (!GlobalVars.parentWindow || GlobalVars.parentWindow.closed || messageSource === GlobalVars.parentWindow)
+  ) {
     GlobalVars.parentWindow = messageSource;
     GlobalVars.parentOrigin = messageOrigin;
   } else if (!GlobalVars.childWindow || GlobalVars.childWindow.closed || messageSource === GlobalVars.childWindow) {
