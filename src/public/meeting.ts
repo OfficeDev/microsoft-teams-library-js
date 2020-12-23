@@ -36,4 +36,19 @@ export namespace meeting {
     const messageId = sendMessageRequestToParent('toggleIncomingClientAudio');
     GlobalVars.callbacks[messageId] = callback;
   }
+
+  /**
+   * Allows an app to get the meeting details for the meeting
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError, incase of an error, or null when get is successful
+   * result can either contain a string value, incase of a successful get or null when the get fails
+   */
+  export function getMeetingDetails(callback: (error: SdkError | null, result: string | null) => void): void {
+    if (!callback) {
+      throw new Error('[get meeting details] Callback cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
+    GlobalVars.callbacks[messageId] = callback;
+  }
 }
