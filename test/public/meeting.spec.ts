@@ -153,70 +153,78 @@ describe('meeting', () => {
       expect(returnedResult).toBe(null);
     });
   });
-  describe("getMeetingDetails", () => {
+  describe('getMeetingDetails', () => {
     it('should not allow get meeting details calls with null callback', () => {
       expect(() => meeting.getMeetingDetails(null)).toThrowError('[get meeting details] Callback cannot be null');
     });
-    it("should not allow calls before initialization", () => {
+    it('should not allow calls before initialization', () => {
       expect(() =>
         meeting.getMeetingDetails(() => {
           return;
         }),
-      ).toThrowError("The library has not yet been initialized");
+      ).toThrowError('The library has not yet been initialized');
     });
 
-    it("should successfully get the meeting details", () => {
-      desktopPlatformMock.initializeWithContext("content");
+    it('should successfully get the meeting details', () => {
+      desktopPlatformMock.initializeWithContext('content');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedResult: string | null;
-      meeting.getMeetingDetails((error: SdkError, result: string) => {
+      let returnedMeetingResult: meeting.IMeetingDetails | null;
+      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
         callbackCalled = true;
-        returnedResult = result;
+        returnedMeetingResult = meetingDetails;
         returnedSdkError = error;
       });
 
-      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc("meeting.getMeetingDetails");
+      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
-      let mockData = `{​​​​"scheduledStartTime":"2020-12-21T21:30:00+00:00","scheduledEndTime":"2020-12-21T22:00:00+00:00","meetingTitle":"Get meeting details test meeting","organizerId":"8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3","tenantId":"72f988bf-86f1-41af-91ab-2d7cd011db47","joinUrl":"https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZTVhMWViNDAtM2JjOC00MWQyLWI5MzctZjM2ODM3YjQzM2Vi%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d"}​​​​`;
+      let meetingDetails: meeting.IMeetingDetails = {
+        scheduledStartTime: '2020-12-21T21:30:00+00:00',
+        scheduledEndTime: '2020-12-21T22:00:00+00:00',
+        meetingTitle: 'Get meeting details test meeting',
+        organizerId: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
+        tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
+        joinUrl:
+          'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
+      }​​​​;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [null, mockData],
-        }
+          args: [null, meetingDetails],
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBeNull();
-      expect(returnedResult).toStrictEqual(mockData);
+      expect(returnedMeetingResult).toStrictEqual(meetingDetails);
     });
 
-    it("should return error code 500", () => {
-      desktopPlatformMock.initializeWithContext("content");
+    it('should return error code 500', () => {
+      desktopPlatformMock.initializeWithContext('content');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedResult: string | null;
-      meeting.getMeetingDetails((error: SdkError, result: string) => {
+      let returnedMeetingDetails: meeting.IMeetingDetails | null;
+      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
         callbackCalled = true;
-        returnedResult = result;
+        returnedMeetingDetails = meetingDetails;
         returnedSdkError = error;
       });
 
-      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc("meeting.getMeetingDetails");
+      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
         },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedResult).toBe(null);
+      expect(returnedMeetingDetails).toBe(null);
     });
   });
 });

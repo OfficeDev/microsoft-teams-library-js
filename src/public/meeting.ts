@@ -19,19 +19,19 @@ export namespace meeting {
     /**
      * meeting title name of the meeting
      */
-    meetingTitle?: string;
+    meetingTitle: string;
     /**
      * organizer id of the meeting
      */
-    organizerId?: string;
+    organizerId: string;
     /**
      * tenant id of the meeting
      */
-    tenantId?: string;
+    tenantId: string;
     /**
      * url to join the current meeting
      */
-    joinUrl?: string;
+    joinUrl: string;
   }
 
   /**
@@ -70,11 +70,13 @@ export namespace meeting {
 
   /**
    * Allows an app to get the meeting details for the meeting
-   * @param callback Callback contains 2 parameters, error and result.
+   * @param callback Callback contains 2 parameters, error and meetingDetails.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a string value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetails value, incase of a successful get or null when the get fails
    */
-  export function getMeetingDetails(callback: (error: SdkError | null, result: string | null) => void): void {
+  export function getMeetingDetails(
+    callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
+  ): void {
     if (!callback) {
       throw new Error('[get meeting details] Callback cannot be null');
     }
