@@ -27,6 +27,10 @@ steps:
     Arguments: 'test-sdk'
   displayName: 'yarn test-sdk'
 - task: Yarn@3
+  inputs:
+    Arguments: 'build-test-app'
+  displayName: 'yarn build-test-app'
+- task: Yarn@3
   condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'Manual'))
   inputs:
     Arguments: 'publish-sdk'
