@@ -227,4 +227,74 @@ describe('meeting', () => {
       expect(returnedMeetingDetails).toBe(null);
     });
   });
+  describe('getAuthenticationTokenForAnonymousUser', () => {
+    it('should not allow get anonymous user token with null callback', () => {
+      expect(() => meeting.getAuthenticationTokenForAnonymousUser(null)).toThrowError(
+        '[get Authentication Token For AnonymousUser] Callback cannot be null',
+      );
+    });
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        meeting.getAuthenticationTokenForAnonymousUser(() => {
+          return;
+        })
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully get the anonymous user token of the user in meeting', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedSkypeToken: string | null;
+      meeting.getAuthenticationTokenForAnonymousUser((error: SdkError, authenticationTokenOfAnonymousUser: string) => {
+        callbackCalled = true;
+        returnedSkypeToken = authenticationTokenOfAnonymousUser;
+        returnedSdkError = error;
+      });
+
+      let getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
+        'meeting.getAuthenticationTokenForAnonymousUser',
+      );
+      expect(getAnonymousUserTokenMessage).not.toBeNull();
+      let callbackId = getAnonymousUserTokenMessage.id;
+      let mockAuthenticationToken = '1234567890oiuytrdeswasdcfvbgnhjmuy6t54ewsxdcvbnu743edfvbnm,o98';
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [null, mockAuthenticationToken],
+        },
+      } as DOMMessageEvent);
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).toBeNull();
+      expect(returnedSkypeToken).toBe(mockAuthenticationToken);
+    });
+    it('should return error code 500', () => {
+      desktopPlatformMock.initializeWithContext('content');
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedSkypeToken: string | null;
+      meeting.getAuthenticationTokenForAnonymousUser((error: SdkError, authenticationTokenOfAnonymousUser: string) => {
+        callbackCalled = true;
+        returnedSkypeToken = authenticationTokenOfAnonymousUser;
+        returnedSdkError = error;
+      });
+
+      let getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
+        'meeting.getAuthenticationTokenForAnonymousUser',
+      );
+      expect(getAnonymousUserTokenMessage).not.toBeNull();
+      let callbackId = getAnonymousUserTokenMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
+        }
+      } as DOMMessageEvent);
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).not.toBeNull();
+      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      expect(returnedSkypeToken).toBe(null);
+    });
+  });
 });
