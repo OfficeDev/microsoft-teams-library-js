@@ -1,5 +1,6 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
+export { backgroundFilters } from './backgroundFilters';
 export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
   Context,
