@@ -11,11 +11,11 @@ export namespace meeting {
     /**
      * Scheduled start time of the meeting
      */
-    scheduledStartTime?: string;
+    scheduledStartTime: string;
     /**
      * Scheduled end time of the meeting
      */
-    scheduledEndTime?: string;
+    scheduledEndTime: string;
     /**
      * meeting title name of the meeting
      */
