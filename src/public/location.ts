@@ -2,6 +2,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { Communication } from '../internal/communication';
 
 export namespace location {
   /**
@@ -65,7 +66,7 @@ export namespace location {
       return;
     }
     const messageId = sendMessageRequestToParent('location.getLocation', [props]);
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**
@@ -90,6 +91,6 @@ export namespace location {
       return;
     }
     const messageId = sendMessageRequestToParent('location.showLocation', [location]);
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 }

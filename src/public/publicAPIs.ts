@@ -20,6 +20,7 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
+import { Communication } from '../internal/communication';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -41,18 +42,18 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
     GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-    GlobalVars.parentWindow =
+    Communication.parentWindow =
       GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
         ? GlobalVars.currentWindow.parent
         : GlobalVars.currentWindow.opener;
 
     // Listen to messages from the parent or child frame.
     // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
-    if (GlobalVars.parentWindow || validMessageOrigins) {
+    if (Communication.parentWindow || validMessageOrigins) {
       GlobalVars.currentWindow.addEventListener('message', messageListener, false);
     }
 
-    if (!GlobalVars.parentWindow) {
+    if (!Communication.parentWindow) {
       GlobalVars.isFramelessWindow = true;
       (window as ExtendedWindow).onNativeMessage = handleParentMessage;
     }
@@ -60,9 +61,9 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
       // of the parent window, and this message contains no data that could pose a security risk.
-      GlobalVars.parentOrigin = '*';
+      Communication.parentOrigin = '*';
       const messageId = sendMessageRequestToParent('initialize', [version]);
-      GlobalVars.callbacks[messageId] = (
+      Communication.callbacks[messageId] = (
         context: FrameContexts,
         clientType: string,
         clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
@@ -77,7 +78,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         GlobalVars.initializeCompleted = true;
       };
     } finally {
-      GlobalVars.parentOrigin = null;
+      Communication.parentOrigin = null;
     }
 
     // Undocumented function used to clear state between unit tests
@@ -105,14 +106,14 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       GlobalVars.initializeCompleted = false;
       GlobalVars.initializeCallbacks = [];
       GlobalVars.additionalValidOrigins = [];
-      GlobalVars.parentWindow = null;
-      GlobalVars.parentOrigin = null;
-      GlobalVars.parentMessageQueue = [];
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
-      GlobalVars.childMessageQueue = [];
-      GlobalVars.nextMessageId = 0;
-      GlobalVars.callbacks = {};
+      Communication.parentWindow = null;
+      Communication.parentOrigin = null;
+      Communication.parentMessageQueue = [];
+      Communication.childWindow = null;
+      Communication.childOrigin = null;
+      Communication.childMessageQueue = [];
+      Communication.nextMessageId = 0;
+      Communication.callbacks = {};
       GlobalVars.frameContext = null;
       GlobalVars.hostClientType = null;
       GlobalVars.isFramelessWindow = false;
@@ -185,7 +186,7 @@ export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getContext');
-  GlobalVars.callbacks[messageId] = (context: Context) => {
+  Communication.callbacks[messageId] = (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
@@ -316,7 +317,7 @@ export function getTabInstances(
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  Communication.callbacks[messageId] = callback;
 }
 
 /**
@@ -331,7 +332,7 @@ export function getMruTabInstances(
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  Communication.callbacks[messageId] = callback;
 }
 
 /**
@@ -361,7 +362,7 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.stage,
   );
   const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 export function setFrameContext(frameContext: FrameContext): void {

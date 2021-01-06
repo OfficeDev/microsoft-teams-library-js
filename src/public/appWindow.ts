@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { Communication } from '../internal/communication';
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -12,12 +13,12 @@ export class ChildAppWindow implements IAppWindow {
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('messageForChild', [message]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      GlobalVars.handlers['messageForParent'] = listener;
+      Communication.handlers['messageForParent'] = listener;
     }
   }
 }
@@ -33,12 +34,12 @@ export class ParentAppWindow implements IAppWindow {
     ensureInitialized(FrameContexts.task);
     const messageId = sendMessageRequestToParent('messageForParent', [message]);
 
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      GlobalVars.handlers['messageForChild'] = listener;
+      Communication.handlers['messageForChild'] = listener;
     }
   }
 }

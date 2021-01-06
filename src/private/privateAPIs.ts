@@ -9,6 +9,7 @@ import {
   UserJoinedTeamsInformation,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { Communication } from '../internal/communication';
 
 /**
  * @private
@@ -25,7 +26,7 @@ export function getUserJoinedTeams(
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getUserJoinedTeams', [teamInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  Communication.callbacks[messageId] = callback;
 }
 
 /**
@@ -103,7 +104,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('uploadCustomApp', [manifestBlob]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 /**
@@ -126,7 +127,7 @@ export function sendCustomMessage(
 
   const messageId = sendMessageRequestToParent(actionName, args);
   if (typeof callback === 'function') {
-    GlobalVars.callbacks[messageId] = (...args: any[]): void => {
+    Communication.callbacks[messageId] = (...args: any[]): void => {
       callback.apply(null, args);
     };
   }
@@ -150,7 +151,7 @@ export function sendCustomEvent(
   ensureInitialized();
 
   //validate childWindow
-  if (!GlobalVars.childWindow) {
+  if (!Communication.childWindow) {
     throw new Error('The child window has not yet been initialized or is not present');
   }
   sendMessageEventToChild(actionName, args);
@@ -171,7 +172,7 @@ export function registerCustomHandler(
   ) => any[],
 ): void {
   ensureInitialized();
-  GlobalVars.handlers[actionName] = (...args: any[]) => {
+  Communication.handlers[actionName] = (...args: any[]) => {
     return customHandler.apply(this, args);
   };
 }
@@ -189,7 +190,7 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getChatMembers');
-  GlobalVars.callbacks[messageId] = callback;
+  Communication.callbacks[messageId] = callback;
 }
 
 /**
@@ -204,5 +205,5 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
-  GlobalVars.callbacks[messageId] = callback;
+  Communication.callbacks[messageId] = callback;
 }

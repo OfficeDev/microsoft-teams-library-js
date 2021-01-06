@@ -1,5 +1,5 @@
+import { Communication } from '../internal/communication';
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from './interfaces';
 
 export namespace meeting {
@@ -49,7 +49,7 @@ export namespace meeting {
     }
     ensureInitialized();
     const messageId = sendMessageRequestToParent('getIncomingClientAudioState');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**
@@ -65,7 +65,7 @@ export namespace meeting {
     }
     ensureInitialized();
     const messageId = sendMessageRequestToParent('toggleIncomingClientAudio');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**
@@ -82,6 +82,6 @@ export namespace meeting {
     }
     ensureInitialized();
     const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 }

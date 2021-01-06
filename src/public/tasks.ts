@@ -1,8 +1,8 @@
 import { TaskInfo } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the task module-specific part of the SDK.
@@ -18,7 +18,7 @@ export namespace tasks {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
     const messageId = sendMessageRequestToParent('tasks.startTask', [taskInfo]);
-    GlobalVars.callbacks[messageId] = submitHandler;
+    Communication.callbacks[messageId] = submitHandler;
     return new ChildAppWindow();
   }
 

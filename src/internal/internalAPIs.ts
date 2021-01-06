@@ -1,22 +1,23 @@
 import { navigateBack } from '../../src/public/navigation';
 import { LoadContext } from '../public/interfaces';
+import { Communication } from './communication';
 import { validOriginRegExp, userOriginUrlValidationRegExp, defaultSDKVersionForCompatCheck } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 import { generateRegExpFromUrls, compareSDKVersions } from './utils';
 
 // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-GlobalVars.handlers['themeChange'] = handleThemeChange;
-GlobalVars.handlers['fullScreenChange'] = handleFullScreenChange;
-GlobalVars.handlers['backButtonPress'] = handleBackButtonPress;
-GlobalVars.handlers['load'] = handleLoad;
-GlobalVars.handlers['beforeUnload'] = handleBeforeUnload;
-GlobalVars.handlers['changeSettings'] = handleChangeSettings;
-GlobalVars.handlers['startConversation'] = handleStartConversation;
-GlobalVars.handlers['closeConversation'] = handleCloseConversation;
-GlobalVars.handlers['appButtonClick'] = handleAppButtonClick;
-GlobalVars.handlers['appButtonHoverEnter'] = handleAppButtonHoverEnter;
-GlobalVars.handlers['appButtonHoverLeave'] = handleAppButtonHoverLeave;
+Communication.handlers['themeChange'] = handleThemeChange;
+Communication.handlers['fullScreenChange'] = handleFullScreenChange;
+Communication.handlers['backButtonPress'] = handleBackButtonPress;
+Communication.handlers['load'] = handleLoad;
+Communication.handlers['beforeUnload'] = handleBeforeUnload;
+Communication.handlers['changeSettings'] = handleChangeSettings;
+Communication.handlers['startConversation'] = handleStartConversation;
+Communication.handlers['closeConversation'] = handleCloseConversation;
+Communication.handlers['appButtonClick'] = handleAppButtonClick;
+Communication.handlers['appButtonHoverEnter'] = handleAppButtonHoverEnter;
+Communication.handlers['appButtonHoverLeave'] = handleAppButtonHoverLeave;
 
 function handleStartConversation(
   subEntityId: string,
@@ -55,7 +56,7 @@ function handleThemeChange(theme: string): void {
     GlobalVars.themeChangeHandler(theme);
   }
 
-  if (GlobalVars.childWindow) {
+  if (Communication.childWindow) {
     sendMessageEventToChild('themeChange', [theme]);
   }
 }
@@ -77,7 +78,7 @@ function handleLoad(context: LoadContext): void {
     GlobalVars.loadHandler(context);
   }
 
-  if (GlobalVars.childWindow) {
+  if (Communication.childWindow) {
     sendMessageEventToChild('load', [context]);
   }
 }
@@ -167,9 +168,9 @@ export function processMessage(evt: DOMMessageEvent): void {
   updateRelationships(messageSource, messageOrigin);
 
   // Handle the message
-  if (messageSource === GlobalVars.parentWindow) {
+  if (messageSource === Communication.parentWindow) {
     handleParentMessage(evt);
-  } else if (messageSource === GlobalVars.childWindow) {
+  } else if (messageSource === Communication.childWindow) {
     handleChildMessage(evt);
   }
 }
@@ -205,47 +206,51 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   // For frameless windows (i.e mobile), there is no parent frame, so the message must be from the child.
   if (
     !GlobalVars.isFramelessWindow &&
-    (!GlobalVars.parentWindow || GlobalVars.parentWindow.closed || messageSource === GlobalVars.parentWindow)
+    (!Communication.parentWindow || Communication.parentWindow.closed || messageSource === Communication.parentWindow)
   ) {
-    GlobalVars.parentWindow = messageSource;
-    GlobalVars.parentOrigin = messageOrigin;
-  } else if (!GlobalVars.childWindow || GlobalVars.childWindow.closed || messageSource === GlobalVars.childWindow) {
-    GlobalVars.childWindow = messageSource;
-    GlobalVars.childOrigin = messageOrigin;
+    Communication.parentWindow = messageSource;
+    Communication.parentOrigin = messageOrigin;
+  } else if (
+    !Communication.childWindow ||
+    Communication.childWindow.closed ||
+    messageSource === Communication.childWindow
+  ) {
+    Communication.childWindow = messageSource;
+    Communication.childOrigin = messageOrigin;
   }
 
   // Clean up pointers to closed parent and child windows
-  if (GlobalVars.parentWindow && GlobalVars.parentWindow.closed) {
-    GlobalVars.parentWindow = null;
-    GlobalVars.parentOrigin = null;
+  if (Communication.parentWindow && Communication.parentWindow.closed) {
+    Communication.parentWindow = null;
+    Communication.parentOrigin = null;
   }
-  if (GlobalVars.childWindow && GlobalVars.childWindow.closed) {
-    GlobalVars.childWindow = null;
-    GlobalVars.childOrigin = null;
+  if (Communication.childWindow && Communication.childWindow.closed) {
+    Communication.childWindow = null;
+    Communication.childOrigin = null;
   }
 
   // If we have any messages in our queue, send them now
-  flushMessageQueue(GlobalVars.parentWindow);
-  flushMessageQueue(GlobalVars.childWindow);
+  flushMessageQueue(Communication.parentWindow);
+  flushMessageQueue(Communication.childWindow);
 }
 
 export function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
-    // Call any associated GlobalVars.callbacks
+    // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
-    const callback = GlobalVars.callbacks[message.id];
+    const callback = Communication.callbacks[message.id];
     if (callback) {
       callback.apply(null, message.args);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
-        delete GlobalVars.callbacks[message.id];
+        delete Communication.callbacks[message.id];
       }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    const handler = GlobalVars.handlers[message.func];
+    const handler = Communication.handlers[message.func];
     if (handler) {
       // We don't expect any handler to respond at this point
       handler.apply(this, message.args);
@@ -261,7 +266,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = evt.data as MessageRequest;
-    const handler = message.func ? GlobalVars.handlers[message.func] : null;
+    const handler = message.func ? Communication.handlers[message.func] : null;
     if (handler) {
       const result = handler.apply(this, message.args);
       if (typeof result !== 'undefined') {
@@ -271,8 +276,8 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // No handler, proxy to parent
       const messageId = sendMessageRequestToParent(message.func, message.args);
       // tslint:disable-next-line:no-any
-      GlobalVars.callbacks[messageId] = (...args: any[]): void => {
-        if (GlobalVars.childWindow) {
+      Communication.callbacks[messageId] = (...args: any[]): void => {
+        if (Communication.childWindow) {
           sendMessageResponseToChild(message.id, args);
         }
       };
@@ -307,18 +312,18 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
 }
 
 function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
-  return targetWindow === GlobalVars.parentWindow
-    ? GlobalVars.parentMessageQueue
-    : targetWindow === GlobalVars.childWindow
-    ? GlobalVars.childMessageQueue
+  return targetWindow === Communication.parentWindow
+    ? Communication.parentMessageQueue
+    : targetWindow === Communication.childWindow
+    ? Communication.childMessageQueue
     : [];
 }
 
 function getTargetOrigin(targetWindow: Window): string {
-  return targetWindow === GlobalVars.parentWindow
-    ? GlobalVars.parentOrigin
-    : targetWindow === GlobalVars.childWindow
-    ? GlobalVars.childOrigin
+  return targetWindow === Communication.parentWindow
+    ? Communication.parentOrigin
+    : targetWindow === Communication.childWindow
+    ? Communication.childOrigin
     : null;
 }
 
@@ -347,7 +352,7 @@ export function sendMessageRequestToParent(
   // tslint:disable-next-line: no-any
   args?: any[],
 ): number {
-  const targetWindow = GlobalVars.parentWindow;
+  const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
     if (GlobalVars.currentWindow && GlobalVars.currentWindow.nativeInterface) {
@@ -375,7 +380,7 @@ function sendMessageResponseToChild(
   // tslint:disable-next-line:no-any
   args?: any[],
 ): void {
-  const targetWindow = GlobalVars.childWindow;
+  const targetWindow = Communication.childWindow;
   const response = createMessageResponse(id, args);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
@@ -392,7 +397,7 @@ export function sendMessageEventToChild(
   // tslint:disable-next-line: no-any
   args?: any[],
 ): void {
-  const targetWindow = GlobalVars.childWindow;
+  const targetWindow = Communication.childWindow;
   const customEvent = createMessageEvent(actionName, args);
   const targetOrigin = getTargetOrigin(targetWindow);
 
@@ -408,7 +413,7 @@ export function sendMessageEventToChild(
 // tslint:disable-next-line:no-any
 function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
-    id: GlobalVars.nextMessageId++,
+    id: Communication.nextMessageId++,
     func: func,
     args: args || [],
   };
