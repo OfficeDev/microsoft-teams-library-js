@@ -1,7 +1,7 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -10,8 +10,8 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 export namespace settings {
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
-  GlobalVars.handlers['settings.save'] = handleSave;
-  GlobalVars.handlers['settings.remove'] = handleRemove;
+  Communication.handlers['settings.save'] = handleSave;
+  Communication.handlers['settings.remove'] = handleRemove;
 
   /**
    * Sets the validity state for the settings.
@@ -30,7 +30,7 @@ export namespace settings {
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
     const messageId = sendMessageRequestToParent('settings.getSettings');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**
@@ -44,7 +44,7 @@ export namespace settings {
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings);
     const messageId = sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
   /**

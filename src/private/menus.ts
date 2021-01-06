@@ -1,5 +1,6 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
+import { Communication } from '../internal/communication';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -87,11 +88,11 @@ export namespace menus {
     popOver = 'popOver',
   }
   let navBarMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['navBarMenuItemPress'] = handleNavBarMenuItemPress;
+  Communication.handlers['navBarMenuItemPress'] = handleNavBarMenuItemPress;
   let actionMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['actionMenuItemPress'] = handleActionMenuItemPress;
+  Communication.handlers['actionMenuItemPress'] = handleActionMenuItemPress;
   let viewConfigItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['setModuleView'] = handleViewConfigItemPress;
+  Communication.handlers['setModuleView'] = handleViewConfigItemPress;
   /**
    * Registers list of view configurations and it's handler.
    * Handler is responsible for listening selection of View Configuration.

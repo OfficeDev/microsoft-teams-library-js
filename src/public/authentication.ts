@@ -6,6 +6,7 @@ import {
 } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType } from './constants';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -14,11 +15,11 @@ import { FrameContexts, HostClientType } from './constants';
 export namespace authentication {
   let authParams: AuthenticateParameters;
   let authWindowMonitor: number;
-  GlobalVars.handlers['authentication.authenticate.success'] = handleSuccess;
-  GlobalVars.handlers['authentication.authenticate.failure'] = handleFailure;
+  Communication.handlers['authentication.authenticate.success'] = handleSuccess;
+  Communication.handlers['authentication.authenticate.failure'] = handleFailure;
 
   /**
-   * Registers the authentication GlobalVars.handlers
+   * Registers the authentication Communication.handlers
    * @param authenticateParameters A set of values that configure the authentication pop-up.
    */
   export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
@@ -53,7 +54,7 @@ export namespace authentication {
         authenticateParams.width,
         authenticateParams.height,
       ]);
-      GlobalVars.callbacks[messageId] = (success: boolean, response: string) => {
+      Communication.callbacks[messageId] = (success: boolean, response: string) => {
         if (success) {
           authenticateParams.successCallback(response);
         } else {
@@ -78,7 +79,7 @@ export namespace authentication {
       authTokenRequest.claims,
       authTokenRequest.silent,
     ]);
-    GlobalVars.callbacks[messageId] = (success: boolean, result: string) => {
+    Communication.callbacks[messageId] = (success: boolean, result: string) => {
       if (success) {
         authTokenRequest.successCallback(result);
       } else {
@@ -96,7 +97,7 @@ export namespace authentication {
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('authentication.getUser');
-    GlobalVars.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
+    Communication.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
       } else {
@@ -110,12 +111,12 @@ export namespace authentication {
     stopAuthenticationWindowMonitor();
     // Try to close the authentication window and clear all properties associated with it
     try {
-      if (GlobalVars.childWindow) {
-        GlobalVars.childWindow.close();
+      if (Communication.childWindow) {
+        Communication.childWindow.close();
       }
     } finally {
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
+      Communication.childWindow = null;
+      Communication.childOrigin = null;
     }
   }
 
@@ -144,7 +145,7 @@ export namespace authentication {
     left += GlobalVars.currentWindow.outerWidth / 2 - width / 2;
     top += GlobalVars.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
-    GlobalVars.childWindow = GlobalVars.currentWindow.open(
+    Communication.childWindow = GlobalVars.currentWindow.open(
       link.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
@@ -156,7 +157,7 @@ export namespace authentication {
         ', height=' +
         height,
     );
-    if (GlobalVars.childWindow) {
+    if (Communication.childWindow) {
       // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
       startAuthenticationWindowMonitor();
     } else {
@@ -170,8 +171,8 @@ export namespace authentication {
       clearInterval(authWindowMonitor);
       authWindowMonitor = 0;
     }
-    delete GlobalVars.handlers['initialize'];
-    delete GlobalVars.handlers['navigateCrossDomain'];
+    delete Communication.handlers['initialize'];
+    delete Communication.handlers['navigateCrossDomain'];
   }
 
   function startAuthenticationWindowMonitor(): void {
@@ -183,27 +184,27 @@ export namespace authentication {
     //   contact with any pages along the authentication flow that need to communicate
     //   with us
     authWindowMonitor = GlobalVars.currentWindow.setInterval(() => {
-      if (!GlobalVars.childWindow || GlobalVars.childWindow.closed) {
+      if (!Communication.childWindow || Communication.childWindow.closed) {
         handleFailure('CancelledByUser');
       } else {
-        const savedChildOrigin = GlobalVars.childOrigin;
+        const savedChildOrigin = Communication.childOrigin;
         try {
-          GlobalVars.childOrigin = '*';
+          Communication.childOrigin = '*';
           sendMessageEventToChild('ping');
         } finally {
-          GlobalVars.childOrigin = savedChildOrigin;
+          Communication.childOrigin = savedChildOrigin;
         }
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    GlobalVars.handlers['initialize'] = () => {
+    Communication.handlers['initialize'] = () => {
       return [FrameContexts.authentication, GlobalVars.hostClientType];
     };
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    GlobalVars.handlers['navigateCrossDomain'] = () => {
+    Communication.handlers['navigateCrossDomain'] = () => {
       return false;
     };
   }
@@ -220,7 +221,7 @@ export namespace authentication {
     ensureInitialized(FrameContexts.authentication);
     sendMessageRequestToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
-    waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
+    waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
 
   /**
@@ -235,7 +236,7 @@ export namespace authentication {
     ensureInitialized(FrameContexts.authentication);
     sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
-    waitForMessageQueue(GlobalVars.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
+    waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
   }
 
   function handleSuccess(result?: string): void {

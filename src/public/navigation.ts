@@ -1,8 +1,8 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { TabInstance } from './interfaces';
 import { FrameContexts } from './constants';
+import { Communication } from '../internal/communication';
 
 /**
  * Navigation specific part of the SDK.
@@ -28,7 +28,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
   const messageId = sendMessageRequestToParent('navigateToTab', [tabInstance]);
 
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
 /**
@@ -52,7 +52,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
   const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
     'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }
 
 /**
@@ -64,5 +64,5 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
 
   const messageId = sendMessageRequestToParent('navigateBack', []);
   const errorMessage = 'Back navigation is not supported in the current client or context.';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }

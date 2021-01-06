@@ -1,5 +1,6 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the logging part of the SDK.
@@ -9,7 +10,7 @@ import { GlobalVars } from '../internal/globalVars';
  * Hide from docs
  */
 export namespace logs {
-  GlobalVars.handlers['log.request'] = handleGetLogRequest;
+  Communication.handlers['log.request'] = handleGetLogRequest;
 
   function handleGetLogRequest(): void {
     if (GlobalVars.getLogHandler) {

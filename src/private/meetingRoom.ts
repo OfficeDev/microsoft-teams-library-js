@@ -1,6 +1,7 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
+import { Communication } from '../internal/communication';
 
 export namespace meetingRoom {
   /**
@@ -127,8 +128,8 @@ export namespace meetingRoom {
     leaveMeeting: boolean;
   }
 
-  GlobalVars.handlers['meetingRoom.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
-  GlobalVars.handlers['meetingRoom.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
+  Communication.handlers['meetingRoom.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
+  Communication.handlers['meetingRoom.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
 
   /**
    * @private
@@ -142,7 +143,7 @@ export namespace meetingRoom {
   ): void {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**
@@ -162,7 +163,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     const messageId = sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName]);
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.callbacks[messageId] = callback;
   }
 
   /**

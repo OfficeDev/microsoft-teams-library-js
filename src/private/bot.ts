@@ -1,3 +1,4 @@
+import { Communication } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 
@@ -24,7 +25,7 @@ export namespace bot {
 
     const messageId = sendMessageRequestToParent('bot.executeQuery', [botRequest]);
 
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
+    Communication.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
       if (success) {
         onSuccess(response as QueryResponse);
       } else {
@@ -48,7 +49,7 @@ export namespace bot {
 
     const messageId = sendMessageRequestToParent('bot.getSupportedCommands');
 
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
+    Communication.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
       if (success) {
         onSuccess(response as Command[]);
       } else {
@@ -74,7 +75,7 @@ export namespace bot {
 
     const messageId = sendMessageRequestToParent('bot.authenticate', [authRequest]);
 
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
+    Communication.callbacks[messageId] = (success: boolean, response: string | Results) => {
       if (success) {
         onSuccess(response as Results);
       } else {

@@ -2,6 +2,7 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -26,7 +27,7 @@ export namespace conversations {
     ]);
     GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
     GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
-    GlobalVars.callbacks[messageId] = (status: boolean, reason: string) => {
+    Communication.callbacks[messageId] = (status: boolean, reason: string) => {
       if (!status) {
         throw new Error(reason);
       }
