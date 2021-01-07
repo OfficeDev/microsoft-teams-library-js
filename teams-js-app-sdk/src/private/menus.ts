@@ -57,6 +57,10 @@ export namespace menus {
      * Interface to show list of items on selection of menu item.
      */
     public viewData: ViewData;
+    /**
+     * Whether the menu item is selected or not
+     */
+    public selected: boolean = false;
   }
   /**
    * Represents information about view to show on Navigation Bar Menu item selection

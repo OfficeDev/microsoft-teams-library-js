@@ -596,6 +596,10 @@ export enum ErrorCode {
    */
   USER_ABORT = 8000,
   /**
+   * Could not complete the operation in the given time interval
+   */
+  OPERATION_TIMED_OUT = 8001,
+  /**
    * Platform code is old and doesn't implement this API
    */
   OLD_PLATFORM = 9000,

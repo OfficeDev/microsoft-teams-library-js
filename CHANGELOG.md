@@ -1,5 +1,8 @@
 # Breaking Changes
 
+## Next Version
+Corresponding microsoft-teams-library-js version: 1.7.0
+
 ## v0.0.6
 
 ### The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"

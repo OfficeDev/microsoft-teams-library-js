@@ -15,6 +15,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     utils.messages = [];
     utils.childMessages = [];
     utils.childWindow.closed = false;
+    utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
     core._initialize(utils.mockWindow);
@@ -47,6 +48,20 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
+  });
+
+  it('should listen to frame messages for a frameless window', () => {
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    expect(utils.processMessage).not.toBeNull();
+    expect(utils.messages.length).toBe(1);
+  });
+
+  it('should not listen to frame messages for a frameless window if valid origins are not passed', () => {
+    utils.initializeAsFrameless();
+
+    expect(utils.processMessage).toBeNull();
+    expect(utils.messages.length).toBe(1);
   });
 
   it('should allow multiple initialize calls', () => {
