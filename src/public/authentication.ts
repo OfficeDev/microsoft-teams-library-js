@@ -1,12 +1,12 @@
-import {
-  ensureInitialized,
-  sendMessageRequestToParent,
-  waitForMessageQueue,
-  sendMessageEventToChild,
-} from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType } from './constants';
-import { Communication } from '../internal/communication';
+import {
+  Communication,
+  sendMessageEventToChild,
+  sendMessageRequestToParent,
+  waitForMessageQueue,
+} from '../internal/communication';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.

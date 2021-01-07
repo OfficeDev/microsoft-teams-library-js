@@ -1,8 +1,8 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { TabInstance } from './interfaces';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 
 /**
  * Navigation specific part of the SDK.

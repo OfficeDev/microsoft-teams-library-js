@@ -1,7 +1,7 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 
 export namespace meetingRoom {
   /**

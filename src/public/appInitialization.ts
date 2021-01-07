@@ -1,5 +1,6 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { version } from '../internal/constants';
+import { sendMessageRequestToParent } from '../internal/communication';
 
 export namespace appInitialization {
   /**

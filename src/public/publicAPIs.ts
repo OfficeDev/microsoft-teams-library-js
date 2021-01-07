@@ -1,10 +1,4 @@
-import {
-  processMessage,
-  ensureInitialized,
-  sendMessageRequestToParent,
-  handleParentMessage,
-  processAdditionalValidOrigins,
-} from '../internal/internalAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { version, defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
@@ -20,7 +14,12 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import {
+  Communication,
+  handleParentMessage,
+  processMessage,
+  sendMessageRequestToParent,
+} from '../internal/communication';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**

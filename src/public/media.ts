@@ -1,6 +1,6 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
 import { generateGUID } from '../internal/utils';
 import {
@@ -11,7 +11,7 @@ import {
   validateViewImagesInput,
   validateScanBarCodeInput,
 } from '../internal/mediaUtil';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 
 export namespace media {
   /**
