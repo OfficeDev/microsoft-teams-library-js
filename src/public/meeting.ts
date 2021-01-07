@@ -1,5 +1,5 @@
-import { Communication } from '../internal/communication';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 
 export namespace meeting {

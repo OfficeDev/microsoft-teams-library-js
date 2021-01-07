@@ -1,6 +1,5 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
-import { Communication } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.

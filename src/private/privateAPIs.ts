@@ -1,5 +1,4 @@
-import { ensureInitialized, sendMessageRequestToParent, sendMessageEventToChild } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import {
   ChatMembersInformation,
@@ -9,7 +8,7 @@ import {
   UserJoinedTeamsInformation,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageEventToChild, sendMessageRequestToParent } from '../internal/communication';
 
 /**
  * @private

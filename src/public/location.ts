@@ -1,8 +1,8 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 
 export namespace location {
   /**

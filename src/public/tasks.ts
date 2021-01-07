@@ -1,8 +1,8 @@
 import { TaskInfo } from './interfaces';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
  * Namespace to interact with the task module-specific part of the SDK.

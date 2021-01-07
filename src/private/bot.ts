@@ -1,6 +1,5 @@
-import { Communication } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
  * @private

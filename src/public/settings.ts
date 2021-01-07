@@ -1,7 +1,7 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageRequestToParent } from '../internal/communication';
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
