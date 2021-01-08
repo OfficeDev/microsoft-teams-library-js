@@ -1,5 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -101,12 +101,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    sendMessageRequestToParent('setUpViews', [viewConfig]);
+    Communication.sendMessageRequestToParent('setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('viewConfigItemPress', [id]);
+      Communication.sendMessageRequestToParent('viewConfigItemPress', [id]);
     }
   }
   /**
@@ -117,12 +117,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    sendMessageRequestToParent('setNavBarMenu', [items]);
+    Communication.sendMessageRequestToParent('setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('handleNavBarMenuItemPress', [id]);
+      Communication.sendMessageRequestToParent('handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -143,12 +143,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    sendMessageRequestToParent('showActionMenu', [params]);
+    Communication.sendMessageRequestToParent('showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('handleActionMenuItemPress', [id]);
+      Communication.sendMessageRequestToParent('handleActionMenuItemPress', [id]);
     }
   }
 }

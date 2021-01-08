@@ -1,8 +1,7 @@
-import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 export namespace location {
   /**
@@ -65,7 +64,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('location.getLocation', [props]);
+    const messageId = Communication.sendMessageRequestToParent('location.getLocation', [props]);
     Communication.callbacks[messageId] = callback;
   }
 
@@ -90,7 +89,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('location.showLocation', [location]);
+    const messageId = Communication.sendMessageRequestToParent('location.showLocation', [location]);
     Communication.callbacks[messageId] = callback;
   }
 }

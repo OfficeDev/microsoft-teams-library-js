@@ -8,7 +8,7 @@ import {
   UserJoinedTeamsInformation,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication, sendMessageEventToChild, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 /**
  * @private
@@ -24,7 +24,7 @@ export function getUserJoinedTeams(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getUserJoinedTeams', [teamInstanceParameters]);
+  const messageId = Communication.sendMessageRequestToParent('getUserJoinedTeams', [teamInstanceParameters]);
   Communication.callbacks[messageId] = callback;
 }
 
@@ -36,7 +36,7 @@ export function getUserJoinedTeams(
  */
 export function enterFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  sendMessageRequestToParent('enterFullscreen', []);
+  Communication.sendMessageRequestToParent('enterFullscreen', []);
 }
 
 /**
@@ -47,7 +47,7 @@ export function enterFullscreen(): void {
  */
 export function exitFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  sendMessageRequestToParent('exitFullscreen', []);
+  Communication.sendMessageRequestToParent('exitFullscreen', []);
 }
 
 /**
@@ -75,7 +75,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.viewerAction,
   ];
 
-  sendMessageRequestToParent('openFilePreview', params);
+  Communication.sendMessageRequestToParent('openFilePreview', params);
 }
 
 /**
@@ -89,7 +89,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
   ensureInitialized(FrameContexts.content);
   const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-  sendMessageRequestToParent('showNotification', params);
+  Communication.sendMessageRequestToParent('showNotification', params);
 }
 
 /**
@@ -102,7 +102,7 @@ export function showNotification(showNotificationParameters: ShowNotificationPar
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('uploadCustomApp', [manifestBlob]);
+  const messageId = Communication.sendMessageRequestToParent('uploadCustomApp', [manifestBlob]);
   Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
@@ -124,7 +124,7 @@ export function sendCustomMessage(
 ): number {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent(actionName, args);
+  const messageId = Communication.sendMessageRequestToParent(actionName, args);
   if (typeof callback === 'function') {
     Communication.callbacks[messageId] = (...args: any[]): void => {
       callback.apply(null, args);
@@ -153,7 +153,7 @@ export function sendCustomEvent(
   if (!Communication.childWindow) {
     throw new Error('The child window has not yet been initialized or is not present');
   }
-  sendMessageEventToChild(actionName, args);
+  Communication.sendMessageEventToChild(actionName, args);
 }
 
 /**
@@ -188,7 +188,7 @@ export function registerCustomHandler(
 export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getChatMembers');
+  const messageId = Communication.sendMessageRequestToParent('getChatMembers');
   Communication.callbacks[messageId] = callback;
 }
 
@@ -203,6 +203,6 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
 export function getConfigSetting(callback: (value: string) => void, key: string): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
+  const messageId = Communication.sendMessageRequestToParent('getConfigSetting', [key]);
   Communication.callbacks[messageId] = callback;
 }

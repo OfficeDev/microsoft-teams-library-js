@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 export namespace meetingRoom {
   /**
@@ -142,7 +142,7 @@ export namespace meetingRoom {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
+    const messageId = Communication.sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
     Communication.callbacks[messageId] = callback;
   }
 
@@ -162,7 +162,9 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName]);
+    const messageId = Communication.sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [
+      commandName,
+    ]);
     Communication.callbacks[messageId] = callback;
   }
 
@@ -182,7 +184,8 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
+    handler &&
+      Communication.sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -198,7 +201,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomStatesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
+    handler && Communication.sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 
   function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {

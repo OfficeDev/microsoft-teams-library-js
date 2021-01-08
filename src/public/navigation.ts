@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { TabInstance } from './interfaces';
 import { FrameContexts } from './constants';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 /**
  * Navigation specific part of the SDK.
@@ -15,7 +15,7 @@ import { Communication, sendMessageRequestToParent } from '../internal/communica
 export function returnFocus(navigateForward?: boolean): void {
   ensureInitialized(FrameContexts.content);
 
-  sendMessageRequestToParent('returnFocus', [navigateForward]);
+  Communication.sendMessageRequestToParent('returnFocus', [navigateForward]);
 }
 
 /**
@@ -25,7 +25,7 @@ export function returnFocus(navigateForward?: boolean): void {
 export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('navigateToTab', [tabInstance]);
+  const messageId = Communication.sendMessageRequestToParent('navigateToTab', [tabInstance]);
 
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
   Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
@@ -49,7 +49,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
     FrameContexts.stage,
   );
 
-  const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
+  const messageId = Communication.sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
     'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
   Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
@@ -62,7 +62,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('navigateBack', []);
+  const messageId = Communication.sendMessageRequestToParent('navigateBack', []);
   const errorMessage = 'Back navigation is not supported in the current client or context.';
   Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
 }

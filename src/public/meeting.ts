@@ -1,4 +1,4 @@
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 
@@ -48,7 +48,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('getIncomingClientAudioState');
+    const messageId = Communication.sendMessageRequestToParent('getIncomingClientAudioState');
     Communication.callbacks[messageId] = callback;
   }
 
@@ -64,7 +64,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('toggleIncomingClientAudio');
+    const messageId = Communication.sendMessageRequestToParent('toggleIncomingClientAudio');
     Communication.callbacks[messageId] = callback;
   }
 
@@ -81,7 +81,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
+    const messageId = Communication.sendMessageRequestToParent('meeting.getMeetingDetails');
     Communication.callbacks[messageId] = callback;
   }
 }

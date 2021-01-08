@@ -14,12 +14,7 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
-import {
-  Communication,
-  handleParentMessage,
-  processMessage,
-  sendMessageRequestToParent,
-} from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -35,8 +30,10 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
+    Communication.initialize();
+
     // Listen for messages post to our window
-    const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
+    const messageListener = (evt: DOMMessageEvent): void => Communication.processMessage(evt);
 
     // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
     // it's the window that opened us (i.e., window.opener)
@@ -54,14 +51,14 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
     if (!Communication.parentWindow) {
       GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
+      (window as ExtendedWindow).onNativeMessage = Communication.handleParentMessage;
     }
 
     try {
       // Send the initialized message to any origin, because at this point we most likely don't know the origin
       // of the parent window, and this message contains no data that could pose a security risk.
       Communication.parentOrigin = '*';
-      const messageId = sendMessageRequestToParent('initialize', [version]);
+      const messageId = Communication.sendMessageRequestToParent('initialize', [version]);
       Communication.callbacks[messageId] = (
         context: FrameContexts,
         clientType: string,
@@ -184,7 +181,7 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getContext');
+  const messageId = Communication.sendMessageRequestToParent('getContext');
   Communication.callbacks[messageId] = (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
@@ -202,7 +199,7 @@ export function getContext(callback: (context: Context) => void): void {
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
   GlobalVars.themeChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['themeChange']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['themeChange']);
 }
 
 /**
@@ -214,7 +211,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
   ensureInitialized();
 
   GlobalVars.fullScreenChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['fullScreen']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['fullScreen']);
 }
 
 /**
@@ -226,7 +223,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonClickHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonClick']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['appButtonClick']);
 }
 
 /**
@@ -238,7 +235,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonHoverEnterHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverEnter']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['appButtonHoverEnter']);
 }
 
 /**
@@ -250,7 +247,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonHoverLeaveHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverLeave']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['appButtonHoverLeave']);
 }
 
 /**
@@ -264,7 +261,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
 
   GlobalVars.backButtonPressHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['backButton']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['backButton']);
 }
 
 /**
@@ -276,7 +273,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
   ensureInitialized();
 
   GlobalVars.loadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['load']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['load']);
 }
 
 /**
@@ -289,7 +286,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
   ensureInitialized();
 
   GlobalVars.beforeUnloadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['beforeUnload']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -300,7 +297,7 @@ export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.changeSettingsHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
+  handler && Communication.sendMessageRequestToParent('registerHandler', ['changeSettings']);
 }
 
 /**
@@ -315,7 +312,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
+  const messageId = Communication.sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
   Communication.callbacks[messageId] = callback;
 }
 
@@ -330,7 +327,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
+  const messageId = Communication.sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
   Communication.callbacks[messageId] = callback;
 }
 
@@ -341,7 +338,7 @@ export function getMruTabInstances(
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
   ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-  sendMessageRequestToParent('shareDeepLink', [
+  Communication.sendMessageRequestToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -360,13 +357,13 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.task,
     FrameContexts.stage,
   );
-  const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
+  const messageId = Communication.sendMessageRequestToParent('executeDeepLink', [deepLink]);
   Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
   ensureInitialized(FrameContexts.content);
-  sendMessageRequestToParent('setFrameContext', [frameContext]);
+  Communication.sendMessageRequestToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(
