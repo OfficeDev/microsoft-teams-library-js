@@ -42,6 +42,10 @@ export namespace meeting {
      * meeting title name of the meeting
      */
     title?: string;
+    /**
+     * type of the meeting
+     */
+    type?: MeetingType;
   }
 
   export interface IConversation {
@@ -60,6 +64,15 @@ export namespace meeting {
      * tenant id of the meeting
      */
     tenantId?: string;
+  }
+
+  export enum MeetingType {
+    Unknown = 'Unknown',
+    Adhoc = 'Adhoc',
+    Scheduled = 'Scheduled',
+    Recurring = 'Recurring',
+    Broadcast = 'Broadcast',
+    MeetNow = 'MeetNow',
   }
 
   /**
