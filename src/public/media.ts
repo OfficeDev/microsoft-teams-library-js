@@ -11,7 +11,7 @@ import {
   validateViewImagesInput,
   validateScanBarCodeInput,
 } from '../internal/mediaUtil';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 export namespace media {
   /**
@@ -102,7 +102,7 @@ export namespace media {
       return;
     }
 
-    const messageId = sendMessageRequestToParent('captureImage');
+    const messageId = Communication.sendMessageRequestToParent('captureImage');
     Communication.callbacks[messageId] = callback;
   }
 
@@ -161,7 +161,7 @@ export namespace media {
         assembleAttachment: [],
       };
       const localUriId = [this.content];
-      const messageId = sendMessageRequestToParent('getMedia', localUriId);
+      const messageId = Communication.sendMessageRequestToParent('getMedia', localUriId);
       function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
         if (callback) {
           if (mediaResult && mediaResult.error) {
@@ -194,7 +194,7 @@ export namespace media {
         assembleAttachment: [],
       };
       const params = [actionName, this.content];
-      this.content && callback && sendMessageRequestToParent('getMedia', params);
+      this.content && callback && Communication.sendMessageRequestToParent('getMedia', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
           const mediaResult: MediaResult = JSON.parse(response);
@@ -418,7 +418,7 @@ export namespace media {
     }
 
     const params = [mediaInputs];
-    const messageId = sendMessageRequestToParent('selectMedia', params);
+    const messageId = Communication.sendMessageRequestToParent('selectMedia', params);
 
     // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
     Communication.callbacks[messageId] = (err: SdkError, localAttachments: Media[]) => {
@@ -457,7 +457,7 @@ export namespace media {
     }
 
     const params = [uriList];
-    const messageId = sendMessageRequestToParent('viewImages', params);
+    const messageId = Communication.sendMessageRequestToParent('viewImages', params);
     Communication.callbacks[messageId] = callback;
   }
 
@@ -507,7 +507,7 @@ export namespace media {
       return;
     }
 
-    const messageId = sendMessageRequestToParent('media.scanBarCode', [config]);
+    const messageId = Communication.sendMessageRequestToParent('media.scanBarCode', [config]);
     Communication.callbacks[messageId] = callback;
   }
 }

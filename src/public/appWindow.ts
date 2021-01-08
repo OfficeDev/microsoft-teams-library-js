@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -11,7 +11,7 @@ export interface IAppWindow {
 export class ChildAppWindow implements IAppWindow {
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('messageForChild', [message]);
+    const messageId = Communication.sendMessageRequestToParent('messageForChild', [message]);
     Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
@@ -31,7 +31,7 @@ export class ParentAppWindow implements IAppWindow {
 
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(FrameContexts.task);
-    const messageId = sendMessageRequestToParent('messageForParent', [message]);
+    const messageId = Communication.sendMessageRequestToParent('messageForParent', [message]);
 
     Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }

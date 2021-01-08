@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -20,7 +20,7 @@ export namespace settings {
    */
   export function setValidityState(validityState: boolean): void {
     ensureInitialized(FrameContexts.settings, FrameContexts.remove);
-    sendMessageRequestToParent('settings.setValidityState', [validityState]);
+    Communication.sendMessageRequestToParent('settings.setValidityState', [validityState]);
   }
 
   /**
@@ -29,7 +29,7 @@ export namespace settings {
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
-    const messageId = sendMessageRequestToParent('settings.getSettings');
+    const messageId = Communication.sendMessageRequestToParent('settings.getSettings');
     Communication.callbacks[messageId] = callback;
   }
 
@@ -43,7 +43,7 @@ export namespace settings {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings);
-    const messageId = sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
+    const messageId = Communication.sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
     Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
   }
 
@@ -57,7 +57,7 @@ export namespace settings {
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
     ensureInitialized(FrameContexts.settings);
     saveHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['save']);
+    handler && Communication.sendMessageRequestToParent('registerHandler', ['save']);
   }
 
   /**
@@ -70,7 +70,7 @@ export namespace settings {
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
     ensureInitialized(FrameContexts.remove);
     removeHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['remove']);
+    handler && Communication.sendMessageRequestToParent('registerHandler', ['remove']);
   }
 
   function handleSave(result?: SaveParameters): void {
@@ -154,12 +154,12 @@ export namespace settings {
     }
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.save.success');
+      Communication.sendMessageRequestToParent('settings.save.success');
       this.notified = true;
     }
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.save.failure', [reason]);
+      Communication.sendMessageRequestToParent('settings.save.failure', [reason]);
       this.notified = true;
     }
     private ensureNotNotified(): void {
@@ -188,13 +188,13 @@ export namespace settings {
 
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.remove.success');
+      Communication.sendMessageRequestToParent('settings.remove.success');
       this.notified = true;
     }
 
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.remove.failure', [reason]);
+      Communication.sendMessageRequestToParent('settings.remove.failure', [reason]);
       this.notified = true;
     }
 

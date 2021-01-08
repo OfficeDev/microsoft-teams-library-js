@@ -1,12 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType } from './constants';
-import {
-  Communication,
-  sendMessageEventToChild,
-  sendMessageRequestToParent,
-  waitForMessageQueue,
-} from '../internal/communication';
+import { Communication } from '../internal/communication';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -49,7 +44,7 @@ export namespace authentication {
       const link = document.createElement('a');
       link.href = authenticateParams.url;
       // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      const messageId = sendMessageRequestToParent('authentication.authenticate', [
+      const messageId = Communication.sendMessageRequestToParent('authentication.authenticate', [
         link.href,
         authenticateParams.width,
         authenticateParams.height,
@@ -74,7 +69,7 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('authentication.getAuthToken', [
+    const messageId = Communication.sendMessageRequestToParent('authentication.getAuthToken', [
       authTokenRequest.resources,
       authTokenRequest.claims,
       authTokenRequest.silent,
@@ -96,7 +91,7 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('authentication.getUser');
+    const messageId = Communication.sendMessageRequestToParent('authentication.getUser');
     Communication.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
@@ -190,7 +185,7 @@ export namespace authentication {
         const savedChildOrigin = Communication.childOrigin;
         try {
           Communication.childOrigin = '*';
-          sendMessageEventToChild('ping');
+          Communication.sendMessageEventToChild('ping');
         } finally {
           Communication.childOrigin = savedChildOrigin;
         }
@@ -219,9 +214,11 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(FrameContexts.authentication);
-    sendMessageRequestToParent('authentication.authenticate.success', [result]);
+    Communication.sendMessageRequestToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
-    waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
+    Communication.waitForMessageQueue(Communication.parentWindow, () =>
+      setTimeout(() => GlobalVars.currentWindow.close(), 200),
+    );
   }
 
   /**
@@ -234,9 +231,11 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
-    sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
+    Communication.sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
-    waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => GlobalVars.currentWindow.close(), 200));
+    Communication.waitForMessageQueue(Communication.parentWindow, () =>
+      setTimeout(() => GlobalVars.currentWindow.close(), 200),
+    );
   }
 
   function handleSuccess(result?: string): void {

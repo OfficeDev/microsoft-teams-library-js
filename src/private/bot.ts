@@ -1,4 +1,4 @@
-import { Communication, sendMessageRequestToParent } from '../internal/communication';
+import { Communication } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
@@ -22,7 +22,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.executeQuery', [botRequest]);
+    const messageId = Communication.sendMessageRequestToParent('bot.executeQuery', [botRequest]);
 
     Communication.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
       if (success) {
@@ -46,7 +46,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.getSupportedCommands');
+    const messageId = Communication.sendMessageRequestToParent('bot.getSupportedCommands');
 
     Communication.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
       if (success) {
@@ -72,7 +72,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.authenticate', [authRequest]);
+    const messageId = Communication.sendMessageRequestToParent('bot.authenticate', [authRequest]);
 
     Communication.callbacks[messageId] = (success: boolean, response: string | Results) => {
       if (success) {
