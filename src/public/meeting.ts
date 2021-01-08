@@ -19,19 +19,19 @@ export namespace meeting {
     /**
      * meeting title name of the meeting
      */
-    meetingTitle: string;
+    meetingTitle?: string;
     /**
      * organizer id of the meeting
      */
-    organizerId: string;
+    organizerId?: string;
     /**
      * tenant id of the meeting
      */
-    tenantId: string;
+    tenantId?: string;
     /**
      * url to join the current meeting
      */
-    joinUrl: string;
+    joinUrl?: string;
   }
 
   /**
