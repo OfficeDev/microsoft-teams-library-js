@@ -30,12 +30,12 @@ webApplicationInfo: {
 To build from the monorepo root, 
 
 ```
-yarn build-app
+yarn build-test-app
 ```
 
 To run from the monorepo root,
 ```
-yarn start-app
+yarn start-test-app
 ```
 
 or to build and run from the project directory teamsjs-test-app, simply `yarn build` and `yarn start`.
