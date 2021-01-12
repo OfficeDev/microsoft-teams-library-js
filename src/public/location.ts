@@ -64,8 +64,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = Communication.sendMessageRequestToParent('location.getLocation', [props]);
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('location.getLocation', [props], callback);
   }
 
   /**
@@ -89,7 +88,6 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = Communication.sendMessageRequestToParent('location.showLocation', [location]);
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('location.showLocation', [location], callback);
   }
 }

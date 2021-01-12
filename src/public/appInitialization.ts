@@ -8,7 +8,7 @@ export namespace appInitialization {
    */
   export function notifyAppLoaded(): void {
     ensureInitialized();
-    Communication.sendMessageRequestToParent('appInitialization.appLoaded', [version]);
+    Communication.sendMessageToParent('appInitialization.appLoaded', [version]);
   }
 
   /**
@@ -16,7 +16,7 @@ export namespace appInitialization {
    */
   export function notifySuccess(): void {
     ensureInitialized();
-    Communication.sendMessageRequestToParent('appInitialization.success', [version]);
+    Communication.sendMessageToParent('appInitialization.success', [version]);
   }
 
   /**
@@ -24,7 +24,7 @@ export namespace appInitialization {
    */
   export function notifyFailure(appInitializationFailedRequest: appInitialization.IFailedRequest): void {
     ensureInitialized();
-    Communication.sendMessageRequestToParent('appInitialization.failure', [
+    Communication.sendMessageToParent('appInitialization.failure', [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
     ]);

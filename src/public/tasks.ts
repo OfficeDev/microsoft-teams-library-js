@@ -17,8 +17,7 @@ export namespace tasks {
   export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-    const messageId = Communication.sendMessageRequestToParent('tasks.startTask', [taskInfo]);
-    Communication.callbacks[messageId] = submitHandler;
+    Communication.sendMessageToParent('tasks.startTask', [taskInfo], submitHandler);
     return new ChildAppWindow();
   }
 
@@ -31,7 +30,7 @@ export namespace tasks {
     const { width, height, ...extra } = taskInfo;
 
     if (!Object.keys(extra).length) {
-      Communication.sendMessageRequestToParent('tasks.updateTask', [taskInfo]);
+      Communication.sendMessageToParent('tasks.updateTask', [taskInfo]);
     } else {
       throw new Error('updateTask requires a taskInfo argument containing only width and height');
     }
@@ -46,6 +45,6 @@ export namespace tasks {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    Communication.sendMessageRequestToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+    Communication.sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 }

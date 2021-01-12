@@ -101,12 +101,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    Communication.sendMessageRequestToParent('setUpViews', [viewConfig]);
+    Communication.sendMessageToParent('setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageRequestToParent('viewConfigItemPress', [id]);
+      Communication.sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
   /**
@@ -117,12 +117,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    Communication.sendMessageRequestToParent('setNavBarMenu', [items]);
+    Communication.sendMessageToParent('setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageRequestToParent('handleNavBarMenuItemPress', [id]);
+      Communication.sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -143,12 +143,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    Communication.sendMessageRequestToParent('showActionMenu', [params]);
+    Communication.sendMessageToParent('showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageRequestToParent('handleActionMenuItemPress', [id]);
+      Communication.sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
 }

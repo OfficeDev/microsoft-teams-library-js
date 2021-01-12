@@ -421,12 +421,11 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
 
-      const id = sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
+      sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
       let message = utils.findMessageByFunc('customMessage');
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
-      expect(id).toBe(message.id);
     });
   });
 

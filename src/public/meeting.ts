@@ -48,8 +48,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('getIncomingClientAudioState');
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
   /**
@@ -64,8 +63,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('toggleIncomingClientAudio');
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
   /**
@@ -81,7 +79,6 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('meeting.getMeetingDetails');
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('meeting.getMeetingDetails', callback);
   }
 }

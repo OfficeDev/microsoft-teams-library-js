@@ -24,8 +24,7 @@ export function getUserJoinedTeams(
 ): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('getUserJoinedTeams', [teamInstanceParameters]);
-  Communication.callbacks[messageId] = callback;
+  Communication.sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
 }
 
 /**
@@ -36,7 +35,7 @@ export function getUserJoinedTeams(
  */
 export function enterFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageRequestToParent('enterFullscreen', []);
+  Communication.sendMessageToParent('enterFullscreen', []);
 }
 
 /**
@@ -47,7 +46,7 @@ export function enterFullscreen(): void {
  */
 export function exitFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageRequestToParent('exitFullscreen', []);
+  Communication.sendMessageToParent('exitFullscreen', []);
 }
 
 /**
@@ -75,7 +74,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.viewerAction,
   ];
 
-  Communication.sendMessageRequestToParent('openFilePreview', params);
+  Communication.sendMessageToParent('openFilePreview', params);
 }
 
 /**
@@ -89,7 +88,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
   ensureInitialized(FrameContexts.content);
   const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-  Communication.sendMessageRequestToParent('showNotification', params);
+  Communication.sendMessageToParent('showNotification', params);
 }
 
 /**
@@ -102,8 +101,11 @@ export function showNotification(showNotificationParameters: ShowNotificationPar
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('uploadCustomApp', [manifestBlob]);
-  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const messageId = Communication.sendMessageToParent(
+    'uploadCustomApp',
+    [manifestBlob],
+    onComplete ? onComplete : getGenericOnCompleteHandler(),
+  );
 }
 
 /**
@@ -121,16 +123,10 @@ export function sendCustomMessage(
   args?: any[],
   // tslint:disable-next-line:no-any
   callback?: (...args: any[]) => void,
-): number {
+): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent(actionName, args);
-  if (typeof callback === 'function') {
-    Communication.callbacks[messageId] = (...args: any[]): void => {
-      callback.apply(null, args);
-    };
-  }
-  return messageId;
+  Communication.sendMessageToParent(actionName, args, callback);
 }
 
 /**
@@ -188,8 +184,7 @@ export function registerCustomHandler(
 export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('getChatMembers');
-  Communication.callbacks[messageId] = callback;
+  Communication.sendMessageToParent('getChatMembers', callback);
 }
 
 /**
@@ -203,6 +198,5 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
 export function getConfigSetting(callback: (value: string) => void, key: string): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('getConfigSetting', [key]);
-  Communication.callbacks[messageId] = callback;
+  Communication.sendMessageToParent('getConfigSetting', [key], callback);
 }
