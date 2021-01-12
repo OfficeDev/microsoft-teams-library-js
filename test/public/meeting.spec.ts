@@ -180,7 +180,7 @@ describe('meeting', () => {
       let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
-      let details: meeting.IDetails = {
+      const details: meeting.IDetails = {
         id: `mockObjectId`,
         scheduledStartTime: '2020-12-21T21:30:00+00:00',
         scheduledEndTime: '2020-12-21T22:00:00+00:00',
@@ -189,14 +189,14 @@ describe('meeting', () => {
         title: 'Get meeting details test meeting',
         type: meeting.MeetingType.Scheduled,
       };
-      let organizer: meeting.IOrganizer = {
+      const organizer: meeting.IOrganizer = {
         id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
         tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
       };
       const conversation: meeting.IConversation = {
         id: `convId`,
       };
-      let meetingDetails: meeting.IMeetingDetails = {
+      const meetingDetails: meeting.IMeetingDetails = {
         details,
         conversation,
         organizer,
