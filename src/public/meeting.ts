@@ -84,4 +84,21 @@ export namespace meeting {
     const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
     GlobalVars.callbacks[messageId] = callback;
   }
+
+  /**
+   * Allows an app to get the authentication token for the anonymous or guest user in the meeting
+   * @param callback Callback contains 2 parameters, error and authenticationTokenOfAnonymousUser.
+   * error can either contain an error of type SdkError, incase of an error, or null when get is successful
+   * authenticationTokenOfAnonymousUser can either contain a string value, incase of a successful get or null when the get fails
+   */
+  export function getAuthenticationTokenForAnonymousUser(
+    callback: (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.getAuthenticationTokenForAnonymousUser');
+    GlobalVars.callbacks[messageId] = callback;
+  }
 }
