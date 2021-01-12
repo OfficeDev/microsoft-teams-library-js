@@ -27,15 +27,21 @@ webApplicationInfo: {
 }
 ```
 
-To build from the monorepo root, 
+If you would like to run this app locally, please follow the steps below. Please note many of the functions in the test app will only work as intended while being run in a teamsjs hub as they communicate with the hub to be carried out.
 
 ```
+cd {monorepo root}
+
+// Ensuring you have installed and built the App SDK
+yarn install-app-sdk
+yarn build-app-sdk
+
 yarn build-test-app
-```
-
-To run from the monorepo root,
-```
 yarn start-test-app
 ```
 
 or to build and run from the project directory teamsjs-test-app, simply `yarn build` and `yarn start`.
+
+## Troubleshooting
+
+* If you see a directory view of some files after starting the app rather than the test app itself (which should simply be some boxes and buttons), please try removing all three node_modules folders from the repo (the node_modules folders are in the monorepo root, the root/examples/teamsjs-test-app folder, and the root/teamsjs-app-sdk folder) then redoing the yarn commands above.

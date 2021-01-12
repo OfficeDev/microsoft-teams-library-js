@@ -1,7 +1,7 @@
-import path from "path";
-import webpack from "webpack";
+const path = require('path')
+const HtmlWebPackPlugin = require('html-webpack-plugin');
 
-const config: webpack.Configuration = {
+module.exports = {
   entry: "./src/index.tsx",
   module: {
     rules: [
@@ -34,9 +34,11 @@ const config: webpack.Configuration = {
   },
   devServer: {
     contentBase: path.join(__dirname, "build"),
+    publicPath: "/",
     compress: true,
     port: 4000,
   },
+  plugins: [
+    new HtmlWebPackPlugin({ template: "./index.html", filename: "index.html", })
+  ]
 };
-
-export default config;
