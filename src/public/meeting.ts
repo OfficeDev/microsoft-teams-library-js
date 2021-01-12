@@ -9,6 +9,24 @@ export namespace meeting {
    */
   export interface IMeetingDetails {
     /**
+     * details object
+     */
+    details: IDetails;
+    /**
+     * conversation object
+     */
+    conversation: IConversation;
+    /**
+     * organizer object
+     */
+    organizer: IOrganizer;
+  }
+  export interface IDetails {
+    /**
+     * event id of the meeting
+     */
+    id: string;
+    /**
      * Scheduled start time of the meeting
      */
     scheduledStartTime: string;
@@ -17,21 +35,44 @@ export namespace meeting {
      */
     scheduledEndTime: string;
     /**
+     * url to join the current meeting
+     */
+    joinUrl?: string;
+    /**
      * meeting title name of the meeting
      */
-    meetingTitle?: string;
+    title?: string;
+    /**
+     * type of the meeting
+     */
+    type?: MeetingType;
+  }
+
+  export interface IConversation {
+    /**
+     * conversation id of the meeting
+     */
+    id: string;
+  }
+
+  export interface IOrganizer {
     /**
      * organizer id of the meeting
      */
-    organizerId?: string;
+    id?: string;
     /**
      * tenant id of the meeting
      */
     tenantId?: string;
-    /**
-     * url to join the current meeting
-     */
-    joinUrl?: string;
+  }
+
+  export enum MeetingType {
+    Unknown = 'Unknown',
+    Adhoc = 'Adhoc',
+    Scheduled = 'Scheduled',
+    Recurring = 'Recurring',
+    Broadcast = 'Broadcast',
+    MeetNow = 'MeetNow',
   }
 
   /**
