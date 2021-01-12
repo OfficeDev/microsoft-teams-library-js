@@ -22,15 +22,17 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = Communication.sendMessageRequestToParent('bot.executeQuery', [botRequest]);
-
-    Communication.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
-      if (success) {
-        onSuccess(response as QueryResponse);
-      } else {
-        onError(response as string);
-      }
-    };
+    Communication.sendMessageToParent(
+      'bot.executeQuery',
+      [botRequest],
+      (success: boolean, response: string | QueryResponse) => {
+        if (success) {
+          onSuccess(response as QueryResponse);
+        } else {
+          onError(response as string);
+        }
+      },
+    );
   }
   /**
    * @private
@@ -46,15 +48,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = Communication.sendMessageRequestToParent('bot.getSupportedCommands');
-
-    Communication.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
+    Communication.sendMessageToParent('bot.getSupportedCommands', (success: boolean, response: string | Command[]) => {
       if (success) {
         onSuccess(response as Command[]);
       } else {
         onError(response as string);
       }
-    };
+    });
   }
   /**
    * @private
@@ -72,15 +72,17 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = Communication.sendMessageRequestToParent('bot.authenticate', [authRequest]);
-
-    Communication.callbacks[messageId] = (success: boolean, response: string | Results) => {
-      if (success) {
-        onSuccess(response as Results);
-      } else {
-        onError(response as string);
-      }
-    };
+    Communication.sendMessageToParent(
+      'bot.authenticate',
+      [authRequest],
+      (success: boolean, response: string | Results) => {
+        if (success) {
+          onSuccess(response as Results);
+        } else {
+          onError(response as string);
+        }
+      },
+    );
   }
 
   export interface QueryRequest {

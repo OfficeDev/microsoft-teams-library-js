@@ -8,7 +8,6 @@ export class GlobalVars {
   public static additionalValidOrigins: string[] = [];
   public static additionalValidOriginsRegexp: RegExp = null;
   public static initializeCallbacks: { (): void }[] = [];
-  public static currentWindow: Window | any;
   public static isFramelessWindow: boolean = false;
   public static frameContext: FrameContexts;
   public static hostClientType: string;

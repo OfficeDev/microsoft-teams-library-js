@@ -16,22 +16,25 @@ export namespace conversations {
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): void {
     ensureInitialized(FrameContexts.content);
-    const messageId = Communication.sendMessageRequestToParent('conversations.openConversation', [
-      {
-        title: openConversationRequest.title,
-        subEntityId: openConversationRequest.subEntityId,
-        conversationId: openConversationRequest.conversationId,
-        channelId: openConversationRequest.channelId,
-        entityId: openConversationRequest.entityId,
+    Communication.sendMessageToParent(
+      'conversations.openConversation',
+      [
+        {
+          title: openConversationRequest.title,
+          subEntityId: openConversationRequest.subEntityId,
+          conversationId: openConversationRequest.conversationId,
+          channelId: openConversationRequest.channelId,
+          entityId: openConversationRequest.entityId,
+        },
+      ],
+      (status: boolean, reason: string) => {
+        if (!status) {
+          throw new Error(reason);
+        }
       },
-    ]);
+    );
     GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
     GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
-    Communication.callbacks[messageId] = (status: boolean, reason: string) => {
-      if (!status) {
-        throw new Error(reason);
-      }
-    };
   }
 
   /**
@@ -42,7 +45,7 @@ export namespace conversations {
    */
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
-    Communication.sendMessageRequestToParent('conversations.closeConversation');
+    Communication.sendMessageToParent('conversations.closeConversation');
     GlobalVars.onCloseConversationHandler = null;
     GlobalVars.onStartConversationHandler = null;
   }

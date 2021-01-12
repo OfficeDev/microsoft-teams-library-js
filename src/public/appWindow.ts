@@ -11,8 +11,11 @@ export interface IAppWindow {
 export class ChildAppWindow implements IAppWindow {
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('messageForChild', [message]);
-    Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    Communication.sendMessageToParent(
+      'messageForChild',
+      [message],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
@@ -31,9 +34,11 @@ export class ParentAppWindow implements IAppWindow {
 
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(FrameContexts.task);
-    const messageId = Communication.sendMessageRequestToParent('messageForParent', [message]);
-
-    Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    Communication.sendMessageToParent(
+      'messageForParent',
+      [message],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {

@@ -5,6 +5,7 @@ import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 
 export class Communication {
+  public static currentWindow: Window | any;
   public static parentOrigin: string;
   public static parentWindow: Window | any;
   public static childWindow: Window;
@@ -15,7 +16,7 @@ export class Communication {
   public static handlers: {
     [func: string]: Function;
   } = {};
-  public static callbacks: {
+  private static callbacks: {
     [id: number]: Function;
   } = {};
 
@@ -32,6 +33,17 @@ export class Communication {
     Communication.handlers['appButtonClick'] = Communication.handleAppButtonClick;
     Communication.handlers['appButtonHoverEnter'] = Communication.handleAppButtonHoverEnter;
     Communication.handlers['appButtonHoverLeave'] = Communication.handleAppButtonHoverLeave;
+  }
+
+  public static uninitialize(): void {
+    Communication.parentWindow = null;
+    Communication.parentOrigin = null;
+    Communication.parentMessageQueue = [];
+    Communication.childWindow = null;
+    Communication.childOrigin = null;
+    Communication.childMessageQueue = [];
+    Communication.nextMessageId = 0;
+    Communication.callbacks = {};
   }
 
   private static handleStartConversation(
@@ -100,7 +112,7 @@ export class Communication {
 
   private static handleBeforeUnload(): void {
     const readyToUnload = (): void => {
-      Communication.sendMessageRequestToParent('readyToUnload', []);
+      Communication.sendMessageToParent('readyToUnload', []);
     };
 
     if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
@@ -163,13 +175,13 @@ export class Communication {
   private static shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
     // Process if message source is a different window and if origin is either in
     // Teams' pre-known whitelist or supplied as valid origin by user during initialization
-    if (GlobalVars.currentWindow && messageSource === GlobalVars.currentWindow) {
+    if (Communication.currentWindow && messageSource === Communication.currentWindow) {
       return false;
     } else if (
-      GlobalVars.currentWindow &&
-      GlobalVars.currentWindow.location &&
+      Communication.currentWindow &&
+      Communication.currentWindow.location &&
       messageOrigin &&
-      messageOrigin === GlobalVars.currentWindow.location.origin
+      messageOrigin === Communication.currentWindow.location.origin
     ) {
       return true;
     } else if (
@@ -256,13 +268,12 @@ export class Communication {
         }
       } else {
         // No handler, proxy to parent
-        const messageId = Communication.sendMessageRequestToParent(message.func, message.args);
         // tslint:disable-next-line:no-any
-        Communication.callbacks[messageId] = (...args: any[]): void => {
+        Communication.sendMessageToParent(message.func, message.args, (...args: any[]): void => {
           if (Communication.childWindow) {
             Communication.sendMessageResponseToChild(message.id, args);
           }
-        };
+        });
       }
     }
   }
@@ -292,7 +303,7 @@ export class Communication {
   }
 
   public static waitForMessageQueue(targetWindow: Window, callback: () => void): void {
-    const messageQueueMonitor = GlobalVars.currentWindow.setInterval(() => {
+    const messageQueueMonitor = Communication.currentWindow.setInterval(() => {
       if (Communication.getTargetMessageQueue(targetWindow).length === 0) {
         clearInterval(messageQueueMonitor);
         callback();
@@ -303,16 +314,32 @@ export class Communication {
   /**
    * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
    */
-  public static sendMessageRequestToParent(
-    actionName: string,
-    // tslint:disable-next-line: no-any
-    args?: any[],
-  ): number {
+  public static sendMessageToParent(actionName: string): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, args: any[]): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, callback: Function): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, args: any[], callback: Function): void;
+  public static sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
+    let args: any[] | undefined;
+    if (argsOrCallback instanceof Function) {
+      callback = argsOrCallback;
+    } else if (argsOrCallback instanceof Array) {
+      args = argsOrCallback;
+    }
+
     const targetWindow = Communication.parentWindow;
     const request = Communication.createMessageRequest(actionName, args);
     if (GlobalVars.isFramelessWindow) {
-      if (GlobalVars.currentWindow && GlobalVars.currentWindow.nativeInterface) {
-        (GlobalVars.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
+      if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+        (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
       }
     } else {
       const targetOrigin = Communication.getTargetOrigin(targetWindow);
@@ -325,7 +352,10 @@ export class Communication {
         Communication.getTargetMessageQueue(targetWindow).push(request);
       }
     }
-    return request.id;
+
+    if (callback) {
+      Communication.callbacks[request.id] = callback;
+    }
   }
 
   /**

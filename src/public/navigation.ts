@@ -15,7 +15,7 @@ import { Communication } from '../internal/communication';
 export function returnFocus(navigateForward?: boolean): void {
   ensureInitialized(FrameContexts.content);
 
-  Communication.sendMessageRequestToParent('returnFocus', [navigateForward]);
+  Communication.sendMessageToParent('returnFocus', [navigateForward]);
 }
 
 /**
@@ -25,10 +25,12 @@ export function returnFocus(navigateForward?: boolean): void {
 export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('navigateToTab', [tabInstance]);
-
   const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.sendMessageToParent(
+    'navigateToTab',
+    [tabInstance],
+    onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
+  );
 }
 
 /**
@@ -49,10 +51,13 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
     FrameContexts.stage,
   );
 
-  const messageId = Communication.sendMessageRequestToParent('navigateCrossDomain', [url]);
   const errorMessage =
     'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.sendMessageToParent(
+    'navigateCrossDomain',
+    [url],
+    onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
+  );
 }
 
 /**
@@ -62,7 +67,10 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageRequestToParent('navigateBack', []);
   const errorMessage = 'Back navigation is not supported in the current client or context.';
-  Communication.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Communication.sendMessageToParent(
+    'navigateBack',
+    [],
+    onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
+  );
 }

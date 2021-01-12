@@ -44,18 +44,17 @@ export namespace authentication {
       const link = document.createElement('a');
       link.href = authenticateParams.url;
       // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      const messageId = Communication.sendMessageRequestToParent('authentication.authenticate', [
-        link.href,
-        authenticateParams.width,
-        authenticateParams.height,
-      ]);
-      Communication.callbacks[messageId] = (success: boolean, response: string) => {
-        if (success) {
-          authenticateParams.successCallback(response);
-        } else {
-          authenticateParams.failureCallback(response);
-        }
-      };
+      Communication.sendMessageToParent(
+        'authentication.authenticate',
+        [link.href, authenticateParams.width, authenticateParams.height],
+        (success: boolean, response: string) => {
+          if (success) {
+            authenticateParams.successCallback(response);
+          } else {
+            authenticateParams.failureCallback(response);
+          }
+        },
+      );
     } else {
       // Open an authentication window with the parameters provided by the caller.
       openAuthenticationWindow(authenticateParams);
@@ -69,18 +68,17 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('authentication.getAuthToken', [
-      authTokenRequest.resources,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
-    ]);
-    Communication.callbacks[messageId] = (success: boolean, result: string) => {
-      if (success) {
-        authTokenRequest.successCallback(result);
-      } else {
-        authTokenRequest.failureCallback(result);
-      }
-    };
+    Communication.sendMessageToParent(
+      'authentication.getAuthToken',
+      [authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
+      (success: boolean, result: string) => {
+        if (success) {
+          authTokenRequest.successCallback(result);
+        } else {
+          authTokenRequest.failureCallback(result);
+        }
+      },
+    );
   }
 
   /**
@@ -91,14 +89,13 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void {
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('authentication.getUser');
-    Communication.callbacks[messageId] = (success: boolean, result: UserProfile | string) => {
+    Communication.sendMessageToParent('authentication.getUser', (success: boolean, result: UserProfile | string) => {
       if (success) {
         userRequest.successCallback(result as UserProfile);
       } else {
         userRequest.failureCallback(result as string);
       }
-    };
+    });
   }
 
   function closeAuthenticationWindow(): void {
@@ -123,24 +120,24 @@ export namespace authentication {
     let width = authParams.width || 600;
     let height = authParams.height || 400;
     // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-    width = Math.min(width, GlobalVars.currentWindow.outerWidth - 400);
-    height = Math.min(height, GlobalVars.currentWindow.outerHeight - 200);
+    width = Math.min(width, Communication.currentWindow.outerWidth - 400);
+    height = Math.min(height, Communication.currentWindow.outerHeight - 200);
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
     link.href = authParams.url;
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
-      typeof GlobalVars.currentWindow.screenLeft !== 'undefined'
-        ? GlobalVars.currentWindow.screenLeft
-        : GlobalVars.currentWindow.screenX;
+      typeof Communication.currentWindow.screenLeft !== 'undefined'
+        ? Communication.currentWindow.screenLeft
+        : Communication.currentWindow.screenX;
     let top: number =
-      typeof GlobalVars.currentWindow.screenTop !== 'undefined'
-        ? GlobalVars.currentWindow.screenTop
-        : GlobalVars.currentWindow.screenY;
-    left += GlobalVars.currentWindow.outerWidth / 2 - width / 2;
-    top += GlobalVars.currentWindow.outerHeight / 2 - height / 2;
+      typeof Communication.currentWindow.screenTop !== 'undefined'
+        ? Communication.currentWindow.screenTop
+        : Communication.currentWindow.screenY;
+    left += Communication.currentWindow.outerWidth / 2 - width / 2;
+    top += Communication.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
-    Communication.childWindow = GlobalVars.currentWindow.open(
+    Communication.childWindow = Communication.currentWindow.open(
       link.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
@@ -178,7 +175,7 @@ export namespace authentication {
     // - Keeps pinging the authentication window while it is open to re-establish
     //   contact with any pages along the authentication flow that need to communicate
     //   with us
-    authWindowMonitor = GlobalVars.currentWindow.setInterval(() => {
+    authWindowMonitor = Communication.currentWindow.setInterval(() => {
       if (!Communication.childWindow || Communication.childWindow.closed) {
         handleFailure('CancelledByUser');
       } else {
@@ -214,10 +211,10 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(FrameContexts.authentication);
-    Communication.sendMessageRequestToParent('authentication.authenticate.success', [result]);
+    Communication.sendMessageToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     Communication.waitForMessageQueue(Communication.parentWindow, () =>
-      setTimeout(() => GlobalVars.currentWindow.close(), 200),
+      setTimeout(() => Communication.currentWindow.close(), 200),
     );
   }
 
@@ -231,10 +228,10 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
-    Communication.sendMessageRequestToParent('authentication.authenticate.failure', [reason]);
+    Communication.sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     Communication.waitForMessageQueue(Communication.parentWindow, () =>
-      setTimeout(() => GlobalVars.currentWindow.close(), 200),
+      setTimeout(() => Communication.currentWindow.close(), 200),
     );
   }
 
@@ -280,13 +277,13 @@ export namespace authentication {
           if (value) {
             link.href = updateUrlParameter(link.href, 'result', value);
           }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, 'authSuccess', ''));
+          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authSuccess', ''));
         }
         if (key && key === 'reason') {
           if (value) {
             link.href = updateUrlParameter(link.href, 'reason', value);
           }
-          GlobalVars.currentWindow.location.assign(updateUrlParameter(link.href, 'authFailure', ''));
+          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authFailure', ''));
         }
       }
     }

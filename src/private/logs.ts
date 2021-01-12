@@ -15,7 +15,7 @@ export namespace logs {
   function handleGetLogRequest(): void {
     if (GlobalVars.getLogHandler) {
       const log: string = GlobalVars.getLogHandler();
-      Communication.sendMessageRequestToParent('log.receive', [log]);
+      Communication.sendMessageToParent('log.receive', [log]);
     }
   }
 
@@ -30,6 +30,6 @@ export namespace logs {
     ensureInitialized();
 
     GlobalVars.getLogHandler = handler;
-    handler && Communication.sendMessageRequestToParent('registerHandler', ['log.request']);
+    handler && Communication.sendMessageToParent('registerHandler', ['log.request']);
   }
 }

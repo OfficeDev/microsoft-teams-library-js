@@ -142,8 +142,7 @@ export namespace meetingRoom {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
   }
 
   /**
@@ -162,10 +161,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = Communication.sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [
-      commandName,
-    ]);
-    Communication.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
   }
 
   /**
@@ -184,8 +180,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
-    handler &&
-      Communication.sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
+    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -201,7 +196,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomStatesUpdateHandler = handler;
-    handler && Communication.sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
+    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 
   function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {
