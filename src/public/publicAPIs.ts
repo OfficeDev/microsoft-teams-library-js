@@ -15,6 +15,8 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 import { Communication } from '../internal/communication';
+import { authentication } from './authentication';
+import { initializePrivateApis } from '../private/privateAPIs';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -79,6 +81,10 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
     } finally {
       Communication.parentOrigin = null;
     }
+
+    authentication.initialize();
+    settings.initialize();
+    initializePrivateApis();
 
     // Undocumented function used to clear state between unit tests
     this._uninitialize = () => {

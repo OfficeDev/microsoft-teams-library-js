@@ -10,8 +10,11 @@ import { Communication } from '../internal/communication';
 export namespace settings {
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
-  Communication.handlers['settings.save'] = handleSave;
-  Communication.handlers['settings.remove'] = handleRemove;
+
+  export function initialize(): void {
+    Communication.registerHandler('settings.save', handleSave);
+    Communication.registerHandler('settings.remove', handleRemove);
+  }
 
   /**
    * Sets the validity state for the settings.

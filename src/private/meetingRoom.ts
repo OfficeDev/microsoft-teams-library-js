@@ -128,9 +128,10 @@ export namespace meetingRoom {
     leaveMeeting: boolean;
   }
 
-  Communication.handlers['meetingRoom.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
-  Communication.handlers['meetingRoom.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
-
+  export function initialize(): void {
+    Communication.registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', handleMeetingRoomCapabilitiesUpdate);
+    Communication.registerHandler('meetingRoom.meetingRoomStatesUpdate', handleMeetingRoomStatesUpdate);
+  }
   /**
    * @private
    * Hide from docs

@@ -10,7 +10,9 @@ import { Communication } from '../internal/communication';
  * Hide from docs
  */
 export namespace logs {
-  Communication.handlers['log.request'] = handleGetLogRequest;
+  export function initialize(): void {
+    Communication.registerHandler('log.request', handleGetLogRequest);
+  }
 
   function handleGetLogRequest(): void {
     if (GlobalVars.getLogHandler) {

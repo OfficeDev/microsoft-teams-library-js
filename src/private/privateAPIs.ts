@@ -9,6 +9,15 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication } from '../internal/communication';
+import { menus } from './menus';
+import { meetingRoom } from './meetingRoom';
+import { logs } from './logs';
+
+export function initializePrivateApis(): void {
+  logs.initialize();
+  meetingRoom.initialize();
+  menus.initialize();
+}
 
 /**
  * @private
@@ -167,9 +176,9 @@ export function registerCustomHandler(
   ) => any[],
 ): void {
   ensureInitialized();
-  Communication.handlers[actionName] = (...args: any[]) => {
+  Communication.registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
-  };
+  });
 }
 
 /**
