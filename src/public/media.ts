@@ -198,7 +198,7 @@ export namespace media {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
             callback(mediaResult.error, null);
-            delete Communication.handlers['getMedia' + actionName];
+            Communication.removeHandler('getMedia' + actionName);
           } else {
             if (mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
@@ -206,7 +206,7 @@ export namespace media {
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
                 callback(mediaResult.error, file);
-                delete Communication.handlers['getMedia' + actionName];
+                Communication.removeHandler('getMedia' + actionName);
               } else {
                 // Keep pushing chunks into assemble attachment
                 const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -214,13 +214,13 @@ export namespace media {
               }
             } else {
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
-              delete Communication.handlers['getMedia' + actionName];
+              Communication.removeHandler('getMedia' + actionName);
             }
           }
         }
       }
 
-      Communication.handlers['getMedia' + actionName] = handleGetMediaRequest;
+      Communication.registerHandler('getMedia' + actionName, handleGetMediaRequest);
     }
   }
 

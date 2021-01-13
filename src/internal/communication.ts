@@ -10,10 +10,10 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window;
   public static childOrigin: string;
-  public static parentMessageQueue: MessageRequest[] = [];
-  public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId: number = 0;
-  public static handlers: {
+  private static parentMessageQueue: MessageRequest[] = [];
+  private static childMessageQueue: MessageRequest[] = [];
+  private static nextMessageId: number = 0;
+  private static handlers: {
     [func: string]: Function;
   } = {};
   private static callbacks: {
@@ -422,5 +422,13 @@ export class Communication {
       func: func,
       args: args || [],
     };
+  }
+
+  public static registerHandler(name: string, handler: Function): void {
+    Communication.handlers[name] = handler;
+  }
+
+  public static removeHandler(name: string): void {
+    delete Communication.handlers[name];
   }
 }

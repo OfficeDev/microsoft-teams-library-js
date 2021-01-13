@@ -20,7 +20,7 @@ export class ChildAppWindow implements IAppWindow {
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Communication.handlers['messageForParent'] = listener;
+      Communication.registerHandler('messageForParent', listener);
     }
   }
 }
@@ -43,7 +43,7 @@ export class ParentAppWindow implements IAppWindow {
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Communication.handlers['messageForChild'] = listener;
+      Communication.registerHandler('messageForChild', listener);
     }
   }
 }

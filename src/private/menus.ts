@@ -87,11 +87,14 @@ export namespace menus {
     popOver = 'popOver',
   }
   let navBarMenuItemPressHandler: (id: string) => boolean;
-  Communication.handlers['navBarMenuItemPress'] = handleNavBarMenuItemPress;
   let actionMenuItemPressHandler: (id: string) => boolean;
-  Communication.handlers['actionMenuItemPress'] = handleActionMenuItemPress;
   let viewConfigItemPressHandler: (id: string) => boolean;
-  Communication.handlers['setModuleView'] = handleViewConfigItemPress;
+
+  export function initialize(): void {
+    Communication.registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress);
+    Communication.registerHandler('actionMenuItemPress', handleActionMenuItemPress);
+    Communication.registerHandler('setModuleView', handleViewConfigItemPress);
+  }
   /**
    * Registers list of view configurations and it's handler.
    * Handler is responsible for listening selection of View Configuration.
