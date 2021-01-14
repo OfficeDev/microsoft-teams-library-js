@@ -180,14 +180,26 @@ describe('meeting', () => {
       let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
-      let meetingDetails: meeting.IMeetingDetails = {
+      const details: meeting.IDetails = {
+        id: `mockObjectId`,
         scheduledStartTime: '2020-12-21T21:30:00+00:00',
         scheduledEndTime: '2020-12-21T22:00:00+00:00',
-        meetingTitle: 'Get meeting details test meeting',
-        organizerId: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
-        tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
         joinUrl:
           'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
+        title: 'Get meeting details test meeting',
+        type: meeting.MeetingType.Scheduled,
+      };
+      const organizer: meeting.IOrganizer = {
+        id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
+        tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
+      };
+      const conversation: meeting.IConversation = {
+        id: `convId`,
+      };
+      const meetingDetails: meeting.IMeetingDetails = {
+        details,
+        conversation,
+        organizer,
       }​​​​;
       desktopPlatformMock.respondToMessage({
         data: {
