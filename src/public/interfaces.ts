@@ -384,6 +384,16 @@ export interface Context {
    * Personal app icon y coordinate position
    */
   appIconPosition?: number;
+
+  /**
+   * Source origin from where the tab is opened
+   */
+  sourceOrigin?: string;
+
+  /**
+   * Time when the user clicked on the tab
+   */
+  userClickTime?: string;
 }
 
 export interface DeepLinkParameters {
