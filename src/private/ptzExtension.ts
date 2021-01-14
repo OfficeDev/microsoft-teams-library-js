@@ -170,7 +170,7 @@ export namespace ptzExtension {
    * result can either contain the PtzCapableParticipants object, incase of a successful fetch or null when it fails
    * result: object that contains an array of ptz-capable participants
    */
-  export function getPtzCapableParticipants(callback: (error: SdkError, result: PtzCapableParticipants) => void): void {
+  export function getCapableParticipants(callback: (error: SdkError, result: PtzCapableParticipants) => void): void {
     if (!callback) {
       throw new Error('[ptzExtension.getPtzCapableParticipants] Callback cannot be null');
     }
@@ -190,7 +190,7 @@ export namespace ptzExtension {
    * result can either contain the true/false value, incase of a successful request or null when it fails
    * result: True means request was accepted and false means request was denied
    */
-  export function requestRemotePtzCameraControl(
+  export function requestRemoteCameraControl(
     participant: PtzParticipantInput,
     callback: (error: SdkError, result: boolean) => void,
   ): void {
@@ -213,7 +213,7 @@ export namespace ptzExtension {
    * @param ptzControlCommand PtzControlCommand specifies the command for controling the PTZ camera
    * @param callback Callback to invoke when the command response returns.
    */
-  export function sendRemotePtzCustomCommand(
+  export function sendRemoteCustomCommand(
     ptzControlCommand: PtzControlCommand,
     callback: (error: SdkError) => void,
   ): void {
@@ -235,7 +235,7 @@ export namespace ptzExtension {
    * Terminate the remote PTZ session
    * @param callback Callback to invoke when the command response returns.
    */
-  export function terminateRemotePtzSession(callback: (error: SdkError) => void): void {
+  export function terminateRemoteSession(callback: (error: SdkError) => void): void {
     if (!callback) {
       throw new Error('[ptzExtension.terminateRemotePtzSession] Callback cannot be null');
     }
@@ -249,7 +249,7 @@ export namespace ptzExtension {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the list of PTZ-capable participants changes.
    */
-  export function registerOnPtzCapableParticipantsChangeHandler(
+  export function registerOnCapableParticipantsChangeHandler(
     handler: (participantChange: PtzCapableParticipants) => void,
   ): void {
     ensureInitialized();
@@ -262,9 +262,9 @@ export namespace ptzExtension {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when there is an error from the PTZ side.
    */
-  export function registerOnPtzHandlerErrorHandler(handler: (error: PtzHandlerFailed) => void): void {
+  export function registerOnPtzErrorHandler(handler: (error: PtzHandlerFailed) => void): void {
     ensureInitialized();
-    GlobalVars.ptzHandlerErrorHandler = handler;
+    GlobalVars.ptzErrorHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['ptzHandlerError']);
   }
 
@@ -273,7 +273,7 @@ export namespace ptzExtension {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the controlled PTZ device changes state.
    */
-  export function registerOnPtzControlDeviceStateChangeHandler(
+  export function registerOnControlDeviceStateChangeHandler(
     handler: (deviceStateChange: PtzRemoteControlDeviceStateChanged) => void,
   ): void {
     ensureInitialized();

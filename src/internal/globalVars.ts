@@ -43,7 +43,7 @@ export class GlobalVars {
   public static meetingRoomCapabilitiesUpdateHandler: (capabilities: meetingRoom.MeetingRoomCapability) => void;
   public static meetingRoomStatesUpdateHandler: (states: meetingRoom.MeetingRoomState) => void;
   public static ptzCapableParticipantsChangeHandler: (participantChange: ptzExtension.PtzCapableParticipants) => void;
-  public static ptzHandlerErrorHandler: (error: ptzExtension.PtzHandlerFailed) => void;
+  public static ptzErrorHandler: (error: ptzExtension.PtzHandlerFailed) => void;
   public static ptzControlDeviceStateChangeHandler: (
     deviceStateChange: ptzExtension.PtzRemoteControlDeviceStateChanged,
   ) => void;
