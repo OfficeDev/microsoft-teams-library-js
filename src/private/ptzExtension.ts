@@ -172,10 +172,10 @@ export namespace ptzExtension {
    */
   export function getCapableParticipants(callback: (error: SdkError, result: PtzCapableParticipants) => void): void {
     if (!callback) {
-      throw new Error('[ptzExtension.getPtzCapableParticipants] Callback cannot be null');
+      throw new Error('[ptzExtension.getCapableParticipants] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('ptzExtension.getPtzCapableParticipants');
+    const messageId = sendMessageRequestToParent('ptzExtension.getCapableParticipants');
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -184,7 +184,7 @@ export namespace ptzExtension {
    * Hide from docs
    *
    * Request remote control of a participant's ptz camera
-   * @param participant the near-end participant object, for which the far-end is requesting control.
+   * @param participant Participant specifies the near-end participant object, for which the far-end is requesting control.
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when fetch is successful
    * result can either contain the true/false value, incase of a successful request or null when it fails
@@ -195,13 +195,13 @@ export namespace ptzExtension {
     callback: (error: SdkError, result: boolean) => void,
   ): void {
     if (!participant) {
-      throw new Error('[ptzExtension.requestRemotePtzCameraControl] Participant cannot be null or empty');
+      throw new Error('[ptzExtension.requestRemotCameraControl] Participant cannot be null or empty');
     }
     if (!callback) {
-      throw new Error('[ptzExtension.requestRemotePtzCameraControl] Callback cannot be null');
+      throw new Error('[ptzExtension.requestRemoteCameraControl] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('ptzExtension.requestRemotePtzCameraControl', [participant]);
+    const messageId = sendMessageRequestToParent('ptzExtension.requestRemoteCameraControl', [participant]);
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -218,13 +218,13 @@ export namespace ptzExtension {
     callback: (error: SdkError) => void,
   ): void {
     if (!ptzControlCommand) {
-      throw new Error('[ptzExtension.sendRemotePtzCustomCommand] PtzControlCommand cannot be null');
+      throw new Error('[ptzExtension.sendRemoteCustomCommand] PtzControlCommand cannot be null');
     }
     if (!callback) {
-      throw new Error('[ptzExtension.sendRemotePtzCustomCommand] Callback cannot be null');
+      throw new Error('[ptzExtension.sendRemoteCustomCommand] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('ptzExtension.sendRemotePtzCustomCommand', [ptzControlCommand]);
+    const messageId = sendMessageRequestToParent('ptzExtension.sendRemoteCustomCommand', [ptzControlCommand]);
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -237,10 +237,10 @@ export namespace ptzExtension {
    */
   export function terminateRemoteSession(callback: (error: SdkError) => void): void {
     if (!callback) {
-      throw new Error('[ptzExtension.terminateRemotePtzSession] Callback cannot be null');
+      throw new Error('[ptzExtension.terminateRemoteSession] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('ptzExtension.terminateRemotePtzSession');
+    const messageId = sendMessageRequestToParent('ptzExtension.terminateRemoteSession');
     GlobalVars.callbacks[messageId] = callback;
   }
 
@@ -284,9 +284,9 @@ export namespace ptzExtension {
   /**
    * Registers a handler for PTZ session status change.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the current PTZ status changes.
+   * @param handler The handler to invoke when the current PTZ session status changes.
    */
-  export function registerOnPtzSessionStatusChangeHandler(
+  export function registerOnSessionStatusChangeHandler(
     handler: (sessionStatusChange: PtzSessionStatusChanged) => void,
   ): void {
     ensureInitialized();
