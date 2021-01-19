@@ -81,6 +81,61 @@ export class Communication {
     Communication.callbacks = {};
   }
 
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, args: any[]): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, callback: Function): void;
+  /**
+   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+   */
+  public static sendMessageToParent(actionName: string, args: any[], callback: Function): void;
+  public static sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
+    let args: any[] | undefined;
+    if (argsOrCallback instanceof Function) {
+      callback = argsOrCallback;
+    } else if (argsOrCallback instanceof Array) {
+      args = argsOrCallback;
+    }
+
+    const targetWindow = Communication.parentWindow;
+    const request = Communication.createMessageRequest(actionName, args);
+    if (GlobalVars.isFramelessWindow) {
+      if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+        (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
+      }
+    } else {
+      const targetOrigin = Communication.getTargetOrigin(targetWindow);
+
+      // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+      // queue the message and send it after the origin is established
+      if (targetWindow && targetOrigin) {
+        targetWindow.postMessage(request, targetOrigin);
+      } else {
+        Communication.getTargetMessageQueue(targetWindow).push(request);
+      }
+    }
+
+    if (callback) {
+      Communication.callbacks[request.id] = callback;
+    }
+  }
+
+  public static registerHandler(name: string, handler: Function): void {
+    Communication.handlers[name] = handler;
+  }
+
+  public static removeHandler(name: string): void {
+    delete Communication.handlers[name];
+  }
+
   private static handleStartConversation(
     subEntityId: string,
     conversationId: string,
@@ -179,7 +234,7 @@ export class Communication {
     }
   }
 
-  public static processMessage(evt: DOMMessageEvent): void {
+  private static processMessage(evt: DOMMessageEvent): void {
     // Process only if we received a valid message
     if (!evt || !evt.data || typeof evt.data !== 'object') {
       return;
@@ -263,7 +318,7 @@ export class Communication {
     Communication.flushMessageQueue(Communication.childWindow);
   }
 
-  public static handleParentMessage(evt: DOMMessageEvent): void {
+  private static handleParentMessage(evt: DOMMessageEvent): void {
     if ('id' in evt.data && typeof evt.data.id === 'number') {
       // Call any associated Communication.callbacks
       const message = evt.data as MessageResponse;
@@ -347,53 +402,6 @@ export class Communication {
   }
 
   /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string): void;
-  /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string, args: any[]): void;
-  /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string, callback: Function): void;
-  /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string, args: any[], callback: Function): void;
-  public static sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
-    let args: any[] | undefined;
-    if (argsOrCallback instanceof Function) {
-      callback = argsOrCallback;
-    } else if (argsOrCallback instanceof Array) {
-      args = argsOrCallback;
-    }
-
-    const targetWindow = Communication.parentWindow;
-    const request = Communication.createMessageRequest(actionName, args);
-    if (GlobalVars.isFramelessWindow) {
-      if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-        (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
-      }
-    } else {
-      const targetOrigin = Communication.getTargetOrigin(targetWindow);
-
-      // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-      // queue the message and send it after the origin is established
-      if (targetWindow && targetOrigin) {
-        targetWindow.postMessage(request, targetOrigin);
-      } else {
-        Communication.getTargetMessageQueue(targetWindow).push(request);
-      }
-    }
-
-    if (callback) {
-      Communication.callbacks[request.id] = callback;
-    }
-  }
-
-  /**
    * Send a response to child for a message request that was from child
    */
   private static sendMessageResponseToChild(
@@ -457,13 +465,5 @@ export class Communication {
       func: func,
       args: args || [],
     };
-  }
-
-  public static registerHandler(name: string, handler: Function): void {
-    Communication.handlers[name] = handler;
-  }
-
-  public static removeHandler(name: string): void {
-    delete Communication.handlers[name];
   }
 }
