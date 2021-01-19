@@ -1,7 +1,6 @@
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, defaultSDKVersionForCompatCheck } from '../internal/constants';
-import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { settings } from './settings';
 import {
   TabInformation,
@@ -32,55 +31,23 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    Communication.initialize();
+    Communication.initialize(
+      (
+        context: FrameContexts,
+        clientType: string,
+        clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
+      ) => {
+        GlobalVars.frameContext = context;
+        GlobalVars.hostClientType = clientType;
+        GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
-    // Listen for messages post to our window
-    const messageListener = (evt: DOMMessageEvent): void => Communication.processMessage(evt);
-
-    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-    // it's the window that opened us (i.e., window.opener)
-    Communication.currentWindow = Communication.currentWindow || window;
-    Communication.parentWindow =
-      Communication.currentWindow.parent !== Communication.currentWindow.self
-        ? Communication.currentWindow.parent
-        : Communication.currentWindow.opener;
-
-    // Listen to messages from the parent or child frame.
-    // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
-    if (Communication.parentWindow || validMessageOrigins) {
-      Communication.currentWindow.addEventListener('message', messageListener, false);
-    }
-
-    if (!Communication.parentWindow) {
-      GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = Communication.handleParentMessage;
-    }
-
-    try {
-      // Send the initialized message to any origin, because at this point we most likely don't know the origin
-      // of the parent window, and this message contains no data that could pose a security risk.
-      Communication.parentOrigin = '*';
-      Communication.sendMessageToParent(
-        'initialize',
-        [version],
-        (
-          context: FrameContexts,
-          clientType: string,
-          clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
-        ) => {
-          GlobalVars.frameContext = context;
-          GlobalVars.hostClientType = clientType;
-          GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
-
-          // Notify all waiting callers that the initialization has completed
-          GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
-          GlobalVars.initializeCallbacks = [];
-          GlobalVars.initializeCompleted = true;
-        },
-      );
-    } finally {
-      Communication.parentOrigin = null;
-    }
+        // Notify all waiting callers that the initialization has completed
+        GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
+        GlobalVars.initializeCallbacks = [];
+        GlobalVars.initializeCompleted = true;
+      },
+      validMessageOrigins,
+    );
 
     authentication.initialize();
     settings.initialize();
@@ -104,8 +71,6 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       if (GlobalVars.frameContext === FrameContexts.remove) {
         settings.registerOnRemoveHandler(null);
       }
-
-      Communication.currentWindow.removeEventListener('message', messageListener, false);
 
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
