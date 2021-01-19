@@ -136,7 +136,6 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getAuthenticationTokenForAnonymousUser');
-    GlobalVars.callbacks[messageId] = callback;
+    Communication.sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 }
