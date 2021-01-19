@@ -1,6 +1,6 @@
 import { navigateBack } from '../../src/public/navigation';
 import { LoadContext } from '../public/interfaces';
-import { validOriginRegExp } from './constants';
+import { validOriginRegExp, version } from './constants';
 import { GlobalVars } from './globalVars';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 
@@ -19,8 +19,9 @@ export class Communication {
   private static callbacks: {
     [id: number]: Function;
   } = {};
+  private static messageListener: Function;
 
-  public static initialize(): void {
+  public static initialize(callback: Function, validMessageOrigins: string[] | undefined): void {
     // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
     Communication.handlers['themeChange'] = Communication.handleThemeChange;
     Communication.handlers['fullScreenChange'] = Communication.handleFullScreenChange;
@@ -33,9 +34,42 @@ export class Communication {
     Communication.handlers['appButtonClick'] = Communication.handleAppButtonClick;
     Communication.handlers['appButtonHoverEnter'] = Communication.handleAppButtonHoverEnter;
     Communication.handlers['appButtonHoverLeave'] = Communication.handleAppButtonHoverLeave;
+
+    // Listen for messages post to our window
+    Communication.messageListener = (evt: DOMMessageEvent): void => Communication.processMessage(evt);
+
+    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
+    // it's the window that opened us (i.e., window.opener)
+    Communication.currentWindow = Communication.currentWindow || window;
+    Communication.parentWindow =
+      Communication.currentWindow.parent !== Communication.currentWindow.self
+        ? Communication.currentWindow.parent
+        : Communication.currentWindow.opener;
+
+    // Listen to messages from the parent or child frame.
+    // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
+    if (Communication.parentWindow || validMessageOrigins) {
+      Communication.currentWindow.addEventListener('message', Communication.messageListener, false);
+    }
+
+    if (!Communication.parentWindow) {
+      GlobalVars.isFramelessWindow = true;
+      (window as ExtendedWindow).onNativeMessage = Communication.handleParentMessage;
+    }
+
+    try {
+      // Send the initialized message to any origin, because at this point we most likely don't know the origin
+      // of the parent window, and this message contains no data that could pose a security risk.
+      Communication.parentOrigin = '*';
+      Communication.sendMessageToParent('initialize', [version], callback);
+    } finally {
+      Communication.parentOrigin = null;
+    }
   }
 
   public static uninitialize(): void {
+    Communication.currentWindow.removeEventListener('message', Communication.messageListener, false);
+
     Communication.parentWindow = null;
     Communication.parentOrigin = null;
     Communication.parentMessageQueue = [];
