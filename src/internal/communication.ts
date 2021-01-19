@@ -54,6 +54,7 @@ export class Communication {
 
     if (!Communication.parentWindow) {
       GlobalVars.isFramelessWindow = true;
+      // @ts-ignore: window as ExtendedWindow
       (window as ExtendedWindow).onNativeMessage = Communication.handleParentMessage;
     }
 
