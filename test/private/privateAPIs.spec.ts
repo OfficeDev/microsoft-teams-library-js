@@ -278,6 +278,8 @@ describe('MicrosoftTeams-privateAPIs', () => {
       teamSiteUrl: 'someSiteUrl',
       sessionId: 'someSessionId',
       appSessionId: 'appSessionId',
+      sourceOrigin: 'someOrigin',
+      userClickTime: 'someTime'
     };
 
     // Get many responses to the same message
