@@ -195,7 +195,7 @@ export namespace ptzExtension {
     callback: (error: SdkError, result: boolean) => void,
   ): void {
     if (!participant) {
-      throw new Error('[ptzExtension.requestRemotCameraControl] Participant cannot be null or empty');
+      throw new Error('[ptzExtension.requestRemoteCameraControl] Participant cannot be null');
     }
     if (!callback) {
       throw new Error('[ptzExtension.requestRemoteCameraControl] Callback cannot be null');
@@ -244,6 +244,10 @@ export namespace ptzExtension {
     GlobalVars.callbacks[messageId] = callback;
   }
 
+  GlobalVars.handlers['ptzCapableParticipantsChange'] = handlePtzCapableParticipantsChange;
+  GlobalVars.handlers['ptzHandlerError'] = handlePtzHandlerError;
+  GlobalVars.handlers['ptzControlDeviceStateChange'] = handlePtzControlDeviceStateChange;
+  GlobalVars.handlers['ptzSessionStatusChange'] = handlePtzSessionStatusChange;
   /**
    * Registers a handler for change in PTZ-capable participants.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -252,9 +256,18 @@ export namespace ptzExtension {
   export function registerOnCapableParticipantsChangeHandler(
     handler: (participantChange: PtzCapableParticipants) => void,
   ): void {
+    if (!handler) {
+      throw new Error('[ptzExtension.registerOnCapableParticipantsChangeHandler] Handler cannot be null');
+    }
     ensureInitialized();
     GlobalVars.ptzCapableParticipantsChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['ptzCapableParticipantsChange']);
+  }
+
+  function handlePtzCapableParticipantsChange(participantChange: ptzExtension.PtzCapableParticipants): void {
+    if (GlobalVars.ptzCapableParticipantsChangeHandler) {
+      GlobalVars.ptzCapableParticipantsChangeHandler(participantChange);
+    }
   }
 
   /**
@@ -263,9 +276,18 @@ export namespace ptzExtension {
    * @param handler The handler to invoke when there is an error from the PTZ side.
    */
   export function registerOnPtzErrorHandler(handler: (error: PtzHandlerFailed) => void): void {
+    if (!handler) {
+      throw new Error('[ptzExtension.registerOnPtzErrorHandler] Handler cannot be null');
+    }
     ensureInitialized();
     GlobalVars.ptzErrorHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['ptzHandlerError']);
+  }
+
+  function handlePtzHandlerError(error: PtzHandlerFailed): void {
+    if (GlobalVars.ptzErrorHandler) {
+      GlobalVars.ptzErrorHandler(error);
+    }
   }
 
   /**
@@ -276,9 +298,18 @@ export namespace ptzExtension {
   export function registerOnControlDeviceStateChangeHandler(
     handler: (deviceStateChange: PtzRemoteControlDeviceStateChanged) => void,
   ): void {
+    if (!handler) {
+      throw new Error('[ptzExtension.registerOnControlDeviceStateChangeHandler] Handler cannot be null');
+    }
     ensureInitialized();
     GlobalVars.ptzControlDeviceStateChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['ptzControlDeviceStateChange']);
+  }
+
+  function handlePtzControlDeviceStateChange(deviceStateChange: PtzRemoteControlDeviceStateChanged): void {
+    if (GlobalVars.ptzControlDeviceStateChangeHandler) {
+      GlobalVars.ptzControlDeviceStateChangeHandler(deviceStateChange);
+    }
   }
 
   /**
@@ -289,8 +320,17 @@ export namespace ptzExtension {
   export function registerOnSessionStatusChangeHandler(
     handler: (sessionStatusChange: PtzSessionStatusChanged) => void,
   ): void {
+    if (!handler) {
+      throw new Error('[ptzExtension.registerOnSessionStatusChangeHandler] Handler cannot be null');
+    }
     ensureInitialized();
     GlobalVars.ptzSessionStatusChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['ptzSessionStatusChange']);
+  }
+
+  function handlePtzSessionStatusChange(sessionStatusChange: PtzSessionStatusChanged): void {
+    if (GlobalVars.ptzSessionStatusChangeHandler) {
+      GlobalVars.ptzSessionStatusChangeHandler(sessionStatusChange);
+    }
   }
 }
