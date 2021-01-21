@@ -14,22 +14,60 @@ steps:
   inputs:
     versionSpec: '1.x'
   displayName: 'Yarn 1.x'
+
 - task: Yarn@3
   inputs:
     Arguments: 'install'
   displayName: 'yarn install'
+  
 - task: Yarn@3
   inputs:
     Arguments: 'build-sdk'
   displayName: 'yarn build-sdk'
+
 - task: Yarn@3
   inputs:
     Arguments: 'test-sdk'
   displayName: 'yarn test-sdk'
+
 - task: Yarn@3
   inputs:
     Arguments: 'build-test-app'
   displayName: 'yarn build-test-app'
+
+- task: CopyFiles@2
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  inputs:
+    sourceFolder: 'examples/teamsjs-test-app/build'
+    contents: "**"
+    targetFolder: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+  displayName: "Copy teamsjs test app to artifacts staging directory"
+
+- task: ArchiveFiles@2
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+    includeRootFolder: false
+    archiveType: "zip"
+    archiveFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+    ArtifactName: "teamsjs-test-app"
+  displayName: "Publish teamsjs test app artifacts"
+
+- task: AzureRmWebAppDeployment@4
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
+    appType: 'webApp'
+    WebAppName: 'dev-teamsjstestapp'
+    package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+
 - task: Yarn@3
   condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'Manual'))
   inputs:

@@ -37,6 +37,8 @@ module.exports = {
     publicPath: "/",
     compress: true,
     port: 4000,
+    https: true,
+    disableHostCheck: true,
   },
   plugins: [
     new HtmlWebPackPlugin({ template: "./index.html", filename: "index.html", })
