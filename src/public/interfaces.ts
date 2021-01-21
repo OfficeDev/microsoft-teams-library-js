@@ -393,7 +393,7 @@ export interface Context {
   /**
    * Time when the user clicked on the tab
    */
-  userClickTime?: string;
+  userClickTime?: number;
 }
 
 export interface DeepLinkParameters {
