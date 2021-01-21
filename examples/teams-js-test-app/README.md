@@ -33,7 +33,7 @@ If you would like to run this app locally, please follow the steps below. Please
 cd {monorepo root}
 
 // Ensuring you have installed and built the App SDK
-yarn install-app-sdk
+yarn install
 yarn build-app-sdk
 
 yarn build-test-app
