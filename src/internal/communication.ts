@@ -324,7 +324,7 @@ export class Communication {
       const message = evt.data as MessageResponse;
       const callback = Communication.callbacks[message.id];
       if (callback) {
-        callback.apply(null, message.args);
+        callback.apply(null, [...message.args, message.isPartialResponse]);
 
         // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
         if (!Communication.isPartialResponse(evt)) {
@@ -361,7 +361,8 @@ export class Communication {
         // tslint:disable-next-line:no-any
         Communication.sendMessageToParent(message.func, message.args, (...args: any[]): void => {
           if (Communication.childWindow) {
-            Communication.sendMessageResponseToChild(message.id, args);
+            const isPartialResponse = args.pop();
+            Communication.sendMessageResponseToChild(message.id, args, isPartialResponse);
           }
         });
       }
@@ -408,9 +409,10 @@ export class Communication {
     id: number,
     // tslint:disable-next-line:no-any
     args?: any[],
+    isPartialResponse?: boolean,
   ): void {
     const targetWindow = Communication.childWindow;
-    const response = Communication.createMessageResponse(id, args);
+    const response = Communication.createMessageResponse(id, args, isPartialResponse);
     const targetOrigin = Communication.getTargetOrigin(targetWindow);
     if (targetWindow && targetOrigin) {
       targetWindow.postMessage(response, targetOrigin);
@@ -449,10 +451,11 @@ export class Communication {
   }
 
   // tslint:disable-next-line:no-any
-  private static createMessageResponse(id: number, args: any[]): MessageResponse {
+  private static createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
     return {
       id: id,
       args: args || [],
+      isPartialResponse,
     };
   }
 

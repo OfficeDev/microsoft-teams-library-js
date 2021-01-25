@@ -73,7 +73,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-    ensureInitialized(FrameContexts.remove);
+    ensureInitialized(FrameContexts.remove, FrameContexts.settings);
     removeHandler = handler;
     handler && Communication.sendMessageToParent('registerHandler', ['remove']);
   }
