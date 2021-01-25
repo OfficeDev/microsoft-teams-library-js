@@ -79,7 +79,7 @@ export namespace meeting {
    * Allows an app to get the incoming audio speaker setting for the meeting user
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when fetch is successful
-   * result can either contain the true/false value, incase of a successful toggle or null when the fetching fails
+   * result can either contain the true/false value, incase of a successful fetch or null when the fetching fails
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
   export function getIncomingClientAudioState(
@@ -124,6 +124,7 @@ export namespace meeting {
   }
 
   /**
+   * @private
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
    * @param callback Callback contains 2 parameters, error and authenticationTokenOfAnonymousUser.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
