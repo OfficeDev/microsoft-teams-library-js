@@ -235,7 +235,7 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageResponse;
     const callback = GlobalVars.callbacks[message.id];
     if (callback) {
-      callback.apply(null, message.args);
+      callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
@@ -273,7 +273,8 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // tslint:disable-next-line:no-any
       GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
-          sendMessageResponseToChild(message.id, args);
+          const isPartialResponse = args.pop();
+          sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       };
     }
@@ -374,9 +375,10 @@ function sendMessageResponseToChild(
   id: number,
   // tslint:disable-next-line:no-any
   args?: any[],
+  isPartialResponse?: boolean,
 ): void {
   const targetWindow = GlobalVars.childWindow;
-  const response = createMessageResponse(id, args);
+  const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
     targetWindow.postMessage(response, targetOrigin);
@@ -415,10 +417,11 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
 }
 
 // tslint:disable-next-line:no-any
-function createMessageResponse(id: number, args: any[]): MessageResponse {
+function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],
+    isPartialResponse: isPartialResponse,
   };
 }
 
