@@ -4,6 +4,7 @@ interface BoxAndButtonProps {
   handleClick: (input?: any) => void;
   hasInput: boolean;
   title: string;
+  name: string; // system identifiable unique name in context of MOS App and should contain no spaces
   output: string;
 }
 
@@ -12,6 +13,7 @@ const BoxAndButton = ({
   hasInput,
   output,
   title,
+  name
 }: BoxAndButtonProps) => {
   let input = "";
   const setInput = (val: string) => {
@@ -29,8 +31,9 @@ const BoxAndButton = ({
         border: "5px solid black",
         textAlign: "center",
       }}
+      id={`box_${name}`}
     >
-      <input type="button" value={title} onClick={getOutput} />
+      <input name={`button_${name}`} type="button" value={title} onClick={getOutput} />
       {hasInput && (
         <input type="text" onChange={(e) => setInput(e.target.value)} />
       )}
@@ -43,7 +46,7 @@ const BoxAndButton = ({
           overflow: "auto",
         }}
       >
-        <span style={{ wordWrap: "break-word" }}>{output}</span>
+        <span id={`text_${name}`} style={{ wordWrap: "break-word" }}>{output}</span>
       </div>
     </div>
   );

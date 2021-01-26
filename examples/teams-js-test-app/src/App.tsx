@@ -53,18 +53,21 @@ const App = () => {
         output={context}
         hasInput={false}
         title="Get Context"
+        name="getContext"
       />
       <BoxAndButton
         handleClick={returnAuth}
         output={auth}
         hasInput={true}
         title="Get Auth Token"
+        name="getAuthToken"
       />
       <BoxAndButton
         handleClick={returnExecuteDeepLink}
         output={executeDeepLink}
         hasInput={true}
         title="Execute Deep Link"
+        name="executeDeepLink"
       />
     </>
   );
