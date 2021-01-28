@@ -26,4 +26,4 @@ export {
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
-export { ptzExtension } from './ptzExtension';
+export { remoteCamera } from './remoteCamera';

@@ -2,7 +2,7 @@ import { MessageRequest } from './interfaces';
 import { ConversationResponse, LoadContext } from '../public/interfaces';
 import { FrameContexts } from '../public';
 import { meetingRoom } from '../private/meetingRoom';
-import { ptzExtension } from '../private/ptzExtension';
+import { remoteCamera } from '../private/remoteCamera';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -42,10 +42,8 @@ export class GlobalVars {
   public static appButtonHoverLeaveHandler: () => void;
   public static meetingRoomCapabilitiesUpdateHandler: (capabilities: meetingRoom.MeetingRoomCapability) => void;
   public static meetingRoomStatesUpdateHandler: (states: meetingRoom.MeetingRoomState) => void;
-  public static ptzCapableParticipantsChangeHandler: (participantChange: ptzExtension.PtzCapableParticipants) => void;
-  public static ptzErrorHandler: (error: ptzExtension.PtzHandlerFailed) => void;
-  public static ptzControlDeviceStateChangeHandler: (
-    deviceStateChange: ptzExtension.PtzRemoteControlDeviceStateChanged,
-  ) => void;
-  public static ptzSessionStatusChangeHandler: (sessionStatusChange: ptzExtension.PtzSessionStatusChanged) => void;
+  public static capableParticipantsChangeHandler: (participantChange: remoteCamera.CapableParticipants) => void;
+  public static errorHandler: (error: remoteCamera.HandlerFailed) => void;
+  public static deviceStateChangeHandler: (deviceStateChange: remoteCamera.DeviceStateChanged) => void;
+  public static sessionStatusChangeHandler: (sessionStatusChange: remoteCamera.SessionStatusChanged) => void;
 }

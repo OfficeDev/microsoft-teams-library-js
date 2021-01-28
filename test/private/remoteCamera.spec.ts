@@ -1,30 +1,30 @@
 import { Utils } from '../utils';
-import { ptzExtension } from '../../src/private/ptzExtension';
+import { remoteCamera } from '../../src/private/remoteCamera';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { SdkError } from '../../src/public/interfaces';
 
-describe('ptzExtension', () => {
+describe('remoteCamera', () => {
   const utils = new Utils();
-  const ptzCapableParticipantsMock: ptzExtension.PtzCapableParticipants = {
+  const capableParticipantsMock: remoteCamera.CapableParticipants = {
     participants: [
       {
         id: '1',
         displayName: 'Nicole',
-        isPtzCapable: true,
+        isCapable: true,
       },
       {
         id: '2',
         displayName: 'Mrudula',
-        isPtzCapable: true,
+        isCapable: true,
       },
     ],
   };
-  const participantInputMock: ptzExtension.PtzParticipantInput = { id: '1' };
-  const ptzControlCommandMock: ptzExtension.PtzControlCommand = ptzExtension.PtzControlCommand.PanRight;
-  const ptzHandlerFailedMock: ptzExtension.PtzHandlerFailed = {
-    ptzHandlerError: ptzExtension.PtzErrorReason.CommandPanRightError,
+  const participantInputMock: remoteCamera.ParticipantInput = { id: '1' };
+  const controlCommandMock: remoteCamera.ControlCommand = remoteCamera.ControlCommand.PanRight;
+  const handlerFailedMock: remoteCamera.HandlerFailed = {
+    handlerError: remoteCamera.ErrorReason.CommandPanRightError,
   };
-  const ptzDeviceStateChangedMock: ptzExtension.PtzRemoteControlDeviceStateChanged = {
+  const deviceStateChangedMock: remoteCamera.DeviceStateChanged = {
     deviceState: {
       available: false,
       error: false,
@@ -37,7 +37,7 @@ describe('ptzExtension', () => {
       tiltDown: false,
     },
   };
-  const ptzSessionStatusChangedMock: ptzExtension.PtzSessionStatusChanged = {
+  const sessionStatusChangedMock: remoteCamera.SessionStatusChanged = {
     sessionStatus: {
       inControl: true,
       id: '1',
@@ -55,52 +55,52 @@ describe('ptzExtension', () => {
   });
   describe('getCapableParticipants', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => ptzExtension.getCapableParticipants(() => {})).toThrowError(
+      expect(() => remoteCamera.getCapableParticipants(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => ptzExtension.getCapableParticipants(null)).toThrowError(
-        '[ptzExtension.getCapableParticipants] Callback cannot be null',
+      expect(() => remoteCamera.getCapableParticipants(null)).toThrowError(
+        '[remoteCamera.getCapableParticipants] Callback cannot be null',
       );
     });
-    it('should successfully get PTZ-capable participants', () => {
+    it('should successfully get list of participants with controllable cameras', () => {
       utils.initializeWithContext('content');
-      let returnedResult: ptzExtension.PtzCapableParticipants = null;
+      let returnedResult: remoteCamera.CapableParticipants = null;
       let returnedSdkError: SdkError;
-      const callback = (sdkError: SdkError, result: ptzExtension.PtzCapableParticipants): void => {
+      const callback = (sdkError: SdkError, result: remoteCamera.CapableParticipants): void => {
         returnedResult = result;
         returnedSdkError = sdkError;
       };
-      ptzExtension.getCapableParticipants(callback);
-      let message = utils.findMessageByFunc('ptzExtension.getCapableParticipants');
+      remoteCamera.getCapableParticipants(callback);
+      let message = utils.findMessageByFunc('remoteCamera.getCapableParticipants');
       expect(message).not.toBeUndefined();
 
       // simulate response
       const data = {
         error: null,
-        result: ptzCapableParticipantsMock,
+        result: capableParticipantsMock,
       };
       utils.respondToMessage(message, data.error, data.result);
 
       // check data is returned properly
-      expect(returnedResult).toEqual(ptzCapableParticipantsMock);
+      expect(returnedResult).toEqual(capableParticipantsMock);
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
       utils.initializeWithContext('content');
-      let returnedResult: ptzExtension.PtzCapableParticipants = null;
+      let returnedResult: remoteCamera.CapableParticipants = null;
       let returnedSdkError: SdkError;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
         message: 'Test error message.',
       };
-      const callback = (sdkError: SdkError, result: ptzExtension.PtzCapableParticipants): void => {
+      const callback = (sdkError: SdkError, result: remoteCamera.CapableParticipants): void => {
         returnedResult = result;
         returnedSdkError = sdkError;
       };
-      ptzExtension.getCapableParticipants(callback);
-      let message = utils.findMessageByFunc('ptzExtension.getCapableParticipants');
+      remoteCamera.getCapableParticipants(callback);
+      let message = utils.findMessageByFunc('remoteCamera.getCapableParticipants');
       expect(message).not.toBeUndefined();
 
       // simulate response
@@ -116,20 +116,20 @@ describe('ptzExtension', () => {
     });
   });
 
-  describe('requestRemoteCameraControl', () => {
+  describe('requestControl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => ptzExtension.requestRemoteCameraControl(participantInputMock, () => {})).toThrowError(
+      expect(() => remoteCamera.requestControl(participantInputMock, () => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should throw an error if the participant is null', () => {
-      expect(() => ptzExtension.requestRemoteCameraControl(null, () => {})).toThrowError(
-        '[ptzExtension.requestRemoteCameraControl] Participant cannot be null',
+      expect(() => remoteCamera.requestControl(null, () => {})).toThrowError(
+        '[remoteCamera.requestControl] Participant cannot be null',
       );
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => ptzExtension.requestRemoteCameraControl(participantInputMock, null)).toThrowError(
-        '[ptzExtension.requestRemoteCameraControl] Callback cannot be null',
+      expect(() => remoteCamera.requestControl(participantInputMock, null)).toThrowError(
+        '[remoteCamera.requestControl] Callback cannot be null',
       );
     });
     it('should request control of remote camera', () => {
@@ -140,8 +140,8 @@ describe('ptzExtension', () => {
         returnedResult = result;
         returnedSdkError = sdkError;
       };
-      ptzExtension.requestRemoteCameraControl(participantInputMock, callbackMock);
-      let message = utils.findMessageByFunc('ptzExtension.requestRemoteCameraControl');
+      remoteCamera.requestControl(participantInputMock, callbackMock);
+      let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
       expect(message.args).toContain(participantInputMock);
 
@@ -168,8 +168,8 @@ describe('ptzExtension', () => {
         returnedResult = result;
         returnedSdkError = sdkError;
       };
-      ptzExtension.requestRemoteCameraControl(participantInputMock, callbackMock);
-      let message = utils.findMessageByFunc('ptzExtension.requestRemoteCameraControl');
+      remoteCamera.requestControl(participantInputMock, callbackMock);
+      let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
 
       // simulate response
@@ -185,20 +185,20 @@ describe('ptzExtension', () => {
     });
   });
 
-  describe('sendRemoteCustomCommand', () => {
+  describe('sendControlCommand', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => ptzExtension.sendRemoteCustomCommand(ptzControlCommandMock, () => {})).toThrowError(
+      expect(() => remoteCamera.sendControlCommand(controlCommandMock, () => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
-    it('should throw an error if the ptzControlCommand is null', () => {
-      expect(() => ptzExtension.sendRemoteCustomCommand(null, () => {})).toThrowError(
-        '[ptzExtension.sendRemoteCustomCommand] PtzControlCommand cannot be null',
+    it('should throw an error if the ControlCommand is null', () => {
+      expect(() => remoteCamera.sendControlCommand(null, () => {})).toThrowError(
+        '[remoteCamera.sendControlCommand] ControlCommand cannot be null',
       );
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => ptzExtension.sendRemoteCustomCommand(ptzControlCommandMock, null)).toThrowError(
-        '[ptzExtension.sendRemoteCustomCommand] Callback cannot be null',
+      expect(() => remoteCamera.sendControlCommand(controlCommandMock, null)).toThrowError(
+        '[remoteCamera.sendControlCommand] Callback cannot be null',
       );
     });
     it('should send control command to the remote camera', () => {
@@ -207,10 +207,10 @@ describe('ptzExtension', () => {
       const callbackMock = (sdkError: SdkError): void => {
         returnedSdkError = sdkError;
       };
-      ptzExtension.sendRemoteCustomCommand(ptzControlCommandMock, callbackMock);
-      let message = utils.findMessageByFunc('ptzExtension.sendRemoteCustomCommand');
+      remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
+      let message = utils.findMessageByFunc('remoteCamera.sendControlCommand');
       expect(message).not.toBeUndefined();
-      expect(message.args).toContain(ptzControlCommandMock);
+      expect(message.args).toContain(controlCommandMock);
 
       // simulate response
       const data = {
@@ -231,8 +231,8 @@ describe('ptzExtension', () => {
       const callbackMock = (sdkError: SdkError): void => {
         returnedSdkError = sdkError;
       };
-      ptzExtension.sendRemoteCustomCommand(ptzControlCommandMock, callbackMock);
-      let message = utils.findMessageByFunc('ptzExtension.sendRemoteCustomCommand');
+      remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
+      let message = utils.findMessageByFunc('remoteCamera.sendControlCommand');
       expect(message).not.toBeUndefined();
 
       // simulate response
@@ -246,15 +246,13 @@ describe('ptzExtension', () => {
     });
   });
 
-  describe('terminateRemoteSession', () => {
+  describe('terminateSession', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => ptzExtension.terminateRemoteSession(() => {})).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => remoteCamera.terminateSession(() => {})).toThrowError('The library has not yet been initialized');
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => ptzExtension.terminateRemoteSession(null)).toThrowError(
-        '[ptzExtension.terminateRemoteSession] Callback cannot be null',
+      expect(() => remoteCamera.terminateSession(null)).toThrowError(
+        '[remoteCamera.terminateSession] Callback cannot be null',
       );
     });
     it('should terminate remote camera control session', () => {
@@ -263,8 +261,8 @@ describe('ptzExtension', () => {
       const callback = (sdkError: SdkError): void => {
         returnedSdkError = sdkError;
       };
-      ptzExtension.terminateRemoteSession(callback);
-      let message = utils.findMessageByFunc('ptzExtension.terminateRemoteSession');
+      remoteCamera.terminateSession(callback);
+      let message = utils.findMessageByFunc('remoteCamera.terminateSession');
       expect(message).not.toBeUndefined();
 
       // simulate response
@@ -286,8 +284,8 @@ describe('ptzExtension', () => {
       const callback = (sdkError: SdkError): void => {
         returnedSdkError = sdkError;
       };
-      ptzExtension.terminateRemoteSession(callback);
-      let message = utils.findMessageByFunc('ptzExtension.terminateRemoteSession');
+      remoteCamera.terminateSession(callback);
+      let message = utils.findMessageByFunc('remoteCamera.terminateSession');
       expect(message).not.toBeUndefined();
 
       // simulate response
@@ -303,121 +301,121 @@ describe('ptzExtension', () => {
 
   describe('registerOnCapableParticipantsChangeHandler', () => {
     it('should not allow calls before initialization ', () => {
-      expect(() => ptzExtension.registerOnCapableParticipantsChangeHandler(() => {})).toThrowError(
+      expect(() => remoteCamera.registerOnCapableParticipantsChangeHandler(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should not allow calls with null handler ', () => {
       utils.initializeWithContext('content');
-      expect(() => ptzExtension.registerOnCapableParticipantsChangeHandler(null)).toThrowError(
-        '[ptzExtension.registerOnCapableParticipantsChangeHandler] Handler cannot be null',
+      expect(() => remoteCamera.registerOnCapableParticipantsChangeHandler(null)).toThrowError(
+        '[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null',
       );
     });
     it('should successfully register a handler for when the capable participants change', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let ptzCapableParticipants: ptzExtension.PtzCapableParticipants;
-      const handlerMock = (participantChange: ptzExtension.PtzCapableParticipants): void => {
+      let CapableParticipants: remoteCamera.CapableParticipants;
+      const handlerMock = (participantChange: remoteCamera.CapableParticipants): void => {
         handlerInvoked = true;
-        ptzCapableParticipants = participantChange;
+        CapableParticipants = participantChange;
       };
-      ptzExtension.registerOnCapableParticipantsChangeHandler(handlerMock);
+      remoteCamera.registerOnCapableParticipantsChangeHandler(handlerMock);
 
-      utils.sendMessage('ptzCapableParticipantsChange', ptzCapableParticipantsMock);
+      utils.sendMessage('remoteCamera.capableParticipantsChange', capableParticipantsMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(ptzCapableParticipants).toEqual(ptzCapableParticipantsMock);
+      expect(CapableParticipants).toEqual(capableParticipantsMock);
     });
   });
 
-  describe('registerOnPtzErrorHandler', () => {
+  describe('registerOnErrorHandler', () => {
     it('should not allow calls before initialization ', () => {
-      expect(() => ptzExtension.registerOnPtzErrorHandler(() => {})).toThrowError(
+      expect(() => remoteCamera.registerOnErrorHandler(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should not allow calls with null handler ', () => {
       utils.initializeWithContext('content');
-      expect(() => ptzExtension.registerOnPtzErrorHandler(null)).toThrowError(
-        '[ptzExtension.registerOnPtzErrorHandler] Handler cannot be null',
+      expect(() => remoteCamera.registerOnErrorHandler(null)).toThrowError(
+        '[remoteCamera.registerOnErrorHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the PTZ handler encounters an error', () => {
+    it('should successfully register a handler for when the handler encounters an error', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let handlerError: ptzExtension.PtzHandlerFailed;
-      const handlerMock = (error: ptzExtension.PtzHandlerFailed): void => {
+      let handlerError: remoteCamera.HandlerFailed;
+      const handlerMock = (error: remoteCamera.HandlerFailed): void => {
         handlerInvoked = true;
         handlerError = error;
       };
-      ptzExtension.registerOnPtzErrorHandler(handlerMock);
+      remoteCamera.registerOnErrorHandler(handlerMock);
 
-      utils.sendMessage('ptzHandlerError', ptzHandlerFailedMock);
+      utils.sendMessage('remoteCamera.handlerError', handlerFailedMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(handlerError).toEqual(ptzHandlerFailedMock);
+      expect(handlerError).toEqual(handlerFailedMock);
     });
   });
 
-  describe('registerOnControlDeviceStateChangeHandler', () => {
+  describe('registerOnDeviceStateChangeHandler', () => {
     it('should not allow calls before initialization ', () => {
-      expect(() => ptzExtension.registerOnControlDeviceStateChangeHandler(() => {})).toThrowError(
+      expect(() => remoteCamera.registerOnDeviceStateChangeHandler(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should not allow calls with null handler ', () => {
       utils.initializeWithContext('content');
-      expect(() => ptzExtension.registerOnControlDeviceStateChangeHandler(null)).toThrowError(
-        '[ptzExtension.registerOnControlDeviceStateChangeHandler] Handler cannot be null',
+      expect(() => remoteCamera.registerOnDeviceStateChangeHandler(null)).toThrowError(
+        '[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the PTZ device state changes', () => {
+    it('should successfully register a handler for when the device state changes', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let deviceState: ptzExtension.PtzRemoteControlDeviceStateChanged;
-      const handlerMock = (deviceStateChange: ptzExtension.PtzRemoteControlDeviceStateChanged): void => {
+      let deviceState: remoteCamera.DeviceStateChanged;
+      const handlerMock = (deviceStateChange: remoteCamera.DeviceStateChanged): void => {
         handlerInvoked = true;
         deviceState = deviceStateChange;
       };
-      ptzExtension.registerOnControlDeviceStateChangeHandler(handlerMock);
+      remoteCamera.registerOnDeviceStateChangeHandler(handlerMock);
 
-      utils.sendMessage('ptzControlDeviceStateChange', ptzDeviceStateChangedMock);
+      utils.sendMessage('remoteCamera.deviceStateChange', deviceStateChangedMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(deviceState).toEqual(ptzDeviceStateChangedMock);
+      expect(deviceState).toEqual(deviceStateChangedMock);
     });
   });
 
   describe('registerOnSessionStatusChangeHandler', () => {
     it('should not allow calls before initialization ', () => {
-      expect(() => ptzExtension.registerOnSessionStatusChangeHandler(() => {})).toThrowError(
+      expect(() => remoteCamera.registerOnSessionStatusChangeHandler(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
     it('should not allow calls with null handler ', () => {
       utils.initializeWithContext('content');
-      expect(() => ptzExtension.registerOnSessionStatusChangeHandler(null)).toThrowError(
-        '[ptzExtension.registerOnSessionStatusChangeHandler] Handler cannot be null',
+      expect(() => remoteCamera.registerOnSessionStatusChangeHandler(null)).toThrowError(
+        '[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the PTZ session status changes', () => {
+    it('should successfully register a handler for when the session status changes', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let sessionStatus: ptzExtension.PtzSessionStatusChanged;
-      const handlerMock = (sessionStatusChange: ptzExtension.PtzSessionStatusChanged): void => {
+      let sessionStatus: remoteCamera.SessionStatusChanged;
+      const handlerMock = (sessionStatusChange: remoteCamera.SessionStatusChanged): void => {
         handlerInvoked = true;
         sessionStatus = sessionStatusChange;
       };
-      ptzExtension.registerOnSessionStatusChangeHandler(handlerMock);
+      remoteCamera.registerOnSessionStatusChangeHandler(handlerMock);
 
-      utils.sendMessage('ptzSessionStatusChange', ptzSessionStatusChangedMock);
+      utils.sendMessage('remoteCamera.sessionStatusChange', sessionStatusChangedMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(sessionStatus).toEqual(ptzSessionStatusChangedMock);
+      expect(sessionStatus).toEqual(sessionStatusChangedMock);
     });
   });
 });
