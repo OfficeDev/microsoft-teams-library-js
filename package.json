@@ -9,9 +9,13 @@
   },
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
-    "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)",
-    "publish-sdk": "yarn publish teamsjs-app-sdk",
     "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)",
-    "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)"
+    "clean": "if exist node_modules (rd /s /q node_modules)",
+    "clean:all": "yarn clean && yarn clean-sdk && yarn clean-test-app",
+    "clean-sdk": "(cd ./teamsjs-app-sdk/ && yarn clean)",
+    "clean-test-app": "(cd ./examples/teamsjs-test-app/ && yarn clean)",
+    "publish-sdk": "yarn publish teamsjs-app-sdk",
+    "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
+    "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)"
   }
 }

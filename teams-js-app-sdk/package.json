@@ -11,8 +11,9 @@
   },
   "scripts": {
     "build": "yarn lint && webpack",
-    "lint": "eslint ./src/**/*.ts",
+    "clean": "if exist node_modules (rd /s /q node_modules)",
     "doctor": "yarn lint --fix",
+    "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },
