@@ -9,15 +9,13 @@ describe('remoteCamera', () => {
     {
       id: '1',
       displayName: 'Nicole',
-      isCapable: true,
     },
     {
       id: '2',
       displayName: 'Mrudula',
-      isCapable: true,
     },
   ];
-  const participantBaseInfoMock: remoteCamera.ParticipantBaseInfo = { id: '1' };
+  const participantMock: remoteCamera.Participant = { id: '1' };
   const controlCommandMock: remoteCamera.ControlCommand = remoteCamera.ControlCommand.PanRight;
   const errorReasonMock: remoteCamera.ErrorReason = remoteCamera.ErrorReason.CommandPanRightError;
   const deviceStateChangeMock: remoteCamera.DeviceState = {
@@ -33,7 +31,6 @@ describe('remoteCamera', () => {
   };
   const sessionStatusChangeMock: remoteCamera.SessionStatus = {
     inControl: true,
-    id: '1',
   };
   beforeEach(() => {
     utils.messages = [];
@@ -110,7 +107,7 @@ describe('remoteCamera', () => {
 
   describe('requestControl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => remoteCamera.requestControl(participantBaseInfoMock, () => {})).toThrowError(
+      expect(() => remoteCamera.requestControl(participantMock, () => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -120,7 +117,7 @@ describe('remoteCamera', () => {
       );
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => remoteCamera.requestControl(participantBaseInfoMock, null)).toThrowError(
+      expect(() => remoteCamera.requestControl(participantMock, null)).toThrowError(
         '[remoteCamera.requestControl] Callback cannot be null',
       );
     });
@@ -132,10 +129,10 @@ describe('remoteCamera', () => {
         returnedRequestResponse = requestResult;
         returnedSdkError = sdkError;
       };
-      remoteCamera.requestControl(participantBaseInfoMock, callbackMock);
+      remoteCamera.requestControl(participantMock, callbackMock);
       let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
-      expect(message.args).toContain(participantBaseInfoMock);
+      expect(message.args).toContain(participantMock);
 
       // simulate response
       const data = {
@@ -160,7 +157,7 @@ describe('remoteCamera', () => {
         returnedRequestResponse = requestResult;
         returnedSdkError = sdkError;
       };
-      remoteCamera.requestControl(participantBaseInfoMock, callbackMock);
+      remoteCamera.requestControl(participantMock, callbackMock);
       let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
 

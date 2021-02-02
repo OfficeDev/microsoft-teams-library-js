@@ -8,7 +8,7 @@ export namespace remoteCamera {
    *
    * Data structure to represent patricipant details needed to request control of camera.
    */
-  export interface ParticipantBaseInfo {
+  export interface Participant {
     /**
      * Id of participant.
      */
@@ -17,16 +17,6 @@ export namespace remoteCamera {
      * Display name of participant.
      */
     displayName?: string;
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Data structure to represent a patricipant in a meeting.
-   */
-  export interface Participant extends ParticipantBaseInfo {
-    isCapable: boolean;
   }
 
   /**
@@ -119,10 +109,6 @@ export namespace remoteCamera {
      */
     inControl: boolean;
     /**
-     * Id of  participant whose device is being controlled.
-     */
-    id: string;
-    /**
      * Reason the  control session was terminated.
      */
     terminatedReason?: SessionTerminatedReason;
@@ -185,7 +171,7 @@ export namespace remoteCamera {
    * requestResponse: True means request was accepted and false means request was denied
    */
   export function requestControl(
-    participant: ParticipantBaseInfo,
+    participant: Participant,
     callback: (error: SdkError | null, requestResponse: boolean | null) => void,
   ): void {
     if (!participant) {
