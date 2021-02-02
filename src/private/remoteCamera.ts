@@ -8,7 +8,7 @@ export namespace remoteCamera {
    *
    * Data structure to represent patricipant details needed to request control of camera.
    */
-  export interface ParticipantInput {
+  export interface ParticipantBaseInfo {
     /**
      * Id of participant.
      */
@@ -25,7 +25,7 @@ export namespace remoteCamera {
    *
    * Data structure to represent a patricipant in a meeting.
    */
-  export interface Participant extends ParticipantInput {
+  export interface Participant extends ParticipantBaseInfo {
     isCapable: boolean;
   }
 
@@ -43,46 +43,6 @@ export namespace remoteCamera {
     PanRight = 'PanRight',
     TiltUp = 'TiltUp',
     TiltDown = 'TiltDown',
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Data structure to hold the array of participants with controllable-cameras in a meeting.
-   */
-  export interface CapableParticipants {
-    participants: Participant[];
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Data structure to return error reason when a handler error occurs.
-   */
-  export interface HandlerFailed {
-    handlerError: ErrorReason;
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Data structure to track the controlled device's state.
-   */
-  export interface DeviceStateChanged {
-    deviceState: DeviceState;
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Data structure to track the control session status.
-   */
-  export interface SessionStatusChanged {
-    sessionStatus: SessionStatus;
   }
 
   /**
@@ -187,17 +147,24 @@ export namespace remoteCamera {
     ControlDisabled,
   }
 
+  GlobalVars.handlers['remoteCamera.capableParticipantsChange'] = handleCapableParticipantsChange;
+  GlobalVars.handlers['remoteCamera.handlerError'] = handleHandlerError;
+  GlobalVars.handlers['remoteCamera.deviceStateChange'] = handleDeviceStateChange;
+  GlobalVars.handlers['remoteCamera.sessionStatusChange'] = handleSessionStatusChange;
+
   /**
    * @private
    * Hide from docs
    *
    * Fetch a list of the participants with controllable-cameras in a meeting.
-   * @param callback Callback contains 2 parameters, error and result.
+   * @param callback Callback contains 2 parameters, error and participants.
    * error can either contain an error of type SdkError, incase of an error, or null when fetch is successful
-   * result can either contain the CapableParticipants object, incase of a successful fetch or null when it fails
-   * result: object that contains an array of participants with controllable-cameras
+   * participants can either contain an array of Participant objects, incase of a successful fetch or null when it fails
+   * participants: object that contains an array of participants with controllable-cameras
    */
-  export function getCapableParticipants(callback: (error: SdkError, result: CapableParticipants) => void): void {
+  export function getCapableParticipants(
+    callback: (error: SdkError | null, participants: Participant[] | null) => void,
+  ): void {
     if (!callback) {
       throw new Error('[remoteCamera.getCapableParticipants] Callback cannot be null');
     }
@@ -212,14 +179,14 @@ export namespace remoteCamera {
    *
    * Request control of a participant's camera.
    * @param participant Participant specifies the participant to send the request for camera control.
-   * @param callback Callback contains 2 parameters, error and result.
+   * @param callback Callback contains 2 parameters, error and requestResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when fetch is successful
-   * result can either contain the true/false value, incase of a successful request or null when it fails
-   * result: True means request was accepted and false means request was denied
+   * requestResponse can either contain the true/false value, incase of a successful request or null when it fails
+   * requestResponse: True means request was accepted and false means request was denied
    */
   export function requestControl(
-    participant: ParticipantInput,
-    callback: (error: SdkError, result: boolean) => void,
+    participant: ParticipantBaseInfo,
+    callback: (error: SdkError | null, requestResponse: boolean | null) => void,
   ): void {
     if (!participant) {
       throw new Error('[remoteCamera.requestControl] Participant cannot be null');
@@ -240,7 +207,7 @@ export namespace remoteCamera {
    * @param ControlCommand ControlCommand specifies the command for controling the camera.
    * @param callback Callback to invoke when the command response returns.
    */
-  export function sendControlCommand(ControlCommand: ControlCommand, callback: (error: SdkError) => void): void {
+  export function sendControlCommand(ControlCommand: ControlCommand, callback: (error: SdkError | null) => void): void {
     if (!ControlCommand) {
       throw new Error('[remoteCamera.sendControlCommand] ControlCommand cannot be null');
     }
@@ -259,7 +226,7 @@ export namespace remoteCamera {
    * Terminate the remote  session
    * @param callback Callback to invoke when the command response returns.
    */
-  export function terminateSession(callback: (error: SdkError) => void): void {
+  export function terminateSession(callback: (error: SdkError | null) => void): void {
     if (!callback) {
       throw new Error('[remoteCamera.terminateSession] Callback cannot be null');
     }
@@ -268,30 +235,25 @@ export namespace remoteCamera {
     GlobalVars.callbacks[messageId] = callback;
   }
 
-  GlobalVars.handlers['remoteCamera.capableParticipantsChange'] = handleCapableParticipantsChange;
-  GlobalVars.handlers['remoteCamera.handlerError'] = handleHandlerError;
-  GlobalVars.handlers['remoteCamera.deviceStateChange'] = handleDeviceStateChange;
-  GlobalVars.handlers['remoteCamera.sessionStatusChange'] = handleSessionStatusChange;
-
   /**
    * Registers a handler for change in participants with controllable-cameras.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the list of participants with controllable-cameras changes.
    */
   export function registerOnCapableParticipantsChangeHandler(
-    handler: (participantChange: CapableParticipants) => void,
+    handler: (participantChange: Participant[]) => void,
   ): void {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.capableParticipantsChangeHandler = handler;
+    GlobalVars.remoteCameraCapableParticipantsChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remoteCamera.capableParticipantsChange']);
   }
 
-  function handleCapableParticipantsChange(participantChange: remoteCamera.CapableParticipants): void {
-    if (GlobalVars.capableParticipantsChangeHandler) {
-      GlobalVars.capableParticipantsChangeHandler(participantChange);
+  function handleCapableParticipantsChange(participantChange: Participant[]): void {
+    if (GlobalVars.remoteCameraCapableParticipantsChangeHandler) {
+      GlobalVars.remoteCameraCapableParticipantsChangeHandler(participantChange);
     }
   }
 
@@ -300,18 +262,18 @@ export namespace remoteCamera {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when there is an error from the camera handler.
    */
-  export function registerOnErrorHandler(handler: (error: HandlerFailed) => void): void {
+  export function registerOnErrorHandler(handler: (error: ErrorReason) => void): void {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnErrorHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.errorHandler = handler;
+    GlobalVars.remoteCameraErrorHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remoteCamera.handlerError']);
   }
 
-  function handleHandlerError(error: HandlerFailed): void {
-    if (GlobalVars.errorHandler) {
-      GlobalVars.errorHandler(error);
+  function handleHandlerError(error: ErrorReason): void {
+    if (GlobalVars.remoteCameraErrorHandler) {
+      GlobalVars.remoteCameraErrorHandler(error);
     }
   }
 
@@ -320,18 +282,18 @@ export namespace remoteCamera {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the controlled device changes state.
    */
-  export function registerOnDeviceStateChangeHandler(handler: (deviceStateChange: DeviceStateChanged) => void): void {
+  export function registerOnDeviceStateChangeHandler(handler: (deviceStateChange: DeviceState) => void): void {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.deviceStateChangeHandler = handler;
+    GlobalVars.remoteCameraDeviceStateChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remoteCamera.deviceStateChange']);
   }
 
-  function handleDeviceStateChange(deviceStateChange: DeviceStateChanged): void {
-    if (GlobalVars.deviceStateChangeHandler) {
-      GlobalVars.deviceStateChangeHandler(deviceStateChange);
+  function handleDeviceStateChange(deviceStateChange: DeviceState): void {
+    if (GlobalVars.remoteCameraDeviceStateChangeHandler) {
+      GlobalVars.remoteCameraDeviceStateChangeHandler(deviceStateChange);
     }
   }
 
@@ -340,20 +302,18 @@ export namespace remoteCamera {
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the current session status changes.
    */
-  export function registerOnSessionStatusChangeHandler(
-    handler: (sessionStatusChange: SessionStatusChanged) => void,
-  ): void {
+  export function registerOnSessionStatusChangeHandler(handler: (sessionStatusChange: SessionStatus) => void): void {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.sessionStatusChangeHandler = handler;
+    GlobalVars.remoteCameraSessionStatusChangeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remoteCamera.sessionStatusChange']);
   }
 
-  function handleSessionStatusChange(sessionStatusChange: SessionStatusChanged): void {
-    if (GlobalVars.sessionStatusChangeHandler) {
-      GlobalVars.sessionStatusChangeHandler(sessionStatusChange);
+  function handleSessionStatusChange(sessionStatusChange: SessionStatus): void {
+    if (GlobalVars.remoteCameraSessionStatusChangeHandler) {
+      GlobalVars.remoteCameraSessionStatusChangeHandler(sessionStatusChange);
     }
   }
 }

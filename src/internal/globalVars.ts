@@ -42,8 +42,8 @@ export class GlobalVars {
   public static appButtonHoverLeaveHandler: () => void;
   public static meetingRoomCapabilitiesUpdateHandler: (capabilities: meetingRoom.MeetingRoomCapability) => void;
   public static meetingRoomStatesUpdateHandler: (states: meetingRoom.MeetingRoomState) => void;
-  public static capableParticipantsChangeHandler: (participantChange: remoteCamera.CapableParticipants) => void;
-  public static errorHandler: (error: remoteCamera.HandlerFailed) => void;
-  public static deviceStateChangeHandler: (deviceStateChange: remoteCamera.DeviceStateChanged) => void;
-  public static sessionStatusChangeHandler: (sessionStatusChange: remoteCamera.SessionStatusChanged) => void;
+  public static remoteCameraCapableParticipantsChangeHandler: (participantChange: remoteCamera.Participant[]) => void;
+  public static remoteCameraErrorHandler: (error: remoteCamera.ErrorReason) => void;
+  public static remoteCameraDeviceStateChangeHandler: (deviceStateChange: remoteCamera.DeviceState) => void;
+  public static remoteCameraSessionStatusChangeHandler: (sessionStatusChange: remoteCamera.SessionStatus) => void;
 }

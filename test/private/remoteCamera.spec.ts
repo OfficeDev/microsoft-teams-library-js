@@ -5,43 +5,35 @@ import { SdkError } from '../../src/public/interfaces';
 
 describe('remoteCamera', () => {
   const utils = new Utils();
-  const capableParticipantsMock: remoteCamera.CapableParticipants = {
-    participants: [
-      {
-        id: '1',
-        displayName: 'Nicole',
-        isCapable: true,
-      },
-      {
-        id: '2',
-        displayName: 'Mrudula',
-        isCapable: true,
-      },
-    ],
-  };
-  const participantInputMock: remoteCamera.ParticipantInput = { id: '1' };
-  const controlCommandMock: remoteCamera.ControlCommand = remoteCamera.ControlCommand.PanRight;
-  const handlerFailedMock: remoteCamera.HandlerFailed = {
-    handlerError: remoteCamera.ErrorReason.CommandPanRightError,
-  };
-  const deviceStateChangedMock: remoteCamera.DeviceStateChanged = {
-    deviceState: {
-      available: false,
-      error: false,
-      reset: false,
-      zoomIn: false,
-      zoomOut: false,
-      panLeft: false,
-      panRight: false,
-      tiltUp: false,
-      tiltDown: false,
-    },
-  };
-  const sessionStatusChangedMock: remoteCamera.SessionStatusChanged = {
-    sessionStatus: {
-      inControl: true,
+  const capableParticipantsMock: remoteCamera.Participant[] = [
+    {
       id: '1',
+      displayName: 'Nicole',
+      isCapable: true,
     },
+    {
+      id: '2',
+      displayName: 'Mrudula',
+      isCapable: true,
+    },
+  ];
+  const participantBaseInfoMock: remoteCamera.ParticipantBaseInfo = { id: '1' };
+  const controlCommandMock: remoteCamera.ControlCommand = remoteCamera.ControlCommand.PanRight;
+  const errorReasonMock: remoteCamera.ErrorReason = remoteCamera.ErrorReason.CommandPanRightError;
+  const deviceStateChangeMock: remoteCamera.DeviceState = {
+    available: false,
+    error: false,
+    reset: false,
+    zoomIn: false,
+    zoomOut: false,
+    panLeft: false,
+    panRight: false,
+    tiltUp: false,
+    tiltDown: false,
+  };
+  const sessionStatusChangeMock: remoteCamera.SessionStatus = {
+    inControl: true,
+    id: '1',
   };
   beforeEach(() => {
     utils.messages = [];
@@ -66,10 +58,10 @@ describe('remoteCamera', () => {
     });
     it('should successfully get list of participants with controllable cameras', () => {
       utils.initializeWithContext('content');
-      let returnedResult: remoteCamera.CapableParticipants = null;
-      let returnedSdkError: SdkError;
-      const callback = (sdkError: SdkError, result: remoteCamera.CapableParticipants): void => {
-        returnedResult = result;
+      let returnedParticipant: remoteCamera.Participant[] | null = null;
+      let returnedSdkError: SdkError | null = null;
+      const callback = (sdkError: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
+        returnedParticipant = participants;
         returnedSdkError = sdkError;
       };
       remoteCamera.getCapableParticipants(callback);
@@ -79,24 +71,24 @@ describe('remoteCamera', () => {
       // simulate response
       const data = {
         error: null,
-        result: capableParticipantsMock,
+        participants: capableParticipantsMock,
       };
-      utils.respondToMessage(message, data.error, data.result);
+      utils.respondToMessage(message, data.error, data.participants);
 
       // check data is returned properly
-      expect(returnedResult).toEqual(capableParticipantsMock);
+      expect(returnedParticipant).toEqual(capableParticipantsMock);
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
       utils.initializeWithContext('content');
-      let returnedResult: remoteCamera.CapableParticipants = null;
-      let returnedSdkError: SdkError;
+      let returnedParticipant: remoteCamera.Participant[] | null = null;
+      let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
         message: 'Test error message.',
       };
-      const callback = (sdkError: SdkError, result: remoteCamera.CapableParticipants): void => {
-        returnedResult = result;
+      const callback = (sdkError: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
+        returnedParticipant = participants;
         returnedSdkError = sdkError;
       };
       remoteCamera.getCapableParticipants(callback);
@@ -106,19 +98,19 @@ describe('remoteCamera', () => {
       // simulate response
       const data = {
         error: sdkErrorMock,
-        result: null,
+        participants: null,
       };
-      utils.respondToMessage(message, data.error, data.result);
+      utils.respondToMessage(message, data.error, data.participants);
 
       // check data is returned properly
-      expect(returnedResult).toBeNull();
+      expect(returnedParticipant).toBeNull();
       expect(returnedSdkError).toEqual(sdkErrorMock);
     });
   });
 
   describe('requestControl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => remoteCamera.requestControl(participantInputMock, () => {})).toThrowError(
+      expect(() => remoteCamera.requestControl(participantBaseInfoMock, () => {})).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -128,59 +120,59 @@ describe('remoteCamera', () => {
       );
     });
     it('should throw an error if the callback function is null', () => {
-      expect(() => remoteCamera.requestControl(participantInputMock, null)).toThrowError(
+      expect(() => remoteCamera.requestControl(participantBaseInfoMock, null)).toThrowError(
         '[remoteCamera.requestControl] Callback cannot be null',
       );
     });
     it('should request control of remote camera', () => {
       utils.initializeWithContext('content');
-      let returnedResult = false;
-      let returnedSdkError: SdkError;
-      const callbackMock = (sdkError: SdkError, result: boolean): void => {
-        returnedResult = result;
+      let returnedRequestResponse: boolean | null = null;
+      let returnedSdkError: SdkError | null = null;
+      const callbackMock = (sdkError: SdkError | null, requestResult: boolean | null): void => {
+        returnedRequestResponse = requestResult;
         returnedSdkError = sdkError;
       };
-      remoteCamera.requestControl(participantInputMock, callbackMock);
+      remoteCamera.requestControl(participantBaseInfoMock, callbackMock);
       let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
-      expect(message.args).toContain(participantInputMock);
+      expect(message.args).toContain(participantBaseInfoMock);
 
       // simulate response
       const data = {
         error: null,
-        result: true,
+        requestResult: true,
       };
-      utils.respondToMessage(message, data.error, data.result);
+      utils.respondToMessage(message, data.error, data.requestResult);
 
       // check data is returned properly
-      expect(returnedResult).toEqual(true);
+      expect(returnedRequestResponse).toEqual(true);
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
       utils.initializeWithContext('content');
-      let returnedResult = false;
-      let returnedSdkError: SdkError;
+      let returnedRequestResponse: boolean | null = null;
+      let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
         message: 'Test error message.',
       };
-      const callbackMock = (sdkError: SdkError, result: boolean): void => {
-        returnedResult = result;
+      const callbackMock = (sdkError: SdkError | null, requestResult: boolean | null): void => {
+        returnedRequestResponse = requestResult;
         returnedSdkError = sdkError;
       };
-      remoteCamera.requestControl(participantInputMock, callbackMock);
+      remoteCamera.requestControl(participantBaseInfoMock, callbackMock);
       let message = utils.findMessageByFunc('remoteCamera.requestControl');
       expect(message).not.toBeUndefined();
 
       // simulate response
       const data = {
         error: sdkErrorMock,
-        result: null,
+        requestResult: null,
       };
-      utils.respondToMessage(message, data.error, data.result);
+      utils.respondToMessage(message, data.error, data.requestResult);
 
       // check data is returned properly
-      expect(returnedResult).toBeNull();
+      expect(returnedRequestResponse).toBeNull();
       expect(returnedSdkError).toEqual(sdkErrorMock);
     });
   });
@@ -203,8 +195,8 @@ describe('remoteCamera', () => {
     });
     it('should send control command to the remote camera', () => {
       utils.initializeWithContext('content');
-      let returnedSdkError: SdkError;
-      const callbackMock = (sdkError: SdkError): void => {
+      let returnedSdkError: SdkError | null;
+      const callbackMock = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
       };
       remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
@@ -223,12 +215,12 @@ describe('remoteCamera', () => {
     });
     it('should return an error object if response has error', () => {
       utils.initializeWithContext('content');
-      let returnedSdkError: SdkError;
+      let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
         message: 'Test error message.',
       };
-      const callbackMock = (sdkError: SdkError): void => {
+      const callbackMock = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
       };
       remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
@@ -257,8 +249,8 @@ describe('remoteCamera', () => {
     });
     it('should terminate remote camera control session', () => {
       utils.initializeWithContext('content');
-      let returnedSdkError: SdkError;
-      const callback = (sdkError: SdkError): void => {
+      let returnedSdkError: SdkError | null;
+      const callback = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
       };
       remoteCamera.terminateSession(callback);
@@ -276,12 +268,12 @@ describe('remoteCamera', () => {
     });
     it('should return an error object if response has error', () => {
       utils.initializeWithContext('content');
-      let returnedSdkError: SdkError;
+      let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
         message: 'Test error message.',
       };
-      const callback = (sdkError: SdkError): void => {
+      const callback = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
       };
       remoteCamera.terminateSession(callback);
@@ -315,8 +307,8 @@ describe('remoteCamera', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let CapableParticipants: remoteCamera.CapableParticipants;
-      const handlerMock = (participantChange: remoteCamera.CapableParticipants): void => {
+      let CapableParticipants: remoteCamera.Participant[];
+      const handlerMock = (participantChange: remoteCamera.Participant[]): void => {
         handlerInvoked = true;
         CapableParticipants = participantChange;
       };
@@ -345,17 +337,17 @@ describe('remoteCamera', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let handlerError: remoteCamera.HandlerFailed;
-      const handlerMock = (error: remoteCamera.HandlerFailed): void => {
+      let handlerError: remoteCamera.ErrorReason;
+      const handlerMock = (error: remoteCamera.ErrorReason): void => {
         handlerInvoked = true;
         handlerError = error;
       };
       remoteCamera.registerOnErrorHandler(handlerMock);
 
-      utils.sendMessage('remoteCamera.handlerError', handlerFailedMock);
+      utils.sendMessage('remoteCamera.handlerError', errorReasonMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(handlerError).toEqual(handlerFailedMock);
+      expect(handlerError).toEqual(errorReasonMock);
     });
   });
 
@@ -375,17 +367,17 @@ describe('remoteCamera', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let deviceState: remoteCamera.DeviceStateChanged;
-      const handlerMock = (deviceStateChange: remoteCamera.DeviceStateChanged): void => {
+      let deviceState: remoteCamera.DeviceState;
+      const handlerMock = (deviceStateChange: remoteCamera.DeviceState): void => {
         handlerInvoked = true;
         deviceState = deviceStateChange;
       };
       remoteCamera.registerOnDeviceStateChangeHandler(handlerMock);
 
-      utils.sendMessage('remoteCamera.deviceStateChange', deviceStateChangedMock);
+      utils.sendMessage('remoteCamera.deviceStateChange', deviceStateChangeMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(deviceState).toEqual(deviceStateChangedMock);
+      expect(deviceState).toEqual(deviceStateChangeMock);
     });
   });
 
@@ -405,17 +397,17 @@ describe('remoteCamera', () => {
       utils.initializeWithContext('content');
 
       let handlerInvoked = false;
-      let sessionStatus: remoteCamera.SessionStatusChanged;
-      const handlerMock = (sessionStatusChange: remoteCamera.SessionStatusChanged): void => {
+      let sessionStatus: remoteCamera.SessionStatus;
+      const handlerMock = (sessionStatusChange: remoteCamera.SessionStatus): void => {
         handlerInvoked = true;
         sessionStatus = sessionStatusChange;
       };
       remoteCamera.registerOnSessionStatusChangeHandler(handlerMock);
 
-      utils.sendMessage('remoteCamera.sessionStatusChange', sessionStatusChangedMock);
+      utils.sendMessage('remoteCamera.sessionStatusChange', sessionStatusChangeMock);
 
       expect(handlerInvoked).toEqual(true);
-      expect(sessionStatus).toEqual(sessionStatusChangedMock);
+      expect(sessionStatus).toEqual(sessionStatusChangeMock);
     });
   });
 });
