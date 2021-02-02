@@ -56,7 +56,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'http://microsoft.sharepoint-df.com',
     'https://a.b.sharepoint.com',
     'https://a.b.c.sharepoint.com',
-    'http://invalid.origin.com'
+    'http://invalid.origin.com',
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
@@ -279,7 +279,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       sessionId: 'someSessionId',
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
-      userClickTime: 'someTime'
+      userClickTime: 1000,
     };
 
     // Get many responses to the same message
@@ -342,6 +342,38 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     // The frameless window should send a response back to the child window
     expect(utils.childMessages.length).toBe(1);
+  });
+
+  it('should properly pass partial responses to nested child frames ', () => {
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'testPartialFunc1',
+        args: ['testArgs'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // Send a partial response back
+    const parentMessage = utils.findMessageByFunc('testPartialFunc1');
+    utils.respondToNativeMessage(parentMessage, true, {});
+
+    // The child window should properly receive the partial response
+    expect(utils.childMessages.length).toBe(1);
+    const firstChildMessage = utils.childMessages[0];
+    expect(firstChildMessage.isPartialResponse).toBeTruthy();
+
+    // Pass the final response (non partial)
+    utils.respondToNativeMessage(parentMessage, false, {});
+
+    // The child window should properly receive the non-partial response
+    expect(utils.childMessages.length).toBe(2);
+    const secondChildMessage = utils.childMessages[1];
+    expect(secondChildMessage.isPartialResponse).toBeFalsy();
   });
 
   describe('getUserJoinedTeams', () => {
