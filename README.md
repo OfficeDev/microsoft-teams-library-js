@@ -46,7 +46,8 @@ To install the stable version:
 
 #### Production
 
-You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.7.0/js/teamsjs.min.js), download them, or point your package manager to them.
+**TODO:** Update this URL once we have released the App SDK publicly and published it to a CDN (currently the URL points to the Teams SDK)
+You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.9.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -65,11 +66,12 @@ import { core } from "@microsoft/teamsjs-app-sdk";
 Reference the library inside of your `.html` page using:
 
 ```html
-<!-- Microsoft teamsjs App JavaScript API (via CDN) -->
-<script src="https://statics.teams.cdn.office.net/sdk/v1.7.0/js/teamsjs.min.js" integrity="sha384-00JbifySIlPvW32u9rSurgu8PujfL6XFdV9iNn4ZWyurJJ33MFvpwPqmCHDq9ADv" crossorigin="anonymous"></script>
+<!-- Microsoft Teams JavaScript API (via CDN) -->
+<!-- TODO: Update URL (as above) -->
+<script src="https://statics.teams.cdn.office.net/sdk/v1.9.0/js/MicrosoftTeams.min.js" integrity="sha384-bcRxWKfzRyPxg/waVm3IsOnaH2Inoh5gGIJNOat79+wq22/BZ+mFuSTUmVc7l2el" crossorigin="anonymous"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teamsjs-app-sdk@1.7.0/dist/teamsjs.min.js"></script>
+<script src="node_modules/@microsoft/teamsjs-app-sdk@0.0.6/dist/teamsjs.min.js"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via local) -->
 <script src="teamsjs.min.js"></script>
