@@ -41,3 +41,4 @@ export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
+export { peoplepicker } from './peoplepicker';
