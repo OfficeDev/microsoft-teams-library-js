@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {core, appInitialization, authentication} from "@microsoft/teamsjs-app-sdk";
+import {core, appInitialization, authentication, teamsCore} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 
 core.initialize();
@@ -14,6 +14,11 @@ const App = () => {
   const [authenticationNotifyFailure, setAuthenticationNotifyFailure] = React.useState("");
   const [authenticationNotifySucess, setAuthenticationNotifySucess] = React.useState("");
   const [authenticationAuthenticate, setAuthenticationAuthenticate] = React.useState("");
+  const [registerOnThemeChangeHandler, setRegisterOnThemeChangeHandler] = React.useState("");
+  const [registerChangeSettingsHandler, setRegisterChangeSettingsHandler] = React.useState("");
+  const [registerAppButtonClickHandler, setRegisterAppButtonClickHandler] = React.useState("");
+  const [registerAppButtonHoverEnterHandler, setRegisterAppButtonHoverEnterHandler] = React.useState("");
+  const [registerAppButtonHoverLeaveHandler, setRegisterAppButtonHoverLeaveHandler] = React.useState("");
 
   const returnContext = () => {
     let textResult = "No Context";
@@ -82,6 +87,40 @@ const App = () => {
     authentication.authenticate(authenticateParameters);
   };
 
+  const returnRegisterOnThemeChangeHandler = () => {
+    core.registerOnThemeChangeHandler((theme: string) => {
+      setRegisterOnThemeChangeHandler(theme);
+    });
+  }; 
+
+  const returnRegisterChangeSettingsHandler = () => {
+    setRegisterChangeSettingsHandler("App SDK call registerChangeSettingsHandler() was called, but there was no action from the Hub SDK.");
+    teamsCore.registerChangeSettingsHandler(() => {
+      setRegisterChangeSettingsHandler("successfully called");
+    });
+  }; 
+
+  const returnRegisterAppButtonClickHandler = () => {
+    setRegisterAppButtonClickHandler("App SDK call registerAppButtonClickHandler() was called, but there was no action from the Hub SDK.");
+    teamsCore.registerAppButtonClickHandler(() => {
+      setRegisterAppButtonClickHandler("successfully called");
+    });
+  }; 
+
+  const returnRegisterAppButtonHoverEnterHandler = () => {
+    setRegisterAppButtonHoverEnterHandler("App SDK call registerAppButtonHoverEnterHandler() was called, but there was no action from the Hub SDK.");
+    teamsCore.registerAppButtonHoverEnterHandler(() => {
+      setRegisterAppButtonHoverEnterHandler("successfully called");
+    });
+  }; 
+
+  const returnRegisterAppButtonHoverLeaveHandler = () => {
+    setRegisterAppButtonHoverLeaveHandler("App SDK call registerAppButtonHoverLeaveHandler() was called, but there was no action from the Hub SDK.");
+    teamsCore.registerAppButtonHoverLeaveHandler(() => {
+      setRegisterAppButtonHoverLeaveHandler("successfully called");
+    });
+  }; 
+
   return (
     <>
       <BoxAndButton
@@ -132,6 +171,41 @@ const App = () => {
         hasInput={true}
         title="authentication.authenticate"
         name="authentication.authenticate"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterOnThemeChangeHandler}
+        output={registerOnThemeChangeHandler}
+        hasInput={false}
+        title="Register On Theme Change Handler"
+        name="registerOnThemeChangeHandler"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterChangeSettingsHandler}
+        output={registerChangeSettingsHandler}
+        hasInput={false}
+        title="Register Change Settings Handler"
+        name="registerChangeSettingsHandler"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterAppButtonClickHandler}
+        output={registerAppButtonClickHandler}
+        hasInput={false}
+        title="Register App Button Click Handler"
+        name="registerAppButtonClickHandler"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterAppButtonHoverEnterHandler}
+        output={registerAppButtonHoverEnterHandler}
+        hasInput={false}
+        title="Register App Button Hover Enter Handler"
+        name="registerAppButtonHoverEnterHandler"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterAppButtonHoverLeaveHandler}
+        output={registerAppButtonHoverLeaveHandler}
+        hasInput={false}
+        title="Register App Button Hover Leave Handler"
+        name="registerAppButtonHoverLeaveHandler"
       />
     </>
   );
