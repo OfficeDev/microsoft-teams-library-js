@@ -202,7 +202,11 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
   // Determine whether the source of the message is our parent or child and update our
   // window and origin pointer accordingly
-  if (!GlobalVars.parentWindow || GlobalVars.parentWindow.closed || messageSource === GlobalVars.parentWindow) {
+  // For frameless windows (i.e mobile), there is no parent frame, so the message must be from the child.
+  if (
+    !GlobalVars.isFramelessWindow &&
+    (!GlobalVars.parentWindow || GlobalVars.parentWindow.closed || messageSource === GlobalVars.parentWindow)
+  ) {
     GlobalVars.parentWindow = messageSource;
     GlobalVars.parentOrigin = messageOrigin;
   } else if (!GlobalVars.childWindow || GlobalVars.childWindow.closed || messageSource === GlobalVars.childWindow) {
@@ -231,10 +235,12 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageResponse;
     const callback = GlobalVars.callbacks[message.id];
     if (callback) {
-      callback.apply(null, message.args);
+      callback.apply(null, [...message.args, message.isPartialResponse]);
 
-      // Remove the callback to ensure that the callback is called only once and to free up memory.
-      delete GlobalVars.callbacks[message.id];
+      // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
+      if (!isPartialResponse(evt)) {
+        delete GlobalVars.callbacks[message.id];
+      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -245,6 +251,10 @@ export function handleParentMessage(evt: DOMMessageEvent): void {
       handler.apply(this, message.args);
     }
   }
+}
+
+function isPartialResponse(evt: DOMMessageEvent): boolean {
+  return evt.data.isPartialResponse === true;
 }
 
 function handleChildMessage(evt: DOMMessageEvent): void {
@@ -263,7 +273,8 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // tslint:disable-next-line:no-any
       GlobalVars.callbacks[messageId] = (...args: any[]): void => {
         if (GlobalVars.childWindow) {
-          sendMessageResponseToChild(message.id, args);
+          const isPartialResponse = args.pop();
+          sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       };
     }
@@ -364,9 +375,10 @@ function sendMessageResponseToChild(
   id: number,
   // tslint:disable-next-line:no-any
   args?: any[],
+  isPartialResponse?: boolean,
 ): void {
   const targetWindow = GlobalVars.childWindow;
-  const response = createMessageResponse(id, args);
+  const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
     targetWindow.postMessage(response, targetOrigin);
@@ -405,10 +417,11 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
 }
 
 // tslint:disable-next-line:no-any
-function createMessageResponse(id: number, args: any[]): MessageResponse {
+function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],
+    isPartialResponse: isPartialResponse,
   };
 }
 

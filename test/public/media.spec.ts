@@ -1,19 +1,20 @@
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
-import { FrameContexts } from '../../src/public/constants';
+import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 import { media } from '../../src/public/media';
 
 /**
- * Test cases for device APIs
+ * Test cases for media APIs
  */
 describe('media', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils()
   const minVersionForCaptureImage = '1.7.0';
   const mediaAPISupportVersion = '1.8.0';
+  const scanBarCodeAPISupportVersion = '1.9.0';
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -569,5 +570,181 @@ describe('media', () => {
       }
     } as DOMMessageEvent)
     expect(mediaError.errorCode).toBe(ErrorCode.FILE_NOT_FOUND);
+  });
+
+  /**
+   * ScanBarCode API tests
+   */
+  it('should not allow scanBarCode calls with null callback', () => {
+    expect(() => media.scanBarCode(null, null)).toThrowError(
+      '[media.scanBarCode] Callback cannot be null',
+    );
+  });
+
+  it('should not allow scanBarCode calls with null callback after init context', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    expect(() => media.scanBarCode(null, null)).toThrowError(
+      '[media.scanBarCode] Callback cannot be null',
+    );
+  });
+
+  it('should not allow scanBarCode calls before initialization', () => {
+    expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
+      'The library has not yet been initialized',
+    );
+  });
+
+  it('scanBarCode call in default version of platform support fails', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    let error;
+    media.scanBarCode((e: SdkError, d: string) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+  });
+
+  it('should not allow scanBarCode calls for authentication frame context', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
+      "This call is not allowed in the 'authentication' context",
+    );
+  });
+
+  it('scanBarCode call in task frameContext works', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    media.scanBarCode(emptyCallback, null);
+    let message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+  });
+
+  it('scanBarCode call in content frameContext works', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    media.scanBarCode(emptyCallback, null);
+    let message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+  });
+
+  it('scanBarCode calls with successful result', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let decodedText: string, mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+      decodedText = d;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    let response : string = 'decodedText';
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, response]
+      }
+    } as DOMMessageEvent)
+
+    expect(mediaError).toBeFalsy();
+    expect(decodedText).toBe('decodedText');
+  });
+
+  it('scanBarCode with optional barcode config calls with successful result', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let decodedText: string, mediaError: SdkError;
+    let barCodeConfig: media.BarCodeConfig = {
+      timeOutIntervalInSec: 40
+    };
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+      decodedText = d;
+    }, barCodeConfig);
+
+    let message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    let response : string = 'decodedText';
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, response]
+      }
+    } as DOMMessageEvent)
+
+    expect(mediaError).toBeFalsy();
+    expect(decodedText).not.toBeNull;
+    expect(decodedText).toBe('decodedText');
+  });
+
+  it('scanBarCode calls with error', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let decodedText: string, mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+      decodedText = d;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }]
+      }
+    } as DOMMessageEvent)
+
+    expect(decodedText).toBeFalsy();
+    expect(mediaError.errorCode).toBe(ErrorCode.OPERATION_TIMED_OUT);
+  });
+
+  it('should not allow scanBarCode calls with invalid timeOutIntervalInSec', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: any = {
+      timeOutIntervalInSec: 0
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).not.toBeNull();
+    expect(mediaError.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+  });
+
+  it('should allow scanBarCode calls when timeOutIntervalInSec is not passed in config params', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
+    let barCodeConfig: media.BarCodeConfig = {
+    };
+    let mediaError: SdkError;
+    media.scanBarCode((e: SdkError, d: string) => {
+      mediaError = e;
+    }, barCodeConfig);
+    expect(mediaError).toBeFalsy();
+  });
+
+  it('should not allow scanBarCode calls in desktop', () => {
+    desktopPlatformMock.initializeWithContext(FrameContexts.content, HostClientType.desktop);
+    let error;
+    media.scanBarCode((e: SdkError, d: string) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
   });
 });

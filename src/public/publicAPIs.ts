@@ -46,12 +46,15 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         ? GlobalVars.currentWindow.parent
         : GlobalVars.currentWindow.opener;
 
+    // Listen to messages from the parent or child frame.
+    // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
+    if (GlobalVars.parentWindow || validMessageOrigins) {
+      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
+    }
+
     if (!GlobalVars.parentWindow) {
       GlobalVars.isFramelessWindow = true;
       (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-    } else {
-      // For iFrame scenario, add listener to listen 'message'
-      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
     }
 
     try {
@@ -96,9 +99,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         settings.registerOnRemoveHandler(null);
       }
 
-      if (!GlobalVars.isFramelessWindow) {
-        GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-      }
+      GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
 
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
