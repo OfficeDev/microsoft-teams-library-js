@@ -1,7 +1,7 @@
 # Breaking Changes
 
 ## v0.0.7
-Corresponding microsoft-teams-library-js version: 1.7.0
+Corresponding microsoft-teams-library-js version: 1.9.0
 
 ### Several core API functions have been moved to 'teamsCore' namespace
 

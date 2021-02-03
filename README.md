@@ -8,10 +8,24 @@ Welcome to the teamsjs App SDK monorepo! For breaking changes, please refer to o
 git remote add upstream https://github.com/OfficeDev/microsoft-teams-library-js.git # HTTPS
 git remote add upstream git@github.com:OfficeDev/microsoft-teams-library-js.git # SSH
 
-# Do every time we want to merge
+# Do every time we want to merge (currently weekly on Tuesdays):
 git fetch upstream
+git checkout develop
+git pull
+git checkout -b <youralias>/pull-from-upstream
 git merge upstream/master
+# Address merge conflicts and commit to your branch if necessary
+git push origin head
+# Create a PR and wait for signoff and CI to pass
+git checkout develop
+git merge --ff <youralias>/pull-from-upstream
+git push origin head
+# If this push fails it's because someone else merged to develop in the meantime.
+# You can fix this with a 'git pull' and then try the push again.
+git branch -d <youralias>/pull-from-upstream
 ```
+
+Note: the reason that we merge into develop locally and then push to origin is because we only allow squash merges from PRs on GitHub. When pulling from upstream we don't want to squash the commits because then Git won't know which upstream commits are included in that merge, resulting in future merges conflicting with merges we've already done. By committing as a merge commit instead, the history is preserved and subsequent merges from upstream will only need to merge the new commits.
 
 ## Original Repo
 [https://github.com/OfficeDev/microsoft-teams-library-js](OfficeDev/microsoft-teams-library-js)
