@@ -48,6 +48,17 @@ export enum ViewerActionTypes {
  * Hide from docs.
  * ------
  */
+export enum FileViewModes {
+  Teams = 'teams',
+  Desktop = 'desktop',
+  Web = 'web',
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ */
 export interface FilePreviewParameters {
   /**
    * The developer-defined unique ID for the file.
@@ -110,6 +121,11 @@ export interface FilePreviewParameters {
    * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
    */
   viewerAction?: ViewerActionTypes;
+
+  /**
+   * Optional; indicates where the file should be viewed when opened.
+   */
+  fileViewMode?: FileViewModes;
 }
 
 /**
