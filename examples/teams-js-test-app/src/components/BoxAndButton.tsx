@@ -8,6 +8,7 @@ interface BoxAndButtonProps {
   output: string;
 }
 
+//  TODO: consider looking into a grayed out example of parameters show in the box.
 const BoxAndButton = ({
   handleClick,
   hasInput,
