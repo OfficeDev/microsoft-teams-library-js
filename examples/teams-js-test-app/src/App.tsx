@@ -25,10 +25,15 @@ const App = () => {
   const [registerAppButtonClickHandler, setRegisterAppButtonClickHandler] = React.useState("");
   const [registerAppButtonHoverEnterHandler, setRegisterAppButtonHoverEnterHandler] = React.useState("");
   const [registerAppButtonHoverLeaveHandler, setRegisterAppButtonHoverLeaveHandler] = React.useState("");
+  const [getTabInstance, setTabInstance] = React.useState("");
+  const [getMRUTabInstance, setMRUTabInstance] = React.useState("");
+  const [navigateCrossDomain, setNavigateCrossDomain] = React.useState("");
+  const [focus, setReturnFocus] = React.useState("");
 
 
   const returnContext = () => {
     let textResult = "No Context";
+    setContext(textResult);
     core.getContext((res: any) => {
       textResult = JSON.stringify(res);
       setContext(textResult);
@@ -163,6 +168,40 @@ const App = () => {
     })
   }
 
+  const returnGetTabInstances = () => {
+    let tabInfoRes = "No Tab Info";
+    teamsCore.getTabInstances((tabInfo: any) => {
+      tabInfoRes = JSON.stringify(tabInfo);
+      setTabInstance(tabInfoRes);
+    });
+  };
+
+  const returnGetMRUTabInstances = () => {
+    let tabInfoRes = "No MRU Tab Info";
+    teamsCore.getMruTabInstances((tabInfo: any) => {
+      tabInfoRes = JSON.stringify(tabInfo);
+      setMRUTabInstance(tabInfoRes);
+    });
+  };
+
+  const returnNavigateCrossDomain = (url: string) => {
+    let inputUrl = "";
+    inputUrl = JSON.stringify(url);
+    const onComplete = (status: boolean, reason?: string) => {
+      if (!status) {
+        if (reason) setNavigateCrossDomain(reason);
+      } else {
+        setNavigateCrossDomain("Completed");
+      }
+    };
+    teamsjs.navigateCrossDomain(inputUrl, onComplete);
+  };
+
+  const returnFocus = (navigateForward?: string) => {
+    setReturnFocus("Current navigateForward state is " + (navigateForward == 'true'));
+    teamsjs.returnFocus(navigateForward == 'true');
+  };
+
   return (
     <>
       <BoxAndButton
@@ -283,6 +322,34 @@ const App = () => {
         hasInput={false}
         title="Register On Remove Handler"
         name="settings.registerOnRemoveHandler"
+      />
+      <BoxAndButton
+        handleClick={returnGetTabInstances}
+        output={getTabInstance}
+        hasInput={false}
+        title="Get Tab Instance"
+        name="getTabInstance"
+      />
+      <BoxAndButton
+        handleClick={returnGetMRUTabInstances}
+        output={getMRUTabInstance}
+        hasInput={false}
+        title="Get MRU Tab Instance"
+        name="getMRUTabInstance"
+      />
+      <BoxAndButton
+        handleClick={returnNavigateCrossDomain}
+        output={navigateCrossDomain}
+        hasInput={true}
+        title="Navigate Cross Domain"
+        name="navigateCrossDomain"
+      />
+      <BoxAndButton
+        handleClick={returnFocus}
+        output={focus}
+        hasInput={true}
+        title="Return Focus"
+        name="returnFocus"
       />
     </>
   );
