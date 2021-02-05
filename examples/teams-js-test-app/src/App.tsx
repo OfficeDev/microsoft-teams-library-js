@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import {core, appInitialization, authentication, teamsCore, settings} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
+import CheckboxAndButton from "./components/CheckboxAndButton";
 
 core.initialize();
 appInitialization.notifyAppLoaded();
@@ -196,10 +197,10 @@ const App = () => {
     };
     teamsjs.navigateCrossDomain(inputUrl, onComplete);
   };
-
-  const returnFocus = (navigateForward?: string) => {
-    setReturnFocus("Current navigateForward state is " + (navigateForward == 'true'));
-    teamsjs.returnFocus(navigateForward == 'true');
+  
+  const returnFocus = (navigateForward: any) => {
+    setReturnFocus("Current navigateForward state is " + navigateForward);
+    teamsjs.returnFocus(navigateForward);
   };
 
   return (
@@ -344,12 +345,14 @@ const App = () => {
         title="Navigate Cross Domain"
         name="navigateCrossDomain"
       />
-      <BoxAndButton
+      <CheckboxAndButton
         handleClick={returnFocus}
         output={focus}
-        hasInput={true}
+        hasInput={false}
         title="Return Focus"
         name="returnFocus"
+        hasTitle={true}
+        checkBoxTitle="navigateForward:"
       />
     </>
   );
