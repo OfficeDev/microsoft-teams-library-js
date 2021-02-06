@@ -1,5 +1,4 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
 import { Communication } from '../internal/communication';
 
@@ -127,11 +126,6 @@ export namespace meetingRoom {
      */
     leaveMeeting: boolean;
   }
-
-  export function initialize(): void {
-    Communication.registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', handleMeetingRoomCapabilitiesUpdate);
-    Communication.registerHandler('meetingRoom.meetingRoomStatesUpdate', handleMeetingRoomStatesUpdate);
-  }
   /**
    * @private
    * Hide from docs
@@ -180,7 +174,13 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
+    Communication.registerHandler(
+      'meetingRoom.meetingRoomCapabilitiesUpdate',
+      (capabilities: MeetingRoomCapability) => {
+        ensureInitialized();
+        handler(capabilities);
+      },
+    );
     handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
@@ -196,21 +196,10 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.meetingRoomStatesUpdateHandler = handler;
+    Communication.registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
+      ensureInitialized();
+      handler(states);
+    });
     handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
-  }
-
-  function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {
-    if (GlobalVars.meetingRoomCapabilitiesUpdateHandler != null) {
-      ensureInitialized();
-      GlobalVars.meetingRoomCapabilitiesUpdateHandler(capabilities);
-    }
-  }
-
-  function handleMeetingRoomStatesUpdate(states: MeetingRoomState): void {
-    if (GlobalVars.meetingRoomStatesUpdateHandler != null) {
-      ensureInitialized();
-      GlobalVars.meetingRoomStatesUpdateHandler(states);
-    }
   }
 }

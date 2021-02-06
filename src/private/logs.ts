@@ -10,17 +10,6 @@ import { Communication } from '../internal/communication';
  * Hide from docs
  */
 export namespace logs {
-  export function initialize(): void {
-    Communication.registerHandler('log.request', handleGetLogRequest);
-  }
-
-  function handleGetLogRequest(): void {
-    if (GlobalVars.getLogHandler) {
-      const log: string = GlobalVars.getLogHandler();
-      Communication.sendMessageToParent('log.receive', [log]);
-    }
-  }
-
   /**
    * @private
    * Hide from docs
@@ -31,7 +20,14 @@ export namespace logs {
   export function registerGetLogHandler(handler: () => string): void {
     ensureInitialized();
 
-    GlobalVars.getLogHandler = handler;
+    if (handler) {
+      Communication.registerHandler('log.request', () => {
+        const log: string = handler();
+        Communication.sendMessageToParent('log.receive', [log]);
+      });
+    } else {
+      Communication.removeHandler('log.request');
+    }
     handler && Communication.sendMessageToParent('registerHandler', ['log.request']);
   }
 }

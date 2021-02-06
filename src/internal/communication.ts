@@ -24,16 +24,9 @@ export class Communication {
   public static initialize(callback: Function, validMessageOrigins: string[] | undefined): void {
     // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
     Communication.handlers['themeChange'] = Communication.handleThemeChange;
-    Communication.handlers['fullScreenChange'] = Communication.handleFullScreenChange;
     Communication.handlers['backButtonPress'] = Communication.handleBackButtonPress;
     Communication.handlers['load'] = Communication.handleLoad;
     Communication.handlers['beforeUnload'] = Communication.handleBeforeUnload;
-    Communication.handlers['changeSettings'] = Communication.handleChangeSettings;
-    Communication.handlers['startConversation'] = Communication.handleStartConversation;
-    Communication.handlers['closeConversation'] = Communication.handleCloseConversation;
-    Communication.handlers['appButtonClick'] = Communication.handleAppButtonClick;
-    Communication.handlers['appButtonHoverEnter'] = Communication.handleAppButtonHoverEnter;
-    Communication.handlers['appButtonHoverLeave'] = Communication.handleAppButtonHoverLeave;
 
     // Listen for messages post to our window
     Communication.messageListener = (evt: DOMMessageEvent): void => Communication.processMessage(evt);
@@ -136,38 +129,6 @@ export class Communication {
     delete Communication.handlers[name];
   }
 
-  private static handleStartConversation(
-    subEntityId: string,
-    conversationId: string,
-    channelId: string,
-    entityId: string,
-  ): void {
-    if (GlobalVars.onStartConversationHandler) {
-      GlobalVars.onStartConversationHandler({
-        subEntityId: subEntityId,
-        conversationId: conversationId,
-        channelId: channelId,
-        entityId: entityId,
-      });
-    }
-  }
-
-  private static handleCloseConversation(
-    subEntityId: string,
-    conversationId?: string,
-    channelId?: string,
-    entityId?: string,
-  ): void {
-    if (GlobalVars.onCloseConversationHandler) {
-      GlobalVars.onCloseConversationHandler({
-        subEntityId: subEntityId,
-        conversationId: conversationId,
-        channelId: channelId,
-        entityId: entityId,
-      });
-    }
-  }
-
   private static handleThemeChange(theme: string): void {
     if (GlobalVars.themeChangeHandler) {
       GlobalVars.themeChangeHandler(theme);
@@ -175,12 +136,6 @@ export class Communication {
 
     if (Communication.childWindow) {
       Communication.sendMessageEventToChild('themeChange', [theme]);
-    }
-  }
-
-  private static handleFullScreenChange(isFullScreen: boolean): void {
-    if (GlobalVars.fullScreenChangeHandler) {
-      GlobalVars.fullScreenChangeHandler(isFullScreen);
     }
   }
 
@@ -207,30 +162,6 @@ export class Communication {
 
     if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
       readyToUnload();
-    }
-  }
-
-  private static handleChangeSettings(): void {
-    if (GlobalVars.changeSettingsHandler) {
-      GlobalVars.changeSettingsHandler();
-    }
-  }
-
-  private static handleAppButtonClick(): void {
-    if (GlobalVars.appButtonClickHandler) {
-      GlobalVars.appButtonClickHandler();
-    }
-  }
-
-  private static handleAppButtonHoverEnter(): void {
-    if (GlobalVars.appButtonHoverEnterHandler) {
-      GlobalVars.appButtonHoverEnterHandler();
-    }
-  }
-
-  private static handleAppButtonHoverLeave(): void {
-    if (GlobalVars.appButtonHoverLeaveHandler) {
-      GlobalVars.appButtonHoverLeaveHandler();
     }
   }
 

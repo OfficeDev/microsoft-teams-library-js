@@ -177,8 +177,12 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
   ensureInitialized();
 
-  GlobalVars.fullScreenChangeHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['fullScreen']);
+  if (handler) {
+    Communication.registerHandler('fullScreenChange', handler);
+    Communication.sendMessageToParent('registerHandler', ['fullScreen']);
+  } else {
+    Communication.removeHandler('fullScreenChange');
+  }
 }
 
 /**
@@ -189,8 +193,12 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
 export function registerAppButtonClickHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
-  GlobalVars.appButtonClickHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonClick']);
+  if (handler) {
+    Communication.registerHandler('appButtonClick', handler);
+    Communication.sendMessageToParent('registerHandler', ['appButtonClick']);
+  } else {
+    Communication.removeHandler('appButtonClick');
+  }
 }
 
 /**
@@ -201,8 +209,12 @@ export function registerAppButtonClickHandler(handler: () => void): void {
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
-  GlobalVars.appButtonHoverEnterHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonHoverEnter']);
+  if (handler) {
+    Communication.registerHandler('appButtonHoverEnter', handler);
+    Communication.sendMessageToParent('registerHandler', ['appButtonHoverEnter']);
+  } else {
+    Communication.removeHandler('appButtonHoverEnter');
+  }
 }
 
 /**
@@ -213,8 +225,12 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
-  GlobalVars.appButtonHoverLeaveHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonHoverLeave']);
+  if (handler) {
+    Communication.registerHandler('appButtonHoverLeave', handler);
+    Communication.sendMessageToParent('registerHandler', ['appButtonHoverLeave']);
+  } else {
+    Communication.removeHandler('appButtonHoverLeave');
+  }
 }
 
 /**
@@ -263,8 +279,12 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
-  GlobalVars.changeSettingsHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['changeSettings']);
+  if (handler) {
+    Communication.registerHandler('changeSettings', handler);
+    Communication.sendMessageToParent('registerHandler', ['changeSettings']);
+  } else {
+    Communication.removeHandler('changeSettings');
+  }
 }
 
 /**
