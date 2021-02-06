@@ -33,8 +33,30 @@ export namespace conversations {
         }
       },
     );
-    GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
-    GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
+    if (openConversationRequest.onStartConversation) {
+      Communication.registerHandler(
+        'startConversation',
+        (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
+          openConversationRequest.onStartConversation({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
+      );
+    }
+    if (openConversationRequest.onCloseConversation) {
+      Communication.registerHandler(
+        'closeConversation',
+        (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
+          openConversationRequest.onCloseConversation({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
+      );
+    }
   }
 
   /**
@@ -46,7 +68,7 @@ export namespace conversations {
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
     Communication.sendMessageToParent('conversations.closeConversation');
-    GlobalVars.onCloseConversationHandler = null;
-    GlobalVars.onStartConversationHandler = null;
+    Communication.removeHandler('startConversation');
+    Communication.removeHandler('closeConversation');
   }
 }
