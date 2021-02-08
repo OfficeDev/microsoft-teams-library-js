@@ -1,7 +1,6 @@
-import { navigateBack } from '../../src/public/navigation';
-import { LoadContext } from '../public/interfaces';
 import { validOriginRegExp, version } from './constants';
 import { GlobalVars } from './globalVars';
+import { Handlers } from './handlers';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
 
 export class Communication {
@@ -10,24 +9,16 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window;
   public static childOrigin: string;
+
   private static parentMessageQueue: MessageRequest[] = [];
   private static childMessageQueue: MessageRequest[] = [];
   private static nextMessageId: number = 0;
-  private static handlers: {
-    [func: string]: Function;
-  } = {};
   private static callbacks: {
     [id: number]: Function;
   } = {};
   private static messageListener: Function;
 
   public static initialize(callback: Function, validMessageOrigins: string[] | undefined): void {
-    // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-    Communication.handlers['themeChange'] = Communication.handleThemeChange;
-    Communication.handlers['backButtonPress'] = Communication.handleBackButtonPress;
-    Communication.handlers['load'] = Communication.handleLoad;
-    Communication.handlers['beforeUnload'] = Communication.handleBeforeUnload;
-
     // Listen for messages post to our window
     Communication.messageListener = (evt: DOMMessageEvent): void => Communication.processMessage(evt);
 
@@ -118,50 +109,6 @@ export class Communication {
 
     if (callback) {
       Communication.callbacks[request.id] = callback;
-    }
-  }
-
-  public static registerHandler(name: string, handler: Function): void {
-    Communication.handlers[name] = handler;
-  }
-
-  public static removeHandler(name: string): void {
-    delete Communication.handlers[name];
-  }
-
-  private static handleThemeChange(theme: string): void {
-    if (GlobalVars.themeChangeHandler) {
-      GlobalVars.themeChangeHandler(theme);
-    }
-
-    if (Communication.childWindow) {
-      Communication.sendMessageEventToChild('themeChange', [theme]);
-    }
-  }
-
-  private static handleBackButtonPress(): void {
-    if (!GlobalVars.backButtonPressHandler || !GlobalVars.backButtonPressHandler()) {
-      navigateBack();
-    }
-  }
-
-  private static handleLoad(context: LoadContext): void {
-    if (GlobalVars.loadHandler) {
-      GlobalVars.loadHandler(context);
-    }
-
-    if (Communication.childWindow) {
-      Communication.sendMessageEventToChild('load', [context]);
-    }
-  }
-
-  private static handleBeforeUnload(): void {
-    const readyToUnload = (): void => {
-      Communication.sendMessageToParent('readyToUnload', []);
-    };
-
-    if (!GlobalVars.beforeUnloadHandler || !GlobalVars.beforeUnloadHandler(readyToUnload)) {
-      readyToUnload();
     }
   }
 
@@ -265,11 +212,7 @@ export class Communication {
     } else if ('func' in evt.data && typeof evt.data.func === 'string') {
       // Delegate the request to the proper handler
       const message = evt.data as MessageRequest;
-      const handler = Communication.handlers[message.func];
-      if (handler) {
-        // We don't expect any handler to respond at this point
-        handler.apply(this, message.args);
-      }
+      Handlers.callHandler(message.func, message.args);
     }
   }
 
@@ -281,12 +224,9 @@ export class Communication {
     if ('id' in evt.data && 'func' in evt.data) {
       // Try to delegate the request to the proper handler, if defined
       const message = evt.data as MessageRequest;
-      const handler = message.func ? Communication.handlers[message.func] : null;
-      if (handler) {
-        const result = handler.apply(this, message.args);
-        if (typeof result !== 'undefined') {
-          Communication.sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
-        }
+      const [called, result] = Handlers.callHandler(message.func, message.args);
+      if (called && typeof result !== 'undefined') {
+        Communication.sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
       } else {
         // No handler, proxy to parent
         // tslint:disable-next-line:no-any

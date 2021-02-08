@@ -2,6 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -20,7 +21,7 @@ export class ChildAppWindow implements IAppWindow {
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Communication.registerHandler('messageForParent', listener);
+      Handlers.registerHandler('messageForParent', listener);
     }
   }
 }
@@ -43,7 +44,7 @@ export class ParentAppWindow implements IAppWindow {
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Communication.registerHandler('messageForChild', listener);
+      Handlers.registerHandler('messageForChild', listener);
     }
   }
 }

@@ -10,6 +10,7 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication } from '../internal/communication';
 import { menus } from './menus';
+import { Handlers } from '../internal/handlers';
 
 export function initializePrivateApis(): void {
   menus.initialize();
@@ -172,7 +173,7 @@ export function registerCustomHandler(
   ) => any[],
 ): void {
   ensureInitialized();
-  Communication.registerHandler(actionName, (...args: any[]) => {
+  Handlers.registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
   });
 }

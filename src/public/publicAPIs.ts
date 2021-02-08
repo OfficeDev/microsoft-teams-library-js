@@ -16,6 +16,7 @@ import { FrameContexts } from './constants';
 import { Communication } from '../internal/communication';
 import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
+import { Handlers } from '../internal/handlers';
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -31,6 +32,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
+    Handlers.initialize();
     Communication.initialize(
       (
         context: FrameContexts,
@@ -165,8 +167,7 @@ export function getContext(callback: (context: Context) => void): void {
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
-  GlobalVars.themeChangeHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['themeChange']);
+  Handlers.registerOnThemeChangeHandler(handler);
 }
 
 /**
@@ -176,13 +177,7 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
   ensureInitialized();
-
-  if (handler) {
-    Communication.registerHandler('fullScreenChange', handler);
-    Communication.sendMessageToParent('registerHandler', ['fullScreen']);
-  } else {
-    Communication.removeHandler('fullScreenChange');
-  }
+  Handlers.registerHandler('fullScreenChange', handler);
 }
 
 /**
@@ -192,13 +187,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  if (handler) {
-    Communication.registerHandler('appButtonClick', handler);
-    Communication.sendMessageToParent('registerHandler', ['appButtonClick']);
-  } else {
-    Communication.removeHandler('appButtonClick');
-  }
+  Handlers.registerHandler('appButtonClick', handler);
 }
 
 /**
@@ -208,13 +197,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
  */
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  if (handler) {
-    Communication.registerHandler('appButtonHoverEnter', handler);
-    Communication.sendMessageToParent('registerHandler', ['appButtonHoverEnter']);
-  } else {
-    Communication.removeHandler('appButtonHoverEnter');
-  }
+  Handlers.registerHandler('appButtonHoverEnter', handler);
 }
 
 /**
@@ -224,13 +207,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
  */
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  if (handler) {
-    Communication.registerHandler('appButtonHoverLeave', handler);
-    Communication.sendMessageToParent('registerHandler', ['appButtonHoverLeave']);
-  } else {
-    Communication.removeHandler('appButtonHoverLeave');
-  }
+  Handlers.registerHandler('appButtonHoverLeave', handler);
 }
 
 /**
@@ -242,9 +219,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
  */
 export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
-
-  GlobalVars.backButtonPressHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['backButton']);
+  Handlers.registerBackButtonHandler(handler);
 }
 
 /**
@@ -254,9 +229,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   ensureInitialized();
-
-  GlobalVars.loadHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['load']);
+  Handlers.registerOnLoadHandler(handler);
 }
 
 /**
@@ -267,9 +240,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   ensureInitialized();
-
-  GlobalVars.beforeUnloadHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['beforeUnload']);
+  Handlers.registerBeforeUnloadHandler(handler);
 }
 
 /**
@@ -278,13 +249,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  if (handler) {
-    Communication.registerHandler('changeSettings', handler);
-    Communication.sendMessageToParent('registerHandler', ['changeSettings']);
-  } else {
-    Communication.removeHandler('changeSettings');
-  }
+  Handlers.registerHandler('changeSettings', handler);
 }
 
 /**

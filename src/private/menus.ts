@@ -1,5 +1,6 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -91,9 +92,9 @@ export namespace menus {
   let viewConfigItemPressHandler: (id: string) => boolean;
 
   export function initialize(): void {
-    Communication.registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress);
-    Communication.registerHandler('actionMenuItemPress', handleActionMenuItemPress);
-    Communication.registerHandler('setModuleView', handleViewConfigItemPress);
+    Handlers.registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
+    Handlers.registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
+    Handlers.registerHandler('setModuleView', handleViewConfigItemPress, false);
   }
   /**
    * Registers list of view configurations and it's handler.
