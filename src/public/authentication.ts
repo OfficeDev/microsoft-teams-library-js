@@ -2,6 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType } from './constants';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -12,8 +13,8 @@ export namespace authentication {
   let authWindowMonitor: number;
 
   export function initialize(): void {
-    Communication.registerHandler('authentication.authenticate.success', handleSuccess);
-    Communication.registerHandler('authentication.authenticate.failure', handleFailure);
+    Handlers.registerHandler('authentication.authenticate.success', handleSuccess, false);
+    Handlers.registerHandler('authentication.authenticate.failure', handleFailure, false);
   }
 
   /**
@@ -166,8 +167,8 @@ export namespace authentication {
       clearInterval(authWindowMonitor);
       authWindowMonitor = 0;
     }
-    Communication.removeHandler('initialize');
-    Communication.removeHandler('navigateCrossDomain');
+    Handlers.removeHandler('initialize');
+    Handlers.removeHandler('navigateCrossDomain');
   }
 
   function startAuthenticationWindowMonitor(): void {
@@ -192,14 +193,14 @@ export namespace authentication {
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    Communication.registerHandler('initialize', () => {
+    Handlers.registerHandler('initialize', () => {
       return [FrameContexts.authentication, GlobalVars.hostClientType];
     });
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    Communication.registerHandler('navigateCrossDomain', () => {
+    Handlers.registerHandler('navigateCrossDomain', () => {
       return false;
     });
   }

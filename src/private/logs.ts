@@ -1,6 +1,6 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 /**
  * Namespace to interact with the logging part of the SDK.
@@ -21,13 +21,12 @@ export namespace logs {
     ensureInitialized();
 
     if (handler) {
-      Communication.registerHandler('log.request', () => {
+      Handlers.registerHandler('log.request', () => {
         const log: string = handler();
         Communication.sendMessageToParent('log.receive', [log]);
       });
     } else {
-      Communication.removeHandler('log.request');
+      Handlers.removeHandler('log.request');
     }
-    handler && Communication.sendMessageToParent('registerHandler', ['log.request']);
   }
 }

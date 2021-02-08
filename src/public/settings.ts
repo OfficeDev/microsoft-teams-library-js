@@ -2,6 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -12,8 +13,8 @@ export namespace settings {
   let removeHandler: (evt: RemoveEvent) => void;
 
   export function initialize(): void {
-    Communication.registerHandler('settings.save', handleSave);
-    Communication.registerHandler('settings.remove', handleRemove);
+    Handlers.registerHandler('settings.save', handleSave, false);
+    Handlers.registerHandler('settings.remove', handleRemove, false);
   }
 
   /**

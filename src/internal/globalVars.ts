@@ -1,4 +1,3 @@
-import { ConversationResponse, LoadContext } from '../public/interfaces';
 import { FrameContexts } from '../public';
 
 export class GlobalVars {
@@ -12,8 +11,4 @@ export class GlobalVars {
   public static hostClientType: string;
   public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled: boolean = false;
-  public static themeChangeHandler: (theme: string) => void;
-  public static backButtonPressHandler: () => boolean;
-  public static loadHandler: (context: LoadContext) => void;
-  public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }

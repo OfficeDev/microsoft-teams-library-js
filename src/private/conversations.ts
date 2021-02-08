@@ -1,8 +1,8 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -34,7 +34,7 @@ export namespace conversations {
       },
     );
     if (openConversationRequest.onStartConversation) {
-      Communication.registerHandler(
+      Handlers.registerHandler(
         'startConversation',
         (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
           openConversationRequest.onStartConversation({
@@ -46,7 +46,7 @@ export namespace conversations {
       );
     }
     if (openConversationRequest.onCloseConversation) {
-      Communication.registerHandler(
+      Handlers.registerHandler(
         'closeConversation',
         (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
           openConversationRequest.onCloseConversation({
@@ -68,7 +68,7 @@ export namespace conversations {
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
     Communication.sendMessageToParent('conversations.closeConversation');
-    Communication.removeHandler('startConversation');
-    Communication.removeHandler('closeConversation');
+    Handlers.removeHandler('startConversation');
+    Handlers.removeHandler('closeConversation');
   }
 }

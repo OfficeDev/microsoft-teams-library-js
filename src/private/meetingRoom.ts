@@ -1,6 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from '../public/interfaces';
 import { Communication } from '../internal/communication';
+import { Handlers } from '../internal/handlers';
 
 export namespace meetingRoom {
   /**
@@ -174,14 +175,11 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    Communication.registerHandler(
-      'meetingRoom.meetingRoomCapabilitiesUpdate',
-      (capabilities: MeetingRoomCapability) => {
-        ensureInitialized();
-        handler(capabilities);
-      },
-    );
-    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
+    Handlers.registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
+      ensureInitialized();
+      handler(capabilities);
+    });
+    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -196,10 +194,10 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    Communication.registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
+    Handlers.registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized();
       handler(states);
     });
-    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
+    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 }
