@@ -13,6 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
+  requestDefaultFileViewModeChange,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -689,4 +690,29 @@ describe('MicrosoftTeams-privateAPIs', () => {
       expect(exitFullscreenMessage).not.toBeNull();
     });
   });
+
+  describe('requestfileViewModePreferenceChange', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+      requestDefaultFileViewModeChange(() => {
+          return;
+        }, 'xlsx'),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should allow a valid parameter', () => {
+      utils.initializeWithContext('content');
+
+      let callbackValue: string = "";
+      requestDefaultFileViewModeChange((param) => {
+        callbackValue = param;
+      }, 'xlsx');
+
+      let requestDefaultFileViewModeChangeMessage = utils.findMessageByFunc('requestDefaultFileViewModeChange');
+      expect(requestDefaultFileViewModeChangeMessage).not.toBeNull();
+      utils.respondToMessage(requestDefaultFileViewModeChangeMessage, 'web');
+      expect(callbackValue).toBe('web');
+    });
+  });
+
 });

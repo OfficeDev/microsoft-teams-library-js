@@ -7,6 +7,7 @@ import {
   FilePreviewParameters,
   TeamInstanceParameters,
   UserJoinedTeamsInformation,
+  FileViewModes,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 
@@ -205,5 +206,25 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
   ensureInitialized();
 
   const messageId = sendMessageRequestToParent('getConfigSetting', [key]);
+  GlobalVars.callbacks[messageId] = callback;
+}
+
+/**
+ * @private
+ * Hide from docs
+ * ------
+ * Allows an app to request an update to the default file view mode
+ * @param callback The callback is invoked with updatedFileViewMode. Missing updatedFileViewMode indicates dialog was dismissed.
+ * @param fileType Type of file on which open fileViewMode Preference is being requested.
+ * @param serviceName Service/App name requesting preference change.
+ */
+export function requestDefaultFileViewModeChange(
+  callback: (updatedFileViewMode?: FileViewModes) => void,
+  fileType: string,
+  serviceName?: string,
+): void {
+  ensureInitialized();
+
+  const messageId = sendMessageRequestToParent('requestDefaultFileViewModeChange', [fileType, serviceName]);
   GlobalVars.callbacks[messageId] = callback;
 }
