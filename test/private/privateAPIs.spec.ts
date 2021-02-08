@@ -691,7 +691,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     });
   });
 
-  describe('requestfileViewModePreferenceChange', () => {
+  describe('requestDefaultFileViewModeChange', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
       requestDefaultFileViewModeChange(() => {
