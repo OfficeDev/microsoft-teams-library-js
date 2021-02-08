@@ -54,7 +54,7 @@ describe('remoteCamera', () => {
       );
     });
     it('should successfully get list of participants with controllable cameras', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedParticipant: remoteCamera.Participant[] | null = null;
       let returnedSdkError: SdkError | null = null;
       const callback = (sdkError: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
@@ -77,7 +77,7 @@ describe('remoteCamera', () => {
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedParticipant: remoteCamera.Participant[] | null = null;
       let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
@@ -122,7 +122,7 @@ describe('remoteCamera', () => {
       );
     });
     it('should request control of remote camera', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedRequestResponse: boolean | null = null;
       let returnedSdkError: SdkError | null = null;
       const callbackMock = (sdkError: SdkError | null, requestResult: boolean | null): void => {
@@ -146,7 +146,7 @@ describe('remoteCamera', () => {
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedRequestResponse: boolean | null = null;
       let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
@@ -191,7 +191,7 @@ describe('remoteCamera', () => {
       );
     });
     it('should send control command to the remote camera', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const callbackMock = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
@@ -211,7 +211,7 @@ describe('remoteCamera', () => {
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
@@ -245,7 +245,7 @@ describe('remoteCamera', () => {
       );
     });
     it('should terminate remote camera control session', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const callback = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
@@ -264,7 +264,7 @@ describe('remoteCamera', () => {
       expect(returnedSdkError).toBeNull();
     });
     it('should return an error object if response has error', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
@@ -295,13 +295,13 @@ describe('remoteCamera', () => {
       );
     });
     it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnCapableParticipantsChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null',
       );
     });
     it('should successfully register a handler for when the capable participants change', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let CapableParticipants: remoteCamera.Participant[];
@@ -325,13 +325,13 @@ describe('remoteCamera', () => {
       );
     });
     it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnErrorHandler(null)).toThrowError(
         '[remoteCamera.registerOnErrorHandler] Handler cannot be null',
       );
     });
     it('should successfully register a handler for when the handler encounters an error', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let handlerError: remoteCamera.ErrorReason;
@@ -355,13 +355,13 @@ describe('remoteCamera', () => {
       );
     });
     it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnDeviceStateChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null',
       );
     });
     it('should successfully register a handler for when the device state changes', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let deviceState: remoteCamera.DeviceState;
@@ -385,13 +385,13 @@ describe('remoteCamera', () => {
       );
     });
     it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnSessionStatusChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null',
       );
     });
     it('should successfully register a handler for when the session status changes', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let sessionStatus: remoteCamera.SessionStatus;
