@@ -212,18 +212,18 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
  * @private
  * Hide from docs
  * ------
- * Allows an app to request an update to the default file view mode
+ * Allows an app to request an update to the preffered file view mode
  * @param callback The callback is invoked with updatedFileViewMode. Missing updatedFileViewMode indicates dialog was dismissed.
  * @param fileType Type of file on which open fileViewMode Preference is being requested.
  * @param serviceName Service/App name requesting preference change.
  */
-export function requestDefaultFileViewModeChange(
+export function requestPreferredFileViewModeChange(
   callback: (updatedFileViewMode: FileViewModes | '') => void,
   fileType: string,
   serviceName?: string,
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('requestDefaultFileViewModeChange', [fileType, serviceName]);
+  const messageId = sendMessageRequestToParent('requestPreferredFileViewModeChange', [fileType, serviceName]);
   GlobalVars.callbacks[messageId] = callback;
 }
