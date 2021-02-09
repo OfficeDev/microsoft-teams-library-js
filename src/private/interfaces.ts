@@ -121,11 +121,6 @@ export interface FilePreviewParameters {
    * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
    */
   viewerAction?: ViewerActionTypes;
-
-  /**
-   * Optional; indicates where the file should be viewed when opened.
-   */
-  fileViewMode?: FileViewModes;
 }
 
 /**

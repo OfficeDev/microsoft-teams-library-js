@@ -308,12 +308,11 @@ describe('MicrosoftTeams-privateAPIs', () => {
       editFile: true,
       subEntityId: 'someSubEntityId',
       viewerAction: ViewerActionTypes.view,
-      fileViewMode: FileViewModes.Web,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(13);
+    expect(message.args.length).toBe(12);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -326,7 +325,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
-    expect(message.args[12]).toBe('web');
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
