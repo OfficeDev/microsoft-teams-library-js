@@ -12,11 +12,13 @@ import { Communication } from '../internal/communication';
 import { menus } from './menus';
 import { meetingRoom } from './meetingRoom';
 import { logs } from './logs';
+import { remoteCamera } from './remoteCamera';
 
 export function initializePrivateApis(): void {
   logs.initialize();
   meetingRoom.initialize();
   menus.initialize();
+  remoteCamera.initialize();
 }
 
 /**
