@@ -84,19 +84,11 @@ export class Communication {
   /**
    * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
    */
-  public static sendMessageToParent(actionName: string): void;
+  public static sendMessageToParent(actionName: string, callback?: Function): void;
   /**
    * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
    */
-  public static sendMessageToParent(actionName: string, args: any[]): void;
-  /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string, callback: Function): void;
-  /**
-   * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
-   */
-  public static sendMessageToParent(actionName: string, args: any[], callback: Function): void;
+  public static sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
   public static sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
     let args: any[] | undefined;
     if (argsOrCallback instanceof Function) {
