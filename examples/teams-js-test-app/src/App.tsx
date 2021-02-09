@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {core, appInitialization, authentication, teamsCore, settings} from "@microsoft/teamsjs-app-sdk";
+import {core, appInitialization, authentication, teamsCore, settings, media} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 import CheckboxAndButton from "./components/CheckboxAndButton";
 
@@ -30,8 +30,15 @@ const App = () => {
   const [getMRUTabInstance, setMRUTabInstance] = React.useState("");
   const [navigateCrossDomain, setNavigateCrossDomain] = React.useState("");
   const [focus, setReturnFocus] = React.useState("");
-
-
+  const [getCaptureImage, setCaptureImage] = React.useState("");
+  const [getSelectMedia, setSelectMedia] = React.useState("");
+  const [getGetMedia, setGetMedia] = React.useState("");
+  const [getViewImagesWithId, setViewImagesWithId] = React.useState("");
+  const [getViewImagesWithUrls, setViewImagesWithUrls] = React.useState("");
+  const [getGetLocation, setGetLocation] = React.useState("");
+  const [getShowLocation, setShowLocation] = React.useState("");
+  const [getMediaScanBarCode, setMediaScanBarCode] = React.useState("");
+  
   const returnContext = () => {
     let textResult = "No Context";
     setContext(textResult);
@@ -203,6 +210,152 @@ const App = () => {
     teamsjs.returnFocus(navigateForward);
   };
 
+  const returnCaptureImage = () => {
+    setCaptureImage("App SDK call returnCaptureImage() was called");
+    const callback = (error: teamsjs.SdkError, files: media.File[]) => {
+      if (error) {
+        setCaptureImage(error.errorCode.toString + " " + error.message);
+        return;
+      } 
+      const file: media.File = files[0];
+      let content: string = "";
+      let len = 20;
+      if (file.content) {
+        len = Math.min(len, file.content.length);
+        content = file.content.substr(0, len);
+      }
+      let output = "format: " + file.format + ", size: " + file.size + ", mimeType: " + file.mimeType + ", content: " + content;
+      setCaptureImage(output);
+    };
+    media.captureImage(callback);
+  };
+
+  const returnSelectMedia = (mediaInputs: any) => {
+    setSelectMedia("App SDK call returnSelectMedia() was called");
+    const callback = (error: teamsjs.SdkError, medias: media.Media[]) => {
+      if (error) {
+        setSelectMedia(error.errorCode.toString + " " + error.message);
+        return;
+      }
+      let message = "";
+      for (let i = 0; i < medias.length; i++) {
+        const media: media.Media = medias[i];
+        let preview: string = "";
+        let len = 20;
+        if (media.preview) {
+          len = Math.min(len, media.preview.length);
+          preview = media.preview.substr(0, len);
+        }
+        message += "[format: " + media.format + ", size: " + media.size 
+          + ", mimeType: " + media.mimeType + ", content: " + media.content
+          + ", preview: " + preview + "],"
+          setSelectMedia(message);
+      }
+    };
+    media.selectMedia(mediaInputs, callback);
+  };
+
+  const returnGetMedia = (inputParams: any) => {
+    setGetMedia("App SDK call returnGetMedia() was called");
+    media.selectMedia(inputParams, (error: teamsjs.SdkError, medias: media.Media[]) => {
+      if (error) {
+        setGetMedia(error.errorCode.toString + " " + error.message);
+        return;
+      }
+      const media: media.Media = medias[0] as media.Media;
+      media.getMedia((gmErr: teamsjs.SdkError, blob: Blob) => {
+        if (gmErr) {
+          setGetMedia(gmErr.errorCode.toString + " " + gmErr.message);
+          return;
+        }
+        var reader = new FileReader();
+        reader.readAsDataURL(blob); 
+        reader.onloadend = () => {
+          if (reader.result) {
+            setGetMedia("Received Blob");
+          }
+        }
+      });
+    });
+  };
+
+  const returnViewImagesWithId = (selectMediaInputs: any) => {
+    setViewImagesWithId("App SDK call returnViewImagesWithId() was called");
+    media.selectMedia(selectMediaInputs, (err: teamsjs.SdkError, medias: media.Media[]) => {
+      if (err) {
+        setViewImagesWithId(err.errorCode.toString + " " + err.message);
+        return;
+      }
+      const urlList: media.ImageUri[] = [];
+      for (let i = 0; i < medias.length; i++) {
+        const media = medias[i];
+        urlList.push({
+          value: media.content,
+          type: 1 //teamsjs.ImageUriType.ID
+        } as media.ImageUri)
+      }
+      media.viewImages(urlList, (gmErr?: teamsjs.SdkError) => {
+        if (gmErr) {
+          setViewImagesWithId(gmErr.errorCode.toString + " " + gmErr.message);
+          return;
+        }
+        setViewImagesWithId("Success");
+      });
+    });
+  };
+
+  const returnViewImagesWithUrls = (imageUrls: any) => {
+    setViewImagesWithUrls("App SDK call returnViewImagesWithUrls() was called");
+    const urlList: media.ImageUri[] = [];
+    for (let i = 0; i < imageUrls.length; i++) {
+      const imageUrl = imageUrls[i];
+      urlList.push({
+        value: imageUrl,
+        type: 2 //teamsjs.ImageUriType.URL
+      } as media.ImageUri)
+    }
+    media.viewImages(urlList, (err?: teamsjs.SdkError) => {
+      if (err) {
+        setViewImagesWithUrls(err.errorCode.toString + " " + err.message);
+        return;
+      }
+      setViewImagesWithUrls("Success");
+    });
+  };
+
+  const returnGetLocation = (locationProps: any) => {
+    setGetLocation("App SDK call returnGetLocation() was called");
+    teamsjs.location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location) => {
+      if (err) {
+        setGetLocation(err.errorCode.toString + " " + err.message);
+        return;
+      }
+      setGetLocation(JSON.stringify(location));
+    });
+  };
+
+  const returnShowLocation = (location: any) => {
+    setShowLocation("App SDK call returnShowLocation() was called");
+    teamsjs.location.showLocation(location, (err: teamsjs.SdkError, result: boolean) => {
+      if (err) {
+        setShowLocation(err.errorCode.toString + " " + err.message);
+        return;
+      }
+      setShowLocation("result: " + result);
+    });
+  };
+
+  const returnMediaScanBarCode = (scanBarCodeConfig: any) => {
+    setMediaScanBarCode("App SDK call returnMediaScanBarCode() was called");
+    media.scanBarCode((err: teamsjs.SdkError, result: string) => {
+      if (err) {
+        setMediaScanBarCode(err.errorCode.toString + " " + err.message);
+        return;
+      }
+      setMediaScanBarCode("result: " + result);
+    }, scanBarCodeConfig);
+  };
+
   return (
     <>
       <BoxAndButton
@@ -353,6 +506,62 @@ const App = () => {
         name="returnFocus"
         hasTitle={true}
         checkBoxTitle="navigateForward:"
+      />
+      <BoxAndButton
+        handleClick={returnCaptureImage}
+        output={getCaptureImage}
+        hasInput={false}
+        title="Capture Image"
+        name="CaptureImage"
+      />
+      <BoxAndButton
+        handleClick={returnSelectMedia}
+        output={getSelectMedia}
+        hasInput={true}
+        title="Select Media"
+        name="selectMedia"
+      />
+      <BoxAndButton
+        handleClick={returnGetMedia}
+        output={getGetMedia}
+        hasInput={true}
+        title="Get Media"
+        name="getMedia"
+      />
+      <BoxAndButton
+        handleClick={returnViewImagesWithId}
+        output={getViewImagesWithId}
+        hasInput={true}
+        title="View Images With Id"
+        name="viewImagesWithId"
+      />
+      <BoxAndButton
+        handleClick={returnViewImagesWithUrls}
+        output={getViewImagesWithUrls}
+        hasInput={true}
+        title="View Images With Urls"
+        name="viewImagesWithUrls"
+      />
+      <BoxAndButton
+        handleClick={returnGetLocation}
+        output={getGetLocation}
+        hasInput={true}
+        title="Get Location"
+        name="getLocation"
+      />
+      <BoxAndButton
+        handleClick={returnShowLocation}
+        output={getShowLocation}
+        hasInput={true}
+        title="Show Location"
+        name="showLocation"
+      />
+      <BoxAndButton
+        handleClick={returnMediaScanBarCode}
+        output={getMediaScanBarCode}
+        hasInput={true}
+        title="Media Scan Bar Code"
+        name="mediaScanBarCode"
       />
     </>
   );
