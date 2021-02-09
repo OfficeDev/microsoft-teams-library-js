@@ -1,3 +1,4 @@
+import { peoplepicker } from '../public';
 import { media } from '../public/media';
 
 /**
@@ -86,6 +87,32 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
       barCodeConfig.timeOutIntervalInSec > 60
     ) {
       return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Returns true if the people picker params are valid and false otherwise
+ */
+export function validatePeoplePickerInput(peoplePickerInputs: peoplepicker.PeoplePickerInputs): boolean {
+  if (peoplePickerInputs) {
+    if (peoplePickerInputs.title) {
+      if (typeof peoplePickerInputs.title !== 'string') {
+        return false;
+      }
+    }
+
+    if (peoplePickerInputs.setSelected) {
+      if (typeof peoplePickerInputs.setSelected !== 'object') {
+        return false;
+      }
+    }
+
+    if (peoplePickerInputs.openOrgWideSearchInChatOrChannel) {
+      if (typeof peoplePickerInputs.openOrgWideSearchInChatOrChannel !== 'boolean') {
+        return false;
+      }
     }
   }
   return true;

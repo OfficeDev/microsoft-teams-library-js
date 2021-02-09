@@ -2,13 +2,14 @@ import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isAPISupportedByPlatform, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
+import { validatePeoplePickerInput } from '../internal/mediaUtil';
 
 export namespace peoplepicker {
   export const peoplePickerRequiredVersion = '2.0.0';
 
-  export function pickPeople(
-    peoplePickerInputs: PeoplePickerInputs,
+  export function launchPeoplePicker(
     callback: (error: SdkError, people: string[]) => void,
+    peoplePickerInputs?: PeoplePickerInputs,
   ): void {
     if (!callback) {
       throw new Error('[people picker] Callback cannot be null');
@@ -27,8 +28,12 @@ export namespace peoplepicker {
       return;
     }
 
-    const params = [peoplePickerInputs];
-    const messageId = sendMessageRequestToParent('pickPeople', params);
+    if (!validatePeoplePickerInput(peoplePickerInputs)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput, null);
+      return;
+    }
+    const messageId = sendMessageRequestToParent('peoplepicker.launchPeoplePicker', [peoplePickerInputs]);
 
     GlobalVars.callbacks[messageId] = callback;
   }
@@ -41,8 +46,6 @@ export namespace peoplepicker {
 
     setSelected?: string[];
 
-    openOrgWideSearch?: boolean;
-
-    excludeBotsInChatOrChannel?: boolean;
+    openOrgWideSearchInChatOrChannel?: boolean;
   }
 }
