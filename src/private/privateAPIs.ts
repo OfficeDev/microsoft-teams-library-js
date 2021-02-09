@@ -218,7 +218,7 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
  * @param serviceName Service/App name requesting preference change.
  */
 export function requestDefaultFileViewModeChange(
-  callback: (updatedFileViewMode?: FileViewModes) => void,
+  callback: (updatedFileViewMode: FileViewModes | '') => void,
   fileType: string,
   serviceName?: string,
 ): void {
