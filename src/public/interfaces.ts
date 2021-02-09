@@ -158,6 +158,15 @@ export interface LocaleInfo {
   longTime: string;
 }
 
+/**
+ * Allowed user file open preferences
+ */
+export enum FileOpenPreference {
+  Teams = 'teams',
+  Desktop = 'desktop',
+  Web = 'web',
+}
+
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
@@ -394,6 +403,11 @@ export interface Context {
    * Time when the user clicked on the tab
    */
   userClickTime?: number;
+
+  /**
+   * Where the user prefers the file to be opened from by default during file open
+   */
+  userFileOpenPreference?: FileOpenPreference;
 }
 
 export interface DeepLinkParameters {

@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
@@ -280,6 +280,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      userFileOpenPreference: FileOpenPreference.Web,
     };
 
     // Get many responses to the same message
