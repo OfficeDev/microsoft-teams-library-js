@@ -11,6 +11,7 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication } from '../internal/communication';
 import { menus } from './menus';
 import { Handlers } from '../internal/handlers';
+import { remoteCamera } from './remoteCamera';
 
 export function initializePrivateApis(): void {
   menus.initialize();
