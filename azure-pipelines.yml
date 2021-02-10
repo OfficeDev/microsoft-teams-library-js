@@ -54,7 +54,7 @@ steps:
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
     ArtifactName: "teamsjs-test-app"
