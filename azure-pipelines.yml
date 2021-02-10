@@ -70,7 +70,12 @@ steps:
     package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
 
 - task: Yarn@3
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'Manual'))
+  condition: and(
+                  eq(variables['Build.SourceBranch'], 'refs/heads/main'), 
+                  in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), 
+                  ne(variables['Build.Reason'], 'PullRequest'), 
+                  ne(variables['Build.Reason'], 'Manual')
+                )
   inputs:
     Arguments: 'publish-sdk'
   displayName: 'yarn publish-sdk'
