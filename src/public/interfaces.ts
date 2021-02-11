@@ -162,7 +162,7 @@ export interface LocaleInfo {
  * Allowed user file open preferences
  */
 export enum FileOpenPreference {
-  InApp = 'InApp',
+  InApp = 'inApp',
   Desktop = 'desktop',
   Web = 'web',
 }
