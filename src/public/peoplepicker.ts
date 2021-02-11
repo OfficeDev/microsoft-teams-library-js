@@ -54,7 +54,7 @@ export namespace peoplepicker {
   export interface PeoplePickerInputs {
     /**
      * Optional; Set title for the people picker
-     * Default value is
+     * Default value is "Add people"
      */
     title?: string;
 
