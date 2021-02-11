@@ -37,7 +37,7 @@ export namespace peoplePicker {
       callback(invalidInput, null);
       return;
     }
-    const messageId = sendMessageRequestToParent('peoplepicker.launchPeoplePicker', [peoplePickerInputs]);
+    const messageId = sendMessageRequestToParent('peoplePicker.launchPeoplePicker', [peoplePickerInputs]);
 
     GlobalVars.callbacks[messageId] = callback;
   }
