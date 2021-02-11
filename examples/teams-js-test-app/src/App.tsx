@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {core, appInitialization, authentication, tasks, teamsCore, settings, media} from "@microsoft/teamsjs-app-sdk";
+import {core, appInitialization, authentication, tasks, teamsCore, settings, media, conversations} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 import CheckboxAndButton from "./components/CheckboxAndButton";
 
@@ -45,6 +45,12 @@ const App = () => {
   const [openFilePreview, setOpenFilePreview] = React.useState("");
   const [getChatMembers, setGetChatMembers] = React.useState("");
   const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState("");
+  const [registerBeforeUnload, setRegisterBeforeUnload] = React.useState("");
+  const [addStates, setAddStates] = React.useState("");
+  const [totalStates, setTotalStates] = React.useState(0);
+  const [registerBackButtonHandler, setRegisterBackButtonHandler] = React.useState("");
+  const [openConversation, setOpenConversation] = React.useState("");
+  const [closeConversation, setCloseConversation] = React.useState("");
   
   const returnContext = () => {
     let textResult = "No Context";
@@ -88,7 +94,7 @@ const App = () => {
     // TODO: return a feedback for users 
   };
 
-  const returnAuthenticationNotifyFailure = (reason?: string, callbackUrl?: string) => {
+  const returnAuthenticationNotifyFailure = (reason?: string, callbackUrl?: string) => {
     authentication.notifyFailure(reason, callbackUrl);
      // TODO: return a feedback for users 
   };
@@ -218,7 +224,7 @@ const App = () => {
   };
 
   const returnCaptureImage = () => {
-    setCaptureImage("App SDK call returnCaptureImage() was called");
+    setCaptureImage("App SDK call captureImage() was called");
     const callback = (error: teamsjs.SdkError, files: media.File[]) => {
       if (error) {
         setCaptureImage(error.errorCode.toString + " " + error.message);
@@ -238,7 +244,7 @@ const App = () => {
   };
 
   const returnSelectMedia = (mediaInputs: any) => {
-    setSelectMedia("App SDK call returnSelectMedia() was called");
+    setSelectMedia("App SDK call selectMedia() was called");
     const callback = (error: teamsjs.SdkError, medias: media.Media[]) => {
       if (error) {
         setSelectMedia(error.errorCode.toString + " " + error.message);
@@ -263,7 +269,7 @@ const App = () => {
   };
 
   const returnGetMedia = (inputParams: any) => {
-    setGetMedia("App SDK call returnGetMedia() was called");
+    setGetMedia("App SDK call getMedia() was called");
     media.selectMedia(inputParams, (error: teamsjs.SdkError, medias: media.Media[]) => {
       if (error) {
         setGetMedia(error.errorCode.toString + " " + error.message);
@@ -287,7 +293,7 @@ const App = () => {
   };
 
   const returnViewImagesWithId = (selectMediaInputs: any) => {
-    setViewImagesWithId("App SDK call returnViewImagesWithId() was called");
+    setViewImagesWithId("App SDK call viewImagesWithId() was called");
     media.selectMedia(selectMediaInputs, (err: teamsjs.SdkError, medias: media.Media[]) => {
       if (err) {
         setViewImagesWithId(err.errorCode.toString + " " + err.message);
@@ -312,7 +318,7 @@ const App = () => {
   };
 
   const returnViewImagesWithUrls = (imageUrls: any) => {
-    setViewImagesWithUrls("App SDK call returnViewImagesWithUrls() was called");
+    setViewImagesWithUrls("App SDK call viewImagesWithUrls() was called");
     const urlList: media.ImageUri[] = [];
     for (let i = 0; i < imageUrls.length; i++) {
       const imageUrl = imageUrls[i];
@@ -331,7 +337,7 @@ const App = () => {
   };
 
   const returnGetLocation = (locationProps: any) => {
-    setGetLocation("App SDK call returnGetLocation() was called");
+    setGetLocation("App SDK call getLocation() was called");
     teamsjs.location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location) => {
       if (err) {
         setGetLocation(err.errorCode.toString + " " + err.message);
@@ -342,7 +348,7 @@ const App = () => {
   };
 
   const returnShowLocation = (location: any) => {
-    setShowLocation("App SDK call returnShowLocation() was called");
+    setShowLocation("App SDK call showLocation() was called");
     teamsjs.location.showLocation(location, (err: teamsjs.SdkError, result: boolean) => {
       if (err) {
         setShowLocation(err.errorCode.toString + " " + err.message);
@@ -353,7 +359,7 @@ const App = () => {
   };
 
   const returnMediaScanBarCode = (scanBarCodeConfig: any) => {
-    setMediaScanBarCode("App SDK call returnMediaScanBarCode() was called");
+    setMediaScanBarCode("App SDK call mediaScanBarCode() was called");
     media.scanBarCode((err: teamsjs.SdkError, result: string) => {
       if (err) {
         setMediaScanBarCode(err.errorCode.toString + " " + err.message);
@@ -408,6 +414,66 @@ const App = () => {
       setGetUserJoinedTeams(JSON.stringify(userJoinedTeamsInfo));
     };
     teamsjs.getUserJoinedTeams(onComplete, teamInstanceParams);
+  };
+
+  const returnRegisterBeforeUnload = (readyToUnloadDelay: any) => {
+    setRegisterBeforeUnload("App SDK call registerBeforeUnload() was called");
+    const delay = Number(readyToUnloadDelay);
+    teamsCore.registerBeforeUnloadHandler(function (readyToUnload) {
+          (window as any).readyToUnload = readyToUnload;
+          setTimeout(() => {
+            readyToUnload();
+          }, delay);
+          alert(`beforeUnload recieved; calling readyToUnload in ${delay / 1000} seconds`);
+          return true;
+        });
+  };
+
+  const returnAddStates = () => {
+    let newNumStates = totalStates + 1;
+    setTotalStates(newNumStates);
+    window.history.pushState({ some: 'state', id: newNumStates }, "tab state" + newNumStates, '/testTab');
+    setAddStates("total States: " + newNumStates);
+    window.addEventListener('popstate', function (event) {
+      if (event.state && event.state.id) {
+        setAddStates("onpopstate: back button clicked. total remaining state: " + event.state.id);
+      }
+    }, false);
+  };
+
+  const returnRegisterBackButtonHandler = () => {
+    setRegisterBackButtonHandler("App SDK call registerBackButtonHandler() was called");
+    setRegisterBackButtonHandler("total States: " + totalStates);
+    teamsCore.registerBackButtonHandler(function () {
+      if (totalStates > 0) {
+        let newNumStates = totalStates - 1;
+        setTotalStates(newNumStates);
+        setRegisterBackButtonHandler("back button clicked. total remaining state: " + newNumStates);
+        return true;
+      }
+      return false;
+    });
+  };
+
+  const returnConversationsOpenConversation = (openConversationRequest: any) => {
+    setOpenConversation("App SDK call conversations.openConversation() was called");
+    conversations.openConversation(openConversationRequest);
+    openConversationRequest.onStartConversation = (conversationResponse) => {
+      setOpenConversation("Start Conversation Subentity Id " + conversationResponse.subEntityId + " Conversation Id: " + conversationResponse.conversationId + " Entity Id: " + conversationResponse.entityId + " Channel Id: " + conversationResponse.channelId);
+    };
+    openConversationRequest.onCloseConversation = (conversationResponse) => {
+      setOpenConversation("Start Conversation Subentity Id " + conversationResponse.subEntityId + " Conversation Id: " + conversationResponse.conversationId + " Entity Id: " + conversationResponse.entityId + " Channel Id: " + conversationResponse.channelId);
+    };
+    try {
+      conversations.openConversation(openConversationRequest);
+    } catch (e) {
+      setOpenConversation("Error" + e);
+    }
+  };
+
+  const returnConversationsCloseConversation = () => {
+    setCloseConversation("Conversation Closed!");
+    conversations.closeConversation();
   };
 
   return (
@@ -665,6 +731,41 @@ const App = () => {
         hasInput={true}
         title="Get User Joined Teams"
         name="getUserJoinedTeams"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterBeforeUnload}
+        output={registerBeforeUnload}
+        hasInput={true}
+        title="Register Before Unload"
+        name="registerBeforeUnload"
+     />
+       <BoxAndButton
+        handleClick={returnAddStates}
+        output={addStates}
+        hasInput={false}
+        title="Add States"
+        name="addStates"
+      />
+      <BoxAndButton
+        handleClick={returnRegisterBackButtonHandler}
+        output={registerBackButtonHandler}
+        hasInput={false}
+        title="Register Back Button Handler"
+        name="registerBackButtonHandler"
+      />
+      <BoxAndButton
+        handleClick={returnConversationsOpenConversation}
+        output={openConversation}
+        hasInput={true}
+        title="openConversation"
+        name="Open Conversation"
+      />
+      <BoxAndButton
+        handleClick={returnConversationsCloseConversation}
+        output={closeConversation}
+        hasInput={false}
+        title="closeConversation"
+        name="Close Conversation"
       />
     </>
   );
