@@ -4,7 +4,7 @@ import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 
-export namespace peoplepicker {
+export namespace peoplePicker {
   /**
    * This is the SDK version when people picker API is supported on mobile.
    */
@@ -25,12 +25,6 @@ export namespace peoplepicker {
       throw new Error('[people picker] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    if (!GlobalVars.isFramelessWindow) {
-      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      callback(notSupportedError, undefined);
-      return;
-    }
 
     if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };

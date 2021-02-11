@@ -1,4 +1,4 @@
-import { peoplepicker } from '../public';
+import { peoplePicker } from '../public';
 import { media } from '../public/media';
 
 /**
@@ -95,7 +95,7 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
 /**
  * Returns true if the people picker params are valid and false otherwise
  */
-export function validatePeoplePickerInput(peoplePickerInputs: peoplepicker.PeoplePickerInputs): boolean {
+export function validatePeoplePickerInput(peoplePickerInputs: peoplePicker.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {
     if (peoplePickerInputs.title) {
       if (typeof peoplePickerInputs.title !== 'string') {
@@ -111,6 +111,11 @@ export function validatePeoplePickerInput(peoplePickerInputs: peoplepicker.Peopl
 
     if (peoplePickerInputs.openOrgWideSearchInChatOrChannel) {
       if (typeof peoplePickerInputs.openOrgWideSearchInChatOrChannel !== 'boolean') {
+        return false;
+      }
+    }
+    if (peoplePickerInputs.singleSelect) {
+      if (typeof peoplePickerInputs.singleSelect !== 'boolean') {
         return false;
       }
     }
