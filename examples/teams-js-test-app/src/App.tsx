@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {core, appInitialization, authentication, teamsCore, settings, media} from "@microsoft/teamsjs-app-sdk";
+import {core, appInitialization, authentication, tasks, teamsCore, settings, media} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 import CheckboxAndButton from "./components/CheckboxAndButton";
 
@@ -38,6 +38,13 @@ const App = () => {
   const [getGetLocation, setGetLocation] = React.useState("");
   const [getShowLocation, setShowLocation] = React.useState("");
   const [getMediaScanBarCode, setMediaScanBarCode] = React.useState("");
+  const [startTask, setStartTask] = React.useState("");
+  const [updateTask, setUpdateTask] = React.useState("");
+  const [submitTask, setSubmitTask] = React.useState("");
+  const [showNotification, setShowNotification] = React.useState("");
+  const [openFilePreview, setOpenFilePreview] = React.useState("");
+  const [getChatMembers, setGetChatMembers] = React.useState("");
+  const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState("");
   
   const returnContext = () => {
     let textResult = "No Context";
@@ -356,6 +363,53 @@ const App = () => {
     }, scanBarCodeConfig);
   };
 
+  const returnStartTask = (taskInfo: any) => {
+    taskInfo = JSON.parse(taskInfo);
+    setStartTask("App SDK call startTask was called");
+    const onComplete = (err: string, result: string) => {
+      setStartTask("Error: " + err + "\nResult: " + result);
+    };
+    tasks.startTask(taskInfo, onComplete);
+  };
+
+  const returnUpdateTask = (taskInfo: any) => {
+    taskInfo = JSON.parse(taskInfo);
+    setUpdateTask("App SDK call updateTask was called");
+    tasks.updateTask(taskInfo);
+  }
+
+  const returnSubmitTask = (result: any) => {
+    result = JSON.parse(result);
+    setSubmitTask("App SDK call submitTask was called");
+    tasks.submitTask(result);
+  };
+
+  const returnShowNotification = (showNotificationParams: any) => {
+    showNotificationParams = JSON.parse(showNotificationParams);
+    setShowNotification("App SDK call showNotification was called");
+    teamsjs.showNotification(showNotificationParams);
+  };
+
+  const returnOpenFilePreview = (filePreviewParams: any) => {
+    filePreviewParams = JSON.parse(filePreviewParams);
+    setOpenFilePreview("App SDK call openFilePreview was called");
+    teamsjs.openFilePreview(filePreviewParams);
+  }
+
+  const returnGetChatMembers = () => {
+    const onComplete = (chatMembersInformation: teamsjs.ChatMembersInformation) => {
+      setGetChatMembers(JSON.stringify(chatMembersInformation));
+    };
+    teamsjs.getChatMembers(onComplete);
+  };
+
+  const returnGetUserJoinedTeams = (teamInstanceParams: any) => {
+    const onComplete = (userJoinedTeamsInfo: any) => {
+      setGetUserJoinedTeams(JSON.stringify(userJoinedTeamsInfo));
+    };
+    teamsjs.getUserJoinedTeams(onComplete, teamInstanceParams);
+  };
+
   return (
     <>
       <BoxAndButton
@@ -507,7 +561,7 @@ const App = () => {
         hasTitle={true}
         checkBoxTitle="navigateForward:"
       />
-      <BoxAndButton
+      <BoxAndButton 
         handleClick={returnCaptureImage}
         output={getCaptureImage}
         hasInput={false}
@@ -562,6 +616,55 @@ const App = () => {
         hasInput={true}
         title="Media Scan Bar Code"
         name="mediaScanBarCode"
+      />
+      <BoxAndButton
+        handleClick={returnStartTask}
+        output={startTask}
+        hasInput={true}
+        title="Start Task"
+        name="startTask"
+      />
+      <BoxAndButton
+        handleClick={returnUpdateTask}
+        output={updateTask}
+        hasInput={true}
+        title="Update Task"
+        name="updateTask"
+      />
+      <BoxAndButton
+        handleClick={returnSubmitTask}
+        output={submitTask}
+        hasInput={true}
+        title="Submit Task"
+        name="submitTask"
+      />
+      <BoxAndButton
+        handleClick={returnShowNotification}
+        output={showNotification}
+        hasInput={true}
+        title="Show Notification"
+        name="showNotification"
+      />
+      <BoxAndButton
+        handleClick={returnOpenFilePreview}
+        output={openFilePreview}
+        hasInput={true}
+        title="Open File Preview"
+        name="openFilePreview"
+      />
+      <BoxAndButton
+        handleClick={returnGetChatMembers}
+        output={getChatMembers}
+        hasInput={false}
+        title="Get Chat Members"
+        name="getChatMembers"
+      />
+      <BoxAndButton
+        handleClick={returnGetUserJoinedTeams}
+        output={getUserJoinedTeams}
+        hasInput={true}
+        title="Get User Joined Teams"
+        name="getUserJoinedTeams"
       />
     </>
   );
