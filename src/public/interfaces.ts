@@ -162,7 +162,7 @@ export interface LocaleInfo {
  * Allowed user file open preferences
  */
 export enum FileOpenPreference {
-  Teams = 'teams',
+  InApp = 'InApp',
   Desktop = 'desktop',
   Web = 'web',
 }
