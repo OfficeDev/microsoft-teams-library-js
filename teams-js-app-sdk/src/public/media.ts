@@ -1,7 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { FrameContexts, HostClientType } from './constants';
 import { generateGUID } from '../internal/utils';
 import {
   createFile,
@@ -9,6 +9,7 @@ import {
   validateSelectMediaInputs,
   validateGetMediaInputs,
   validateViewImagesInput,
+  validateScanBarCodeInput,
 } from '../internal/mediaUtil';
 
 export namespace media {
@@ -21,6 +22,16 @@ export namespace media {
    * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
    */
   const mediaAPISupportVersion = '1.8.0';
+
+  /**
+   * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
+   */
+  const getMediaCallbackSupportVersion = '2.0.0';
+
+  /**
+   * This is the SDK version when scanBarCode API is supported on mobile.
+   */
+  const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
   /**
    * Enum for file formats supported
@@ -135,6 +146,47 @@ export namespace media {
         callback(invalidInput, null);
         return;
       }
+      // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+      if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
+        this.getMediaViaCallback(callback);
+      } else {
+        this.getMediaViaHandler(callback);
+      }
+    }
+
+    private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
+      const helper: MediaHelper = {
+        mediaMimeType: this.mimeType,
+        assembleAttachment: [],
+      };
+      const localUriId = [this.content];
+      const messageId = sendMessageRequestToParent('getMedia', localUriId);
+      function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
+        if (callback) {
+          if (mediaResult && mediaResult.error) {
+            callback(mediaResult.error, null);
+          } else {
+            if (mediaResult && mediaResult.mediaChunk) {
+              // If the chunksequence number is less than equal to 0 implies EOF
+              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+              if (mediaResult.mediaChunk.chunkSequence <= 0) {
+                const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+                callback(mediaResult.error, file);
+              } else {
+                // Keep pushing chunks into assemble attachment
+                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+                helper.assembleAttachment.push(assemble);
+              }
+            } else {
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+            }
+          }
+        }
+      }
+      GlobalVars.callbacks[messageId] = handleGetMediaCallbackRequest;
+    }
+
+    private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
@@ -147,7 +199,7 @@ export namespace media {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
             callback(mediaResult.error, null);
-            GlobalVars.handlers['getMedia' + actionName] = null;
+            delete GlobalVars.handlers['getMedia' + actionName];
           } else {
             if (mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
@@ -155,7 +207,7 @@ export namespace media {
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
                 callback(mediaResult.error, file);
-                GlobalVars.handlers['getMedia' + actionName] = null;
+                delete GlobalVars.handlers['getMedia' + actionName];
               } else {
                 // Keep pushing chunks into assemble attachment
                 const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -163,7 +215,7 @@ export namespace media {
               }
             } else {
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
-              GlobalVars.handlers['getMedia' + actionName] = null;
+              delete GlobalVars.handlers['getMedia' + actionName];
             }
           }
         }
@@ -405,6 +457,56 @@ export namespace media {
 
     const params = [uriList];
     const messageId = sendMessageRequestToParent('viewImages', params);
+    GlobalVars.callbacks[messageId] = callback;
+  }
+
+  /**
+   * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
+   * All properties in BarCodeConfig are optional and have default values in the platform
+   */
+  export interface BarCodeConfig {
+    /**
+     * Optional; Lets the developer specify the scan timeout interval in seconds
+     * Default value is 30 seconds and max allowed value is 60 seconds
+     */
+    timeOutIntervalInSec?: number;
+  }
+
+  /**
+   * Scan Barcode/QRcode using camera
+   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+   * @param callback callback to invoke after scanning the barcode
+   * @param config optional input configuration to customize the barcode scanning experience
+   */
+  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
+    if (!callback) {
+      throw new Error('[media.scanBarCode] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    if (
+      GlobalVars.hostClientType === HostClientType.desktop ||
+      GlobalVars.hostClientType === HostClientType.web ||
+      GlobalVars.hostClientType === HostClientType.rigel
+    ) {
+      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      callback(notSupportedError, null);
+      return;
+    }
+
+    if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
+      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      callback(oldPlatformError, null);
+      return;
+    }
+
+    if (!validateScanBarCodeInput(config)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput, null);
+      return;
+    }
+
+    const messageId = sendMessageRequestToParent('media.scanBarCode', [config]);
     GlobalVars.callbacks[messageId] = callback;
   }
 }

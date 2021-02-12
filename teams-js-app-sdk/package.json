@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teamsjs-app-sdk",
   "author": "Microsoft teamsjs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "teamsjs App SDK for building teamsjs apps",
   "main": "./dist/teamsjs.min.js",
   "typings": "./dist/teamsjs.d.ts",
@@ -11,8 +11,9 @@
   },
   "scripts": {
     "build": "yarn lint && webpack",
-    "lint": "eslint ./src/**/*.ts",
+    "clean": "if exist node_modules (rd /s /q node_modules)",
     "doctor": "yarn lint --fix",
+    "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },

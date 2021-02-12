@@ -384,6 +384,16 @@ export interface Context {
    * Personal app icon y coordinate position
    */
   appIconPosition?: number;
+
+  /**
+   * Source origin from where the tab is opened
+   */
+  sourceOrigin?: string;
+
+  /**
+   * Time when the user clicked on the tab
+   */
+  userClickTime?: number;
 }
 
 export interface DeepLinkParameters {
@@ -595,6 +605,10 @@ export enum ErrorCode {
    * User aborted the operation
    */
   USER_ABORT = 8000,
+  /**
+   * Could not complete the operation in the given time interval
+   */
+  OPERATION_TIMED_OUT = 8001,
   /**
    * Platform code is old and doesn't implement this API
    */

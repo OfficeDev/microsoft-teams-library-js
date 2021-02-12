@@ -1,0 +1,77 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# This pipeline checks-out current teamsjs-app-sdk repo and stable teamsjs-hub-sdk repo(as specified in HubSdkgitRef).
+# It then runs a script which is responsible for locally running MOS App(from teamsjs-app-sdk) and  Orange hub(from teamsjs-hub-sdk). And then running E2E tests and publishing them.
+
+trigger: 
+- main
+- develop
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - checkout: self
+  - checkout: git://ISS/teamsjs-hub-sdk@$(HubSDKgitref)
+    persistCredentials: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "14.x"
+    displayName: "Install Node.js"
+
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: "1.x"
+
+  - task: Yarn@2
+    displayName: "Run yarn on hub-sdk"
+    inputs:
+      Arguments:
+      ProjectDirectory: "teamsjs-hub-sdk"
+
+  - task: Yarn@2
+    displayName: "Build hub-sdk"
+    inputs:
+      Arguments: "build"
+      ProjectDirectory: "teamsjs-hub-sdk"
+
+  - task: Yarn@2
+    displayName: "Run yarn on app-sdk"
+    inputs:
+      Arguments:
+      ProjectDirectory: "teamsjs-app-sdk"
+
+  - task: Yarn@2
+    displayName: "Build app-sdk"
+    inputs:
+      Arguments: "build-sdk"
+      ProjectDirectory: "teamsjs-app-sdk"
+
+  - task: CmdLine@2
+    displayName: "Configure host machine"
+    inputs:
+      script: |
+        sudo chmod -R 755 ./ 
+        sudo yarn setup
+      workingDirectory: "teamsjs-hub-sdk"
+
+  - bash: "node tools/cli/runAppsWithE2ETests.js"
+    displayName: "Run E2E tests"
+    condition: succeeded()
+    workingDirectory: "teamsjs-hub-sdk"
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/e2e-tests-report*.xml"
+    condition: succeededOrFailed()
+
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: "LogOnly"
+      verbosity: "Verbose"
+      alertWarningLevel: "High"
+      failOnAlert: true

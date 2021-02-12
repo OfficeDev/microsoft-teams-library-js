@@ -13,3 +13,6 @@ coverage/
 # Visual Studio cache/options directory
 .vs/
 .DS_Store
+
+# teamsjs Test App gitignore areas
+yarn-error.log

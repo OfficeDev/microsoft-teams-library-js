@@ -1,10 +1,12 @@
 import { core } from '../src/public/publicAPIs';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
+import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 export interface MessageRequest {
   id: number;
   func: string;
   args?: any[]; // tslint:disable-line:no-any
+  isPartialResponse?: boolean;
 }
 
 export interface MessageResponse {
@@ -26,22 +28,35 @@ export class Utils {
   public childMessages: MessageRequest[] = [];
 
   public childWindow;
+  public parentWindow: Window;
 
   public constructor() {
     let that = this;
     this.messages = [];
     this.childMessages = [];
+
+    this.parentWindow = {
+      postMessage: function(message: MessageRequest, targetOrigin: string): void {
+        if (message.func === 'initialize') {
+          expect(targetOrigin).toEqual('*');
+        } else {
+          expect(targetOrigin).toEqual(that.validOrigin);
+        }
+        that.messages.push(message);
+      },
+    } as Window;
+
     this.mockWindow = {
       outerWidth: 1024,
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = listener;
         }
       },
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = null;
         }
@@ -49,25 +64,21 @@ export class Utils {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function (url: string): void {
+        assign: function(url: string): void {
           return;
         },
       },
-      parent: {
-        postMessage: function (message: MessageRequest, targetOrigin: string): void {
-          if (message.func === 'initialize') {
-            expect(targetOrigin).toEqual('*');
-          } else {
-            expect(targetOrigin).toEqual(that.validOrigin);
-          }
-          that.messages.push(message);
+      parent: this.parentWindow,
+      nativeInterface: {
+        framelessPostMessage: function(message: string): void {
+          that.messages.push(JSON.parse(message));
         },
-      } as Window,
+      },
       self: null as Window,
-      open: function (url: string, name: string, specs: string): Window {
+      open: function(url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
       },
-      close: function (): void {
+      close: function(): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
@@ -75,10 +86,10 @@ export class Utils {
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: function(message: MessageRequest, targetOrigin: string): void {
         that.childMessages.push(message);
       },
-      close: function (): void {
+      close: function(): void {
         return;
       },
       closed: false,
@@ -87,7 +98,12 @@ export class Utils {
 
   public processMessage: (ev: MessageEvent) => void;
 
-  public initializeWithContext = (frameContext: string, hostClientType?: string, callback?: () => void, validMessageOrigins?: string[]): void => {
+  public initializeWithContext = (
+    frameContext: string,
+    hostClientType?: string,
+    callback?: () => void,
+    validMessageOrigins?: string[],
+  ): void => {
     core._initialize(this.mockWindow);
     core.initialize(callback, validMessageOrigins);
 
@@ -96,6 +112,11 @@ export class Utils {
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
     expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
+  };
+
+  public initializeAsFrameless = (callback?: () => void, validMessageOrigins?: string[]): void => {
+    this.mockWindow.parent = null;
+    core.initialize(callback, validMessageOrigins);
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {
@@ -130,6 +151,16 @@ export class Utils {
     } as MessageEvent);
   };
 
+  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+    (window as ExtendedWindow).onNativeMessage({
+      data: {
+        id: message.id,
+        args: args,
+        isPartialResponse,
+      } as MessageResponse,
+    } as DOMMessageEvent);
+  };
+
   // tslint:disable-next-line:no-any
   public sendMessage = (func: string, ...args: any[]): void => {
     this.processMessage({
@@ -147,5 +178,5 @@ export class Utils {
    */
   public setClientSupportedSDKVersion = (version: string) => {
     GlobalVars.clientSupportedSDKVersion = version;
-  }
+  };
 }
