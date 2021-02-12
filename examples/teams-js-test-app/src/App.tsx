@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {core, appInitialization, authentication, tasks, teamsCore, settings, media, conversations} from "@microsoft/teamsjs-app-sdk";
+import { core, appInitialization, authentication, tasks, teamsCore, settings, media, conversations } from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 import CheckboxAndButton from "./components/CheckboxAndButton";
 
@@ -17,11 +17,11 @@ const App = () => {
   const [setSettings, setSetSettings] = React.useState("");
   const [setValidityState, setSetValidityState] = React.useState("");
   const [registerOnRemoveHandler, setRegisterOnRemoveHandler] = React.useState("");
-  const [shareDeepLink, setShareDeepLink] = React.useState("");
-  const [authenticationNotifyFailure, setAuthenticationNotifyFailure] = React.useState("");
-  const [authenticationNotifySucess, setAuthenticationNotifySucess] = React.useState("");
-  const [authenticationAuthenticate, setAuthenticationAuthenticate] = React.useState("");
-  const [registerOnThemeChangeHandler, setRegisterOnThemeChangeHandler] = React.useState("");
+  const [shareDeepLink, setShareDeepLink] = React.useState("");
+  const [authenticationNotifyFailure, setAuthenticationNotifyFailure] = React.useState("");
+  const [authenticationNotifySucess, setAuthenticationNotifySucess] = React.useState("");
+  const [authenticationAuthenticate, setAuthenticationAuthenticate] = React.useState("");
+  const [registerOnThemeChangeHandler, setRegisterOnThemeChangeHandler] = React.useState("");
   const [registerChangeSettingsHandler, setRegisterChangeSettingsHandler] = React.useState("");
   const [registerAppButtonClickHandler, setRegisterAppButtonClickHandler] = React.useState("");
   const [registerAppButtonHoverEnterHandler, setRegisterAppButtonHoverEnterHandler] = React.useState("");
@@ -87,24 +87,24 @@ const App = () => {
     };
     core.executeDeepLink(deepLink, onComplete);
   };
-  
-  const returnShareDeepLink = (deepLinkParams: any) => {
+
+  const returnShareDeepLink = (deepLinkParams: any) => {
     deepLinkParams = JSON.parse(deepLinkParams);
     core.shareDeepLink(deepLinkParams);
     // TODO: return a feedback for users 
   };
 
-  const returnAuthenticationNotifyFailure = (reason?: string, callbackUrl?: string) => {
-    authentication.notifyFailure(reason, callbackUrl);
-     // TODO: return a feedback for users 
+  const returnAuthenticationNotifyFailure = (reason: string) => {
+    authentication.notifyFailure(reason);
+    // TODO: return a feedback for users 
   };
 
-  const returnAuthenticationNotifySucess = (result?: string, callbackUrl?: string) => {
-    authentication.notifySuccess(result, callbackUrl);
-     // TODO: return a feedback for users 
+  const returnAuthenticationNotifySucess = (result: string) => {
+    authentication.notifySuccess(result);
+    // TODO: return a feedback for users 
   };
 
-  const returnAuthenticationAuthenticate = (authenticateParameters: any) => {
+  const returnAuthenticationAuthenticate = (authenticateParameters: any) => {
     let textResult = "";
     authenticateParameters = JSON.parse(authenticateParameters);
     try {
@@ -114,46 +114,46 @@ const App = () => {
       authenticateParameters.failureCallback = (reason: string) => {
         setAuth("Failure: " + reason);
       };
-    } catch(e) {
-       setAuthenticationAuthenticate(textResult);
+    } catch (e) {
+      setAuthenticationAuthenticate(textResult);
     }
-    authentication.authenticate(authenticateParameters);
+    authentication.authenticate(authenticateParameters);
   };
 
   const returnRegisterOnThemeChangeHandler = () => {
     core.registerOnThemeChangeHandler((theme: string) => {
       setRegisterOnThemeChangeHandler(theme);
     });
-  }; 
+  };
 
   const returnRegisterChangeSettingsHandler = () => {
     setRegisterChangeSettingsHandler("App SDK call registerChangeSettingsHandler() was called, but there was no action from the Hub SDK.");
     teamsCore.registerChangeSettingsHandler(() => {
       setRegisterChangeSettingsHandler("successfully called");
     });
-  }; 
+  };
 
   const returnRegisterAppButtonClickHandler = () => {
     setRegisterAppButtonClickHandler("App SDK call registerAppButtonClickHandler() was called, but there was no action from the Hub SDK.");
     teamsCore.registerAppButtonClickHandler(() => {
       setRegisterAppButtonClickHandler("successfully called");
     });
-  }; 
+  };
 
   const returnRegisterAppButtonHoverEnterHandler = () => {
     setRegisterAppButtonHoverEnterHandler("App SDK call registerAppButtonHoverEnterHandler() was called, but there was no action from the Hub SDK.");
     teamsCore.registerAppButtonHoverEnterHandler(() => {
       setRegisterAppButtonHoverEnterHandler("successfully called");
     });
-  }; 
+  };
 
   const returnRegisterAppButtonHoverLeaveHandler = () => {
     setRegisterAppButtonHoverLeaveHandler("App SDK call registerAppButtonHoverLeaveHandler() was called, but there was no action from the Hub SDK.");
     teamsCore.registerAppButtonHoverLeaveHandler(() => {
       setRegisterAppButtonHoverLeaveHandler("successfully called");
     });
-  }; 
-  
+  };
+
   const returnSettings = () => {
     setGetSettings("App SDK call settings.getSettings() was called, but there was no action from the Hub SDK.");
     const onComplete = (instanceSettings: any) => {
@@ -217,7 +217,7 @@ const App = () => {
     };
     teamsjs.navigateCrossDomain(inputUrl, onComplete);
   };
-  
+
   const returnFocus = (navigateForward: any) => {
     setReturnFocus("Current navigateForward state is " + navigateForward);
     teamsjs.returnFocus(navigateForward);
@@ -229,7 +229,7 @@ const App = () => {
       if (error) {
         setCaptureImage(error.errorCode.toString + " " + error.message);
         return;
-      } 
+      }
       const file: media.File = files[0];
       let content: string = "";
       let len = 20;
@@ -259,10 +259,10 @@ const App = () => {
           len = Math.min(len, media.preview.length);
           preview = media.preview.substr(0, len);
         }
-        message += "[format: " + media.format + ", size: " + media.size 
+        message += "[format: " + media.format + ", size: " + media.size
           + ", mimeType: " + media.mimeType + ", content: " + media.content
           + ", preview: " + preview + "],"
-          setSelectMedia(message);
+        setSelectMedia(message);
       }
     };
     media.selectMedia(mediaInputs, callback);
@@ -282,7 +282,7 @@ const App = () => {
           return;
         }
         var reader = new FileReader();
-        reader.readAsDataURL(blob); 
+        reader.readAsDataURL(blob);
         reader.onloadend = () => {
           if (reader.result) {
             setGetMedia("Received Blob");
@@ -627,7 +627,7 @@ const App = () => {
         hasTitle={true}
         checkBoxTitle="navigateForward:"
       />
-      <BoxAndButton 
+      <BoxAndButton
         handleClick={returnCaptureImage}
         output={getCaptureImage}
         hasInput={false}
