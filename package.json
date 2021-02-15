@@ -2,7 +2,11 @@
   "name": "teamsjs-app-sdk-monorepo",
   "private": true,
   "author": "Microsoft teamsjs",
-  "workspaces": [ "teamsjs-app-sdk", "examples/teamsjs-test-app" ],
+  "workspaces": [
+    "teamsjs-app-sdk",
+    "examples/*",
+    "utilities/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
@@ -10,6 +14,8 @@
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
     "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)",
+    "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
+    "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "clean": "if exist node_modules (rd /s /q node_modules)",
     "clean:all": "yarn clean && yarn clean-sdk && yarn clean-test-app",
     "clean-sdk": "(cd ./teamsjs-app-sdk/ && yarn clean)",
@@ -17,5 +23,8 @@
     "publish-sdk": "yarn publish teamsjs-app-sdk",
     "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
     "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)"
+  },
+  "devDependencies": {
+    "fs-extra": "^9.1.0"
   }
 }
