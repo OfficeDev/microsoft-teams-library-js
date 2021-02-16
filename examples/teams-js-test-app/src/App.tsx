@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { core, appInitialization, authentication, tasks, teamsCore, settings, media, conversations } from "@microsoft/teamsjs-app-sdk";
+import {core, appInitialization, authentication, tasks, teamsCore, settings, media, conversations, calendar, runtime, RuntimeCapabilities} from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./components/BoxAndButton";
 import CheckboxAndButton from "./components/CheckboxAndButton";
 
@@ -51,6 +51,9 @@ const App = () => {
   const [registerBackButtonHandler, setRegisterBackButtonHandler] = React.useState("");
   const [openConversation, setOpenConversation] = React.useState("");
   const [closeConversation, setCloseConversation] = React.useState("");
+  const [calendarCapabilityCheck, setCalendarCapabilityCheck] = React.useState("");
+  const [openCalendarItem, setOpenCalendarItem] = React.useState("");
+  const [composeMeeting, setComposeMeeting] = React.useState("");
   
   const returnContext = () => {
     let textResult = "No Context";
@@ -475,6 +478,34 @@ const App = () => {
     setCloseConversation("Conversation Closed!");
     conversations.closeConversation();
   };
+  const returnComposeMeeting = (meetingParams: any) => {
+    const onComplete = (status: boolean, reason?: string) => {
+      if (!status) {
+        if (reason) setComposeMeeting(reason);
+      } else {
+        setComposeMeeting('Completed');
+      }
+    };
+    calendar.composeMeeting(JSON.parse(meetingParams), onComplete);
+  };
+  const returnOpenCalendarItem = (calendarParams: any) => {
+    const onComplete = (status: boolean, reason?: string) => {
+      if (!status) {
+        if (reason) setOpenCalendarItem(reason);
+      } else {
+        setOpenCalendarItem('Completed');
+      }
+    };
+    calendar.openCalendarItem(JSON.parse(calendarParams), onComplete);
+  };
+
+  const returnCheckCalendarCapability = () => {
+    if (runtime.isSupported(RuntimeCapabilities.Calendar)) {
+      setCalendarCapabilityCheck('Calendar module is supported');
+    } else {
+      setCalendarCapabilityCheck('Calendar module is not supported');
+    }
+  };
 
   return (
     <>
@@ -766,6 +797,27 @@ const App = () => {
         hasInput={false}
         title="closeConversation"
         name="Close Conversation"
+      />
+      <BoxAndButton
+        handleClick={returnCheckCalendarCapability}
+        output={calendarCapabilityCheck}
+        hasInput={false}
+        title="Check capability"
+        name="checkCapability"
+      />
+      <BoxAndButton
+        handleClick={returnOpenCalendarItem}
+        output={openCalendarItem}
+        hasInput={true}
+        title="Open Calendar Item"
+        name="openCalendarItem"
+      />
+      <BoxAndButton
+        handleClick={returnComposeMeeting}
+        output={composeMeeting}
+        hasInput={true}
+        title="Compose Meeting"
+        name="composeMeeting"
       />
     </>
   );
