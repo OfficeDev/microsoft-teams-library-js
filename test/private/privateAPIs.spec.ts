@@ -280,6 +280,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      teamTemplateId: 'com.microsoft.teams.ManageAProject',
       userFileOpenPreference: FileOpenPreference.Web,
     };
 
