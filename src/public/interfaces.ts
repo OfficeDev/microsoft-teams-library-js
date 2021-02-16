@@ -394,6 +394,11 @@ export interface Context {
    * Time when the user clicked on the tab
    */
   userClickTime?: number;
+
+  /**
+   * Team Template ID if there was a Team Template associated with the creation of the team.
+   */
+  teamTemplateId?: string;
 }
 
 export interface DeepLinkParameters {
