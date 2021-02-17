@@ -17,7 +17,7 @@ export namespace peoplePicker {
    * @param callback Returns list of AAD IDs of the selected users
    * @param peoplePickerInputs Input parameters to launch customized people picker
    */
-  export function launchPeoplePicker(
+  export function selectPeople(
     callback: (error: SdkError, people: string[]) => void,
     peoplePickerInputs?: PeoplePickerInputs,
   ): void {
@@ -37,7 +37,7 @@ export namespace peoplePicker {
       callback(invalidInput, null);
       return;
     }
-    const messageId = sendMessageRequestToParent('peoplePicker.launchPeoplePicker', [peoplePickerInputs]);
+    const messageId = sendMessageRequestToParent('peoplePicker.selectPeople', [peoplePickerInputs]);
 
     GlobalVars.callbacks[messageId] = callback;
   }
