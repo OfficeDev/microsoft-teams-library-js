@@ -404,7 +404,7 @@ export interface Context {
    */
   userClickTime?: number;
 
-  /*
+  /**
    * Team Template ID if there was a Team Template associated with the creation of the team.
    */
   teamTemplateId?: string;
