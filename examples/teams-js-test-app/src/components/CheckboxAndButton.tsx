@@ -28,7 +28,7 @@ const CheckboxAndButton = ({
     input = val;
   };
   const getOutput = () => {
-    hasInput ? handleClick(input) : (hasTitle? handleClick(checkboxState) : handleClick());
+    hasInput ? handleClick(input) : (hasTitle ? handleClick(checkboxState) : handleClick());
   };
   return (
     <div
@@ -46,10 +46,10 @@ const CheckboxAndButton = ({
         <input type="text" onChange={(e) => setInput(e.target.value)} />
       )}
       {hasTitle && (
-        <input  style={{ border: "0px"}} type="text" name={checkBoxTitle} value={checkBoxTitle} />
+        <input style={{ border: "0px" }} type="text" name={checkBoxTitle} value={checkBoxTitle} />
       )}
       {hasTitle && (
-        <input type="checkbox" name={checkBoxTitle} onChange={(e) => setCheckboxState(e.target.checked)}/>
+        <input type="checkbox" name={checkBoxTitle} onChange={(e) => setCheckboxState(e.target.checked)} />
       )}
       <div
         className="box"

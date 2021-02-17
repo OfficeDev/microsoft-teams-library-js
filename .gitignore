@@ -16,3 +16,8 @@ coverage/
 
 # teamsjs Test App gitignore areas
 yarn-error.log
+
+# bundle analysis folders
+/examples/*/bundleAnalysis
+/utilities/*/bundleAnalysis
+/common/*

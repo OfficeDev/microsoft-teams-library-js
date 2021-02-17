@@ -279,6 +279,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      teamTemplateId: 'com.microsoft.teams.ManageAProject',
     };
 
     // Get many responses to the same message

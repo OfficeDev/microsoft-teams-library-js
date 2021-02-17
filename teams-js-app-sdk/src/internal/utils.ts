@@ -86,3 +86,10 @@ export function compareSDKVersions(v1: string, v2: string): number {
 export function generateGUID(): string {
   return uuid.v4();
 }
+
+export function deepFreeze<T extends object>(obj: T): T {
+  Object.keys(obj).forEach(prop => {
+    if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
+  });
+  return Object.freeze(obj);
+}

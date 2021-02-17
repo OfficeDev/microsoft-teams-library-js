@@ -36,6 +36,11 @@ steps:
     Arguments: 'build-test-app'
   displayName: 'yarn build-test-app'
 
+- task: Yarn@2
+  inputs:
+    Arguments: "bundleAnalyze:collect"
+  displayName: "Run bundle analysis and collect"
+
 - task: CopyFiles@2
   condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
   inputs:
@@ -59,6 +64,13 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
     ArtifactName: "teamsjs-test-app"
   displayName: 'Publish teamsjs test app artifacts'
+
+- task: PublishBuildArtifacts@1
+  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'))
+  inputs:
+    PathtoPublish: "./common/temp/bundleAnalysis"
+    ArtifactName: "bundle-analysis-reports"
+  displayName: "Publish bundle analysis"
 
 - task: AzureRmWebAppDeployment@4
   condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
