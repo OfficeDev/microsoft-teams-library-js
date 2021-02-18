@@ -8,6 +8,7 @@ export interface IRuntime {
 }
 export enum RuntimeCapabilities {
   Calendar = 'calendar',
+  Mail = 'mail',
 }
 
 class Runtime {

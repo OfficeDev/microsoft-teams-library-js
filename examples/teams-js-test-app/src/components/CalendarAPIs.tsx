@@ -45,8 +45,8 @@ const CalendarAPIs = () => {
         handleClick={returnCheckCalendarCapability}
         output={calendarCapabilityCheck}
         hasInput={false}
-        title="Check capability"
-        name="checkCapability"
+        title="Check Capability Calendar"
+        name="checkCapabilityCalendar"
       />
       <BoxAndButton
         handleClick={returnOpenCalendarItem}

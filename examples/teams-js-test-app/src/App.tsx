@@ -12,6 +12,7 @@ import PrivateAPIs from "./components/PrivateAPIs";
 import SettingsAPIs from "./components/SettingsAPIs";
 import TasksAPIs from "./components/TasksAPIs";
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import MailAPIs from "./components/MailAPIs";
 
 core.initialize();
 appInitialization.notifyAppLoaded();
@@ -22,6 +23,7 @@ const App = () => {
     <>
       <AuthenticationAPIs />
       <CalendarAPIs/>
+      <MailAPIs/>
       <ConversationsAPIs />
       <CoreAPIs />
       <LocationAPIs />
