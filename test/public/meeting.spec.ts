@@ -29,7 +29,7 @@ describe('meeting', () => {
       expect(() =>
         meeting.toggleIncomingClientAudio(() => {
           return;
-        })
+        }),
       ).toThrowError('The library has not yet been initialized');
     });
 
@@ -52,7 +52,7 @@ describe('meeting', () => {
         data: {
           id: callbackId,
           args: [null, true],
-        }
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBeNull();
@@ -71,14 +71,14 @@ describe('meeting', () => {
         returnedSdkError = error;
       });
 
-      let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("toggleIncomingClientAudio");
+      let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('toggleIncomingClientAudio');
       expect(toggleIncomingClientAudioMessage).not.toBeNull();
       let callbackId = toggleIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
-        }
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
@@ -96,7 +96,7 @@ describe('meeting', () => {
       expect(() =>
         meeting.getIncomingClientAudioState(() => {
           return;
-        })
+        }),
       ).toThrowError('The library has not yet been initialized');
     });
 
@@ -112,14 +112,14 @@ describe('meeting', () => {
         returnedSdkError = error;
       });
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudioState");
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
       expect(getIncomingClientAudioMessage).not.toBeNull();
       let callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, true],
-        }
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBeNull();
@@ -138,14 +138,14 @@ describe('meeting', () => {
         returnedSdkError = error;
       });
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc("getIncomingClientAudioState");
+      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
       expect(getIncomingClientAudioMessage).not.toBeNull();
       let callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
-        }
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
@@ -200,7 +200,7 @@ describe('meeting', () => {
         details,
         conversation,
         organizer,
-      }​​​​;
+      };
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -249,7 +249,7 @@ describe('meeting', () => {
       expect(() =>
         meeting.getAuthenticationTokenForAnonymousUser(() => {
           return;
-        })
+        }),
       ).toThrowError('The library has not yet been initialized');
     });
 
@@ -300,13 +300,260 @@ describe('meeting', () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null]
-        }
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
       } as DOMMessageEvent);
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
       expect(returnedSkypeToken).toBe(null);
+    });
+  });
+
+  describe('getLiveStreamState', () => {
+    it('should fail when called without a callback', () => {
+      expect(() => meeting.getLiveStreamState(null)).toThrowError('[get live stream state] Callback cannot be null');
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() => meeting.getLiveStreamState(() => {})).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should return error code 500', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.getLiveStreamState((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
+      expect(getLiveStreamStateMessage).not.toBeNull();
+
+      let callbackId = getLiveStreamStateMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).not.toBeNull();
+      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      expect(returnedLiveStreamState).toBe(null);
+    });
+
+    it('should successfully get live stream state', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.getLiveStreamState((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
+      expect(getLiveStreamStateMessage).not.toBeNull();
+
+      let callbackId = getLiveStreamStateMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [null, { isStreaming: true, isStreamingByCurrentApp: true }],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).toBe(null);
+      expect(returnedLiveStreamState).not.toBeNull();
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+    });
+  });
+
+  describe('requestStartLiveStreaming', () => {
+    it('should fail when called without a callback', () => {
+      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', null)).toThrowError('[request start live streaming] Callback cannot be null');
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should return error code 500', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.requestStartLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
+      expect(requestStartLiveStreamMessage).not.toBeNull();
+
+      let callbackId = requestStartLiveStreamMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).not.toBeNull();
+      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      expect(returnedLiveStreamState).toBe(null);
+    });
+
+    it('should successfully get live stream state', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.requestStartLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
+      expect(requestStartLiveStreamMessage).not.toBeNull();
+
+      let callbackId = requestStartLiveStreamMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [null, { isStreaming: true, isStreamingByCurrentApp: true }],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).toBe(null);
+      expect(returnedLiveStreamState).not.toBeNull();
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+    });
+  });
+
+  describe('requestStopLiveStreaming', () => {
+    it('should fail when called without a callback', () => {
+      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', null)).toThrowError('[request stop live streaming] Callback cannot be null');
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should return error code 500', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.requestStopLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
+      expect(requestStopLiveStreamingMessage).not.toBeNull();
+
+      let callbackId = requestStopLiveStreamingMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).not.toBeNull();
+      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      expect(returnedLiveStreamState).toBe(null);
+    });
+
+    it('should successfully get live stream state', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let callbackCalled = false;
+      let returnedSdkError: SdkError | null;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.requestStopLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        callbackCalled = true;
+        returnedSdkError = error;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
+      expect(requestStopLiveStreamingMessage).not.toBeNull();
+
+      let callbackId = requestStopLiveStreamingMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [null, { isStreaming: true, isStreamingByCurrentApp: true }],
+        },
+      } as DOMMessageEvent);
+
+      expect(callbackCalled).toBe(true);
+      expect(returnedSdkError).toBe(null);
+      expect(returnedLiveStreamState).not.toBeNull();
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+    });
+  });
+
+  describe('registerLiveStreamChangedHandler', () => {
+    it('should fail when called without a handler', () => {
+      expect(() => meeting.registerLiveStreamChangedHandler(null)).toThrowError('[register live stream changed handler] Handler cannot be null');
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() => meeting.registerLiveStreamChangedHandler(() => {})).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully get live stream state', () => {
+      desktopPlatformMock.initializeWithContext('content');
+
+      let handlerCalled = false;
+      let returnedLiveStreamState: meeting.LiveStreamState | null;
+
+      meeting.registerLiveStreamChangedHandler((liveStreamState: meeting.LiveStreamState) => {
+        handlerCalled = true;
+        returnedLiveStreamState = liveStreamState;
+      });
+
+      let registerLiveStreamChangedHandlerMessage = desktopPlatformMock.findMessageByFunc('meeting.registerLiveStreamChangedHandler');
+      expect(registerLiveStreamChangedHandlerMessage).not.toBeNull();
+
+      let callbackId = registerLiveStreamChangedHandlerMessage.id;
+      desktopPlatformMock.respondToMessage({
+        data: {
+          id: callbackId,
+          args: [{ isStreaming: true, isStreamingByCurrentApp: true }],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBe(true);
+      expect(returnedLiveStreamState).not.toBeNull();
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
     });
   });
 });

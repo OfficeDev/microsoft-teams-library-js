@@ -66,6 +66,17 @@ export namespace meeting {
     tenantId?: string;
   }
 
+  export interface LiveStreamState {
+    /**
+     * indicates whether broadcast is streaming
+     */
+    isStreaming: boolean;
+    /**
+     * indicates whether broadcast is streaming to your specific app
+     */
+    isStreamingByCurrentApp: boolean;
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -142,5 +153,78 @@ export namespace meeting {
     ensureInitialized();
     const messageId = sendMessageRequestToParent('meeting.getAuthenticationTokenForAnonymousUser');
     GlobalVars.callbacks[messageId] = callback;
+  }
+
+  /**
+   * Allows an app to get the state of the live stream in the current meeting
+   * @param callback Callback contains 2 parameters: error and liveStreamState.
+   * error can either contain an error of type SdkError, in case of an error, or null when get is successful
+   * liveStreamState can either contain a LiveStreamState value, or null when operation fails
+   */
+  export function getLiveStreamState(
+    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[get live stream state] Callback cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.getLiveStreamState');
+    GlobalVars.callbacks[messageId] = callback;
+  }
+
+  /**
+   * Allows an app to request the live streaming be started at the given streaming url
+   * @param streamUrl the url to the stream resource
+   * @param streamKey the key to the stream resource
+   * @param callback Callback contains 2 parameters: error and liveStreamState.
+   * error can either contain an error of type SdkError, in case of an error, or null when operation is successful
+   * liveStreamState can either contain a LiveStreamState value, or null when operation fails
+   */
+  export function requestStartLiveStreaming(
+    streamUrl: string,
+    streamKey: string,
+    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[request start live streaming] Callback cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey]);
+    GlobalVars.callbacks[messageId] = callback;
+  }
+
+  /**
+   * Allows an app to request the live streaming be stopped at the given streaming url
+   * @param streamUrl the url to the stream resource
+   * @param streamKey the key to the stream resource
+   * @param callback Callback contains 2 parameters: error and liveStreamState.
+   * error can either contain an error of type SdkError, in case of an error, or null when operation is successful
+   * liveStreamState can either contain a LiveStreamState value, or null when operation fails
+   */
+  export function requestStopLiveStreaming(
+    streamUrl: string,
+    streamKey: string,
+    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[request stop live streaming] Callback cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.requestStopLiveStreaming', [streamUrl, streamKey]);
+    GlobalVars.callbacks[messageId] = callback;
+  }
+
+  /**
+   * Allows an app to register an event handler to get streaming state updates
+   * @param handler Handler contains 1 parameter: liveStreamState
+   * liveStreamState will contain a LiveStreamState value
+   */
+  export function registerLiveStreamChangedHandler(handler: (liveStreamState: LiveStreamState) => void): void {
+    if (!handler) {
+      throw new Error('[register live stream changed handler] Handler cannot be null');
+    }
+    ensureInitialized();
+    const messageId = sendMessageRequestToParent('meeting.registerLiveStreamChangedHandler');
+    GlobalVars.callbacks[messageId] = handler;
   }
 }
