@@ -4,6 +4,7 @@ export enum HostClientType {
   android = 'android',
   ios = 'ios',
   rigel = 'rigel',
+  surfaceHub = 'surfaceHub',
 }
 
 // Ensure these declarations stay in sync with the framework.
