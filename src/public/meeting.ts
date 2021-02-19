@@ -68,11 +68,11 @@ export namespace meeting {
 
   export interface LiveStreamState {
     /**
-     * indicates whether broadcast is streaming
+     * indicates whether meeting is streaming
      */
     isStreaming: boolean;
     /**
-     * indicates whether broadcast is streaming to your specific app
+     * indicates whether meeting is streaming to your specific app
      */
     isStreamingByCurrentApp: boolean;
   }
@@ -181,9 +181,9 @@ export namespace meeting {
    * liveStreamState can either contain a LiveStreamState value, or null when operation fails
    */
   export function requestStartLiveStreaming(
-    streamUrl: string,
-    streamKey: string,
     callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+    streamUrl: string,
+    streamKey?: string,
   ): void {
     if (!callback) {
       throw new Error('[request start live streaming] Callback cannot be null');
@@ -195,22 +195,18 @@ export namespace meeting {
 
   /**
    * Allows an app to request the live streaming be stopped at the given streaming url
-   * @param streamUrl the url to the stream resource
-   * @param streamKey the key to the stream resource
    * @param callback Callback contains 2 parameters: error and liveStreamState.
    * error can either contain an error of type SdkError, in case of an error, or null when operation is successful
    * liveStreamState can either contain a LiveStreamState value, or null when operation fails
    */
   export function requestStopLiveStreaming(
-    streamUrl: string,
-    streamKey: string,
     callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
   ): void {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.requestStopLiveStreaming', [streamUrl, streamKey]);
+    const messageId = sendMessageRequestToParent('meeting.requestStopLiveStreaming');
     GlobalVars.callbacks[messageId] = callback;
   }
 
