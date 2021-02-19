@@ -382,11 +382,15 @@ describe('meeting', () => {
 
   describe('requestStartLiveStreaming', () => {
     it('should fail when called without a callback', () => {
-      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', null)).toThrowError('[request start live streaming] Callback cannot be null');
+      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', null)).toThrowError(
+        '[request start live streaming] Callback cannot be null',
+      );
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meeting.requestStartLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should return error code 500', () => {
@@ -396,11 +400,15 @@ describe('meeting', () => {
       let returnedSdkError: SdkError | null;
       let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStartLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
+      meeting.requestStartLiveStreaming(
+        'streamurl',
+        'streamkey',
+        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+          callbackCalled = true;
+          returnedSdkError = error;
+          returnedLiveStreamState = liveStreamState;
+        },
+      );
 
       let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
       expect(requestStartLiveStreamMessage).not.toBeNull();
@@ -426,11 +434,15 @@ describe('meeting', () => {
       let returnedSdkError: SdkError | null;
       let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStartLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
+      meeting.requestStartLiveStreaming(
+        'streamurl',
+        'streamkey',
+        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+          callbackCalled = true;
+          returnedSdkError = error;
+          returnedLiveStreamState = liveStreamState;
+        },
+      );
 
       let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
       expect(requestStartLiveStreamMessage).not.toBeNull();
@@ -452,11 +464,15 @@ describe('meeting', () => {
 
   describe('requestStopLiveStreaming', () => {
     it('should fail when called without a callback', () => {
-      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', null)).toThrowError('[request stop live streaming] Callback cannot be null');
+      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', null)).toThrowError(
+        '[request stop live streaming] Callback cannot be null',
+      );
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meeting.requestStopLiveStreaming('streamurl', 'streamkey', () => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should return error code 500', () => {
@@ -466,11 +482,15 @@ describe('meeting', () => {
       let returnedSdkError: SdkError | null;
       let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
+      meeting.requestStopLiveStreaming(
+        'streamurl',
+        'streamkey',
+        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+          callbackCalled = true;
+          returnedSdkError = error;
+          returnedLiveStreamState = liveStreamState;
+        },
+      );
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
       expect(requestStopLiveStreamingMessage).not.toBeNull();
@@ -496,11 +516,15 @@ describe('meeting', () => {
       let returnedSdkError: SdkError | null;
       let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming('streamurl', 'streamkey', (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
+      meeting.requestStopLiveStreaming(
+        'streamurl',
+        'streamkey',
+        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+          callbackCalled = true;
+          returnedSdkError = error;
+          returnedLiveStreamState = liveStreamState;
+        },
+      );
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
       expect(requestStopLiveStreamingMessage).not.toBeNull();
@@ -522,11 +546,15 @@ describe('meeting', () => {
 
   describe('registerLiveStreamChangedHandler', () => {
     it('should fail when called without a handler', () => {
-      expect(() => meeting.registerLiveStreamChangedHandler(null)).toThrowError('[register live stream changed handler] Handler cannot be null');
+      expect(() => meeting.registerLiveStreamChangedHandler(null)).toThrowError(
+        '[register live stream changed handler] Handler cannot be null',
+      );
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.registerLiveStreamChangedHandler(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meeting.registerLiveStreamChangedHandler(() => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should successfully get live stream state', () => {
@@ -540,7 +568,9 @@ describe('meeting', () => {
         returnedLiveStreamState = liveStreamState;
       });
 
-      let registerLiveStreamChangedHandlerMessage = desktopPlatformMock.findMessageByFunc('meeting.registerLiveStreamChangedHandler');
+      let registerLiveStreamChangedHandlerMessage = desktopPlatformMock.findMessageByFunc(
+        'meeting.registerLiveStreamChangedHandler',
+      );
       expect(registerLiveStreamChangedHandlerMessage).not.toBeNull();
 
       let callbackId = registerLiveStreamChangedHandlerMessage.id;
