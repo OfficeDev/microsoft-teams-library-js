@@ -4,101 +4,122 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
-- develop
+  - main
+  - develop
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: YarnInstaller@3
-  inputs:
-    versionSpec: '1.x'
-  displayName: 'Yarn 1.x'
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+    displayName: 'Yarn 1.x'
 
-- task: Yarn@3
-  inputs:
-    Arguments: 'install'
-  displayName: 'yarn install'
-  
-- task: Yarn@3
-  inputs:
-    Arguments: 'build-sdk'
-  displayName: 'yarn build-sdk'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'install'
+    displayName: 'yarn install'
 
-- task: Yarn@3
-  inputs:
-    Arguments: 'test-sdk'
-  displayName: 'yarn test-sdk'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'build-sdk'
+    displayName: 'yarn build-sdk'
 
-- task: Yarn@3
-  inputs:
-    Arguments: 'build-test-app'
-  displayName: 'yarn build-test-app'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'test-sdk'
+    displayName: 'yarn test-sdk'
 
-- task: Yarn@2
-  inputs:
-    Arguments: "bundleAnalyze:collect"
-  displayName: "Run bundle analysis and collect"
+  - task: Yarn@3
+    inputs:
+      Arguments: 'build-test-app'
+    displayName: 'yarn build-test-app'
 
-- task: CopyFiles@2
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
-  inputs:
-    sourceFolder: 'examples/teamsjs-test-app/build'
-    contents: "**"
-    targetFolder: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
-  displayName: 'Copy teamsjs test app to artifacts staging directory'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'build-bundle-size-tools'
+    displayName: 'yarn build-bundle-size-tools'
 
-- task: ArchiveFiles@2
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
-    includeRootFolder: false
-    archiveType: "zip"
-    archiveFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
-    replaceExistingArchive: true
+  - task: Yarn@2
+    inputs:
+      Arguments: 'bundleAnalyze:collect'
+    displayName: 'Run bundle analysis and collect'
 
-- task: PublishBuildArtifacts@1
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
-    ArtifactName: "teamsjs-test-app"
-  displayName: 'Publish teamsjs test app artifacts'
+  # Bundle analysis comparison : should trigger only by PR against main/develop
 
-- task: PublishBuildArtifacts@1
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'))
-  inputs:
-    PathtoPublish: "./common/temp/bundleAnalysis"
-    ArtifactName: "bundle-analysis-reports"
-  displayName: "Publish bundle analysis"
+  - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --adoAccessToken $(System.AccessToken) --pullRequestId=$(System.PullRequest.PullRequestNumber) --commitId=$(System.PullRequest.SourceCommitId)'
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), in(variables['System.PullRequest.TargetBranch'], 'main', 'develop'))
+    name: bundleAnalysisTask
+    displayName: 'Analyze bundles against develop and output result'
 
-- task: AzureRmWebAppDeployment@4
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
-    appType: 'webApp'
-    WebAppName: 'teamsjstestapp'
-    package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
-  displayName: 'Deploy to teamsjstestapp.azurewebsites.net'
-    
-- task: AzureRmWebAppDeployment@4
-  condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
-    appType: 'webApp'
-    WebAppName: 'dev-teamsjstestapp'
-    package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
-  displayName: 'Deploy to dev-teamsjstestapp.azurewebsites.net'
+  - task: GitHubComment@0
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), in(variables['System.PullRequest.TargetBranch'], 'main', 'develop'))
+    inputs:
+      gitHubConnection: 'ISS (3)'
+      repositoryName: '$(Build.Repository.Name)'
+      id: '$(System.PullRequest.PullRequestNumber)'
+      comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
+    displayName: 'Post bundle analysis result as PR comment in github'
 
-- task: Yarn@3
-  condition: and(
-                  eq(variables['Build.SourceBranch'], 'refs/heads/main'), 
-                  in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), 
-                  ne(variables['Build.Reason'], 'PullRequest'), 
-                  ne(variables['Build.Reason'], 'Manual')
-                )
-  inputs:
-    Arguments: 'publish-sdk'
-  displayName: 'yarn publish-sdk'
+  - task: CopyFiles@2
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
+    inputs:
+      sourceFolder: 'examples/teamsjs-test-app/build'
+      contents: '**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+    displayName: 'Copy teamsjs test app to artifacts staging directory'
+
+  - task: ArchiveFiles@2
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+      replaceExistingArchive: true
+
+  - task: PublishBuildArtifacts@1
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+      ArtifactName: 'teamsjs-test-app'
+    displayName: 'Publish teamsjs test app artifacts'
+
+  - task: PublishBuildArtifacts@1
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'))
+    inputs:
+      PathtoPublish: './common/temp/bundleAnalysis'
+      ArtifactName: 'bundle-analysis-reports'
+    displayName: 'Publish bundle analysis'
+
+  - task: AzureRmWebAppDeployment@4
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
+      appType: 'webApp'
+      WebAppName: 'musicalsink'
+      package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+    displayName: 'Deploy to musical sink'
+
+  - task: AzureRmWebAppDeployment@4
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
+      appType: 'webApp'
+      WebAppName: 'cloudroll'
+      package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+    displayName: 'Deploy to cloud roll'
+
+  - task: Yarn@3
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    inputs:
+      Arguments: 'publish-sdk'
+    displayName: 'yarn publish-sdk'

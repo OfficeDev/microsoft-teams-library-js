@@ -2,6 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug compare bundle analysis",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}\\tools\\cli\\compareBundleAnalysis.js",
+      "outFiles": [
+        "${workspaceFolder}/tools/**/*.js"
+      ]
+    },
+    {
       "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",

@@ -1,8 +1,8 @@
 # teamsjs Test App
 
-The teamsjs Test App is a React app meant to be run inside teamsjs hubs to not only test teamsjs hubs but also test the teamsjs App SDK, test the teamsjs Hub SDK, be used as a reference on what a teamsjs App can look like, and be of use for anything else you'd like to use it for. 
+The teamsjs Test App is a React app used to test the teamsjs App and Hub SDK. It is currently being developed to be used only for this testing and is not meant to serve as official guidance for SDK use for the time being. 
 
-You can find the teamsjs Test App's released version from our main branch deployed at https://teamsjstestapp.azurewebsites.net. The teamsjs Test App's version in our develop branch is currently being served at https://dev-teamsjstestapp.azurewebsites.net.
+You can find the teamsjs Test App's released version from our main branch deployed at https://musicalsink.azurewebsites.net. The teamsjs Test App's version in our develop branch is currently being served at https://cloudroll.azurewebsites.net.
 
 ## Getting Started
 

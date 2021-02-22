@@ -5,6 +5,7 @@
   "workspaces": [
     "teamsjs-app-sdk",
     "examples/*",
+    "packages/*",
     "utilities/*"
   ],
   "repository": {
@@ -14,10 +15,12 @@
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
     "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)",
+    "build-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn build)",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "clean": "if exist node_modules (rd /s /q node_modules)",
-    "clean:all": "yarn clean && yarn clean-sdk && yarn clean-test-app",
+    "clean:all": "yarn clean && yarn clean-sdk && yarn clean-test-app && yarn clean-bundle-size-tools",
+    "clean-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn clean)",
     "clean-sdk": "(cd ./teamsjs-app-sdk/ && yarn clean)",
     "clean-test-app": "(cd ./examples/teamsjs-test-app/ && yarn clean)",
     "publish-sdk": "yarn publish teamsjs-app-sdk",
