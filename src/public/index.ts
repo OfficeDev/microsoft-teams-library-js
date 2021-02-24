@@ -12,6 +12,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
+  userSettingKeys,
 } from './interfaces';
 export {
   enablePrintCapability,
@@ -33,6 +34,7 @@ export {
   registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
+  registerUserSettingsChangeHandler,
 } from './publicAPIs';
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';

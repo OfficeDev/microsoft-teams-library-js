@@ -167,6 +167,15 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
+/**
+ * User setting changes that can be subscribed to,
+ */
+export enum userSettingKeys {
+  /**
+   * Use this key to subscribe to changes in user's file open preference
+   */
+  fileOpenPreference = 'fileOpenPreference',
+}
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.

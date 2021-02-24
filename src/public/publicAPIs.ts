@@ -16,6 +16,7 @@ import {
   Context,
   LoadContext,
   FrameContext,
+  userSettingKeys,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -376,4 +377,19 @@ export function initializeWithFrameContext(
 ): void {
   initialize(callback, validMessageOrigins);
   setFrameContext(frameContext);
+}
+
+/**
+ * register a handler to be called when a user setting changes. The changed setting key & value is provided in the callback.
+ * @param settingKeys List of user setting changes to subscribe
+ * @param handler When a subscribed setting is updated this handler is called
+ */
+export function registerUserSettingsChangeHandler(
+  settingKeys: userSettingKeys[],
+  handler: (updatedSettingKey: userSettingKeys, updatedValue: any) => void,
+): void {
+  ensureInitialized(FrameContexts.content);
+
+  GlobalVars.userSettingsChangeHandler = handler;
+  handler && sendMessageRequestToParent('registerHandler', ['userSettingsChange', settingKeys]);
 }
