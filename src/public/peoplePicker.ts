@@ -17,7 +17,7 @@ export namespace peoplePicker {
    * @param peoplePickerInputs Input parameters to launch customized people picker
    */
   export function selectPeople(
-    callback: (error: SdkError, people: string[]) => void,
+    callback: (error: SdkError, people: PeoplePickerResult[]) => void,
     peoplePickerInputs?: PeoplePickerInputs,
   ): void {
     if (!callback) {
@@ -72,5 +72,27 @@ export namespace peoplePicker {
      */
 
     singleSelect?: boolean;
+  }
+
+  /**
+   * Output user object of people picker API
+   */
+  export interface PeoplePickerResult {
+    /**
+     * aad Id of the selected user
+     */
+    aadId: string;
+
+    /**
+     * Optional; display name of the selected user
+     */
+
+    displayName?: string;
+
+    /**
+     * Optional; email of the selected user
+     */
+
+    email?: string;
   }
 }
