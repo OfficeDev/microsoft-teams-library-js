@@ -1,4 +1,4 @@
-import { TeamInformation } from '../public/interfaces';
+import { FileOpenPreference, TeamInformation } from '../public/interfaces';
 /**
  * @private
  * Hide from docs
@@ -110,6 +110,11 @@ export interface FilePreviewParameters {
    * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
    */
   viewerAction?: ViewerActionTypes;
+
+  /**
+   * Optional; indicates how user prefers to open the file
+   */
+  fileOpenPreference?: FileOpenPreference;
 }
 
 /**
