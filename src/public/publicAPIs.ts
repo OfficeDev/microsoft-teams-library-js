@@ -13,7 +13,12 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import {
+  Communication,
+  initializeCommunication,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
 import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
 
@@ -31,7 +36,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    Communication.initialize(
+    initializeCommunication(
       (
         context: FrameContexts,
         clientType: string,
@@ -80,7 +85,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       GlobalVars.hostClientType = null;
       GlobalVars.isFramelessWindow = false;
 
-      Communication.uninitialize();
+      uninitializeCommunication();
     };
   }
 
@@ -149,7 +154,7 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getContext', (context: Context) => {
+  sendMessageToParent('getContext', (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
@@ -166,7 +171,7 @@ export function getContext(callback: (context: Context) => void): void {
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
   GlobalVars.themeChangeHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['themeChange']);
+  handler && sendMessageToParent('registerHandler', ['themeChange']);
 }
 
 /**
@@ -178,7 +183,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
   ensureInitialized();
 
   GlobalVars.fullScreenChangeHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['fullScreen']);
+  handler && sendMessageToParent('registerHandler', ['fullScreen']);
 }
 
 /**
@@ -190,7 +195,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonClickHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonClick']);
+  handler && sendMessageToParent('registerHandler', ['appButtonClick']);
 }
 
 /**
@@ -202,7 +207,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonHoverEnterHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonHoverEnter']);
+  handler && sendMessageToParent('registerHandler', ['appButtonHoverEnter']);
 }
 
 /**
@@ -214,7 +219,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.appButtonHoverLeaveHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['appButtonHoverLeave']);
+  handler && sendMessageToParent('registerHandler', ['appButtonHoverLeave']);
 }
 
 /**
@@ -228,7 +233,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
 
   GlobalVars.backButtonPressHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['backButton']);
+  handler && sendMessageToParent('registerHandler', ['backButton']);
 }
 
 /**
@@ -240,7 +245,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
   ensureInitialized();
 
   GlobalVars.loadHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['load']);
+  handler && sendMessageToParent('registerHandler', ['load']);
 }
 
 /**
@@ -253,7 +258,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
   ensureInitialized();
 
   GlobalVars.beforeUnloadHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['beforeUnload']);
+  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -264,7 +269,7 @@ export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
 
   GlobalVars.changeSettingsHandler = handler;
-  handler && Communication.sendMessageToParent('registerHandler', ['changeSettings']);
+  handler && sendMessageToParent('registerHandler', ['changeSettings']);
 }
 
 /**
@@ -279,7 +284,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
+  const messageId = sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -293,7 +298,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
+  sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -303,7 +308,7 @@ export function getMruTabInstances(
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
   ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-  Communication.sendMessageToParent('shareDeepLink', [
+  sendMessageToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -322,16 +327,12 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.task,
     FrameContexts.stage,
   );
-  Communication.sendMessageToParent(
-    'executeDeepLink',
-    [deepLink],
-    onComplete ? onComplete : getGenericOnCompleteHandler(),
-  );
+  sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageToParent('setFrameContext', [frameContext]);
+  sendMessageToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(

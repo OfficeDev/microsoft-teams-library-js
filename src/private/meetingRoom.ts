@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
-import { Communication } from '../internal/communication';
+import { registerHandler, sendMessageToParent } from '../internal/communication';
 
 export namespace meetingRoom {
   /**
@@ -129,8 +129,8 @@ export namespace meetingRoom {
   }
 
   export function initialize(): void {
-    Communication.registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', handleMeetingRoomCapabilitiesUpdate);
-    Communication.registerHandler('meetingRoom.meetingRoomStatesUpdate', handleMeetingRoomStatesUpdate);
+    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', handleMeetingRoomCapabilitiesUpdate);
+    registerHandler('meetingRoom.meetingRoomStatesUpdate', handleMeetingRoomStatesUpdate);
   }
   /**
    * @private
@@ -143,7 +143,7 @@ export namespace meetingRoom {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    Communication.sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
+    sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
   }
 
   /**
@@ -162,7 +162,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
+    sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
   }
 
   /**
@@ -181,7 +181,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
+    handler && sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -197,7 +197,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     GlobalVars.meetingRoomStatesUpdateHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
+    handler && sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 
   function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {

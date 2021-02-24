@@ -1,4 +1,4 @@
-import { Communication } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
@@ -22,17 +22,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    Communication.sendMessageToParent(
-      'bot.executeQuery',
-      [botRequest],
-      (success: boolean, response: string | QueryResponse) => {
-        if (success) {
-          onSuccess(response as QueryResponse);
-        } else {
-          onError(response as string);
-        }
-      },
-    );
+    sendMessageToParent('bot.executeQuery', [botRequest], (success: boolean, response: string | QueryResponse) => {
+      if (success) {
+        onSuccess(response as QueryResponse);
+      } else {
+        onError(response as string);
+      }
+    });
   }
   /**
    * @private
@@ -48,7 +44,7 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    Communication.sendMessageToParent('bot.getSupportedCommands', (success: boolean, response: string | Command[]) => {
+    sendMessageToParent('bot.getSupportedCommands', (success: boolean, response: string | Command[]) => {
       if (success) {
         onSuccess(response as Command[]);
       } else {
@@ -72,17 +68,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    Communication.sendMessageToParent(
-      'bot.authenticate',
-      [authRequest],
-      (success: boolean, response: string | Results) => {
-        if (success) {
-          onSuccess(response as Results);
-        } else {
-          onError(response as string);
-        }
-      },
-    );
+    sendMessageToParent('bot.authenticate', [authRequest], (success: boolean, response: string | Results) => {
+      if (success) {
+        onSuccess(response as Results);
+      } else {
+        onError(response as string);
+      }
+    });
   }
 
   export interface QueryRequest {

@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
 import { FrameContexts } from '../public/constants';
-import { Communication } from '../internal/communication';
+import { registerHandler, sendMessageToParent } from '../internal/communication';
 export namespace remoteCamera {
   /**
    * @private
@@ -142,10 +142,10 @@ export namespace remoteCamera {
    * Initializes this part of the library
    */
   export function initialize(): void {
-    Communication.registerHandler('remoteCamera.capableParticipantsChange', handleCapableParticipantsChange);
-    Communication.registerHandler('remoteCamera.handlerError', handleHandlerError);
-    Communication.registerHandler('remoteCamera.deviceStateChange', handleDeviceStateChange);
-    Communication.registerHandler('remoteCamera.sessionStatusChange', handleSessionStatusChange);
+    registerHandler('remoteCamera.capableParticipantsChange', handleCapableParticipantsChange);
+    registerHandler('remoteCamera.handlerError', handleHandlerError);
+    registerHandler('remoteCamera.deviceStateChange', handleDeviceStateChange);
+    registerHandler('remoteCamera.sessionStatusChange', handleSessionStatusChange);
   }
 
   /**
@@ -165,7 +165,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.getCapableParticipants] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.getCapableParticipants', callback);
+    sendMessageToParent('remoteCamera.getCapableParticipants', callback);
   }
 
   /**
@@ -190,7 +190,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.requestControl] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.requestControl', [participant], callback);
+    sendMessageToParent('remoteCamera.requestControl', [participant], callback);
   }
 
   /**
@@ -209,7 +209,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.sendControlCommand] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
+    sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
   }
 
   /**
@@ -224,7 +224,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.terminateSession] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.terminateSession', callback);
+    sendMessageToParent('remoteCamera.terminateSession', callback);
   }
 
   /**
@@ -240,7 +240,7 @@ export namespace remoteCamera {
     }
     ensureInitialized(FrameContexts.sidePanel);
     GlobalVars.remoteCameraCapableParticipantsChangeHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['remoteCamera.capableParticipantsChange']);
+    handler && sendMessageToParent('registerHandler', ['remoteCamera.capableParticipantsChange']);
   }
 
   function handleCapableParticipantsChange(participantChange: Participant[]): void {
@@ -260,7 +260,7 @@ export namespace remoteCamera {
     }
     ensureInitialized(FrameContexts.sidePanel);
     GlobalVars.remoteCameraErrorHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['remoteCamera.handlerError']);
+    handler && sendMessageToParent('registerHandler', ['remoteCamera.handlerError']);
   }
 
   function handleHandlerError(error: ErrorReason): void {
@@ -280,7 +280,7 @@ export namespace remoteCamera {
     }
     ensureInitialized(FrameContexts.sidePanel);
     GlobalVars.remoteCameraDeviceStateChangeHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['remoteCamera.deviceStateChange']);
+    handler && sendMessageToParent('registerHandler', ['remoteCamera.deviceStateChange']);
   }
 
   function handleDeviceStateChange(deviceStateChange: DeviceState): void {
@@ -300,7 +300,7 @@ export namespace remoteCamera {
     }
     ensureInitialized(FrameContexts.sidePanel);
     GlobalVars.remoteCameraSessionStatusChangeHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['remoteCamera.sessionStatusChange']);
+    handler && sendMessageToParent('registerHandler', ['remoteCamera.sessionStatusChange']);
   }
 
   function handleSessionStatusChange(sessionStatusChange: SessionStatus): void {

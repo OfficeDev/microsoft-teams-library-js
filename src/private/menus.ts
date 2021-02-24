@@ -1,5 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { Communication } from '../internal/communication';
+import { registerHandler, sendMessageToParent } from '../internal/communication';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -91,9 +91,9 @@ export namespace menus {
   let viewConfigItemPressHandler: (id: string) => boolean;
 
   export function initialize(): void {
-    Communication.registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress);
-    Communication.registerHandler('actionMenuItemPress', handleActionMenuItemPress);
-    Communication.registerHandler('setModuleView', handleViewConfigItemPress);
+    registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress);
+    registerHandler('actionMenuItemPress', handleActionMenuItemPress);
+    registerHandler('setModuleView', handleViewConfigItemPress);
   }
   /**
    * Registers list of view configurations and it's handler.
@@ -104,12 +104,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    Communication.sendMessageToParent('setUpViews', [viewConfig]);
+    sendMessageToParent('setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageToParent('viewConfigItemPress', [id]);
+      sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
   /**
@@ -120,12 +120,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    Communication.sendMessageToParent('setNavBarMenu', [items]);
+    sendMessageToParent('setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageToParent('handleNavBarMenuItemPress', [id]);
+      sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -146,12 +146,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    Communication.sendMessageToParent('showActionMenu', [params]);
+    sendMessageToParent('showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      Communication.sendMessageToParent('handleActionMenuItemPress', [id]);
+      sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
 }

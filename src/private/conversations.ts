@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
-import { Communication } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -16,7 +16,7 @@ export namespace conversations {
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): void {
     ensureInitialized(FrameContexts.content);
-    Communication.sendMessageToParent(
+    sendMessageToParent(
       'conversations.openConversation',
       [
         {
@@ -45,7 +45,7 @@ export namespace conversations {
    */
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
-    Communication.sendMessageToParent('conversations.closeConversation');
+    sendMessageToParent('conversations.closeConversation');
     GlobalVars.onCloseConversationHandler = null;
     GlobalVars.onStartConversationHandler = null;
   }
