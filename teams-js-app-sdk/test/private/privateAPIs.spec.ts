@@ -1,4 +1,4 @@
-import * as microsoftTeams from '../../src/public/publicAPIs';
+import { core} from '../../src/public/publicAPIs';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
