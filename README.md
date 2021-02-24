@@ -19,41 +19,22 @@ To install the stable version:
 
 #### npm
 
-`npm install --save @microsoft/teams-js`
+`npm install --save @microsoft/teams-js@1.10.0-beta.1`
 
 #### yarn
 
-`yarn add @microsoft/teams-js`
-
-#### Production
-
-You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.9.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+`yarn add @microsoft/teams-js@1.10.0-beta.1`
 
 ## Usage
 
-### As a package
+### As a npm package
 
-Install either using npm or yarn.
+Install either using npm or yarn
 
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
 import * as microsoftTeams from "@microsoft/teams-js";
-```
-
-### As a script tag
-
-Reference the SDK inside of your `.html` page using:
-
-```html
-<!-- Microsoft Teams JavaScript API (via CDN) -->
-<script src="https://statics.teams.cdn.office.net/sdk/v1.9.0/js/MicrosoftTeams.min.js" integrity="sha384-bcRxWKfzRyPxg/waVm3IsOnaH2Inoh5gGIJNOat79+wq22/BZ+mFuSTUmVc7l2el" crossorigin="anonymous"></script>
-
-<!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@1.9.0/dist/MicrosoftTeams.min.js"></script>
-
-<!-- Microsoft Teams JavaScript API (via local) -->
-<script src="MicrosoftTeams.min.js"></script>
 ```
 
 ## Contributing
