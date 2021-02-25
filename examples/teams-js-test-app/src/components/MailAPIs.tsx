@@ -1,5 +1,5 @@
 import React from 'react';
-import { mail, runtime, RuntimeCapabilities } from "@microsoft/teamsjs-app-sdk";
+import { mail } from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./BoxAndButton";
 import { noHubSdkMsg } from "../App"
 
@@ -33,7 +33,7 @@ const MailAPIs = () => {
   };
 
   const returnMailCapabilityCheck = () => {
-    if (runtime.isSupported(RuntimeCapabilities.Mail)) {
+    if (mail.isSupported()) {
       setMailCapabilityCheck('Mail module is supported');
     } else {
       setMailCapabilityCheck('Mail module is not supported');

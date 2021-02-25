@@ -1,8 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { runtime, RuntimeCapabilities } from './runtime';
+import { runtime } from './runtime';
 import { sendMessageToParent } from '../internal/communication';
 
 export namespace mail {
@@ -11,7 +10,7 @@ export namespace mail {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
-    if (!runtime.isSupported(RuntimeCapabilities.Mail)) throw 'Not Supported';
+    if (!isSupported()) throw 'Not Supported';
 
     sendMessageToParent(
       'mail.openMailItem',
@@ -24,13 +23,16 @@ export namespace mail {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
-    if (!runtime.isSupported(RuntimeCapabilities.Mail)) throw 'Not Supported';
+    if (!isSupported()) throw 'Not Supported';
 
     sendMessageToParent(
       'mail.composeMail',
       [composeMailParams],
       onComplete ? onComplete : getGenericOnCompleteHandler(),
     );
+  }
+  export function isSupported(): boolean {
+    return runtime.supports.mail ? true : false;
   }
 
   export interface OpenMailItemParams {

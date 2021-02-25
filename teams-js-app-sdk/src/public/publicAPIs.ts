@@ -23,7 +23,12 @@ import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { teamsCore } from './teamsAPIs';
+import { applyRuntimeConfig } from './runtime';
 
+/**
+ * Namespace to interact with the core part of the teamsjs App SDK.
+ * This object is used for starting or completing authentication flows.
+ */
 export namespace core {
   // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
   /**
@@ -44,6 +49,7 @@ export namespace core {
         (
           context: FrameContexts,
           clientType: string,
+          runtimeConfig: string,
           clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
         ) => {
           GlobalVars.frameContext = context;
@@ -54,6 +60,7 @@ export namespace core {
           GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
           GlobalVars.initializeCallbacks = [];
           GlobalVars.initializeCompleted = true;
+          runtimeConfig && applyRuntimeConfig(JSON.parse(runtimeConfig));
         },
         validMessageOrigins,
       );

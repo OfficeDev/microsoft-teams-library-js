@@ -4,21 +4,12 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
     readonly calendar?: {};
+    readonly mail?: {};
   };
 }
-export enum RuntimeCapabilities {
-  Calendar = 'calendar',
-  Mail = 'mail',
-}
 
-class Runtime {
-  runtime: IRuntime;
+export let runtime: IRuntime;
 
-  applyRuntimeConfig(runtimeConfig: IRuntime): void {
-    this.runtime = deepFreeze(runtimeConfig);
-  }
-  isSupported(type: RuntimeCapabilities): boolean {
-    return this.runtime.supports[type] ? true : false;
-  }
+export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
+  runtime = deepFreeze(runtimeConfig);
 }
-export const runtime = new Runtime();
