@@ -68,7 +68,7 @@ export namespace settings {
    * @param handler The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-    ensureInitialized(FrameContexts.remove);
+    ensureInitialized(FrameContexts.remove, FrameContexts.settings);
     removeHandler = handler;
     handler && sendMessageRequestToParent('registerHandler', ['remove']);
   }
@@ -104,7 +104,7 @@ export namespace settings {
     /**
      * The developer-defined unique ID for the entity to which this content points.
      */
-    entityId: string;
+    entityId?: string;
   }
 
   export interface SaveEvent {
