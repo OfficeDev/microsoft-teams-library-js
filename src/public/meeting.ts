@@ -71,10 +71,6 @@ export namespace meeting {
      * indicates whether meeting is streaming
      */
     isStreaming: boolean;
-    /**
-     * indicates whether meeting is streaming to your specific app
-     */
-    isStreamingByCurrentApp: boolean;
   }
 
   export enum MeetingType {
