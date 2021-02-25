@@ -14,7 +14,7 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 import { teamsCore } from './teamsAPIs';
-import { runtime } from './runtime';
+import { applyRuntimeConfig } from './runtime';
 
 // ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
 /**
@@ -77,7 +77,7 @@ export namespace core {
           GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
           GlobalVars.initializeCallbacks = [];
           GlobalVars.initializeCompleted = true;
-          runtimeConfig && runtime.applyRuntimeConfig(JSON.parse(runtimeConfig));
+          runtimeConfig && applyRuntimeConfig(JSON.parse(runtimeConfig));
         };
       } finally {
         GlobalVars.parentOrigin = null;

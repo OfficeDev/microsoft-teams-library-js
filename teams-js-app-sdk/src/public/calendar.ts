@@ -2,7 +2,7 @@ import { ensureInitialized, sendMessageRequestToParent } from '../internal/inter
 import { GlobalVars } from '../internal/globalVars';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { runtime, RuntimeCapabilities } from './runtime';
+import { runtime } from './runtime';
 
 export namespace calendar {
   export function openCalendarItem(
@@ -10,7 +10,7 @@ export namespace calendar {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
-    if (!runtime.isSupported(RuntimeCapabilities.Calendar)) throw 'Not Supported';
+    if (!isSupported()) throw 'Not Supported';
 
     const messageId = sendMessageRequestToParent('calendar.openCalendarItem', [openCalendarItemParams]);
     GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
@@ -20,10 +20,13 @@ export namespace calendar {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
-    if (!runtime.isSupported(RuntimeCapabilities.Calendar)) throw 'Not Supported';
+    if (!isSupported()) throw 'Not Supported';
 
     const messageId = sendMessageRequestToParent('calendar.composeMeeting', [composeMeetingParams]);
     GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  }
+  export function isSupported(): boolean {
+    return runtime.supports.calendar ? true : false;
   }
 
   export interface OpenCalendarItemParams {

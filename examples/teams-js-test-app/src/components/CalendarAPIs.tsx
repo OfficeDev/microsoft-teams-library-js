@@ -1,5 +1,5 @@
 import React from 'react';
-import { calendar, runtime, RuntimeCapabilities } from "@microsoft/teamsjs-app-sdk";
+import { calendar } from "@microsoft/teamsjs-app-sdk";
 import BoxAndButton from "./BoxAndButton";
 import { noHubSdkMsg } from "../App"
 
@@ -32,7 +32,7 @@ const CalendarAPIs = () => {
   };
 
   const returnCheckCalendarCapability = () => {
-    if (runtime.isSupported(RuntimeCapabilities.Calendar)) {
+    if (calendar.isSupported()) {
       setCalendarCapabilityCheck('Calendar module is supported');
     } else {
       setCalendarCapabilityCheck('Calendar module is not supported');
