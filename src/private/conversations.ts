@@ -1,8 +1,8 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
-import { Communication } from '../internal/communication';
-import { Handlers } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -16,7 +16,7 @@ export namespace conversations {
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): void {
     ensureInitialized(FrameContexts.content);
-    Communication.sendMessageToParent(
+    sendMessageToParent(
       'conversations.openConversation',
       [
         {
@@ -34,7 +34,7 @@ export namespace conversations {
       },
     );
     if (openConversationRequest.onStartConversation) {
-      Handlers.registerHandler(
+      registerHandler(
         'startConversation',
         (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
           openConversationRequest.onStartConversation({
@@ -46,7 +46,7 @@ export namespace conversations {
       );
     }
     if (openConversationRequest.onCloseConversation) {
-      Handlers.registerHandler(
+      registerHandler(
         'closeConversation',
         (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
           openConversationRequest.onCloseConversation({
@@ -67,8 +67,8 @@ export namespace conversations {
    */
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
-    Communication.sendMessageToParent('conversations.closeConversation');
-    Handlers.removeHandler('startConversation');
-    Handlers.removeHandler('closeConversation');
+    sendMessageToParent('conversations.closeConversation');
+    removeHandler('startConversation');
+    removeHandler('closeConversation');
   }
 }

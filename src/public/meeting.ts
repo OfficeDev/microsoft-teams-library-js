@@ -1,4 +1,4 @@
-import { Communication } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 
@@ -89,7 +89,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('getIncomingClientAudioState', callback);
+    sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
   /**
@@ -104,7 +104,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('toggleIncomingClientAudio', callback);
+    sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
   /**
@@ -120,7 +120,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('meeting.getMeetingDetails', callback);
+    sendMessageToParent('meeting.getMeetingDetails', callback);
   }
 
   /**
@@ -137,6 +137,6 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
+    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 }

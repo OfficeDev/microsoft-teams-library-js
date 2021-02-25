@@ -13,10 +13,15 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import {
+  Communication,
+  initializeCommunication,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
 import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
-import { Handlers } from '../internal/handlers';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -32,8 +37,8 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    Handlers.initialize();
-    Communication.initialize(
+    Handlers.initializeHandlers();
+    initializeCommunication(
       (
         context: FrameContexts,
         clientType: string,
@@ -82,7 +87,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       GlobalVars.hostClientType = null;
       GlobalVars.isFramelessWindow = false;
 
-      Communication.uninitialize();
+      uninitializeCommunication();
     };
   }
 
@@ -151,7 +156,7 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getContext', (context: Context) => {
+  sendMessageToParent('getContext', (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
@@ -264,7 +269,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
+  sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -278,7 +283,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
+  sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -288,7 +293,7 @@ export function getMruTabInstances(
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
   ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-  Communication.sendMessageToParent('shareDeepLink', [
+  sendMessageToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -307,16 +312,12 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.task,
     FrameContexts.stage,
   );
-  Communication.sendMessageToParent(
-    'executeDeepLink',
-    [deepLink],
-    onComplete ? onComplete : getGenericOnCompleteHandler(),
-  );
+  sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageToParent('setFrameContext', [frameContext]);
+  sendMessageToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(

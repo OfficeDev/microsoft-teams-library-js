@@ -8,10 +8,9 @@ import {
   UserJoinedTeamsInformation,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication } from '../internal/communication';
+import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
 import { menus } from './menus';
-import { Handlers } from '../internal/handlers';
-import { remoteCamera } from './remoteCamera';
+import { registerHandler } from '../internal/handlers';
 
 export function initializePrivateApis(): void {
   menus.initialize();
@@ -31,7 +30,7 @@ export function getUserJoinedTeams(
 ): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
+  sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
 }
 
 /**
@@ -42,7 +41,7 @@ export function getUserJoinedTeams(
  */
 export function enterFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageToParent('enterFullscreen', []);
+  sendMessageToParent('enterFullscreen', []);
 }
 
 /**
@@ -53,7 +52,7 @@ export function enterFullscreen(): void {
  */
 export function exitFullscreen(): void {
   ensureInitialized(FrameContexts.content);
-  Communication.sendMessageToParent('exitFullscreen', []);
+  sendMessageToParent('exitFullscreen', []);
 }
 
 /**
@@ -81,7 +80,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.viewerAction,
   ];
 
-  Communication.sendMessageToParent('openFilePreview', params);
+  sendMessageToParent('openFilePreview', params);
 }
 
 /**
@@ -95,7 +94,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
 export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
   ensureInitialized(FrameContexts.content);
   const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-  Communication.sendMessageToParent('showNotification', params);
+  sendMessageToParent('showNotification', params);
 }
 
 /**
@@ -108,11 +107,7 @@ export function showNotification(showNotificationParameters: ShowNotificationPar
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
 
-  const messageId = Communication.sendMessageToParent(
-    'uploadCustomApp',
-    [manifestBlob],
-    onComplete ? onComplete : getGenericOnCompleteHandler(),
-  );
+  sendMessageToParent('uploadCustomApp', [manifestBlob], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 /**
@@ -133,7 +128,7 @@ export function sendCustomMessage(
 ): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent(actionName, args, callback);
+  sendMessageToParent(actionName, args, callback);
 }
 
 /**
@@ -156,7 +151,7 @@ export function sendCustomEvent(
   if (!Communication.childWindow) {
     throw new Error('The child window has not yet been initialized or is not present');
   }
-  Communication.sendMessageEventToChild(actionName, args);
+  sendMessageEventToChild(actionName, args);
 }
 
 /**
@@ -174,7 +169,7 @@ export function registerCustomHandler(
   ) => any[],
 ): void {
   ensureInitialized();
-  Handlers.registerHandler(actionName, (...args: any[]) => {
+  registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
   });
 }
@@ -191,7 +186,7 @@ export function registerCustomHandler(
 export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getChatMembers', callback);
+  sendMessageToParent('getChatMembers', callback);
 }
 
 /**
@@ -205,5 +200,5 @@ export function getChatMembers(callback: (chatMembersInformation: ChatMembersInf
 export function getConfigSetting(callback: (value: string) => void, key: string): void {
   ensureInitialized();
 
-  Communication.sendMessageToParent('getConfigSetting', [key], callback);
+  sendMessageToParent('getConfigSetting', [key], callback);
 }

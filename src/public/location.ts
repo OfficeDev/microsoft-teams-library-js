@@ -1,7 +1,7 @@
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { Communication } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 
 export namespace location {
   /**
@@ -64,7 +64,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    Communication.sendMessageToParent('location.getLocation', [props], callback);
+    sendMessageToParent('location.getLocation', [props], callback);
   }
 
   /**
@@ -88,6 +88,6 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    Communication.sendMessageToParent('location.showLocation', [location], callback);
+    sendMessageToParent('location.showLocation', [location], callback);
   }
 }

@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from '../public/interfaces';
-import { Communication } from '../internal/communication';
-import { Handlers } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 
 export namespace meetingRoom {
   /**
@@ -138,7 +138,7 @@ export namespace meetingRoom {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    Communication.sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
+    sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
   }
 
   /**
@@ -157,7 +157,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    Communication.sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
+    sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
   }
 
   /**
@@ -175,7 +175,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    Handlers.registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
+    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
       ensureInitialized();
       handler(capabilities);
     });
@@ -194,7 +194,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    Handlers.registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
+    registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized();
       handler(states);
     });

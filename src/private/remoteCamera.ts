@@ -1,9 +1,9 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
 import { FrameContexts } from '../public/constants';
-import { Communication } from '../internal/communication';
-import { Handlers } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
+
 export namespace remoteCamera {
   /**
    * @private
@@ -153,7 +153,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.getCapableParticipants] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.getCapableParticipants', callback);
+    sendMessageToParent('remoteCamera.getCapableParticipants', callback);
   }
 
   /**
@@ -178,7 +178,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.requestControl] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.requestControl', [participant], callback);
+    sendMessageToParent('remoteCamera.requestControl', [participant], callback);
   }
 
   /**
@@ -197,7 +197,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.sendControlCommand] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
+    sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
   }
 
   /**
@@ -212,7 +212,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.terminateSession] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Communication.sendMessageToParent('remoteCamera.terminateSession', callback);
+    sendMessageToParent('remoteCamera.terminateSession', callback);
   }
 
   /**
@@ -227,7 +227,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Handlers.registerHandler('remoteCamera.capableParticipantsChange', handler);
+    registerHandler('remoteCamera.capableParticipantsChange', handler);
   }
 
   /**
@@ -240,7 +240,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.registerOnErrorHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Handlers.registerHandler('remoteCamera.handlerError', handler);
+    registerHandler('remoteCamera.handlerError', handler);
   }
 
   /**
@@ -253,7 +253,7 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Handlers.registerHandler('remoteCamera.deviceStateChange', handler);
+    registerHandler('remoteCamera.deviceStateChange', handler);
   }
 
   /**
@@ -266,6 +266,6 @@ export namespace remoteCamera {
       throw new Error('[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    Handlers.registerHandler('remoteCamera.sessionStatusChange', handler);
+    registerHandler('remoteCamera.sessionStatusChange', handler);
   }
 }
