@@ -1,99 +1,99 @@
 import { LoadContext, navigateBack } from '../public';
-import { Communication } from './communication';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 
-export class Handlers {
-  private static handlers: {
+class Handlers {
+  public static handlers: {
     [func: string]: Function;
   } = {};
-  private static themeChangeHandler: (theme: string) => void;
-  private static backButtonPressHandler: () => boolean;
-  private static loadHandler: (context: LoadContext) => void;
-  private static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+  public static themeChangeHandler: (theme: string) => void;
+  public static backButtonPressHandler: () => boolean;
+  public static loadHandler: (context: LoadContext) => void;
+  public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+}
 
-  public static initialize(): void {
-    // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-    Handlers.handlers['themeChange'] = Handlers.handleThemeChange;
-    Handlers.handlers['backButtonPress'] = Handlers.handleBackButtonPress;
-    Handlers.handlers['load'] = Handlers.handleLoad;
-    Handlers.handlers['beforeUnload'] = Handlers.handleBeforeUnload;
+export function initializeHandlers(): void {
+  // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+  Handlers.handlers['themeChange'] = handleThemeChange;
+  Handlers.handlers['backButtonPress'] = handleBackButtonPress;
+  Handlers.handlers['load'] = handleLoad;
+  Handlers.handlers['beforeUnload'] = handleBeforeUnload;
+}
+
+export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
+  const handler = Handlers.handlers[name];
+  if (handler) {
+    const result = handler.apply(this, args);
+    return [true, result];
+  } else {
+    return [false, undefined];
   }
+}
 
-  public static callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
-    const handler = Handlers.handlers[name];
-    if (handler) {
-      const result = handler.apply(this, args);
-      return [true, result];
-    } else {
-      return [false, undefined];
-    }
-  }
-
-  public static registerHandler(name: string, handler: Function, sendMessage: boolean = true): void {
-    if (handler) {
-      Handlers.handlers[name] = handler;
-      sendMessage && Communication.sendMessageToParent('registerHandler', [name]);
-    } else {
-      delete Handlers.handlers[name];
-    }
-  }
-
-  public static removeHandler(name: string): void {
+export function registerHandler(name: string, handler: Function, sendMessage: boolean = true): void {
+  if (handler) {
+    Handlers.handlers[name] = handler;
+    sendMessage && sendMessageToParent('registerHandler', [name]);
+  } else {
     delete Handlers.handlers[name];
   }
+}
 
-  public static registerOnThemeChangeHandler(handler: (theme: string) => void): void {
-    Handlers.themeChangeHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['themeChange']);
+export function removeHandler(name: string): void {
+  delete Handlers.handlers[name];
+}
+
+export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
+  Handlers.themeChangeHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['themeChange']);
+}
+
+export function handleThemeChange(theme: string): void {
+  if (Handlers.themeChangeHandler) {
+    Handlers.themeChangeHandler(theme);
   }
 
-  private static handleThemeChange(theme: string): void {
-    if (Handlers.themeChangeHandler) {
-      Handlers.themeChangeHandler(theme);
-    }
+  if (Communication.childWindow) {
+    sendMessageEventToChild('themeChange', [theme]);
+  }
+}
 
-    if (Communication.childWindow) {
-      Communication.sendMessageEventToChild('themeChange', [theme]);
-    }
+export function registerBackButtonHandler(handler: () => boolean): void {
+  Handlers.backButtonPressHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['backButton']);
+}
+
+function handleBackButtonPress(): void {
+  if (!Handlers.backButtonPressHandler || !Handlers.backButtonPressHandler()) {
+    navigateBack();
+  }
+}
+
+export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+  Handlers.loadHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['load']);
+}
+
+function handleLoad(context: LoadContext): void {
+  if (Handlers.loadHandler) {
+    Handlers.loadHandler(context);
   }
 
-  public static registerBackButtonHandler(handler: () => boolean): void {
-    Handlers.backButtonPressHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['backButton']);
+  if (Communication.childWindow) {
+    sendMessageEventToChild('load', [context]);
   }
+}
 
-  private static handleBackButtonPress(): void {
-    if (!Handlers.backButtonPressHandler || !Handlers.backButtonPressHandler()) {
-      navigateBack();
-    }
-  }
+export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+  Handlers.beforeUnloadHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+}
 
-  public static registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-    Handlers.loadHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['load']);
-  }
+function handleBeforeUnload(): void {
+  const readyToUnload = (): void => {
+    sendMessageToParent('readyToUnload', []);
+  };
 
-  private static handleLoad(context: LoadContext): void {
-    if (Handlers.loadHandler) {
-      Handlers.loadHandler(context);
-    }
-
-    if (Communication.childWindow) {
-      Communication.sendMessageEventToChild('load', [context]);
-    }
-  }
-
-  public static registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
-    Handlers.beforeUnloadHandler = handler;
-    handler && Communication.sendMessageToParent('registerHandler', ['beforeUnload']);
-  }
-
-  private static handleBeforeUnload(): void {
-    const readyToUnload = (): void => {
-      Communication.sendMessageToParent('readyToUnload', []);
-    };
-
-    if (!Handlers.beforeUnloadHandler || !Handlers.beforeUnloadHandler(readyToUnload)) {
-      readyToUnload();
-    }
+  if (!Handlers.beforeUnloadHandler || !Handlers.beforeUnloadHandler(readyToUnload)) {
+    readyToUnload();
   }
 }

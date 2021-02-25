@@ -11,8 +11,8 @@ import {
   validateViewImagesInput,
   validateScanBarCodeInput,
 } from '../internal/mediaUtil';
-import { Communication } from '../internal/communication';
-import { Handlers } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 
 export namespace media {
   /**
@@ -103,7 +103,7 @@ export namespace media {
       return;
     }
 
-    Communication.sendMessageToParent('captureImage', callback);
+    sendMessageToParent('captureImage', callback);
   }
 
   /**
@@ -183,7 +183,7 @@ export namespace media {
           }
         }
       }
-      Communication.sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
+      sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
     }
 
     private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
@@ -193,13 +193,13 @@ export namespace media {
         assembleAttachment: [],
       };
       const params = [actionName, this.content];
-      this.content && callback && Communication.sendMessageToParent('getMedia', params);
+      this.content && callback && sendMessageToParent('getMedia', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
             callback(mediaResult.error, null);
-            Handlers.removeHandler('getMedia' + actionName);
+            removeHandler('getMedia' + actionName);
           } else {
             if (mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
@@ -207,7 +207,7 @@ export namespace media {
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
                 callback(mediaResult.error, file);
-                Handlers.removeHandler('getMedia' + actionName);
+                removeHandler('getMedia' + actionName);
               } else {
                 // Keep pushing chunks into assemble attachment
                 const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
@@ -215,13 +215,13 @@ export namespace media {
               }
             } else {
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
-              Handlers.removeHandler('getMedia' + actionName);
+              removeHandler('getMedia' + actionName);
             }
           }
         }
       }
 
-      Handlers.registerHandler('getMedia' + actionName, handleGetMediaRequest);
+      registerHandler('getMedia' + actionName, handleGetMediaRequest);
     }
   }
 
@@ -418,7 +418,7 @@ export namespace media {
 
     const params = [mediaInputs];
     // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-    Communication.sendMessageToParent('selectMedia', params, (err: SdkError, localAttachments: Media[]) => {
+    sendMessageToParent('selectMedia', params, (err: SdkError, localAttachments: Media[]) => {
       if (!localAttachments) {
         callback(err, null);
         return;
@@ -454,7 +454,7 @@ export namespace media {
     }
 
     const params = [uriList];
-    Communication.sendMessageToParent('viewImages', params, callback);
+    sendMessageToParent('viewImages', params, callback);
   }
 
   /**
@@ -503,6 +503,6 @@ export namespace media {
       return;
     }
 
-    Communication.sendMessageToParent('media.scanBarCode', [config], callback);
+    sendMessageToParent('media.scanBarCode', [config], callback);
   }
 }

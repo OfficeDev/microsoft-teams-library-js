@@ -1,8 +1,8 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication } from '../internal/communication';
-import { Handlers } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -12,16 +12,12 @@ export interface IAppWindow {
 export class ChildAppWindow implements IAppWindow {
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized();
-    Communication.sendMessageToParent(
-      'messageForChild',
-      [message],
-      onComplete ? onComplete : getGenericOnCompleteHandler(),
-    );
+    sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Handlers.registerHandler('messageForParent', listener);
+      registerHandler('messageForParent', listener);
     }
   }
 }
@@ -35,16 +31,12 @@ export class ParentAppWindow implements IAppWindow {
 
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(FrameContexts.task);
-    Communication.sendMessageToParent(
-      'messageForParent',
-      [message],
-      onComplete ? onComplete : getGenericOnCompleteHandler(),
-    );
+    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      Handlers.registerHandler('messageForChild', listener);
+      registerHandler('messageForChild', listener);
     }
   }
 }
