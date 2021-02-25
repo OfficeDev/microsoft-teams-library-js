@@ -8,7 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn tsc",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "clean:all": "rimraf dist && rimraf tsconfig.tsbuildinfo &&  if exist node_modules (rd /s /q node_modules)"
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.0",
@@ -22,6 +23,7 @@
     "@types/msgpack-lite": "^0.1.7",
     "@types/node": "^12.6.2",
     "@types/pako": "^1.0.1",
-    "@types/webpack": "^4.41.25"
+    "@types/webpack": "^4.41.25",
+    "rimraf": "^3.0.2"
   }
 }
