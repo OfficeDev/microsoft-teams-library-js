@@ -1,6 +1,7 @@
 import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from './interfaces';
+import { FrameContexts } from './constants';
 
 export namespace meeting {
   /**
@@ -165,7 +166,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get live stream state] Callback cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(FrameContexts.sidePanel);
     const messageId = sendMessageRequestToParent('meeting.getLiveStreamState');
     GlobalVars.callbacks[messageId] = callback;
   }
@@ -186,7 +187,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(FrameContexts.sidePanel);
     const messageId = sendMessageRequestToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey]);
     GlobalVars.callbacks[messageId] = callback;
   }
@@ -203,7 +204,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(FrameContexts.sidePanel);
     const messageId = sendMessageRequestToParent('meeting.requestStopLiveStreaming');
     GlobalVars.callbacks[messageId] = callback;
   }
@@ -217,7 +218,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(FrameContexts.sidePanel);
     GlobalVars.liveStreamChangedHandler = handler;
     sendMessageRequestToParent('registerHandler', ['meeting.liveStreamChanged']);
   }
