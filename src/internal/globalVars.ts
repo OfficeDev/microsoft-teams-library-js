@@ -3,6 +3,7 @@ import { ConversationResponse, LoadContext } from '../public/interfaces';
 import { FrameContexts } from '../public';
 import { meetingRoom } from '../private/meetingRoom';
 import { remoteCamera } from '../private/remoteCamera';
+import { meeting } from '../public/meeting';
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;
@@ -40,6 +41,7 @@ export class GlobalVars {
   public static appButtonClickHandler: () => void;
   public static appButtonHoverEnterHandler: () => void;
   public static appButtonHoverLeaveHandler: () => void;
+  public static liveStreamChangedHandler: (liveStreamState: meeting.LiveStreamState) => void;
   public static meetingRoomCapabilitiesUpdateHandler: (capabilities: meetingRoom.MeetingRoomCapability) => void;
   public static meetingRoomStatesUpdateHandler: (states: meetingRoom.MeetingRoomState) => void;
   public static remoteCameraCapableParticipantsChangeHandler: (participantChange: remoteCamera.Participant[]) => void;

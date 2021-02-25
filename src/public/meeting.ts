@@ -86,6 +86,8 @@ export namespace meeting {
     MeetNow = 'MeetNow',
   }
 
+  GlobalVars.handlers['meeting.liveStreamChanged'] = handleLiveStreamChanged;
+
   /**
    * Allows an app to get the incoming audio speaker setting for the meeting user
    * @param callback Callback contains 2 parameters, error and result.
@@ -211,16 +213,22 @@ export namespace meeting {
   }
 
   /**
-   * Allows an app to register an event handler to get streaming state updates
-   * @param handler Handler contains 1 parameter: liveStreamState
-   * liveStreamState will contain a LiveStreamState value
+   * Registers a handler for changes to the live stream.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the live stream state changes
    */
   export function registerLiveStreamChangedHandler(handler: (liveStreamState: LiveStreamState) => void): void {
     if (!handler) {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.registerLiveStreamChangedHandler');
-    GlobalVars.callbacks[messageId] = handler;
+    GlobalVars.liveStreamChangedHandler = handler;
+    sendMessageRequestToParent('registerHandler', ['meeting.liveStreamChanged']);
+  }
+
+  function handleLiveStreamChanged(liveStreamStateUpdate: LiveStreamState): void {
+    if (GlobalVars.liveStreamChangedHandler) {
+      GlobalVars.liveStreamChangedHandler(liveStreamStateUpdate);
+    }
   }
 }
