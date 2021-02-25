@@ -3,9 +3,12 @@ import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { FrameContexts } from '../../src/public';
+import { Utils } from '../utils';
 
 describe('meeting', () => {
   const desktopPlatformMock = new FramelessPostMocks();
+  const utils = new Utils();
 
   beforeEach(() => {
     desktopPlatformMock.messages = [];
@@ -320,7 +323,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -350,7 +353,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -369,14 +372,14 @@ describe('meeting', () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [null, { isStreaming: true, isStreamingByCurrentApp: true }],
+          args: [null, { isStreaming: true }],
         },
       } as DOMMessageEvent);
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
       expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
   });
 
@@ -394,7 +397,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -428,7 +431,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -451,14 +454,14 @@ describe('meeting', () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [null, { isStreaming: true, isStreamingByCurrentApp: true }],
+          args: [null, { isStreaming: true }],
         },
       } as DOMMessageEvent);
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
       expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
   });
 
@@ -474,7 +477,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -504,7 +507,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -523,14 +526,14 @@ describe('meeting', () => {
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
-          args: [null, { isStreaming: false, isStreamingByCurrentApp: false }],
+          args: [null, { isStreaming: false }],
         },
       } as DOMMessageEvent);
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
       expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: false, isStreamingByCurrentApp: false });
+      expect(returnedLiveStreamState).toEqual({ isStreaming: false });
     });
   });
 
@@ -547,8 +550,8 @@ describe('meeting', () => {
       );
     });
 
-    it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully register a handler for when live stream is changed', () => {
+      utils.initializeWithContext(FrameContexts.sidePanel);
 
       let handlerCalled = false;
       let returnedLiveStreamState: meeting.LiveStreamState | null;
@@ -558,22 +561,11 @@ describe('meeting', () => {
         returnedLiveStreamState = liveStreamState;
       });
 
-      let registerLiveStreamChangedHandlerMessage = desktopPlatformMock.findMessageByFunc(
-        'meeting.registerLiveStreamChangedHandler',
-      );
-      expect(registerLiveStreamChangedHandlerMessage).not.toBeNull();
-
-      let callbackId = registerLiveStreamChangedHandlerMessage.id;
-      desktopPlatformMock.respondToMessage({
-        data: {
-          id: callbackId,
-          args: [{ isStreaming: true, isStreamingByCurrentApp: true }],
-        },
-      } as DOMMessageEvent);
+      utils.sendMessage('meeting.liveStreamChanged', { isStreaming: true });
 
       expect(handlerCalled).toBe(true);
       expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true, isStreamingByCurrentApp: true });
+      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
   });
 });
