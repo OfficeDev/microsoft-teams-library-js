@@ -1,72 +1,49 @@
-import {
-  processMessage,
-  ensureInitialized,
-  sendMessageRequestToParent,
-  handleParentMessage,
-  processAdditionalValidOrigins,
-} from '../internal/internalAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, defaultSDKVersionForCompatCheck } from '../internal/constants';
-import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { settings } from './settings';
-import { DeepLinkParameters, Context } from './interfaces';
+import {
+  TabInformation,
+  TabInstanceParameters,
+  DeepLinkParameters,
+  Context,
+  LoadContext,
+  FrameContext,
+} from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
+import {
+  Communication,
+  initializeCommunication,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
+import { authentication } from './authentication';
+import { initializePrivateApis } from '../private/privateAPIs';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { teamsCore } from './teamsAPIs';
-import { runtime } from './runtime';
 
-// ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
-/**
- * Initializes the library. This must be called before any other SDK calls
- * but after the frame is loaded successfully.
- * @param callback Optionally specify a callback to invoke when teamsjs App SDK has successfully initialized
- * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
- * https: protocol otherwise they will be ignored. Example: https://www.example.com
- */
-
-/**
- * Namespace to interact with the core part of the teamsjs App SDK.
- * This object is used for starting or completing authentication flows.
- */
 export namespace core {
+  // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
+  /**
+   * Initializes the library. This must be called before any other SDK calls
+   * but after the frame is loaded successfully.
+   * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
+   * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
+   */
   export function initialize(callback?: () => void, validMessageOrigins?: string[]): void {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
 
-      // Listen for messages post to our window
-      const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
-
-      // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-      // it's the window that opened us (i.e., window.opener)
-      GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-      GlobalVars.parentWindow =
-        GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-          ? GlobalVars.currentWindow.parent
-          : GlobalVars.currentWindow.opener;
-
-      // Listen to messages from the parent or child frame.
-      // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
-      if (GlobalVars.parentWindow || validMessageOrigins) {
-        GlobalVars.currentWindow.addEventListener('message', messageListener, false);
-      }
-
-      if (!GlobalVars.parentWindow) {
-        GlobalVars.isFramelessWindow = true;
-        (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-      }
-
-      try {
-        // Send the initialized message to any origin, because at this point we most likely don't know the origin
-        // of the parent window, and this message contains no data that could pose a security risk.
-        GlobalVars.parentOrigin = '*';
-        const messageId = sendMessageRequestToParent('initialize', [version]);
-        GlobalVars.callbacks[messageId] = (
+      Handlers.initializeHandlers();
+      initializeCommunication(
+        (
           context: FrameContexts,
           clientType: string,
-          runtimeConfig: string,
           clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
         ) => {
           GlobalVars.frameContext = context;
@@ -77,11 +54,13 @@ export namespace core {
           GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
           GlobalVars.initializeCallbacks = [];
           GlobalVars.initializeCompleted = true;
-          runtimeConfig && runtime.applyRuntimeConfig(JSON.parse(runtimeConfig));
-        };
-      } finally {
-        GlobalVars.parentOrigin = null;
-      }
+        },
+        validMessageOrigins,
+      );
+
+      authentication.initialize();
+      settings.initialize();
+      initializePrivateApis();
 
       // Undocumented function used to clear state between unit tests
       this._uninitialize = () => {
@@ -102,23 +81,15 @@ export namespace core {
           settings.registerOnRemoveHandler(null);
         }
 
-        GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-
         GlobalVars.initializeCalled = false;
         GlobalVars.initializeCompleted = false;
         GlobalVars.initializeCallbacks = [];
         GlobalVars.additionalValidOrigins = [];
-        GlobalVars.parentWindow = null;
-        GlobalVars.parentOrigin = null;
-        GlobalVars.parentMessageQueue = [];
-        GlobalVars.childWindow = null;
-        GlobalVars.childOrigin = null;
-        GlobalVars.childMessageQueue = [];
-        GlobalVars.nextMessageId = 0;
-        GlobalVars.callbacks = {};
         GlobalVars.frameContext = null;
         GlobalVars.hostClientType = null;
         GlobalVars.isFramelessWindow = false;
+
+        uninitializeCommunication();
       };
     }
 
@@ -143,7 +114,7 @@ export namespace core {
    * Undocumented function used to set a mock window for unit tests
    */
   export function _initialize(hostWindow: any): void {
-    GlobalVars.currentWindow = hostWindow;
+    Communication.currentWindow = hostWindow;
   }
 
   /**
@@ -161,14 +132,13 @@ export namespace core {
   export function getContext(callback: (context: Context) => void): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('getContext');
-    GlobalVars.callbacks[messageId] = (context: Context) => {
+    sendMessageToParent('getContext', (context: Context) => {
       if (!context.frameContext) {
         // Fallback logic for frameContext properties
         context.frameContext = GlobalVars.frameContext;
       }
       callback(context);
-    };
+    });
   }
 
   /**
@@ -178,8 +148,7 @@ export namespace core {
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
     ensureInitialized();
-    GlobalVars.themeChangeHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['themeChange']);
+    Handlers.registerOnThemeChangeHandler(handler);
   }
 
   /**
@@ -189,7 +158,7 @@ export namespace core {
   export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-    sendMessageRequestToParent('shareDeepLink', [
+    sendMessageToParent('shareDeepLink', [
       deepLinkParameters.subEntityId,
       deepLinkParameters.subEntityLabel,
       deepLinkParameters.subEntityWebUrl,
@@ -208,7 +177,6 @@ export namespace core {
       FrameContexts.task,
       FrameContexts.stage,
     );
-    const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 }
