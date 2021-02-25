@@ -78,6 +78,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.editFile,
     filePreviewParameters.subEntityId,
     filePreviewParameters.viewerAction,
+    filePreviewParameters.fileOpenPreference,
   ];
 
   sendMessageToParent('openFilePreview', params);

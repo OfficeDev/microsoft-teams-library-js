@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
@@ -280,6 +280,8 @@ describe('MicrosoftTeams-privateAPIs', () => {
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      teamTemplateId: 'com.microsoft.teams.ManageAProject',
+      userFileOpenPreference: FileOpenPreference.Web,
     };
 
     // Get many responses to the same message
@@ -307,11 +309,12 @@ describe('MicrosoftTeams-privateAPIs', () => {
       editFile: true,
       subEntityId: 'someSubEntityId',
       viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(12);
+    expect(message.args.length).toBe(13);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -324,6 +327,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
+    expect(message.args[12]).toBe(FileOpenPreference.Web);
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
