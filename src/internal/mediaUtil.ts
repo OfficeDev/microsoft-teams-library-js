@@ -1,4 +1,4 @@
-import { peoplePicker } from '../public';
+import { peoplePicker } from '../public/peoplePicker';
 import { media } from '../public/media';
 
 /**
