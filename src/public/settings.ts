@@ -110,7 +110,7 @@ export namespace settings {
     /**
      * The developer-defined unique ID for the entity to which this content points.
      */
-    entityId: string;
+    entityId?: string;
   }
 
   export interface SaveEvent {
