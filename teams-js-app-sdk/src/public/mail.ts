@@ -1,8 +1,8 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+import { sendMessageToParent } from '../internal/communication';
 
 export namespace mail {
   export function openMailItem(
@@ -12,8 +12,11 @@ export namespace mail {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) throw 'Not Supported';
 
-    const messageId = sendMessageRequestToParent('mail.openMailItem', [openMailItemParams]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent(
+      'mail.openMailItem',
+      [openMailItemParams],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
   export function composeMail(
     composeMailParams: ComposeMailParams,
@@ -22,8 +25,11 @@ export namespace mail {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) throw 'Not Supported';
 
-    const messageId = sendMessageRequestToParent('mail.composeMail', [composeMailParams]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent(
+      'mail.composeMail',
+      [composeMailParams],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
   export function isSupported(): boolean {
     return runtime.supports.mail ? true : false;

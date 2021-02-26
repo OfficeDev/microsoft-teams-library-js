@@ -1,5 +1,5 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 
 export namespace meeting {
@@ -89,8 +89,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('getIncomingClientAudioState');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
   /**
@@ -105,8 +104,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('toggleIncomingClientAudio');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
   /**
@@ -122,8 +120,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.getMeetingDetails', callback);
   }
 
   /**
@@ -140,7 +137,6 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getAuthenticationTokenForAnonymousUser');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 }

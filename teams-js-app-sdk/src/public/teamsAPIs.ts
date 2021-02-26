@@ -1,8 +1,10 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { TabInformation, TabInstanceParameters, LoadContext, FrameContext } from './interfaces';
 import { FrameContexts } from './constants';
 import { core } from './publicAPIs';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
+import { sendMessageToParent } from '../internal/communication';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
@@ -42,9 +44,7 @@ export namespace teamsCore {
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
-
-    GlobalVars.fullScreenChangeHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['fullScreen']);
+    Handlers.registerHandler('fullScreenChange', handler);
   }
 
   /**
@@ -54,9 +54,7 @@ export namespace teamsCore {
    */
   export function registerAppButtonClickHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
-
-    GlobalVars.appButtonClickHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['appButtonClick']);
+    Handlers.registerHandler('appButtonClick', handler);
   }
 
   /**
@@ -66,9 +64,7 @@ export namespace teamsCore {
    */
   export function registerAppButtonHoverEnterHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
-
-    GlobalVars.appButtonHoverEnterHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverEnter']);
+    Handlers.registerHandler('appButtonHoverEnter', handler);
   }
 
   /**
@@ -78,23 +74,19 @@ export namespace teamsCore {
    */
   export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
-
-    GlobalVars.appButtonHoverLeaveHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverLeave']);
+    Handlers.registerHandler('appButtonHoverLeave', handler);
   }
 
   /**
-   * Registers a handler for user presses of the App's back button. Experiences that maintain an internal
+   * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
    * navigation stack should use this handler to navigate the user back within their frame. If an app finds
    * that after running its back button handler it cannot handle the event it should call the navigateBack
-   * method to ask the teamsjs App SDK to handle it instead.
-   * @param handler The handler to invoke when the user presses their client's back button.
+   * method to ask the Teams client to handle it instead.
+   * @param handler The handler to invoke when the user presses their Team client's back button.
    */
   export function registerBackButtonHandler(handler: () => boolean): void {
     ensureInitialized();
-
-    GlobalVars.backButtonPressHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['backButton']);
+    Handlers.registerBackButtonHandler(handler);
   }
 
   /**
@@ -103,16 +95,14 @@ export namespace teamsCore {
    */
   export function registerChangeSettingsHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
-
-    GlobalVars.changeSettingsHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
+    Handlers.registerHandler('changeSettings', handler);
   }
 
   /**
    * Allows an app to retrieve for this user tabs that are owned by this app.
    * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
    * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
-   * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teamsjs App.
+   * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
    */
   export function getTabInstances(
     callback: (tabInfo: TabInformation) => void,
@@ -120,8 +110,7 @@ export namespace teamsCore {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
   }
 
   /**
@@ -135,13 +124,12 @@ export namespace teamsCore {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
   }
 
   export function setFrameContext(frameContext: FrameContext): void {
     ensureInitialized(FrameContexts.content);
-    sendMessageRequestToParent('setFrameContext', [frameContext]);
+    sendMessageToParent('setFrameContext', [frameContext]);
   }
 
   export function initializeWithFrameContext(
@@ -160,9 +148,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     ensureInitialized();
-
-    GlobalVars.loadHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['load']);
+    Handlers.registerOnLoadHandler(handler);
   }
 
   /**
@@ -173,8 +159,6 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
-
-    GlobalVars.beforeUnloadHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['beforeUnload']);
+    Handlers.registerBeforeUnloadHandler(handler);
   }
 }
