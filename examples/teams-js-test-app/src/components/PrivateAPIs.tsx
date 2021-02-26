@@ -1,36 +1,36 @@
-import React from 'react';
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const PrivateAPIs = () => {
-  const [showNotification, setShowNotification] = React.useState("");
-  const [openFilePreview, setOpenFilePreview] = React.useState("");
-  const [getChatMembers, setGetChatMembers] = React.useState("");
-  const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState("");
+const PrivateAPIs = (): ReactElement => {
+  const [showNotification, setShowNotification] = React.useState('');
+  const [openFilePreview, setOpenFilePreview] = React.useState('');
+  const [getChatMembers, setGetChatMembers] = React.useState('');
+  const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState('');
 
-  const returnShowNotification = (showNotificationParams: any) => {
+  const returnShowNotification = (showNotificationParams: any): void => {
     showNotificationParams = JSON.parse(showNotificationParams);
-    setShowNotification("showNotification()" + noHubSdkMsg);
+    setShowNotification('showNotification()' + noHubSdkMsg);
     teamsjs.showNotification(showNotificationParams);
   };
 
-  const returnOpenFilePreview = (filePreviewParams: any) => {
+  const returnOpenFilePreview = (filePreviewParams: any): void => {
     filePreviewParams = JSON.parse(filePreviewParams);
-    setOpenFilePreview("openFilePreview()" + noHubSdkMsg);
+    setOpenFilePreview('openFilePreview()' + noHubSdkMsg);
     teamsjs.openFilePreview(filePreviewParams);
-  }
+  };
 
-  const returnGetChatMembers = () => {
-    setGetChatMembers("getChatMembers()" + noHubSdkMsg);
-    const onComplete = (chatMembersInformation: teamsjs.ChatMembersInformation) => {
+  const returnGetChatMembers = (): void => {
+    setGetChatMembers('getChatMembers()' + noHubSdkMsg);
+    const onComplete = (chatMembersInformation: teamsjs.ChatMembersInformation): void => {
       setGetChatMembers(JSON.stringify(chatMembersInformation));
     };
     teamsjs.getChatMembers(onComplete);
   };
 
-  const returnGetUserJoinedTeams = (teamInstanceParams: any) => {
-    setGetUserJoinedTeams("getUserJoinedTeams()" + noHubSdkMsg);
-    const onComplete = (userJoinedTeamsInfo: any) => {
+  const returnGetUserJoinedTeams = (teamInstanceParams: any): void => {
+    setGetUserJoinedTeams('getUserJoinedTeams()' + noHubSdkMsg);
+    const onComplete = (userJoinedTeamsInfo: any): void => {
       setGetUserJoinedTeams(JSON.stringify(userJoinedTeamsInfo));
     };
     teamsjs.getUserJoinedTeams(onComplete, teamInstanceParams);

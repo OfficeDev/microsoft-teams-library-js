@@ -93,7 +93,11 @@ Reference the SDK inside of your `.html` page using:
 
 ## Examples
 
-To explore the APIs, please see the [teamsjs Test App](./examples/teamsjs-test-app/README.md) located in our examples/ folder.
+Stay tuned for examples coming soon.
+
+## Testing
+
+The [teamsjs Test App](./examples/teamsjs-test-app/README.md) is used to validate the teamsjs App SDK APIs.
 
 ## Contributing
 

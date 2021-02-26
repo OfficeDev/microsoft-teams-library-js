@@ -6,6 +6,7 @@ Corresponding microsoft-teams-library-js version: 1.9.0
 ### Several core API functions have been moved to 'teamsCore' namespace
 
 API functions that are not directly implemented by the teamsjs Hub SDK that were previously under the 'core' namespace have been moved to a new namespace called 'teamsCore' for now.
+This teamsCore namespace is temporary and APIs will move again when the work to organize them by capability is completed.
 
 Kept in 'core':
 * Initialize

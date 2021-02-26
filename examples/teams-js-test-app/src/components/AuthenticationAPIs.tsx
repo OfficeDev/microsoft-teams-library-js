@@ -1,84 +1,82 @@
-import React from 'react';
-import { authentication } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App";
+import React, { ReactElement } from 'react';
+import { authentication } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const AuthenticationAPIs = () => {
-  const [auth, setAuth] = React.useState("");
-  const [authenticationNotifyFailure, setAuthenticationNotifyFailure] = React.useState("");
-  const [authenticationNotifySucess, setAuthenticationNotifySucess] = React.useState("");
-  const [authenticationAuthenticate, setAuthenticationAuthenticate] = React.useState("");
+const AuthenticationAPIs = (): ReactElement => {
+  const [getTokenRes, setGetTokenRes] = React.useState('');
+  const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
+  const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
+  const [authenticateRes, setAuthenticateRes] = React.useState('');
 
-  const returnAuth = (authParams: any) => {
-    setAuth("authentication.getToken()" + noHubSdkMsg);
-    authParams = JSON.parse(authParams);
+  const authGetToken = (unformattedAuthParams: string): void => {
+    setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
+    const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
     try {
-      authParams.successCallback = (token: string) => {
-        setAuth("Success: " + token);
+      authParams.successCallback = (result?: string) => {
+        setGetTokenRes('Success: ' + result);
       };
-      authParams.failureCallback = (reason: string) => {
-        setAuth("Failure: " + reason);
+      authParams.failureCallback = (reason?: string) => {
+        setGetTokenRes('Failure: ' + reason);
       };
     } catch (e) {
-      setAuth("No Auth");
+      setGetTokenRes('No Auth');
     }
     authentication.getAuthToken(authParams);
   };
 
-  const returnAuthenticationNotifyFailure = (reason: string) => {
+  const authNotifyFailure = (reason: string): void => {
     authentication.notifyFailure(reason);
-    // TODO: return a feedback for users 
+    setNotifyFailureRes('called');
   };
 
-  const returnAuthenticationNotifySucess = (result: string) => {
+  const authNotifySuccess = (result: string): void => {
     authentication.notifySuccess(result);
-    // TODO: return a feedback for users 
+    setNotifySuccessRes('called');
   };
 
-  const returnAuthenticationAuthenticate = (authenticateParameters: any) => {
-    setAuthenticationAuthenticate("authentication.authenticate()" + noHubSdkMsg);
-    authenticateParameters = JSON.parse(authenticateParameters);
+  const authAuthenticate = (unformattedAuthParams: string): void => {
+    setAuthenticateRes('authentication.authenticate()' + noHubSdkMsg);
+    const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
     try {
-      authenticateParameters.successCallback = (token: string) => {
-        setAuthenticationAuthenticate("Success: " + token);
+      authParams.successCallback = (token?: string) => {
+        setAuthenticateRes('Success: ' + token);
       };
-      authenticateParameters.failureCallback = (reason: string) => {
-        setAuthenticationAuthenticate("Failure: " + reason);
+      authParams.failureCallback = (reason?: string) => {
+        setAuthenticateRes('Failure: ' + reason);
       };
     } catch (e) {
-      setAuthenticationAuthenticate("No Auth");
+      setAuthenticateRes('No Auth');
     }
-    authentication.authenticate(authenticateParameters);
+    authentication.authenticate(authParams);
   };
-
-
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnAuth}
-        output={auth}
+        handleClick={authGetToken}
+        output={getTokenRes}
         hasInput={true}
         title="Get Auth Token"
         name="getAuthToken"
       />
       <BoxAndButton
-        handleClick={returnAuthenticationNotifyFailure}
-        output={authenticationNotifyFailure}
+        handleClick={authNotifyFailure}
+        output={notifyFailureRes}
         hasInput={true}
         title="authentication.notifyFailure"
         name="authentication.notifyFailure"
       />
       <BoxAndButton
-        handleClick={returnAuthenticationNotifySucess}
-        output={authenticationNotifySucess}
+        handleClick={authNotifySuccess}
+        output={notifySuccessRes}
         hasInput={true}
-        title="authentication.notifySucess"
-        name="authentication.notifySucess"
+        title="authentication.notifySuccess"
+        name="authentication.notifySuccess"
       />
       <BoxAndButton
-        handleClick={returnAuthenticationAuthenticate}
-        output={authenticationAuthenticate}
+        handleClick={authAuthenticate}
+        output={authenticateRes}
         hasInput={true}
         title="authentication.authenticate"
         name="authentication.authenticate"

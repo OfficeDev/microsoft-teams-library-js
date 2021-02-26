@@ -1,84 +1,84 @@
-import React from 'react';
-import { settings } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { settings } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const SettingsAPIs = () => {
-  const [getSettings, setGetSettings] = React.useState("");
-  const [registerOnSaveHandler, setRegisterOnSaveHandler] = React.useState("");
-  const [setSettings, setSetSettings] = React.useState("");
-  const [setValidityState, setSetValidityState] = React.useState("");
-  const [registerOnRemoveHandler, setRegisterOnRemoveHandler] = React.useState("");
+const SettingsAPIs = (): ReactElement => {
+  const [getSettingsRes, setGetSettingsRes] = React.useState('');
+  const [registerOnSaveHandlerRes, setRegisterOnSaveHandlerRes] = React.useState('');
+  const [setSettingsRes, setSetSettingsRes] = React.useState('');
+  const [setValidityStateRes, setSetValidityStateRes] = React.useState('');
+  const [registerOnRemoveHandlerRes, setRegisterOnRemoveHandlerRes] = React.useState('');
 
-  const returnSettings = () => {
-    setGetSettings("settings.getSettings()" + noHubSdkMsg);
-    const onComplete = (instanceSettings: any) => {
-      setGetSettings(instanceSettings);
-    }
+  const getSettings = (): void => {
+    setGetSettingsRes('settings.getSettings()' + noHubSdkMsg);
+    const onComplete = (instanceSettings: any): void => {
+      setGetSettingsRes(instanceSettings);
+    };
     settings.getSettings(onComplete);
   };
 
-  const returnRegisterOnSaveHandler = () => {
-    setRegisterOnSaveHandler("settings.registerOnSaveHandler()" + noHubSdkMsg);
-    settings.registerOnSaveHandler((saveEvent: any) => {
-      setRegisterOnSaveHandler("Save event received.");
+  const registerOnSaveHandler = (): void => {
+    setRegisterOnSaveHandlerRes('settings.registerOnSaveHandler()' + noHubSdkMsg);
+    settings.registerOnSaveHandler((saveEvent: any): void => {
+      setRegisterOnSaveHandlerRes('Save event received.');
       saveEvent.notifySuccess();
     });
   };
 
-  const returnSetSettings = (instanceSettings: any) => {
-    setSetSettings("settings.setSettings()" + noHubSdkMsg);
-    const onComplete = (output: any) => {
-      setSetSettings(output);
-    }
+  const setSettings = (instanceSettings: any): void => {
+    setSetSettingsRes('settings.setSettings()' + noHubSdkMsg);
+    const onComplete = (output: any): void => {
+      setSetSettingsRes(output);
+    };
     settings.setSettings(instanceSettings, onComplete);
   };
 
-  const returnSetValidityState = (validityState: string) => {
+  const setValidityState = (validityState: string): void => {
     settings.setValidityState(validityState == 'true');
-    setSetValidityState("Set validity state to " + (validityState == 'true'));
+    setSetValidityStateRes('Set validity state to ' + (validityState == 'true'));
   };
 
-  const returnRegisterOnRemoveHandler = () => {
-    setRegisterOnRemoveHandler("settings.registerOnRemoveHandler()" + noHubSdkMsg);
-    settings.registerOnRemoveHandler((removeEvent: any) => {
-      setRegisterOnRemoveHandler("Handler registered.")
-    })
-  }
+  const registerOnRemoveHandler = (): void => {
+    setRegisterOnRemoveHandlerRes('settings.registerOnRemoveHandler()' + noHubSdkMsg);
+    settings.registerOnRemoveHandler((removeEvent: any): void => {
+      setRegisterOnRemoveHandlerRes('Handler registered.');
+    });
+  };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnSettings}
-        output={getSettings}
+        handleClick={getSettings}
+        output={getSettingsRes}
         hasInput={false}
         title="Get Settings"
         name="settings.getSettings"
       />
       <BoxAndButton
-        handleClick={returnRegisterOnSaveHandler}
-        output={registerOnSaveHandler}
+        handleClick={registerOnSaveHandler}
+        output={registerOnSaveHandlerRes}
         hasInput={false}
         title="Set RegisterOnSaveHandler"
         name="settings.registerOnSaveHandler"
       />
       <BoxAndButton
-        handleClick={returnSetSettings}
-        output={setSettings}
+        handleClick={setSettings}
+        output={setSettingsRes}
         hasInput={true}
         title="Set Settings"
         name="settings.setSettings"
       />
       <BoxAndButton
-        handleClick={returnSetValidityState}
-        output={setValidityState}
+        handleClick={setValidityState}
+        output={setValidityStateRes}
         hasInput={true}
         title="Set Validity State"
         name="settings.setValidityState"
       />
       <BoxAndButton
-        handleClick={returnRegisterOnRemoveHandler}
-        output={registerOnRemoveHandler}
+        handleClick={registerOnRemoveHandler}
+        output={registerOnRemoveHandlerRes}
         hasInput={false}
         title="Register On Remove Handler"
         name="settings.registerOnRemoveHandler"

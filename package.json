@@ -28,6 +28,8 @@
     "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)"
   },
   "devDependencies": {
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "fs-extra": "^9.1.0"
   }
 }

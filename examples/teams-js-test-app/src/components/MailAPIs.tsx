@@ -1,67 +1,67 @@
-import React from 'react';
-import { mail } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { mail } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const MailAPIs = () => {
-  const [openMailItem, setOpenMailItem] = React.useState("");
-  const [composeMail, setComposeMail] = React.useState("");
-  const [mailCapabilityCheck, setMailCapabilityCheck] = React.useState("");
+const MailAPIs = (): ReactElement => {
+  const [composeMailRes, setComposeMailRes] = React.useState('');
+  const [openMailItemRes, setOpenMailItemRes] = React.useState('');
+  const [mailCapabilityCheckRes, setMailCapabilityCheckRes] = React.useState('');
 
-  const returnComposeMail = (mailParams: string) => {
-    setComposeMail("mail.composeMail()" + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string) => {
+  const composeMail = (mailParams: string): void => {
+    setComposeMailRes('mail.composeMail()' + noHubSdkMsg);
+    const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setComposeMail(reason);
+        if (reason) setComposeMailRes(reason);
       } else {
-        setComposeMail('Completed');
+        setComposeMailRes('Completed');
       }
     };
     mail.composeMail(JSON.parse(mailParams), onComplete);
   };
-  
-  const returnOpenMailItem = (mailParams: string) => {
-    setOpenMailItem("mail.openMailItem()" + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string) => {
+
+  const openMailItem = (mailParams: string): void => {
+    setOpenMailItemRes('mail.openMailItem()' + noHubSdkMsg);
+    const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setOpenMailItem(reason);
+        if (reason) setOpenMailItemRes(reason);
       } else {
-        setOpenMailItem('Completed');
+        setOpenMailItemRes('Completed');
       }
     };
     mail.openMailItem(JSON.parse(mailParams), onComplete);
   };
 
-  const returnMailCapabilityCheck = () => {
+  const mailCapabilityCheck = (): void => {
     if (mail.isSupported()) {
-      setMailCapabilityCheck('Mail module is supported');
+      setMailCapabilityCheckRes('Mail module is supported');
     } else {
-      setMailCapabilityCheck('Mail module is not supported');
+      setMailCapabilityCheckRes('Mail module is not supported');
     }
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnMailCapabilityCheck}
-        output={mailCapabilityCheck}
-        hasInput={false}
-        title="Check Capability Mail"
-        name="checkCapabilityMail"
+        handleClick={composeMail}
+        output={composeMailRes}
+        hasInput={true}
+        title="Compose Mail"
+        name="composeMail"
       />
       <BoxAndButton
-        handleClick={returnOpenMailItem}
-        output={openMailItem}
+        handleClick={openMailItem}
+        output={openMailItemRes}
         hasInput={true}
         title="Open Mail Item"
         name="openMailItem"
       />
       <BoxAndButton
-        handleClick={returnComposeMail}
-        output={composeMail}
-        hasInput={true}
-        title="Compose Mail"
-        name="composeMail"
+        handleClick={mailCapabilityCheck}
+        output={mailCapabilityCheckRes}
+        hasInput={false}
+        title="Check Capability Mail"
+        name="checkCapabilityMail"
       />
     </>
   );
