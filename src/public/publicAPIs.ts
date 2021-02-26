@@ -1,13 +1,6 @@
-import {
-  processMessage,
-  ensureInitialized,
-  sendMessageRequestToParent,
-  handleParentMessage,
-  processAdditionalValidOrigins,
-} from '../internal/internalAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, defaultSDKVersionForCompatCheck } from '../internal/constants';
-import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { settings } from './settings';
 import {
   TabInformation,
@@ -20,6 +13,15 @@ import {
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
+import {
+  Communication,
+  initializeCommunication,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
+import { authentication } from './authentication';
+import { initializePrivateApis } from '../private/privateAPIs';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -35,34 +37,9 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    // Listen for messages post to our window
-    const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
-
-    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-    // it's the window that opened us (i.e., window.opener)
-    GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-    GlobalVars.parentWindow =
-      GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-        ? GlobalVars.currentWindow.parent
-        : GlobalVars.currentWindow.opener;
-
-    // Listen to messages from the parent or child frame.
-    // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
-    if (GlobalVars.parentWindow || validMessageOrigins) {
-      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
-    }
-
-    if (!GlobalVars.parentWindow) {
-      GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-    }
-
-    try {
-      // Send the initialized message to any origin, because at this point we most likely don't know the origin
-      // of the parent window, and this message contains no data that could pose a security risk.
-      GlobalVars.parentOrigin = '*';
-      const messageId = sendMessageRequestToParent('initialize', [version]);
-      GlobalVars.callbacks[messageId] = (
+    Handlers.initializeHandlers();
+    initializeCommunication(
+      (
         context: FrameContexts,
         clientType: string,
         clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
@@ -75,10 +52,13 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
         GlobalVars.initializeCallbacks = [];
         GlobalVars.initializeCompleted = true;
-      };
-    } finally {
-      GlobalVars.parentOrigin = null;
-    }
+      },
+      validMessageOrigins,
+    );
+
+    authentication.initialize();
+    settings.initialize();
+    initializePrivateApis();
 
     // Undocumented function used to clear state between unit tests
     this._uninitialize = () => {
@@ -99,23 +79,15 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         settings.registerOnRemoveHandler(null);
       }
 
-      GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
-
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
       GlobalVars.initializeCallbacks = [];
       GlobalVars.additionalValidOrigins = [];
-      GlobalVars.parentWindow = null;
-      GlobalVars.parentOrigin = null;
-      GlobalVars.parentMessageQueue = [];
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
-      GlobalVars.childMessageQueue = [];
-      GlobalVars.nextMessageId = 0;
-      GlobalVars.callbacks = {};
       GlobalVars.frameContext = null;
       GlobalVars.hostClientType = null;
       GlobalVars.isFramelessWindow = false;
+
+      uninitializeCommunication();
     };
   }
 
@@ -140,7 +112,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
  * Undocumented function used to set a mock window for unit tests
  */
 export function _initialize(hostWindow: any): void {
-  GlobalVars.currentWindow = hostWindow;
+  Communication.currentWindow = hostWindow;
 }
 
 /**
@@ -184,14 +156,13 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getContext');
-  GlobalVars.callbacks[messageId] = (context: Context) => {
+  sendMessageToParent('getContext', (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
     }
     callback(context);
-  };
+  });
 }
 
 /**
@@ -201,8 +172,7 @@ export function getContext(callback: (context: Context) => void): void {
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
-  GlobalVars.themeChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['themeChange']);
+  Handlers.registerOnThemeChangeHandler(handler);
 }
 
 /**
@@ -212,9 +182,7 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
   ensureInitialized();
-
-  GlobalVars.fullScreenChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['fullScreen']);
+  Handlers.registerHandler('fullScreenChange', handler);
 }
 
 /**
@@ -224,9 +192,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  GlobalVars.appButtonClickHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonClick']);
+  Handlers.registerHandler('appButtonClick', handler);
 }
 
 /**
@@ -236,9 +202,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
  */
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  GlobalVars.appButtonHoverEnterHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverEnter']);
+  Handlers.registerHandler('appButtonHoverEnter', handler);
 }
 
 /**
@@ -248,9 +212,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
  */
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  GlobalVars.appButtonHoverLeaveHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['appButtonHoverLeave']);
+  Handlers.registerHandler('appButtonHoverLeave', handler);
 }
 
 /**
@@ -262,9 +224,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
  */
 export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
-
-  GlobalVars.backButtonPressHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['backButton']);
+  Handlers.registerBackButtonHandler(handler);
 }
 
 /**
@@ -274,9 +234,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   ensureInitialized();
-
-  GlobalVars.loadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['load']);
+  Handlers.registerOnLoadHandler(handler);
 }
 
 /**
@@ -287,9 +245,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   ensureInitialized();
-
-  GlobalVars.beforeUnloadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['beforeUnload']);
+  Handlers.registerBeforeUnloadHandler(handler);
 }
 
 /**
@@ -298,9 +254,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
-
-  GlobalVars.changeSettingsHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
+  Handlers.registerHandler('changeSettings', handler);
 }
 
 /**
@@ -315,8 +269,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -330,8 +283,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -341,7 +293,7 @@ export function getMruTabInstances(
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
   ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
 
-  sendMessageRequestToParent('shareDeepLink', [
+  sendMessageToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -360,13 +312,12 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.task,
     FrameContexts.stage,
   );
-  const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+  sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
   ensureInitialized(FrameContexts.content);
-  sendMessageRequestToParent('setFrameContext', [frameContext]);
+  sendMessageToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(
