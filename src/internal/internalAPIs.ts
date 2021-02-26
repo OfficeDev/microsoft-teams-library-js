@@ -291,8 +291,8 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
       return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
     }),
   );
-  let dedupUrls: { [url: string]: boolean } = {};
-  combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
+  const dedupUrls: { [url: string]: boolean } = {};
+  combinedOriginUrls = combinedOriginUrls.filter((_originUrl) => {
     if (dedupUrls[_originUrl]) {
       return false;
     }

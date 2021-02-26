@@ -66,6 +66,8 @@
     "no-var-keyword": true,
     "no-var-requires": true,
     "object-literal-sort-keys": false,
+    "no-inferrable-types": false,
+    "prefer-spread": false,
     "one-line": [ false ],
     "quotemark": [
       true,

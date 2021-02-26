@@ -52,7 +52,7 @@ export namespace menus {
     /**
      * State of the menu item
      */
-    public enabled: boolean = true;
+    public enabled = true;
     /**
      * Interface to show list of items on selection of menu item.
      */
@@ -60,7 +60,7 @@ export namespace menus {
     /**
      * Whether the menu item is selected or not
      */
-    public selected: boolean = false;
+    public selected = false;
   }
   /**
    * Represents information about view to show on Navigation Bar Menu item selection

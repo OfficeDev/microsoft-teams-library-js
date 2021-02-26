@@ -10,7 +10,7 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
   let file: Blob;
   let sequence = 1;
   assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
-  assembleAttachment.forEach(item => {
+  assembleAttachment.forEach((item) => {
     if (item.sequence == sequence) {
       if (file) {
         file = new Blob([file, item.file], { type: mimeType });

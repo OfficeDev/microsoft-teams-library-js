@@ -10,6 +10,7 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 
+// tslint:disable:prefer-spread
 /**
  * @private
  * Hide from docs

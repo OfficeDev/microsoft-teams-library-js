@@ -54,7 +54,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
     if (!GlobalVars.parentWindow) {
       GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
+      ((window as unknown) as ExtendedWindow).onNativeMessage = handleParentMessage;
     }
 
     try {
@@ -72,7 +72,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
         // Notify all waiting callers that the initialization has completed
-        GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
+        GlobalVars.initializeCallbacks.forEach((initCallback) => initCallback());
         GlobalVars.initializeCallbacks = [];
         GlobalVars.initializeCompleted = true;
       };

@@ -15,11 +15,15 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'warn',
     '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/no-inferrable-types': 'warn',
+    '@typescript-eslint/no-empty-function': 'warn',
+    '@typescript-eslint/ban-types': 'warn',
     '@typescript-eslint/explicit-function-return-type': [
       'error',
       {
         allowExpressions: true,
       },
     ],
+    "prefer-spread": 0
   },
 };

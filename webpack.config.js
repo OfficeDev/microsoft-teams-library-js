@@ -1,5 +1,5 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 const libraryName = 'microsoftTeams';
 var plugins = [];
 const DtsBundlePlugin = require('./generate-dts');
@@ -33,8 +33,8 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
+      new TerserPlugin({
+        terserOptions: {
           compress: {
             reduce_funcs: false,
             inline: false,
