@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 interface BoxAndButtonProps {
   handleClick: (input?: any) => void;
@@ -9,18 +9,12 @@ interface BoxAndButtonProps {
 }
 
 //  TODO: consider looking into a grayed out example of parameters show in the box.
-const BoxAndButton = ({
-  handleClick,
-  hasInput,
-  output,
-  title,
-  name
-}: BoxAndButtonProps) => {
-  let input = "";
-  const setInput = (val: string) => {
+const BoxAndButton = ({ handleClick, hasInput, output, title, name }: BoxAndButtonProps): React.ReactElement => {
+  let input = '';
+  const setInput = (val: string): void => {
     input = val;
   };
-  const getOutput = () => {
+  const getOutput = (): void => {
     hasInput ? handleClick(input) : handleClick();
   };
   return (
@@ -29,25 +23,25 @@ const BoxAndButton = ({
       style={{
         height: 200,
         width: 400,
-        border: "5px solid black",
-        textAlign: "center",
+        border: '5px solid black',
+        textAlign: 'center',
       }}
       id={`box_${name}`}
     >
       <input name={`button_${name}`} type="button" value={title} onClick={getOutput} />
-      {hasInput && (
-        <input type="text" onChange={(e) => setInput(e.target.value)} />
-      )}
+      {hasInput && <input type="text" onChange={e => setInput(e.target.value)} />}
       <div
         className="box"
         style={{
-          border: "2px solid red",
+          border: '2px solid red',
           height: 150,
           width: 400,
-          overflow: "auto",
+          overflow: 'auto',
         }}
       >
-        <span id={`text_${name}`} style={{ wordWrap: "break-word" }}>{output}</span>
+        <span id={`text_${name}`} style={{ wordWrap: 'break-word' }}>
+          {output}
+        </span>
       </div>
     </div>
   );

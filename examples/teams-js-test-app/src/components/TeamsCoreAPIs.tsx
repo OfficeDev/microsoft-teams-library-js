@@ -1,95 +1,99 @@
-import React from 'react';
-import { teamsCore } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { teamsCore } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const TeamsCoreAPIs = () => {
-  const [registerChangeSettingsHandler, setRegisterChangeSettingsHandler] = React.useState("");
-  const [registerAppButtonClickHandler, setRegisterAppButtonClickHandler] = React.useState("");
-  const [registerAppButtonHoverEnterHandler, setRegisterAppButtonHoverEnterHandler] = React.useState("");
-  const [registerAppButtonHoverLeaveHandler, setRegisterAppButtonHoverLeaveHandler] = React.useState("");
-  const [getTabInstance, setTabInstance] = React.useState("");
-  const [getMRUTabInstance, setMRUTabInstance] = React.useState("");
-  const [registerBeforeUnload, setRegisterBeforeUnload] = React.useState("");
-  const [registerBackButtonHandler, setRegisterBackButtonHandler] = React.useState("");
+const TeamsCoreAPIs = (): ReactElement => {
+  const [registerChangeSettingsHandlerRes, setRegisterChangeSettingsHandlerRes] = React.useState('');
+  const [registerAppButtonClickHandlerRes, setRegisterAppButtonClickHandlerRes] = React.useState('');
+  const [registerAppButtonHoverEnterHandlerRes, setRegisterAppButtonHoverEnterHandlerRes] = React.useState('');
+  const [registerAppButtonHoverLeaveHandlerRes, setRegisterAppButtonHoverLeaveHandlerRes] = React.useState('');
+  const [getTabInstanceRes, setGetTabInstanceRes] = React.useState('');
+  const [getMRUTabInstanceRes, setGetMRUTabInstanceRes] = React.useState('');
+  const [registerBeforeUnloadRes, setRegisterBeforeUnloadRes] = React.useState('');
+  const [addStatesRes, setAddStatesRes] = React.useState('');
+  const [registerBackButtonHandlerRes, setRegisterBackButtonHandlerRes] = React.useState('');
   const [totalStates, setTotalStates] = React.useState(0);
-  const [addStates, setAddStates] = React.useState("");
 
-  const returnRegisterChangeSettingsHandler = () => {
-    setRegisterChangeSettingsHandler("teamsCore.registerChangeSettingsHandler()" + noHubSdkMsg);
-    teamsCore.registerChangeSettingsHandler(() => {
-      setRegisterChangeSettingsHandler("successfully called");
+  const registerChangeSettingsHandler = (): void => {
+    setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
+    teamsCore.registerChangeSettingsHandler((): void => {
+      setRegisterChangeSettingsHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonClickHandler = () => {
-    setRegisterAppButtonClickHandler("teamsCore.registerAppButtonClickHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonClickHandler(() => {
-      setRegisterAppButtonClickHandler("successfully called");
+  const registerAppButtonClickHandler = (): void => {
+    setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonClickHandler((): void => {
+      setRegisterAppButtonClickHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonHoverEnterHandler = () => {
-    setRegisterAppButtonHoverEnterHandler("teamsCore.registerAppButtonHoverEnterHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverEnterHandler(() => {
-      setRegisterAppButtonHoverEnterHandler("successfully called");
+  const registerAppButtonHoverEnterHandler = (): void => {
+    setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonHoverEnterHandler((): void => {
+      setRegisterAppButtonHoverEnterHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonHoverLeaveHandler = () => {
-    setRegisterAppButtonHoverLeaveHandler("teamsCore.registerAppButtonHoverLeaveHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverLeaveHandler(() => {
-      setRegisterAppButtonHoverLeaveHandler("successfully called");
+  const registerAppButtonHoverLeaveHandler = (): void => {
+    setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonHoverLeaveHandler((): void => {
+      setRegisterAppButtonHoverLeaveHandlerRes('successfully called');
     });
   };
 
-  const returnGetTabInstances = () => {
-    setTabInstance("teamsCore.getTabInstances()" + noHubSdkMsg);
-    teamsCore.getTabInstances((tabInfo: any) => {
-      setTabInstance(JSON.stringify(tabInfo));
+  const getTabInstances = (): void => {
+    setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
+    teamsCore.getTabInstances((tabInfo: any): void => {
+      setGetTabInstanceRes(JSON.stringify(tabInfo));
     });
   };
 
-  const returnGetMRUTabInstances = () => {
-    setMRUTabInstance("teamsCore.getMruTabInstances()" + noHubSdkMsg);
-    teamsCore.getMruTabInstances((tabInfo: any) => {
-      setMRUTabInstance(JSON.stringify(tabInfo));
+  const getMRUTabInstances = (): void => {
+    setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
+    teamsCore.getMruTabInstances((tabInfo: any): void => {
+      setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
     });
   };
 
-  const returnRegisterBeforeUnload = (readyToUnloadDelay: any) => {
-    setRegisterBeforeUnload("teamsCore.registerBeforeUnload()" + noHubSdkMsg);
+  const registerBeforeUnload = (readyToUnloadDelay: any): void => {
+    setRegisterBeforeUnloadRes('teamsCore.registerBeforeUnload()' + noHubSdkMsg);
     const delay = Number(readyToUnloadDelay);
-    teamsCore.registerBeforeUnloadHandler(function (readyToUnload) {
+    teamsCore.registerBeforeUnloadHandler((readyToUnload): boolean => {
       (window as any).readyToUnload = readyToUnload;
       setTimeout(() => {
         readyToUnload();
       }, delay);
       alert(`beforeUnload received; calling readyToUnload in ${delay / 1000} seconds`);
-      setRegisterBeforeUnload("Success");
+      setRegisterBeforeUnloadRes('Success');
       return true;
     });
   };
 
-  const returnAddStates = () => {
+  const addStates = (): void => {
     let newNumStates = totalStates + 1;
     setTotalStates(newNumStates);
-    window.history.pushState({ some: 'state', id: newNumStates }, "tab state" + newNumStates, '/testTab');
-    setAddStates("total States: " + newNumStates);
-    window.addEventListener('popstate', function (event) {
-      if (event.state && event.state.id) {
-        setAddStates("onpopstate: back button clicked. total remaining state: " + event.state.id);
-      }
-    }, false);
+    window.history.pushState({ some: 'state', id: newNumStates }, 'tab state' + newNumStates, '/testTab');
+    setAddStatesRes('total States: ' + newNumStates);
+    window.addEventListener(
+      'popstate',
+      (event): void => {
+        if (event.state && event.state.id) {
+          setAddStatesRes('onpopstate: back button clicked. total remaining state: ' + event.state.id);
+        }
+      },
+      false,
+    );
   };
 
-  const returnRegisterBackButtonHandler = () => {
-    setRegisterBackButtonHandler("total States: " + totalStates);
-    teamsCore.registerBackButtonHandler(function () {
+  const returnRegisterBackButtonHandler = (): void => {
+    setRegisterBackButtonHandlerRes('total States: ' + totalStates);
+    teamsCore.registerBackButtonHandler((): boolean => {
       if (totalStates > 0) {
         let newNumStates = totalStates - 1;
         setTotalStates(newNumStates);
-        setRegisterBackButtonHandler("back button clicked. total remaining state: " + newNumStates);
+        setRegisterBackButtonHandlerRes('back button clicked. total remaining state: ' + newNumStates);
         return true;
       }
       return false;
@@ -99,64 +103,64 @@ const TeamsCoreAPIs = () => {
   return (
     <>
       <BoxAndButton
-        handleClick={returnRegisterChangeSettingsHandler}
-        output={registerChangeSettingsHandler}
+        handleClick={registerChangeSettingsHandler}
+        output={registerChangeSettingsHandlerRes}
         hasInput={false}
         title="Register Change Settings Handler"
         name="registerChangeSettingsHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonClickHandler}
-        output={registerAppButtonClickHandler}
+        handleClick={registerAppButtonClickHandler}
+        output={registerAppButtonClickHandlerRes}
         hasInput={false}
         title="Register App Button Click Handler"
         name="registerAppButtonClickHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonHoverEnterHandler}
-        output={registerAppButtonHoverEnterHandler}
+        handleClick={registerAppButtonHoverEnterHandler}
+        output={registerAppButtonHoverEnterHandlerRes}
         hasInput={false}
         title="Register App Button Hover Enter Handler"
         name="registerAppButtonHoverEnterHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonHoverLeaveHandler}
-        output={registerAppButtonHoverLeaveHandler}
+        handleClick={registerAppButtonHoverLeaveHandler}
+        output={registerAppButtonHoverLeaveHandlerRes}
         hasInput={false}
         title="Register App Button Hover Leave Handler"
         name="registerAppButtonHoverLeaveHandler"
       />
       <BoxAndButton
-        handleClick={returnGetTabInstances}
-        output={getTabInstance}
+        handleClick={getTabInstances}
+        output={getTabInstanceRes}
         hasInput={false}
         title="Get Tab Instance"
         name="getTabInstance"
       />
       <BoxAndButton
-        handleClick={returnGetMRUTabInstances}
-        output={getMRUTabInstance}
+        handleClick={getMRUTabInstances}
+        output={getMRUTabInstanceRes}
         hasInput={false}
         title="Get MRU Tab Instance"
         name="getMRUTabInstance"
       />
       <BoxAndButton
-        handleClick={returnRegisterBeforeUnload}
-        output={registerBeforeUnload}
+        handleClick={registerBeforeUnload}
+        output={registerBeforeUnloadRes}
         hasInput={true}
         title="Register Before Unload"
         name="registerBeforeUnload"
       />
       <BoxAndButton
-        handleClick={returnAddStates}
-        output={addStates}
+        handleClick={addStates}
+        output={addStatesRes}
         hasInput={false}
         title="Add States"
         name="addStates"
       />
       <BoxAndButton
         handleClick={returnRegisterBackButtonHandler}
-        output={registerBackButtonHandler}
+        output={registerBackButtonHandlerRes}
         hasInput={false}
         title="Register Back Button Handler"
         name="registerBackButtonHandler"

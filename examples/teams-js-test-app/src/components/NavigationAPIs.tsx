@@ -1,41 +1,42 @@
-import React from 'react';
-import BoxAndButton from "./BoxAndButton";
-import CheckboxAndButton from "./CheckboxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import BoxAndButton from './BoxAndButton';
+import CheckboxAndButton from './CheckboxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const NavigationAPIs = () => {
-  const [navigateCrossDomain, setNavigateCrossDomain] = React.useState("");
-  const [focus, setReturnFocus] = React.useState("");
+const NavigationAPIs = (): ReactElement => {
+  const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
+  const [returnFocusRes, setReturnFocusRes] = React.useState('');
 
-  const returnNavigateCrossDomain = (url: string) => {
-    setNavigateCrossDomain("navigateCrossDomain()" + noHubSdkMsg);
+  const navigateCrossDomain = (url: string): void => {
+    setNavigateCrossDomainRes('navigateCrossDomain()' + noHubSdkMsg);
     let inputUrl = JSON.stringify(url);
-    const onComplete = (status: boolean, reason?: string) => {
+    const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setNavigateCrossDomain(reason);
+        if (reason) setNavigateCrossDomainRes(reason);
       } else {
-        setNavigateCrossDomain("Completed");
+        setNavigateCrossDomainRes('Completed');
       }
     };
     teamsjs.navigateCrossDomain(inputUrl, onComplete);
   };
 
-  const returnFocus = (navigateForward: any) => {
-    setReturnFocus("Current navigateForward state is " + navigateForward);
+  const returnFocus = (navigateForward: any): void => {
+    setReturnFocusRes('Current navigateForward state is ' + navigateForward);
     teamsjs.returnFocus(navigateForward);
   };
+
   return (
     <>
       <BoxAndButton
-        handleClick={returnNavigateCrossDomain}
-        output={navigateCrossDomain}
+        handleClick={navigateCrossDomain}
+        output={navigateCrossDomainRes}
         hasInput={true}
         title="Navigate Cross Domain"
         name="navigateCrossDomain"
       />
       <CheckboxAndButton
         handleClick={returnFocus}
-        output={focus}
+        output={returnFocusRes}
         hasInput={false}
         title="Return Focus"
         name="returnFocus"

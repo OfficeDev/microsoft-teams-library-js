@@ -1,46 +1,46 @@
-import React from 'react';
-import { location } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { location } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const LocationAPIs = () => {
-  const [getGetLocation, setGetLocation] = React.useState("");
-  const [getShowLocation, setShowLocation] = React.useState("");
+const LocationAPIs = (): ReactElement => {
+  const [getLocationRes, setGetLocationRes] = React.useState('');
+  const [showLocationRes, setShowLocationRes] = React.useState('');
 
-  const returnGetLocation = (locationProps: any) => {
-    setGetLocation("location.getLocation()" + noHubSdkMsg);
-    location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location) => {
+  const getLocation = (locationProps: any): void => {
+    setGetLocationRes('location.getLocation()' + noHubSdkMsg);
+    location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location): void => {
       if (err) {
-        setGetLocation(err.errorCode.toString + " " + err.message);
+        setGetLocationRes(err.errorCode.toString + ' ' + err.message);
         return;
       }
-      setGetLocation(JSON.stringify(location));
+      setGetLocationRes(JSON.stringify(location));
     });
   };
 
-  const returnShowLocation = (location: any) => {
-    setShowLocation("location.showLocation()" + noHubSdkMsg);
-    location.showLocation(location, (err: teamsjs.SdkError, result: boolean) => {
+  const showLocation = (location: any): void => {
+    setShowLocationRes('location.showLocation()' + noHubSdkMsg);
+    location.showLocation(location, (err: teamsjs.SdkError, result: boolean): void => {
       if (err) {
-        setShowLocation(err.errorCode.toString + " " + err.message);
+        setShowLocationRes(err.errorCode.toString + ' ' + err.message);
         return;
       }
-      setShowLocation("result: " + result);
+      setShowLocationRes('result: ' + result);
     });
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnGetLocation}
-        output={getGetLocation}
+        handleClick={getLocation}
+        output={getLocationRes}
         hasInput={true}
         title="Get Location"
         name="getLocation"
       />
       <BoxAndButton
-        handleClick={returnShowLocation}
-        output={getShowLocation}
+        handleClick={showLocation}
+        output={showLocationRes}
         hasInput={true}
         title="Show Location"
         name="showLocation"

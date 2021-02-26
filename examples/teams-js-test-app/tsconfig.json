@@ -14,18 +14,15 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react"
   },
   "include": [
-    "src",
-    "src/**/*.ts"
+    "src"
   ],
   "exclude": [
     "**/build/*",
     "build",
-    "node_modules/**",
+    "node_modules",
     "**/*.test.*",
     "webpack.config.js"
   ],
