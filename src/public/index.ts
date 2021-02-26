@@ -12,6 +12,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
+  FileOpenPreference,
   UserSettingKeys,
 } from './interfaces';
 export {

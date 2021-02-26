@@ -175,6 +175,10 @@ export enum UserSettingKeys {
    * Use this key to subscribe to changes in user's file open preference
    */
   fileOpenPreference = 'fileOpenPreference',
+  /**
+   * Use this key to subscribe to theme changes
+   */
+  theme = 'theme',
 }
 export interface Context {
   /**
