@@ -12,7 +12,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
-  userSettingKeys,
+  UserSettingKeys,
 } from './interfaces';
 export {
   enablePrintCapability,

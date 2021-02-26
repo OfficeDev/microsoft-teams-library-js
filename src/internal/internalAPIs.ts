@@ -117,9 +117,9 @@ function handleAppButtonHoverLeave(): void {
   }
 }
 
-function handleUserSettingsChange(udatedSettingKey, updatedSettingValue): void {
+function handleUserSettingsChange(settingKey, value): void {
   if (GlobalVars.userSettingsChangeHandler) {
-    GlobalVars.userSettingsChangeHandler(udatedSettingKey, updatedSettingValue);
+    GlobalVars.userSettingsChangeHandler(settingKey, value);
   }
 }
 

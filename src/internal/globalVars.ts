@@ -1,5 +1,5 @@
 import { MessageRequest } from './interfaces';
-import { ConversationResponse, LoadContext, userSettingKeys } from '../public/interfaces';
+import { ConversationResponse, LoadContext, UserSettingKeys } from '../public/interfaces';
 import { FrameContexts } from '../public';
 import { meetingRoom } from '../private/meetingRoom';
 import { remoteCamera } from '../private/remoteCamera';
@@ -46,5 +46,5 @@ export class GlobalVars {
   public static remoteCameraErrorHandler: (error: remoteCamera.ErrorReason) => void;
   public static remoteCameraDeviceStateChangeHandler: (deviceStateChange: remoteCamera.DeviceState) => void;
   public static remoteCameraSessionStatusChangeHandler: (sessionStatusChange: remoteCamera.SessionStatus) => void;
-  public static userSettingsChangeHandler: (updatedSettingKey: userSettingKeys, updatedValue: any) => void;
+  public static userSettingsChangeHandler: (settingKey: UserSettingKeys, value: any) => void;
 }

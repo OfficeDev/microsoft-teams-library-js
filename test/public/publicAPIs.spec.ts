@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { TabInstanceParameters, Context, FrameContext, userSettingKeys } from '../../src/public/interfaces';
+import { TabInstanceParameters, Context, FrameContext, UserSettingKeys } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import {
   executeDeepLink,
@@ -348,7 +348,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
 
     let changedUserSettingKey, changedUserSettingValue;
-    registerUserSettingsChangeHandler([userSettingKeys.fileOpenPreference], (updatedKey, updatedValue) => {
+    registerUserSettingsChangeHandler([UserSettingKeys.fileOpenPreference], (updatedKey, updatedValue) => {
       changedUserSettingKey = updatedKey;
       changedUserSettingValue = updatedValue;
     });

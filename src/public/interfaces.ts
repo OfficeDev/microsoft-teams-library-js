@@ -170,7 +170,7 @@ export enum FileOpenPreference {
 /**
  * User setting changes that can be subscribed to,
  */
-export enum userSettingKeys {
+export enum UserSettingKeys {
   /**
    * Use this key to subscribe to changes in user's file open preference
    */

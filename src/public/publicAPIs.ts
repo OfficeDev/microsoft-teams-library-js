@@ -16,7 +16,7 @@ import {
   Context,
   LoadContext,
   FrameContext,
-  userSettingKeys,
+  UserSettingKeys,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -385,8 +385,8 @@ export function initializeWithFrameContext(
  * @param handler When a subscribed setting is updated this handler is called
  */
 export function registerUserSettingsChangeHandler(
-  settingKeys: userSettingKeys[],
-  handler: (updatedSettingKey: userSettingKeys, updatedValue: any) => void,
+  settingKeys: UserSettingKeys[],
+  handler: (updatedSettingKey: UserSettingKeys, updatedValue: any) => void,
 ): void {
   ensureInitialized(FrameContexts.content);
 
