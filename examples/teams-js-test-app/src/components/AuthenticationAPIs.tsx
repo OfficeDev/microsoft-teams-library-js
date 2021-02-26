@@ -5,6 +5,7 @@ import { noHubSdkMsg } from '../App';
 
 const AuthenticationAPIs = (): ReactElement => {
   const [getTokenRes, setGetTokenRes] = React.useState('');
+  const [getUserRes, setGetUserRes] = React.useState('');
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
   const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
   const [authenticateRes, setAuthenticateRes] = React.useState('');
@@ -23,6 +24,19 @@ const AuthenticationAPIs = (): ReactElement => {
       setGetTokenRes('No Auth');
     }
     authentication.getAuthToken(authParams);
+  };
+
+  const authGetUser = (): void => {
+    setGetUserRes('authentication.getUser()' + noHubSdkMsg);
+    const userRequest = {
+      successCallback: (user: authentication.UserProfile) => {
+        setGetUserRes('Success: ' + JSON.stringify(user));
+      },
+      failureCallback: (reason: string) => {
+        setGetUserRes('Failure: ' + reason);
+      },
+    };
+    authentication.getUser(userRequest);
   };
 
   const authNotifyFailure = (reason: string): void => {
@@ -60,6 +74,7 @@ const AuthenticationAPIs = (): ReactElement => {
         title="Get Auth Token"
         name="getAuthToken"
       />
+      <BoxAndButton handleClick={authGetUser} output={getUserRes} hasInput={false} title="Get User" name="getUser" />
       <BoxAndButton
         handleClick={authNotifyFailure}
         output={notifyFailureRes}
