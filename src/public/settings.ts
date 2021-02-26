@@ -1,7 +1,8 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 
 /**
  * Namespace to interact with the settings-specific part of the SDK.
@@ -10,8 +11,11 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 export namespace settings {
   let saveHandler: (evt: SaveEvent) => void;
   let removeHandler: (evt: RemoveEvent) => void;
-  GlobalVars.handlers['settings.save'] = handleSave;
-  GlobalVars.handlers['settings.remove'] = handleRemove;
+
+  export function initialize(): void {
+    registerHandler('settings.save', handleSave, false);
+    registerHandler('settings.remove', handleRemove, false);
+  }
 
   /**
    * Sets the validity state for the settings.
@@ -20,7 +24,7 @@ export namespace settings {
    */
   export function setValidityState(validityState: boolean): void {
     ensureInitialized(FrameContexts.settings, FrameContexts.remove);
-    sendMessageRequestToParent('settings.setValidityState', [validityState]);
+    sendMessageToParent('settings.setValidityState', [validityState]);
   }
 
   /**
@@ -29,8 +33,7 @@ export namespace settings {
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
-    const messageId = sendMessageRequestToParent('settings.getSettings');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('settings.getSettings', callback);
   }
 
   /**
@@ -43,8 +46,11 @@ export namespace settings {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings);
-    const messageId = sendMessageRequestToParent('settings.setSettings', [instanceSettings]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent(
+      'settings.setSettings',
+      [instanceSettings],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
 
   /**
@@ -57,7 +63,7 @@ export namespace settings {
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
     ensureInitialized(FrameContexts.settings);
     saveHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['save']);
+    handler && sendMessageToParent('registerHandler', ['save']);
   }
 
   /**
@@ -70,7 +76,7 @@ export namespace settings {
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
     ensureInitialized(FrameContexts.remove, FrameContexts.settings);
     removeHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['remove']);
+    handler && sendMessageToParent('registerHandler', ['remove']);
   }
 
   function handleSave(result?: SaveParameters): void {
@@ -154,12 +160,12 @@ export namespace settings {
     }
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.save.success');
+      sendMessageToParent('settings.save.success');
       this.notified = true;
     }
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.save.failure', [reason]);
+      sendMessageToParent('settings.save.failure', [reason]);
       this.notified = true;
     }
     private ensureNotNotified(): void {
@@ -188,13 +194,13 @@ export namespace settings {
 
     public notifySuccess(): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.remove.success');
+      sendMessageToParent('settings.remove.success');
       this.notified = true;
     }
 
     public notifyFailure(reason?: string): void {
       this.ensureNotNotified();
-      sendMessageRequestToParent('settings.remove.failure', [reason]);
+      sendMessageToParent('settings.remove.failure', [reason]);
       this.notified = true;
     }
 
