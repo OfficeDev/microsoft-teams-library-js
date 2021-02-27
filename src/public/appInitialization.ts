@@ -1,5 +1,6 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { version } from '../internal/constants';
+import { sendMessageToParent } from '../internal/communication';
 
 export namespace appInitialization {
   /**
@@ -7,7 +8,7 @@ export namespace appInitialization {
    */
   export function notifyAppLoaded(): void {
     ensureInitialized();
-    sendMessageRequestToParent('appInitialization.appLoaded', [version]);
+    sendMessageToParent('appInitialization.appLoaded', [version]);
   }
 
   /**
@@ -15,7 +16,7 @@ export namespace appInitialization {
    */
   export function notifySuccess(): void {
     ensureInitialized();
-    sendMessageRequestToParent('appInitialization.success', [version]);
+    sendMessageToParent('appInitialization.success', [version]);
   }
 
   /**
@@ -23,7 +24,7 @@ export namespace appInitialization {
    */
   export function notifyFailure(appInitializationFailedRequest: appInitialization.IFailedRequest): void {
     ensureInitialized();
-    sendMessageRequestToParent('appInitialization.failure', [
+    sendMessageToParent('appInitialization.failure', [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
     ]);
