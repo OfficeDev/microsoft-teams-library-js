@@ -1,5 +1,5 @@
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
  * @private
@@ -22,15 +22,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.executeQuery', [botRequest]);
-
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | QueryResponse) => {
+    sendMessageToParent('bot.executeQuery', [botRequest], (success: boolean, response: string | QueryResponse) => {
       if (success) {
         onSuccess(response as QueryResponse);
       } else {
         onError(response as string);
       }
-    };
+    });
   }
   /**
    * @private
@@ -46,15 +44,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.getSupportedCommands');
-
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Command[]) => {
+    sendMessageToParent('bot.getSupportedCommands', (success: boolean, response: string | Command[]) => {
       if (success) {
         onSuccess(response as Command[]);
       } else {
         onError(response as string);
       }
-    };
+    });
   }
   /**
    * @private
@@ -72,15 +68,13 @@ export namespace bot {
   ): void {
     ensureInitialized();
 
-    const messageId = sendMessageRequestToParent('bot.authenticate', [authRequest]);
-
-    GlobalVars.callbacks[messageId] = (success: boolean, response: string | Results) => {
+    sendMessageToParent('bot.authenticate', [authRequest], (success: boolean, response: string | Results) => {
       if (success) {
         onSuccess(response as Results);
       } else {
         onError(response as string);
       }
-    };
+    });
   }
 
   export interface QueryRequest {
