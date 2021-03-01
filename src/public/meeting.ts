@@ -1,5 +1,6 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 import { FrameContexts } from './constants';
 
@@ -83,8 +84,6 @@ export namespace meeting {
     MeetNow = 'MeetNow',
   }
 
-  GlobalVars.handlers['meeting.liveStreamChanged'] = handleLiveStreamChanged;
-
   /**
    * Allows an app to get the incoming audio speaker setting for the meeting user
    * @param callback Callback contains 2 parameters, error and result.
@@ -99,8 +98,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('getIncomingClientAudioState');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
   /**
@@ -115,8 +113,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('toggleIncomingClientAudio');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
   /**
@@ -132,8 +129,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getMeetingDetails');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.getMeetingDetails', callback);
   }
 
   /**
@@ -150,8 +146,7 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meeting.getAuthenticationTokenForAnonymousUser');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 
   /**
@@ -167,8 +162,7 @@ export namespace meeting {
       throw new Error('[get live stream state] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    const messageId = sendMessageRequestToParent('meeting.getLiveStreamState');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.getLiveStreamState', callback);
   }
 
   /**
@@ -188,8 +182,7 @@ export namespace meeting {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    const messageId = sendMessageRequestToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey], callback);
   }
 
   /**
@@ -205,8 +198,7 @@ export namespace meeting {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    const messageId = sendMessageRequestToParent('meeting.requestStopLiveStreaming');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meeting.requestStopLiveStreaming', callback);
   }
 
   /**
@@ -219,13 +211,6 @@ export namespace meeting {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    GlobalVars.liveStreamChangedHandler = handler;
-    sendMessageRequestToParent('registerHandler', ['meeting.liveStreamChanged']);
-  }
-
-  function handleLiveStreamChanged(liveStreamStateUpdate: LiveStreamState): void {
-    if (GlobalVars.liveStreamChangedHandler) {
-      GlobalVars.liveStreamChangedHandler(liveStreamStateUpdate);
-    }
+    registerHandler('meeting.liveStreamChanged', handler);
   }
 }
