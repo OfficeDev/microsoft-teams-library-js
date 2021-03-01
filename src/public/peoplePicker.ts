@@ -1,8 +1,8 @@
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, isAPISupportedByPlatform, sendMessageRequestToParent } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
+import { sendMessageToParent } from '../internal/communication';
 
 export namespace peoplePicker {
   /**
@@ -36,9 +36,8 @@ export namespace peoplePicker {
       callback(invalidInput, null);
       return;
     }
-    const messageId = sendMessageRequestToParent('peoplePicker.selectPeople', [peoplePickerInputs]);
 
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('peoplePicker.selectPeople', [peoplePickerInputs], callback);
   }
 
   /**
