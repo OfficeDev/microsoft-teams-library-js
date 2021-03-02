@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { TabInstanceParameters, Context, FrameContext, UserSettingKeys } from '../../src/public/interfaces';
+import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import {
   executeDeepLink,
@@ -21,7 +21,6 @@ import {
   registerAppButtonClickHandler,
   registerAppButtonHoverEnterHandler,
   registerAppButtonHoverLeaveHandler,
-  registerUserSettingsChangeHandler,
 } from '../../src/public/publicAPIs';
 import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
 import { FrameContexts } from '../../src/public/constants';
@@ -342,21 +341,6 @@ describe('MicrosoftTeams-publicAPIs', () => {
     let navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
     expect(handlerInvoked).toBe(true);
-  });
-
-  it('should successfully register a userSettingsChange handler and call the callback handler on setting change', () => {
-    utils.initializeWithContext('content');
-
-    let changedUserSettingKey, changedUserSettingValue;
-    registerUserSettingsChangeHandler([UserSettingKeys.fileOpenPreference], (updatedKey, updatedValue) => {
-      changedUserSettingKey = updatedKey;
-      changedUserSettingValue = updatedValue;
-    });
-
-    utils.sendMessage('userSettingsChange', 'key', 'value');
-
-    expect(changedUserSettingKey).toBe('key');
-    expect(changedUserSettingValue).toBe('value');
   });
 
   describe('navigateCrossDomain', () => {

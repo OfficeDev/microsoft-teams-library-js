@@ -1,4 +1,4 @@
-import { LoadContext, navigateBack, UserSettingKeys } from '../public';
+import { LoadContext, navigateBack } from '../public';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 
 class HandlersPrivate {
@@ -9,7 +9,6 @@ class HandlersPrivate {
   public static backButtonPressHandler: () => boolean;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-  public static userSettingsChangeHandler: (settingKey: UserSettingKeys, value: any) => void;
 }
 
 export function initializeHandlers(): void {
@@ -18,7 +17,6 @@ export function initializeHandlers(): void {
   HandlersPrivate.handlers['backButtonPress'] = handleBackButtonPress;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-  HandlersPrivate.handlers['userSettingsChange'] = handleUserSettingsChange;
 }
 
 export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
@@ -31,10 +29,10 @@ export function callHandler(name: string, args?: any[]): [true, any] | [false, u
   }
 }
 
-export function registerHandler(name: string, handler: Function, sendMessage: boolean = true): void {
+export function registerHandler(name: string, handler: Function, sendMessage: boolean = true, args: any[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name]);
+    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -90,14 +88,6 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
   handler && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
-export function registerUserSettingsChangeHandler(
-  settingKeys: UserSettingKeys[],
-  handler: (settingKey: UserSettingKeys, value: any) => void,
-): void {
-  HandlersPrivate.userSettingsChangeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['userSettingsChange', settingKeys]);
-}
-
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
     sendMessageToParent('readyToUnload', []);
@@ -105,11 +95,5 @@ function handleBeforeUnload(): void {
 
   if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
     readyToUnload();
-  }
-}
-
-function handleUserSettingsChange(settingKey, value): void {
-  if (HandlersPrivate.userSettingsChangeHandler) {
-    HandlersPrivate.userSettingsChangeHandler(settingKey, value);
   }
 }

@@ -1,6 +1,6 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes, UserSettingKeys } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -13,6 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
+  registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -328,6 +329,22 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
     expect(message.args[12]).toBe(FileOpenPreference.Web);
+  });
+
+  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
+    utils.initializeWithContext('content');
+
+    let changedUserSettingKey, changedUserSettingValue;
+
+    registerUserSettingsChangeHandler([UserSettingKeys.fileOpenPreference], (updatedKey, updatedValue) => {
+      changedUserSettingKey = updatedKey;
+      changedUserSettingValue = updatedValue;
+    });
+
+    utils.sendMessage('userSettingsChange', 'key', 'value');
+
+    expect(changedUserSettingKey).toBe('key');
+    expect(changedUserSettingValue).toBe('value');
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {

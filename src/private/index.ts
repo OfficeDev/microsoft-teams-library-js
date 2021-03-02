@@ -10,6 +10,7 @@ export {
   ThreadMember,
   UserJoinedTeamsInformation,
   ViewerActionTypes,
+  UserSettingKeys,
 } from './interfaces';
 export {
   enterFullscreen,
@@ -23,6 +24,7 @@ export {
   sendCustomEvent,
   registerCustomHandler,
   uploadCustomApp,
+  registerUserSettingsChangeHandler,
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
