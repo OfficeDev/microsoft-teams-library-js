@@ -49,6 +49,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
     FrameContexts.remove,
     FrameContexts.task,
     FrameContexts.stage,
+    FrameContexts.meetingStage
   );
 
   const errorMessage =

@@ -42,6 +42,7 @@ export namespace authentication {
       FrameContexts.remove,
       FrameContexts.task,
       FrameContexts.stage,
+      FrameContexts.meetingStage
     );
     if (
       GlobalVars.hostClientType === HostClientType.desktop ||
