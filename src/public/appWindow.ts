@@ -1,7 +1,8 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 
 export interface IAppWindow {
   postMessage(message): void;
@@ -11,13 +12,12 @@ export interface IAppWindow {
 export class ChildAppWindow implements IAppWindow {
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('messageForChild', [message]);
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      GlobalVars.handlers['messageForParent'] = listener;
+      registerHandler('messageForParent', listener);
     }
   }
 }
@@ -31,14 +31,12 @@ export class ParentAppWindow implements IAppWindow {
 
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(FrameContexts.task);
-    const messageId = sendMessageRequestToParent('messageForParent', [message]);
-
-    GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
+    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
   public addEventListener(type: string, listener: (message: any) => void): void {
     if (type === 'message') {
-      GlobalVars.handlers['messageForChild'] = listener;
+      registerHandler('messageForChild', listener);
     }
   }
 }

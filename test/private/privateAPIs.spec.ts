@@ -1,5 +1,5 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
@@ -56,7 +56,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'http://microsoft.sharepoint-df.com',
     'https://a.b.sharepoint.com',
     'https://a.b.c.sharepoint.com',
-    'http://invalid.origin.com'
+    'http://invalid.origin.com',
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
@@ -279,7 +279,9 @@ describe('MicrosoftTeams-privateAPIs', () => {
       sessionId: 'someSessionId',
       appSessionId: 'appSessionId',
       sourceOrigin: 'someOrigin',
-      userClickTime: 'someTime'
+      userClickTime: 1000,
+      teamTemplateId: 'com.microsoft.teams.ManageAProject',
+      userFileOpenPreference: FileOpenPreference.Web,
     };
 
     // Get many responses to the same message
@@ -307,11 +309,12 @@ describe('MicrosoftTeams-privateAPIs', () => {
       editFile: true,
       subEntityId: 'someSubEntityId',
       viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(12);
+    expect(message.args.length).toBe(13);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -324,6 +327,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
+    expect(message.args[12]).toBe(FileOpenPreference.Web);
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
@@ -342,6 +346,38 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     // The frameless window should send a response back to the child window
     expect(utils.childMessages.length).toBe(1);
+  });
+
+  it('should properly pass partial responses to nested child frames ', () => {
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'testPartialFunc1',
+        args: ['testArgs'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // Send a partial response back
+    const parentMessage = utils.findMessageByFunc('testPartialFunc1');
+    utils.respondToNativeMessage(parentMessage, true, {});
+
+    // The child window should properly receive the partial response
+    expect(utils.childMessages.length).toBe(1);
+    const firstChildMessage = utils.childMessages[0];
+    expect(firstChildMessage.isPartialResponse).toBeTruthy();
+
+    // Pass the final response (non partial)
+    utils.respondToNativeMessage(parentMessage, false, {});
+
+    // The child window should properly receive the non-partial response
+    expect(utils.childMessages.length).toBe(2);
+    const secondChildMessage = utils.childMessages[1];
+    expect(secondChildMessage.isPartialResponse).toBeFalsy();
   });
 
   describe('getUserJoinedTeams', () => {
@@ -423,12 +459,11 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
 
-      const id = sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
+      sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
       let message = utils.findMessageByFunc('customMessage');
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
-      expect(id).toBe(message.id);
     });
   });
 
