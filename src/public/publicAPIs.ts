@@ -311,7 +311,7 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.settings,
     FrameContexts.task,
     FrameContexts.stage,
-    FrameContexts.meetingStage
+    FrameContexts.meetingStage,
   );
   sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
