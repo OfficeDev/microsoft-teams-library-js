@@ -18,9 +18,9 @@ const LocationAPIs = (): ReactElement => {
     });
   };
 
-  const showLocation = (location: any): void => {
+  const showLocation = (locationInput: any): void => {
     setShowLocationRes('location.showLocation()' + noHubSdkMsg);
-    location.showLocation(location, (err: teamsjs.SdkError, result: boolean): void => {
+    location.showLocation(locationInput, (err: teamsjs.SdkError, result: boolean): void => {
       if (err) {
         setShowLocationRes(err.errorCode.toString + ' ' + err.message);
         return;

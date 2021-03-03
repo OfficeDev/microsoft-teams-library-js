@@ -10,10 +10,8 @@ interface BoxAndButtonProps {
 
 //  TODO: consider looking into a grayed out example of parameters show in the box.
 const BoxAndButton = ({ handleClick, hasInput, output, title, name }: BoxAndButtonProps): React.ReactElement => {
-  let input = '';
-  const setInput = (val: string): void => {
-    input = val;
-  };
+  const [input, setInput] = React.useState('');
+
   const getOutput = (): void => {
     hasInput ? handleClick(input) : handleClick();
   };
