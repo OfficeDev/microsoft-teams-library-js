@@ -20,7 +20,7 @@ import {
   initializeWithFrameContext,
   registerAppButtonClickHandler,
   registerAppButtonHoverEnterHandler,
-  registerAppButtonHoverLeaveHandler,
+  registerAppButtonHoverLeaveHandler
 } from '../../src/public/publicAPIs';
 import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
 import { FrameContexts } from '../../src/public/constants';
