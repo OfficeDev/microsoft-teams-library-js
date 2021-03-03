@@ -1,6 +1,6 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { TeamInstanceParameters, ViewerActionTypes, UserSettingKeys } from '../../src/private/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -334,16 +334,16 @@ describe('MicrosoftTeams-privateAPIs', () => {
   it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
     utils.initializeWithContext('content');
 
-    let changedUserSettingKey, changedUserSettingValue;
+    let changedUserSettingType, changedUserSettingValue;
 
-    registerUserSettingsChangeHandler([UserSettingKeys.fileOpenPreference], (updatedKey, updatedValue) => {
-      changedUserSettingKey = updatedKey;
+    registerUserSettingsChangeHandler([UserSettingTypes.fileOpenPreference], (updatedSettingType, updatedValue) => {
+      changedUserSettingType = updatedSettingType;
       changedUserSettingValue = updatedValue;
     });
 
-    utils.sendMessage('userSettingsChange', 'key', 'value');
+    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
 
-    expect(changedUserSettingKey).toBe('key');
+    expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
     expect(changedUserSettingValue).toBe('value');
   });
 

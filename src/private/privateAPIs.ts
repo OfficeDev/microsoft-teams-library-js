@@ -6,7 +6,7 @@ import {
   FilePreviewParameters,
   TeamInstanceParameters,
   UserJoinedTeamsInformation,
-  UserSettingKeys,
+  UserSettingTypes,
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
@@ -207,15 +207,15 @@ export function getConfigSetting(callback: (value: string) => void, key: string)
 
 /**
  * @private
- * register a handler to be called when a user setting changes. The changed setting key & value is provided in the callback.
- * @param settingKeys List of user setting changes to subscribe
+ * register a handler to be called when a user setting changes. The changed setting type & value is provided in the callback.
+ * @param settingTypes List of user setting changes to subscribe
  * @param handler When a subscribed setting is updated this handler is called
  */
 export function registerUserSettingsChangeHandler(
-  settingKeys: UserSettingKeys[],
-  handler: (settingKey: UserSettingKeys, value: any) => void,
+  settingTypes: UserSettingTypes[],
+  handler: (settingType: UserSettingTypes, value: any) => void,
 ): void {
-  ensureInitialized(FrameContexts.content);
+  ensureInitialized();
 
-  registerHandler('userSettingsChange', handler, true, [settingKeys]);
+  registerHandler('userSettingsChange', handler, true, [settingTypes]);
 }

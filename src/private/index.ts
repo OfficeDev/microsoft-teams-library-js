@@ -10,7 +10,7 @@ export {
   ThreadMember,
   UserJoinedTeamsInformation,
   ViewerActionTypes,
-  UserSettingKeys,
+  UserSettingTypes,
 } from './interfaces';
 export {
   enterFullscreen,

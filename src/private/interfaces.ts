@@ -49,7 +49,7 @@ export enum ViewerActionTypes {
  * ------
  * User setting changes that can be subscribed to,
  */
-export enum UserSettingKeys {
+export enum UserSettingTypes {
   /**
    * Use this key to subscribe to changes in user's file open preference
    */
