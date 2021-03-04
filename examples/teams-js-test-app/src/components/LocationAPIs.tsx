@@ -6,6 +6,7 @@ import { noHubSdkMsg } from '../App';
 const LocationAPIs = (): ReactElement => {
   const [getLocationRes, setGetLocationRes] = React.useState('');
   const [showLocationRes, setShowLocationRes] = React.useState('');
+  const [checkLocationCapabilityRes, setCheckLocationCapabilityRes] = React.useState('');
 
   const getLocation = (locationProps: any): void => {
     setGetLocationRes('location.getLocation()' + noHubSdkMsg);
@@ -29,6 +30,14 @@ const LocationAPIs = (): ReactElement => {
     });
   };
 
+  const locationCapabilityCheck = (): void => {
+    if (location.isSupported()) {
+      setCheckLocationCapabilityRes('Location module is supported');
+    } else {
+      setCheckLocationCapabilityRes('Location module is not supported');
+    }
+  };
+
   return (
     <>
       <BoxAndButton
@@ -44,6 +53,13 @@ const LocationAPIs = (): ReactElement => {
         hasInput={true}
         title="Show Location"
         name="showLocation"
+      />
+      <BoxAndButton
+        handleClick={locationCapabilityCheck}
+        output={checkLocationCapabilityRes}
+        hasInput={false}
+        title="Check Location Capability"
+        name="checkLocationCapability"
       />
     </>
   );

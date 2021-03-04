@@ -2,6 +2,7 @@ import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { sendMessageToParent } from '../internal/communication';
+import { runtime } from './runtime';
 
 export namespace location {
   /**
@@ -89,5 +90,9 @@ export namespace location {
       return;
     }
     sendMessageToParent('location.showLocation', [location], callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.location ? true : false;
   }
 }
