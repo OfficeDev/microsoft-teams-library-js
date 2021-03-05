@@ -3,16 +3,9 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const PrivateAPIs = (): ReactElement => {
-  const [showNotification, setShowNotification] = React.useState('');
   const [openFilePreview, setOpenFilePreview] = React.useState('');
   const [getChatMembers, setGetChatMembers] = React.useState('');
   const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState('');
-
-  const returnShowNotification = (showNotificationParams: any): void => {
-    showNotificationParams = JSON.parse(showNotificationParams);
-    setShowNotification('showNotification()' + noHubSdkMsg);
-    teamsjs.showNotification(showNotificationParams);
-  };
 
   const returnOpenFilePreview = (filePreviewParams: any): void => {
     filePreviewParams = JSON.parse(filePreviewParams);
@@ -38,13 +31,6 @@ const PrivateAPIs = (): ReactElement => {
 
   return (
     <>
-      <BoxAndButton
-        handleClick={returnShowNotification}
-        output={showNotification}
-        hasInput={true}
-        title="Show Notification"
-        name="showNotification"
-      />
       <BoxAndButton
         handleClick={returnOpenFilePreview}
         output={openFilePreview}

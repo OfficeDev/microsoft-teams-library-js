@@ -88,20 +88,6 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
  * @private
  * Hide from docs.
  * ------
- * display notification API.
- * @param message Notification message.
- * @param notificationType Notification type
- */
-export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
-  ensureInitialized(FrameContexts.content);
-  const params = [showNotificationParameters.message, showNotificationParameters.notificationType];
-  sendMessageToParent('showNotification', params);
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  */

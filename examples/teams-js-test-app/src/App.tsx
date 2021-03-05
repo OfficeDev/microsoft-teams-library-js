@@ -13,6 +13,7 @@ import SettingsAPIs from './components/SettingsAPIs';
 import TasksAPIs from './components/TasksAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import MailAPIs from './components/MailAPIs';
+import NotificationAPIs from './components/privateApis/NotificationAPIs';
 
 core.initialize();
 appInitialization.notifyAppLoaded();
@@ -33,6 +34,7 @@ const App = (): ReactElement => {
       <SettingsAPIs />
       <TasksAPIs />
       <TeamsCoreAPIs />
+      <NotificationAPIs />
     </>
   );
 };

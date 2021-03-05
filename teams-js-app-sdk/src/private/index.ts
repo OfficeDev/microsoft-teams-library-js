@@ -19,7 +19,6 @@ export {
   getUserJoinedTeams,
   openFilePreview,
   sendCustomMessage,
-  showNotification,
   sendCustomEvent,
   registerCustomHandler,
   uploadCustomApp,
@@ -27,3 +26,4 @@ export {
 export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
 export { remoteCamera } from './remoteCamera';
+export { notifications } from './notifications';

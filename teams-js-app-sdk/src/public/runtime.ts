@@ -6,6 +6,7 @@ export interface IRuntime {
     readonly calendar?: {};
     readonly mail?: {};
     readonly location?: {};
+    readonly notifications?: {};
   };
 }
 
