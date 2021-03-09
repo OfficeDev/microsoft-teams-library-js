@@ -44,6 +44,23 @@ export enum ViewerActionTypes {
 }
 
 /**
+ * * @private
+ * Hide from docs.
+ * ------
+ * User setting changes that can be subscribed to,
+ */
+export enum UserSettingTypes {
+  /**
+   * Use this key to subscribe to changes in user's file open preference
+   */
+  fileOpenPreference = 'fileOpenPreference',
+  /**
+   * Use this key to subscribe to theme changes
+   */
+  theme = 'theme',
+}
+
+/**
  * @private
  * Hide from docs.
  * ------

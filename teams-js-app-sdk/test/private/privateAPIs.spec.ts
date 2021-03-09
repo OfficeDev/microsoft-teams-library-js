@@ -1,6 +1,6 @@
 import { core } from '../../src/public/publicAPIs';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -13,6 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
+  registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
@@ -327,6 +328,22 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
     expect(message.args[12]).toBe(FileOpenPreference.Web);
+  });
+
+  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
+    utils.initializeWithContext('content');
+
+    let changedUserSettingType, changedUserSettingValue;
+
+    registerUserSettingsChangeHandler([UserSettingTypes.fileOpenPreference], (updatedSettingType, updatedValue) => {
+      changedUserSettingType = updatedSettingType;
+      changedUserSettingValue = updatedValue;
+    });
+
+    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
+
+    expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
+    expect(changedUserSettingValue).toBe('value');
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {

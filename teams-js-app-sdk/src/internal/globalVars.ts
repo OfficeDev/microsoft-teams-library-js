@@ -1,5 +1,4 @@
 import { FrameContexts } from '../public';
-
 export class GlobalVars {
   public static initializeCalled: boolean = false;
   public static initializeCompleted: boolean = false;

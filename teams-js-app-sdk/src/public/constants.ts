@@ -16,6 +16,7 @@ export enum FrameContexts {
   task = 'task',
   sidePanel = 'sidePanel',
   stage = 'stage',
+  meetingStage = 'meetingStage',
 }
 
 /**

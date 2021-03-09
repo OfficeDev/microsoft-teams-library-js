@@ -29,10 +29,10 @@ export function callHandler(name: string, args?: any[]): [true, any] | [false, u
   }
 }
 
-export function registerHandler(name: string, handler: Function, sendMessage: boolean = true): void {
+export function registerHandler(name: string, handler: Function, sendMessage: boolean = true, args: any[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name]);
+    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
