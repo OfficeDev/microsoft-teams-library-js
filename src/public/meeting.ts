@@ -25,10 +25,6 @@ export namespace meeting {
   }
   export interface IDetails {
     /**
-     * event id of the meeting
-     */
-    id: string;
-    /**
      * Scheduled start time of the meeting
      */
     scheduledStartTime: string;
