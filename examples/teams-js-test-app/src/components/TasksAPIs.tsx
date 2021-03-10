@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { tasks } from '@microsoft/teamsjs-app-sdk';
+import { TaskInfo, tasks } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -8,23 +8,22 @@ const TaskAPIs = (): ReactElement => {
   const [updateTaskRes, setUpdateTaskRes] = React.useState('');
   const [submitTaskRes, setSubmitTaskRes] = React.useState('');
 
-  const startTask = (taskInfo: any): void => {
+  const startTask = (taskInfoInput: string): void => {
     setStartTaskRes('tasks.startTask' + noHubSdkMsg);
-    taskInfo = JSON.parse(taskInfo);
+    let taskInfo: TaskInfo = JSON.parse(taskInfoInput);
     const onComplete = (err: string, result: string): void => {
       setStartTaskRes('Error: ' + err + '\nResult: ' + result);
     };
     tasks.startTask(taskInfo, onComplete);
   };
 
-  const updateTask = (taskInfo: any): void => {
-    taskInfo = JSON.parse(taskInfo);
+  const updateTask = (taskInfoInput: string): void => {
     setUpdateTaskRes('App SDK call updateTask was called');
+    let taskInfo: TaskInfo = JSON.parse(taskInfoInput);
     tasks.updateTask(taskInfo);
   };
 
-  const submitTask = (result: any): void => {
-    result = JSON.parse(result);
+  const submitTask = (result: string): void => {
     setSubmitTaskRes('App SDK call submitTask was called');
     tasks.submitTask(result);
   };

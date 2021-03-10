@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react';
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
-import { notifications } from '@microsoft/teamsjs-app-sdk';
+import { notifications, ShowNotificationParameters } from '@microsoft/teamsjs-app-sdk';
 
 const NotificationAPIs = (): ReactElement => {
   const [showNotification, setShowNotification] = React.useState('');
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
-  const returnShowNotification = (showNotificationParams: any): void => {
-    showNotificationParams = JSON.parse(showNotificationParams);
+  const returnShowNotification = (showNotificationParamsInput: string): void => {
+    let showNotificationParams: ShowNotificationParameters = JSON.parse(showNotificationParamsInput);
     setShowNotification('showNotification()' + noHubSdkMsg);
     notifications.showNotification(showNotificationParams);
   };

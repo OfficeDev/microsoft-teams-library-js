@@ -8,7 +8,8 @@ const LocationAPIs = (): ReactElement => {
   const [showLocationRes, setShowLocationRes] = React.useState('');
   const [checkLocationCapabilityRes, setCheckLocationCapabilityRes] = React.useState('');
 
-  const getLocation = (locationProps: any): void => {
+  const getLocation = (locationPropsInput: string): void => {
+    let locationProps: location.LocationProps = JSON.parse(locationPropsInput);
     setGetLocationRes('location.getLocation()' + noHubSdkMsg);
     location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location): void => {
       if (err) {
@@ -19,9 +20,10 @@ const LocationAPIs = (): ReactElement => {
     });
   };
 
-  const showLocation = (locationInput: any): void => {
+  const showLocation = (locationInput: string): void => {
+    let locationParam: location.Location = JSON.parse(locationInput);
     setShowLocationRes('location.showLocation()' + noHubSdkMsg);
-    location.showLocation(locationInput, (err: teamsjs.SdkError, result: boolean): void => {
+    location.showLocation(locationParam, (err: teamsjs.SdkError, result: boolean): void => {
       if (err) {
         setShowLocationRes(err.errorCode.toString + ' ' + err.message);
         return;

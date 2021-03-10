@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { core } from '@microsoft/teamsjs-app-sdk';
+import { Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -11,7 +11,7 @@ const CoreAPIs = (): ReactElement => {
 
   const getContext = (): void => {
     setGetContextRes('core.getContext()' + noHubSdkMsg);
-    core.getContext((res: any) => {
+    core.getContext((res: Context) => {
       setGetContextRes(JSON.stringify(res));
     });
   };
@@ -28,8 +28,8 @@ const CoreAPIs = (): ReactElement => {
     core.executeDeepLink(deepLink, onComplete);
   };
 
-  const shareDeepLink = (deepLinkParams: any): void => {
-    deepLinkParams = JSON.parse(deepLinkParams);
+  const shareDeepLink = (deepLinkParamsInput: string): void => {
+    let deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
     core.shareDeepLink(deepLinkParams);
     setShareDeepLinkRes('called shareDeepLink.');
   };

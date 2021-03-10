@@ -20,9 +20,9 @@ const NavigationAPIs = (): ReactElement => {
     teamsjs.navigateCrossDomain(inputUrl, onComplete);
   };
 
-  const returnFocus = (navigateForward: any): void => {
+  const returnFocus = (navigateForward: string): void => {
     setReturnFocusRes('Current navigateForward state is ' + navigateForward);
-    teamsjs.returnFocus(navigateForward);
+    teamsjs.returnFocus(navigateForward === 'true');
   };
 
   return (

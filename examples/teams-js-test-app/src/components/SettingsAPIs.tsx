@@ -12,37 +12,41 @@ const SettingsAPIs = (): ReactElement => {
 
   const getSettings = (): void => {
     setGetSettingsRes('settings.getSettings()' + noHubSdkMsg);
-    const onComplete = (instanceSettings: any): void => {
-      setGetSettingsRes(instanceSettings);
+    const onComplete = (instanceSettings: settings.Settings): void => {
+      setGetSettingsRes(instanceSettings.toString());
     };
     settings.getSettings(onComplete);
   };
 
   const registerOnSaveHandler = (): void => {
     setRegisterOnSaveHandlerRes('settings.registerOnSaveHandler()' + noHubSdkMsg);
-    settings.registerOnSaveHandler((saveEvent: any): void => {
+    settings.registerOnSaveHandler((saveEvent: settings.SaveEvent): void => {
       setRegisterOnSaveHandlerRes('Save event received.');
       saveEvent.notifySuccess();
     });
   };
 
-  const setSettings = (instanceSettings: any): void => {
+  const setSettings = (instanceSettingsInput: string): void => {
+    let instanceSettings: settings.Settings = JSON.parse(instanceSettingsInput);
     setSetSettingsRes('settings.setSettings()' + noHubSdkMsg);
-    const onComplete = (output: any): void => {
-      setSetSettingsRes(output);
+    const onComplete = (status: boolean, reason?: string | undefined): void => {
+      let output = '';
+      if (reason) output += 'reason: ' + reason + ', \n';
+      setSetSettingsRes(output + 'status: ' + status.toString());
     };
     settings.setSettings(instanceSettings, onComplete);
   };
 
   const setValidityState = (validityState: string): void => {
-    settings.setValidityState(validityState == 'true');
-    setSetValidityStateRes('Set validity state to ' + (validityState == 'true'));
+    settings.setValidityState(validityState === 'true');
+    setSetValidityStateRes('Set validity state to ' + (validityState === 'true'));
   };
 
   const registerOnRemoveHandler = (): void => {
     setRegisterOnRemoveHandlerRes('settings.registerOnRemoveHandler()' + noHubSdkMsg);
-    settings.registerOnRemoveHandler((removeEvent: any): void => {
+    settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
       setRegisterOnRemoveHandlerRes('Handler registered.');
+      removeEvent.notifySuccess();
     });
   };
 

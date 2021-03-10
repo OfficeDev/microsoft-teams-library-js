@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { conversations } from '@microsoft/teamsjs-app-sdk';
+import { OpenConversationRequest, conversations } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -7,9 +7,9 @@ const ConversationsAPIs = (): ReactElement => {
   const [openConversationRes, setOpenConversationRes] = React.useState('');
   const [closeConversationRes, setCloseConversationRes] = React.useState('');
 
-  const openConversation = (openConversationRequest: any): void => {
+  const openConversation = (openConversationRequestInput: string): void => {
     setOpenConversationRes('conversations.openConversation()' + noHubSdkMsg);
-    openConversationRequest = JSON.parse(openConversationRequest);
+    let openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
     openConversationRequest.onStartConversation = conversationResponse => {
       setOpenConversationRes(
         'Start Conversation Subentity Id ' +

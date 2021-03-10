@@ -7,8 +7,8 @@ const PrivateAPIs = (): ReactElement => {
   const [getChatMembers, setGetChatMembers] = React.useState('');
   const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState('');
 
-  const returnOpenFilePreview = (filePreviewParams: any): void => {
-    filePreviewParams = JSON.parse(filePreviewParams);
+  const returnOpenFilePreview = (filePreviewParamsInput: string): void => {
+    let filePreviewParams: teamsjs.FilePreviewParameters = JSON.parse(filePreviewParamsInput);
     setOpenFilePreview('openFilePreview()' + noHubSdkMsg);
     teamsjs.openFilePreview(filePreviewParams);
   };
@@ -21,9 +21,10 @@ const PrivateAPIs = (): ReactElement => {
     teamsjs.getChatMembers(onComplete);
   };
 
-  const returnGetUserJoinedTeams = (teamInstanceParams: any): void => {
+  const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
+    let teamInstanceParams = JSON.parse(teamInstanceParamsInput);
     setGetUserJoinedTeams('getUserJoinedTeams()' + noHubSdkMsg);
-    const onComplete = (userJoinedTeamsInfo: any): void => {
+    const onComplete = (userJoinedTeamsInfo: teamsjs.UserJoinedTeamsInformation): void => {
       setGetUserJoinedTeams(JSON.stringify(userJoinedTeamsInfo));
     };
     teamsjs.getUserJoinedTeams(onComplete, teamInstanceParams);
