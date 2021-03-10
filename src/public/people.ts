@@ -4,7 +4,7 @@ import { ErrorCode, SdkError } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
 
-export namespace peoplePicker {
+export namespace people {
   /**
    * This is the SDK version when people picker API is supported on mobile.
    */
@@ -23,7 +23,7 @@ export namespace peoplePicker {
     if (!callback) {
       throw new Error('[people picker] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
     if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
@@ -37,7 +37,7 @@ export namespace peoplePicker {
       return;
     }
 
-    sendMessageToParent('peoplePicker.selectPeople', [peoplePickerInputs], callback);
+    sendMessageToParent('people.selectPeople', [peoplePickerInputs], callback);
   }
 
   /**
@@ -55,21 +55,18 @@ export namespace peoplePicker {
      * If single select is enabled this value, only the first user in the list will be pre-populated
      * Default value is null
      */
-
     setSelected?: string[];
 
     /**
      * Optional; launches the people picker in org wide scope even if the app is added to a chat or channel
      * Default value is false
      */
-
     openOrgWideSearchInChatOrChannel?: boolean;
 
     /**
      * Optional; launches the people picker for which only 1 person can be selected
      * Default value is false
      */
-
     singleSelect?: boolean;
   }
 
@@ -78,20 +75,18 @@ export namespace peoplePicker {
    */
   export interface PeoplePickerResult {
     /**
-     * aad Id of the selected user
+     * user object Id (also known as aad id) of the selected user
      */
-    aadId: string;
+    objectId: string;
 
     /**
      * Optional; display name of the selected user
      */
-
     displayName?: string;
 
     /**
      * Optional; email of the selected user
      */
-
     email?: string;
   }
 }

@@ -1,5 +1,5 @@
 import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile, validatePeoplePickerInput } from '../../src/internal/mediaUtil';
-import { peoplePicker } from '../../src/public/peoplePicker';
+import { people } from '../../src/public/people';
 import { media } from '../../src/public/media';
 
 describe('mediaUtil', () => {
@@ -155,7 +155,7 @@ describe('mediaUtil', () => {
   });
 
   it('test success case for selectPeople with valid input params', () => {
-    const peoplePickerInputs : peoplePicker.PeoplePickerInputs = {
+    const peoplePickerInputs : people.PeoplePickerInputs = {
       title: "Hello World",
       setSelected: ["12345678"],
       openOrgWideSearchInChatOrChannel: true,

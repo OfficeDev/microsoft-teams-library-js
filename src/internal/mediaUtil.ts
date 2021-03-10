@@ -1,4 +1,4 @@
-import { peoplePicker } from '../public/peoplePicker';
+import { people } from '../public/people';
 import { media } from '../public/media';
 
 /**
@@ -95,7 +95,7 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
 /**
  * Returns true if the people picker params are valid and false otherwise
  */
-export function validatePeoplePickerInput(peoplePickerInputs: peoplePicker.PeoplePickerInputs): boolean {
+export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {
     if (peoplePickerInputs.title) {
       if (typeof peoplePickerInputs.title !== 'string') {

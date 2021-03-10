@@ -3,10 +3,10 @@ import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { FrameContexts } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
-import { peoplePicker } from '../../src/public/peoplePicker';
+import { people } from '../../src/public/people';
 
 /**
- * Test cases for peoplePicker API
+ * Test cases for selectPeople API
  */
 describe('peoplePicker', () => {
   const mobilePlatformMock = new FramelessPostMocks();
@@ -32,7 +32,7 @@ describe('peoplePicker', () => {
    * People Picker tests
    */
   it('should not allow selectPeople calls with null callback', () => {
-    expect(() => peoplePicker.selectPeople(null)).toThrowError(
+    expect(() => people.selectPeople(null)).toThrowError(
       '[people picker] Callback cannot be null',
     );
   });
@@ -41,7 +41,7 @@ describe('peoplePicker', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
     let peoplePickerError: SdkError;
-    peoplePicker.selectPeople((error: SdkError, people: peoplePicker.PeoplePickerResult[]) => {
+    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
       peoplePickerError = error;
     }, null);
     expect(peoplePickerError).toBeUndefined();
@@ -51,7 +51,7 @@ describe('peoplePicker', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
     let peoplePickerError: SdkError;
-    peoplePicker.selectPeople((error: SdkError, people: peoplePicker.PeoplePickerResult[]) => {
+    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
       peoplePickerError = error;
     });
     expect(peoplePickerError).toBeUndefined();
@@ -61,7 +61,7 @@ describe('peoplePicker', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
     let peoplePickerError: SdkError;
-    peoplePicker.selectPeople((error: SdkError, people: peoplePicker.PeoplePickerResult[]) => {
+    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
       peoplePickerError = error;
     }, undefined);
     expect(peoplePickerError).toBeUndefined();
@@ -70,7 +70,7 @@ describe('peoplePicker', () => {
   it('selectPeople call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     let peoplePickerError: SdkError;
-    peoplePicker.selectPeople((error: SdkError, people: peoplePicker.PeoplePickerResult[]) => {
+    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
       peoplePickerError = error;
     });
     expect(peoplePickerError).not.toBeNull();
@@ -80,8 +80,8 @@ describe('peoplePicker', () => {
   it('selectPeople call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    peoplePicker.selectPeople(emptyCallback);
-    const message = mobilePlatformMock.findMessageByFunc('peoplePicker.selectPeople');
+    people.selectPeople(emptyCallback);
+    const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
   });
@@ -89,8 +89,8 @@ describe('peoplePicker', () => {
   it('selectPeople call in content frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    peoplePicker.selectPeople(emptyCallback);
-    const message = mobilePlatformMock.findMessageByFunc('peoplePicker.selectPeople');
+    people.selectPeople(emptyCallback);
+    const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
   });
@@ -98,22 +98,22 @@ describe('peoplePicker', () => {
   it('selectPeople calls with successful result', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let people: peoplePicker.PeoplePickerResult[], peoplePickerError: SdkError;
-    peoplePicker.selectPeople((e: SdkError, m: peoplePicker.PeoplePickerResult[]) => {
+    let peoplePickerResult: people.PeoplePickerResult[], peoplePickerError: SdkError;
+    people.selectPeople((e: SdkError, m: people.PeoplePickerResult[]) => {
       peoplePickerError = e;
-      people = m;
+      peoplePickerResult = m;
     });
 
-    const message = mobilePlatformMock.findMessageByFunc('peoplePicker.selectPeople');
+    const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
 
     const callbackId = message.id;
     const result = [{
-     aadId: "5842943a-aa5a-470a-bfdc-7311b9988962",
+     objectId: "5842943a-aa5a-470a-bfdc-7311b9988962",
      displayName: "Sonal Jha",
      email: "sojh@m365x347208.onmicrosoft.com"
-    } as peoplePicker.PeoplePickerResult];
+    } as people.PeoplePickerResult];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -125,11 +125,11 @@ describe('peoplePicker', () => {
     expect(result.length).toBe(1);
     const person = result[0];
     expect(person).not.toBeNull();
-    expect(person.aadId).not.toBeNull();
-    expect(typeof person.aadId === 'string').toBeTruthy();
+    expect(person.objectId).not.toBeNull();
+    expect(typeof person.objectId === 'string').toBeTruthy();
     expect(typeof person.displayName === 'string').toBeTruthy();
     expect(typeof person.email === 'string').toBeTruthy();
-    expect(person.aadId).toBe('5842943a-aa5a-470a-bfdc-7311b9988962');
+    expect(person.objectId).toBe('5842943a-aa5a-470a-bfdc-7311b9988962');
     expect(person.displayName).toBe('Sonal Jha');
     expect(person.email).toBe('sojh@m365x347208.onmicrosoft.com');
   });
@@ -137,19 +137,19 @@ describe('peoplePicker', () => {
   it('selectPeople calls with error', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerResult: peoplePicker.PeoplePickerResult[], peoplePickerError: SdkError;
-    const peoplePickerInput: peoplePicker.PeoplePickerInputs = {
+    let peoplePickerResult: people.PeoplePickerResult[], peoplePickerError: SdkError;
+    const peoplePickerInput: people.PeoplePickerInputs = {
      title: "Hello World",
      setSelected: null,
      openOrgWideSearchInChatOrChannel: true,
      singleSelect: true
     };
-    peoplePicker.selectPeople( (e: SdkError, m: peoplePicker.PeoplePickerResult[]) => {
+    people.selectPeople( (e: SdkError, m: people.PeoplePickerResult[]) => {
       peoplePickerError = e;
       peoplePickerResult = m;
     }, peoplePickerInput);
 
-    const message = mobilePlatformMock.findMessageByFunc('peoplePicker.selectPeople');
+    const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
 
