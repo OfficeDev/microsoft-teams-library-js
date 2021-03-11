@@ -1,7 +1,8 @@
 import * as React from 'react';
-// TODO: Will come back and generate this UI to be a UI componment
+
 interface CheckboxAndButtonProps {
-  handleClick: (input?: any) => void;
+  handleClick?: () => void;
+  handleClickWithInput?: (input: string) => void;
   hasInput: boolean;
   title: string;
   name: string; // system identifiable unique name in context of MOS App and should contain no spaces
@@ -10,8 +11,10 @@ interface CheckboxAndButtonProps {
   checkBoxTitle?: string;
 }
 
+// Exactly one of handleClick or handleClickWithInput should be passed in.
 const CheckboxAndButton = ({
   handleClick,
+  handleClickWithInput,
   hasInput,
   output,
   title,
@@ -21,6 +24,9 @@ const CheckboxAndButton = ({
 }: CheckboxAndButtonProps): React.ReactElement => {
   let input = '';
   let checkboxState = false;
+  if (!handleClick === !handleClickWithInput) {
+    throw new Error('Please implement exactly one of either handleClick or handleClickWithInput for ' + title + '. ');
+  }
   const setCheckboxState = (val: boolean): void => {
     checkboxState = val;
   };
@@ -28,7 +34,11 @@ const CheckboxAndButton = ({
     input = val;
   };
   const getOutput = (): void => {
-    hasInput ? handleClick(input) : hasTitle ? handleClick(checkboxState) : handleClick();
+    if (handleClick) {
+      handleClick();
+    } else if (handleClickWithInput) {
+      handleClickWithInput(checkboxState.toString());
+    }
   };
   return (
     <div

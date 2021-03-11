@@ -28,14 +28,14 @@ const NavigationAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={navigateCrossDomain}
+        handleClickWithInput={navigateCrossDomain}
         output={navigateCrossDomainRes}
         hasInput={true}
         title="Navigate Cross Domain"
         name="navigateCrossDomain"
       />
       <CheckboxAndButton
-        handleClick={returnFocus}
+        handleClickWithInput={returnFocus}
         output={returnFocusRes}
         hasInput={false}
         title="Return Focus"

@@ -49,7 +49,7 @@ const ConversationsAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={openConversation}
+        handleClickWithInput={openConversation}
         output={openConversationRes}
         hasInput={true}
         title="openConversation"

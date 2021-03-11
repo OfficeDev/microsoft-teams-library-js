@@ -30,16 +30,22 @@ const TaskAPIs = (): ReactElement => {
 
   return (
     <>
-      <BoxAndButton handleClick={startTask} output={startTaskRes} hasInput={true} title="Start Task" name="startTask" />
       <BoxAndButton
-        handleClick={updateTask}
+        handleClickWithInput={startTask}
+        output={startTaskRes}
+        hasInput={true}
+        title="Start Task"
+        name="startTask"
+      />
+      <BoxAndButton
+        handleClickWithInput={updateTask}
         output={updateTaskRes}
         hasInput={true}
         title="Update Task"
         name="updateTask"
       />
       <BoxAndButton
-        handleClick={submitTask}
+        handleClickWithInput={submitTask}
         output={submitTaskRes}
         hasInput={true}
         title="Submit Task"

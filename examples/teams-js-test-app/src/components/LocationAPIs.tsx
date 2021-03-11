@@ -43,14 +43,14 @@ const LocationAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={getLocation}
+        handleClickWithInput={getLocation}
         output={getLocationRes}
         hasInput={true}
         title="Get Location"
         name="getLocation"
       />
       <BoxAndButton
-        handleClick={showLocation}
+        handleClickWithInput={showLocation}
         output={showLocationRes}
         hasInput={true}
         title="Show Location"

@@ -50,14 +50,14 @@ const CalendarAPIs = (): ReactElement => {
         name="checkCapabilityCalendar"
       />
       <BoxAndButton
-        handleClick={openCalendarItem}
+        handleClickWithInput={openCalendarItem}
         output={openCalendarItemRes}
         hasInput={true}
         title="Open Calendar Item"
         name="openCalendarItem"
       />
       <BoxAndButton
-        handleClick={composeMeeting}
+        handleClickWithInput={composeMeeting}
         output={composeMeetingRes}
         hasInput={true}
         title="Compose Meeting"

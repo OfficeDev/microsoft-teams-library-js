@@ -33,7 +33,7 @@ const PrivateAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={returnOpenFilePreview}
+        handleClickWithInput={returnOpenFilePreview}
         output={openFilePreview}
         hasInput={true}
         title="Open File Preview"
@@ -47,7 +47,7 @@ const PrivateAPIs = (): ReactElement => {
         name="getChatMembers"
       />
       <BoxAndButton
-        handleClick={returnGetUserJoinedTeams}
+        handleClickWithInput={returnGetUserJoinedTeams}
         output={getUserJoinedTeams}
         hasInput={true}
         title="Get User Joined Teams"

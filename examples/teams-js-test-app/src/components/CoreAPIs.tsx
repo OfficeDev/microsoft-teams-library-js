@@ -20,7 +20,9 @@ const CoreAPIs = (): ReactElement => {
     setExecuteDeepLinkRes('core.executeDeepLink()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setExecuteDeepLinkRes(reason);
+        if (reason) {
+          setExecuteDeepLinkRes(reason);
+        }
       } else {
         setExecuteDeepLinkRes('Completed');
       }
@@ -50,14 +52,14 @@ const CoreAPIs = (): ReactElement => {
         name="getContext"
       />
       <BoxAndButton
-        handleClick={executeDeepLink}
+        handleClickWithInput={executeDeepLink}
         output={executeDeepLinkRes}
         hasInput={true}
         title="Execute Deep Link"
         name="executeDeepLink"
       />
       <BoxAndButton
-        handleClick={shareDeepLink}
+        handleClickWithInput={shareDeepLink}
         output={shareDeepLinkRes}
         hasInput={true}
         title="core.shareDeepLink"

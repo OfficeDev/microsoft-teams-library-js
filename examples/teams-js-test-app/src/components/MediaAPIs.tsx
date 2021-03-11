@@ -160,29 +160,35 @@ const MediaAPIs = (): ReactElement => {
         name="CaptureImage"
       />
       <BoxAndButton
-        handleClick={selectMedia}
+        handleClickWithInput={selectMedia}
         output={selectMediaRes}
         hasInput={true}
         title="Select Media"
         name="selectMedia"
       />
-      <BoxAndButton handleClick={getMedia} output={getMediaRes} hasInput={true} title="Get Media" name="getMedia" />
       <BoxAndButton
-        handleClick={viewImagesWithId}
+        handleClickWithInput={getMedia}
+        output={getMediaRes}
+        hasInput={true}
+        title="Get Media"
+        name="getMedia"
+      />
+      <BoxAndButton
+        handleClickWithInput={viewImagesWithId}
         output={viewImagesWithIdRes}
         hasInput={true}
         title="View Images With Id"
         name="viewImagesWithId"
       />
       <BoxAndButton
-        handleClick={viewImagesWithUrls}
+        handleClickWithInput={viewImagesWithUrls}
         output={viewImagesWithUrlsRes}
         hasInput={true}
         title="View Images With Urls"
         name="viewImagesWithUrls"
       />
       <BoxAndButton
-        handleClick={scanBarCode}
+        handleClickWithInput={scanBarCode}
         output={scanBarCodeRes}
         hasInput={true}
         title="Media Scan Bar Code"

@@ -1,7 +1,8 @@
 import * as React from 'react';
 
 interface BoxAndButtonProps {
-  handleClick: (input?: any) => void;
+  handleClick?: () => void;
+  handleClickWithInput?: (input: string) => void;
   hasInput: boolean;
   title: string;
   name: string; // system identifiable unique name in context of MOS App and should contain no spaces
@@ -9,11 +10,25 @@ interface BoxAndButtonProps {
 }
 
 //  TODO: consider looking into a grayed out example of parameters show in the box.
-const BoxAndButton = ({ handleClick, hasInput, output, title, name }: BoxAndButtonProps): React.ReactElement => {
+const BoxAndButton = ({
+  handleClick,
+  handleClickWithInput,
+  hasInput,
+  output,
+  title,
+  name,
+}: BoxAndButtonProps): React.ReactElement => {
   const [input, setInput] = React.useState('');
 
+  if (!handleClick === !handleClickWithInput) {
+    throw new Error('Please implement exactly one of either handleClick or handleClickWithInput for ' + title + '. ');
+  }
   const getOutput = (): void => {
-    hasInput ? handleClick(input) : handleClick();
+    if (handleClick) {
+      handleClick();
+    } else if (handleClickWithInput) {
+      handleClickWithInput(input);
+    }
   };
   return (
     <div

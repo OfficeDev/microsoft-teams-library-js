@@ -67,14 +67,14 @@ const SettingsAPIs = (): ReactElement => {
         name="settings.registerOnSaveHandler"
       />
       <BoxAndButton
-        handleClick={setSettings}
+        handleClickWithInput={setSettings}
         output={setSettingsRes}
         hasInput={true}
         title="Set Settings"
         name="settings.setSettings"
       />
       <BoxAndButton
-        handleClick={setValidityState}
+        handleClickWithInput={setValidityState}
         output={setValidityStateRes}
         hasInput={true}
         title="Set Validity State"

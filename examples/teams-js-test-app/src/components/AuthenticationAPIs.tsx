@@ -68,7 +68,7 @@ const AuthenticationAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={authGetToken}
+        handleClickWithInput={authGetToken}
         output={getTokenRes}
         hasInput={true}
         title="Get Auth Token"
@@ -76,21 +76,21 @@ const AuthenticationAPIs = (): ReactElement => {
       />
       <BoxAndButton handleClick={authGetUser} output={getUserRes} hasInput={false} title="Get User" name="getUser" />
       <BoxAndButton
-        handleClick={authNotifyFailure}
+        handleClickWithInput={authNotifyFailure}
         output={notifyFailureRes}
         hasInput={true}
         title="authentication.notifyFailure"
         name="authentication.notifyFailure"
       />
       <BoxAndButton
-        handleClick={authNotifySuccess}
+        handleClickWithInput={authNotifySuccess}
         output={notifySuccessRes}
         hasInput={true}
         title="authentication.notifySuccess"
         name="authentication.notifySuccess"
       />
       <BoxAndButton
-        handleClick={authAuthenticate}
+        handleClickWithInput={authAuthenticate}
         output={authenticateRes}
         hasInput={true}
         title="authentication.authenticate"

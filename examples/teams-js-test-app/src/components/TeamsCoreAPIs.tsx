@@ -144,7 +144,7 @@ const TeamsCoreAPIs = (): ReactElement => {
         name="getMRUTabInstance"
       />
       <BoxAndButton
-        handleClick={registerBeforeUnload}
+        handleClickWithInput={registerBeforeUnload}
         output={registerBeforeUnloadRes}
         hasInput={true}
         title="Register Before Unload"

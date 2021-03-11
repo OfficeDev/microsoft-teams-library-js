@@ -24,7 +24,7 @@ const NotificationAPIs = (): ReactElement => {
   return (
     <>
       <BoxAndButton
-        handleClick={returnShowNotification}
+        handleClickWithInput={returnShowNotification}
         output={showNotification}
         hasInput={true}
         title="Show Notification"
