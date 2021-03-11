@@ -10,5 +10,6 @@ describe('utils', () => {
     expect(compareSDKVersions('1.10.0', '1.8.0')).toEqual(1);
     expect(compareSDKVersions('1.10.0', '1.8.2')).toEqual(1);
     expect(compareSDKVersions('2', '1.10.345')).toEqual(1);
+    expect(compareSDKVersions('1.9.1', '1.9.0.0')).toEqual(1);
   });
 });
