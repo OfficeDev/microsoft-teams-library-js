@@ -15,6 +15,7 @@ import TasksAPIs from './components/TasksAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import MailAPIs from './components/MailAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
+import MeetingAPIs from './components/MeetingAPIs';
 
 core.initialize();
 
@@ -47,6 +48,7 @@ const App = (): ReactElement => {
       <TasksAPIs />
       <TeamsCoreAPIs />
       <NotificationAPIs />
+      <MeetingAPIs />
     </>
   );
 };

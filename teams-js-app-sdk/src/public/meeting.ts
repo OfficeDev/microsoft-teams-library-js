@@ -3,6 +3,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
 import { FrameContexts } from './constants';
+import { runtime } from './runtime';
 
 export namespace meeting {
   /**
@@ -147,6 +148,10 @@ export namespace meeting {
     }
     ensureInitialized();
     sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.meeting ? true : false;
   }
 
   /**
