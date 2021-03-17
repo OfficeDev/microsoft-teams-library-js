@@ -4,9 +4,12 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
     readonly calendar?: {};
-    readonly mail?: {};
     readonly location?: {};
+    readonly mail?: {};
     readonly notifications?: {};
+    readonly pages?: {
+      readonly tabs?: {};
+    };
   };
 }
 

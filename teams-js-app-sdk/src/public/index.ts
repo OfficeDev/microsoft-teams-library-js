@@ -15,7 +15,7 @@ export {
   FileOpenPreference,
 } from './interfaces';
 export { core } from './publicAPIs';
-export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
+export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab, isPageCapabilitySupported } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';

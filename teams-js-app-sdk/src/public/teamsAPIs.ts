@@ -5,6 +5,7 @@ import { FrameContexts } from './constants';
 import { core } from './publicAPIs';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { sendMessageToParent } from '../internal/communication';
+import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
@@ -160,5 +161,12 @@ export namespace teamsCore {
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
     Handlers.registerBeforeUnloadHandler(handler);
+  }
+
+  /**
+   * Checks if pages.tabs capability is supported currently
+   */
+  export function isPageTabsCapabilitySupported(): boolean {
+    return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
   }
 }

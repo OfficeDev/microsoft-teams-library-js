@@ -3,6 +3,7 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { TabInstance } from './interfaces';
 import { FrameContexts } from './constants';
 import { sendMessageToParent } from '../internal/communication';
+import { runtime } from './runtime';
 
 /**
  * Navigation specific part of the SDK.
@@ -70,4 +71,11 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
 
   const errorMessage = 'Back navigation is not supported in the current client or context.';
   sendMessageToParent('navigateBack', [], onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage));
+}
+
+/**
+ * Checks if page capability is supported currently
+ */
+export function isPageCapabilitySupported(): boolean {
+  return runtime.supports.pages ? true : false;
 }

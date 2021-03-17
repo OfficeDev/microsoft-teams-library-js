@@ -14,6 +14,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [addStatesRes, setAddStatesRes] = React.useState('');
   const [registerBackButtonHandlerRes, setRegisterBackButtonHandlerRes] = React.useState('');
   const [totalStates, setTotalStates] = React.useState(0);
+  const [checkPageTabsCapabilityRes, setCheckPageTabsCapabilityRes] = React.useState('');
 
   const registerChangeSettingsHandler = (): void => {
     setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
@@ -43,18 +44,20 @@ const TeamsCoreAPIs = (): ReactElement => {
     });
   };
 
-  const getTabInstances = (): void => {
+  const getTabInstances = (input: string): void => {
+    const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
     teamsCore.getTabInstances((tabInfo: TabInformation): void => {
       setGetTabInstanceRes(JSON.stringify(tabInfo));
-    });
+    }, tabInstanceParams);
   };
 
-  const getMRUTabInstances = (): void => {
+  const getMRUTabInstances = (input: string): void => {
+    const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
     teamsCore.getMruTabInstances((tabInfo: TabInformation): void => {
       setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
-    });
+    }, tabInstanceParams);
   };
 
   const registerBeforeUnload = (readyToUnloadDelay: string): void => {
@@ -99,6 +102,14 @@ const TeamsCoreAPIs = (): ReactElement => {
     });
   };
 
+  const pageTabsCapabilityCheck = (): void => {
+    if (teamsCore.isPageTabsCapabilitySupported()) {
+      setCheckPageTabsCapabilityRes('Page tabs module is supported');
+    } else {
+      setCheckPageTabsCapabilityRes('Page tabs module is not supported');
+    }
+  };
+
   return (
     <>
       <BoxAndButton
@@ -130,16 +141,16 @@ const TeamsCoreAPIs = (): ReactElement => {
         name="registerAppButtonHoverLeaveHandler"
       />
       <BoxAndButton
-        handleClick={getTabInstances}
+        handleClickWithInput={getTabInstances}
         output={getTabInstanceRes}
-        hasInput={false}
+        hasInput={true}
         title="Get Tab Instance"
         name="getTabInstance"
       />
       <BoxAndButton
-        handleClick={getMRUTabInstances}
+        handleClickWithInput={getMRUTabInstances}
         output={getMRUTabInstanceRes}
-        hasInput={false}
+        hasInput={true}
         title="Get MRU Tab Instance"
         name="getMRUTabInstance"
       />
@@ -163,6 +174,13 @@ const TeamsCoreAPIs = (): ReactElement => {
         hasInput={false}
         title="Register Back Button Handler"
         name="registerBackButtonHandler"
+      />
+      <BoxAndButton
+        handleClick={pageTabsCapabilityCheck}
+        output={checkPageTabsCapabilityRes}
+        hasInput={false}
+        title="Check Page Tabs Capability"
+        name="checkPageTabsCapability"
       />
     </>
   );
