@@ -184,7 +184,6 @@ describe('meeting', () => {
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
       const details: meeting.IDetails = {
-        id: `mockObjectId`,
         scheduledStartTime: '2020-12-21T21:30:00+00:00',
         scheduledEndTime: '2020-12-21T22:00:00+00:00',
         joinUrl:
