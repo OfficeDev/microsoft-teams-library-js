@@ -1,4 +1,5 @@
-import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile } from '../../src/internal/mediaUtil';
+import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile, validatePeoplePickerInput } from '../../src/internal/mediaUtil';
+import { people } from '../../src/public/people';
 import { media } from '../../src/public/media';
 
 describe('mediaUtil', () => {
@@ -137,6 +138,30 @@ describe('mediaUtil', () => {
     }
     uriList.push(imageUri);
     const result = validateViewImagesInput(uriList);
+    expect(result).toBeTruthy();
+  });
+
+ /**
+   * Validate People Picker selectPeople Input
+   */
+  it('test selectPeople success with null param', () => {
+    const result = validatePeoplePickerInput(null);
+    expect(result).toBeTruthy();
+  });
+
+  it('test selectPeople success with undefined param', () => {
+    const result = validatePeoplePickerInput(undefined);
+    expect(result).toBeTruthy();
+  });
+
+  it('test success case for selectPeople with valid input params', () => {
+    const peoplePickerInputs : people.PeoplePickerInputs = {
+      title: "Hello World",
+      setSelected: ["12345678"],
+      openOrgWideSearchInChatOrChannel: true,
+      singleSelect: true
+    }
+    const result = validatePeoplePickerInput(peoplePickerInputs);
     expect(result).toBeTruthy();
   });
 });
