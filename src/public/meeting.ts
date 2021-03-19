@@ -6,7 +6,8 @@ import { FrameContexts } from './constants';
 
 export namespace meeting {
   /**
-   *
+   * @private
+   * Hide from docs
    * Data structure to represent a meeting details.
    */
   export interface IMeetingDetails {
@@ -23,6 +24,11 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent details.
+   */
   export interface IDetails {
     /**
      * Scheduled start time of the meeting
@@ -46,6 +52,11 @@ export namespace meeting {
     type?: MeetingType;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent a conversation object.
+   */
   export interface IConversation {
     /**
      * conversation id of the meeting
@@ -53,6 +64,11 @@ export namespace meeting {
     id: string;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent an organizer object.
+   */
   export interface IOrganizer {
     /**
      * organizer id of the meeting
