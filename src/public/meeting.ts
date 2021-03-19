@@ -6,7 +6,8 @@ import { FrameContexts } from './constants';
 
 export namespace meeting {
   /**
-   *
+   * @private
+   * Hide from docs
    * Data structure to represent a meeting details.
    */
   export interface IMeetingDetails {
@@ -23,11 +24,12 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent details.
+   */
   export interface IDetails {
-    /**
-     * event id of the meeting
-     */
-    id: string;
     /**
      * Scheduled start time of the meeting
      */
@@ -50,6 +52,11 @@ export namespace meeting {
     type?: MeetingType;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent a conversation object.
+   */
   export interface IConversation {
     /**
      * conversation id of the meeting
@@ -57,6 +64,11 @@ export namespace meeting {
     id: string;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent an organizer object.
+   */
   export interface IOrganizer {
     /**
      * organizer id of the meeting
@@ -117,6 +129,8 @@ export namespace meeting {
   }
 
   /**
+   * @private
+   * Hide from docs
    * Allows an app to get the meeting details for the meeting
    * @param callback Callback contains 2 parameters, error and meetingDetails.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
