@@ -20,6 +20,14 @@ export namespace remoteCamera {
      * Display name of participant.
      */
     displayName?: string;
+    /**
+     * Active indicates whether the participant's device is actively being controlled.
+     */
+    active?: boolean;
+    /**
+     * Device state of the participant's device. Undefined if participant's device is not actively being controlled.
+     */
+    deviceState?: DeviceState | undefined;
   }
 
   /**
