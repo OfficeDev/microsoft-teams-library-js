@@ -12,7 +12,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Cloud storage providers registered with Microsoft Teams
    */
   export enum CloudStorageProviderCode {
@@ -26,7 +26,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Cloud storage provider integration type
    */
   export enum CloudStorageProviderType {
@@ -38,7 +38,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Cloud storage folder interface
    */
   export interface CloudStorageFolder {
@@ -87,7 +87,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Gets a list of cloud storage folders added to the channel
    * @param channelId ID of the channel whose cloud storage folders should be retrieved
    * @param callback Callback that will be triggered post folders load
@@ -110,7 +110,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Initiates the add cloud storage folder flow
    * @param channelId ID of the channel to add cloud storage folder
    * @param callback Callback that will be triggered post add folder flow is compelete
@@ -133,7 +133,7 @@ export namespace files {
   /**
    * @private
    * Hide from docs
-   * 
+   *
    * Deletes a cloud storage folder from channel
    * @param channelId ID of the channel where folder is to be deleted
    * @param folderToDelete cloud storage folder to be deleted
