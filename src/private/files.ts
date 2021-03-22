@@ -13,7 +13,7 @@ export namespace files {
 
   export enum CloudStorageProviderType {
     Sharepoint = 0,
-    WOPI = 1,
+    WopiIntegration = 1,
     Google = 2,
   }
 
@@ -28,17 +28,6 @@ export namespace files {
     serverRelativeUrl?: string;
     libraryType?: string;
     accessType?: string;
-  }
-
-  export interface CloudStorageFolderItem {
-    id: string;
-    lastModifiedTime: string;
-    size: number;
-    objectUrl: string;
-    accessToken?: string;
-    title: string;
-    isSubdirectory: boolean;
-    type: string;
   }
 
   export function getCloudStorageFolders(
@@ -85,39 +74,5 @@ export namespace files {
 
     ensureInitialized();
     sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
-  }
-
-  export function getCloudStorageFolderContents(
-    folder: CloudStorageFolder | CloudStorageFolderItem,
-    providerCode: CloudStorageProviderCode,
-    callback: (error: SdkError, items: CloudStorageFolderItem[]) => void,
-  ): void {
-    if (!folder || !providerCode) {
-      throw new Error('[files.getCloudStorageFolderContents] channelId name cannot be null or empty');
-    }
-
-    if (!callback) {
-      throw new Error('[files.getCloudStorageFolderContents] Callback cannot be null');
-    }
-
-    ensureInitialized();
-    sendMessageToParent('files.getCloudStorageFolderContents', [folder, providerCode], callback);
-  }
-
-  export function openCloudStorageFile(
-    file: CloudStorageFolderItem,
-    providerCode: CloudStorageProviderCode,
-    fileOpenPreference?: FileOpenPreference,
-  ): void {
-    if (!file || !providerCode) {
-      throw new Error('[files.openCloudStorageFile] file/providerCode cannot be null or empty');
-    }
-
-    if (file.isSubdirectory) {
-      throw new Error('[files.openCloudStorageFile] provider file is a subDirectory');
-    }
-
-    ensureInitialized();
-    sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
   }
 }
