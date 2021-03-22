@@ -54,14 +54,14 @@ describe('files', () => {
         },
       ];
 
-      let callback = jest.fn((err, folders) => {
+      const callback = jest.fn((err, folders) => {
         expect(err).toBeFalsy();
         expect(folders).toEqual(mockCloudStorageFolders);
       });
 
       files.getCloudStorageFolders('channelId', callback);
 
-      let getCloudStorageFoldersMessage = utils.findMessageByFunc('files.getCloudStorageFolders');
+      const getCloudStorageFoldersMessage = utils.findMessageByFunc('files.getCloudStorageFolders');
       expect(getCloudStorageFoldersMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFoldersMessage, false, mockCloudStorageFolders);
       expect(callback).toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe('files', () => {
         },
       ];
 
-      let callback = jest.fn((err, isFolderAdded, folders) => {
+      const callback = jest.fn((err, isFolderAdded, folders) => {
         expect(err).toBeFalsy();
         expect(isFolderAdded).toEqual(true);
         expect(folders).toEqual(mockCloudStorageFolders);
@@ -106,7 +106,7 @@ describe('files', () => {
 
       files.addCloudStorageFolder('channelId', callback);
 
-      let addCloudStorageFolderMessage = utils.findMessageByFunc('files.addCloudStorageFolder');
+      const addCloudStorageFolderMessage = utils.findMessageByFunc('files.addCloudStorageFolder');
       expect(addCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(addCloudStorageFolderMessage, false, true, mockCloudStorageFolders);
       expect(callback).toHaveBeenCalled();
@@ -147,14 +147,14 @@ describe('files', () => {
     it('should trigger callback correctly', () => {
       utils.initializeWithContext('content');
 
-      let callback = jest.fn((err, isFolderDeleted) => {
+      const callback = jest.fn((err, isFolderDeleted) => {
         expect(err).toBeFalsy();
         expect(isFolderDeleted).toEqual(true);
       });
 
       files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, callback);
 
-      let deleteCloudStorageFolderMessage = utils.findMessageByFunc('files.deleteCloudStorageFolder');
+      const deleteCloudStorageFolderMessage = utils.findMessageByFunc('files.deleteCloudStorageFolder');
       expect(deleteCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(deleteCloudStorageFolderMessage, false, true);
       expect(callback).toHaveBeenCalled();
