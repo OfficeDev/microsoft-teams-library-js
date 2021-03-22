@@ -15,6 +15,8 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [registerBackButtonHandlerRes, setRegisterBackButtonHandlerRes] = React.useState('');
   const [totalStates, setTotalStates] = React.useState(0);
   const [checkPageTabsCapabilityRes, setCheckPageTabsCapabilityRes] = React.useState('');
+  const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
+  const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
 
   const registerChangeSettingsHandler = (): void => {
     setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
@@ -102,6 +104,20 @@ const TeamsCoreAPIs = (): ReactElement => {
     });
   };
 
+  const registerOnLoadHandler = (): void => {
+    setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHubSdkMsg);
+    teamsCore.registerOnLoadHandler((context: teamsjs.LoadContext): void => {
+      setRegisterOnLoadRes('successfully called with context:' + JSON.stringify(context));
+    });
+  };
+
+  const registerFullScreenChangeHandler = (): void => {
+    setRegisterFullScreenChangeHandlerRes('teamsCore.registerFullScreenHandler()' + noHubSdkMsg);
+    teamsCore.registerFullScreenHandler((isFullScreen: boolean): void => {
+      setRegisterFullScreenChangeHandlerRes('successfully called with isFullScreen:' + isFullScreen);
+    });
+  };
+
   const pageTabsCapabilityCheck = (): void => {
     if (teamsCore.isPageTabsCapabilitySupported()) {
       setCheckPageTabsCapabilityRes('Page tabs module is supported');
@@ -141,6 +157,13 @@ const TeamsCoreAPIs = (): ReactElement => {
         name="registerAppButtonHoverLeaveHandler"
       />
       <BoxAndButton
+        handleClick={registerFullScreenChangeHandler}
+        output={registerFullScreenChangeHandlerRes}
+        hasInput={false}
+        title="Register Full Screen Change Handler"
+        name="registerFullScreenChangeHandler"
+      />
+      <BoxAndButton
         handleClickWithInput={getTabInstances}
         output={getTabInstanceRes}
         hasInput={true}
@@ -153,6 +176,13 @@ const TeamsCoreAPIs = (): ReactElement => {
         hasInput={true}
         title="Get MRU Tab Instance"
         name="getMRUTabInstance"
+      />
+      <BoxAndButton
+        handleClick={registerOnLoadHandler}
+        output={registerOnLoadRes}
+        hasInput={false}
+        title="Register On Load Handler"
+        name="registerOnLoadHandler"
       />
       <BoxAndButton
         handleClickWithInput={registerBeforeUnload}
