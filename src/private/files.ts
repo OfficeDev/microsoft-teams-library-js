@@ -42,15 +42,45 @@ export namespace files {
    * Cloud storage folder interface
    */
   export interface CloudStorageFolder {
+    /**
+     * ID of the cloud storage folder
+     */
     id: string;
+    /**
+     * Display Name/Title of the cloud storage folder
+     */
     title: string;
+    /**
+     * ID of the cloud storage folder in the provider
+     */
     folderId: string;
+    /**
+     * Type of the cloud storage folder provider integration
+     */
     providerType: CloudStorageProviderType;
+    /**
+     * Code of the supported cloud storage folder provider
+     */
     providerCode: CloudStorageProviderCode;
+    /**
+     * Display name of the owner of the cloud storage folder provider
+     */
     ownerDisplayName: string;
+    /**
+     * Sharepoint specific siteURL of the folder
+     */
     siteUrl?: string;
+    /**
+     * Sharepoint specific serverRelativeUrl of the folder
+     */
     serverRelativeUrl?: string;
+    /**
+     * Sharepoint specific libraryType of the folder
+     */
     libraryType?: string;
+    /**
+     * Sharepoint specific accessType of the folder
+     */
     accessType?: string;
   }
 
