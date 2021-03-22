@@ -9,7 +9,13 @@ import { FileOpenPreference, SdkError } from '../public';
  * Hide from docs
  */
 export namespace files {
-  export type CloudStorageProviderCode = 'DROPBOX' | 'BOX' | 'SHAREFILE' | 'GOOGLEDRIVE' | 'EGNYTE';
+  export enum CloudStorageProviderCode {
+    Dropbox = 'DROPBOX',
+    Box = 'BOX',
+    Sharefile = 'SHAREFILE',
+    GoogleDrive = 'GOOGLEDRIVE',
+    Egnyte = 'EGNYTE',
+  }
 
   export enum CloudStorageProviderType {
     Sharepoint = 0,
@@ -65,8 +71,11 @@ export namespace files {
     folderToDelete: CloudStorageFolder,
     callback: (error: SdkError, isFolderDeleted: boolean) => void,
   ): void {
-    if (!channelId || !folderToDelete) {
+    if (!channelId) {
       throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
+    }
+    if (!folderToDelete) {
+      throw new Error('[files.deleteCloudStorageFolder] folderToDelete cannot be null or empty');
     }
     if (!callback) {
       throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
