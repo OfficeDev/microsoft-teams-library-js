@@ -17,8 +17,10 @@ const AppInitializationAPIs = (): ReactElement => {
     setNotifySuccessRes('called');
   };
 
-  const notifyFailure = (): void => {
-    appInitialization.notifyFailure({ reason: appInitialization.FailedReason.Other });
+  const notifyFailure = (reason?: string): void => {
+    appInitialization.notifyFailure({
+      reason: (reason as appInitialization.FailedReason) || appInitialization.FailedReason.Other,
+    });
     setNotifyFailureRes('called');
   };
 
@@ -39,9 +41,9 @@ const AppInitializationAPIs = (): ReactElement => {
         name="appInitializationSuccess"
       />
       <BoxAndButton
-        handleClick={notifyFailure}
+        handleClickWithInput={notifyFailure}
         output={notifyFailureRes}
-        hasInput={false}
+        hasInput={true}
         title="appInitialization.failure"
         name="appInitializationFailure"
       />
