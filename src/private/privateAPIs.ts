@@ -1,5 +1,5 @@
-import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { FrameContexts, HostClientType } from '../public/constants';
 import {
   ChatMembersInformation,
   ShowNotificationParameters,
@@ -12,6 +12,10 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
 import { menus } from './menus';
 import { registerHandler } from '../internal/handlers';
+import { GlobalVars } from '../internal/globalVars';
+import { ErrorCode, SdkError } from '../public/interfaces';
+
+const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
 
 export function initializePrivateApis(): void {
   menus.initialize();
@@ -30,6 +34,14 @@ export function getUserJoinedTeams(
   teamInstanceParameters?: TeamInstanceParameters,
 ): void {
   ensureInitialized();
+
+  if (
+    GlobalVars.hostClientType === HostClientType.android &&
+    !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
+  ) {
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    throw new Error(JSON.stringify(oldPlatformError));
+  }
 
   sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
 }
