@@ -1,8 +1,8 @@
-import { settings } from '../../src/public/settings';
+import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 import { core } from '../../src/public/publicAPIs';
 
-describe('settings', () => {
+describe('config', () => {
   // Use to send a mock message from the app.
 
   const utils = new Utils();
@@ -24,7 +24,7 @@ describe('settings', () => {
   it('should not allow calls from the wrong context', () => {
     utils.initializeWithContext('content');
 
-    expect(() => settings.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
+    expect(() => pages.config.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
   });
 
   it('should successfully notify success on save when there is no registered handler', () => {
@@ -41,7 +41,7 @@ describe('settings', () => {
     utils.initializeWithContext('remove');
 
     let handlerCalled = false;
-    settings.registerOnRemoveHandler(() => {
+    pages.config.registerOnRemoveHandler(() => {
       handlerCalled = true;
     });
 
@@ -53,7 +53,7 @@ describe('settings', () => {
   it('should successfully set validity state to true', () => {
     utils.initializeWithContext('settings');
 
-    settings.setValidityState(true);
+    pages.config.setValidityState(true);
 
     let message = utils.findMessageByFunc('settings.setValidityState');
     expect(message).not.toBeNull();
@@ -64,7 +64,7 @@ describe('settings', () => {
   it('should successfully set validity state to false', () => {
     utils.initializeWithContext('settings');
 
-    settings.setValidityState(false);
+    pages.config.setValidityState(false);
 
     let message = utils.findMessageByFunc('settings.setValidityState');
     expect(message).not.toBeNull();
@@ -75,15 +75,15 @@ describe('settings', () => {
   it('should successfully get settings', () => {
     utils.initializeWithContext('settings');
 
-    let actualSettings: settings.Settings;
-    settings.getSettings(settings => {
+    let actualSettings: pages.config.Config;
+    pages.config.getConfig(settings => {
       actualSettings = settings;
     });
 
     let message = utils.findMessageByFunc('settings.getSettings');
     expect(message).not.toBeNull();
 
-    let expectedSettings: settings.Settings = {
+    let expectedSettings: pages.config.Config = {
       suggestedDisplayName: 'someSuggestedDisplayName',
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
@@ -98,13 +98,13 @@ describe('settings', () => {
   it('should successfully set settings', () => {
     utils.initializeWithContext('settings');
 
-    let settingsObj: settings.Settings = {
+    let settingsObj: pages.config.Config = {
       suggestedDisplayName: 'someSuggestedDisplayName',
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
       entityId: 'someEntityId',
     };
-    settings.setSettings(settingsObj);
+    pages.config.setConfig(settingsObj);
 
     let message = utils.findMessageByFunc('settings.setSettings');
     expect(message).not.toBeNull();
@@ -116,7 +116,7 @@ describe('settings', () => {
     utils.initializeWithContext('settings');
 
     let handlerCalled = false;
-    settings.registerOnSaveHandler(() => {
+    pages.config.registerOnSaveHandler(() => {
       handlerCalled = true;
     });
 
@@ -129,7 +129,7 @@ describe('settings', () => {
     utils.initializeWithContext('settings');
 
     let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
+    pages.config.registerOnSaveHandler(saveEvent => {
       handlerCalled = true;
       expect(saveEvent.result['webhookUrl']).not.toBeNull();
     });
@@ -148,10 +148,10 @@ describe('settings', () => {
 
     let handler1Called = false;
     let handler2Called = false;
-    settings.registerOnSaveHandler(() => {
+    pages.config.registerOnSaveHandler(() => {
       handler1Called = true;
     });
-    settings.registerOnSaveHandler(() => {
+    pages.config.registerOnSaveHandler(() => {
       handler2Called = true;
     });
 
@@ -165,7 +165,7 @@ describe('settings', () => {
     utils.initializeWithContext('settings');
 
     let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
+    pages.config.registerOnSaveHandler(saveEvent => {
       saveEvent.notifySuccess();
       handlerCalled = true;
     });
@@ -182,7 +182,7 @@ describe('settings', () => {
     utils.initializeWithContext('settings');
 
     let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
+    pages.config.registerOnSaveHandler(saveEvent => {
       saveEvent.notifyFailure('someReason');
       handlerCalled = true;
     });
@@ -210,7 +210,7 @@ describe('settings', () => {
     utils.initializeWithContext('remove');
 
     let handlerCalled = false;
-    settings.registerOnRemoveHandler(removeEvent => {
+    pages.config.registerOnRemoveHandler(removeEvent => {
       removeEvent.notifySuccess();
       handlerCalled = true;
     });
@@ -227,7 +227,7 @@ describe('settings', () => {
     utils.initializeWithContext('remove');
 
     let handlerCalled = false;
-    settings.registerOnRemoveHandler(removeEvent => {
+    pages.config.registerOnRemoveHandler(removeEvent => {
       removeEvent.notifyFailure('someReason');
       handlerCalled = true;
     });
@@ -245,7 +245,7 @@ describe('settings', () => {
     utils.initializeWithContext('settings');
 
     let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
+    pages.config.registerOnSaveHandler(saveEvent => {
       saveEvent.notifySuccess();
       expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
       expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');

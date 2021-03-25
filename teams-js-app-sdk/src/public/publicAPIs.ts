@@ -1,15 +1,8 @@
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
-import { settings } from './settings';
-import {
-  TabInformation,
-  TabInstanceParameters,
-  DeepLinkParameters,
-  Context,
-  LoadContext,
-  FrameContext,
-} from './interfaces';
+import { pages } from './pages';
+import { DeepLinkParameters, Context } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
@@ -66,7 +59,7 @@ export namespace core {
       );
 
       authentication.initialize();
-      settings.initialize();
+      pages.config.initialize();
       initializePrivateApis();
 
       // Undocumented function used to clear state between unit tests
@@ -81,11 +74,11 @@ export namespace core {
         }
 
         if (GlobalVars.frameContext === FrameContexts.settings) {
-          settings.registerOnSaveHandler(null);
+          pages.config.registerOnSaveHandler(null);
         }
 
         if (GlobalVars.frameContext === FrameContexts.remove) {
-          settings.registerOnRemoveHandler(null);
+          pages.config.registerOnRemoveHandler(null);
         }
 
         GlobalVars.initializeCalled = false;

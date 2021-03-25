@@ -10,6 +10,7 @@ export interface IRuntime {
     readonly notifications?: {};
     readonly pages?: {
       readonly tabs?: {};
+      readonly config?: {};
     };
   };
 }

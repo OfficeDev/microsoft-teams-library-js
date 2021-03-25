@@ -2,20 +2,14 @@ import React, { ReactElement } from 'react';
 import BoxAndButton from './BoxAndButton';
 import CheckboxAndButton from './CheckboxAndButton';
 import { noHubSdkMsg } from '../App';
-import {
-  navigateToTab,
-  navigateCrossDomain,
-  navigateBack,
-  returnFocus,
-  isPageCapabilitySupported,
-} from '@microsoft/teamsjs-app-sdk';
+import { pages } from '@microsoft/teamsjs-app-sdk';
 
 const NavigationAPIs = (): ReactElement => {
   const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
   const [returnFocusRes, setReturnFocusRes] = React.useState('');
   const [navigateToTabRes, setNavigateToTabRes] = React.useState('');
   const [navigateBackRes, setNavigateBackRes] = React.useState('');
-  const [checkPageCapabilityRes, setCheckPageCapabilityRes] = React.useState('');
+  const [checkPagesCapabilityRes, setCheckPagesCapabilityRes] = React.useState('');
 
   const navigateCrossDomainFunc = (url: string): void => {
     setNavigateCrossDomainRes('navigateCrossDomain()' + noHubSdkMsg);
@@ -26,7 +20,7 @@ const NavigationAPIs = (): ReactElement => {
         setNavigateCrossDomainRes('Completed');
       }
     };
-    navigateCrossDomain(url, onComplete);
+    pages.navigateCrossDomain(url, onComplete);
   };
 
   const navigateToTabFunc = (inputParams: string): void => {
@@ -38,7 +32,7 @@ const NavigationAPIs = (): ReactElement => {
         setNavigateToTabRes('Completed');
       }
     };
-    navigateToTab(JSON.parse(inputParams), onComplete);
+    pages.tabs.navigateToTab(JSON.parse(inputParams), onComplete);
   };
 
   const navigateBackFunc = (): void => {
@@ -50,19 +44,19 @@ const NavigationAPIs = (): ReactElement => {
         setNavigateBackRes('Completed');
       }
     };
-    navigateBack(onComplete);
+    pages.navigateBack(onComplete);
   };
 
   const returnFocusFunc = (navigateForward: string): void => {
     setReturnFocusRes('Current navigateForward state is ' + navigateForward);
-    returnFocus(navigateForward === 'true');
+    pages.returnFocus(navigateForward === 'true');
   };
 
-  const pageCapabilityCheck = (): void => {
-    if (isPageCapabilitySupported()) {
-      setCheckPageCapabilityRes('Page module is supported');
+  const pagesCapabilityCheck = (): void => {
+    if (pages.isSupported()) {
+      setCheckPagesCapabilityRes('Pages module is supported');
     } else {
-      setCheckPageCapabilityRes('Page module is not supported');
+      setCheckPagesCapabilityRes('Pages module is not supported');
     }
   };
   return (
@@ -98,8 +92,8 @@ const NavigationAPIs = (): ReactElement => {
         name="navigateBack"
       />
       <BoxAndButton
-        handleClick={pageCapabilityCheck}
-        output={checkPageCapabilityRes}
+        handleClick={pagesCapabilityCheck}
+        output={checkPagesCapabilityRes}
         hasInput={false}
         title="Check Page Capability"
         name="checkPageCapability"

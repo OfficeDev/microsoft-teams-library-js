@@ -1,11 +1,10 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { TabInformation, TabInstanceParameters, LoadContext, FrameContext } from './interfaces';
+import { LoadContext, FrameContext } from './interfaces';
 import { FrameContexts } from './constants';
 import { core } from './publicAPIs';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { sendMessageToParent } from '../internal/communication';
-import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
@@ -99,35 +98,6 @@ export namespace teamsCore {
     Handlers.registerHandler('changeSettings', handler);
   }
 
-  /**
-   * Allows an app to retrieve for this user tabs that are owned by this app.
-   * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-   * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
-   * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
-   */
-  export function getTabInstances(
-    callback: (tabInfo: TabInformation) => void,
-    tabInstanceParameters?: TabInstanceParameters,
-  ): void {
-    ensureInitialized();
-
-    sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
-  }
-
-  /**
-   * Allows an app to retrieve the most recently used tabs for this user.
-   * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
-   * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
-   */
-  export function getMruTabInstances(
-    callback: (tabInfo: TabInformation) => void,
-    tabInstanceParameters?: TabInstanceParameters,
-  ): void {
-    ensureInitialized();
-
-    sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
-  }
-
   export function setFrameContext(frameContext: FrameContext): void {
     ensureInitialized(FrameContexts.content);
     sendMessageToParent('setFrameContext', [frameContext]);
@@ -161,12 +131,5 @@ export namespace teamsCore {
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
     Handlers.registerBeforeUnloadHandler(handler);
-  }
-
-  /**
-   * Checks if pages.tabs capability is supported currently
-   */
-  export function isPageTabsCapabilitySupported(): boolean {
-    return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
   }
 }

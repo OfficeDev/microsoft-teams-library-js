@@ -1,7 +1,7 @@
 import { Context } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import { core } from '../../src/public/publicAPIs';
-import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
+import { pages } from '../../src/public/pages';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
@@ -100,7 +100,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   it('should invoke callback immediately if initialization has already completed', () => {
     core.initialize();
-    
+
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
 
@@ -180,7 +180,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       parentMessageId: 'someParentMessageId',
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
-      meetingId: 'dummyMeetingId'
+      meetingId: 'dummyMeetingId',
     };
 
     utils.respondToMessage(getContextMessage, expectedContext);
@@ -240,7 +240,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   describe('navigateCrossDomain', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
+      expect(() => pages.navigateCrossDomain('https://valid.origin.com')).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -248,7 +248,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should not allow calls from authentication context', () => {
       utils.initializeWithContext('authentication');
 
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
+      expect(() => pages.navigateCrossDomain('https://valid.origin.com')).toThrowError(
         "This call is not allowed in the 'authentication' context",
       );
     });
@@ -256,43 +256,43 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should allow calls from content context', () => {
       utils.initializeWithContext('content');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should allow calls from sidePanel context', () => {
       utils.initializeWithContext('sidePanel');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should allow calls from settings context', () => {
       utils.initializeWithContext('settings');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should allow calls from remove context', () => {
       utils.initializeWithContext('remove');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should allow calls from task context', () => {
       utils.initializeWithContext('task');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should allow calls from stage context', () => {
       utils.initializeWithContext('stage');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
     });
 
     it('should successfully navigate cross-origin', () => {
       utils.initializeWithContext('content');
 
-      navigateCrossDomain('https://valid.origin.com');
+      pages.navigateCrossDomain('https://valid.origin.com');
 
       let navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
       expect(navigateCrossDomainMessage).not.toBeNull();
@@ -303,7 +303,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should throw on invalid cross-origin navigation request', () => {
       utils.initializeWithContext('settings');
 
-      navigateCrossDomain('https://invalid.origin.com');
+      pages.navigateCrossDomain('https://invalid.origin.com');
 
       let navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
       expect(navigateCrossDomainMessage).not.toBeNull();
@@ -630,7 +630,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should successfully returnFocus', () => {
       utils.initializeWithContext('content');
 
-      returnFocus(true);
+      pages.returnFocus(true);
 
       let returnFocusMessage = utils.findMessageByFunc('returnFocus');
       expect(returnFocusMessage).not.toBeNull();

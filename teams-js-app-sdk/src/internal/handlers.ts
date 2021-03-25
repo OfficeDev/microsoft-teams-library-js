@@ -1,4 +1,5 @@
-import { LoadContext, navigateBack } from '../public';
+import { LoadContext } from '../public';
+import { pages } from '../public/pages';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 
 class HandlersPrivate {
@@ -64,7 +65,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 
 function handleBackButtonPress(): void {
   if (!HandlersPrivate.backButtonPressHandler || !HandlersPrivate.backButtonPressHandler()) {
-    navigateBack();
+    pages.navigateBack();
   }
 }
 

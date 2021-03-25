@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
+import { pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -14,7 +14,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [addStatesRes, setAddStatesRes] = React.useState('');
   const [registerBackButtonHandlerRes, setRegisterBackButtonHandlerRes] = React.useState('');
   const [totalStates, setTotalStates] = React.useState(0);
-  const [checkPageTabsCapabilityRes, setCheckPageTabsCapabilityRes] = React.useState('');
+  const [checkPagesTabsCapabilityRes, setCheckPagesTabsCapabilityRes] = React.useState('');
   const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
   const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
 
@@ -49,7 +49,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const getTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
-    teamsCore.getTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getTabInstances((tabInfo: TabInformation): void => {
       setGetTabInstanceRes(JSON.stringify(tabInfo));
     }, tabInstanceParams);
   };
@@ -57,7 +57,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const getMRUTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
-    teamsCore.getMruTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getMruTabInstances((tabInfo: TabInformation): void => {
       setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
     }, tabInstanceParams);
   };
@@ -118,11 +118,11 @@ const TeamsCoreAPIs = (): ReactElement => {
     });
   };
 
-  const pageTabsCapabilityCheck = (): void => {
-    if (teamsCore.isPageTabsCapabilitySupported()) {
-      setCheckPageTabsCapabilityRes('Page tabs module is supported');
+  const pagesTabsCapabilityCheck = (): void => {
+    if (pages.tabs.isSupported()) {
+      setCheckPagesTabsCapabilityRes('Pages.tabs module is supported');
     } else {
-      setCheckPageTabsCapabilityRes('Page tabs module is not supported');
+      setCheckPagesTabsCapabilityRes('Pages.tabs module is not supported');
     }
   };
 
@@ -206,8 +206,8 @@ const TeamsCoreAPIs = (): ReactElement => {
         name="registerBackButtonHandler"
       />
       <BoxAndButton
-        handleClick={pageTabsCapabilityCheck}
-        output={checkPageTabsCapabilityRes}
+        handleClick={pagesTabsCapabilityCheck}
+        output={checkPagesTabsCapabilityRes}
         hasInput={false}
         title="Check Page Tabs Capability"
         name="checkPageTabsCapability"
