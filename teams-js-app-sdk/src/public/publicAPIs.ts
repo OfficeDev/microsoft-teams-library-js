@@ -156,7 +156,7 @@ export namespace core {
    * @param deepLinkParameters ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
     sendMessageToParent('shareDeepLink', [
       deepLinkParameters.subEntityId,

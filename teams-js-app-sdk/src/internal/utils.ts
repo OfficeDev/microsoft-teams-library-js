@@ -69,9 +69,9 @@ export function compareSDKVersions(v1: string, v2: string): number {
   }
 
   for (let i = 0; i < v1parts.length; ++i) {
-    if (v1parts[i] == v2parts[i]) {
+    if (Number(v1parts[i]) == Number(v2parts[i])) {
       continue;
-    } else if (v1parts[i] > v2parts[i]) {
+    } else if (Number(v1parts[i]) > Number(v2parts[i])) {
       return 1;
     } else {
       return -1;

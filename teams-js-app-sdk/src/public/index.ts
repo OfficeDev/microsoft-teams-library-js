@@ -24,3 +24,4 @@ export { meeting } from './meeting';
 export { calendar } from './calendar';
 export { mail } from './mail';
 export { teamsCore } from './teamsAPIs';
+export { people } from './people';
