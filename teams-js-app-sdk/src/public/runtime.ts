@@ -12,6 +12,7 @@ export interface IRuntime {
       readonly tabs?: {};
       readonly config?: {};
     };
+    readonly dialog?: {};
   };
 }
 

@@ -75,12 +75,12 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should invoke all callbacks once initialization completes', () => {
-    let firstCallbackInvoked: boolean = false;
+    let firstCallbackInvoked = false;
     core.initialize(() => {
       firstCallbackInvoked = true;
     });
 
-    let secondCallbackInvoked: boolean = false;
+    let secondCallbackInvoked = false;
     core.initialize(() => {
       secondCallbackInvoked = true;
     });
@@ -107,7 +107,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, 'content');
 
-    let callbackInvoked: boolean = false;
+    let callbackInvoked = false;
     core.initialize(() => {
       callbackInvoked = true;
     });

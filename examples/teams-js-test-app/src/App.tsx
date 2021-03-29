@@ -10,8 +10,8 @@ import LocationAPIs from './components/LocationAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import NavigationAPIs from './components/NavigationAPIs';
 import PrivateAPIs from './components/PrivateAPIs';
+import DialogAPIs from './components/DialogAPIs';
 import ConfigAPIs from './components/ConfigAPIs';
-import TasksAPIs from './components/TasksAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import MailAPIs from './components/MailAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
@@ -44,8 +44,8 @@ const App = (): ReactElement => {
       <MediaAPIs />
       <NavigationAPIs />
       <PrivateAPIs />
+      <DialogAPIs />
       <ConfigAPIs />
-      <TasksAPIs />
       <TeamsCoreAPIs />
       <NotificationAPIs />
       <MeetingAPIs />

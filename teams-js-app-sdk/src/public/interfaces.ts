@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { DialogDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -434,7 +434,7 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
-export interface TaskInfo {
+export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
    */
@@ -448,12 +448,12 @@ export interface TaskInfo {
   /**
    * The requested height of the webview/iframe.
    */
-  height?: TaskModuleDimension | number;
+  height?: DialogDimension | number;
 
   /**
    * The requested width of the webview/iframe.
    */
-  width?: TaskModuleDimension | number;
+  width?: DialogDimension | number;
 
   /**
    * Title of the task module.

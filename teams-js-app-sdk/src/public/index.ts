@@ -1,6 +1,6 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
-export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole, ChannelType } from './constants';
+export { FrameContexts, HostClientType, DialogDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
   Context,
   DeepLinkParameters,
@@ -10,13 +10,13 @@ export {
   TabInformation,
   TabInstance,
   TabInstanceParameters,
-  TaskInfo,
+  DialogInfo,
   TeamInformation,
   FileOpenPreference,
 } from './interfaces';
 export { core } from './publicAPIs';
+export { dialog } from './dialog';
 export { pages } from './pages';
-export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
