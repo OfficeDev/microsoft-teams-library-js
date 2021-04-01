@@ -14,8 +14,7 @@ import { menus } from './menus';
 import { registerHandler } from '../internal/handlers';
 import { GlobalVars } from '../internal/globalVars';
 import { ErrorCode, SdkError } from '../public/interfaces';
-
-const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
+import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 
 export function initializePrivateApis(): void {
   menus.initialize();
