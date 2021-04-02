@@ -105,7 +105,6 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolders] Callback cannot be null');
     }
 
-    ensureInitialized();
     sendMessageToParent('files.getCloudStorageFolders', [channelId], callback);
   }
 
@@ -130,7 +129,6 @@ export namespace files {
       throw new Error('[files.addCloudStorageFolder] Callback cannot be null');
     }
 
-    ensureInitialized();
     sendMessageToParent('files.addCloudStorageFolder', [channelId], callback);
   }
 
