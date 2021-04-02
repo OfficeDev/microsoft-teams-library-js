@@ -31,6 +31,13 @@ describe('files', () => {
       );
     });
 
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
     it('should not allow calls with null channelId', () => {
       utils.initializeWithContext('content');
       expect(() => files.getCloudStorageFolders(null, emptyCallback)).toThrowError();
@@ -72,6 +79,13 @@ describe('files', () => {
     it('should not allow calls before initialization', () => {
       expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
         'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
       );
     });
 
@@ -126,6 +140,13 @@ describe('files', () => {
     it('should not allow calls before initialization', () => {
       expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
       );
     });
 

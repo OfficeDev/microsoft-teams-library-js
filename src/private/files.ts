@@ -1,6 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FileOpenPreference, SdkError } from '../public';
+import { FrameContexts, SdkError } from '../public';
 
 /**
  * Namespace to interact with the files specific part of the SDK.
@@ -96,6 +96,8 @@ export namespace files {
     channelId: string,
     callback: (error: SdkError, folders: CloudStorageFolder[]) => void,
   ): void {
+    ensureInitialized(FrameContexts.content);
+
     if (!channelId || channelId.length == 0) {
       throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
     }
@@ -119,6 +121,8 @@ export namespace files {
     channelId: string,
     callback: (error: SdkError, isFolderAdded: boolean, folders: CloudStorageFolder[]) => void,
   ): void {
+    ensureInitialized(FrameContexts.content);
+
     if (!channelId || channelId.length == 0) {
       throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
     }
@@ -144,6 +148,8 @@ export namespace files {
     folderToDelete: CloudStorageFolder,
     callback: (error: SdkError, isFolderDeleted: boolean) => void,
   ): void {
+    ensureInitialized(FrameContexts.content);
+
     if (!channelId) {
       throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
     }
@@ -154,7 +160,6 @@ export namespace files {
       throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
     }
 
-    ensureInitialized();
     sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
   }
 }
