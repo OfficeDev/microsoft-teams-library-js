@@ -29,3 +29,4 @@ export {
 export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
 export { remoteCamera } from './remoteCamera';
+export { files } from './files';
