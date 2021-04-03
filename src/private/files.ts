@@ -15,7 +15,7 @@ export namespace files {
    *
    * Cloud storage providers registered with Microsoft Teams
    */
-  export enum CloudStorageProviderCode {
+  export enum CloudStorageProvider {
     Dropbox = 'DROPBOX',
     Box = 'BOX',
     Sharefile = 'SHAREFILE',
@@ -61,7 +61,7 @@ export namespace files {
     /**
      * Code of the supported cloud storage folder provider
      */
-    providerCode: CloudStorageProviderCode;
+    providerCode: CloudStorageProvider;
     /**
      * Display name of the owner of the cloud storage folder provider
      */

@@ -56,7 +56,7 @@ describe('files', () => {
           title: 'folder title',
           folderId: 'folderId',
           providerType: files.CloudStorageProviderType.WopiIntegration,
-          providerCode: files.CloudStorageProviderCode.Box,
+          providerCode: files.CloudStorageProvider.Box,
           ownerDisplayName: 'owner',
         },
       ];
@@ -107,7 +107,7 @@ describe('files', () => {
           title: 'folder title',
           folderId: 'folderId',
           providerType: files.CloudStorageProviderType.WopiIntegration,
-          providerCode: files.CloudStorageProviderCode.Box,
+          providerCode: files.CloudStorageProvider.Box,
           ownerDisplayName: 'owner',
         },
       ];
@@ -133,7 +133,7 @@ describe('files', () => {
       title: 'folder title',
       folderId: 'folderId',
       providerType: files.CloudStorageProviderType.WopiIntegration,
-      providerCode: files.CloudStorageProviderCode.Box,
+      providerCode: files.CloudStorageProvider.Box,
       ownerDisplayName: 'owner',
     };
 
