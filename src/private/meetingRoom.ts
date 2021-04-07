@@ -1,6 +1,7 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from '../public/interfaces';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 
 export namespace meetingRoom {
   /**
@@ -126,10 +127,6 @@ export namespace meetingRoom {
      */
     leaveMeeting: boolean;
   }
-
-  GlobalVars.handlers['meetingRoom.meetingRoomCapabilitiesUpdate'] = handleMeetingRoomCapabilitiesUpdate;
-  GlobalVars.handlers['meetingRoom.meetingRoomStatesUpdate'] = handleMeetingRoomStatesUpdate;
-
   /**
    * @private
    * Hide from docs
@@ -141,8 +138,7 @@ export namespace meetingRoom {
     callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
   ): void {
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meetingRoom.getPairedMeetingRoomInfo');
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
   }
 
   /**
@@ -161,8 +157,7 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
     }
     ensureInitialized();
-    const messageId = sendMessageRequestToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
   }
 
   /**
@@ -180,8 +175,11 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.meetingRoomCapabilitiesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
+    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
+      ensureInitialized();
+      handler(capabilities);
+    });
+    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -196,21 +194,10 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
-    GlobalVars.meetingRoomStatesUpdateHandler = handler;
-    handler && sendMessageRequestToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
-  }
-
-  function handleMeetingRoomCapabilitiesUpdate(capabilities: MeetingRoomCapability): void {
-    if (GlobalVars.meetingRoomCapabilitiesUpdateHandler != null) {
+    registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized();
-      GlobalVars.meetingRoomCapabilitiesUpdateHandler(capabilities);
-    }
-  }
-
-  function handleMeetingRoomStatesUpdate(states: MeetingRoomState): void {
-    if (GlobalVars.meetingRoomStatesUpdateHandler != null) {
-      ensureInitialized();
-      GlobalVars.meetingRoomStatesUpdateHandler(states);
-    }
+      handler(states);
+    });
+    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 }

@@ -1,8 +1,8 @@
 import { TaskInfo } from './interfaces';
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
  * Namespace to interact with the task module-specific part of the SDK.
@@ -15,10 +15,9 @@ export namespace tasks {
    * @param submitHandler Handler to call when the task module is completed
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-    const messageId = sendMessageRequestToParent('tasks.startTask', [taskInfo]);
-    GlobalVars.callbacks[messageId] = submitHandler;
+    sendMessageToParent('tasks.startTask', [taskInfo], submitHandler);
     return new ChildAppWindow();
   }
 
@@ -27,11 +26,11 @@ export namespace tasks {
    * @param taskInfo An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
     const { width, height, ...extra } = taskInfo;
 
     if (!Object.keys(extra).length) {
-      sendMessageRequestToParent('tasks.updateTask', [taskInfo]);
+      sendMessageToParent('tasks.updateTask', [taskInfo]);
     } else {
       throw new Error('updateTask requires a taskInfo argument containing only width and height');
     }
@@ -43,9 +42,9 @@ export namespace tasks {
    * @param appIds Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageRequestToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+    sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 }

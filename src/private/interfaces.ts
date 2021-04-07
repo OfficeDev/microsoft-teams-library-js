@@ -1,4 +1,4 @@
-import { TeamInformation } from '../public/interfaces';
+import { FileOpenPreference, TeamInformation } from '../public/interfaces';
 /**
  * @private
  * Hide from docs
@@ -41,6 +41,23 @@ export enum ViewerActionTypes {
   view = 'view',
   edit = 'edit',
   editNew = 'editNew',
+}
+
+/**
+ * * @private
+ * Hide from docs.
+ * ------
+ * User setting changes that can be subscribed to,
+ */
+export enum UserSettingTypes {
+  /**
+   * Use this key to subscribe to changes in user's file open preference
+   */
+  fileOpenPreference = 'fileOpenPreference',
+  /**
+   * Use this key to subscribe to theme changes
+   */
+  theme = 'theme',
 }
 
 /**
@@ -110,6 +127,11 @@ export interface FilePreviewParameters {
    * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
    */
   viewerAction?: ViewerActionTypes;
+
+  /**
+   * Optional; indicates how user prefers to open the file
+   */
+  fileOpenPreference?: FileOpenPreference;
 }
 
 /**

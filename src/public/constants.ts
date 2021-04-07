@@ -4,6 +4,7 @@ export enum HostClientType {
   android = 'android',
   ios = 'ios',
   rigel = 'rigel',
+  surfaceHub = 'surfaceHub',
 }
 
 // Ensure these declarations stay in sync with the framework.
@@ -15,6 +16,7 @@ export enum FrameContexts {
   task = 'task',
   sidePanel = 'sidePanel',
   stage = 'stage',
+  meetingStage = 'meetingStage',
 }
 
 /**

@@ -12,6 +12,7 @@ export {
   TabInstanceParameters,
   TaskInfo,
   TeamInformation,
+  FileOpenPreference,
 } from './interfaces';
 export {
   enablePrintCapability,
@@ -41,3 +42,4 @@ export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
+export { people } from './people';
