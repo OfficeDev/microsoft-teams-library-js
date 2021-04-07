@@ -26,6 +26,7 @@ export {
   registerUserSettingsChangeHandler,
 } from './privateAPIs';
 export { conversations } from './conversations';
+export { files } from './files';
 export { meetingRoom } from './meetingRoom';
-export { remoteCamera } from './remoteCamera';
 export { notifications } from './notifications';
+export { remoteCamera } from './remoteCamera';

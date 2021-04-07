@@ -176,6 +176,7 @@ export namespace core {
       FrameContexts.settings,
       FrameContexts.task,
       FrameContexts.stage,
+      FrameContexts.meetingStage,
     );
     sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
