@@ -27,7 +27,7 @@ export const peoplePickerRequiredVersion = '2.0.0';
 export const captureImageMobileSupportVersion = '1.7.0';
 
 /**
- * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
+ * This is the SDK version when media APIs are supported on all three platforms ios, android and web.
  */
 export const mediaAPISupportVersion = '1.8.0';
 
