@@ -53,6 +53,8 @@ export const validOrigins = [
   'https://teams.live.com',
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
+  'https://local.teams.live.com', // local development
+  'https://local.teams.live.com:8080', // local development
   'https://local.teams.office.com', // local development
   'https://local.teams.office.com:8080', // local development
   'https://msft.spoppe.com',
