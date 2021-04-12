@@ -3,13 +3,9 @@ import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
+import { peoplePickerRequiredVersion } from '../internal/constants';
 
 export namespace people {
-  /**
-   * This is the SDK version when people picker API is supported on mobile.
-   */
-  export const peoplePickerRequiredVersion = '2.0.0';
-
   /**
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
