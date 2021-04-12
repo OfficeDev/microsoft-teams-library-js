@@ -4,6 +4,9 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const TeamsCoreAPIs = (): ReactElement => {
+  const [enablePrintCapRes, setEnablePrintCapRes] = React.useState('');
+  const [printRes, setPrintRes] = React.useState('');
+  const [setFrameContextRes, setSetFrameContextRes] = React.useState('');
   const [registerChangeSettingsHandlerRes, setRegisterChangeSettingsHandlerRes] = React.useState('');
   const [registerAppButtonClickHandlerRes, setRegisterAppButtonClickHandlerRes] = React.useState('');
   const [registerAppButtonHoverEnterHandlerRes, setRegisterAppButtonHoverEnterHandlerRes] = React.useState('');
@@ -17,6 +20,21 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [checkPagesTabsCapabilityRes, setCheckPagesTabsCapabilityRes] = React.useState('');
   const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
   const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
+
+  const enablePrintCapability = (): void => {
+    teamsCore.enablePrintCapability();
+    setEnablePrintCapRes('called');
+  };
+
+  const print = (): void => {
+    teamsCore.print();
+    setPrintRes('called');
+  };
+
+  const setFrameContext = (frameContextInput: string): void => {
+    teamsCore.setFrameContext(JSON.parse(frameContextInput));
+    setSetFrameContextRes('called');
+  };
 
   const registerChangeSettingsHandler = (): void => {
     setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
@@ -128,6 +146,21 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   return (
     <>
+      <BoxAndButton
+        handleClick={enablePrintCapability}
+        output={enablePrintCapRes}
+        hasInput={false}
+        title="Enable Print Capability"
+        name="enablePrintCapability"
+      />
+      <BoxAndButton handleClick={print} output={printRes} hasInput={false} title="Print" name="print" />
+      <BoxAndButton
+        handleClickWithInput={setFrameContext}
+        output={setFrameContextRes}
+        hasInput={true}
+        title="Set Frame Context"
+        name="setFrameContext"
+      />
       <BoxAndButton
         handleClick={registerChangeSettingsHandler}
         output={registerChangeSettingsHandlerRes}

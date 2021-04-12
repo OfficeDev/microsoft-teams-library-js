@@ -4,12 +4,18 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const ConfigAPIs = (): ReactElement => {
+  const [initializeRes, setInitializeRes] = React.useState('');
   const [getConfigRes, setGetConfigRes] = React.useState('');
   const [registerOnSaveHandlerRes, setRegisterOnSaveHandlerRes] = React.useState('');
   const [setConfigRes, setSetConfigRes] = React.useState('');
   const [setValidityStateRes, setSetValidityStateRes] = React.useState('');
   const [registerOnRemoveHandlerRes, setRegisterOnRemoveHandlerRes] = React.useState('');
   const [checkPagesConfigCapabilityRes, setCheckPagesConfigCapabilityRes] = React.useState('');
+
+  const initialize = (): void => {
+    pages.config.initialize();
+    setInitializeRes('called');
+  };
 
   const getConfig = (): void => {
     setGetConfigRes('config.getConfig()' + noHubSdkMsg);
@@ -60,6 +66,13 @@ const ConfigAPIs = (): ReactElement => {
   };
   return (
     <>
+      <BoxAndButton
+        handleClick={initialize}
+        output={initializeRes}
+        hasInput={false}
+        title="Config Initialize"
+        name="configs_initialize"
+      />
       <BoxAndButton
         handleClick={getConfig}
         output={getConfigRes}
