@@ -10,6 +10,7 @@ const MediaAPIs = (): ReactElement => {
   const [viewImagesWithIdRes, setViewImagesWithIdRes] = React.useState('');
   const [viewImagesWithUrlsRes, setViewImagesWithUrlsRes] = React.useState('');
   const [scanBarCodeRes, setScanBarCodeRes] = React.useState('');
+  const [checkMediaCapabilityRes, setCheckMediaCapabilityRes] = React.useState('');
 
   const captureImage = (): void => {
     setCaptureImageRes('media.captureImage()' + noHubSdkMsg);
@@ -85,7 +86,7 @@ const MediaAPIs = (): ReactElement => {
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           if (reader.result) {
-            setGetMediaRes('Received Blob');
+            setGetMediaRes('Received Blob (length: ' + (reader.result as any).length + ')');
           }
         };
       });
@@ -150,6 +151,14 @@ const MediaAPIs = (): ReactElement => {
     }, scanBarCodeConfig);
   };
 
+  const mediaCapabilityCheck = (): void => {
+    if (media.isSupported()) {
+      setCheckMediaCapabilityRes('Media module is supported');
+    } else {
+      setCheckMediaCapabilityRes('Media module is not supported');
+    }
+  };
+
   return (
     <>
       <BoxAndButton
@@ -193,6 +202,13 @@ const MediaAPIs = (): ReactElement => {
         hasInput={true}
         title="Media Scan Bar Code"
         name="mediaScanBarCode"
+      />
+      <BoxAndButton
+        handleClick={mediaCapabilityCheck}
+        output={checkMediaCapabilityRes}
+        hasInput={false}
+        title="Check Media Capability"
+        name="checkMediaCapability"
       />
     </>
   );

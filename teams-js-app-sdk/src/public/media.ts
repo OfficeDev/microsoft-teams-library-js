@@ -13,6 +13,7 @@ import {
 } from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
+import { runtime } from './runtime';
 
 export namespace media {
   /**
@@ -504,5 +505,9 @@ export namespace media {
     }
 
     sendMessageToParent('media.scanBarCode', [config], callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.media ? true : false;
   }
 }
