@@ -28,12 +28,12 @@ export namespace videoApp {
     /**
      * Video frame buffer
      */
-    data: ArrayBuffer;
+    data: Uint8ClampedArray;
 
     /**
      * Optional; person mask bufer
      */
-    personMask?: ArrayBuffer;
+    personMask?: Uint8ClampedArray;
   }
 
   /**
@@ -130,12 +130,6 @@ export namespace videoApp {
     private setupConnection(): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       window.addEventListener('message', this.receiveMessage.bind(this), false);
-      // sendMessageToParent()
-      // const rootOrigin = "*";
-      // top.postMessage({
-      //     type: 'SubscribeVideoFrames',
-      //     config : 'none'
-      // },rootOrigin);
     }
 
     /**
@@ -147,6 +141,9 @@ export namespace videoApp {
       sendMessageToParent('videoApp.VideoFrameProcessed');
     }
 
+    /**
+     * sending error notification to Teams client.
+     */
     private notifyError(errorMessage: string): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       sendMessageToParent('videoApp.notifyError', [errorMessage]);
