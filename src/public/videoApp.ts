@@ -76,7 +76,7 @@ export namespace videoApp {
   /**
    * VideoApp
    */
-  export class VideoApp {
+  class VideoApp {
     private videoFrameCallback: VideoFrameCallback;
     private videoEffectCallback: VideoEffectCallBack;
     /**
@@ -149,4 +149,18 @@ export namespace videoApp {
       sendMessageToParent('videoApp.notifyError', [errorMessage]);
     }
   } // end of VideoApp
+
+  const videoApp = new VideoApp();
+
+  export function registerForVideoFrame(frameCallback: VideoFrameCallback, format: VideoFrameFormat): void {
+    videoApp.registerForVideoFrame(frameCallback, format);
+  }
+
+  export function notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
+    videoApp.notifySelectedVideoEffectChanged(effectChangeType);
+  }
+
+  export function registerForVideoEffect(callback: VideoEffectCallBack): void {
+    videoApp.registerForVideoEffect(callback);
+  }
 } //end of video namespace
