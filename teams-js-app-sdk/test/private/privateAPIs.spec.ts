@@ -1,6 +1,6 @@
 import { core } from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
-import { TeamInstanceParameters, ViewerActionTypes } from '../../src/private/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -13,6 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
+  registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
@@ -280,6 +281,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
+      userFileOpenPreference: FileOpenPreference.Web,
     };
 
     // Get many responses to the same message
@@ -307,11 +309,12 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       editFile: true,
       subEntityId: 'someSubEntityId',
       viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(12);
+    expect(message.args.length).toBe(13);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -324,6 +327,23 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
+    expect(message.args[12]).toBe(FileOpenPreference.Web);
+  });
+
+  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
+    utils.initializeWithContext('content');
+
+    let changedUserSettingType, changedUserSettingValue;
+
+    registerUserSettingsChangeHandler([UserSettingTypes.fileOpenPreference], (updatedSettingType, updatedValue) => {
+      changedUserSettingType = updatedSettingType;
+      changedUserSettingValue = updatedValue;
+    });
+
+    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
+
+    expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
+    expect(changedUserSettingValue).toBe('value');
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
@@ -455,12 +475,11 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
 
-      const id = sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
+      sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
       let message = utils.findMessageByFunc('customMessage');
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
-      expect(id).toBe(message.id);
     });
   });
 

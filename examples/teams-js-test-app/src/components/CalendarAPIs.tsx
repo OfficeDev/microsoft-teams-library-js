@@ -1,63 +1,64 @@
-import React from 'react';
-import { calendar, runtime, RuntimeCapabilities } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { calendar } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const CalendarAPIs = () => {
-  const [calendarCapabilityCheck, setCalendarCapabilityCheck] = React.useState("");
-  const [openCalendarItem, setOpenCalendarItem] = React.useState("");
-  const [composeMeeting, setComposeMeeting] = React.useState("");
+const CalendarAPIs = (): ReactElement => {
+  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+  const [composeMeetingRes, setComposeMeetingRes] = React.useState('');
+  const [openCalendarItemRes, setOpenCalendarItemRes] = React.useState('');
 
-  const returnComposeMeeting = (meetingParams: any) => {
-    setComposeMeeting("calendar.composeMeeting()" + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string) => {
+  const composeMeeting = (meetingParams: string): void => {
+    setComposeMeetingRes('calendar.composeMeeting()' + noHubSdkMsg);
+    const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setComposeMeeting(reason);
+        if (reason) setComposeMeetingRes(reason);
       } else {
-        setComposeMeeting('Completed');
+        setComposeMeetingRes('Completed');
       }
     };
     calendar.composeMeeting(JSON.parse(meetingParams), onComplete);
   };
-  const returnOpenCalendarItem = (calendarParams: any) => {
-    setOpenCalendarItem("calendar.openCalendarItem()" + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string) => {
+
+  const openCalendarItem = (calendarParams: string): void => {
+    setOpenCalendarItemRes('calendar.openCalendarItem()' + noHubSdkMsg);
+    const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setOpenCalendarItem(reason);
+        if (reason) setOpenCalendarItemRes(reason);
       } else {
-        setOpenCalendarItem('Completed');
+        setOpenCalendarItemRes('Completed');
       }
     };
     calendar.openCalendarItem(JSON.parse(calendarParams), onComplete);
   };
 
-  const returnCheckCalendarCapability = () => {
-    if (runtime.isSupported(RuntimeCapabilities.Calendar)) {
-      setCalendarCapabilityCheck('Calendar module is supported');
+  const checkCalendarCapability = (): void => {
+    if (calendar.isSupported()) {
+      setCapabilityCheckRes('Calendar module is supported');
     } else {
-      setCalendarCapabilityCheck('Calendar module is not supported');
+      setCapabilityCheckRes('Calendar module is not supported');
     }
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnCheckCalendarCapability}
-        output={calendarCapabilityCheck}
+        handleClick={checkCalendarCapability}
+        output={capabilityCheckRes}
         hasInput={false}
         title="Check Capability Calendar"
         name="checkCapabilityCalendar"
       />
       <BoxAndButton
-        handleClick={returnOpenCalendarItem}
-        output={openCalendarItem}
+        handleClickWithInput={openCalendarItem}
+        output={openCalendarItemRes}
         hasInput={true}
         title="Open Calendar Item"
         name="openCalendarItem"
       />
       <BoxAndButton
-        handleClick={returnComposeMeeting}
-        output={composeMeeting}
+        handleClickWithInput={composeMeeting}
+        output={composeMeetingRes}
         hasInput={true}
         title="Compose Meeting"
         name="composeMeeting"

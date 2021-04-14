@@ -1,11 +1,41 @@
 # Breaking Changes
 
+## v0.0.10
+Corresponding microsoft-teams-library-js version: 1.9.0
+
+### New Capabilities organization introduced
+
+The following capabilities have been used to reorganize several existing APIs in the App SDK:
+
+#### `Tasks` namespace has been renamed `Dialog` and the following APIs have been renamed
+* `startTask` has been renamed `open`
+* `submitTasks` has been renamed `submit`
+* `updateTask` has been renamed `resize`
+* `TaskModuleDimension` enum has been renamed `DialogDimension`
+
+#### `Settings` namespace has been renamed `Pages.Config` and the following APIs have been renamed
+* `getSettings` has been renamed `getConfig`
+* `setSettings` has been renamed `setConfig`
+
+#### Several APIs have been moved from `teamsCore` namespace
+* `getTabInstances`, `getMruTabInstances`, `navigateToTab` APIs have moved to `pages.tabs` capability
+* `navigateCrossDomain`, `returnFocus`, `navigateBack` APIs have moved to `pages` capability
+
+#### Added Notifications capability
+* `showNotification` has moved to `notifications` capability
+
+**We reserve the right to change the grouping based on teamsjs API Reviews, which are still in progress.**
+
+### `teamsCore` namespace now exported
+Fixed a bug where the `teamsCore` namespace wasn't exported.
+
 ## v0.0.7
 Corresponding microsoft-teams-library-js version: 1.9.0
 
 ### Several core API functions have been moved to 'teamsCore' namespace
 
 API functions that are not directly implemented by the teamsjs Hub SDK that were previously under the 'core' namespace have been moved to a new namespace called 'teamsCore' for now.
+This teamsCore namespace is temporary and APIs will move again when the work to organize them by capability is completed.
 
 Kept in 'core':
 * Initialize

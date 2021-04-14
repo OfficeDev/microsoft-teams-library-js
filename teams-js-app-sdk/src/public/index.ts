@@ -1,6 +1,6 @@
 export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
-export { FrameContexts, HostClientType, TaskModuleDimension, TeamType, UserTeamRole, ChannelType } from './constants';
+export { FrameContexts, HostClientType, DialogDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
   Context,
   DeepLinkParameters,
@@ -10,17 +10,18 @@ export {
   TabInformation,
   TabInstance,
   TabInstanceParameters,
-  TaskInfo,
+  DialogInfo,
   TeamInformation,
+  FileOpenPreference,
 } from './interfaces';
 export { core } from './publicAPIs';
-export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
-export { settings } from './settings';
-export { tasks } from './tasks';
+export { dialog } from './dialog';
+export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
-export { runtime } from './runtime';
 export { calendar } from './calendar';
 export { mail } from './mail';
+export { teamsCore } from './teamsAPIs';
+export { people } from './people';

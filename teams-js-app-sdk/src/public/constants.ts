@@ -4,6 +4,7 @@ export enum HostClientType {
   android = 'android',
   ios = 'ios',
   rigel = 'rigel',
+  surfaceHub = 'surfaceHub',
 }
 
 // Ensure these declarations stay in sync with the framework.
@@ -13,8 +14,10 @@ export enum FrameContexts {
   authentication = 'authentication',
   remove = 'remove',
   task = 'task',
+  dialog = 'dialog',
   sidePanel = 'sidePanel',
   stage = 'stage',
+  meetingStage = 'meetingStage',
 }
 
 /**
@@ -41,7 +44,7 @@ export enum UserTeamRole {
 /**
  * Task module dimension enum
  */
-export enum TaskModuleDimension {
+export enum DialogDimension {
   Large = 'large',
   Medium = 'medium',
   Small = 'small',

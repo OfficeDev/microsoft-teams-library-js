@@ -2,8 +2,8 @@ import { TabInstanceParameters, Context, FrameContext } from '../../src/public/i
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import { core } from '../../src/public/publicAPIs';
 import { teamsCore } from '../../src/public/teamsAPIs';
-import { returnFocus, navigateCrossDomain } from '../../src/public/navigation';
 import { FrameContexts } from '../../src/public/constants';
+import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
 
@@ -116,8 +116,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', () => {
       utils.initializeWithContext('content');
 
-      teamsCore.getTabInstances(tabInfo => tabInfo);
-      teamsCore.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getTabInstances(tabInfo => tabInfo);
+      pages.tabs.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
     });
   });
 
@@ -125,8 +125,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', () => {
       utils.initializeWithContext('content');
 
-      teamsCore.getMruTabInstances(tabInfo => tabInfo);
-      teamsCore.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getMruTabInstances(tabInfo => tabInfo);
+      pages.tabs.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
     });
   });
 
@@ -209,16 +209,16 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBe(true);
   });
 
-  describe("registerOnLoadHandler", () => {
-    it("should not allow calls before initialization", () => {
+  describe('registerOnLoadHandler', () => {
+    it('should not allow calls before initialization', () => {
       expect(() =>
-      teamsCore.registerOnLoadHandler(() => {
+        teamsCore.registerOnLoadHandler(() => {
           return false;
-        })
-      ).toThrowError("The library has not yet been initialized");
+        }),
+      ).toThrowError('The library has not yet been initialized');
     });
-    it("should successfully register handler", () => {
-      utils.initializeWithContext("content");
+    it('should successfully register handler', () => {
+      utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       teamsCore.registerOnLoadHandler(() => {
@@ -226,7 +226,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
         return false;
       });
 
-      utils.sendMessage("load");
+      utils.sendMessage('load');
 
       expect(handlerInvoked).toBe(true);
     });
@@ -235,7 +235,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
   describe('registerBeforeUnloadHandler', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-      teamsCore.registerBeforeUnloadHandler(() => {
+        teamsCore.registerBeforeUnloadHandler(() => {
           return false;
         }),
       ).toThrowError('The library has not yet been initialized');

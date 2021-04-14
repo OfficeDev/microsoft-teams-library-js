@@ -10,7 +10,7 @@
   ],
   "extends": [
     "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "../../.eslintrc.js"
   ],
   "rules": {
     "react-hooks/rules-of-hooks": "error",

@@ -2,11 +2,12 @@ const path = require('path')
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: "./src/index.tsx",
   module: {
     rules: [
       {
-        test: /\.(ts|js)x?$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -18,6 +19,11 @@ module.exports = {
             ],
           },
         },
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/,

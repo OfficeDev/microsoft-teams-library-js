@@ -1,165 +1,249 @@
-import React from 'react';
-import { teamsCore } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const TeamsCoreAPIs = () => {
-  const [registerChangeSettingsHandler, setRegisterChangeSettingsHandler] = React.useState("");
-  const [registerAppButtonClickHandler, setRegisterAppButtonClickHandler] = React.useState("");
-  const [registerAppButtonHoverEnterHandler, setRegisterAppButtonHoverEnterHandler] = React.useState("");
-  const [registerAppButtonHoverLeaveHandler, setRegisterAppButtonHoverLeaveHandler] = React.useState("");
-  const [getTabInstance, setTabInstance] = React.useState("");
-  const [getMRUTabInstance, setMRUTabInstance] = React.useState("");
-  const [registerBeforeUnload, setRegisterBeforeUnload] = React.useState("");
-  const [registerBackButtonHandler, setRegisterBackButtonHandler] = React.useState("");
+const TeamsCoreAPIs = (): ReactElement => {
+  const [enablePrintCapRes, setEnablePrintCapRes] = React.useState('');
+  const [printRes, setPrintRes] = React.useState('');
+  const [setFrameContextRes, setSetFrameContextRes] = React.useState('');
+  const [registerChangeSettingsHandlerRes, setRegisterChangeSettingsHandlerRes] = React.useState('');
+  const [registerAppButtonClickHandlerRes, setRegisterAppButtonClickHandlerRes] = React.useState('');
+  const [registerAppButtonHoverEnterHandlerRes, setRegisterAppButtonHoverEnterHandlerRes] = React.useState('');
+  const [registerAppButtonHoverLeaveHandlerRes, setRegisterAppButtonHoverLeaveHandlerRes] = React.useState('');
+  const [getTabInstanceRes, setGetTabInstanceRes] = React.useState('');
+  const [getMRUTabInstanceRes, setGetMRUTabInstanceRes] = React.useState('');
+  const [registerBeforeUnloadRes, setRegisterBeforeUnloadRes] = React.useState('');
+  const [addStatesRes, setAddStatesRes] = React.useState('');
+  const [registerBackButtonHandlerRes, setRegisterBackButtonHandlerRes] = React.useState('');
   const [totalStates, setTotalStates] = React.useState(0);
-  const [addStates, setAddStates] = React.useState("");
+  const [checkPagesTabsCapabilityRes, setCheckPagesTabsCapabilityRes] = React.useState('');
+  const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
+  const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
 
-  const returnRegisterChangeSettingsHandler = () => {
-    setRegisterChangeSettingsHandler("teamsCore.registerChangeSettingsHandler()" + noHubSdkMsg);
-    teamsCore.registerChangeSettingsHandler(() => {
-      setRegisterChangeSettingsHandler("successfully called");
+  const enablePrintCapability = (): void => {
+    teamsCore.enablePrintCapability();
+    setEnablePrintCapRes('called');
+  };
+
+  const print = (): void => {
+    teamsCore.print();
+    setPrintRes('called');
+  };
+
+  const setFrameContext = (frameContextInput: string): void => {
+    teamsCore.setFrameContext(JSON.parse(frameContextInput));
+    setSetFrameContextRes('called');
+  };
+
+  const registerChangeSettingsHandler = (): void => {
+    setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
+    teamsCore.registerChangeSettingsHandler((): void => {
+      setRegisterChangeSettingsHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonClickHandler = () => {
-    setRegisterAppButtonClickHandler("teamsCore.registerAppButtonClickHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonClickHandler(() => {
-      setRegisterAppButtonClickHandler("successfully called");
+  const registerAppButtonClickHandler = (): void => {
+    setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonClickHandler((): void => {
+      setRegisterAppButtonClickHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonHoverEnterHandler = () => {
-    setRegisterAppButtonHoverEnterHandler("teamsCore.registerAppButtonHoverEnterHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverEnterHandler(() => {
-      setRegisterAppButtonHoverEnterHandler("successfully called");
+  const registerAppButtonHoverEnterHandler = (): void => {
+    setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonHoverEnterHandler((): void => {
+      setRegisterAppButtonHoverEnterHandlerRes('successfully called');
     });
   };
 
-  const returnRegisterAppButtonHoverLeaveHandler = () => {
-    setRegisterAppButtonHoverLeaveHandler("teamsCore.registerAppButtonHoverLeaveHandler()" + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverLeaveHandler(() => {
-      setRegisterAppButtonHoverLeaveHandler("successfully called");
+  const registerAppButtonHoverLeaveHandler = (): void => {
+    setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHubSdkMsg);
+    teamsCore.registerAppButtonHoverLeaveHandler((): void => {
+      setRegisterAppButtonHoverLeaveHandlerRes('successfully called');
     });
   };
 
-  const returnGetTabInstances = () => {
-    setTabInstance("teamsCore.getTabInstances()" + noHubSdkMsg);
-    teamsCore.getTabInstances((tabInfo: any) => {
-      setTabInstance(JSON.stringify(tabInfo));
-    });
+  const getTabInstances = (input: string): void => {
+    const tabInstanceParams = input ? JSON.parse(input) : undefined;
+    setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
+    pages.tabs.getTabInstances((tabInfo: TabInformation): void => {
+      setGetTabInstanceRes(JSON.stringify(tabInfo));
+    }, tabInstanceParams);
   };
 
-  const returnGetMRUTabInstances = () => {
-    setMRUTabInstance("teamsCore.getMruTabInstances()" + noHubSdkMsg);
-    teamsCore.getMruTabInstances((tabInfo: any) => {
-      setMRUTabInstance(JSON.stringify(tabInfo));
-    });
+  const getMRUTabInstances = (input: string): void => {
+    const tabInstanceParams = input ? JSON.parse(input) : undefined;
+    setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
+    pages.tabs.getMruTabInstances((tabInfo: TabInformation): void => {
+      setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
+    }, tabInstanceParams);
   };
 
-  const returnRegisterBeforeUnload = (readyToUnloadDelay: any) => {
-    setRegisterBeforeUnload("teamsCore.registerBeforeUnload()" + noHubSdkMsg);
+  const registerBeforeUnload = (readyToUnloadDelay: string): void => {
     const delay = Number(readyToUnloadDelay);
-    teamsCore.registerBeforeUnloadHandler(function (readyToUnload) {
-      (window as any).readyToUnload = readyToUnload;
+    setRegisterBeforeUnloadRes('teamsCore.registerBeforeUnload()' + noHubSdkMsg);
+    teamsCore.registerBeforeUnloadHandler((readyToUnload): boolean => {
       setTimeout(() => {
         readyToUnload();
       }, delay);
       alert(`beforeUnload received; calling readyToUnload in ${delay / 1000} seconds`);
-      setRegisterBeforeUnload("Success");
+      setRegisterBeforeUnloadRes('Success');
       return true;
     });
   };
 
-  const returnAddStates = () => {
+  const addStates = (): void => {
     let newNumStates = totalStates + 1;
     setTotalStates(newNumStates);
-    window.history.pushState({ some: 'state', id: newNumStates }, "tab state" + newNumStates, '/testTab');
-    setAddStates("total States: " + newNumStates);
-    window.addEventListener('popstate', function (event) {
-      if (event.state && event.state.id) {
-        setAddStates("onpopstate: back button clicked. total remaining state: " + event.state.id);
-      }
-    }, false);
+    window.history.pushState({ some: 'state', id: newNumStates }, 'tab state' + newNumStates, '/testTab');
+    setAddStatesRes('total States: ' + newNumStates);
+    window.addEventListener(
+      'popstate',
+      (event): void => {
+        if (event.state && event.state.id) {
+          setAddStatesRes('onpopstate: back button clicked. total remaining state: ' + event.state.id);
+        }
+      },
+      false,
+    );
   };
 
-  const returnRegisterBackButtonHandler = () => {
-    setRegisterBackButtonHandler("total States: " + totalStates);
-    teamsCore.registerBackButtonHandler(function () {
+  const returnRegisterBackButtonHandler = (): void => {
+    setRegisterBackButtonHandlerRes('total States: ' + totalStates);
+    teamsCore.registerBackButtonHandler((): boolean => {
       if (totalStates > 0) {
         let newNumStates = totalStates - 1;
         setTotalStates(newNumStates);
-        setRegisterBackButtonHandler("back button clicked. total remaining state: " + newNumStates);
+        setRegisterBackButtonHandlerRes('back button clicked. total remaining state: ' + newNumStates);
         return true;
       }
       return false;
     });
   };
 
+  const registerOnLoadHandler = (): void => {
+    setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHubSdkMsg);
+    teamsCore.registerOnLoadHandler((context: teamsjs.LoadContext): void => {
+      setRegisterOnLoadRes('successfully called with context:' + JSON.stringify(context));
+    });
+  };
+
+  const registerFullScreenChangeHandler = (): void => {
+    setRegisterFullScreenChangeHandlerRes('teamsCore.registerFullScreenHandler()' + noHubSdkMsg);
+    teamsCore.registerFullScreenHandler((isFullScreen: boolean): void => {
+      setRegisterFullScreenChangeHandlerRes('successfully called with isFullScreen:' + isFullScreen);
+    });
+  };
+
+  const pagesTabsCapabilityCheck = (): void => {
+    if (pages.tabs.isSupported()) {
+      setCheckPagesTabsCapabilityRes('Pages.tabs module is supported');
+    } else {
+      setCheckPagesTabsCapabilityRes('Pages.tabs module is not supported');
+    }
+  };
+
   return (
     <>
       <BoxAndButton
-        handleClick={returnRegisterChangeSettingsHandler}
-        output={registerChangeSettingsHandler}
+        handleClick={enablePrintCapability}
+        output={enablePrintCapRes}
+        hasInput={false}
+        title="Enable Print Capability"
+        name="enablePrintCapability"
+      />
+      <BoxAndButton handleClick={print} output={printRes} hasInput={false} title="Print" name="print" />
+      <BoxAndButton
+        handleClickWithInput={setFrameContext}
+        output={setFrameContextRes}
+        hasInput={true}
+        title="Set Frame Context"
+        name="setFrameContext"
+      />
+      <BoxAndButton
+        handleClick={registerChangeSettingsHandler}
+        output={registerChangeSettingsHandlerRes}
         hasInput={false}
         title="Register Change Settings Handler"
         name="registerChangeSettingsHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonClickHandler}
-        output={registerAppButtonClickHandler}
+        handleClick={registerAppButtonClickHandler}
+        output={registerAppButtonClickHandlerRes}
         hasInput={false}
         title="Register App Button Click Handler"
         name="registerAppButtonClickHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonHoverEnterHandler}
-        output={registerAppButtonHoverEnterHandler}
+        handleClick={registerAppButtonHoverEnterHandler}
+        output={registerAppButtonHoverEnterHandlerRes}
         hasInput={false}
         title="Register App Button Hover Enter Handler"
         name="registerAppButtonHoverEnterHandler"
       />
       <BoxAndButton
-        handleClick={returnRegisterAppButtonHoverLeaveHandler}
-        output={registerAppButtonHoverLeaveHandler}
+        handleClick={registerAppButtonHoverLeaveHandler}
+        output={registerAppButtonHoverLeaveHandlerRes}
         hasInput={false}
         title="Register App Button Hover Leave Handler"
         name="registerAppButtonHoverLeaveHandler"
       />
       <BoxAndButton
-        handleClick={returnGetTabInstances}
-        output={getTabInstance}
+        handleClick={registerFullScreenChangeHandler}
+        output={registerFullScreenChangeHandlerRes}
         hasInput={false}
+        title="Register Full Screen Change Handler"
+        name="registerFullScreenChangeHandler"
+      />
+      <BoxAndButton
+        handleClickWithInput={getTabInstances}
+        output={getTabInstanceRes}
+        hasInput={true}
         title="Get Tab Instance"
         name="getTabInstance"
       />
       <BoxAndButton
-        handleClick={returnGetMRUTabInstances}
-        output={getMRUTabInstance}
-        hasInput={false}
+        handleClickWithInput={getMRUTabInstances}
+        output={getMRUTabInstanceRes}
+        hasInput={true}
         title="Get MRU Tab Instance"
         name="getMRUTabInstance"
       />
       <BoxAndButton
-        handleClick={returnRegisterBeforeUnload}
-        output={registerBeforeUnload}
+        handleClick={registerOnLoadHandler}
+        output={registerOnLoadRes}
+        hasInput={false}
+        title="Register On Load Handler"
+        name="registerOnLoadHandler"
+      />
+      <BoxAndButton
+        handleClickWithInput={registerBeforeUnload}
+        output={registerBeforeUnloadRes}
         hasInput={true}
         title="Register Before Unload"
         name="registerBeforeUnload"
       />
       <BoxAndButton
-        handleClick={returnAddStates}
-        output={addStates}
+        handleClick={addStates}
+        output={addStatesRes}
         hasInput={false}
         title="Add States"
         name="addStates"
       />
       <BoxAndButton
         handleClick={returnRegisterBackButtonHandler}
-        output={registerBackButtonHandler}
+        output={registerBackButtonHandlerRes}
         hasInput={false}
         title="Register Back Button Handler"
         name="registerBackButtonHandler"
+      />
+      <BoxAndButton
+        handleClick={pagesTabsCapabilityCheck}
+        output={checkPagesTabsCapabilityRes}
+        hasInput={false}
+        title="Check Page Tabs Capability"
+        name="checkPageTabsCapability"
       />
     </>
   );

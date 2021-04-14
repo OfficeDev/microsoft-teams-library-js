@@ -10,6 +10,7 @@ export {
   ThreadMember,
   UserJoinedTeamsInformation,
   ViewerActionTypes,
+  UserSettingTypes,
 } from './interfaces';
 export {
   enterFullscreen,
@@ -19,11 +20,13 @@ export {
   getUserJoinedTeams,
   openFilePreview,
   sendCustomMessage,
-  showNotification,
   sendCustomEvent,
   registerCustomHandler,
   uploadCustomApp,
+  registerUserSettingsChangeHandler,
 } from './privateAPIs';
 export { conversations } from './conversations';
+export { files } from './files';
 export { meetingRoom } from './meetingRoom';
+export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';

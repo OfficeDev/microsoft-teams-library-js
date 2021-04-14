@@ -5,26 +5,26 @@
       "type": "pwa-node",
       "request": "launch",
       "name": "Debug compare bundle analysis",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\tools\\cli\\compareBundleAnalysis.js",
-      "outFiles": [
-        "${workspaceFolder}/tools/**/*.js"
-      ]
+      "outFiles": ["${workspaceFolder}/tools/**/*.js"]
     },
     {
       "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": [
-        "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
-        "--runInBand"
-      ],
+      "runtimeArgs": ["--inspect-brk", "${workspaceRoot}/node_modules/jest/bin/jest.js", "--runInBand"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch yarn command",
+      "runtimeExecutable": "yarn",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["build-sdk"]
     }
   ]
 }

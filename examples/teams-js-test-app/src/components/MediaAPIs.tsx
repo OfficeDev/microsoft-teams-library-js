@@ -1,90 +1,104 @@
-import React from 'react';
-import { media } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { media } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const MediaAPIs = () => {
-  const [getCaptureImage, setCaptureImage] = React.useState("");
-  const [getSelectMedia, setSelectMedia] = React.useState("");
-  const [getGetMedia, setGetMedia] = React.useState("");
-  const [getViewImagesWithId, setViewImagesWithId] = React.useState("");
-  const [getViewImagesWithUrls, setViewImagesWithUrls] = React.useState("");
-  const [getMediaScanBarCode, setMediaScanBarCode] = React.useState("");
+const MediaAPIs = (): ReactElement => {
+  const [captureImageRes, setCaptureImageRes] = React.useState('');
+  const [selectMediaRes, setSelectMediaRes] = React.useState('');
+  const [getMediaRes, setGetMediaRes] = React.useState('');
+  const [viewImagesWithIdRes, setViewImagesWithIdRes] = React.useState('');
+  const [viewImagesWithUrlsRes, setViewImagesWithUrlsRes] = React.useState('');
+  const [scanBarCodeRes, setScanBarCodeRes] = React.useState('');
+  const [checkMediaCapabilityRes, setCheckMediaCapabilityRes] = React.useState('');
 
-  const returnCaptureImage = () => {
-    setCaptureImage("media.captureImage()" + noHubSdkMsg);
-    const callback = (error: teamsjs.SdkError, files: media.File[]) => {
+  const captureImage = (): void => {
+    setCaptureImageRes('media.captureImage()' + noHubSdkMsg);
+    const callback = (error: teamsjs.SdkError, files: media.File[]): void => {
       if (error) {
-        setCaptureImage(error.errorCode.toString + " " + error.message);
+        setCaptureImageRes(error.errorCode.toString + ' ' + error.message);
         return;
       }
       const file: media.File = files[0];
-      let content: string = "";
+      let content = '';
       let len = 20;
       if (file.content) {
         len = Math.min(len, file.content.length);
         content = file.content.substr(0, len);
       }
-      let output = "format: " + file.format + ", size: " + file.size + ", mimeType: " + file.mimeType + ", content: " + content;
-      setCaptureImage(output);
+      let output =
+        'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
+      setCaptureImageRes(output);
     };
     media.captureImage(callback);
   };
 
-  const returnSelectMedia = (mediaInputs: any) => {
-    setSelectMedia("media.selectMedia()" + noHubSdkMsg);
-    const callback = (error: teamsjs.SdkError, medias: media.Media[]) => {
+  const selectMedia = (mediaInputs: string): void => {
+    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    setSelectMediaRes('media.selectMedia()' + noHubSdkMsg);
+    const callback = (error: teamsjs.SdkError, medias: media.Media[]): void => {
       if (error) {
-        setSelectMedia(error.errorCode.toString + " " + error.message);
+        setSelectMediaRes(error.errorCode.toString + ' ' + error.message);
         return;
       }
-      let message = "";
+      let message = '';
       for (let i = 0; i < medias.length; i++) {
         const media: media.Media = medias[i];
-        let preview: string = "";
+        let preview = '';
         let len = 20;
         if (media.preview) {
           len = Math.min(len, media.preview.length);
           preview = media.preview.substr(0, len);
         }
-        message += "[format: " + media.format + ", size: " + media.size
-          + ", mimeType: " + media.mimeType + ", content: " + media.content
-          + ", preview: " + preview + "],"
-        setSelectMedia(message);
+        message +=
+          '[format: ' +
+          media.format +
+          ', size: ' +
+          media.size +
+          ', mimeType: ' +
+          media.mimeType +
+          ', content: ' +
+          media.content +
+          ', preview: ' +
+          preview +
+          '],';
+        setSelectMediaRes(message);
       }
     };
-    media.selectMedia(mediaInputs, callback);
+    media.selectMedia(mediaInputsParams, callback);
   };
 
-  const returnGetMedia = (inputParams: any) => {
-    setGetMedia("media.getMedia()" + noHubSdkMsg);
-    media.selectMedia(inputParams, (error: teamsjs.SdkError, medias: media.Media[]) => {
+  const getMedia = (mediaInputs: string): void => {
+    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    setGetMediaRes('media.getMedia()' + noHubSdkMsg);
+    media.selectMedia(mediaInputsParams, (error: teamsjs.SdkError, medias: media.Media[]) => {
       if (error) {
-        setGetMedia(error.errorCode.toString + " " + error.message);
+        setGetMediaRes(error.errorCode.toString + ' ' + error.message);
         return;
       }
       const media: media.Media = medias[0] as media.Media;
       media.getMedia((gmErr: teamsjs.SdkError, blob: Blob) => {
         if (gmErr) {
-          setGetMedia(gmErr.errorCode.toString + " " + gmErr.message);
+          setGetMediaRes(gmErr.errorCode.toString + ' ' + gmErr.message);
           return;
         }
         var reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           if (reader.result) {
-            setGetMedia("Received Blob");
+            setGetMediaRes('Received Blob (length: ' + (reader.result as any).length + ')');
           }
-        }
+        };
       });
     });
   };
 
-  const returnViewImagesWithId = (selectMediaInputs: any) => {
-    setViewImagesWithId("media.viewImagesWithId()" + noHubSdkMsg);
-    media.selectMedia(selectMediaInputs, (err: teamsjs.SdkError, medias: media.Media[]) => {
+  const viewImagesWithId = (mediaInputs: string): void => {
+    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    setViewImagesWithIdRes('media.viewImagesWithId()' + noHubSdkMsg);
+    media.selectMedia(mediaInputsParams, (err: teamsjs.SdkError, medias: media.Media[]) => {
       if (err) {
-        setViewImagesWithId(err.errorCode.toString + " " + err.message);
+        setViewImagesWithIdRes(err.errorCode.toString + ' ' + err.message);
         return;
       }
       const urlList: media.ImageUri[] = [];
@@ -92,92 +106,109 @@ const MediaAPIs = () => {
         const media = medias[i];
         urlList.push({
           value: media.content,
-          type: 1 //teamsjs.ImageUriType.ID
-        } as media.ImageUri)
+          type: 1, //teamsjs.ImageUriType.ID
+        } as media.ImageUri);
       }
-      media.viewImages(urlList, (gmErr?: teamsjs.SdkError) => {
+      media.viewImages(urlList, (gmErr?: teamsjs.SdkError): void => {
         if (gmErr) {
-          setViewImagesWithId(gmErr.errorCode.toString + " " + gmErr.message);
+          setViewImagesWithIdRes(gmErr.errorCode.toString + ' ' + gmErr.message);
           return;
         }
-        setViewImagesWithId("Success");
+        setViewImagesWithIdRes('Success');
       });
     });
   };
 
-  const returnViewImagesWithUrls = (imageUrls: any) => {
-    setViewImagesWithUrls("media.viewImagesWithUrls()" + noHubSdkMsg);
-    const urlList: media.ImageUri[] = [];
+  const viewImagesWithUrls = (imageUrlsInput: string): void => {
+    setViewImagesWithUrlsRes('media.viewImagesWithUrls()' + noHubSdkMsg);
+    let imageUrls: string[] = imageUrlsInput.split(', ');
+    let urlList: media.ImageUri[] = [];
     for (let i = 0; i < imageUrls.length; i++) {
       const imageUrl = imageUrls[i];
       urlList.push({
         value: imageUrl,
-        type: 2 //teamsjs.ImageUriType.URL
-      } as media.ImageUri)
+        type: 2, //teamsjs.ImageUriType.URL
+      } as media.ImageUri);
     }
-    media.viewImages(urlList, (err?: teamsjs.SdkError) => {
+    media.viewImages(urlList, (err?: teamsjs.SdkError): void => {
       if (err) {
-        setViewImagesWithUrls(err.errorCode.toString + " " + err.message);
-        return;
+        setViewImagesWithUrlsRes(err.errorCode.toString + ' ' + err.message);
+      } else {
+        setViewImagesWithUrlsRes('media.viewImagesWithUrls() executed');
       }
-      setViewImagesWithUrls("Success");
     });
   };
 
-  const returnMediaScanBarCode = (scanBarCodeConfig: any) => {
-    setMediaScanBarCode("media.scanBarCode()" + noHubSdkMsg);
-    media.scanBarCode((err: teamsjs.SdkError, result: string) => {
+  const scanBarCode = (scanBarCodeConfigInput: string): void => {
+    let scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
+    setScanBarCodeRes('media.scanBarCode()' + noHubSdkMsg);
+    media.scanBarCode((err: teamsjs.SdkError, result: string): void => {
       if (err) {
-        setMediaScanBarCode(err.errorCode.toString + " " + err.message);
-        return;
+        setScanBarCodeRes(err.errorCode.toString + ' ' + err.message);
+      } else {
+        setScanBarCodeRes('result: ' + result);
       }
-      setMediaScanBarCode("result: " + result);
     }, scanBarCodeConfig);
+  };
+
+  const mediaCapabilityCheck = (): void => {
+    if (media.isSupported()) {
+      setCheckMediaCapabilityRes('Media module is supported');
+    } else {
+      setCheckMediaCapabilityRes('Media module is not supported');
+    }
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnCaptureImage}
-        output={getCaptureImage}
+        handleClick={captureImage}
+        output={captureImageRes}
         hasInput={false}
         title="Capture Image"
         name="CaptureImage"
       />
       <BoxAndButton
-        handleClick={returnSelectMedia}
-        output={getSelectMedia}
+        handleClickWithInput={selectMedia}
+        output={selectMediaRes}
         hasInput={true}
         title="Select Media"
         name="selectMedia"
       />
       <BoxAndButton
-        handleClick={returnGetMedia}
-        output={getGetMedia}
+        handleClickWithInput={getMedia}
+        output={getMediaRes}
         hasInput={true}
         title="Get Media"
         name="getMedia"
       />
       <BoxAndButton
-        handleClick={returnViewImagesWithId}
-        output={getViewImagesWithId}
+        handleClickWithInput={viewImagesWithId}
+        output={viewImagesWithIdRes}
         hasInput={true}
         title="View Images With Id"
         name="viewImagesWithId"
       />
       <BoxAndButton
-        handleClick={returnViewImagesWithUrls}
-        output={getViewImagesWithUrls}
+        handleClickWithInput={viewImagesWithUrls}
+        output={viewImagesWithUrlsRes}
         hasInput={true}
         title="View Images With Urls"
         name="viewImagesWithUrls"
       />
       <BoxAndButton
-        handleClick={returnMediaScanBarCode}
-        output={getMediaScanBarCode}
+        handleClickWithInput={scanBarCode}
+        output={scanBarCodeRes}
         hasInput={true}
         title="Media Scan Bar Code"
         name="mediaScanBarCode"
+      />
+      <BoxAndButton
+        handleClick={mediaCapabilityCheck}
+        output={checkMediaCapabilityRes}
+        hasInput={false}
+        title="Check Media Capability"
+        name="checkMediaCapability"
       />
     </>
   );

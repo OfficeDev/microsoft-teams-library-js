@@ -1,4 +1,4 @@
-import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { DialogDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -156,6 +156,15 @@ export interface LocaleInfo {
   longDate: string;
   shortTime: string;
   longTime: string;
+}
+
+/**
+ * Allowed user file open preferences
+ */
+export enum FileOpenPreference {
+  Inline = 'inline',
+  Desktop = 'desktop',
+  Web = 'web',
 }
 
 export interface Context {
@@ -399,6 +408,11 @@ export interface Context {
    * Team Template ID if there was a Team Template associated with the creation of the team.
    */
   teamTemplateId?: string;
+
+  /**
+   * Where the user prefers the file to be opened from by default during file open
+   */
+  userFileOpenPreference?: FileOpenPreference;
 }
 
 export interface DeepLinkParameters {
@@ -420,7 +434,7 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
-export interface TaskInfo {
+export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
    */
@@ -434,12 +448,12 @@ export interface TaskInfo {
   /**
    * The requested height of the webview/iframe.
    */
-  height?: TaskModuleDimension | number;
+  height?: DialogDimension | number;
 
   /**
    * The requested width of the webview/iframe.
    */
-  width?: TaskModuleDimension | number;
+  width?: DialogDimension | number;
 
   /**
    * Title of the task module.

@@ -1,45 +1,63 @@
-import React from 'react';
-import { conversations } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { OpenConversationRequest, conversations } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const ConversationsAPIs = () => {
-  const [openConversation, setOpenConversation] = React.useState("");
-  const [closeConversation, setCloseConversation] = React.useState("");
+const ConversationsAPIs = (): ReactElement => {
+  const [openConversationRes, setOpenConversationRes] = React.useState('');
+  const [closeConversationRes, setCloseConversationRes] = React.useState('');
 
-  const returnConversationsOpenConversation = (openConversationRequest: any) => {
-    setOpenConversation("conversations.openConversation()" + noHubSdkMsg);
-    openConversationRequest = JSON.parse(openConversationRequest);
-    openConversationRequest.onStartConversation = (conversationResponse) => {
-      setOpenConversation("Start Conversation Subentity Id " + conversationResponse.subEntityId + " Conversation Id: " + conversationResponse.conversationId + " Entity Id: " + conversationResponse.entityId + " Channel Id: " + conversationResponse.channelId);
+  const openConversation = (openConversationRequestInput: string): void => {
+    setOpenConversationRes('conversations.openConversation()' + noHubSdkMsg);
+    let openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
+    openConversationRequest.onStartConversation = conversationResponse => {
+      setOpenConversationRes(
+        'Start Conversation Subentity Id ' +
+          conversationResponse.subEntityId +
+          ' Conversation Id: ' +
+          conversationResponse.conversationId +
+          ' Entity Id: ' +
+          conversationResponse.entityId +
+          ' Channel Id: ' +
+          conversationResponse.channelId,
+      );
     };
-    openConversationRequest.onCloseConversation = (conversationResponse) => {
-      setOpenConversation("Start Conversation Subentity Id " + conversationResponse.subEntityId + " Conversation Id: " + conversationResponse.conversationId + " Entity Id: " + conversationResponse.entityId + " Channel Id: " + conversationResponse.channelId);
+    openConversationRequest.onCloseConversation = conversationResponse => {
+      setOpenConversationRes(
+        'Start Conversation Subentity Id ' +
+          conversationResponse.subEntityId +
+          ' Conversation Id: ' +
+          conversationResponse.conversationId +
+          ' Entity Id: ' +
+          conversationResponse.entityId +
+          ' Channel Id: ' +
+          conversationResponse.channelId,
+      );
     };
     try {
       conversations.openConversation(openConversationRequest);
     } catch (e) {
-      setOpenConversation("Error" + e);
+      setOpenConversationRes('Error' + e);
     }
   };
 
-  const returnConversationsCloseConversation = () => {
-    setCloseConversation("Conversation Closed!");
+  const closeConversation = (): void => {
+    setCloseConversationRes('Conversation Closed!');
     conversations.closeConversation();
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnConversationsOpenConversation}
-        output={openConversation}
+        handleClickWithInput={openConversation}
+        output={openConversationRes}
         hasInput={true}
         title="openConversation"
         name="Open Conversation"
       />
       <BoxAndButton
-        handleClick={returnConversationsCloseConversation}
-        output={closeConversation}
+        handleClick={closeConversation}
+        output={closeConversationRes}
         hasInput={false}
         title="closeConversation"
         name="Close Conversation"

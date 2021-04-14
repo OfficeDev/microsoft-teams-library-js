@@ -1,5 +1,6 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 /**
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
@@ -87,11 +88,14 @@ export namespace menus {
     popOver = 'popOver',
   }
   let navBarMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['navBarMenuItemPress'] = handleNavBarMenuItemPress;
   let actionMenuItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['actionMenuItemPress'] = handleActionMenuItemPress;
   let viewConfigItemPressHandler: (id: string) => boolean;
-  GlobalVars.handlers['setModuleView'] = handleViewConfigItemPress;
+
+  export function initialize(): void {
+    registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
+    registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
+    registerHandler('setModuleView', handleViewConfigItemPress, false);
+  }
   /**
    * Registers list of view configurations and it's handler.
    * Handler is responsible for listening selection of View Configuration.
@@ -101,12 +105,12 @@ export namespace menus {
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
     viewConfigItemPressHandler = handler;
-    sendMessageRequestToParent('setUpViews', [viewConfig]);
+    sendMessageToParent('setUpViews', [viewConfig]);
   }
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('viewConfigItemPress', [id]);
+      sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
   /**
@@ -117,12 +121,12 @@ export namespace menus {
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
     navBarMenuItemPressHandler = handler;
-    sendMessageRequestToParent('setNavBarMenu', [items]);
+    sendMessageToParent('setNavBarMenu', [items]);
   }
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('handleNavBarMenuItemPress', [id]);
+      sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
   export interface ActionMenuParameters {
@@ -143,12 +147,12 @@ export namespace menus {
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
     actionMenuItemPressHandler = handler;
-    sendMessageRequestToParent('showActionMenu', [params]);
+    sendMessageToParent('showActionMenu', [params]);
   }
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
-      sendMessageRequestToParent('handleActionMenuItemPress', [id]);
+      sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
 }

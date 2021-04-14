@@ -1,7 +1,8 @@
-import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, sendMessageRequestToParent, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { sendMessageToParent } from '../internal/communication';
+import { runtime } from './runtime';
 
 export namespace location {
   /**
@@ -64,8 +65,7 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('location.getLocation', [props]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('location.getLocation', [props], callback);
   }
 
   /**
@@ -89,7 +89,10 @@ export namespace location {
       callback(invalidInput, undefined);
       return;
     }
-    const messageId = sendMessageRequestToParent('location.showLocation', [location]);
-    GlobalVars.callbacks[messageId] = callback;
+    sendMessageToParent('location.showLocation', [location], callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.location ? true : false;
   }
 }

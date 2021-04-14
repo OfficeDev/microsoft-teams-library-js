@@ -1,16 +1,15 @@
 const libraryName = 'teamsjs';
 const fs = require('fs');
 const rimraf = require('rimraf');
-const timeout = 2000;
 
 function DtsBundlePlugin() {}
 DtsBundlePlugin.prototype.apply = function(compiler) {
   const self = this;
 
-  compiler.plugin('done', (_compilation, callback) => {
+  compiler.plugin('done', async (_compilation, callback) => {
     const dtsBuilder = require('dts-builder');
 
-    dtsBuilder.generateBundles([
+    await dtsBuilder.generateBundles([
       {
         name: libraryName,
         alias: libraryName,
@@ -18,11 +17,7 @@ DtsBundlePlugin.prototype.apply = function(compiler) {
         destDir: './dist',
       },
     ]);
-
-    console.log(
-      'Waiting for 2 seconds so that the dts can be merged before proceeding. If this fails the either increase the wait time or just re-run the task.',
-    );
-    setTimeout(() => patchDTS(callback), timeout);
+    patchDTS(callback);
   });
 };
 

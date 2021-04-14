@@ -1,49 +1,67 @@
-import React from 'react';
-import { location } from "@microsoft/teamsjs-app-sdk";
-import BoxAndButton from "./BoxAndButton";
-import { noHubSdkMsg } from "../App"
+import React, { ReactElement } from 'react';
+import { location } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from './BoxAndButton';
+import { noHubSdkMsg } from '../App';
 
-const LocationAPIs = () => {
-  const [getGetLocation, setGetLocation] = React.useState("");
-  const [getShowLocation, setShowLocation] = React.useState("");
+const LocationAPIs = (): ReactElement => {
+  const [getLocationRes, setGetLocationRes] = React.useState('');
+  const [showLocationRes, setShowLocationRes] = React.useState('');
+  const [checkLocationCapabilityRes, setCheckLocationCapabilityRes] = React.useState('');
 
-  const returnGetLocation = (locationProps: any) => {
-    setGetLocation("location.getLocation()" + noHubSdkMsg);
-    location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location) => {
+  const getLocation = (locationPropsInput: string): void => {
+    let locationProps: location.LocationProps = JSON.parse(locationPropsInput);
+    setGetLocationRes('location.getLocation()' + noHubSdkMsg);
+    location.getLocation(locationProps, (err: teamsjs.SdkError, location: teamsjs.location.Location): void => {
       if (err) {
-        setGetLocation(err.errorCode.toString + " " + err.message);
+        setGetLocationRes(err.errorCode.toString + ' ' + err.message);
         return;
       }
-      setGetLocation(JSON.stringify(location));
+      setGetLocationRes(JSON.stringify(location));
     });
   };
 
-  const returnShowLocation = (location: any) => {
-    setShowLocation("location.showLocation()" + noHubSdkMsg);
-    location.showLocation(location, (err: teamsjs.SdkError, result: boolean) => {
+  const showLocation = (locationInput: string): void => {
+    let locationParam: location.Location = JSON.parse(locationInput);
+    setShowLocationRes('location.showLocation()' + noHubSdkMsg);
+    location.showLocation(locationParam, (err: teamsjs.SdkError, result: boolean): void => {
       if (err) {
-        setShowLocation(err.errorCode.toString + " " + err.message);
+        setShowLocationRes(err.errorCode.toString + ' ' + err.message);
         return;
       }
-      setShowLocation("result: " + result);
+      setShowLocationRes('result: ' + result);
     });
+  };
+
+  const locationCapabilityCheck = (): void => {
+    if (location.isSupported()) {
+      setCheckLocationCapabilityRes('Location module is supported');
+    } else {
+      setCheckLocationCapabilityRes('Location module is not supported');
+    }
   };
 
   return (
     <>
       <BoxAndButton
-        handleClick={returnGetLocation}
-        output={getGetLocation}
+        handleClickWithInput={getLocation}
+        output={getLocationRes}
         hasInput={true}
         title="Get Location"
         name="getLocation"
       />
       <BoxAndButton
-        handleClick={returnShowLocation}
-        output={getShowLocation}
+        handleClickWithInput={showLocation}
+        output={showLocationRes}
         hasInput={true}
         title="Show Location"
         name="showLocation"
+      />
+      <BoxAndButton
+        handleClick={locationCapabilityCheck}
+        output={checkLocationCapabilityRes}
+        hasInput={false}
+        title="Check Location Capability"
+        name="checkLocationCapability"
       />
     </>
   );
