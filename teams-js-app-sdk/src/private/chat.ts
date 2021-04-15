@@ -3,11 +3,12 @@ import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
+import { runtime } from '../public/runtime';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
  */
-export namespace conversations {
+export namespace chat {
   /**
    * @private
    * Hide from docs
@@ -70,5 +71,8 @@ export namespace conversations {
     sendMessageToParent('conversations.closeConversation');
     removeHandler('startConversation');
     removeHandler('closeConversation');
+  }
+  export function isSupported(): boolean {
+    return runtime.supports.chat ? true : false;
   }
 }

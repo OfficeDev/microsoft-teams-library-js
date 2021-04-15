@@ -4,7 +4,7 @@ import { core, appInitialization } from '@microsoft/teamsjs-app-sdk';
 import AppInitializationAPIs from './components/AppInitialization';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
-import ConversationsAPIs from './components/ConversationsAPIs';
+import ChatAPIs from './components/privateApis/ChatAPIs';
 import CoreAPIs from './components/CoreAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import MediaAPIs from './components/MediaAPIs';
@@ -38,7 +38,7 @@ const App = (): ReactElement => {
       <AppInitializationAPIs />
       <CalendarAPIs />
       <MailAPIs />
-      <ConversationsAPIs />
+      <ChatAPIs />
       <CoreAPIs />
       <LocationAPIs />
       <MediaAPIs />
