@@ -16,6 +16,7 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import MailAPIs from './components/MailAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
+import PeopleAPIs from './components/PeopleAPIs';
 
 core.initialize();
 
@@ -34,21 +35,22 @@ export const noHubSdkMsg = ' was called, but there was no response from the Hub 
 const App = (): ReactElement => {
   return (
     <>
-      <AuthenticationAPIs />
       <AppInitializationAPIs />
+      <AuthenticationAPIs />
       <CalendarAPIs />
-      <MailAPIs />
       <ChatAPIs />
-      <CoreAPIs />
-      <LocationAPIs />
-      <MediaAPIs />
-      <NavigationAPIs />
-      <PrivateAPIs />
-      <DialogAPIs />
       <ConfigAPIs />
-      <TeamsCoreAPIs />
-      <NotificationAPIs />
+      <CoreAPIs />
+      <DialogAPIs />
+      <LocationAPIs />
+      <MailAPIs />
+      <MediaAPIs />
       <MeetingAPIs />
+      <NavigationAPIs />
+      <NotificationAPIs />
+      <PeopleAPIs />
+      <PrivateAPIs />
+      <TeamsCoreAPIs />
     </>
   );
 };
