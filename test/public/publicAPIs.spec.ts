@@ -69,6 +69,10 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.time).not.toBeNull();
+    let currentTime = new Date().toISOString();
+    expect(initMessage.time).not.toBe(currentTime);
+
   });
 
   it('should listen to frame messages for a frameless window', () => {
@@ -271,7 +275,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       appSessionId: 'appSessionId',
       meetingId: 'dummyMeetingId'
     };
-
+    //insert expected time comparison here?
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);
