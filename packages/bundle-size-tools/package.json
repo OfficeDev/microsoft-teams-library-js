@@ -12,7 +12,7 @@
     "clean:all": "rimraf dist && rimraf tsconfig.tsbuildinfo &&  if exist node_modules (rd /s /q node_modules)"
   },
   "dependencies": {
-    "azure-devops-node-api": "^10.2.0",
+    "azure-devops-node-api": "^10.2.2",
     "jszip": "^3.2.2",
     "msgpack-lite": "^0.1.26",
     "pako": "^2.0.2",
