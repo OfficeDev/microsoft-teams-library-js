@@ -18,12 +18,19 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 
-core.initialize();
+const urlParams = new URLSearchParams(window.location.search);
+
+// This is added for custom initialization when app can be initialized based upon a trigger/click.
+if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+  core.initialize();
+}
 
 // for AppInitialization tests we need a way to stop the Test App from sending these
 // we do it by adding appInitializationTest=true to query string
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest')) {
+if (
+  (urlParams.has('customInit') && urlParams.get('customInit')) ||
+  (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest'))
+) {
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
   appInitialization.notifyAppLoaded();
