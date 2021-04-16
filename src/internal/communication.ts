@@ -86,6 +86,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
 
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
+  //put in delay to mimic behavior, setTimeout 5 secs 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
@@ -312,7 +313,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
-    time: new Date().toISOString(),
+    creationTimestamp: new Date().getTime(),
     args: args || [],
   };
 }
