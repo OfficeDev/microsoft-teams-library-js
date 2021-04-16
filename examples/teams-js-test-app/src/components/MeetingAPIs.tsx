@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { meeting } from '@microsoft/teamsjs-app-sdk';
+import { meeting, SdkError } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -12,7 +12,7 @@ const MeetingAPIs = (): ReactElement => {
 
   const getIncomingClientAudioState = (): void => {
     setGetIncomingClientAudioStateRes('getIncomingClientAudioState()' + noHubSdkMsg);
-    meeting.getIncomingClientAudioState((err: teamsjs.SdkError | null, result: boolean | null): void => {
+    meeting.getIncomingClientAudioState((err: SdkError | null, result: boolean | null): void => {
       if (err) {
         setGetIncomingClientAudioStateRes(err.errorCode.toString() + ' ' + err.message);
         return;
@@ -25,7 +25,7 @@ const MeetingAPIs = (): ReactElement => {
 
   const toggleIncomingClientAudio = (): void => {
     setToggleIncomingClientAudioRes('toggleIncomingClientAudio()' + noHubSdkMsg);
-    meeting.toggleIncomingClientAudio((err: teamsjs.SdkError | null, result: boolean | null): void => {
+    meeting.toggleIncomingClientAudio((err: SdkError | null, result: boolean | null): void => {
       if (err) {
         setToggleIncomingClientAudioRes(err.errorCode.toString() + ' ' + err.message);
         return;
@@ -38,7 +38,7 @@ const MeetingAPIs = (): ReactElement => {
 
   const getMeetingDetails = (): void => {
     setGetMeetingDetailsRes('meeting.getMeetingDetails()' + noHubSdkMsg);
-    meeting.getMeetingDetails((err: teamsjs.SdkError | null, meetingDetails: meeting.IMeetingDetails | null): void => {
+    meeting.getMeetingDetails((err: SdkError | null, meetingDetails: meeting.IMeetingDetails | null): void => {
       if (err) {
         setGetMeetingDetailsRes(err.errorCode.toString() + ' ' + err.message);
         return;
@@ -51,7 +51,7 @@ const MeetingAPIs = (): ReactElement => {
 
   const getAuthenticationToken = (): void => {
     setGetAuthenticationTokenRes('meeting.getAuthenticationTokenForAnonymousUser()' + noHubSdkMsg);
-    meeting.getAuthenticationTokenForAnonymousUser((err: teamsjs.SdkError | null, authToken: string | null): void => {
+    meeting.getAuthenticationTokenForAnonymousUser((err: SdkError | null, authToken: string | null): void => {
       if (err) {
         setGetAuthenticationTokenRes(err.errorCode.toString() + ' ' + err.message);
         return;

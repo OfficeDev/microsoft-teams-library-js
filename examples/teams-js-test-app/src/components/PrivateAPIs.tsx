@@ -1,54 +1,62 @@
 import React, { ReactElement } from 'react';
+import {
+  ChatMembersInformation,
+  FilePreviewParameters,
+  getChatMembers,
+  getUserJoinedTeams,
+  openFilePreview,
+  UserJoinedTeamsInformation,
+} from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const PrivateAPIs = (): ReactElement => {
-  const [openFilePreview, setOpenFilePreview] = React.useState('');
-  const [getChatMembers, setGetChatMembers] = React.useState('');
-  const [getUserJoinedTeams, setGetUserJoinedTeams] = React.useState('');
+  const [openFilePreviewRes, setOpenFilePreviewRes] = React.useState('');
+  const [getChatMembersRes, setGetChatMembersRes] = React.useState('');
+  const [getUserJoinedTeamsRes, setGetUserJoinedTeamsRes] = React.useState('');
 
   const returnOpenFilePreview = (filePreviewParamsInput: string): void => {
-    let filePreviewParams: teamsjs.FilePreviewParameters = JSON.parse(filePreviewParamsInput);
-    setOpenFilePreview('openFilePreview()' + noHubSdkMsg);
-    teamsjs.openFilePreview(filePreviewParams);
+    let filePreviewParams: FilePreviewParameters = JSON.parse(filePreviewParamsInput);
+    setOpenFilePreviewRes('openFilePreview()' + noHubSdkMsg);
+    openFilePreview(filePreviewParams);
   };
 
   const returnGetChatMembers = (): void => {
-    setGetChatMembers('getChatMembers()' + noHubSdkMsg);
-    const onComplete = (chatMembersInformation: teamsjs.ChatMembersInformation): void => {
-      setGetChatMembers(JSON.stringify(chatMembersInformation));
+    setGetChatMembersRes('getChatMembers()' + noHubSdkMsg);
+    const onComplete = (chatMembersInformation: ChatMembersInformation): void => {
+      setGetChatMembersRes(JSON.stringify(chatMembersInformation));
     };
-    teamsjs.getChatMembers(onComplete);
+    getChatMembers(onComplete);
   };
 
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
     let teamInstanceParams = JSON.parse(teamInstanceParamsInput);
-    setGetUserJoinedTeams('getUserJoinedTeams()' + noHubSdkMsg);
-    const onComplete = (userJoinedTeamsInfo: teamsjs.UserJoinedTeamsInformation): void => {
-      setGetUserJoinedTeams(JSON.stringify(userJoinedTeamsInfo));
+    setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHubSdkMsg);
+    const onComplete = (userJoinedTeamsInfo: UserJoinedTeamsInformation): void => {
+      setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo));
     };
-    teamsjs.getUserJoinedTeams(onComplete, teamInstanceParams);
+    getUserJoinedTeams(onComplete, teamInstanceParams);
   };
 
   return (
     <>
       <BoxAndButton
         handleClickWithInput={returnOpenFilePreview}
-        output={openFilePreview}
+        output={openFilePreviewRes}
         hasInput={true}
         title="Open File Preview"
         name="openFilePreview"
       />
       <BoxAndButton
         handleClick={returnGetChatMembers}
-        output={getChatMembers}
+        output={getChatMembersRes}
         hasInput={false}
         title="Get Chat Members"
         name="getChatMembers"
       />
       <BoxAndButton
         handleClickWithInput={returnGetUserJoinedTeams}
-        output={getUserJoinedTeams}
+        output={getUserJoinedTeamsRes}
         hasInput={true}
         title="Get User Joined Teams"
         name="getUserJoinedTeams"

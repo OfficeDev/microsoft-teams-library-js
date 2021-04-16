@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
+import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -116,7 +116,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const registerOnLoadHandler = (): void => {
     setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHubSdkMsg);
-    teamsCore.registerOnLoadHandler((context: teamsjs.LoadContext): void => {
+    teamsCore.registerOnLoadHandler((context: LoadContext): void => {
       setRegisterOnLoadRes('successfully called with context:' + JSON.stringify(context));
     });
   };
