@@ -6,7 +6,7 @@ export interface MessageRequest {
   id: number;
   func: string;
   args?: any[]; // tslint:disable-line:no-any
-  time?: string;
+  creationTimestamp?: number;
   isPartialResponse?: boolean;
 }
 

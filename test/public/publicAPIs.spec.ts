@@ -69,9 +69,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
-    expect(initMessage.time).not.toBeNull();
-    let currentTime = new Date().toISOString();
-    expect(initMessage.time).not.toBe(currentTime);
+    expect(initMessage.creationTimestamp).not.toBeNull();
+    let currentTime = new Date().getTime();
+    expect(initMessage.creationTimestamp).not.toBe(currentTime);
 
   });
 
