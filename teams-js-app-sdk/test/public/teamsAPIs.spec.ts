@@ -1,4 +1,4 @@
-import { TabInstanceParameters, Context, FrameContext } from '../../src/public/interfaces';
+import { TabInstanceParameters, Context, FrameInfo } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
 import { core } from '../../src/public/publicAPIs';
 import { teamsCore } from '../../src/public/teamsAPIs';
@@ -32,7 +32,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    teamsCore.registerChangeSettingsHandler(() => {
+    pages.config.registerChangeConfigHandler(() => {
       handlerCalled = true;
     });
 
@@ -45,7 +45,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    teamsCore.registerAppButtonClickHandler(() => {
+    pages.registerAppButtonClickHandler(() => {
       handlerCalled = true;
     });
 
@@ -58,7 +58,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    teamsCore.registerAppButtonHoverEnterHandler(() => {
+    pages.registerAppButtonHoverEnterHandler(() => {
       handlerCalled = true;
     });
 
@@ -71,7 +71,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    teamsCore.registerAppButtonHoverLeaveHandler(() => {
+    pages.registerAppButtonHoverLeaveHandler(() => {
       handlerCalled = true;
     });
 
@@ -84,7 +84,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
 
     let handlerInvoked = false;
-    teamsCore.registerBackButtonHandler(() => {
+    pages.backStack.registerBackButtonHandler(() => {
       handlerInvoked = true;
       return true;
     });
@@ -100,7 +100,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.initializeWithContext('content');
 
     let handlerInvoked = false;
-    teamsCore.registerBackButtonHandler(() => {
+    pages.backStack.registerBackButtonHandler(() => {
       handlerInvoked = true;
       return false;
     });
@@ -324,11 +324,11 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
   it('should successfully frame context', () => {
     utils.initializeWithContext('content');
 
-    let frameContext: FrameContext = {
+    let frameContext: FrameInfo = {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
-    teamsCore.setFrameContext(frameContext);
+    pages.setCurrentFrame(frameContext);
 
     let message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
@@ -337,12 +337,12 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
   });
 
   it('should successfully initialize and set the frame context', () => {
-    let frameContext: FrameContext = {
+    let frameContext: FrameInfo = {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
     utils.initializeWithContext('content');
-    teamsCore.initializeWithFrameContext(frameContext);
+    pages.initializeWithFrameContext(frameContext);
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(2);
 

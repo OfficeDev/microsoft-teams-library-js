@@ -558,7 +558,7 @@ export interface LoadContext {
   contentUrl: string;
 }
 
-export interface FrameContext {
+export interface FrameInfo {
   /**
    * The current URL that needs to be used in the iframe if the tab is reloaded
    */

@@ -1,10 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { LoadContext, FrameContext } from './interfaces';
-import { FrameContexts } from './constants';
-import { core } from './publicAPIs';
+import { LoadContext } from './interfaces';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { sendMessageToParent } from '../internal/communication';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
@@ -35,81 +32,6 @@ export namespace teamsCore {
    */
   export function print(): void {
     window.print();
-  }
-
-  /**
-   * Registers a handler for changes from or to full-screen view for a tab.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the user toggles full-screen view for a tab.
-   */
-  export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-    ensureInitialized();
-    Handlers.registerHandler('fullScreenChange', handler);
-  }
-
-  /**
-   * Registers a handler for clicking the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the personal app button is clicked in the app bar.
-   */
-  export function registerAppButtonClickHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    Handlers.registerHandler('appButtonClick', handler);
-  }
-
-  /**
-   * Registers a handler for entering hover of the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
-   */
-  export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    Handlers.registerHandler('appButtonHoverEnter', handler);
-  }
-
-  /**
-   * Registers a handler for exiting hover of the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
-   */
-  export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    Handlers.registerHandler('appButtonHoverLeave', handler);
-  }
-
-  /**
-   * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
-   * navigation stack should use this handler to navigate the user back within their frame. If an app finds
-   * that after running its back button handler it cannot handle the event it should call the navigateBack
-   * method to ask the Teams client to handle it instead.
-   * @param handler The handler to invoke when the user presses their Team client's back button.
-   */
-  export function registerBackButtonHandler(handler: () => boolean): void {
-    ensureInitialized();
-    Handlers.registerBackButtonHandler(handler);
-  }
-
-  /**
-   * Registers a handler for when the user reconfigurated tab
-   * @param handler The handler to invoke when the user click on Settings.
-   */
-  export function registerChangeSettingsHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    Handlers.registerHandler('changeSettings', handler);
-  }
-
-  export function setFrameContext(frameContext: FrameContext): void {
-    ensureInitialized(FrameContexts.content);
-    sendMessageToParent('setFrameContext', [frameContext]);
-  }
-
-  export function initializeWithFrameContext(
-    frameContext: FrameContext,
-    callback?: () => void,
-    validMessageOrigins?: string[],
-  ): void {
-    core.initialize(callback, validMessageOrigins);
-    setFrameContext(frameContext);
   }
 
   /**

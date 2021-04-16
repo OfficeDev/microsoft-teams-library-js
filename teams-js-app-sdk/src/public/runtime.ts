@@ -14,6 +14,7 @@ export interface IRuntime {
     readonly pages?: {
       readonly tabs?: {};
       readonly config?: {};
+      readonly backStack?: {};
     };
   };
 }

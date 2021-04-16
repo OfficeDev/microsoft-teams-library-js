@@ -11,6 +11,7 @@ const ConfigAPIs = (): ReactElement => {
   const [setValidityStateRes, setSetValidityStateRes] = React.useState('');
   const [registerOnRemoveHandlerRes, setRegisterOnRemoveHandlerRes] = React.useState('');
   const [checkPagesConfigCapabilityRes, setCheckPagesConfigCapabilityRes] = React.useState('');
+  const [registerChangeConfigHandlerRes, setRegisterChangeConfigHandlerRes] = React.useState('');
 
   const initialize = (): void => {
     pages.config.initialize();
@@ -57,6 +58,13 @@ const ConfigAPIs = (): ReactElement => {
     });
   };
 
+  const registerChangeConfigHandler = (): void => {
+    setRegisterChangeConfigHandlerRes('pages.config.registerChangeConfigHandler()' + noHubSdkMsg);
+    pages.config.registerChangeConfigHandler((): void => {
+      setRegisterChangeConfigHandlerRes('successfully called');
+    });
+  };
+
   const pagesConfigCapabilityCheck = (): void => {
     if (pages.config.isSupported()) {
       setCheckPagesConfigCapabilityRes('Pages.config module is supported');
@@ -71,8 +79,45 @@ const ConfigAPIs = (): ReactElement => {
         output={initializeRes}
         hasInput={false}
         title="Config Initialize"
-        name="configs_initialize"
+        name="config_initialize"
       />
+      <BoxAndButton
+        handleClick={getConfig}
+        output={getConfigRes}
+        hasInput={false}
+        title="Get Config"
+        name="config_getConfig"
+      />
+      <BoxAndButton
+        handleClick={registerOnSaveHandler}
+        output={registerOnSaveHandlerRes}
+        hasInput={false}
+        title="Set RegisterOnSaveHandler"
+        name="config_registerOnSaveHandler"
+      />
+      <BoxAndButton
+        handleClickWithInput={setConfig}
+        output={setConfigRes}
+        hasInput={true}
+        title="Set Config"
+        name="config_setConfig"
+      />
+      <BoxAndButton
+        handleClickWithInput={setValidityState}
+        output={setValidityStateRes}
+        hasInput={true}
+        title="Set Validity State"
+        name="config_setValidityState"
+      />
+      <BoxAndButton
+        handleClick={registerOnRemoveHandler}
+        output={registerOnRemoveHandlerRes}
+        hasInput={false}
+        title="Register On Remove Handler"
+        name="config_registerOnRemoveHandler"
+      />
+      {/* Start : Changes to keep for backward compatibilty and will be removed once test-changes in hub sdk merges to main
+      <BoxAndButton */}
       <BoxAndButton
         handleClick={getConfig}
         output={getConfigRes}
@@ -91,7 +136,7 @@ const ConfigAPIs = (): ReactElement => {
         handleClickWithInput={setConfig}
         output={setConfigRes}
         hasInput={true}
-        title="Set Configs"
+        title="Set Config"
         name="configs_setConfigs"
       />
       <BoxAndButton
@@ -107,6 +152,15 @@ const ConfigAPIs = (): ReactElement => {
         hasInput={false}
         title="Register On Remove Handler"
         name="configs_registerOnRemoveHandler"
+      />
+      {/* End : Changes to keep for backward compatibilty and will be removed once test-changes in hub sdk merges to main
+      <  */}
+      <BoxAndButton
+        handleClick={registerChangeConfigHandler}
+        output={registerChangeConfigHandlerRes}
+        hasInput={false}
+        title="Register Change Config Handler"
+        name="config_registerChangeConfigsHandler"
       />
       <BoxAndButton
         handleClick={pagesConfigCapabilityCheck}
