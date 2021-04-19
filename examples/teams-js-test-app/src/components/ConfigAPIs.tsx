@@ -116,45 +116,6 @@ const ConfigAPIs = (): ReactElement => {
         title="Register On Remove Handler"
         name="config_registerOnRemoveHandler"
       />
-      {/* Start : Changes to keep for backward compatibilty and will be removed once test-changes in hub sdk merges to main
-      <BoxAndButton */}
-      <BoxAndButton
-        handleClick={getConfig}
-        output={getConfigRes}
-        hasInput={false}
-        title="Get Config"
-        name="configs_getConfig"
-      />
-      <BoxAndButton
-        handleClick={registerOnSaveHandler}
-        output={registerOnSaveHandlerRes}
-        hasInput={false}
-        title="Set RegisterOnSaveHandler"
-        name="configs_registerOnSaveHandler"
-      />
-      <BoxAndButton
-        handleClickWithInput={setConfig}
-        output={setConfigRes}
-        hasInput={true}
-        title="Set Config"
-        name="configs_setConfigs"
-      />
-      <BoxAndButton
-        handleClickWithInput={setValidityState}
-        output={setValidityStateRes}
-        hasInput={true}
-        title="Set Validity State"
-        name="configs_setValidityState"
-      />
-      <BoxAndButton
-        handleClick={registerOnRemoveHandler}
-        output={registerOnRemoveHandlerRes}
-        hasInput={false}
-        title="Register On Remove Handler"
-        name="configs_registerOnRemoveHandler"
-      />
-      {/* End : Changes to keep for backward compatibilty and will be removed once test-changes in hub sdk merges to main
-      <  */}
       <BoxAndButton
         handleClick={registerChangeConfigHandler}
         output={registerChangeConfigHandlerRes}
