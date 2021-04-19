@@ -312,7 +312,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
-    creationTimestamp: new Date().getTime(),
+    creationTimestamp: Date.now(),
     args: args || [],
   };
 }
