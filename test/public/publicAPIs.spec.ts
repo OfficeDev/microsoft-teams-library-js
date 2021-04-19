@@ -70,8 +70,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
     expect(initMessage.creationTimestamp).not.toBeNull();
-    let currentTime = new Date().getTime();
-    expect(initMessage.creationTimestamp).not.toBe(currentTime);
+    expect(initMessage.creationTimestamp).not.toBe(Date.now());
 
   });
 
