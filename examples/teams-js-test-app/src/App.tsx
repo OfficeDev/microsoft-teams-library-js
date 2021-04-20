@@ -17,6 +17,7 @@ import MailAPIs from './components/MailAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
+import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -49,6 +50,7 @@ const App = (): ReactElement => {
       <ConfigAPIs />
       <CoreAPIs />
       <DialogAPIs />
+      <FullTrustAPIs />
       <LocationAPIs />
       <MailAPIs />
       <MediaAPIs />
