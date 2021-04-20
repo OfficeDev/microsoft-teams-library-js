@@ -11,6 +11,7 @@ export {
   UserJoinedTeamsInformation,
   ViewerActionTypes,
   UserSettingTypes,
+  AppEntityConfiguration,
 } from './interfaces';
 export {
   enterFullscreen,
@@ -30,3 +31,4 @@ export { conversations } from './conversations';
 export { meetingRoom } from './meetingRoom';
 export { remoteCamera } from './remoteCamera';
 export { files } from './files';
+export { appEntity } from './appEntity';
