@@ -7,6 +7,41 @@ export const version = '1.9.0';
 export const defaultSDKVersionForCompatCheck = '1.6.0';
 
 /**
+ * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
+ */
+export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
+
+/**
+ * This is the SDK version when location APIs (getLocation and showLocation) are supported.
+ */
+export const locationAPIsRequiredVersion = '1.9.0';
+
+/**
+ * This is the SDK version when people picker API is supported on mobile.
+ */
+export const peoplePickerRequiredVersion = '2.0.0';
+
+/**
+ * This is the SDK version when captureImage API is supported on mobile.
+ */
+export const captureImageMobileSupportVersion = '1.7.0';
+
+/**
+ * This is the SDK version when media APIs are supported on all three platforms ios, android and web.
+ */
+export const mediaAPISupportVersion = '1.8.0';
+
+/**
+ * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
+ */
+export const getMediaCallbackSupportVersion = '2.0.0';
+
+/**
+ * This is the SDK version when scanBarCode API is supported on mobile.
+ */
+export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
+
+/**
  * List of supported Host origins
  */
 export const validOrigins = [
@@ -18,6 +53,8 @@ export const validOrigins = [
   'https://teams.live.com',
   'https://devspaces.skype.com',
   'https://ssauth.skype.com',
+  'https://local.teams.live.com', // local development
+  'https://local.teams.live.com:8080', // local development
   'https://local.teams.office.com', // local development
   'https://local.teams.office.com:8080', // local development
   'https://msft.spoppe.com',
