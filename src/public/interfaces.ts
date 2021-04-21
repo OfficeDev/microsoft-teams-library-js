@@ -593,6 +593,10 @@ export enum ErrorCode {
    */
   INTERNAL_ERROR = 500,
   /**
+   * API is not supported in the current context
+   */
+  NOT_SUPPORTED_IN_CURRENT_CONTEXT = 501,
+  /**
   Permissions denied by user
   */
   PERMISSION_DENIED = 1000,
