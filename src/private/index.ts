@@ -11,7 +11,6 @@ export {
   UserJoinedTeamsInformation,
   ViewerActionTypes,
   UserSettingTypes,
-  AppEntityConfiguration,
 } from './interfaces';
 export {
   enterFullscreen,
