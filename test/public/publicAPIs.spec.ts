@@ -246,6 +246,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       teamName: 'someTeamName',
       channelId: 'someChannelId',
       channelName: 'someChannelName',
+      isGeneralChannel: true,
       entityId: 'someEntityId',
       subEntityId: 'someSubEntityId',
       locale: 'someLocale',
