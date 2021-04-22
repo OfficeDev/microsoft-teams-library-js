@@ -12,6 +12,7 @@ export interface MessageRequest {
 
 export interface MessageResponse {
   id: number;
+  timestamp?: number;
   args?: any[]; // tslint:disable-line:no-any
 }
 

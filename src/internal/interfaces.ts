@@ -37,6 +37,7 @@ export interface MessageRequest {
 
 export interface MessageResponse {
   id: number;
+  timestamp?: number;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
