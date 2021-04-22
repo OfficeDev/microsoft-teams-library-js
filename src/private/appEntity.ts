@@ -1,7 +1,6 @@
-import { SdkError } from '@microsoft/teams-js';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public';
+import { FrameContexts, SdkError } from '../public';
 
 /**
  * Namespace to interact with the application entities specific part of the SDK.
