@@ -200,6 +200,11 @@ export interface Context {
   channelType?: ChannelType;
 
   /**
+   * Indication whether channel is the general channel in team.
+   */
+  isGeneralChannel?: boolean;
+
+  /**
    * The developer-defined unique ID for the entity this content points to.
    */
   entityId: string;
