@@ -3,7 +3,6 @@ import { version } from '../internal/constants';
 import { sendMessageToParent } from '../internal/communication';
 
 export namespace appInitialization {
-
   export const notifyMessages = {
     appLoaded: 'appInitialization.appLoaded',
     success: 'appInitialization.success',
