@@ -2,31 +2,52 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { version } from '../internal/constants';
 import { sendMessageToParent } from '../internal/communication';
 
+
+
 export namespace appInitialization {
+
+  export const notifyMessages = {
+    appLoaded: 'appInitialization.appLoaded',
+    success: 'appInitialization.success',
+    failure: 'appInitialization.failure',
+    initializedWithErrors: 'appInitialization.initializedWithErrors',
+  };
+
   /**
-   * To notify app loaded to hide loading indicator
+   * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
     ensureInitialized();
-    sendMessageToParent('appInitialization.appLoaded', [version]);
+    sendMessageToParent(notifyMessages.appLoaded, [version]);
   }
 
   /**
-   * To notify app Initialization successs and ready for user interaction
+   * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
     ensureInitialized();
-    sendMessageToParent('appInitialization.success', [version]);
+    sendMessageToParent(notifyMessages.success, [version]);
   }
 
   /**
-   * To notify app Initialization failed
+   * Notifies the frame that app initialization has failed and to show an error page in its place.
    */
-  export function notifyFailure(appInitializationFailedRequest: appInitialization.IFailedRequest): void {
+  export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitialized();
-    sendMessageToParent('appInitialization.failure', [
+    sendMessageToParent(notifyMessages.failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
+    ]);
+  }
+
+  /**
+   * Notifies the frame that app initialized with some expected errors.
+   */
+  export function notifyInitializedWithErrors(appInitializedWithErrorsRequest: IInitializationErrorsRequest): void {
+    ensureInitialized();
+    sendMessageToParent(notifyMessages.initializedWithErrors, [
+      appInitializedWithErrorsRequest.reason,
+      appInitializedWithErrorsRequest.message,
     ]);
   }
 
@@ -36,8 +57,19 @@ export namespace appInitialization {
     Other = 'Other',
   }
 
+  export enum InitializationErrorType {
+    PermissionError = 'PermissionError',
+    NotFound = 'NotFound',
+    Other = 'Other',
+  }
+
   export interface IFailedRequest {
     reason: appInitialization.FailedReason;
+    message?: string;
+  }
+
+  export interface IInitializationErrorsRequest {
+    reason: appInitialization.InitializationErrorType;
     message?: string;
   }
 }
