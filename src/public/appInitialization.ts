@@ -2,8 +2,6 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { version } from '../internal/constants';
 import { sendMessageToParent } from '../internal/communication';
 
-
-
 export namespace appInitialization {
 
   export const notifyMessages = {
@@ -43,7 +41,7 @@ export namespace appInitialization {
   /**
    * Notifies the frame that app initialized with some expected errors.
    */
-  export function notifyInitializedWithErrors(appInitializedWithErrorsRequest: IInitializationErrorsRequest): void {
+  export function notifyInitializedWithErrors(appInitializedWithErrorsRequest: IInitWithErrorsRequest): void {
     ensureInitialized();
     sendMessageToParent(notifyMessages.initializedWithErrors, [
       appInitializedWithErrorsRequest.reason,
@@ -68,7 +66,7 @@ export namespace appInitialization {
     message?: string;
   }
 
-  export interface IInitializationErrorsRequest {
+  export interface IInitWithErrorsRequest {
     reason: appInitialization.InitializationErrorType;
     message?: string;
   }
