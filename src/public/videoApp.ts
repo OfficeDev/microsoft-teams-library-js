@@ -54,6 +54,10 @@ export namespace videoApp {
     EffectChanged,
 
     /**
+     * enable the video effect
+     */
+    EffectEnabled,
+    /**
      * disable the video effect
      */
     EffectDisabled,
@@ -138,7 +142,7 @@ export namespace videoApp {
      */
     private notifyVideoFrameProcessed(): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      sendMessageToParent('videoApp.VideoFrameProcessed');
+      sendMessageToParent('videoApp.videoFrameProcessed');
     }
 
     /**
