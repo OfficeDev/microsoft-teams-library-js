@@ -109,7 +109,7 @@ export namespace videoApp {
     public registerForVideoEffect(callback: VideoEffectCallBack): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       this.videoEffectCallback = callback;
-      sendMessageToParent('videoApp.registerVideoEffect');
+      sendMessageToParent('videoApp.registerForVideoEffect');
     }
 
     /**
@@ -118,10 +118,10 @@ export namespace videoApp {
     private receiveMessage(event: MessageEvent): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       const type = event.data.type;
-      if (type === 'NewVideoFrame' && this.videoFrameCallback != null) {
+      if (type === 'videoApp.newVideoFrame' && this.videoFrameCallback != null) {
         const videoFrame = event.data.videoFrame as VideoFrame;
         this.videoFrameCallback(videoFrame, this.notifyVideoFrameProcessed.bind(this), this.notifyError.bind(this));
-      } else if (type === 'EffectParameterChange' && this.videoEffectCallback != null) {
+      } else if (type === 'videoApp.effectParameterChange' && this.videoEffectCallback != null) {
         this.videoEffectCallback('');
       } else {
         console.log('Unsupported message type' + type);
