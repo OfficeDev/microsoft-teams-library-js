@@ -40,7 +40,7 @@ export namespace appInitialization {
   /**
    * Notifies the frame that app initialized with some expected errors.
    */
-  export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest ): void {
+  export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitialized();
     sendMessageToParent(notifyMessages.expectedFailure, [
       expectedFailureRequest.reason,
@@ -67,7 +67,7 @@ export namespace appInitialization {
     message?: string;
   }
 
-  export interface IExpectedFailureRequest  {
+  export interface IExpectedFailureRequest {
     reason: ExpectedFailureReason;
     message?: string;
   }
