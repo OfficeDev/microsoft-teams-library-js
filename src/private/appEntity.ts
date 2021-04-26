@@ -15,7 +15,7 @@ export namespace appEntity {
    * --------
    * Information on an app entity
    */
-  export interface AppEntityConfiguration {
+  export interface AppEntity {
     /**
      * App ID of the application
      */
@@ -46,28 +46,28 @@ export namespace appEntity {
    * @private
    * Hide from docs
    *
-   * Open the Tab Gallery and retrieve the app entity configuration
-   * @param channelId ID of the channel where the app entity will be created
+   * Open the Tab Gallery and retrieve the app entity
+   * @param threadId ID of the thread where the app entity will be created
    * @param categories A list of app categories that will be displayed in the open tab gallery
    * @param callback Callback that will be triggered once the app entity information is available.
    *                 The callback takes two arguments: the app entity configuration, if available and
    *                 an optional SdkError in case something happened (i.e. the window was closed)
    */
   export function selectAppEntity(
-    channelId: string,
+    threadId: string,
     categories: string[],
-    callback: (appEntity: AppEntityConfiguration, sdkError?: SdkError) => void,
+    callback: (appEntity: AppEntity, sdkError?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
-      throw new Error('[appEntity.selectAppEntity] channelId name cannot be null or empty');
+    if (!threadId || threadId.length == 0) {
+      throw new Error('[appEntity.selectAppEntity] threadId name cannot be null or empty');
     }
 
     if (!callback) {
       throw new Error('[appEntity.selectAppEntity] Callback cannot be null');
     }
 
-    sendMessageToParent('appEntity.selectAppEntity', [channelId, categories], callback);
+    sendMessageToParent('appEntity.selectAppEntity', [threadId, categories], callback);
   }
 }
