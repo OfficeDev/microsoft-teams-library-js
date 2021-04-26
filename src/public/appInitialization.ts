@@ -7,7 +7,7 @@ export namespace appInitialization {
     appLoaded: 'appInitialization.appLoaded',
     success: 'appInitialization.success',
     failure: 'appInitialization.failure',
-    initializedWithErrors: 'appInitialization.initializedWithErrors',
+    expectedFailure: 'appInitialization.expectedFailure',
   };
 
   /**
@@ -40,11 +40,11 @@ export namespace appInitialization {
   /**
    * Notifies the frame that app initialized with some expected errors.
    */
-  export function notifyInitializedWithErrors(appInitializedWithErrorsRequest: IInitWithErrorsRequest): void {
+  export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest ): void {
     ensureInitialized();
-    sendMessageToParent(notifyMessages.initializedWithErrors, [
-      appInitializedWithErrorsRequest.reason,
-      appInitializedWithErrorsRequest.message,
+    sendMessageToParent(notifyMessages.expectedFailure, [
+      expectedFailureRequest.reason,
+      expectedFailureRequest.message,
     ]);
   }
 
@@ -54,19 +54,21 @@ export namespace appInitialization {
     Other = 'Other',
   }
 
-  export enum InitializationErrorType {
+  export enum ExpectedFailureReason {
     PermissionError = 'PermissionError',
     NotFound = 'NotFound',
+    Throttling = 'Throttling',
+    Offline = 'Offline',
     Other = 'Other',
   }
 
   export interface IFailedRequest {
-    reason: appInitialization.FailedReason;
+    reason: FailedReason;
     message?: string;
   }
 
-  export interface IInitWithErrorsRequest {
-    reason: appInitialization.InitializationErrorType;
+  export interface IExpectedFailureRequest  {
+    reason: ExpectedFailureReason;
     message?: string;
   }
 }
