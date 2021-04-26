@@ -7,6 +7,13 @@ export enum HostClientType {
   surfaceHub = 'surfaceHub',
 }
 
+export enum HostName {
+  office = 'Office',
+  outlook = 'Outlook',
+  orange = 'Orange',
+  teams = 'Teams',
+}
+
 // Ensure these declarations stay in sync with the framework.
 export enum FrameContexts {
   settings = 'settings',

@@ -1,4 +1,4 @@
-import { DialogDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { DialogDimension, HostClientType, HostName, TeamType, UserTeamRole, ChannelType } from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -322,6 +322,11 @@ export interface Context {
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
    */
   isTeamArchived?: boolean;
+
+  /**
+   * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
+   */
+  hostName?: HostName;
 
   /**
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel
