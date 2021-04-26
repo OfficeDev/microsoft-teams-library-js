@@ -52,11 +52,6 @@ export namespace videoApp {
      * current video effect changed.
      */
     EffectChanged,
-
-    /**
-     * enable the video effect
-     */
-    EffectEnabled,
     /**
      * disable the video effect
      */
