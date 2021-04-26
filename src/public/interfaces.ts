@@ -272,6 +272,16 @@ export interface Context {
   teamSitePath?: string;
 
   /**
+   * The tenant ID of the host team.
+   */
+  hostTeamTenantId?: string;
+
+  /**
+   * The AAD group ID of the host team.
+   */
+   hostTeamGroupId?: string;
+
+  /**
    * The relative path to the SharePoint folder associated with the channel.
    */
   channelRelativeUrl?: string;
