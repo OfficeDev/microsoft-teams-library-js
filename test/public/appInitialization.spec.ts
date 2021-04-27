@@ -28,7 +28,7 @@ describe('appInitialization', () => {
     utils.initializeWithContext('content');
 
     appInitialization.notifyAppLoaded();
-    const message = utils.findMessageByFunc(appInitialization.notifyMessages.appLoaded);
+    const message = utils.findMessageByFunc(appInitialization.Messages.AppLoaded);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(version);
@@ -38,7 +38,7 @@ describe('appInitialization', () => {
     utils.initializeWithContext('content');
 
     appInitialization.notifySuccess();
-    const message = utils.findMessageByFunc(appInitialization.notifyMessages.success);
+    const message = utils.findMessageByFunc(appInitialization.Messages.Success);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(version);
@@ -51,7 +51,7 @@ describe('appInitialization', () => {
       reason: appInitialization.ExpectedFailureReason.PermissionError,
       message: 'Permission denied'
     });
-    const message = utils.findMessageByFunc(appInitialization.notifyMessages.expectedFailure);
+    const message = utils.findMessageByFunc(appInitialization.Messages.ExpectedFailure);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
     expect(message.args[0]).toEqual(appInitialization.ExpectedFailureReason.PermissionError);
@@ -65,7 +65,7 @@ describe('appInitialization', () => {
       reason: appInitialization.FailedReason.AuthFailed,
       message: 'Failed message'
     });
-    const message = utils.findMessageByFunc(appInitialization.notifyMessages.failure);
+    const message = utils.findMessageByFunc(appInitialization.Messages.Failure);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
     expect(message.args[0]).toEqual(appInitialization.FailedReason.AuthFailed);

@@ -3,11 +3,11 @@ import { version } from '../internal/constants';
 import { sendMessageToParent } from '../internal/communication';
 
 export namespace appInitialization {
-  export const notifyMessages = {
-    appLoaded: 'appInitialization.appLoaded',
-    success: 'appInitialization.success',
-    failure: 'appInitialization.failure',
-    expectedFailure: 'appInitialization.expectedFailure',
+  export const Messages = {
+    AppLoaded: 'appInitialization.appLoaded',
+    Success: 'appInitialization.success',
+    Failure: 'appInitialization.failure',
+    ExpectedFailure: 'appInitialization.expectedFailure',
   };
 
   export enum FailedReason {
@@ -39,7 +39,7 @@ export namespace appInitialization {
    */
   export function notifyAppLoaded(): void {
     ensureInitialized();
-    sendMessageToParent(notifyMessages.appLoaded, [version]);
+    sendMessageToParent(Messages.AppLoaded, [version]);
   }
 
   /**
@@ -47,7 +47,7 @@ export namespace appInitialization {
    */
   export function notifySuccess(): void {
     ensureInitialized();
-    sendMessageToParent(notifyMessages.success, [version]);
+    sendMessageToParent(Messages.Success, [version]);
   }
 
   /**
@@ -55,7 +55,7 @@ export namespace appInitialization {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitialized();
-    sendMessageToParent(notifyMessages.failure, [
+    sendMessageToParent(Messages.Failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
     ]);
@@ -66,9 +66,6 @@ export namespace appInitialization {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitialized();
-    sendMessageToParent(notifyMessages.expectedFailure, [
-      expectedFailureRequest.reason,
-      expectedFailureRequest.message,
-    ]);
+    sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
   }
 }
