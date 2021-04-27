@@ -4,12 +4,18 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const AuthenticationAPIs = (): ReactElement => {
+  const [registerAuthHandlersRes, setRegisterAuthHAndlerRes] = React.useState('');
   const [getTokenRes, setGetTokenRes] = React.useState('');
   const [getUserRes, setGetUserRes] = React.useState('');
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
   const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
   const [authenticateRes, setAuthenticateRes] = React.useState('');
   const [initializeRes, setInitializeRes] = React.useState('');
+
+  const registerAuthenticationHandlers = (authParams: string): void => {
+    authentication.registerAuthenticationHandlers(JSON.parse(authParams));
+    setRegisterAuthHAndlerRes('called');
+  };
 
   const authGetToken = (unformattedAuthParams: string): void => {
     setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
@@ -79,6 +85,13 @@ const AuthenticationAPIs = (): ReactElement => {
         hasInput={false}
         title="Initialize"
         name="initialize"
+      />
+      <BoxAndButton
+        handleClickWithInput={registerAuthenticationHandlers}
+        output={registerAuthHandlersRes}
+        hasInput={true}
+        title="register Authentication Handlers"
+        name="registerAuthenticationHandlers"
       />
       <BoxAndButton
         handleClickWithInput={authGetToken}
