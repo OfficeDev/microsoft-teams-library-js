@@ -70,8 +70,6 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
     expect(initMessage.timestamp).not.toBeNull();
-    expect(initMessage.timestamp).not.toBe(Date.now());
-
   });
 
   it('should listen to frame messages for a frameless window', () => {
