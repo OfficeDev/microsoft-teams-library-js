@@ -10,6 +10,30 @@ export namespace appInitialization {
     expectedFailure: 'appInitialization.expectedFailure',
   };
 
+  export enum FailedReason {
+    AuthFailed = 'AuthFailed',
+    Timeout = 'Timeout',
+    Other = 'Other',
+  }
+
+  export enum ExpectedFailureReason {
+    PermissionError = 'PermissionError',
+    NotFound = 'NotFound',
+    Throttling = 'Throttling',
+    Offline = 'Offline',
+    Other = 'Other',
+  }
+
+  export interface IFailedRequest {
+    reason: FailedReason;
+    message?: string;
+  }
+
+  export interface IExpectedFailureRequest {
+    reason: ExpectedFailureReason;
+    message?: string;
+  }
+
   /**
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
@@ -46,29 +70,5 @@ export namespace appInitialization {
       expectedFailureRequest.reason,
       expectedFailureRequest.message,
     ]);
-  }
-
-  export enum FailedReason {
-    AuthFailed = 'AuthFailed',
-    Timeout = 'Timeout',
-    Other = 'Other',
-  }
-
-  export enum ExpectedFailureReason {
-    PermissionError = 'PermissionError',
-    NotFound = 'NotFound',
-    Throttling = 'Throttling',
-    Offline = 'Offline',
-    Other = 'Other',
-  }
-
-  export interface IFailedRequest {
-    reason: FailedReason;
-    message?: string;
-  }
-
-  export interface IExpectedFailureRequest {
-    reason: ExpectedFailureReason;
-    message?: string;
   }
 }
