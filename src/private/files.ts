@@ -1,6 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts, SdkError } from '../public';
+import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 
 /**
  * Namespace to interact with the files specific part of the SDK.
@@ -88,6 +88,46 @@ export namespace files {
    * @private
    * Hide from docs
    *
+   * Cloud storage item interface
+   */
+  export interface CloudStorageFolderItem {
+    /**
+     * ID of the item in the provider
+     */
+    id: string;
+    /**
+     * Display name/title
+     */
+    title: string;
+    /**
+     * Key to differentiate files and subdirectory
+     */
+    isSubdirectory: boolean;
+    /**
+     * File extension
+     */
+    type: string;
+    /**
+     * Last modifed time of the item
+     */
+    lastModifiedTime: string;
+    /**
+     * Display size of the items in bytes
+     */
+    size: number;
+    /**
+     * URL of the file
+     */
+    objectUrl: string;
+    /**
+     * Temporary access token for the item
+     */
+    accessToken?: string;
+  }
+  /**
+   * @private
+   * Hide from docs
+   *
    * Gets a list of cloud storage folders added to the channel
    * @param channelId ID of the channel whose cloud storage folders should be retrieved
    * @param callback Callback that will be triggered post folders load
@@ -159,5 +199,63 @@ export namespace files {
     }
 
     sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Fetches the contents of a Cloud storage folder (CloudStorageFolder) / sub directory
+   * @param folder Cloud storage folder (CloudStorageFolder) / sub directory (CloudStorageFolderItem)
+   * @param providerCode Code of the cloud storage folder provider
+   * @param callback Callback that will be triggered post contents are loaded
+   */
+  export function getCloudStorageFolderContents(
+    folder: CloudStorageFolder | CloudStorageFolderItem,
+    providerCode: CloudStorageProvider,
+    callback: (error: SdkError, items: CloudStorageFolderItem[]) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!folder || !providerCode) {
+      throw new Error('[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty');
+    }
+
+    if (!callback) {
+      throw new Error('[files.getCloudStorageFolderContents] Callback cannot be null');
+    }
+
+    if ('isSubdirectory' in folder && !folder.isSubdirectory) {
+      throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
+    }
+
+    sendMessageToParent('files.getCloudStorageFolderContents', [folder, providerCode], callback);
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Open a cloud storage file in teams
+   * @param file cloud storage file that should be opened
+   * @param providerCode Code of the cloud storage folder provider
+   * @param fileOpenPreference Whether file should be opened in web/inline
+   */
+  export function openCloudStorageFile(
+    file: CloudStorageFolderItem,
+    providerCode: CloudStorageProvider,
+    fileOpenPreference?: FileOpenPreference.Web | FileOpenPreference.Inline,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!file || !providerCode) {
+      throw new Error('[files.openCloudStorageFile] file/providerCode cannot be null or empty');
+    }
+
+    if (file.isSubdirectory) {
+      throw new Error('[files.openCloudStorageFile] provided file is a subDirectory');
+    }
+
+    sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
   }
 }
