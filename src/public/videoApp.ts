@@ -34,18 +34,22 @@ export namespace videoApp {
      * RGB stride, valid only when video frame format is RGB
      */
     stride: number;
-    /**
-     * Optional; person mask bufer
-     */
-    personMask?: Uint8ClampedArray;
   }
-
   /**
    * Video frame format enum
    */
   export enum VideoFrameFormat {
     RGB,
     NV12,
+  }
+  /**
+   * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format.
+   */
+  export interface VideoFrameConfig {
+    /**
+     * video format
+     */
+    format: VideoFrameFormat;
   }
 
   /**
@@ -85,11 +89,11 @@ export namespace videoApp {
     /**
      * register to read the video frames in Permissions section.
      */
-    public registerForVideoFrame(frameCallback: VideoFrameCallback, format: VideoFrameFormat): void {
+    public registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
       ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoFrameCallback = frameCallback;
       this.setupConnection();
-      sendMessageToParent('videoApp.sendMessagePortToMainWindow', [format]);
+      sendMessageToParent('videoApp.sendMessagePortToMainWindow', [config]);
     }
 
     /**
@@ -120,7 +124,7 @@ export namespace videoApp {
         const videoFrame = event.data.videoFrame as VideoFrame;
         this.videoFrameCallback(videoFrame, this.notifyVideoFrameProcessed.bind(this), this.notifyError.bind(this));
       } else if (type === 'videoApp.effectParameterChange' && this.videoEffectCallback != null) {
-        this.videoEffectCallback('');
+        this.videoEffectCallback(event.data.effectId);
       } else {
         console.log('Unsupported message type' + type);
       }
@@ -151,8 +155,8 @@ export namespace videoApp {
 
   const videoApp = new VideoApp();
 
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, format: VideoFrameFormat): void {
-    videoApp.registerForVideoFrame(frameCallback, format);
+  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+    videoApp.registerForVideoFrame(frameCallback, config);
   }
 
   export function notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
