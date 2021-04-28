@@ -14,22 +14,26 @@ export namespace videoApp {
      * Video frame width.
      */
     width: number;
-
     /**
      * Video frame height.
      */
     height: number;
-
-    /**
-     * Video frame format, it should be one of RGB and NV12.
-     */
-    format: string;
-
     /**
      * Video frame buffer
      */
     data: Uint8ClampedArray;
-
+    /**
+     * NV12 luma stride, valid only when video frame format is NV12
+     */
+    lumaStride: number;
+    /**
+     * NV12 chroma stride, valid only when video frame format is NV12
+     */
+    chromaStride: number;
+    /**
+     * RGB stride, valid only when video frame format is RGB
+     */
+    stride: number;
     /**
      * Optional; person mask bufer
      */
@@ -82,7 +86,7 @@ export namespace videoApp {
      * register to read the video frames in Permissions section.
      */
     public registerForVideoFrame(frameCallback: VideoFrameCallback, format: VideoFrameFormat): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
       this.videoFrameCallback = frameCallback;
       this.setupConnection();
       sendMessageToParent('videoApp.sendMessagePortToMainWindow', [format]);
@@ -94,7 +98,7 @@ export namespace videoApp {
      * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
      */
     public notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
       sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType]);
     }
 
@@ -102,7 +106,7 @@ export namespace videoApp {
      * Register the video effect callback, Teams client uses this to notify the videoApp extension the new video effect will by applied.
      */
     public registerForVideoEffect(callback: VideoEffectCallBack): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
       this.videoEffectCallback = callback;
       sendMessageToParent('videoApp.registerForVideoEffect');
     }
@@ -127,7 +131,7 @@ export namespace videoApp {
      * Setup the connection between videoApp and Teams, they use postMessage function to communicate
      */
     private setupConnection(): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
       window.addEventListener('message', this.receiveMessage.bind(this), false);
     }
 
@@ -136,7 +140,6 @@ export namespace videoApp {
      * or pass the video frame to next one in video pipeline.
      */
     private notifyVideoFrameProcessed(): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
       sendMessageToParent('videoApp.videoFrameProcessed');
     }
 
@@ -144,7 +147,6 @@ export namespace videoApp {
      * sending error notification to Teams client.
      */
     private notifyError(errorMessage: string): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
       sendMessageToParent('videoApp.notifyError', [errorMessage]);
     }
   } // end of VideoApp
