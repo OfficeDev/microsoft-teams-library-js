@@ -69,8 +69,7 @@ export const validOrigins = [
   'https://excel.office.com',
   'https://powerpoint.office.com',
   'https://www.officeppe.com',
-  'https://*.www.office.com',
-  'http://127.0.0.1:5000', // local Development
+  'https://*.www.office.com'
 ];
 
 export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
