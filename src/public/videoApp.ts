@@ -86,7 +86,7 @@ export namespace videoApp {
      * register to read the video frames in Permissions section.
      */
     public registerForVideoFrame(frameCallback: VideoFrameCallback, format: VideoFrameFormat): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoFrameCallback = frameCallback;
       this.setupConnection();
       sendMessageToParent('videoApp.sendMessagePortToMainWindow', [format]);
@@ -98,7 +98,7 @@ export namespace videoApp {
      * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
      */
     public notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType]);
     }
 
@@ -106,7 +106,7 @@ export namespace videoApp {
      * Register the video effect callback, Teams client uses this to notify the videoApp extension the new video effect will by applied.
      */
     public registerForVideoEffect(callback: VideoEffectCallBack): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
+      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoEffectCallback = callback;
       sendMessageToParent('videoApp.registerForVideoEffect');
     }
@@ -115,7 +115,6 @@ export namespace videoApp {
      * Message handler
      */
     private receiveMessage(event: MessageEvent): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
       const type = event.data.type;
       if (type === 'videoApp.newVideoFrame' && this.videoFrameCallback != null) {
         const videoFrame = event.data.videoFrame as VideoFrame;
@@ -131,7 +130,6 @@ export namespace videoApp {
      * Setup the connection between videoApp and Teams, they use postMessage function to communicate
      */
     private setupConnection(): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.stage);
       window.addEventListener('message', this.receiveMessage.bind(this), false);
     }
 
