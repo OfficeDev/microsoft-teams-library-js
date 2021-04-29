@@ -4,6 +4,7 @@ import { core } from '../../src/public/publicAPIs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
 import { FrameContexts } from '../../src/public/constants';
+import { locationAPIsRequiredVersion } from '../../src/internal/constants';
 
 /**
  * Test cases for location APIs
@@ -11,7 +12,7 @@ import { FrameContexts } from '../../src/public/constants';
 describe('location', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils()
-  const minVersionForLocationAPIs = location.locationAPIsRequiredVersion;
+  const minVersionForLocationAPIs = locationAPIsRequiredVersion;
   const defaultLocationProps: location.LocationProps = {allowChooseLocation: false, showMap: false};
   const defaultLocation: location.Location = {latitude: 17, longitude: 17, accuracy: -1, timestamp: 100};
   

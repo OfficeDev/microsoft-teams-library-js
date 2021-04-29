@@ -63,4 +63,5 @@ export enum DialogDimension {
 export enum ChannelType {
   Regular = 'Regular',
   Private = 'Private',
+  Shared = 'Shared',
 }
