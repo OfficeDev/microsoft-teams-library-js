@@ -1,6 +1,6 @@
 import { version } from '../../src/internal/constants';
 import { appInitialization } from '../../src/public/appInitialization';
-import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
+import { core } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
 
 describe('appInitialization', () => {
@@ -14,13 +14,13 @@ describe('appInitialization', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    core._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (core._uninitialize) {
+      core._uninitialize();
     }
   });
 
