@@ -177,21 +177,6 @@ export function registerCustomHandler(
  * @private
  * Hide from docs
  * ------
- * Allows an app to retrieve information of all chat members
- * Because a malicious party run your content in a browser, this value should
- * be used only as a hint as to who the members are and never as proof of membership.
- * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
- */
-export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
-  ensureInitialized();
-
-  sendMessageToParent('getChatMembers', callback);
-}
-
-/**
- * @private
- * Hide from docs
- * ------
  * Allows an app to get the configuration setting value
  * @param callback The callback to invoke when the value is retrieved.
  * @param key The key for the config setting

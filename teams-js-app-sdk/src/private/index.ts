@@ -15,7 +15,6 @@ export {
 export {
   enterFullscreen,
   exitFullscreen,
-  getChatMembers,
   getConfigSetting,
   getUserJoinedTeams,
   openFilePreview,

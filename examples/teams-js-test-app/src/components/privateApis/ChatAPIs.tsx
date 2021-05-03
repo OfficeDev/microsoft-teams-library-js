@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
-import { OpenConversationRequest, chat } from '@microsoft/teamsjs-app-sdk';
+import { OpenConversationRequest, chat, ChatMembersInformation } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from '../BoxAndButton';
 import { noHubSdkMsg } from '../../App';
 
 const ConversationsAPIs = (): ReactElement => {
   const [openConversationRes, setOpenConversationRes] = React.useState('');
   const [closeConversationRes, setCloseConversationRes] = React.useState('');
+  const [getChatMembersRes, setGetChatMembersRes] = React.useState('');
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const openConversation = (openConversationRequestInput: string): void => {
@@ -47,6 +48,14 @@ const ConversationsAPIs = (): ReactElement => {
     chat.closeConversation();
   };
 
+  const returnGetChatMembers = (): void => {
+    setGetChatMembersRes('getChatMembers()' + noHubSdkMsg);
+    const onComplete = (chatMembersInformation: ChatMembersInformation): void => {
+      setGetChatMembersRes(JSON.stringify(chatMembersInformation));
+    };
+    chat.getChatMembers(onComplete);
+  };
+
   const checkChatCapability = (): void => {
     if (chat.isSupported()) {
       setCapabilityCheckRes('Chat module is supported');
@@ -70,6 +79,13 @@ const ConversationsAPIs = (): ReactElement => {
         hasInput={false}
         title="Close Conversation"
         name="closeConversation"
+      />
+      <BoxAndButton
+        handleClick={returnGetChatMembers}
+        output={getChatMembersRes}
+        hasInput={false}
+        title="Get Chat Members"
+        name="getChatMembers"
       />
       <BoxAndButton
         handleClick={checkChatCapability}

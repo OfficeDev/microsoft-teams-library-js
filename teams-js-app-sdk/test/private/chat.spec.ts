@@ -86,4 +86,28 @@ describe('chat', () => {
       expect(() => chat.closeConversation()).toThrowError("This call is not allowed in the 'settings' context");
     });
   });
+
+  describe('getChatMembers', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        chat.getChatMembers(() => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully get chat members', () => {
+      utils.initializeWithContext('content');
+
+      let callbackCalled = false;
+      chat.getChatMembers(() => {
+        callbackCalled = true;
+      });
+
+      let getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
+      expect(getChatMembersMessage).not.toBeNull();
+      utils.respondToMessage(getChatMembersMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+  });
 });

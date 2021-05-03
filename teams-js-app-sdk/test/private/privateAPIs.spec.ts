@@ -8,7 +8,6 @@ import {
   getUserJoinedTeams,
   sendCustomMessage,
   registerCustomHandler,
-  getChatMembers,
   getConfigSetting,
   enterFullscreen,
   exitFullscreen,
@@ -62,7 +61,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   unSupportedDomains.forEach(unSupportedDomain => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, () => {
       utils.initializeWithContext('content', null, null, ['http://invalid.origin.com']);
-      let callbackCalled = false;
+      let callbackCalled: boolean = false;
       core.getContext(() => {
         callbackCalled = true;
       });
@@ -110,7 +109,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   supportedDomains.forEach(supportedDomain => {
     it('should allow utils.messages from supported domain ' + supportedDomain, () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com', 'https://www.example.com']);
-      let callbackCalled = false;
+      let callbackCalled: boolean = false;
       core.getContext(() => {
         callbackCalled = true;
       });
@@ -151,7 +150,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    let callbackCalled = false;
+    let callbackCalled: boolean = false;
     core.getContext(() => {
       callbackCalled = true;
       return;
@@ -513,7 +512,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       const customActionName = 'customAction1';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -530,7 +529,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -557,7 +556,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled: boolean = false,
+      let callbackCalled = false,
         callbackArgs: any[] = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
@@ -578,30 +577,6 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
-    });
-  });
-
-  describe('getChatMembers', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() =>
-        getChatMembers(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should successfully get chat members', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getChatMembers(() => {
-        callbackCalled = true;
-      });
-
-      let getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
-      expect(getChatMembersMessage).not.toBeNull();
-      utils.respondToMessage(getChatMembersMessage, {});
-      expect(callbackCalled).toBe(true);
     });
   });
 

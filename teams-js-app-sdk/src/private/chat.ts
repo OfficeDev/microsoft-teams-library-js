@@ -4,6 +4,7 @@ import { OpenConversationRequest } from '../public/interfaces';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { runtime } from '../public/runtime';
+import { ChatMembersInformation } from './interfaces';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -72,6 +73,22 @@ export namespace chat {
     removeHandler('startConversation');
     removeHandler('closeConversation');
   }
+
+  /**
+   * @private
+   * Hide from docs
+   * ------
+   * Allows an app to retrieve information of all chat members
+   * Because a malicious party run your content in a browser, this value should
+   * be used only as a hint as to who the members are and never as proof of membership.
+   * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
+   */
+  export function getChatMembers(callback: (chatMembersInformation: ChatMembersInformation) => void): void {
+    ensureInitialized();
+
+    sendMessageToParent('getChatMembers', callback);
+  }
+
   export function isSupported(): boolean {
     return runtime.supports.chat ? true : false;
   }
