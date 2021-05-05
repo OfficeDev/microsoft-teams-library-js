@@ -444,6 +444,11 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
+export interface ShareInTeamsInfo {
+  url: string;
+  context: string;
+}
+
 export interface TaskInfo {
   /**
    * The url to be rendered in the webview/iframe.

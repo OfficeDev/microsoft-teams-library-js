@@ -7,6 +7,7 @@ export {
   ErrorCode,
   LoadContext,
   SdkError,
+  ShareInTeamsInfo,
   TabInformation,
   TabInstance,
   TabInstanceParameters,
@@ -37,6 +38,7 @@ export {
 } from './publicAPIs';
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
+export { shareInTeams } from './shareInTeams';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { media } from './media';
