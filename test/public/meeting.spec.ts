@@ -400,13 +400,11 @@ describe('meeting', () => {
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
       meeting.requestStartLiveStreaming(
-        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        (error: SdkError) => {
           callbackCalled = true;
           returnedSdkError = error;
-          returnedLiveStreamState = liveStreamState;
         },
         'streamurl',
         'streamkey',
@@ -426,21 +424,18 @@ describe('meeting', () => {
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedLiveStreamState).toBe(null);
     });
 
-    it('should successfully get live stream state', () => {
+    it('should successfully request start live streaming', () => {
       desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
       meeting.requestStartLiveStreaming(
-        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        (error: SdkError) => {
           callbackCalled = true;
           returnedSdkError = error;
-          returnedLiveStreamState = liveStreamState;
         },
         'streamurl',
         'streamkey',
@@ -459,8 +454,7 @@ describe('meeting', () => {
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
-      expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
+      expect(requestStartLiveStreamMessage.args).toEqual(['streamurl', 'streamkey']);
     });
   });
 
@@ -480,12 +474,10 @@ describe('meeting', () => {
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+      meeting.requestStopLiveStreaming((error: SdkError) => {
         callbackCalled = true;
         returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
       });
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
@@ -502,20 +494,17 @@ describe('meeting', () => {
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedLiveStreamState).toBe(null);
     });
 
-    it('should successfully get live stream state', () => {
+    it('should successfully request start live streaming', () => {
       desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+      meeting.requestStopLiveStreaming((error: SdkError) => {
         callbackCalled = true;
         returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
       });
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
@@ -531,8 +520,6 @@ describe('meeting', () => {
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
-      expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: false });
     });
   });
 
