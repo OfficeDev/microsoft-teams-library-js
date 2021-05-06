@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { meeting, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { meeting, meetingRoom, SdkError } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -12,6 +12,10 @@ const MeetingAPIs = (): ReactElement => {
   const [requestStartLiveStreamingRes, setRequestStartLiveStreamingRes] = React.useState('');
   const [requestStopLiveStreamingRes, setRequestStopLiveStreamingRes] = React.useState('');
   const [registerLiveStreamChangedHandlerRes, setRegisterLiveStreamChangedHandlerRes] = React.useState('');
+  const [getPairedMeetingRoomInfoRes, setGetPairedMeetingRoomInfoRes] = React.useState('');
+  const [sendCommandToPairedMeetingRoomRes, setSendCommandToPairedMeetingRoomRes] = React.useState('');
+  const [registerMeetingRoomCapUpdateHandlerRes, setRegisterMeetingRoomCapUpdateHandlerRes] = React.useState('');
+  const [registerMeetingRoomStatesUpdateHandlerRes, setRegisterMeetingRoomStatesUpdateHandlerRes] = React.useState('');
   const [checkMeetingCapabilityRes, setCheckMeetingCapabilityRes] = React.useState('');
   const NULL = 'null';
 
@@ -138,6 +142,44 @@ const MeetingAPIs = (): ReactElement => {
     meeting.registerLiveStreamChangedHandler(handler);
   };
 
+  const getPairedMeetingRoomInfo = (): void => {
+    setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHubSdkMsg);
+    const callback = (sdkError: SdkError, meetingRoomInfo: meetingRoom.MeetingRoomInfo): void => {
+      if (sdkError) {
+        setGetPairedMeetingRoomInfoRes(JSON.stringify(sdkError));
+      } else {
+        setGetPairedMeetingRoomInfoRes(JSON.stringify(meetingRoomInfo));
+      }
+    };
+    meetingRoom.getPairedMeetingRoomInfo(callback);
+  };
+
+  const sendCommandToPairedMeetingRoom = (commandName: string): void => {
+    setSendCommandToPairedMeetingRoomRes('sendCommandToPairedMeetingRoom' + noHubSdkMsg);
+    const callback = (sdkError: SdkError): void => {
+      sdkError
+        ? setSendCommandToPairedMeetingRoomRes(JSON.stringify(sdkError))
+        : setSendCommandToPairedMeetingRoomRes('Success');
+    };
+    meetingRoom.sendCommandToPairedMeetingRoom(commandName, callback);
+  };
+
+  const registerMeetingRoomCapabilitiesUpdateHandler = (): void => {
+    setRegisterMeetingRoomCapUpdateHandlerRes('registerMeetingRoomCapabilitiesUpdateHandler' + noHubSdkMsg);
+    const handler = (cap: meetingRoom.MeetingRoomCapability): void => {
+      setRegisterMeetingRoomCapUpdateHandlerRes('MeetingRoom Capabilities have been updated to ' + JSON.stringify(cap));
+    };
+    meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(handler);
+  };
+
+  const registerMeetingRoomStatesUpdateHandler = (): void => {
+    setRegisterMeetingRoomStatesUpdateHandlerRes('registerMeetingRoomStatesUpdateHandler' + noHubSdkMsg);
+    const handler = (states: meetingRoom.MeetingRoomState): void => {
+      setRegisterMeetingRoomStatesUpdateHandlerRes('MeetingRoom States have been updated to ' + JSON.stringify(states));
+    };
+    meetingRoom.registerMeetingRoomStatesUpdateHandler(handler);
+  };
+
   const meetingCapabilityCheck = (): void => {
     if (meeting.isSupported()) {
       setCheckMeetingCapabilityRes('Meeting module is supported');
@@ -203,6 +245,34 @@ const MeetingAPIs = (): ReactElement => {
         hasInput={false}
         title="Register LiveStream Changed Handler"
         name="registerLiveStreamChangedHandler"
+      />
+      <BoxAndButton
+        handleClick={getPairedMeetingRoomInfo}
+        output={getPairedMeetingRoomInfoRes}
+        hasInput={false}
+        title="Get Paired MeetingRoom Info"
+        name="getPairedMeetingRoomInfo"
+      />
+      <BoxAndButton
+        handleClickWithInput={sendCommandToPairedMeetingRoom}
+        output={sendCommandToPairedMeetingRoomRes}
+        hasInput={true}
+        title="Send Command to Paired MeetingRoom"
+        name="sendCommandToPairedMeetingRoom"
+      />
+      <BoxAndButton
+        handleClick={registerMeetingRoomCapabilitiesUpdateHandler}
+        output={registerMeetingRoomCapUpdateHandlerRes}
+        hasInput={false}
+        title="Register MeetingRoom Capabilities Update Handler"
+        name="registerMeetingRoomCapUpdateHandler"
+      />
+      <BoxAndButton
+        handleClick={registerMeetingRoomStatesUpdateHandler}
+        output={registerMeetingRoomStatesUpdateHandlerRes}
+        hasInput={false}
+        title="Register MeetingRoom States Update Handler"
+        name="registerMeetingRoomStatesUpdateHandler"
       />
       <BoxAndButton
         handleClick={meetingCapabilityCheck}
