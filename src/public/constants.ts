@@ -55,4 +55,5 @@ export enum TaskModuleDimension {
 export enum ChannelType {
   Regular = 'Regular',
   Private = 'Private',
+  Shared = 'Shared',
 }

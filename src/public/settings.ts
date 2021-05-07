@@ -32,7 +32,7 @@ export namespace settings {
    * @param callback The callback to invoke when the {@link Settings} object is retrieved.
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
+    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
     sendMessageToParent('settings.getSettings', callback);
   }
 
@@ -45,7 +45,7 @@ export namespace settings {
     instanceSettings: Settings,
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.settings);
+    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
     sendMessageToParent(
       'settings.setSettings',
       [instanceSettings],
