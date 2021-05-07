@@ -3,7 +3,8 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import { core } from './publicAPIs';
 import { runtime } from './runtime';
 
 export namespace pages {
@@ -18,6 +19,20 @@ export namespace pages {
     ensureInitialized(FrameContexts.content);
 
     sendMessageToParent('returnFocus', [navigateForward]);
+  }
+
+  export function setCurrentFrame(frameInfo: FrameInfo): void {
+    ensureInitialized(FrameContexts.content);
+    sendMessageToParent('setFrameContext', [frameInfo]);
+  }
+
+  export function initializeWithFrameContext(
+    frameInfo: FrameInfo,
+    callback?: () => void,
+    validMessageOrigins?: string[],
+  ): void {
+    core.initialize(callback, validMessageOrigins);
+    setCurrentFrame(frameInfo);
   }
 
   /**
@@ -49,14 +64,43 @@ export namespace pages {
   }
 
   /**
-   * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
-   * it's appropriate to use this method.
+   * Registers a handler for changes from or to full-screen view for a tab.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the user toggles full-screen view for a tab.
    */
-  export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
+  export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
+    registerHandler('fullScreenChange', handler);
+  }
 
-    const errorMessage = 'Back navigation is not supported in the current client or context.';
-    sendMessageToParent('navigateBack', [], onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage));
+  /**
+   * Registers a handler for clicking the app button.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the personal app button is clicked in the app bar.
+   */
+  export function registerAppButtonClickHandler(handler: () => void): void {
+    ensureInitialized(FrameContexts.content);
+    registerHandler('appButtonClick', handler);
+  }
+
+  /**
+   * Registers a handler for entering hover of the app button.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
+   */
+  export function registerAppButtonHoverEnterHandler(handler: () => void): void {
+    ensureInitialized(FrameContexts.content);
+    registerHandler('appButtonHoverEnter', handler);
+  }
+
+  /**
+   * Registers a handler for exiting hover of the app button.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
+   */
+  export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
+    ensureInitialized(FrameContexts.content);
+    registerHandler('appButtonHoverLeave', handler);
   }
 
   /**
@@ -205,6 +249,15 @@ export namespace pages {
       }
     }
 
+    /**
+     * Registers a handler for when the user reconfigurated tab
+     * @param handler The handler to invoke when the user click on Settings.
+     */
+    export function registerChangeConfigHandler(handler: () => void): void {
+      ensureInitialized(FrameContexts.content);
+      registerHandler('changeSettings', handler);
+    }
+
     export interface Config {
       /**
        * A suggested display name for the new content.
@@ -332,6 +385,53 @@ export namespace pages {
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
+    }
+  }
+
+  /**
+   * Namespace to interact with the back-stack part of the SDK.
+   */
+  export namespace backStack {
+    let backButtonPressHandler: () => boolean;
+
+    export function _initialize(): void {
+      registerHandler('backButtonPress', handleBackButtonPress, false);
+    }
+
+    /**
+     * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
+     * it's appropriate to use this method.
+     */
+    export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
+      ensureInitialized();
+
+      const errorMessage = 'Back navigation is not supported in the current client or context.';
+      sendMessageToParent('navigateBack', [], onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage));
+    }
+
+    /**
+     * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
+     * navigation stack should use this handler to navigate the user back within their frame. If an app finds
+     * that after running its back button handler it cannot handle the event it should call the navigateBack
+     * method to ask the Teams client to handle it instead.
+     * @param handler The handler to invoke when the user presses their Team client's back button.
+     */
+    export function registerBackButtonHandler(handler: () => boolean): void {
+      backButtonPressHandler = handler;
+      handler && sendMessageToParent('registerHandler', ['backButton']);
+    }
+
+    function handleBackButtonPress(): void {
+      if (!backButtonPressHandler || !backButtonPressHandler()) {
+        navigateBack();
+      }
+    }
+
+    /**
+     * Checks if pages.backStack capability is supported currently
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
     }
   }
 }

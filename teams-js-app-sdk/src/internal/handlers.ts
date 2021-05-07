@@ -7,7 +7,6 @@ class HandlersPrivate {
     [func: string]: Function;
   } = {};
   public static themeChangeHandler: (theme: string) => void;
-  public static backButtonPressHandler: () => boolean;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -15,9 +14,9 @@ class HandlersPrivate {
 export function initializeHandlers(): void {
   // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
   HandlersPrivate.handlers['themeChange'] = handleThemeChange;
-  HandlersPrivate.handlers['backButtonPress'] = handleBackButtonPress;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+  pages.backStack._initialize();
 }
 
 export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
@@ -55,17 +54,6 @@ export function handleThemeChange(theme: string): void {
 
   if (Communication.childWindow) {
     sendMessageEventToChild('themeChange', [theme]);
-  }
-}
-
-export function registerBackButtonHandler(handler: () => boolean): void {
-  HandlersPrivate.backButtonPressHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['backButton']);
-}
-
-function handleBackButtonPress(): void {
-  if (!HandlersPrivate.backButtonPressHandler || !HandlersPrivate.backButtonPressHandler()) {
-    pages.navigateBack();
   }
 }
 

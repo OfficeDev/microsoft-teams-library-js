@@ -1,14 +1,21 @@
 import React, { ReactElement } from 'react';
-import { authentication } from '@microsoft/teamsjs-app-sdk';
+import { authentication, core } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const AuthenticationAPIs = (): ReactElement => {
+  const [registerAuthHandlersRes, setRegisterAuthHAndlerRes] = React.useState('');
   const [getTokenRes, setGetTokenRes] = React.useState('');
   const [getUserRes, setGetUserRes] = React.useState('');
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
   const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
   const [authenticateRes, setAuthenticateRes] = React.useState('');
+  const [initializeRes, setInitializeRes] = React.useState('');
+
+  const registerAuthenticationHandlers = (authParams: string): void => {
+    authentication.registerAuthenticationHandlers(JSON.parse(authParams));
+    setRegisterAuthHAndlerRes('called');
+  };
 
   const authGetToken = (unformattedAuthParams: string): void => {
     setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
@@ -49,6 +56,11 @@ const AuthenticationAPIs = (): ReactElement => {
     setNotifySuccessRes('called');
   };
 
+  const initialize = (): void => {
+    core.initialize();
+    setInitializeRes('called');
+  };
+
   const authAuthenticate = (unformattedAuthParams: string): void => {
     setAuthenticateRes('authentication.authenticate()' + noHubSdkMsg);
     const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
@@ -67,6 +79,20 @@ const AuthenticationAPIs = (): ReactElement => {
 
   return (
     <>
+      <BoxAndButton
+        handleClick={initialize}
+        output={initializeRes}
+        hasInput={false}
+        title="Initialize"
+        name="initialize"
+      />
+      <BoxAndButton
+        handleClickWithInput={registerAuthenticationHandlers}
+        output={registerAuthHandlersRes}
+        hasInput={true}
+        title="register Authentication Handlers"
+        name="registerAuthenticationHandlers"
+      />
       <BoxAndButton
         handleClickWithInput={authGetToken}
         output={getTokenRes}

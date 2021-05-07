@@ -44,7 +44,7 @@ const NavigationAPIs = (): ReactElement => {
         setNavigateBackRes('Completed');
       }
     };
-    pages.navigateBack(onComplete);
+    pages.backStack.navigateBack(onComplete);
   };
 
   const returnFocusFunc = (navigateForward: string): void => {

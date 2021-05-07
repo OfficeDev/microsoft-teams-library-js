@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { media } from '@microsoft/teamsjs-app-sdk';
+import { media, SdkError } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -14,7 +14,7 @@ const MediaAPIs = (): ReactElement => {
 
   const captureImage = (): void => {
     setCaptureImageRes('media.captureImage()' + noHubSdkMsg);
-    const callback = (error: teamsjs.SdkError, files: media.File[]): void => {
+    const callback = (error: SdkError, files: media.File[]): void => {
       if (error) {
         setCaptureImageRes(error.errorCode.toString + ' ' + error.message);
         return;
@@ -36,7 +36,7 @@ const MediaAPIs = (): ReactElement => {
   const selectMedia = (mediaInputs: string): void => {
     let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setSelectMediaRes('media.selectMedia()' + noHubSdkMsg);
-    const callback = (error: teamsjs.SdkError, medias: media.Media[]): void => {
+    const callback = (error: SdkError, medias: media.Media[]): void => {
       if (error) {
         setSelectMediaRes(error.errorCode.toString + ' ' + error.message);
         return;
@@ -71,13 +71,13 @@ const MediaAPIs = (): ReactElement => {
   const getMedia = (mediaInputs: string): void => {
     let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setGetMediaRes('media.getMedia()' + noHubSdkMsg);
-    media.selectMedia(mediaInputsParams, (error: teamsjs.SdkError, medias: media.Media[]) => {
+    media.selectMedia(mediaInputsParams, (error: SdkError, medias: media.Media[]) => {
       if (error) {
         setGetMediaRes(error.errorCode.toString + ' ' + error.message);
         return;
       }
       const media: media.Media = medias[0] as media.Media;
-      media.getMedia((gmErr: teamsjs.SdkError, blob: Blob) => {
+      media.getMedia((gmErr: SdkError, blob: Blob) => {
         if (gmErr) {
           setGetMediaRes(gmErr.errorCode.toString + ' ' + gmErr.message);
           return;
@@ -86,6 +86,7 @@ const MediaAPIs = (): ReactElement => {
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           if (reader.result) {
+            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
             setGetMediaRes('Received Blob (length: ' + (reader.result as any).length + ')');
           }
         };
@@ -96,7 +97,7 @@ const MediaAPIs = (): ReactElement => {
   const viewImagesWithId = (mediaInputs: string): void => {
     let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setViewImagesWithIdRes('media.viewImagesWithId()' + noHubSdkMsg);
-    media.selectMedia(mediaInputsParams, (err: teamsjs.SdkError, medias: media.Media[]) => {
+    media.selectMedia(mediaInputsParams, (err: SdkError, medias: media.Media[]) => {
       if (err) {
         setViewImagesWithIdRes(err.errorCode.toString + ' ' + err.message);
         return;
@@ -106,10 +107,10 @@ const MediaAPIs = (): ReactElement => {
         const media = medias[i];
         urlList.push({
           value: media.content,
-          type: 1, //teamsjs.ImageUriType.ID
+          type: 1, //ImageUriType.ID
         } as media.ImageUri);
       }
-      media.viewImages(urlList, (gmErr?: teamsjs.SdkError): void => {
+      media.viewImages(urlList, (gmErr?: SdkError): void => {
         if (gmErr) {
           setViewImagesWithIdRes(gmErr.errorCode.toString + ' ' + gmErr.message);
           return;
@@ -127,10 +128,10 @@ const MediaAPIs = (): ReactElement => {
       const imageUrl = imageUrls[i];
       urlList.push({
         value: imageUrl,
-        type: 2, //teamsjs.ImageUriType.URL
+        type: 2, //ImageUriType.URL
       } as media.ImageUri);
     }
-    media.viewImages(urlList, (err?: teamsjs.SdkError): void => {
+    media.viewImages(urlList, (err?: SdkError): void => {
       if (err) {
         setViewImagesWithUrlsRes(err.errorCode.toString + ' ' + err.message);
       } else {
@@ -142,7 +143,7 @@ const MediaAPIs = (): ReactElement => {
   const scanBarCode = (scanBarCodeConfigInput: string): void => {
     let scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
     setScanBarCodeRes('media.scanBarCode()' + noHubSdkMsg);
-    media.scanBarCode((err: teamsjs.SdkError, result: string): void => {
+    media.scanBarCode((err: SdkError, result: string): void => {
       if (err) {
         setScanBarCodeRes(err.errorCode.toString + ' ' + err.message);
       } else {

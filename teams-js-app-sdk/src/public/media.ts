@@ -14,28 +14,14 @@ import {
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { runtime } from './runtime';
+import {
+  captureImageMobileSupportVersion,
+  mediaAPISupportVersion,
+  getMediaCallbackSupportVersion,
+  scanBarCodeAPIMobileSupportVersion,
+} from '../internal/constants';
 
 export namespace media {
-  /**
-   * This is the SDK version when captureImage API is supported on mobile.
-   */
-  const captureImageMobileSupportVersion = '1.7.0';
-
-  /**
-   * This is the SDK version when media APIs is supported on all three platforms ios, android and web.
-   */
-  const mediaAPISupportVersion = '1.8.0';
-
-  /**
-   * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
-   */
-  const getMediaCallbackSupportVersion = '2.0.0';
-
-  /**
-   * This is the SDK version when scanBarCode API is supported on mobile.
-   */
-  const scanBarCodeAPIMobileSupportVersion = '1.9.0';
-
   /**
    * Enum for file formats supported
    */

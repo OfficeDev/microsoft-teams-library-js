@@ -15,7 +15,6 @@ export {
 export {
   enterFullscreen,
   exitFullscreen,
-  getChatMembers,
   getConfigSetting,
   getUserJoinedTeams,
   openFilePreview,
@@ -25,8 +24,9 @@ export {
   uploadCustomApp,
   registerUserSettingsChangeHandler,
 } from './privateAPIs';
-export { conversations } from './conversations';
+export { chat } from './chat';
 export { files } from './files';
 export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';
+export { appEntity } from './appEntity';

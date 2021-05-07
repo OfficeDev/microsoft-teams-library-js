@@ -4,7 +4,7 @@ import { core, appInitialization } from '@microsoft/teamsjs-app-sdk';
 import AppInitializationAPIs from './components/AppInitialization';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
-import ConversationsAPIs from './components/ConversationsAPIs';
+import ChatAPIs from './components/privateApis/ChatAPIs';
 import CoreAPIs from './components/CoreAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import MediaAPIs from './components/MediaAPIs';
@@ -16,13 +16,22 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import MailAPIs from './components/MailAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
+import PeopleAPIs from './components/PeopleAPIs';
+import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 
-core.initialize();
+const urlParams = new URLSearchParams(window.location.search);
+
+// This is added for custom initialization when app can be initialized based upon a trigger/click.
+if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+  core.initialize();
+}
 
 // for AppInitialization tests we need a way to stop the Test App from sending these
 // we do it by adding appInitializationTest=true to query string
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest')) {
+if (
+  (urlParams.has('customInit') && urlParams.get('customInit')) ||
+  (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest'))
+) {
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
   appInitialization.notifyAppLoaded();
@@ -34,21 +43,23 @@ export const noHubSdkMsg = ' was called, but there was no response from the Hub 
 const App = (): ReactElement => {
   return (
     <>
-      <AuthenticationAPIs />
       <AppInitializationAPIs />
+      <AuthenticationAPIs />
       <CalendarAPIs />
-      <MailAPIs />
-      <ConversationsAPIs />
-      <CoreAPIs />
-      <LocationAPIs />
-      <MediaAPIs />
-      <NavigationAPIs />
-      <PrivateAPIs />
-      <DialogAPIs />
+      <ChatAPIs />
       <ConfigAPIs />
-      <TeamsCoreAPIs />
-      <NotificationAPIs />
+      <CoreAPIs />
+      <DialogAPIs />
+      <FullTrustAPIs />
+      <LocationAPIs />
+      <MailAPIs />
+      <MediaAPIs />
       <MeetingAPIs />
+      <NavigationAPIs />
+      <NotificationAPIs />
+      <PeopleAPIs />
+      <PrivateAPIs />
+      <TeamsCoreAPIs />
     </>
   );
 };

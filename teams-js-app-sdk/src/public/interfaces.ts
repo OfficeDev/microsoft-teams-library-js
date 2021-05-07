@@ -1,4 +1,4 @@
-import { DialogDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { DialogDimension, HostClientType, HostName, TeamType, UserTeamRole, ChannelType } from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -272,6 +272,16 @@ export interface Context {
   teamSitePath?: string;
 
   /**
+   * The tenant ID of the host team.
+   */
+  hostTeamTenantId?: string;
+
+  /**
+   * The AAD group ID of the host team.
+   */
+  hostTeamGroupId?: string;
+
+  /**
    * The relative path to the SharePoint folder associated with the channel.
    */
   channelRelativeUrl?: string;
@@ -322,6 +332,11 @@ export interface Context {
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
    */
   isTeamArchived?: boolean;
+
+  /**
+   * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
+   */
+  hostName?: HostName;
 
   /**
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel
@@ -558,7 +573,7 @@ export interface LoadContext {
   contentUrl: string;
 }
 
-export interface FrameContext {
+export interface FrameInfo {
   /**
    * The current URL that needs to be used in the iframe if the tab is reloaded
    */
@@ -592,6 +607,10 @@ export enum ErrorCode {
    * Internal error encountered while performing the required operation.
    */
   INTERNAL_ERROR = 500,
+  /**
+   * API is not supported in the current context
+   */
+  NOT_SUPPORTED_IN_CURRENT_CONTEXT = 501,
   /**
   Permissions denied by user
   */

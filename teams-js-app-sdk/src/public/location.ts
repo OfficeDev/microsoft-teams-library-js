@@ -3,13 +3,9 @@ import { ensureInitialized, isAPISupportedByPlatform } from '../internal/interna
 import { FrameContexts } from './constants';
 import { sendMessageToParent } from '../internal/communication';
 import { runtime } from './runtime';
+import { locationAPIsRequiredVersion } from '../internal/constants';
 
 export namespace location {
-  /**
-   * This is the SDK version when location APIs (getLocation and showLocation) are supported.
-   */
-  export const locationAPIsRequiredVersion = '1.9.0';
-
   export interface LocationProps {
     /**
     whether user can alter location or not

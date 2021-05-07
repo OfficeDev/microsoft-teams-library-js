@@ -1,5 +1,32 @@
 # Breaking Changes
 
+## v0.0.11
+Corresponding microsoft-teams-library-js version: 1.9.0
+
+### More Capabilities organized
+The following capabilities have been used to reorganize several existing APIs in the App SDK:
+
+#### `conversations` namespace has been renamed `chat`
+`openConversation` and `closeConversation` have been moved to `chat` capability
+`getChatMembers` has been moved to `chat` capability
+
+#### Several APIs reorganized under `pages`, `pages.config` and new `pages.backStack` capability
+The following APIs have been moved from `teamsCore` to `pages`:
+* `registerFullScreenHandler`
+* `registerAppButtonClickHandler`
+* `registerAppButtonHoverEnterHandler`
+* `regsiterAppButtonHoverLeaveHandler`
+* `initializeWithFrameContext`
+* `setFrameContext` has been renamed `setCurrentFrame`
+* `registerChangeSettingsHandler` has been renamed to `registerChangeConfigHandler` and moved to `pages.config`
+* `registerBackButtonHandler` has moved to `pages.backStack.registerBackButtonHandler`
+
+The `pages.navigateBack` API has moved to `pages.backStack.navigateBack`
+
+The `FrameContext` interface has been renamed `FrameInfo`
+
+### Support for `hostName` added to context
+The name of the hub the app is running in is now part of the application context in the `hostName` property. For details on how to use this property correctly, please view the [Hub Name and Capabilities](https://office.visualstudio.com/ISS/_wiki/wikis/teamsjs%20Docs/31719/Hub-Name-And-Capabilities) page.
 ## v0.0.10
 Corresponding microsoft-teams-library-js version: 1.9.0
 

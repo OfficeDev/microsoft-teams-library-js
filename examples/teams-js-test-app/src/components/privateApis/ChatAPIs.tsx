@@ -1,11 +1,13 @@
 import React, { ReactElement } from 'react';
-import { OpenConversationRequest, conversations } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
-import { noHubSdkMsg } from '../App';
+import { OpenConversationRequest, chat, ChatMembersInformation } from '@microsoft/teamsjs-app-sdk';
+import BoxAndButton from '../BoxAndButton';
+import { noHubSdkMsg } from '../../App';
 
 const ConversationsAPIs = (): ReactElement => {
   const [openConversationRes, setOpenConversationRes] = React.useState('');
   const [closeConversationRes, setCloseConversationRes] = React.useState('');
+  const [getChatMembersRes, setGetChatMembersRes] = React.useState('');
+  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const openConversation = (openConversationRequestInput: string): void => {
     setOpenConversationRes('conversations.openConversation()' + noHubSdkMsg);
@@ -35,7 +37,7 @@ const ConversationsAPIs = (): ReactElement => {
       );
     };
     try {
-      conversations.openConversation(openConversationRequest);
+      chat.openConversation(openConversationRequest);
     } catch (e) {
       setOpenConversationRes('Error' + e);
     }
@@ -43,7 +45,23 @@ const ConversationsAPIs = (): ReactElement => {
 
   const closeConversation = (): void => {
     setCloseConversationRes('Conversation Closed!');
-    conversations.closeConversation();
+    chat.closeConversation();
+  };
+
+  const returnGetChatMembers = (): void => {
+    setGetChatMembersRes('getChatMembers()' + noHubSdkMsg);
+    const onComplete = (chatMembersInformation: ChatMembersInformation): void => {
+      setGetChatMembersRes(JSON.stringify(chatMembersInformation));
+    };
+    chat.getChatMembers(onComplete);
+  };
+
+  const checkChatCapability = (): void => {
+    if (chat.isSupported()) {
+      setCapabilityCheckRes('Chat module is supported');
+    } else {
+      setCapabilityCheckRes('Chat module is not supported');
+    }
   };
 
   return (
@@ -52,15 +70,29 @@ const ConversationsAPIs = (): ReactElement => {
         handleClickWithInput={openConversation}
         output={openConversationRes}
         hasInput={true}
-        title="openConversation"
-        name="Open Conversation"
+        title="Open Conversation"
+        name="openConversation"
       />
       <BoxAndButton
         handleClick={closeConversation}
         output={closeConversationRes}
         hasInput={false}
-        title="closeConversation"
-        name="Close Conversation"
+        title="Close Conversation"
+        name="closeConversation"
+      />
+      <BoxAndButton
+        handleClick={returnGetChatMembers}
+        output={getChatMembersRes}
+        hasInput={false}
+        title="Get Chat Members"
+        name="getChatMembers"
+      />
+      <BoxAndButton
+        handleClick={checkChatCapability}
+        output={capabilityCheckRes}
+        hasInput={false}
+        title="Check Chat Capability"
+        name="checkChatCapability"
       />
     </>
   );

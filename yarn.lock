@@ -2036,14 +2036,13 @@ aws4@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
 
-azure-devops-node-api@^10.2.0:
-  version "10.2.1"
-  resolved "https://registry.yarnpkg.com/azure-devops-node-api/-/azure-devops-node-api-10.2.1.tgz#835080164f8c30cec6506c47198b044c053f1f36"
-  integrity sha512-XuSiUaYpk0tQpd9fD8qfRa5y1IdavupKNVmwxy0w/RhmxG2Wl8uAYnNJchUoWd3Rn9On0mYTCCZSn+UlYdYFSg==
+azure-devops-node-api@^10.2.2:
+  version "10.2.2"
+  resolved "https://registry.yarnpkg.com/azure-devops-node-api/-/azure-devops-node-api-10.2.2.tgz#9f557e622dd07bbaa9bd5e7e84e17c761e2151b2"
+  integrity sha512-4TVv2X7oNStT0vLaEfExmy3J4/CzfuXolEcQl/BRUmvGySqKStTG2O55/hUQ0kM7UJlZBLgniM0SBq4d/WkKow==
   dependencies:
     tunnel "0.0.6"
-    typed-rest-client "^1.8.0"
-    underscore "1.8.3"
+    typed-rest-client "^1.8.4"
 
 azure-keyvault@^3.0.4:
   version "3.0.4"
@@ -9161,14 +9160,14 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typed-rest-client@^1.8.0:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/typed-rest-client/-/typed-rest-client-1.8.1.tgz#2ecb18dd360ce2a722ad30d0e076712f1fc3d191"
-  integrity sha512-7JbJFBZZuu3G64u6ksklN1xtVGfqBKiR5MQoTe5oLTi68OyB6pRuuIQCllfK/BdGjQtZYp62rgUOnEYDz4e9Xg==
+typed-rest-client@^1.8.4:
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/typed-rest-client/-/typed-rest-client-1.8.4.tgz#ba3fb788e5b9322547406392533f12d660a5ced6"
+  integrity sha512-MyfKKYzk3I6/QQp6e1T50py4qg+c+9BzOEl2rBmQIpStwNUoqQ73An+Tkfy9YuV7O+o2mpVVJpe+fH//POZkbg==
   dependencies:
     qs "^6.9.1"
     tunnel "0.0.6"
-    underscore "1.8.3"
+    underscore "^1.12.1"
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -9210,13 +9209,18 @@ uglifyjs-webpack-plugin@^1.2.4:
     webpack-sources "^1.1.0"
     worker-farm "^1.5.2"
 
-underscore@1.8.3, underscore@~1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
-
 "underscore@>= 1.3.1":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
+
+underscore@^1.12.1:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.0.tgz#3ccdcbb824230fc6bf234ad0ddcd83dff4eafe5f"
+  integrity sha512-sCs4H3pCytsb5K7i072FAEC9YlSYFIbosvM0tAKAlpSSUgD7yC1iXSEGdl5XrDKQ1YUB+p/HDzYrSG2H2Vl36g==
+
+underscore@~1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

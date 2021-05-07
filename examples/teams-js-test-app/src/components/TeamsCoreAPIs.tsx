@@ -1,13 +1,12 @@
 import React, { ReactElement } from 'react';
-import { pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
+import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const TeamsCoreAPIs = (): ReactElement => {
   const [enablePrintCapRes, setEnablePrintCapRes] = React.useState('');
   const [printRes, setPrintRes] = React.useState('');
-  const [setFrameContextRes, setSetFrameContextRes] = React.useState('');
-  const [registerChangeSettingsHandlerRes, setRegisterChangeSettingsHandlerRes] = React.useState('');
+  const [currentFrameRes, setCurrentFrameRes] = React.useState('');
   const [registerAppButtonClickHandlerRes, setRegisterAppButtonClickHandlerRes] = React.useState('');
   const [registerAppButtonHoverEnterHandlerRes, setRegisterAppButtonHoverEnterHandlerRes] = React.useState('');
   const [registerAppButtonHoverLeaveHandlerRes, setRegisterAppButtonHoverLeaveHandlerRes] = React.useState('');
@@ -31,35 +30,28 @@ const TeamsCoreAPIs = (): ReactElement => {
     setPrintRes('called');
   };
 
-  const setFrameContext = (frameContextInput: string): void => {
-    teamsCore.setFrameContext(JSON.parse(frameContextInput));
-    setSetFrameContextRes('called');
-  };
-
-  const registerChangeSettingsHandler = (): void => {
-    setRegisterChangeSettingsHandlerRes('teamsCore.registerChangeSettingsHandler()' + noHubSdkMsg);
-    teamsCore.registerChangeSettingsHandler((): void => {
-      setRegisterChangeSettingsHandlerRes('successfully called');
-    });
+  const setCurrentFrame = (frameContextInput: string): void => {
+    pages.setCurrentFrame(JSON.parse(frameContextInput));
+    setCurrentFrameRes('called');
   };
 
   const registerAppButtonClickHandler = (): void => {
     setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHubSdkMsg);
-    teamsCore.registerAppButtonClickHandler((): void => {
+    pages.registerAppButtonClickHandler((): void => {
       setRegisterAppButtonClickHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverEnterHandler = (): void => {
     setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverEnterHandler((): void => {
+    pages.registerAppButtonHoverEnterHandler((): void => {
       setRegisterAppButtonHoverEnterHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverLeaveHandler = (): void => {
     setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHubSdkMsg);
-    teamsCore.registerAppButtonHoverLeaveHandler((): void => {
+    pages.registerAppButtonHoverLeaveHandler((): void => {
       setRegisterAppButtonHoverLeaveHandlerRes('successfully called');
     });
   };
@@ -111,7 +103,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const returnRegisterBackButtonHandler = (): void => {
     setRegisterBackButtonHandlerRes('total States: ' + totalStates);
-    teamsCore.registerBackButtonHandler((): boolean => {
+    pages.backStack.registerBackButtonHandler((): boolean => {
       if (totalStates > 0) {
         let newNumStates = totalStates - 1;
         setTotalStates(newNumStates);
@@ -124,14 +116,14 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const registerOnLoadHandler = (): void => {
     setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHubSdkMsg);
-    teamsCore.registerOnLoadHandler((context: teamsjs.LoadContext): void => {
+    teamsCore.registerOnLoadHandler((context: LoadContext): void => {
       setRegisterOnLoadRes('successfully called with context:' + JSON.stringify(context));
     });
   };
 
   const registerFullScreenChangeHandler = (): void => {
     setRegisterFullScreenChangeHandlerRes('teamsCore.registerFullScreenHandler()' + noHubSdkMsg);
-    teamsCore.registerFullScreenHandler((isFullScreen: boolean): void => {
+    pages.registerFullScreenHandler((isFullScreen: boolean): void => {
       setRegisterFullScreenChangeHandlerRes('successfully called with isFullScreen:' + isFullScreen);
     });
   };
@@ -155,18 +147,11 @@ const TeamsCoreAPIs = (): ReactElement => {
       />
       <BoxAndButton handleClick={print} output={printRes} hasInput={false} title="Print" name="print" />
       <BoxAndButton
-        handleClickWithInput={setFrameContext}
-        output={setFrameContextRes}
+        handleClickWithInput={setCurrentFrame}
+        output={currentFrameRes}
         hasInput={true}
-        title="Set Frame Context"
-        name="setFrameContext"
-      />
-      <BoxAndButton
-        handleClick={registerChangeSettingsHandler}
-        output={registerChangeSettingsHandlerRes}
-        hasInput={false}
-        title="Register Change Settings Handler"
-        name="registerChangeSettingsHandler"
+        title="Set current frame"
+        name="setCurrentFrame"
       />
       <BoxAndButton
         handleClick={registerAppButtonClickHandler}

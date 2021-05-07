@@ -66,8 +66,8 @@ export namespace core {
       this._uninitialize = () => {
         if (GlobalVars.frameContext) {
           registerOnThemeChangeHandler(null);
-          teamsCore.registerFullScreenHandler(null);
-          teamsCore.registerBackButtonHandler(null);
+          pages.backStack.registerBackButtonHandler(null);
+          pages.registerFullScreenHandler(null);
           teamsCore.registerBeforeUnloadHandler(null);
           teamsCore.registerOnLoadHandler(null);
           logs.registerGetLogHandler(null);

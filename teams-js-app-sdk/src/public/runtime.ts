@@ -4,6 +4,8 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
     readonly calendar?: {};
+    readonly chat?: {};
+    readonly dialog?: {};
     readonly location?: {};
     readonly mail?: {};
     readonly media?: {};
@@ -12,8 +14,8 @@ export interface IRuntime {
     readonly pages?: {
       readonly tabs?: {};
       readonly config?: {};
+      readonly backStack?: {};
     };
-    readonly dialog?: {};
   };
 }
 
