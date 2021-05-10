@@ -434,4 +434,34 @@ export namespace pages {
       return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
     }
   }
+
+  export namespace fullTrust {
+    /**
+     * @private
+     * Hide from docs
+     * ------
+     * Place the tab into full-screen mode.
+     */
+    export function enterFullscreen(): void {
+      ensureInitialized(FrameContexts.content);
+      sendMessageToParent('enterFullscreen', []);
+    }
+
+    /**
+     * @private
+     * Hide from docs
+     * ------
+     * Reverts the tab into normal-screen mode.
+     */
+    export function exitFullscreen(): void {
+      ensureInitialized(FrameContexts.content);
+      sendMessageToParent('exitFullscreen', []);
+    }
+    /**
+     * Checks if pages.fullTrust capability is supported currently
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
+    }
+  }
 }

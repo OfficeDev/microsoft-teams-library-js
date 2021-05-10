@@ -4,15 +4,11 @@ import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
-  openFilePreview,
-  getUserJoinedTeams,
   sendCustomMessage,
   registerCustomHandler,
-  getConfigSetting,
-  enterFullscreen,
-  exitFullscreen,
   sendCustomEvent,
   registerUserSettingsChangeHandler,
+  openFilePreview,
 } from '../../src/private/privateAPIs';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
@@ -395,81 +391,6 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(secondChildMessage.isPartialResponse).toBeFalsy();
   });
 
-  describe('getUserJoinedTeams', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() =>
-        getUserJoinedTeams(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should allow a valid optional parameter set to true', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        { favoriteTeamsOnly: true } as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a valid optional parameter set to false', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        { favoriteTeamsOnly: false } as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a missing optional parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(() => {
-        callbackCalled = true;
-      });
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a missing and valid optional parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        {} as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-  });
-
   describe('sendCustomMessage', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
@@ -577,108 +498,6 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
-    });
-  });
-
-  describe('getConfigSetting', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() =>
-        getConfigSetting(() => {
-          return;
-        }, 'key'),
-      ).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should allow a valid parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getConfigSetting(() => {
-        callbackCalled = true;
-      }, 'key');
-
-      let getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
-      expect(getConfigSettingMessage).not.toBeNull();
-      utils.respondToMessage(getConfigSettingMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-  });
-
-  describe('enterFullscreen', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => enterFullscreen()).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
-    });
-
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
-    });
-
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
-    });
-
-    it('should not allow calls from task context', () => {
-      utils.initializeWithContext('task');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'task' context");
-    });
-
-    it('should successfully enter fullscreen', () => {
-      utils.initializeWithContext('content');
-
-      enterFullscreen();
-
-      const enterFullscreenMessage = utils.findMessageByFunc('enterFullscreen');
-      expect(enterFullscreenMessage).not.toBeNull();
-    });
-  });
-
-  describe('exitFullscreen', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => exitFullscreen()).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
-    });
-
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
-    });
-
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
-    });
-
-    it('should not allow calls from task context', () => {
-      utils.initializeWithContext('task');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'task' context");
-    });
-
-    it('should successfully exit fullscreen', () => {
-      utils.initializeWithContext('content');
-
-      exitFullscreen();
-
-      const exitFullscreenMessage = utils.findMessageByFunc('exitFullscreen');
-      expect(exitFullscreenMessage).not.toBeNull();
     });
   });
 });
