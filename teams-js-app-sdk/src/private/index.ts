@@ -13,7 +13,6 @@ export {
   UserSettingTypes,
 } from './interfaces';
 export {
-  openFilePreview,
   sendCustomMessage,
   sendCustomEvent,
   registerCustomHandler,

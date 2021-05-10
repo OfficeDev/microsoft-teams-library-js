@@ -1,6 +1,8 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { runtime } from '../public/runtime';
+import { FilePreviewParameters } from './interfaces';
 
 /**
  * Namespace to interact with the files specific part of the SDK.
@@ -257,5 +259,38 @@ export namespace files {
     }
 
     sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
+  }
+
+  /**
+   * @private
+   * Hide from docs.
+   * ------
+   * Opens a client-friendly preview of the specified file.
+   * @param file The file to preview.
+   */
+  export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
+    ensureInitialized(FrameContexts.content);
+
+    const params = [
+      filePreviewParameters.entityId,
+      filePreviewParameters.title,
+      filePreviewParameters.description,
+      filePreviewParameters.type,
+      filePreviewParameters.objectUrl,
+      filePreviewParameters.downloadUrl,
+      filePreviewParameters.webPreviewUrl,
+      filePreviewParameters.webEditUrl,
+      filePreviewParameters.baseUrl,
+      filePreviewParameters.editFile,
+      filePreviewParameters.subEntityId,
+      filePreviewParameters.viewerAction,
+      filePreviewParameters.fileOpenPreference,
+    ];
+
+    sendMessageToParent('openFilePreview', params);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.files ? true : false;
   }
 }

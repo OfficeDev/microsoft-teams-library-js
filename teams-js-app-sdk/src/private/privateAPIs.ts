@@ -14,35 +14,6 @@ export function initializePrivateApis(): void {
  * @private
  * Hide from docs.
  * ------
- * Opens a client-friendly preview of the specified file.
- * @param file The file to preview.
- */
-export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(FrameContexts.content);
-
-  const params = [
-    filePreviewParameters.entityId,
-    filePreviewParameters.title,
-    filePreviewParameters.description,
-    filePreviewParameters.type,
-    filePreviewParameters.objectUrl,
-    filePreviewParameters.downloadUrl,
-    filePreviewParameters.webPreviewUrl,
-    filePreviewParameters.webEditUrl,
-    filePreviewParameters.baseUrl,
-    filePreviewParameters.editFile,
-    filePreviewParameters.subEntityId,
-    filePreviewParameters.viewerAction,
-    filePreviewParameters.fileOpenPreference,
-  ];
-
-  sendMessageToParent('openFilePreview', params);
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  */

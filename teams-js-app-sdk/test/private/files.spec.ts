@@ -1,7 +1,8 @@
 import { files } from '../../src/private/files';
 import { Utils } from '../utils';
 import { core } from '../../src/public/publicAPIs';
-import { FileOpenPreference } from '../../src/public';
+import { FileOpenPreference } from '../../src/public/interfaces';
+import { ViewerActionTypes } from '../../src/private/interfaces';
 
 describe('files', () => {
   const utils = new Utils();
@@ -346,4 +347,79 @@ describe('files', () => {
       expect(openCloudStorageFileMessage.args).toEqual([mockCloudStorageFolderItem, files.CloudStorageProvider.Box, FileOpenPreference.Inline]);
     });
   })
+  describe('openFilePreview', () => {
+    it('should successfully open a file preview', () => {
+      utils.initializeWithContext('content');
+
+      files.openFilePreview({
+        entityId: 'someEntityId',
+        title: 'someTitle',
+        description: 'someDescription',
+        type: 'someType',
+        objectUrl: 'someObjectUrl',
+        downloadUrl: 'someDownloadUrl',
+        webPreviewUrl: 'someWebPreviewUrl',
+        webEditUrl: 'someWebEditUrl',
+        baseUrl: 'someBaseUrl',
+        editFile: true,
+        subEntityId: 'someSubEntityId',
+        viewerAction: ViewerActionTypes.view,
+        fileOpenPreference: FileOpenPreference.Web,
+      });
+
+      let message = utils.findMessageByFunc('openFilePreview');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(13);
+      expect(message.args[0]).toBe('someEntityId');
+      expect(message.args[1]).toBe('someTitle');
+      expect(message.args[2]).toBe('someDescription');
+      expect(message.args[3]).toBe('someType');
+      expect(message.args[4]).toBe('someObjectUrl');
+      expect(message.args[5]).toBe('someDownloadUrl');
+      expect(message.args[6]).toBe('someWebPreviewUrl');
+      expect(message.args[7]).toBe('someWebEditUrl');
+      expect(message.args[8]).toBe('someBaseUrl');
+      expect(message.args[9]).toBe(true);
+      expect(message.args[10]).toBe('someSubEntityId');
+      expect(message.args[11]).toBe('view');
+      expect(message.args[12]).toBe(FileOpenPreference.Web);
+    });
+  });
+
+  it('should successfully open a file preview', () => {
+    utils.initializeWithContext('content');
+
+    files.openFilePreview({
+      entityId: 'someEntityId',
+      title: 'someTitle',
+      description: 'someDescription',
+      type: 'someType',
+      objectUrl: 'someObjectUrl',
+      downloadUrl: 'someDownloadUrl',
+      webPreviewUrl: 'someWebPreviewUrl',
+      webEditUrl: 'someWebEditUrl',
+      baseUrl: 'someBaseUrl',
+      editFile: true,
+      subEntityId: 'someSubEntityId',
+      viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
+    });
+
+    let message = utils.findMessageByFunc('openFilePreview');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(13);
+    expect(message.args[0]).toBe('someEntityId');
+    expect(message.args[1]).toBe('someTitle');
+    expect(message.args[2]).toBe('someDescription');
+    expect(message.args[3]).toBe('someType');
+    expect(message.args[4]).toBe('someObjectUrl');
+    expect(message.args[5]).toBe('someDownloadUrl');
+    expect(message.args[6]).toBe('someWebPreviewUrl');
+    expect(message.args[7]).toBe('someWebEditUrl');
+    expect(message.args[8]).toBe('someBaseUrl');
+    expect(message.args[9]).toBe(true);
+    expect(message.args[10]).toBe('someSubEntityId');
+    expect(message.args[11]).toBe('view');
+    expect(message.args[12]).toBe(FileOpenPreference.Web);
+  });
 });

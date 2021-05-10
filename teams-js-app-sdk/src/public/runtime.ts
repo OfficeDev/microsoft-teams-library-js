@@ -6,6 +6,7 @@ export interface IRuntime {
     readonly calendar?: {};
     readonly chat?: {};
     readonly dialog?: {};
+    readonly files?: {};
     readonly location?: {};
     readonly mail?: {};
     readonly media?: {};

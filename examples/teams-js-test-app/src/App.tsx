@@ -9,7 +9,6 @@ import CoreAPIs from './components/CoreAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import NavigationAPIs from './components/NavigationAPIs';
-import PrivateAPIs from './components/PrivateAPIs';
 import DialogAPIs from './components/DialogAPIs';
 import ConfigAPIs from './components/ConfigAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
@@ -18,6 +17,7 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import FilesAPIs from './components/privateApis/FilesAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -50,6 +50,7 @@ const App = (): ReactElement => {
       <ConfigAPIs />
       <CoreAPIs />
       <DialogAPIs />
+      <FilesAPIs />
       <FullTrustAPIs />
       <LocationAPIs />
       <MailAPIs />
@@ -58,7 +59,6 @@ const App = (): ReactElement => {
       <NavigationAPIs />
       <NotificationAPIs />
       <PeopleAPIs />
-      <PrivateAPIs />
       <TeamsCoreAPIs />
     </>
   );
