@@ -17,6 +17,7 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -40,6 +41,38 @@ if (
 
 export const noHubSdkMsg = ' was called, but there was no response from the Hub SDK.';
 
+/**
+ * Generates and returns an error message explaining that a string input was expected
+ * to be parsed into a JSON object but there was a parsing error.
+ * If there is an example JSON object provided, it gives the keys needed in a
+ * correctly formatted JSON object parameter of the desired function. If possible,
+ * it is recommended to provide this example to this function.
+ *
+ * @param [example] Example object of the type to generate the error message about.
+ * @returns A message to the user to fix their input. Provides an example if there is any.
+ */
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export const generateJsonParseErrorMsg = (example?: Record<string, any>): string => {
+  if (example) {
+    return `Please JSON format your input. Your input should contain at least ${Object.keys(
+      example,
+    )}. For example, ${JSON.stringify(example)}`;
+  } else {
+    return 'Please JSON format your input.';
+  }
+};
+
+/**
+ * Generates and returns a message for confirming registration attempt of a handler, callback, etc.
+ * Takes in the trigger condition for the handler to provide in the message to the user.
+ *
+ * @param changeCause the trigger condition for the handler to fire.
+ * @returns A message to user to show confirmation of handler registration attempt.
+ */
+export const generateRegistrationMsg = (changeCause: string): string => {
+  return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
+};
+
 const App = (): ReactElement => {
   return (
     <>
@@ -59,6 +92,7 @@ const App = (): ReactElement => {
       <NavigationAPIs />
       <NotificationAPIs />
       <PeopleAPIs />
+      <RemoteCameraAPIs />
       <TeamsCoreAPIs />
     </>
   );
