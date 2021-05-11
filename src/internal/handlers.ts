@@ -47,6 +47,11 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
   handler && sendMessageToParent('registerHandler', ['themeChange']);
 }
 
+export function registerFocusChangeHandler(handler: (theme: string) => void): void {
+  HandlersPrivate.themeChangeHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['focusChange']);
+}
+
 export function handleThemeChange(theme: string): void {
   if (HandlersPrivate.themeChangeHandler) {
     HandlersPrivate.themeChangeHandler(theme);
