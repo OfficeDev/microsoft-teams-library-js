@@ -22,7 +22,7 @@ const FilesAPIs = (): ReactElement => {
   };
 
   const returnGetCloudStorageFolders = (channelId: string): void => {
-    setOpenFilePreviewRes('getCloudStorageFolders()' + noHubSdkMsg);
+    setGetCloudStorageFoldersRes('getCloudStorageFolders()' + noHubSdkMsg);
     files.getCloudStorageFolders(channelId, (err: SdkError, folders: files.CloudStorageFolder[]): void => {
       if (err) {
         setGetCloudStorageFoldersRes(err.errorCode.toString + ' ' + err.message);
@@ -33,7 +33,7 @@ const FilesAPIs = (): ReactElement => {
   };
 
   const returnAddCloudStorageFolder = (channelId: string): void => {
-    setOpenFilePreviewRes('addCloudStorageFolder()' + noHubSdkMsg);
+    setAddCloudStorageFolderRes('addCloudStorageFolder()' + noHubSdkMsg);
     files.addCloudStorageFolder(
       channelId,
       (err: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
@@ -48,7 +48,7 @@ const FilesAPIs = (): ReactElement => {
 
   const returnDeleteCloudStorageFolder = (input: string): void => {
     let deleteCloudStorageParams: DeleteCloudStorageParams = JSON.parse(input);
-    setOpenFilePreviewRes('deleteCloudStorageFolder()' + noHubSdkMsg);
+    setDeleteCloudStorageFolderRes('deleteCloudStorageFolder()' + noHubSdkMsg);
     files.deleteCloudStorageFolder(
       deleteCloudStorageParams.channelId,
       deleteCloudStorageParams.folderToDelete,
