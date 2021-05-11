@@ -7,6 +7,7 @@ class HandlersPrivate {
   } = {};
   public static themeChangeHandler: (theme: string) => void;
   public static backButtonPressHandler: () => boolean;
+  public static focusChangeHandler: () => boolean;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -17,6 +18,7 @@ export function initializeHandlers(): void {
   HandlersPrivate.handlers['backButtonPress'] = handleBackButtonPress;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+  HandlersPrivate.handlers['focusChange'] = handleFocusChange;
 }
 
 export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
@@ -47,11 +49,6 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
   handler && sendMessageToParent('registerHandler', ['themeChange']);
 }
 
-export function registerFocusChangeHandler(handler: (theme: string) => void): void {
-  HandlersPrivate.themeChangeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['focusChange']);
-}
-
 export function handleThemeChange(theme: string): void {
   if (HandlersPrivate.themeChangeHandler) {
     HandlersPrivate.themeChangeHandler(theme);
@@ -70,6 +67,21 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 function handleBackButtonPress(): void {
   if (!HandlersPrivate.backButtonPressHandler || !HandlersPrivate.backButtonPressHandler()) {
     navigateBack();
+  }
+}
+
+export function registerFocusChangeHandler(handler: () => boolean): void {
+  HandlersPrivate.focusChangeHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['focusChange']);
+}
+
+function handleFocusChange(): void {
+  const focusChange = (): void => {
+    sendMessageToParent('focusChange', []);
+  };
+
+  if (!HandlersPrivate.focusChangeHandler || !HandlersPrivate.focusChangeHandler()) {
+    focusChange();
   }
 }
 
