@@ -67,6 +67,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerFocusChangeHandler(null);
         registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
@@ -246,6 +247,16 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   ensureInitialized();
   Handlers.registerBeforeUnloadHandler(handler);
+}
+
+/**
+ * @private
+ * Registers a handler when focus needs to be passed from teams to the place of choice on app.
+ * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
+ */
+export function registerFocusChangeHandler(handler: () => boolean): void {
+  ensureInitialized();
+  Handlers.registerFocusChangeHandler(handler);
 }
 
 /**
