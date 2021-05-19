@@ -7,7 +7,7 @@ class HandlersPrivate {
   } = {};
   public static themeChangeHandler: (theme: string) => void;
   public static backButtonPressHandler: () => boolean;
-  public static focusChangeHandler: () => boolean;
+  public static focusChangeHandler: () => void;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -76,12 +76,8 @@ export function registerFocusChangeHandler(handler: () => boolean): void {
 }
 
 function handleFocusChange(): void {
-  const focusChange = (): void => {
-    sendMessageToParent('focusChange', []);
-  };
-
-  if (!HandlersPrivate.focusChangeHandler || !HandlersPrivate.focusChangeHandler()) {
-    focusChange();
+  if (HandlersPrivate.focusChangeHandler) {
+    HandlersPrivate.focusChangeHandler();
   }
 }
 
