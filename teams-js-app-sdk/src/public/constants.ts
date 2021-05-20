@@ -21,7 +21,6 @@ export enum FrameContexts {
   authentication = 'authentication',
   remove = 'remove',
   task = 'task',
-  dialog = 'dialog',
   sidePanel = 'sidePanel',
   stage = 'stage',
   meetingStage = 'meetingStage',

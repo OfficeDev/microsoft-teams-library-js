@@ -23,7 +23,7 @@ describe('Dialog', () => {
     }
   });
 
-  describe('oepn', () => {
+  describe('open', () => {
     it('should not allow calls before initialization', () => {
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError('The library has not yet been initialized');
@@ -50,11 +50,11 @@ describe('Dialog', () => {
       expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'remove' context");
     });
 
-    it('should not allow calls from dialog context', () => {
-      utils.initializeWithContext('dialog');
+    it('should not allow calls from task context', () => {
+      utils.initializeWithContext('task');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'dialog' context");
+      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'task' context");
     });
 
     it('should pass along entire DialogInfo parameter in sidePanel context', () => {
@@ -153,8 +153,8 @@ describe('Dialog', () => {
       expect(resizeMessage.args).toEqual([dialogInfo]);
     });
 
-    it('should successfully pass DialogInfo in Dialog context', () => {
-      utils.initializeWithContext('dialog');
+    it('should successfully pass DialogInfo in Task context', () => {
+      utils.initializeWithContext('task');
       const dialogInfo = { width: 10, height: 10 };
 
       dialog.resize(dialogInfo);
@@ -165,7 +165,7 @@ describe('Dialog', () => {
     });
 
     it('should throw an error if extra properties are provided', () => {
-      utils.initializeWithContext('dialog');
+      utils.initializeWithContext('task');
       const dialogInfo = { width: 10, height: 10, title: 'anything' };
 
       expect(() => dialog.resize(dialogInfo)).toThrowError(
@@ -204,11 +204,12 @@ describe('Dialog', () => {
 
       const submitMessage = utils.findMessageByFunc('tasks.completeTask');
       expect(submitMessage).not.toBeNull();
+
       expect(submitMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
-    it('should successfully pass result and appIds parameters when called from Dialog context', () => {
-      utils.initializeWithContext('dialog');
+    it('should successfully pass result and appIds parameters when called from Task context', () => {
+      utils.initializeWithContext('task');
 
       dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
 
@@ -218,7 +219,7 @@ describe('Dialog', () => {
     });
 
     it('should handle a single string passed as appIds parameter', () => {
-      utils.initializeWithContext('dialog');
+      utils.initializeWithContext('task');
 
       dialog.submit('someResult', 'someAppId');
 
