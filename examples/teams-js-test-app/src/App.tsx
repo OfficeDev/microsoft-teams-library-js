@@ -17,6 +17,7 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import LogAPIs from './components/LogsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 
@@ -86,6 +87,7 @@ const App = (): ReactElement => {
       <FilesAPIs />
       <FullTrustAPIs />
       <LocationAPIs />
+      <LogAPIs />
       <MailAPIs />
       <MediaAPIs />
       <MeetingAPIs />
