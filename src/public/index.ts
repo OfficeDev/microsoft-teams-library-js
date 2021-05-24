@@ -26,7 +26,7 @@ export {
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
   registerFocusEnterHandler,
-  registerChangeSettingsHandler,
+  registerEnterSettingsHandler,
   registerFullScreenHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
