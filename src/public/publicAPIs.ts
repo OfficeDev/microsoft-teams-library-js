@@ -254,16 +254,16 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * Registers a handler when focus needs to be passed from teams to the place of choice on app.
  * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
-export function registerFocusChangeHandler(handler: () => boolean): void {
+export function registerFocusEnterHandler(handler: () => boolean): void {
   ensureInitialized();
-  Handlers.registerFocusChangeHandler(handler);
+  Handlers.registerFocusEnterHandler(handler);
 }
 
 /**
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
  */
-export function registerChangeSettingsHandler(handler: () => void): void {
+export function registerEnterSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
   Handlers.registerHandler('changeSettings', handler);
 }
