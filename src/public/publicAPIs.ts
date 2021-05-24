@@ -67,7 +67,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
-        registerFocusChangeHandler(null);
+        registerFocusEnterHandler(null);
         registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
