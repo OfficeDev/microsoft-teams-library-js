@@ -138,6 +138,7 @@ export namespace remoteCamera {
     DataChannelError,
     ControllerCancelled,
     ControlDisabled,
+    ControlTerminatedToAllowOtherController,
   }
 
   /**
