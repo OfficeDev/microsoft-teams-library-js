@@ -93,19 +93,14 @@ export namespace videoApp {
     public registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
       ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoFrameCallback = frameCallback;
-      registerHandler('videoApp.newVideoFrame', (...args: any[]) => {
-        if (this.videoFrameCallback !== null && args !== undefined && args.length !== 0) {
-          const videoFrame = args[0] as VideoFrame;
+      registerHandler('videoApp.newVideoFrame', (videoFrame: VideoFrame) => {
+        if (this.videoFrameCallback !== null && videoFrame !== undefined) {
           this.videoFrameCallback(videoFrame, this.notifyVideoFrameProcessed.bind(this), this.notifyError.bind(this));
         }
       });
-      registerHandler('videoApp.effectParameterChange', (...args: any[]) => {
+      registerHandler('videoApp.effectParameterChange', (effectId: string) => {
         if (this.videoEffectCallback !== undefined) {
-          if (args !== undefined && args.length !== 0) {
-            this.videoEffectCallback(args[0]);
-          } else {
-            this.videoEffectCallback(undefined);
-          }
+          this.videoEffectCallback(effectId);
         }
       });
       sendMessageToParent('videoApp.registerForVideoFrame', [config]);
