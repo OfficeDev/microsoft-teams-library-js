@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { registerHandler } from '../internal/handlers';
 /**
  * Namespace to video extensibility of the SDK.
  *
@@ -92,8 +93,22 @@ export namespace videoApp {
     public registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
       ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoFrameCallback = frameCallback;
-      this.setupConnection();
-      sendMessageToParent('videoApp.sendMessagePortToMainWindow', [config]);
+      registerHandler('videoApp.newVideoFrame', (...args: any[]) => {
+        if (this.videoFrameCallback !== null && args !== undefined && args.length !== 0) {
+          const videoFrame = args[0] as VideoFrame;
+          this.videoFrameCallback(videoFrame, this.notifyVideoFrameProcessed.bind(this), this.notifyError.bind(this));
+        }
+      });
+      registerHandler('videoApp.effectParameterChange', (...args: any[]) => {
+        if (this.videoEffectCallback !== undefined) {
+          if (args !== undefined && args.length !== 0) {
+            this.videoEffectCallback(args[0]);
+          } else {
+            this.videoEffectCallback(undefined);
+          }
+        }
+      });
+      sendMessageToParent('videoApp.registerForVideoFrame', [config]);
     }
 
     /**
@@ -110,31 +125,7 @@ export namespace videoApp {
      * Register the video effect callback, Teams client uses this to notify the videoApp extension the new video effect will by applied.
      */
     public registerForVideoEffect(callback: VideoEffectCallBack): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
       this.videoEffectCallback = callback;
-      sendMessageToParent('videoApp.registerForVideoEffect');
-    }
-
-    /**
-     * Message handler
-     */
-    private receiveMessage(event: MessageEvent): void {
-      const type = event.data.type;
-      if (type === 'videoApp.newVideoFrame' && this.videoFrameCallback != null) {
-        const videoFrame = event.data.videoFrame as VideoFrame;
-        this.videoFrameCallback(videoFrame, this.notifyVideoFrameProcessed.bind(this), this.notifyError.bind(this));
-      } else if (type === 'videoApp.effectParameterChange' && this.videoEffectCallback != null) {
-        this.videoEffectCallback(event.data.effectId);
-      } else {
-        console.log('Unsupported message type' + type);
-      }
-    }
-
-    /**
-     * Setup the connection between videoApp and Teams, they use postMessage function to communicate
-     */
-    private setupConnection(): void {
-      window.addEventListener('message', this.receiveMessage.bind(this), false);
     }
 
     /**
