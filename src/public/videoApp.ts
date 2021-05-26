@@ -91,7 +91,7 @@ export namespace videoApp {
      * register to read the video frames in Permissions section.
      */
     public registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      ensureInitialized(FrameContexts.sidePanel);
       this.videoFrameCallback = frameCallback;
       registerHandler('videoApp.newVideoFrame', (videoFrame: VideoFrame) => {
         if (this.videoFrameCallback !== null && videoFrame !== undefined) {
@@ -112,7 +112,7 @@ export namespace videoApp {
      * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
      */
     public notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
-      ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      ensureInitialized(FrameContexts.sidePanel);
       sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType]);
     }
 
