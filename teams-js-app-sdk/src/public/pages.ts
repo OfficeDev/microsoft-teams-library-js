@@ -195,7 +195,7 @@ export namespace pages {
      * @param callback The callback to invoke when the {@link Config} object is retrieved.
      */
     export function getConfig(callback: (instanceSettings: Config) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
+      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
       sendMessageToParent('settings.getSettings', callback);
     }
 
@@ -205,7 +205,7 @@ export namespace pages {
      * @param Config The desired config for this instance.
      */
     export function setConfig(instanceSettings: Config, onComplete?: (status: boolean, reason?: string) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings);
+      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
       sendMessageToParent(
         'settings.setSettings',
         [instanceSettings],

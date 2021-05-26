@@ -86,6 +86,16 @@ export namespace meeting {
      * indicates whether meeting is streaming
      */
     isStreaming: boolean;
+
+    /**
+     * error object in case there is a failure
+     */
+    error?: {
+      /** error code from the streaming service, e.g. IngestionFailure */
+      code: string;
+      /** detailed error message string */
+      message?: string;
+    };
   }
 
   export enum MeetingType {
@@ -188,12 +198,11 @@ export namespace meeting {
    * Allows an app to request the live streaming be started at the given streaming url
    * @param streamUrl the url to the stream resource
    * @param streamKey the key to the stream resource
-   * @param callback Callback contains 2 parameters: error and liveStreamState.
-   * error can either contain an error of type SdkError, in case of an error, or null when operation is successful
-   * liveStreamState can either contain a LiveStreamState value, or null when operation fails
+   * @param callback Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
+   * Use getLiveStreamState or registerLiveStreamChangedHandler to get updates on the live stream state
    */
   export function requestStartLiveStreaming(
-    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+    callback: (error: SdkError | null) => void,
     streamUrl: string,
     streamKey?: string,
   ): void {
@@ -206,13 +215,10 @@ export namespace meeting {
 
   /**
    * Allows an app to request the live streaming be stopped at the given streaming url
-   * @param callback Callback contains 2 parameters: error and liveStreamState.
-   * error can either contain an error of type SdkError, in case of an error, or null when operation is successful
-   * liveStreamState can either contain a LiveStreamState value, or null when operation fails
+   * @param callback Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
+   * Use getLiveStreamState or registerLiveStreamChangedHandler to get updates on the live stream state
    */
-  export function requestStopLiveStreaming(
-    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
-  ): void {
+  export function requestStopLiveStreaming(callback: (error: SdkError | null) => void): void {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }

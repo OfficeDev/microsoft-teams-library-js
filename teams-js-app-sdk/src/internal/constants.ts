@@ -1,6 +1,6 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.9.0';
+export const version = '1.10.0';
 /**
  * This is the SDK version when all SDK APIs started to check platform compatibility for the APIs.
  */
@@ -70,7 +70,6 @@ export const validOrigins = [
   'https://powerpoint.office.com',
   'https://www.officeppe.com',
   'https://*.www.office.com',
-  'http://127.0.0.1:5000', // local Development
 ];
 
 export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
