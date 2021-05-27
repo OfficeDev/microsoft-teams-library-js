@@ -20,6 +20,7 @@ import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import LogAPIs from './components/LogsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
+import PrivateAPIs from './components/privateApis/PrivateAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -59,7 +60,7 @@ export const generateJsonParseErrorMsg = (example?: Record<string, any>): string
       example,
     )}. For example, ${JSON.stringify(example)}`;
   } else {
-    return 'Please JSON format your input.';
+    return 'Please JSON format your input. If you\'ve ensured your input is JSON formatted but are still getting this message, please also ensure that your input contains all necessary keys, etc.';
   }
 };
 
@@ -94,6 +95,7 @@ const App = (): ReactElement => {
       <NavigationAPIs />
       <NotificationAPIs />
       <PeopleAPIs />
+      <PrivateAPIs />
       <RemoteCameraAPIs />
       <TeamsCoreAPIs />
     </>
