@@ -37,10 +37,9 @@ export namespace videoApp {
     stride: number;
   }
   /**
-   * Video frame format enum
+   * Video frame format enum, currentlyl only support NV12
    */
   export enum VideoFrameFormat {
-    RGB,
     NV12,
   }
   /**
