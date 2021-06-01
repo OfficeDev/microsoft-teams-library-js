@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any*/
+
 import { DialogDimension, HostClientType, HostName, TeamType, UserTeamRole, ChannelType } from './constants';
 import { FrameContexts } from './constants';
 

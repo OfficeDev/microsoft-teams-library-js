@@ -1,0 +1,45 @@
+{
+  "name": "teamsjs-perf-test-app",
+  "private": true,
+  "author": "Microsoft teamsjs",
+  "description": "teamsjs Perf Test App utilizing teamsjs App SDK to test teamsjs Hubs Perf",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "yarn eslint ./src/**/*.tsx && webpack",
+    "clean": "if exist node_modules (rd /s /q node_modules)",
+    "eslint-fix-build": "yarn eslint --fix ./src/**/*.tsx && webpack",
+    "start": "webpack serve"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@microsoft/teamsjs-app-sdk": "*",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/webpack": "^4.41.25",
+    "@types/webpack-dev-server": "^3.11.1",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "babel-loader": "^8.2.2",
+    "cross-env": "7.0.2",
+    "css-loader": "^5.0.1",
+    "eslint": "^7.15.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "html-webpack-plugin": "^4.5.0",
+    "style-loader": "^2.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { LoadContext } from '../public';
 import { pages } from '../public/pages';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
@@ -29,7 +32,7 @@ export function callHandler(name: string, args?: any[]): [true, any] | [false, u
   }
 }
 
-export function registerHandler(name: string, handler: Function, sendMessage: boolean = true, args: any[] = []): void {
+export function registerHandler(name: string, handler: Function, sendMessage = true, args: any[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
     sendMessage && sendMessageToParent('registerHandler', [name, ...args]);

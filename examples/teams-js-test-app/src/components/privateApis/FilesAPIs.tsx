@@ -16,7 +16,7 @@ const FilesAPIs = (): ReactElement => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const returnOpenFilePreview = (filePreviewParamsInput: string): void => {
-    let filePreviewParams: FilePreviewParameters = JSON.parse(filePreviewParamsInput);
+    const filePreviewParams: FilePreviewParameters = JSON.parse(filePreviewParamsInput);
     setOpenFilePreviewRes('openFilePreview()' + noHubSdkMsg);
     files.openFilePreview(filePreviewParams);
   };
@@ -47,7 +47,7 @@ const FilesAPIs = (): ReactElement => {
   };
 
   const returnDeleteCloudStorageFolder = (input: string): void => {
-    let deleteCloudStorageParams: DeleteCloudStorageParams = JSON.parse(input);
+    const deleteCloudStorageParams: DeleteCloudStorageParams = JSON.parse(input);
     setDeleteCloudStorageFolderRes('deleteCloudStorageFolder()' + noHubSdkMsg);
     files.deleteCloudStorageFolder(
       deleteCloudStorageParams.channelId,

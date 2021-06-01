@@ -8,7 +8,7 @@ const PrivateAPIs = (): ReactElement => {
   const [registerUserSettingsChangeHandlerRes, setRegisterUserSettingsChangeHandlerRes] = React.useState('');
 
   const getUserSettingTypesFromInput = (input: string[]): UserSettingTypes[] => {
-    let ret: UserSettingTypes[] = [];
+    const ret: UserSettingTypes[] = [];
     if (input.includes('fileOpenPreference')) {
       ret.push(UserSettingTypes.fileOpenPreference);
     }
@@ -25,7 +25,7 @@ const PrivateAPIs = (): ReactElement => {
         throw new Error('There should be exactly one file uploaded.');
       }
       const onComplete = (status: boolean, reason?: string): void => {
-        var message = `status: ${status}`;
+        let message = `status: ${status}`;
         if (reason) {
           message = message + `, reason: ${reason}`;
         }

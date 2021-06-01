@@ -35,7 +35,7 @@ const ConfigAPIs = (): ReactElement => {
   };
 
   const setConfig = (instanceConfigInput: string): void => {
-    let instanceConfig: pages.config.Config = JSON.parse(instanceConfigInput);
+    const instanceConfig: pages.config.Config = JSON.parse(instanceConfigInput);
     setSetConfigRes('config.setConfig()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string | undefined): void => {
       let output = '';

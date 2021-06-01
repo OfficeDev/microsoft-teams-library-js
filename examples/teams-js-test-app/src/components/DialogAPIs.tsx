@@ -10,7 +10,7 @@ const DialogAPIs = (): ReactElement => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const openDialog = (dialogInfoInput: string): void => {
-    let dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
+    const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     const onComplete = (err: string, result: string): void => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
@@ -19,7 +19,7 @@ const DialogAPIs = (): ReactElement => {
   };
 
   const resizeDialog = (dialogInfoInput: string): void => {
-    let dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
+    const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     dialog.resize(dialogInfo);
     setResizeRes('App SDK call dialog.resize was called');
   };

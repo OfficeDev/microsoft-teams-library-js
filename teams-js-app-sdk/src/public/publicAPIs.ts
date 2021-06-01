@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';

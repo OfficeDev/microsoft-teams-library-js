@@ -7,5 +7,9 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "cSpell.words": [
+    "teamsjs",
+    "uninitialize"
+  ]
 }

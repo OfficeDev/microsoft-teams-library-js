@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { DialogInfo } from './interfaces';
 import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
-import { FilePreviewParameters, UserSettingTypes } from './interfaces';
+import { UserSettingTypes } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
 import { menus } from './menus';

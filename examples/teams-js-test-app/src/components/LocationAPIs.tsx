@@ -9,7 +9,7 @@ const LocationAPIs = (): ReactElement => {
   const [checkLocationCapabilityRes, setCheckLocationCapabilityRes] = React.useState('');
 
   const getLocation = (locationPropsInput: string): void => {
-    let locationProps: location.LocationProps = JSON.parse(locationPropsInput);
+    const locationProps: location.LocationProps = JSON.parse(locationPropsInput);
     setGetLocationRes('location.getLocation()' + noHubSdkMsg);
     location.getLocation(locationProps, (err: SdkError, location: location.Location): void => {
       if (err) {
@@ -21,7 +21,7 @@ const LocationAPIs = (): ReactElement => {
   };
 
   const showLocation = (locationInput: string): void => {
-    let locationParam: location.Location = JSON.parse(locationInput);
+    const locationParam: location.Location = JSON.parse(locationInput);
     setShowLocationRes('location.showLocation()' + noHubSdkMsg);
     location.showLocation(locationParam, (err: SdkError, result: boolean): void => {
       if (err) {

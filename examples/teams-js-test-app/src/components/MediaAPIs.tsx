@@ -26,7 +26,7 @@ const MediaAPIs = (): ReactElement => {
         len = Math.min(len, file.content.length);
         content = file.content.substr(0, len);
       }
-      let output =
+      const output =
         'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
       setCaptureImageRes(output);
     };
@@ -34,7 +34,7 @@ const MediaAPIs = (): ReactElement => {
   };
 
   const selectMedia = (mediaInputs: string): void => {
-    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setSelectMediaRes('media.selectMedia()' + noHubSdkMsg);
     const callback = (error: SdkError, medias: media.Media[]): void => {
       if (error) {
@@ -69,7 +69,7 @@ const MediaAPIs = (): ReactElement => {
   };
 
   const getMedia = (mediaInputs: string): void => {
-    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setGetMediaRes('media.getMedia()' + noHubSdkMsg);
     media.selectMedia(mediaInputsParams, (error: SdkError, medias: media.Media[]) => {
       if (error) {
@@ -82,7 +82,7 @@ const MediaAPIs = (): ReactElement => {
           setGetMediaRes(gmErr.errorCode.toString + ' ' + gmErr.message);
           return;
         }
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           if (reader.result) {
@@ -95,7 +95,7 @@ const MediaAPIs = (): ReactElement => {
   };
 
   const viewImagesWithId = (mediaInputs: string): void => {
-    let mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
+    const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setViewImagesWithIdRes('media.viewImagesWithId()' + noHubSdkMsg);
     media.selectMedia(mediaInputsParams, (err: SdkError, medias: media.Media[]) => {
       if (err) {
@@ -122,8 +122,8 @@ const MediaAPIs = (): ReactElement => {
 
   const viewImagesWithUrls = (imageUrlsInput: string): void => {
     setViewImagesWithUrlsRes('media.viewImagesWithUrls()' + noHubSdkMsg);
-    let imageUrls: string[] = imageUrlsInput.split(', ');
-    let urlList: media.ImageUri[] = [];
+    const imageUrls: string[] = imageUrlsInput.split(', ');
+    const urlList: media.ImageUri[] = [];
     for (let i = 0; i < imageUrls.length; i++) {
       const imageUrl = imageUrls[i];
       urlList.push({
@@ -141,7 +141,7 @@ const MediaAPIs = (): ReactElement => {
   };
 
   const scanBarCode = (scanBarCodeConfigInput: string): void => {
-    let scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
+    const scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
     setScanBarCodeRes('media.scanBarCode()' + noHubSdkMsg);
     media.scanBarCode((err: SdkError, result: string): void => {
       if (err) {

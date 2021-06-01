@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as uuid from 'uuid';
+
 // This will return a reg expression a given url
 function generateRegExpFromUrl(url: string): string {
   let urlRegExpPart = '^';

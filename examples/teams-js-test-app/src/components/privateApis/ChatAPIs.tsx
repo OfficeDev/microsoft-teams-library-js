@@ -11,7 +11,7 @@ const ConversationsAPIs = (): ReactElement => {
 
   const openConversation = (openConversationRequestInput: string): void => {
     setOpenConversationRes('conversations.openConversation()' + noHubSdkMsg);
-    let openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
+    const openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
     openConversationRequest.onStartConversation = conversationResponse => {
       setOpenConversationRes(
         'Start Conversation Subentity Id ' +

@@ -31,7 +31,7 @@ const CoreAPIs = (): ReactElement => {
   };
 
   const shareDeepLink = (deepLinkParamsInput: string): void => {
-    let deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
+    const deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
     core.shareDeepLink(deepLinkParams);
     setShareDeepLinkRes('called shareDeepLink.');
   };

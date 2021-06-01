@@ -15,17 +15,21 @@
   "scripts": {
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
     "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)",
+    "build-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn build)",
     "build-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn build)",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "clean": "if exist node_modules (rd /s /q node_modules)",
-    "clean:all": "yarn clean-sdk && yarn clean-test-app && yarn clean-bundle-size-tools && yarn clean",
+    "clean:all": "yarn clean-sdk && yarn clean-test-app && yarn clean-perf-app && yarn clean-bundle-size-tools && yarn clean",
     "clean-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn clean:all)",
     "clean-sdk": "(cd ./teamsjs-app-sdk/ && yarn clean)",
     "clean-test-app": "(cd ./examples/teamsjs-test-app/ && yarn clean)",
+    "clean-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn clean)",
     "efb-test-app": "(cd ./examples/teamsjs-test-app/ && yarn eslint-fix-build)",
+    "efb-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn eslint-fix-build)",
     "publish-sdk": "yarn publish teamsjs-app-sdk",
     "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
+    "start-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn start)",
     "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)"
   },
   "devDependencies": {

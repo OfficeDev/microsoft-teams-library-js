@@ -1,5 +1,6 @@
-import { deepFreeze } from '../internal/utils';
+/* eslint-disable @typescript-eslint/ban-types */
 
+import { deepFreeze } from '../internal/utils';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {

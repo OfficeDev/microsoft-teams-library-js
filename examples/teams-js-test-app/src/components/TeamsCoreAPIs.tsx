@@ -86,7 +86,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   };
 
   const addStates = (): void => {
-    let newNumStates = totalStates + 1;
+    const newNumStates = totalStates + 1;
     setTotalStates(newNumStates);
     window.history.pushState({ some: 'state', id: newNumStates }, 'tab state' + newNumStates, '/testTab');
     setAddStatesRes('total States: ' + newNumStates);
@@ -105,7 +105,7 @@ const TeamsCoreAPIs = (): ReactElement => {
     setRegisterBackButtonHandlerRes('total States: ' + totalStates);
     pages.backStack.registerBackButtonHandler((): boolean => {
       if (totalStates > 0) {
-        let newNumStates = totalStates - 1;
+        const newNumStates = totalStates - 1;
         setTotalStates(newNumStates);
         setRegisterBackButtonHandlerRes('back button clicked. total remaining state: ' + newNumStates);
         return true;

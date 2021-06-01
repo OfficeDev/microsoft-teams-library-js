@@ -322,7 +322,7 @@ export namespace pages {
      * Hide from docs, since this class is not directly used.
      */
     class SaveEventImpl implements SaveEvent {
-      public notified: boolean = false;
+      public notified = false;
       public result: SaveParameters;
       public constructor(result?: SaveParameters) {
         this.result = result ? result : {};
@@ -359,7 +359,7 @@ export namespace pages {
      * Hide from docs, since this class is not directly used.
      */
     class RemoveEventImpl implements RemoveEvent {
-      public notified: boolean = false;
+      public notified = false;
 
       public notifySuccess(): void {
         this.ensureNotNotified();

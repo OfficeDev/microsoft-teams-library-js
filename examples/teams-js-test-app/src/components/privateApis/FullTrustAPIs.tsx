@@ -12,7 +12,7 @@ const FullTrustAPIs = (): ReactElement => {
   const [checkCapabilityPagesRes, setCheckCapabilityPagesRes] = React.useState('');
 
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
-    let teamInstanceParams = JSON.parse(teamInstanceParamsInput);
+    const teamInstanceParams = JSON.parse(teamInstanceParamsInput);
     setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHubSdkMsg);
     const onComplete = (userJoinedTeamsInfo: teamsjs.UserJoinedTeamsInformation): void => {
       setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo));
