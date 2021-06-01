@@ -26,6 +26,7 @@ const AppInitializationAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>appInitialization</h1>
       <BoxAndButton
         handleClick={notifyLoaded}
         output={notifyLoadedRes}

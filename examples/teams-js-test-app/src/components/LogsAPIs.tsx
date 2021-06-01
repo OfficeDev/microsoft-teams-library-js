@@ -18,6 +18,7 @@ const LogsAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>logs</h1>
       <BoxAndButton
         handleClick={registerGetLogHandler}
         output={registerGetLogHandlerRes}

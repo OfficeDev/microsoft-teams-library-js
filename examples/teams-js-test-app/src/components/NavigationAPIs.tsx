@@ -61,6 +61,7 @@ const NavigationAPIs = (): ReactElement => {
   };
   return (
     <>
+      <h1>navigation</h1>
       <BoxAndButton
         handleClickWithInput={navigateCrossDomainFunc}
         output={navigateCrossDomainRes}

@@ -138,6 +138,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>teamsCore</h1>
       <BoxAndButton
         handleClick={enablePrintCapability}
         output={enablePrintCapRes}

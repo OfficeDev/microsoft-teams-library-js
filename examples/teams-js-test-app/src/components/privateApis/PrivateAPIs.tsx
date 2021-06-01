@@ -65,6 +65,7 @@ const PrivateAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>privateAPIs</h1>
       <BoxAndButton
         handleClickWithInput={registerUserSettingsChangeHandlerInTestApp}
         output={registerUserSettingsChangeHandlerRes}

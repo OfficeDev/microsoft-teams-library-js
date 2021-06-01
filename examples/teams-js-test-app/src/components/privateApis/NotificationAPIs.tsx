@@ -23,6 +23,7 @@ const NotificationAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>notifications</h1>
       <BoxAndButton
         handleClickWithInput={returnShowNotification}
         output={showNotification}

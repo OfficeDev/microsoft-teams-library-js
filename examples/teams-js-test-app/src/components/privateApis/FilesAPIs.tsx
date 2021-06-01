@@ -72,6 +72,7 @@ const FilesAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>files</h1>
       <BoxAndButton
         handleClickWithInput={returnOpenFilePreview}
         output={openFilePreviewRes}

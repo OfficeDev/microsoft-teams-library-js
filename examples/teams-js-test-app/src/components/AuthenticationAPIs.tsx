@@ -79,6 +79,7 @@ const AuthenticationAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>authentication</h1>
       <BoxAndButton
         handleClick={initialize}
         output={initializeRes}

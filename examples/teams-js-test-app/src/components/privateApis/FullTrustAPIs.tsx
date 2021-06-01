@@ -56,6 +56,7 @@ const FullTrustAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>FullTrustAPIs</h1>
       <BoxAndButton
         handleClickWithInput={returnGetUserJoinedTeams}
         output={getUserJoinedTeamsRes}

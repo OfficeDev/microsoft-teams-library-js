@@ -162,6 +162,7 @@ const MediaAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>media</h1>
       <BoxAndButton
         handleClick={captureImage}
         output={captureImageRes}

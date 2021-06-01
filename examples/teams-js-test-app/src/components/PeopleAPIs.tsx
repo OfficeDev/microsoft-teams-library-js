@@ -24,6 +24,7 @@ const PeopleAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>people</h1>
       <BoxAndButton
         handleClickWithInput={selectPeople}
         output={selectPeopleRes}

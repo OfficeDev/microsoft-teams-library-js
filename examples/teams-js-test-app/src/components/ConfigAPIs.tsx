@@ -74,6 +74,7 @@ const ConfigAPIs = (): ReactElement => {
   };
   return (
     <>
+      <h1>pages.config</h1>
       <BoxAndButton
         handleClick={initialize}
         output={initializeRes}

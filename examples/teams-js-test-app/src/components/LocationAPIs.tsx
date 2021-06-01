@@ -42,6 +42,7 @@ const LocationAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>location</h1>
       <BoxAndButton
         handleClickWithInput={getLocation}
         output={getLocationRes}

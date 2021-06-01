@@ -44,6 +44,7 @@ const MailAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>mail</h1>
       <BoxAndButton
         handleClickWithInput={composeMail}
         output={composeMailRes}

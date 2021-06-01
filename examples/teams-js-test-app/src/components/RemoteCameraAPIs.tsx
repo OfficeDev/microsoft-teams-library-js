@@ -137,6 +137,7 @@ const RemoteCameraAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>remoteCamera</h1>
       <BoxAndButton
         handleClick={getCapableParticipants}
         output={getCapableParticipantsRes}

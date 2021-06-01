@@ -42,6 +42,7 @@ const CalendarAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>calendar</h1>
       <BoxAndButton
         handleClick={checkCalendarCapability}
         output={capabilityCheckRes}

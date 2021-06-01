@@ -39,6 +39,7 @@ const DialogAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>dialog</h1>
       <BoxAndButton
         handleClick={checkDialogCapability}
         output={capabilityCheckRes}

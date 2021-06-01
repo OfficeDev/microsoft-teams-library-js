@@ -44,6 +44,7 @@ const CoreAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>core</h1>
       <BoxAndButton
         handleClick={getContext}
         output={getContextRes}
