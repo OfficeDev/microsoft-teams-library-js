@@ -9,11 +9,10 @@ import { FrameContexts, SdkError } from '../public';
  * Hide from docs
  */
 export namespace teams {
-
   export enum ChannelType {
     Regular = 0,
     Private = 1,
-    Shared = 2
+    Shared = 2,
   }
 
   export interface TeamsChannelInfo {
