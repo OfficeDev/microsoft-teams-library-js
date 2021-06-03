@@ -7,7 +7,7 @@ class HandlersPrivate {
   } = {};
   public static themeChangeHandler: (theme: string) => void;
   public static backButtonPressHandler: () => boolean;
-  public static focusEnterHandler: () => void;
+  public static focusEnterHandler: (navigateForward: boolean) => void;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -70,14 +70,14 @@ function handleBackButtonPress(): void {
   }
 }
 
-export function registerFocusEnterHandler(handler: (navigateForward?: boolean) => boolean): void {
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
   HandlersPrivate.focusEnterHandler = handler;
   handler && sendMessageToParent('registerHandler', ['focusEnter']);
 }
 
-function handleFocusEnter(): void {
+function handleFocusEnter(navigateForward: boolean): void {
   if (HandlersPrivate.focusEnterHandler) {
-    HandlersPrivate.focusEnterHandler();
+    HandlersPrivate.focusEnterHandler(navigateForward);
   }
 }
 
