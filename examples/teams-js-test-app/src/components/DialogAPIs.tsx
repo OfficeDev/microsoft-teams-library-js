@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { DialogInfo, dialog } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
-import { noHubSdkMsg } from '../App';
+import { noHubSdkMsg, generateJsonParseErrorMsg } from '../App';
 
 const DialogAPIs = (): ReactElement => {
   const [openRes, setOpenRes] = React.useState('');
@@ -27,6 +27,25 @@ const DialogAPIs = (): ReactElement => {
   const submitDialog = (result: string): void => {
     dialog.submit(result);
     setSubmitRes('App SDK call dialog.submit was called');
+  };
+
+  const submitDialogWithInput = (submitDialogInput: string): void => {
+    if (submitDialogInput.length == 0) {
+      dialog.submit();
+      setSubmitRes('App SDK call dialog.submit was called with no arguments');
+    } else {
+      try {
+        const parsedInput = JSON.parse(submitDialogInput);
+        dialog.submit(parsedInput.result, parsedInput.appIds);
+        setSubmitRes('App SDK call dialog.submit was called with arguments');
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          setSubmitRes(generateJsonParseErrorMsg());
+        } else {
+          setSubmitRes(error.message);
+        }
+      }
+    }
   };
 
   const checkDialogCapability = (): void => {
