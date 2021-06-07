@@ -87,6 +87,13 @@ const DialogAPIs = (): ReactElement => {
         title="Dialog Submit"
         name="dialogSubmit"
       />
+      <BoxAndButton
+        handleClickWithInput={submitDialogWithInput}
+        output={submitRes}
+        hasInput={true}
+        title="Dialog Submit With Input"
+        name="dialogSubmitWithInput"
+      />
     </>
   );
 };
