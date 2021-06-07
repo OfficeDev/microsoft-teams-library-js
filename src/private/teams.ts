@@ -28,22 +28,22 @@ export namespace teams {
    * Hide from docs
    *
    * Get a list of channels belong to a Team
-   * @param teamId a team's objectId
+   * @param groupId a team's objectId
    */
-  export function getTeamsChannels(
-    teamId: string,
+  export function getTeamChannels(
+    groupId: string,
     callback: (error: SdkError, channels: TeamsChannelInfo[]) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!teamId) {
-      throw new Error('[teams.getTeamsChannels] teamId cannot be null or empty');
+    if (!groupId) {
+      throw new Error('[teams.getTeamChannels] groupId cannot be null or empty');
     }
 
     if (!callback) {
-      throw new Error('[teams.getTeamsChannels] Callback cannot be null');
+      throw new Error('[teams.getTeamChannels] Callback cannot be null');
     }
 
-    sendMessageToParent('teams.getTeamsChannels', [teamId], callback);
+    sendMessageToParent('teams.getTeamChannels', [groupId], callback);
   }
 }

@@ -24,28 +24,28 @@ describe('teams', () => {
     }
   });
 
-  describe('getTeamsChannels', () => {
+  describe('getTeamChannels', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => teams.getTeamsChannels('teamId', emptyCallback)).toThrowError(
+      expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls without frame context initialization', () => {
       utils.initializeWithContext('settings');
-      expect(() => teams.getTeamsChannels('teamId', emptyCallback)).toThrowError(
+      expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
-    it('should not allow calls with null teamId', () => {
+    it('should not allow calls with null groupId', () => {
       utils.initializeWithContext('content');
-      expect(() => teams.getTeamsChannels(null, emptyCallback)).toThrowError();
+      expect(() => teams.getTeamChannels(null, emptyCallback)).toThrowError();
     });
 
     it('should not allow calls with empty callback', () => {
       utils.initializeWithContext('content');
-      expect(() => teams.getTeamsChannels('teamId', null)).toThrowError();
+      expect(() => teams.getTeamChannels('groupId', null)).toThrowError();
     });
 
     it('should trigger callback correctly', () => {
@@ -65,9 +65,9 @@ describe('teams', () => {
         expect(folders).toEqual(mockTeamsChannels);
       });
 
-      teams.getTeamsChannels('teamId', callback);
+      teams.getTeamChannels('groupId', callback);
 
-      const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.getTeamsChannels');
+      const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.getTeamChannels');
       expect(getCloudStorageFoldersMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
       expect(callback).toHaveBeenCalled();
