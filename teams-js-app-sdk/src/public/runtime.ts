@@ -48,6 +48,28 @@ export let runtime: IRuntime = {
   },
 };
 
+export const teamsRuntimeConfig: IRuntime = {
+  apiVersion: 1,
+  supports: {
+    chat: {},
+    dialog: {},
+    files: {},
+    location: {},
+    media: {},
+    meeting: {},
+    notifications: {},
+    pages: {
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teams: {
+      fullTrust: {},
+    },
+  },
+};
+
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
   runtime = deepFreeze(runtimeConfig);
 }

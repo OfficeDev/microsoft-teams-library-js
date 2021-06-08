@@ -7,7 +7,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { pages } from './pages';
 import { DeepLinkParameters, Context } from './interfaces';
-import { getGenericOnCompleteHandler } from '../internal/utils';
+import { compareSDKVersions, getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 import {
@@ -20,7 +20,7 @@ import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { teamsCore } from './teamsAPIs';
-import { applyRuntimeConfig } from './runtime';
+import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
 
 /**
  * Namespace to interact with the core part of the teamsjs App SDK.
@@ -53,11 +53,32 @@ export namespace core {
           GlobalVars.hostClientType = clientType;
           GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
+          // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
+          // so we assume that if we don't have it, we must be running in Teams.
+          // After Teams switches to the hub SDK, we can remove this default code.
+          try {
+            const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
+            runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
+          } catch (e) {
+            if (e instanceof SyntaxError) {
+              // if the given runtime config was actually meant to be a SDK version, store it as such.
+              // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+              // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+              // remove this feature.
+              if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
+                GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+              }
+              applyRuntimeConfig(teamsRuntimeConfig);
+            } else {
+              // If it's any error that's not a JSON parsing error, we want the program to fail.
+              throw e;
+            }
+          }
+
           // Notify all waiting callers that the initialization has completed
           GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
           GlobalVars.initializeCallbacks = [];
           GlobalVars.initializeCompleted = true;
-          runtimeConfig && applyRuntimeConfig(JSON.parse(runtimeConfig));
         },
         validMessageOrigins,
       );

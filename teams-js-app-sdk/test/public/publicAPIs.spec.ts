@@ -5,6 +5,8 @@ import { pages } from '../../src/public/pages';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
+import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { GlobalVars } from '../../src/internal/globalVars';
 
 describe('teamsjsAppSDK-publicAPIs', () => {
   // Use to send a mock message from the app.
@@ -114,6 +116,71 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     });
 
     expect(callbackInvoked).toBe(true);
+  });
+
+  it('should use teams runtime config if no runtime config is given', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
+
+    expect(runtime).toEqual(teamsRuntimeConfig);
+  });
+
+  it('should use teams runtime config if an empty runtime config is given', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
+
+    expect(runtime).toEqual(teamsRuntimeConfig);
+  });
+
+  it('should use teams runtime config if a JSON parsing error is thrown by a given runtime config', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
+
+    expect(runtime).toEqual(teamsRuntimeConfig);
+  });
+
+  it('should throw an error if the given runtime config causes a non parsing related error', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    expect(utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null)).toThrowError;
+  });
+
+  it('should not use the teams config as a default if another proper config is given', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(
+      initMessage,
+      FrameContexts.content,
+      HostClientType.web,
+      '{"apiVersion":1, "supports":{"mail":{}}}',
+    );
+
+    expect(runtime).not.toEqual(teamsRuntimeConfig);
+    expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+  });
+
+  it('should assign clientSupportedSDKVersion correctly when a proper runtime config is given', () => {
+    core.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(
+      initMessage,
+      FrameContexts.content,
+      HostClientType.web,
+      '{"apiVersion":1, "supports":{"mail":{}}}',
+      '1.0.0',
+    );
+
+    expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+    expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
   });
 
   it('should successfully register a theme change handler', () => {
