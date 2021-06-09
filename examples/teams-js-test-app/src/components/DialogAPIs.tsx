@@ -24,11 +24,6 @@ const DialogAPIs = (): ReactElement => {
     setResizeRes('App SDK call dialog.resize was called');
   };
 
-  const submitDialog = (result: string): void => {
-    dialog.submit(result);
-    setSubmitRes('App SDK call dialog.submit was called');
-  };
-
   const submitDialogWithInput = (submitDialogInput: string): void => {
     if (submitDialogInput.length == 0) {
       dialog.submit();
@@ -79,13 +74,6 @@ const DialogAPIs = (): ReactElement => {
         hasInput={true}
         title="Dialog Resize"
         name="dialogResize"
-      />
-      <BoxAndButton
-        handleClickWithInput={submitDialog}
-        output={submitRes}
-        hasInput={true}
-        title="Dialog Submit"
-        name="dialogSubmit"
       />
       <BoxAndButton
         handleClickWithInput={submitDialogWithInput}
