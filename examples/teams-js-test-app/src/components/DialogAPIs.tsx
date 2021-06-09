@@ -14,8 +14,8 @@ const DialogAPIs = (): ReactElement => {
     const onComplete = (err: string, result: string): void => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
-    dialog.open(dialogInfo, onComplete);
     setOpenRes('dialog.open' + noHubSdkMsg);
+    dialog.open(dialogInfo, onComplete);
   };
 
   const resizeDialog = (dialogInfoInput: string): void => {
