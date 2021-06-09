@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { FilePreviewParameters, files, SdkError } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from '../BoxAndButton';
-import { noHubSdkMsg } from '../../App';
+import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
 
 interface DeleteCloudStorageParams {
   channelId: string;
@@ -13,6 +13,8 @@ const FilesAPIs = (): ReactElement => {
   const [getCloudStorageFoldersRes, setGetCloudStorageFoldersRes] = React.useState('');
   const [addCloudStorageFolderRes, setAddCloudStorageFolderRes] = React.useState('');
   const [deleteCloudStorageFolderRes, setDeleteCloudStorageFolderRes] = React.useState('');
+  const [getCloudStorageFolderContentsRes, setGetCloudStorageFolderContentsRes] = React.useState('');
+  const [openCloudStorageFileRes, setOpenCloudStorageFileRes] = React.useState('');
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const returnOpenFilePreview = (filePreviewParamsInput: string): void => {
@@ -62,6 +64,41 @@ const FilesAPIs = (): ReactElement => {
     );
   };
 
+  const getCloudStorageFolderContents = (input: string): void => {
+    try {
+      const parsedInput = JSON.parse(input);
+      const callback = (error: SdkError, items: files.CloudStorageFolderItem[]): void => {
+        if (error) {
+          setGetCloudStorageFolderContentsRes(JSON.stringify(error));
+        } else {
+          setGetCloudStorageFolderContentsRes(JSON.stringify(items));
+        }
+      };
+      setGetCloudStorageFolderContentsRes('getCloudStorageFolderContents()' + noHubSdkMsg);
+      files.getCloudStorageFolderContents(parsedInput.folder, parsedInput.providerCode, callback);
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        setGetCloudStorageFolderContentsRes(generateJsonParseErrorMsg());
+      } else {
+        setGetCloudStorageFolderContentsRes(e.toString());
+      }
+    }
+  };
+
+  const openCloudStorageFile = (input: string): void => {
+    try {
+      const parsedInput = JSON.parse(input);
+      files.openCloudStorageFile(parsedInput.file, parsedInput.providerCode, parsedInput.fileOpenPreference);
+      setOpenCloudStorageFileRes('openCloudStorageFile() called.');
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        setOpenCloudStorageFileRes(generateJsonParseErrorMsg());
+      } else {
+        setGetCloudStorageFolderContentsRes(e.toString());
+      }
+    }
+  };
+
   const checkFilesCapability = (): void => {
     if (files.isSupported()) {
       setCapabilityCheckRes('Files module is supported');
@@ -100,6 +137,20 @@ const FilesAPIs = (): ReactElement => {
         hasInput={true}
         title="Delete Cloud Storage Folder"
         name="deleteCloudStorageFolder"
+      />
+      <BoxAndButton
+        handleClickWithInput={getCloudStorageFolderContents}
+        output={getCloudStorageFolderContentsRes}
+        hasInput={true}
+        title="Get Cloud Storage Folder Contents"
+        name="getCloudStorageFolderContents"
+      />
+      <BoxAndButton
+        handleClickWithInput={openCloudStorageFile}
+        output={openCloudStorageFileRes}
+        hasInput={true}
+        title="Open Cloud Storage File"
+        name="openCloudStorageFile"
       />
       <BoxAndButton
         handleClick={checkFilesCapability}
