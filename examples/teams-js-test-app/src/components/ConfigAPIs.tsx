@@ -39,7 +39,9 @@ const ConfigAPIs = (): ReactElement => {
     setSetConfigRes('config.setConfig()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string | undefined): void => {
       let output = '';
-      if (reason) output += 'reason: ' + reason + ', \n';
+      if (reason) {
+        output += 'reason: ' + reason + ', \n';
+      }
       setSetConfigRes(output + 'status: ' + status.toString());
     };
     pages.config.setConfig(instanceConfig, onComplete);

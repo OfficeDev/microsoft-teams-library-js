@@ -15,7 +15,9 @@ const NavigationAPIs = (): ReactElement => {
     setNavigateCrossDomainRes('navigateCrossDomain()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setNavigateCrossDomainRes(reason);
+        if (reason) {
+          setNavigateCrossDomainRes(reason);
+        }
       } else {
         setNavigateCrossDomainRes('Completed');
       }
@@ -27,7 +29,9 @@ const NavigationAPIs = (): ReactElement => {
     setNavigateToTabRes('navigateToTab()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setNavigateToTabRes(reason);
+        if (reason) {
+          setNavigateToTabRes(reason);
+        }
       } else {
         setNavigateToTabRes('Completed');
       }
@@ -39,7 +43,9 @@ const NavigationAPIs = (): ReactElement => {
     setNavigateBackRes('navigateBack()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setNavigateBackRes(reason);
+        if (reason) {
+          setNavigateBackRes(reason);
+        }
       } else {
         setNavigateBackRes('Completed');
       }
