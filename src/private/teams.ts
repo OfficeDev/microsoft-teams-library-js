@@ -30,10 +30,7 @@ export namespace teams {
    * Get a list of channels belong to a Team
    * @param groupId a team's objectId
    */
-  export function getTeamChannels(
-    groupId: string,
-    callback: (error: SdkError, channels: ChannelInfo[]) => void,
-  ): void {
+  export function getTeamChannels(groupId: string, callback: (error: SdkError, channels: ChannelInfo[]) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!groupId) {
