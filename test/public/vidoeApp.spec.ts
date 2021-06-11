@@ -37,9 +37,9 @@ describe('videoApp', () => {
     expect(() => videoApp.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig)).toThrowError(
       "This call is not allowed in the 'content' context",
     );
-    expect(() => videoApp.notifySelectedVideoEffectChanged(videoApp.EffectChangeType.EffectChanged)).toThrowError(
-      "This call is not allowed in the 'content' context",
-    );
+    expect(() =>
+      videoApp.notifySelectedVideoEffectChanged(videoApp.EffectChangeType.EffectChanged, 'sample effect config'),
+    ).toThrowError("This call is not allowed in the 'content' context");
   });
 
   it('register for video frame event', () => {
@@ -52,9 +52,9 @@ describe('videoApp', () => {
 
   it('register for video effect change event', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.sidePanel);
-    videoApp.notifySelectedVideoEffectChanged(videoApp.EffectChangeType.EffectChanged);
+    videoApp.notifySelectedVideoEffectChanged(videoApp.EffectChangeType.EffectChanged, 'sample effect config');
     const message = mobilePlatformMock.findMessageByFunc('videoApp.videoEffectChanged');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
+    expect(message.args.length).toBe(2);
   });
 });

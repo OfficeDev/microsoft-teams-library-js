@@ -109,10 +109,15 @@ export namespace videoApp {
      * VideoApp extension should call this to notify Teams Client current selected effect parameter changed.
      * If it's pre-meeting, Teams client will call videoEffectCallback immediately then use the videoEffect.
      * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
+     * @param effectChangeType the effect change type.
+     * @param effectParameter the effect parameter, it can be effect ID and effect parameter
      */
-    public notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
+    public notifySelectedVideoEffectChanged(
+      effectChangeType: EffectChangeType,
+      effectParameter: string | undefined,
+    ): void {
       ensureInitialized(FrameContexts.sidePanel);
-      sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType]);
+      sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType, effectParameter]);
     }
 
     /**
@@ -144,8 +149,11 @@ export namespace videoApp {
     videoApp.registerForVideoFrame(frameCallback, config);
   }
 
-  export function notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType): void {
-    videoApp.notifySelectedVideoEffectChanged(effectChangeType);
+  export function notifySelectedVideoEffectChanged(
+    effectChangeType: EffectChangeType,
+    effectParameter: string | undefined,
+  ): void {
+    videoApp.notifySelectedVideoEffectChanged(effectChangeType, effectParameter);
   }
 
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
