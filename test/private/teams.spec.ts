@@ -50,7 +50,7 @@ describe('teams', () => {
 
     it('should trigger callback correctly', () => {
       utils.initializeWithContext('content');
-      const mockTeamsChannels: teams.TeamsChannelInfo[] = [
+      const mockTeamsChannels: teams.ChannelInfo[] = [
         {
           siteUrl: 'https://microsoft.sharepoint.com/teams/teamsName',
           objectId: 'someId',

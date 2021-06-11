@@ -15,7 +15,7 @@ export namespace teams {
     Shared = 2,
   }
 
-  export interface TeamsChannelInfo {
+  export interface ChannelInfo {
     siteUrl: string;
     objectId: string;
     folderRelativeUrl: string;
@@ -32,7 +32,7 @@ export namespace teams {
    */
   export function getTeamChannels(
     groupId: string,
-    callback: (error: SdkError, channels: TeamsChannelInfo[]) => void,
+    callback: (error: SdkError, channels: ChannelInfo[]) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
