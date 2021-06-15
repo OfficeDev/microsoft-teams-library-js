@@ -78,7 +78,7 @@ export namespace videoApp {
   /**
    *  Video effect change call back funtion definition
    */
-  type VideoEffectCallBack = (effectName: string | undefined) => void;
+  type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
    * VideoApp private members
