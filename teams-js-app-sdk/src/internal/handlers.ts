@@ -19,6 +19,7 @@ class HandlersPrivate {
 export function initializeHandlers(): void {
   // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
   HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+  HandlersPrivate.handlers['backButtonPress'] = handleBackButtonPress;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
   HandlersPrivate.handlers['focusEnter'] = handleFocusEnter;

@@ -25,3 +25,4 @@ export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';
 export { appEntity } from './appEntity';
+export { teams } from './teams';
