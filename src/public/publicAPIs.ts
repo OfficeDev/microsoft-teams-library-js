@@ -67,6 +67,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerFocusEnterHandler(null);
         registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
@@ -249,10 +250,20 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 }
 
 /**
+ * @private
+ * Registers a handler when focus needs to be passed from teams to the place of choice on app.
+ * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
+ */
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
+  ensureInitialized();
+  Handlers.registerFocusEnterHandler(handler);
+}
+
+/**
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
  */
-export function registerChangeSettingsHandler(handler: () => void): void {
+export function registerEnterSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
   Handlers.registerHandler('changeSettings', handler);
 }
