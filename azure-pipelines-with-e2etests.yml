@@ -63,6 +63,11 @@ steps:
     condition: succeeded()
     workingDirectory: "teamsjs-hub-sdk"
 
+  - bash: "node tools/cli/runAppsWithE2ETests.js --MOSAppUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf"
+    displayName: "Run E2E Perf tests"
+    condition: succeeded()
+    workingDirectory: "teamsjs-hub-sdk"
+
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: "JUnit"
