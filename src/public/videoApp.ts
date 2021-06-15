@@ -110,14 +110,11 @@ export namespace videoApp {
      * If it's pre-meeting, Teams client will call videoEffectCallback immediately then use the videoEffect.
      * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
      * @param effectChangeType the effect change type.
-     * @param effectParameter the effect parameter, it can be effect ID and effect parameter
+     * @param effectId Newly selected effect id.
      */
-    public notifySelectedVideoEffectChanged(
-      effectChangeType: EffectChangeType,
-      effectParameter: string | undefined,
-    ): void {
+    public notifySelectedVideoEffectChanged(effectChangeType: EffectChangeType, effectId: string | undefined): void {
       ensureInitialized(FrameContexts.sidePanel);
-      sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType, effectParameter]);
+      sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType, effectId]);
     }
 
     /**
