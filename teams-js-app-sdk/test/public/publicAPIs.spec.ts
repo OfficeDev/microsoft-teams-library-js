@@ -7,10 +7,13 @@ import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { teamsCore } from '../../src/public';
+import { registerFocusEnterHandler } from '../../src/internal/handlers';
 
 describe('teamsjsAppSDK-publicAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
+  const emptyCallback = () => {};
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -127,6 +130,19 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
+  it('should successfully register a change settings handler', () => {
+    utils.initializeWithContext('content');
+    let handlerCalled = false;
+
+    pages.config.registerChangeConfigHandler(() => {
+      handlerCalled = true;
+    });
+
+    utils.sendMessage('changeSettings', '');
+
+    expect(handlerCalled).toBeTruthy();
+  });
+
   it('should use teams runtime config if an empty runtime config is given', () => {
     core.initialize();
 
@@ -203,6 +219,35 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     let navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
+  });
+
+  it('should successfully register a back button handler and not call navigateBack if it returns true', () => {
+    utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    pages.backStack.registerBackButtonHandler(() => {
+      handlerInvoked = true;
+      return true;
+    });
+
+    utils.sendMessage('backButtonPress');
+
+    let navigateBackMessage = utils.findMessageByFunc('navigateBack');
+    expect(navigateBackMessage).toBeNull();
+    expect(handlerInvoked).toBe(true);
+  });
+
+  it('should successfully register a focus enter handler and return true', () => {
+    utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    registerFocusEnterHandler(() => {
+      handlerInvoked = true;
+      return true;
+    });
+
+    utils.sendMessage('focusEnter');
+    expect(handlerInvoked).toBe(true);
   });
 
   it('should successfully get context', () => {
@@ -704,6 +749,55 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       expect(returnFocusMessage).not.toBeNull();
       expect(returnFocusMessage.args.length).toBe(1);
       expect(returnFocusMessage.args[0]).toBe(true);
+    });
+  });
+  describe('getTeamChannels', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => teamsCore.getTeamChannels('groupId', emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => teamsCore.getTeamChannels('groupId', emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should not allow calls with null groupId', () => {
+      utils.initializeWithContext('content');
+      expect(() => teamsCore.getTeamChannels(null, emptyCallback)).toThrowError();
+    });
+
+    it('should not allow calls with empty callback', () => {
+      utils.initializeWithContext('content');
+      expect(() => teamsCore.getTeamChannels('groupId', null)).toThrowError();
+    });
+
+    it('should trigger callback correctly', () => {
+      utils.initializeWithContext('content');
+      const mockTeamsChannels: teamsCore.ChannelInfo[] = [
+        {
+          siteUrl: 'https://microsoft.sharepoint.com/teams/teamsName',
+          objectId: 'someId',
+          folderRelativeUrl: '/teams/teamsName/Shared Documents/General',
+          displayName: 'General',
+          channelType: teamsCore.ChannelType.Regular,
+        },
+      ];
+
+      const callback = jest.fn((err, folders) => {
+        expect(err).toBeFalsy();
+        expect(folders).toEqual(mockTeamsChannels);
+      });
+
+      teamsCore.getTeamChannels('groupId', callback);
+
+      const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.getTeamChannels');
+      expect(getCloudStorageFoldersMessage).not.toBeNull();
+      utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
+      expect(callback).toHaveBeenCalled();
     });
   });
 });

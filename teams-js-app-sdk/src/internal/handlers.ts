@@ -10,6 +10,8 @@ class HandlersPrivate {
     [func: string]: Function;
   } = {};
   public static themeChangeHandler: (theme: string) => void;
+  public static backButtonPressHandler: () => boolean;
+  public static focusEnterHandler: (navigateForward: boolean) => void;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -19,6 +21,7 @@ export function initializeHandlers(): void {
   HandlersPrivate.handlers['themeChange'] = handleThemeChange;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+  HandlersPrivate.handlers['focusEnter'] = handleFocusEnter;
   pages.backStack._initialize();
 }
 
@@ -57,6 +60,28 @@ export function handleThemeChange(theme: string): void {
 
   if (Communication.childWindow) {
     sendMessageEventToChild('themeChange', [theme]);
+  }
+}
+
+export function registerBackButtonHandler(handler: () => boolean): void {
+  HandlersPrivate.backButtonPressHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['backButton']);
+}
+
+function handleBackButtonPress(): void {
+  if (!HandlersPrivate.backButtonPressHandler || !HandlersPrivate.backButtonPressHandler()) {
+    pages.backStack.navigateBack();
+  }
+}
+
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
+  HandlersPrivate.focusEnterHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['focusEnter']);
+}
+
+function handleFocusEnter(navigateForward: boolean): void {
+  if (HandlersPrivate.focusEnterHandler) {
+    HandlersPrivate.focusEnterHandler(navigateForward);
   }
 }
 
