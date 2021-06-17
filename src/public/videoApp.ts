@@ -98,11 +98,6 @@ export namespace videoApp {
         VideoAppPrivate.videoFrameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
-    registerHandler('videoApp.effectParameterChange', (effectId: string) => {
-      if (VideoAppPrivate.videoEffectCallback !== undefined) {
-        VideoAppPrivate.videoEffectCallback(effectId);
-      }
-    });
     sendMessageToParent('videoApp.registerForVideoFrame', [config]);
   }
 
@@ -125,7 +120,13 @@ export namespace videoApp {
    * Register the video effect callback, Teams client uses this to notify the videoApp extension the new video effect will by applied.
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
+    ensureInitialized(FrameContexts.sidePanel);
     VideoAppPrivate.videoEffectCallback = callback;
+    registerHandler('videoApp.effectParameterChange', (effectId: string) => {
+      if (VideoAppPrivate.videoEffectCallback !== undefined) {
+        VideoAppPrivate.videoEffectCallback(effectId);
+      }
+    });
   }
 
   /**
