@@ -31,6 +31,7 @@ export interface ExtendedWindow extends Window {
 export interface MessageRequest {
   id?: number;
   func: string;
+  timestamp?: number;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
 }
 

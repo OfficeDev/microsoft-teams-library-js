@@ -9,11 +9,12 @@ import {
   registerOnLoadHandler,
   registerBeforeUnloadHandler,
   enablePrintCapability,
-  registerChangeSettingsHandler,
+  registerEnterSettingsHandler,
   getContext,
   _initialize,
   _uninitialize,
   registerBackButtonHandler,
+  registerFocusEnterHandler,
   registerOnThemeChangeHandler,
   initialize,
   setFrameContext,
@@ -69,6 +70,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage.func).toBe('initialize');
     expect(initMessage.args.length).toEqual(1);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.timestamp).not.toBeNull();
   });
 
   it('should listen to frame messages for a frameless window', () => {
@@ -140,7 +142,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerChangeSettingsHandler(() => {
+    registerEnterSettingsHandler(() => {
       handlerCalled = true;
     });
 
@@ -226,6 +228,19 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerInvoked).toBe(true);
   });
 
+  it('should successfully register a focus enter handler and return true', () => {
+    utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    registerFocusEnterHandler(() => {
+      handlerInvoked = true;
+      return true;
+    });
+
+    utils.sendMessage('focusEnter');
+    expect(handlerInvoked).toBe(true);
+  });
+
   it('should successfully get context', () => {
     utils.initializeWithContext('content');
 
@@ -271,7 +286,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       appSessionId: 'appSessionId',
       meetingId: 'dummyMeetingId'
     };
-
+    //insert expected time comparison here?
     utils.respondToMessage(getContextMessage, expectedContext);
 
     expect(actualContext).toBe(expectedContext);

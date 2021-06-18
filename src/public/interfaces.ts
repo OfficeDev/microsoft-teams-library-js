@@ -272,6 +272,16 @@ export interface Context {
   teamSitePath?: string;
 
   /**
+   * The tenant ID of the host team.
+   */
+  hostTeamTenantId?: string;
+
+  /**
+   * The AAD group ID of the host team.
+   */
+  hostTeamGroupId?: string;
+
+  /**
    * The relative path to the SharePoint folder associated with the channel.
    */
   channelRelativeUrl?: string;
@@ -592,6 +602,10 @@ export enum ErrorCode {
    * Internal error encountered while performing the required operation.
    */
   INTERNAL_ERROR = 500,
+  /**
+   * API is not supported in the current context
+   */
+  NOT_SUPPORTED_IN_CURRENT_CONTEXT = 501,
   /**
   Permissions denied by user
   */
