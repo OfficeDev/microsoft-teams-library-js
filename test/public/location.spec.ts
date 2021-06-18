@@ -15,6 +15,7 @@ describe('location', () => {
   const minVersionForLocationAPIs = locationAPIsRequiredVersion;
   const defaultLocationProps: location.LocationProps = {allowChooseLocation: false, showMap: false};
   const defaultLocation: location.Location = {latitude: 17, longitude: 17, accuracy: -1, timestamp: 100};
+  const originalDefaultPlatformVersion = '1.6.0';
   
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -51,6 +52,7 @@ describe('location', () => {
   });
   it('getLocation call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     location.getLocation(defaultLocationProps, (e: SdkError, l: location.Location) => {
       error = e;
@@ -190,6 +192,7 @@ describe('location', () => {
   });
   it('showLocation call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     location.showLocation(defaultLocation, (e: SdkError, v: boolean) => {
       error = e;

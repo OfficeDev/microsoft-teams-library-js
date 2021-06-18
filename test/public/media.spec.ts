@@ -15,6 +15,7 @@ describe('media', () => {
   const minVersionForCaptureImage = '1.7.0';
   const mediaAPISupportVersion = '1.8.0';
   const scanBarCodeAPISupportVersion = '1.9.0';
+  const originalDefaultPlatformVersion = '1.6.0';
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -51,6 +52,7 @@ describe('media', () => {
   });
   it('captureImage call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
@@ -207,6 +209,7 @@ describe('media', () => {
 
   it('selectMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaError: SdkError;
     let mediaInputs: media.MediaInputs = {
       mediaType: media.MediaType.Image,
@@ -378,6 +381,7 @@ describe('media', () => {
 
   it('getMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
     mediaOutput.content = "1234567";
@@ -500,6 +504,7 @@ describe('media', () => {
 
   it('viewImages call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaError: SdkError;
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
@@ -597,6 +602,7 @@ describe('media', () => {
 
   it('scanBarCode call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     media.scanBarCode((e: SdkError, d: string) => {
       error = e;

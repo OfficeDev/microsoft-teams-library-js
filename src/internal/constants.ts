@@ -2,9 +2,11 @@ import { generateRegExpFromUrls } from './utils';
 
 export const version = '1.9.0';
 /**
- * This is the SDK version when all SDK APIs started to check platform compatibility for the APIs.
+ * The SDK version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0
+ * Modified to 2.0.1 which is hightest till now so that if any client doesn't pass version in initialize function, it will be set to highest
+ * Mobile clients are passing versions, hence will be applicable to web and desktop clients only
  */
-export const defaultSDKVersionForCompatCheck = '1.6.0';
+export const defaultSDKVersionForCompatCheck = '2.0.1';
 
 /**
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
