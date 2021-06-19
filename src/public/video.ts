@@ -6,7 +6,7 @@ import { registerHandler } from '../internal/handlers';
  * Namespace to video extensibility of the SDK.
  *
  */
-export namespace videoApp {
+export namespace video {
   /**
    * Represents a video frame.
    */
@@ -81,21 +81,13 @@ export namespace videoApp {
   type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
-   * VideoApp private members
-   */
-  class VideoAppPrivate {
-    public static videoFrameCallback: VideoFrameCallback;
-    public static videoEffectCallback: VideoEffectCallBack;
-  }
-  /**
    * register to read the video frames in Permissions section.
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
-    VideoAppPrivate.videoFrameCallback = frameCallback;
     registerHandler('videoApp.newVideoFrame', (videoFrame: VideoFrame) => {
-      if (VideoAppPrivate.videoFrameCallback !== null && videoFrame !== undefined) {
-        VideoAppPrivate.videoFrameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
+      if (videoFrame !== undefined) {
+        frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
     sendMessageToParent('videoApp.registerForVideoFrame', [config]);
@@ -121,12 +113,7 @@ export namespace videoApp {
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
-    VideoAppPrivate.videoEffectCallback = callback;
-    registerHandler('videoApp.effectParameterChange', (effectId: string) => {
-      if (VideoAppPrivate.videoEffectCallback !== undefined) {
-        VideoAppPrivate.videoEffectCallback(effectId);
-      }
-    });
+    registerHandler('videoApp.effectParameterChange', callback);
   }
 
   /**

@@ -44,4 +44,4 @@ export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
 export { people } from './people';
-export { videoApp } from './videoApp';
+export { video } from './video';
