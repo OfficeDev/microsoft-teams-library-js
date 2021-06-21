@@ -11,7 +11,7 @@ import { media } from '../../src/public/media';
  */
 describe('media', () => {
   const mobilePlatformMock = new FramelessPostMocks();
-  const desktopPlatformMock = new Utils()
+  const desktopPlatformMock = new Utils();
   const minVersionForCaptureImage = '1.7.0';
   const mediaAPISupportVersion = '1.8.0';
   const scanBarCodeAPISupportVersion = '1.9.0';
