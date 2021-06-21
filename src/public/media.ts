@@ -96,6 +96,7 @@ export namespace media {
    * Media object returned by the select Media API
    */
   export class Media extends File {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     constructor(that: Media = null) {
       super();
       if (that) {
