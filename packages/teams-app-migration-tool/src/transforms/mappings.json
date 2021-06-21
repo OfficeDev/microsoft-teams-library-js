@@ -1,0 +1,24 @@
+{
+  "mappings" : [
+    {
+      "source" : "microsoftTeams.initialize",
+      "target" : "teamsjs.core.initialize"
+    },
+    {
+      "source" : "microsoftTeams.getContext",
+      "target" : "teamsjs.core.getContext"
+    },
+    {
+      "source" : "microsoftTeams.shareDeepLink",
+      "target" : "teamsjs.core.shareDeepLink"
+    },
+    {
+      "source" : "microsoftTeams.executeDeepLink",
+      "target" : "teamsjs.core.executeDeepLink"
+    },
+    {
+      "source" : "microsoftTeams.registerOnThemeChangeHandler",
+      "target" : "teamsjs.core.registerOnThemeChangeHandler"
+    }
+  ]
+}
