@@ -234,7 +234,6 @@ describe('MicrosoftTeams-publicAPIs', () => {
     let handlerInvoked = false;
     registerFocusEnterHandler(() => {
       handlerInvoked = true;
-      return true;
     });
 
     utils.sendMessage('focusEnter');
