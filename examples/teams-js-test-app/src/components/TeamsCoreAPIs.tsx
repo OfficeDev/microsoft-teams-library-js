@@ -137,9 +137,9 @@ const TeamsCoreAPIs = (): ReactElement => {
     }
   };
 
-  const registerOnFocusEnterHandler = () => {
+  const registerOnFocusEnterHandler = (): void => {
     setRegisterOnFocusEnterHandlerRes('teamsCore.registerOnFocusHandler()' + noHubSdkMsg);
-    teamsCore.registerFocusEnterHandler((navigateForward) => {
+    teamsCore.registerFocusEnterHandler(navigateForward => {
       setRegisterOnFocusEnterHandlerRes('successfully called with nativateForward:' + navigateForward);
       return true;
     });
