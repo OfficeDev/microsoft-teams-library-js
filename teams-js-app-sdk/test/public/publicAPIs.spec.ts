@@ -7,13 +7,10 @@ import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { teamsCore } from '../../src/public';
-import { registerFocusEnterHandler } from '../../src/internal/handlers';
 
 describe('teamsjsAppSDK-publicAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
-  const emptyCallback = () => {};
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -234,19 +231,6 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     let navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).toBeNull();
-    expect(handlerInvoked).toBe(true);
-  });
-
-  it('should successfully register a focus enter handler and return true', () => {
-    utils.initializeWithContext('content');
-
-    let handlerInvoked = false;
-    registerFocusEnterHandler(() => {
-      handlerInvoked = true;
-      return true;
-    });
-
-    utils.sendMessage('focusEnter');
     expect(handlerInvoked).toBe(true);
   });
 

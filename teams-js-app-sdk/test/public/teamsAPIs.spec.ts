@@ -1,8 +1,6 @@
-import { TabInstanceParameters, Context, FrameInfo } from '../../src/public/interfaces';
-import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
+import { TabInstanceParameters, FrameInfo } from '../../src/public/interfaces';
 import { core } from '../../src/public/publicAPIs';
 import { teamsCore } from '../../src/public/teamsAPIs';
-import { FrameContexts } from '../../src/public/constants';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
@@ -356,5 +354,18 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toBe(frameContext);
+  });
+  
+  it('should successfully register a focus enter handler and return true', () => {
+    utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    teamsCore.registerFocusEnterHandler(() => {
+      handlerInvoked = true;
+      return true;
+    });
+
+    utils.sendMessage('focusEnter');
+    expect(handlerInvoked).toBe(true);
   });
 });

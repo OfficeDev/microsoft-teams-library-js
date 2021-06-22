@@ -54,4 +54,9 @@ export namespace teamsCore {
     ensureInitialized();
     Handlers.registerBeforeUnloadHandler(handler);
   }
+
+  export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
+    ensureInitialized();
+    Handlers.registerHandler('focusEnter', handler);
+  }
 }
