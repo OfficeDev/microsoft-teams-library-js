@@ -85,16 +85,16 @@ export namespace video {
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
-    registerHandler('videoApp.newVideoFrame', (videoFrame: VideoFrame) => {
+    registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
       if (videoFrame !== undefined) {
         frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
-    sendMessageToParent('videoApp.registerForVideoFrame', [config]);
+    sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
   /**
-   * VideoApp extension should call this to notify Teams Client current selected effect parameter changed.
+   * video extension should call this to notify Teams Client current selected effect parameter changed.
    * If it's pre-meeting, Teams client will call videoEffectCallback immediately then use the videoEffect.
    * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
    * @param effectChangeType the effect change type.
@@ -105,15 +105,15 @@ export namespace video {
     effectId: string | undefined,
   ): void {
     ensureInitialized(FrameContexts.sidePanel);
-    sendMessageToParent('videoApp.videoEffectChanged', [effectChangeType, effectId]);
+    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId]);
   }
 
   /**
-   * Register the video effect callback, Teams client uses this to notify the videoApp extension the new video effect will by applied.
+   * Register the video effect callback, Teams client uses this to notify the video extension the new video effect will by applied.
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
-    registerHandler('videoApp.effectParameterChange', callback);
+    registerHandler('video.effectParameterChange', callback);
   }
 
   /**
@@ -121,13 +121,13 @@ export namespace video {
    * or pass the video frame to next one in video pipeline.
    */
   function notifyVideoFrameProcessed(): void {
-    sendMessageToParent('videoApp.videoFrameProcessed');
+    sendMessageToParent('video.videoFrameProcessed');
   }
 
   /**
    * sending error notification to Teams client.
    */
   function notifyError(errorMessage: string): void {
-    sendMessageToParent('videoApp.notifyError', [errorMessage]);
+    sendMessageToParent('video.notifyError', [errorMessage]);
   }
-} //end of videoApp namespace
+} //end of video namespace

@@ -38,14 +38,14 @@ describe('video', () => {
       "This call is not allowed in the 'content' context",
     );
     expect(() =>
-    video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'sample effect config'),
+      video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'sample effect config'),
     ).toThrowError("This call is not allowed in the 'content' context");
   });
 
   it('register for video frame event', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.sidePanel);
     video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
-    const message = mobilePlatformMock.findMessageByFunc('videoApp.registerForVideoFrame');
+    const message = mobilePlatformMock.findMessageByFunc('video.registerForVideoFrame');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
   });
@@ -53,7 +53,7 @@ describe('video', () => {
   it('register for video effect change event', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.sidePanel);
     video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'sample effect config');
-    const message = mobilePlatformMock.findMessageByFunc('videoApp.videoEffectChanged');
+    const message = mobilePlatformMock.findMessageByFunc('video.videoEffectChanged');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
   });
