@@ -21,7 +21,7 @@ export {
 } from './privateAPIs';
 export { chat } from './chat';
 export { files } from './files';
-export { teams } from './teams';
+export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';

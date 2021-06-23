@@ -1,7 +1,7 @@
 import { core } from '../../src/public/publicAPIs';
 import { TeamInstanceParameters } from '../../src/private/interfaces';
 import { Utils } from '../utils';
-import { teams } from '../../src/private/teams';
+import { legacy } from '../../src/private/legacy';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -32,7 +32,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   describe('getUserJoinedTeams', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        teams.fullTrust.getUserJoinedTeams(() => {
+        legacy.fullTrust.getUserJoinedTeams(() => {
           return;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -42,7 +42,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
-      teams.fullTrust.getUserJoinedTeams(
+      legacy.fullTrust.getUserJoinedTeams(
         () => {
           callbackCalled = true;
         },
@@ -59,7 +59,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
-      teams.fullTrust.getUserJoinedTeams(
+      legacy.fullTrust.getUserJoinedTeams(
         () => {
           callbackCalled = true;
         },
@@ -76,7 +76,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
-      teams.fullTrust.getUserJoinedTeams(() => {
+      legacy.fullTrust.getUserJoinedTeams(() => {
         callbackCalled = true;
       });
 
@@ -90,7 +90,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
-      teams.fullTrust.getUserJoinedTeams(
+      legacy.fullTrust.getUserJoinedTeams(
         () => {
           callbackCalled = true;
         },
@@ -107,7 +107,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   describe('getConfigSetting', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
-        teams.fullTrust.getConfigSetting(() => {
+        legacy.fullTrust.getConfigSetting(() => {
           return;
         }, 'key'),
       ).toThrowError('The library has not yet been initialized');
@@ -117,7 +117,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
-      teams.fullTrust.getConfigSetting(() => {
+      legacy.fullTrust.getConfigSetting(() => {
         callbackCalled = true;
       }, 'key');
 

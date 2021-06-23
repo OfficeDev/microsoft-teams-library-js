@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react';
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
-import { teams, pages } from '@microsoft/teamsjs-app-sdk';
+import { legacy, pages } from '@microsoft/teamsjs-app-sdk';
 
 const FullTrustAPIs = (): ReactElement => {
   const [getUserJoinedTeamsRes, setGetUserJoinedTeamsRes] = React.useState('');
   const [getConfigSettingRes, setGetConfigSettingRes] = React.useState('');
   const [enterFullscreenRes, setEnterFullscreenRes] = React.useState('');
   const [exitFullscreenRes, setExitFullscreenRes] = React.useState('');
-  const [checkCapabilityTeamsRes, setCheckCapabilityTeamsRes] = React.useState('');
+  const [checkCapabilityLegacyRes, setCheckCapabilityLegacyRes] = React.useState('');
   const [checkCapabilityPagesRes, setCheckCapabilityPagesRes] = React.useState('');
 
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
@@ -17,7 +17,7 @@ const FullTrustAPIs = (): ReactElement => {
     const onComplete = (userJoinedTeamsInfo: teamsjs.UserJoinedTeamsInformation): void => {
       setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo));
     };
-    teams.fullTrust.getUserJoinedTeams(onComplete, teamInstanceParams);
+    legacy.fullTrust.getUserJoinedTeams(onComplete, teamInstanceParams);
   };
 
   const returnGetConfigSetting = (key: string): void => {
@@ -25,7 +25,7 @@ const FullTrustAPIs = (): ReactElement => {
     const onComplete = (value: string): void => {
       setGetConfigSettingRes(value);
     };
-    teams.fullTrust.getConfigSetting(onComplete, key);
+    legacy.fullTrust.getConfigSetting(onComplete, key);
   };
 
   const returnEnterFullscreen = (): void => {
@@ -38,11 +38,11 @@ const FullTrustAPIs = (): ReactElement => {
     pages.fullTrust.exitFullscreen();
   };
 
-  const checkTeamsCapability = (): void => {
-    if (teams.fullTrust.isSupported()) {
-      setCheckCapabilityTeamsRes('Teams Fulltrust module is supported');
+  const checkLegacyCapability = (): void => {
+    if (legacy.fullTrust.isSupported()) {
+      setCheckCapabilityLegacyRes('Legacy Fulltrust module is supported');
     } else {
-      setCheckCapabilityTeamsRes('Teams Fulltrust module is not supported');
+      setCheckCapabilityLegacyRes('Legacy Fulltrust module is not supported');
     }
   };
 
@@ -86,11 +86,11 @@ const FullTrustAPIs = (): ReactElement => {
         name="exitFullscreen"
       />
       <BoxAndButton
-        handleClick={checkTeamsCapability}
-        output={checkCapabilityTeamsRes}
+        handleClick={checkLegacyCapability}
+        output={checkCapabilityLegacyRes}
         hasInput={false}
-        title="Check Teams Fulltrust Capability"
-        name="checkTeamsFulltrustCapability"
+        title="Check Legacy Fulltrust Capability"
+        name="checkLegacyFulltrustCapability"
       />
       <BoxAndButton
         handleClick={checkPagesCapability}

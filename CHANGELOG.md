@@ -3,6 +3,10 @@
 ## v0.0.12
 
 In the MOS test app, dialog.submit() will now take in a JSON string with optional keys result and appIds rather than a string of just result.
+The following APIs have been moved from `teams.fullTrust` to `legacy.fullTrust`:
+* `getUserJoinedTeams`
+* `getConfigSettings`
+* `isSupported`
 
 ## v0.0.11
 Corresponding microsoft-teams-library-js version: 1.9.0

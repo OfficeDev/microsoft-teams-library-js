@@ -7,7 +7,7 @@ import { ErrorCode, SdkError } from '../public/interfaces';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { runtime } from '../public/runtime';
 
-export namespace teams {
+export namespace legacy {
   export namespace fullTrust {
     /**
      * @private
