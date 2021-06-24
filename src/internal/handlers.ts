@@ -7,7 +7,6 @@ class HandlersPrivate {
   } = {};
   public static themeChangeHandler: (theme: string) => void;
   public static backButtonPressHandler: () => boolean;
-  public static focusEnterHandler: (navigateForward: boolean) => void;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
@@ -18,7 +17,6 @@ export function initializeHandlers(): void {
   HandlersPrivate.handlers['backButtonPress'] = handleBackButtonPress;
   HandlersPrivate.handlers['load'] = handleLoad;
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-  HandlersPrivate.handlers['focusEnter'] = handleFocusEnter;
 }
 
 export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
@@ -67,17 +65,6 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 function handleBackButtonPress(): void {
   if (!HandlersPrivate.backButtonPressHandler || !HandlersPrivate.backButtonPressHandler()) {
     navigateBack();
-  }
-}
-
-export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  HandlersPrivate.focusEnterHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['focusEnter']);
-}
-
-function handleFocusEnter(navigateForward: boolean): void {
-  if (HandlersPrivate.focusEnterHandler) {
-    HandlersPrivate.focusEnterHandler(navigateForward);
   }
 }
 

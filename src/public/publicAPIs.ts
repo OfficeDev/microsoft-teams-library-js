@@ -256,7 +256,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
   ensureInitialized();
-  Handlers.registerFocusEnterHandler(handler);
+  Handlers.registerHandler('focusEnter', handler);
 }
 
 /**
