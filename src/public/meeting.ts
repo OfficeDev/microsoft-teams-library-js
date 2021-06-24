@@ -119,7 +119,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
@@ -134,7 +134,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
@@ -174,7 +174,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 

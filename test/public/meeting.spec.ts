@@ -37,7 +37,7 @@ describe('meeting', () => {
     });
 
     it('should successfully toggle the incoming client audio', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -63,7 +63,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -104,7 +104,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get the incoming client audio state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -130,7 +130,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -215,7 +215,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -256,7 +256,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get the anonymous user token of the user in meeting', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -284,7 +284,7 @@ describe('meeting', () => {
       expect(returnedSkypeToken).toBe(mockAuthenticationToken);
     });
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext('sidePanel');
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedSkypeToken: string | null;
