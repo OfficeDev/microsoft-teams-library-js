@@ -26,7 +26,7 @@ The following APIs have been moved from `teamsCore` to `pages`:
 * `regsiterAppButtonHoverLeaveHandler`
 * `initializeWithFrameContext`
 * `setFrameContext` has been renamed `setCurrentFrame`
-* `registerChangeSettingsHandler` has been renamed to `registerChangeConfigHandler` and moved to `pages.config`
+* `registerChangeSettingsHandler` has been renamed to `registerChangeConfigHandler` and moved to `pages.config` (in microsoft-teams-library-js v1.10.0, `registerChangeSettingsHandler` was changed to `registerEnterSettingsHandler`)
 * `registerBackButtonHandler` has moved to `pages.backStack.registerBackButtonHandler`
 
 The `pages.navigateBack` API has moved to `pages.backStack.navigateBack`

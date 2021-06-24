@@ -1,11 +1,9 @@
-import { core } from '../../src/public/publicAPIs';
-import { TeamInstanceParameters } from '../../src/private/interfaces';
+import { core } from '../../src/public';
 import { Utils } from '../utils';
-import { legacy } from '../../src/private/legacy';
+import { legacy, TeamInstanceParameters } from '../../src/private';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
-
   const utils = new Utils();
 
   beforeEach(() => {
@@ -25,7 +23,6 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       core._uninitialize();
     }
   });
-
   it('should exist in the global namespace', () => {
     expect(core).toBeDefined();
   });

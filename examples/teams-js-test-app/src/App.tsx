@@ -21,6 +21,7 @@ import LogAPIs from './components/LogsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
+import TeamsAPIs from './components/privateApis/TeamsAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -98,6 +99,7 @@ const App = (): ReactElement => {
       <PrivateAPIs />
       <RemoteCameraAPIs />
       <TeamsCoreAPIs />
+      <TeamsAPIs />
     </>
   );
 };

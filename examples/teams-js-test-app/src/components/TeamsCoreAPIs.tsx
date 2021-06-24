@@ -19,6 +19,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [checkPagesTabsCapabilityRes, setCheckPagesTabsCapabilityRes] = React.useState('');
   const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
   const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
+  const [registerFocusEnterHandlerRes, setRegisterFocusEnterHandlerRes] = React.useState('');
 
   const enablePrintCapability = (): void => {
     teamsCore.enablePrintCapability();
@@ -136,6 +137,14 @@ const TeamsCoreAPIs = (): ReactElement => {
     }
   };
 
+  const registerFocusEnterHandler = (): void => {
+    setRegisterFocusEnterHandlerRes('teamsCore.registerOnFocusHandler()' + noHubSdkMsg);
+    teamsCore.registerFocusEnterHandler(navigateForward => {
+      setRegisterFocusEnterHandlerRes('successfully called with nativateForward:' + navigateForward);
+      return true;
+    });
+  };
+
   return (
     <>
       <h1>teamsCore</h1>
@@ -230,6 +239,13 @@ const TeamsCoreAPIs = (): ReactElement => {
         hasInput={false}
         title="Check Page Tabs Capability"
         name="checkPageTabsCapability"
+      />
+      <BoxAndButton
+        handleClick={registerFocusEnterHandler}
+        output={registerFocusEnterHandlerRes}
+        hasInput={false}
+        title="Register On Focus Enter Handler"
+        name="registerFocusEnterHandler"
       />
     </>
   );
