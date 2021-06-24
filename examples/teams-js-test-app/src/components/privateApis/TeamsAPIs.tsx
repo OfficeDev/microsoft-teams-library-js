@@ -4,15 +4,15 @@ import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const TeamsAPIs: React.FC = () => {
-  const [getTeamsChannelsRes, setGetTeamsChannelsRes] = React.useState('');
+  const [getTeamChannelsRes, setGetTeamChannelsRes] = React.useState('');
 
-  const getTeamsChannels = (groupId: string): void => {
-    setGetTeamsChannelsRes('getTeamsChannel()' + noHubSdkMsg);
+  const getTeamChannels = (groupId: string): void => {
+    setGetTeamChannelsRes('getTeamChannels()' + noHubSdkMsg);
     const onComplete = (error: SdkError, channels: teams.ChannelInfo[]): void => {
       if (error) {
-        setGetTeamsChannelsRes('getTeamsChannel() error: ' + JSON.stringify(error));
+        setGetTeamChannelsRes('getTeamChannels() error: ' + JSON.stringify(error));
       } else {
-        setGetTeamsChannelsRes(JSON.stringify(channels));
+        setGetTeamChannelsRes(JSON.stringify(channels));
       }
     };
     teams.getTeamChannels(groupId, onComplete);
@@ -21,11 +21,11 @@ const TeamsAPIs: React.FC = () => {
     <>
       <h1>TeamsAPIs</h1>
       <BoxAndButton
-        handleClickWithInput={getTeamsChannels}
-        output={getTeamsChannelsRes}
+        handleClickWithInput={getTeamChannels}
+        output={getTeamChannelsRes}
         hasInput={true}
-        title="Get Teams Channels"
-        name="getTeamsChannels"
+        title="Get Team Channels"
+        name="getTeamChannels"
       />
     </>
   );

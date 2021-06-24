@@ -127,19 +127,6 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
-  it('should successfully register a change settings handler', () => {
-    utils.initializeWithContext('content');
-    let handlerCalled = false;
-
-    pages.config.registerChangeConfigHandler(() => {
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('changeSettings', '');
-
-    expect(handlerCalled).toBeTruthy();
-  });
-
   it('should use teams runtime config if an empty runtime config is given', () => {
     core.initialize();
 
@@ -216,22 +203,6 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     let navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
-  });
-
-  it('should successfully register a back button handler and not call navigateBack if it returns true', () => {
-    utils.initializeWithContext('content');
-
-    let handlerInvoked = false;
-    pages.backStack.registerBackButtonHandler(() => {
-      handlerInvoked = true;
-      return true;
-    });
-
-    utils.sendMessage('backButtonPress');
-
-    let navigateBackMessage = utils.findMessageByFunc('navigateBack');
-    expect(navigateBackMessage).toBeNull();
-    expect(handlerInvoked).toBe(true);
   });
 
   it('should successfully get context', () => {
