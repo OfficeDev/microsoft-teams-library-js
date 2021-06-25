@@ -104,7 +104,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get the incoming client audio state', () => {
-      desktopPlatformMock.initializeWithContext('meetingStage');
+      desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -256,7 +256,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get the anonymous user token of the user in meeting', () => {
-      desktopPlatformMock.initializeWithContext('meetingStage');
+      desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
