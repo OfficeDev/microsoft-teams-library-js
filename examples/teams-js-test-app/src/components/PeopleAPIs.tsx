@@ -11,7 +11,7 @@ const PeopleAPIs = (): ReactElement => {
       if (error) {
         setSelectPeopleRes('Error code: ' + error);
       } else {
-        setSelectPeopleRes(people.toString());
+        setSelectPeopleRes(JSON.stringify(people));
       }
     };
     setSelectPeopleRes('people.selectPeople' + noHubSdkMsg);
