@@ -7,6 +7,11 @@ export const version = '1.10.0';
 export const defaultSDKVersionForCompatCheck = '1.6.0';
 
 /**
+ * This is the SDK version when selectMedia API - VideoAndImage is supported on mobile.
+ */
+export const videoAndImageMediaAPISupportVersion = '2.0.2';
+
+/**
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
  */
 export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';

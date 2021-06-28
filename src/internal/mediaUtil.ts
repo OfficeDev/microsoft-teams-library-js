@@ -57,6 +57,18 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
+ * Returns true if the mediaInput params are called for mediatype VideoAndImage and false otherwise
+ */
+export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs): boolean {
+  if (mediaInputs) {
+    if (mediaInputs.mediaType == 3 || mediaInputs.videoAndImageProps) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Returns true if the get Media params are valid and false otherwise
  */
 export function validateGetMediaInputs(mimeType: string, format: media.FileFormat, content: string): boolean {
