@@ -113,6 +113,38 @@ steps:
       package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloud roll'
 
+  - task: ESLint@1
+    inputs:
+      Configuration: 'required'
+      TargetType: 'eslint'
+      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      ErrorLevel: 'warn'
+    displayName: 'Run ESLint'
+
+  - task: CredScan@3
+    condition: succeededOrFailed()
+    displayName: 'Run Credential Scanner'
+    inputs:
+      debugMode: false
+
+  - task: PublishSecurityAnalysisLogs@3
+    displayName: 'Publish Guardian Artifacts - All Tools'
+    inputs:
+      ArtifactType: M365
+    condition: succeededOrFailed()
+
+  - task: PostAnalysis@2
+    condition: succeededOrFailed()
+    displayName: 'Guardian Break'
+    inputs:
+      GdnBreakPolicyMinSev: Warning
+      GdnBreakAllTools: true
+      GdnBreakGdnToolCredScan: true
+      GdnBreakGdnToolCredScanSeverity: Warning
+      GdnBreakGdnToolESLint: true
+      GdnBreakGdnToolESLintSeverity: Warning
+      GdnBreakPolicy: M365
+
   - task: Yarn@3
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/main'),
