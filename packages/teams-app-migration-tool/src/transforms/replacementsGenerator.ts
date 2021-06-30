@@ -47,8 +47,8 @@ function parseFullyQualifiedFunctionReference(methodReference: string): function
  * replacement based on @param source and @param target
  * string would be splited to three fragments and each fragment would be
  * assigned to the corresponding attribute in replacement interface
- * @param source documented method in Team JavaScript SDK, i.e. 'microsoftTeams.initialize'
- * @param target documented mapping method from Team JavaScript SDK to teamsjs SDK, i.e. 'teamsjs.core.initialize'
+ * @param source documented method in Teams Client SDK, i.e. 'microsoftTeams.initialize'
+ * @param target documented mapping method from Teams Client SDK to teamsjs App SDK, i.e. 'teamsjs.core.initialize'
  * @returns a replacement with a pre-defined structure
  */
 function buildReplacement(source: string, target: string): replacement {
