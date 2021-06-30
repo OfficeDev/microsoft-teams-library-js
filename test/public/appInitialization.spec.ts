@@ -31,7 +31,7 @@ describe('appInitialization', () => {
     const message = utils.findMessageByFunc(appInitialization.Messages.AppLoaded);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
-    expect(message.args[0]).toEqual(version);
+    expect(message.args[0]).toEqual(1);
   });
 
   it('should call notifySuccess correctly', () => {
