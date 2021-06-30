@@ -61,7 +61,7 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
  */
 export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs) {
-    if (mediaInputs.mediaType == 3 || mediaInputs.videoAndImageProps) {
+    if (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps) {
       return true;
     }
   }

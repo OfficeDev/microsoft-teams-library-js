@@ -307,10 +307,7 @@ export namespace media {
   }
 
   /**
-   * @private
-   * Hide from docs
-   * --------
-   *  All properties in VideoAndImageProps are optional and have default values in the platform
+   * All properties in VideoAndImageProps are optional and have default values in the platform
    */
   export interface VideoAndImageProps extends ImageProps, VideoProps {}
 
