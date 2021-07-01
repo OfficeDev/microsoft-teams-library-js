@@ -132,6 +132,15 @@ steps:
     inputs:
       ArtifactType: M365
     condition: succeededOrFailed()
+  - task: AssetRetention@3
+    inputs:
+      ArrowServiceConnection: 'Arrow_office_ISS_PROD'
+      AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+      AssetNumber: '$(Build.BuildId)'
+      IsShipped: false
+      DropsToRetain: 'CodeAnalysisLogs'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    displayName: 'Artifact Retention(Arrow)'
 
   - task: PostAnalysis@2
     condition: succeededOrFailed()
