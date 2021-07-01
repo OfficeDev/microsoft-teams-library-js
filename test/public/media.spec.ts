@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-object-literal-type-assertion */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -11,7 +15,8 @@ import { media } from '../../src/public/media';
  */
 describe('media', () => {
   const mobilePlatformMock = new FramelessPostMocks();
-  const desktopPlatformMock = new Utils()
+  const desktopPlatformMock = new Utils();
+  const originalDefaultPlatformVersion = '1.6.0';
   const minVersionForCaptureImage = '1.7.0';
   const mediaAPISupportVersion = '1.8.0';
   const scanBarCodeAPISupportVersion = '1.9.0';
@@ -34,24 +39,19 @@ describe('media', () => {
   let emptyCallback = () => {};
 
   it('should not allow captureImage calls with null callback', () => {
-    expect(() => media.captureImage(null)).toThrowError(
-      '[captureImage] Callback cannot be null',
-    );
+    expect(() => media.captureImage(null)).toThrowError('[captureImage] Callback cannot be null');
   });
   it('should not allow captureImage calls with null callback after init context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => media.captureImage(null)).toThrowError(
-      '[captureImage] Callback cannot be null',
-    );
+    expect(() => media.captureImage(null)).toThrowError('[captureImage] Callback cannot be null');
   });
   it('should not allow captureImage calls before initialization', () => {
-    expect(() => media.captureImage(emptyCallback)).toThrowError(
-      'The library has not yet been initialized',
-    );
+    expect(() => media.captureImage(emptyCallback)).toThrowError('The library has not yet been initialized');
   });
   it('captureImage call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     media.captureImage((e: SdkError, f: media.File[]) => {
       error = e;
@@ -69,16 +69,12 @@ describe('media', () => {
   it('should not allow captureImage calls for remove frame context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => media.captureImage(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'remove' context",
-    );
+    expect(() => media.captureImage(emptyCallback)).toThrowError("This call is not allowed in the 'remove' context");
   });
   it('should not allow captureImage calls for settings frame context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-    expect(() => media.captureImage(emptyCallback)).toThrowError(
-      "This call is not allowed in the 'settings' context",
-    );
+    expect(() => media.captureImage(emptyCallback)).toThrowError("This call is not allowed in the 'settings' context");
   });
   it('should not allow captureImage calls in desktop', () => {
     desktopPlatformMock.initializeWithContext(FrameContexts.content);
@@ -119,18 +115,20 @@ describe('media', () => {
     expect(message.args.length).toBe(0);
 
     let callbackId = message.id;
-    let filesArray = [{
+    let filesArray = [
+      {
         content: 'base64encodedImage',
         format: media.FileFormat.Base64,
         mimeType: 'image/png',
         size: 300,
-      } as media.File];
+      } as media.File,
+    ];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, filesArray]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, filesArray],
+      },
+    } as DOMMessageEvent);
 
     expect(error).toBeFalsy();
     expect(files.length).toBe(1);
@@ -159,9 +157,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [{errorCode: ErrorCode.PERMISSION_DENIED}]
-      }
-    } as DOMMessageEvent)
+        args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
+      },
+    } as DOMMessageEvent);
 
     expect(files).toBeFalsy();
     expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
@@ -175,9 +173,7 @@ describe('media', () => {
       mediaType: media.MediaType.Image,
       maxMediaCount: 5,
     };
-    expect(() => media.selectMedia(mediaInputs, null)).toThrowError(
-      '[select Media] Callback cannot be null',
-    );
+    expect(() => media.selectMedia(mediaInputs, null)).toThrowError('[select Media] Callback cannot be null');
   });
 
   it('should not allow selectMedia calls with null mediaInputs', () => {
@@ -208,6 +204,7 @@ describe('media', () => {
 
   it('selectMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaError: SdkError;
     let mediaInputs: media.MediaInputs = {
       mediaType: media.MediaType.Image,
@@ -279,19 +276,21 @@ describe('media', () => {
     expect(message.args.length).toBe(1);
 
     let callbackId = message.id;
-    let filesArray = [{
-      content: 'base64encodedImage',
-      preview: null,
-      format: media.FileFormat.ID,
-      mimeType: 'image/jpeg',
-      size: 300,
-    } as media.Media];
+    let filesArray = [
+      {
+        content: 'base64encodedImage',
+        preview: null,
+        format: media.FileFormat.ID,
+        mimeType: 'image/jpeg',
+        size: 300,
+      } as media.Media,
+    ];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, filesArray]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, filesArray],
+      },
+    } as DOMMessageEvent);
 
     expect(mediaError).toBeFalsy();
     expect(mediaAttachments.length).toBe(1);
@@ -370,9 +369,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [{ errorCode: ErrorCode.SIZE_EXCEEDED }]
-      }
-    } as DOMMessageEvent)
+        args: [{ errorCode: ErrorCode.SIZE_EXCEEDED }],
+      },
+    } as DOMMessageEvent);
 
     expect(mediaAttachments).toBeFalsy();
     expect(mediaError.errorCode).toBe(ErrorCode.SIZE_EXCEEDED);
@@ -383,12 +382,10 @@ describe('media', () => {
    */
   it('should not allow getMedia calls with null callback', () => {
     let mediaOutput: media.Media = new media.Media();
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
-    expect(() => mediaOutput.getMedia(null)).toThrowError(
-      '[get Media] Callback cannot be null',
-    );
+    expect(() => mediaOutput.getMedia(null)).toThrowError('[get Media] Callback cannot be null');
   });
 
   it('should not allow getMedia calls with invalid media mimetype', () => {
@@ -396,7 +393,7 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    mediaOutput.content = "1234567";
+    mediaOutput.content = '1234567';
     mediaOutput.mimeType = null;
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
@@ -412,7 +409,7 @@ describe('media', () => {
     let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
     mediaOutput.content = null;
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
@@ -426,8 +423,8 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.Base64;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
@@ -438,10 +435,11 @@ describe('media', () => {
 
   it('getMedia call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaOutput: media.Media = new media.Media();
     let mediaError: SdkError;
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
@@ -454,8 +452,8 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaOutput: media.Media = new media.Media();
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia(emptyCallback);
     let message = mobilePlatformMock.findMessageByFunc('getMedia');
@@ -468,8 +466,8 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let file: Blob, mediaError: SdkError;
     let mediaOutput: media.Media = new media.Media();
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
@@ -485,9 +483,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, blob]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, blob],
+      },
+    } as DOMMessageEvent);
     expect(mediaError).toBeFalsy();
     expect(file).not.toBeNull();
   });
@@ -497,8 +495,8 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let file: Blob, mediaError: SdkError;
     let mediaOutput: media.Media = new media.Media();
-    mediaOutput.content = "1234567";
-    mediaOutput.mimeType = "image/jpeg";
+    mediaOutput.content = '1234567';
+    mediaOutput.mimeType = 'image/jpeg';
     mediaOutput.format = media.FileFormat.ID;
     mediaOutput.getMedia((error: SdkError, blob: Blob) => {
       mediaError = error;
@@ -513,9 +511,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, undefined]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, undefined],
+      },
+    } as DOMMessageEvent);
     expect(mediaError).toBeFalsy();
     expect(file).toBeFalsy();
   });
@@ -526,13 +524,11 @@ describe('media', () => {
   it('should not allow viewImages calls with null callback', () => {
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
-      value: "https://www.w3schools.com/images/picture.jpg",
-      type: media.ImageUriType.URL
+      value: 'https://www.w3schools.com/images/picture.jpg',
+      type: media.ImageUriType.URL,
     };
     uris.push(uri);
-    expect(() => media.viewImages(uris, null)).toThrowError(
-      '[view images] Callback cannot be null',
-    );
+    expect(() => media.viewImages(uris, null)).toThrowError('[view images] Callback cannot be null');
   });
 
   it('should not allow viewImages calls with null imageuris', () => {
@@ -560,11 +556,12 @@ describe('media', () => {
 
   it('viewImages call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let mediaError: SdkError;
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
-      value: "https://www.w3schools.com/images/picture.jpg",
-      type: media.ImageUriType.URL
+      value: 'https://www.w3schools.com/images/picture.jpg',
+      type: media.ImageUriType.URL,
     };
     uris.push(uri);
     media.viewImages(uris, (error: SdkError) => {
@@ -579,8 +576,8 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
-      value: "https://www.w3schools.com/images/picture.jpg",
-      type: media.ImageUriType.URL
+      value: 'https://www.w3schools.com/images/picture.jpg',
+      type: media.ImageUriType.URL,
     };
     uris.push(uri);
     media.viewImages(uris, emptyCallback);
@@ -594,8 +591,8 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
-      value: "https://www.w3schools.com/images/picture.jpg",
-      type: media.ImageUriType.URL
+      value: 'https://www.w3schools.com/images/picture.jpg',
+      type: media.ImageUriType.URL,
     };
     uris.push(uri);
     media.viewImages(uris, emptyCallback);
@@ -610,8 +607,8 @@ describe('media', () => {
     let mediaError: SdkError;
     let uris: media.ImageUri[] = [];
     let uri: media.ImageUri = {
-      value: "1234567",
-      type: media.ImageUriType.ID
+      value: '1234567',
+      type: media.ImageUriType.ID,
     };
     uris.push(uri);
     media.viewImages(uris, (error: SdkError) => {
@@ -626,9 +623,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [{ errorCode: ErrorCode.FILE_NOT_FOUND }]
-      }
-    } as DOMMessageEvent)
+        args: [{ errorCode: ErrorCode.FILE_NOT_FOUND }],
+      },
+    } as DOMMessageEvent);
     expect(mediaError.errorCode).toBe(ErrorCode.FILE_NOT_FOUND);
   });
 
@@ -636,27 +633,22 @@ describe('media', () => {
    * ScanBarCode API tests
    */
   it('should not allow scanBarCode calls with null callback', () => {
-    expect(() => media.scanBarCode(null, null)).toThrowError(
-      '[media.scanBarCode] Callback cannot be null',
-    );
+    expect(() => media.scanBarCode(null, null)).toThrowError('[media.scanBarCode] Callback cannot be null');
   });
 
   it('should not allow scanBarCode calls with null callback after init context', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
-    expect(() => media.scanBarCode(null, null)).toThrowError(
-      '[media.scanBarCode] Callback cannot be null',
-    );
+    expect(() => media.scanBarCode(null, null)).toThrowError('[media.scanBarCode] Callback cannot be null');
   });
 
   it('should not allow scanBarCode calls before initialization', () => {
-    expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
-      'The library has not yet been initialized',
-    );
+    expect(() => media.scanBarCode(emptyCallback, null)).toThrowError('The library has not yet been initialized');
   });
 
   it('scanBarCode call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let error;
     media.scanBarCode((e: SdkError, d: string) => {
       error = e;
@@ -705,13 +697,13 @@ describe('media', () => {
     expect(message.args.length).toBe(1);
 
     let callbackId = message.id;
-    let response : string = 'decodedText';
+    let response = 'decodedText';
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, response]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, response],
+      },
+    } as DOMMessageEvent);
 
     expect(mediaError).toBeFalsy();
     expect(decodedText).toBe('decodedText');
@@ -722,7 +714,7 @@ describe('media', () => {
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let decodedText: string, mediaError: SdkError;
     let barCodeConfig: media.BarCodeConfig = {
-      timeOutIntervalInSec: 40
+      timeOutIntervalInSec: 40,
     };
     media.scanBarCode((e: SdkError, d: string) => {
       mediaError = e;
@@ -734,13 +726,13 @@ describe('media', () => {
     expect(message.args.length).toBe(1);
 
     let callbackId = message.id;
-    let response : string = 'decodedText';
+    let response = 'decodedText';
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, response]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, response],
+      },
+    } as DOMMessageEvent);
 
     expect(mediaError).toBeFalsy();
     expect(decodedText).not.toBeNull;
@@ -764,9 +756,9 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }]
-      }
-    } as DOMMessageEvent)
+        args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }],
+      },
+    } as DOMMessageEvent);
 
     expect(decodedText).toBeFalsy();
     expect(mediaError.errorCode).toBe(ErrorCode.OPERATION_TIMED_OUT);
@@ -776,7 +768,7 @@ describe('media', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
     let barCodeConfig: any = {
-      timeOutIntervalInSec: 0
+      timeOutIntervalInSec: 0,
     };
     let mediaError: SdkError;
     media.scanBarCode((e: SdkError, d: string) => {
@@ -789,8 +781,7 @@ describe('media', () => {
   it('should allow scanBarCode calls when timeOutIntervalInSec is not passed in config params', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
-    let barCodeConfig: media.BarCodeConfig = {
-    };
+    let barCodeConfig: media.BarCodeConfig = {};
     let mediaError: SdkError;
     media.scanBarCode((e: SdkError, d: string) => {
       mediaError = e;
