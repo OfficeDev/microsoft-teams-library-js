@@ -63,7 +63,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('sidePanel');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -130,7 +130,7 @@ describe('meeting', () => {
     });
 
     it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('sidePanel');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -256,7 +256,7 @@ describe('meeting', () => {
     });
 
     it('should successfully get the anonymous user token of the user in meeting', () => {
-      desktopPlatformMock.initializeWithContext('sidePanel');
+      desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
