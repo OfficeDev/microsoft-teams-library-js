@@ -53,6 +53,13 @@ export namespace core {
           GlobalVars.hostClientType = clientType;
           GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
+          // Temporary workaround while the Hub is updated with the new argument order.
+          // For now, we might receive any of these possibilities:
+          // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
+          // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
+          // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
+          // This code supports any of these possibilities
+
           // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
           // so we assume that if we don't have it, we must be running in Teams.
           // After Teams switches to the hub SDK, we can remove this default code.
@@ -61,14 +68,23 @@ export namespace core {
             runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
             if (e instanceof SyntaxError) {
-              // if the given runtime config was actually meant to be a SDK version, store it as such.
-              // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-              // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
-              // remove this feature.
-              if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
-                GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+              try {
+                const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
+                clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+              } catch (e) {
+                if (e instanceof SyntaxError) {
+                  // if the given runtime config was actually meant to be a SDK version, store it as such.
+                  // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+                  // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+                  // remove this feature.
+                  if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
+                    GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+                  }
+                  applyRuntimeConfig(teamsRuntimeConfig);
+                } else {
+                  throw e;
+                }
               }
-              applyRuntimeConfig(teamsRuntimeConfig);
             } else {
               // If it's any error that's not a JSON parsing error, we want the program to fail.
               throw e;
