@@ -247,7 +247,7 @@ export namespace media {
    * @private
    * Hide from docs
    * --------
-   *  All properties common to Image and Video Props
+   * All properties common to Image and Video Props
    */
   interface MediaProps {
     /**
@@ -296,7 +296,7 @@ export namespace media {
    * @private
    * Hide from docs
    * --------
-   *  All properties in VideoProps are optional and have default values in the platform
+   * All properties in VideoProps are optional and have default values in the platform
    */
   interface VideoProps extends MediaProps {
     /**
@@ -424,15 +424,30 @@ export namespace media {
     if (!callback) {
       throw new Error('[select Media] Callback cannot be null');
     }
+
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (
-      !isAPISupportedByPlatform(mediaAPISupportVersion) ||
-      (isMediaCallForVideoAndImageInputs(mediaInputs) && !isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion))
-    ) {
+    if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, null);
       return;
     }
+
+    if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
+      if (
+        GlobalVars.hostClientType === HostClientType.desktop ||
+        GlobalVars.hostClientType === HostClientType.web ||
+        GlobalVars.hostClientType === HostClientType.rigel
+      ) {
+        const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        callback(notSupportedError, null);
+        return;
+      } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
+        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+        callback(oldPlatformError, null);
+        return;
+      }
+    }
+
     if (!validateSelectMediaInputs(mediaInputs)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
       callback(invalidInput, null);
