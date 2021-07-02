@@ -7,13 +7,15 @@ import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from '.
 import { core } from './publicAPIs';
 import { runtime } from './runtime';
 
+/**
+ * Navigation specific part of the SDK.
+ *
+ * @beta
+ */
 export namespace pages {
   /**
-   * Navigation specific part of the SDK.
-   */
-  /**
    * Return focus to the main teamsjs app. Will focus search bar if navigating forward and app bar if navigating back.
-   * @param navigateForward Determines the direction to focus in teamsjs app.
+   * @param navigateForward - Determines the direction to focus in teamsjs app.
    */
   export function returnFocus(navigateForward?: boolean): void {
     ensureInitialized(FrameContexts.content);
@@ -41,7 +43,7 @@ export namespace pages {
    * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
    * than the current one in a way that keeps the app informed of the change and allows the SDK to
    * continue working.
-   * @param url The URL to navigate the frame to.
+   * @param url - The URL to navigate the frame to.
    */
   export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(
@@ -66,7 +68,7 @@ export namespace pages {
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the user toggles full-screen view for a tab.
+   * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
@@ -76,7 +78,7 @@ export namespace pages {
   /**
    * Registers a handler for clicking the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the personal app button is clicked in the app bar.
+   * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
    */
   export function registerAppButtonClickHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
@@ -86,7 +88,7 @@ export namespace pages {
   /**
    * Registers a handler for entering hover of the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
+   * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
    */
   export function registerAppButtonHoverEnterHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
@@ -96,7 +98,7 @@ export namespace pages {
   /**
    * Registers a handler for exiting hover of the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
+   * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
    */
   export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);

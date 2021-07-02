@@ -24,15 +24,16 @@ import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
 
 /**
  * Namespace to interact with the core part of the teamsjs App SDK.
- * This object is used for starting or completing authentication flows.
+ *
+ * @beta
  */
 export namespace core {
-  // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
+  // ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
   /**
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
-   * @param callback Optionally specify a callback to invoke when Teams SDK has successfully initialized
-   * @param validMessageOrigins Optionally specify a list of cross frame message origins. There must have
+   * @param callback - Optionally specify a callback to invoke when App SDK has successfully initialized
+   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. There must have
    * https: protocol otherwise they will be ignored. Example: https://www.example.com
    */
   export function initialize(callback?: () => void, validMessageOrigins?: string[]): void {
@@ -149,26 +150,30 @@ export namespace core {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs.
    * ------
    * Undocumented function used to set a mock window for unit tests
+   *
+   * @internal
    */
   export function _initialize(hostWindow: any): void {
     Communication.currentWindow = hostWindow;
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs.
    * ------
    * Undocumented function used to clear state between unit tests
+   *
+   * @internal
    */
   export function _uninitialize(): void {}
 
   /**
    * Retrieves the current context the frame is running in.
-   * @param callback The callback to invoke when the {@link Context} object is retrieved.
+   * @param callback - The callback to invoke when the {@link Context} object is retrieved.
    */
   export function getContext(callback: (context: Context) => void): void {
     ensureInitialized();
@@ -185,7 +190,7 @@ export namespace core {
   /**
    * Registers a handler for theme changes.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the user changes their theme.
+   * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
     ensureInitialized();
@@ -194,7 +199,7 @@ export namespace core {
 
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
-   * @param deepLinkParameters ID and label for the link and fallback URL.
+   * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -208,7 +213,7 @@ export namespace core {
 
   /**
    * execute deep link API.
-   * @param deepLink deep link.
+   * @param deepLink - deep link.
    */
   export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
     ensureInitialized(
