@@ -1,6 +1,6 @@
 import { generateRegExpFromUrls } from './utils';
 
-export const version = '1.10.0';
+export const version = '1.11.0-beta.2';
 /**
  * The SDK version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
  * Modified to 2.0.1 which is hightest till now so that if any client doesn't pass version in initialize function, it will be set to highest.
