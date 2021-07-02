@@ -19,6 +19,26 @@
     {
       "source" : "microsoftTeams.registerOnThemeChangeHandler",
       "target" : "teamsjs.core.registerOnThemeChangeHandler"
+    },
+    {
+      "source" : "microsoftTeams.authentication.authenticate",
+      "target" : "teamsjs.authentication.authenticate"
+    },
+    {
+      "source" : "microsoftTeams.authentication.getAuthToken",
+      "target" : "teamsjs.authentication.getAuthToken"
+    },
+    {
+      "source" : "microsoftTeams.authentication.notifyFailure",
+      "target" : "teamsjs.authentication.notifyFailure"
+    },
+    {
+      "source" : "microsoftTeams.authentication.notifySuccess",
+      "target" : "teamsjs.authentication.notifySuccess"
+    },
+    {
+      "source" : "microsoftTeams.authentication.registerAuthenticationHandlers",
+      "target" : "teamsjs.authentication.registerAuthenticationHandlers"
     }
   ]
 }
