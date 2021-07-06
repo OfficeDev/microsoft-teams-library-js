@@ -11,6 +11,7 @@ import { people } from '../../src/public/people';
 describe('peoplePicker', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const minVersionForSelectPeople = '2.0.0';
+  const originalDefaultPlatformVersion = '1.6.0';
  
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -69,6 +70,7 @@ describe('peoplePicker', () => {
 
   it('selectPeople call in default version of platform support fails', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     let peoplePickerError: SdkError;
     people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
       peoplePickerError = error;
