@@ -14,6 +14,7 @@ import {
   exitFullscreen,
   sendCustomEvent,
   registerUserSettingsChangeHandler,
+  refreshSiteUrl,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -705,6 +706,24 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
       const exitFullscreenMessage = utils.findMessageByFunc('exitFullscreen');
       expect(exitFullscreenMessage).not.toBeNull();
+    });
+  });
+
+  describe('refreshSiteUrl', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => refreshSiteUrl('threadId')).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => refreshSiteUrl('threadId')).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should not allow calls with null groupId', () => {
+      utils.initializeWithContext('content');
+      expect(() => refreshSiteUrl(null)).toThrowError();
     });
   });
 });

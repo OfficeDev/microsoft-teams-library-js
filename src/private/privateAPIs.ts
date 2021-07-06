@@ -230,3 +230,15 @@ export function registerUserSettingsChangeHandler(
 
   registerHandler('userSettingsChange', handler, true, [settingTypes]);
 }
+
+/**
+ * @private
+ * Allow 1st party apps to call this function when they receive migrated errors to inform Teams refresh siteurl
+ * when site admin renames siteurl.
+ * @param threadId ID of the thread where the app entity will be created
+ */
+export function refreshSiteUrl(threadId: string): void {
+  ensureInitialized();
+
+  sendMessageToParent(threadId);
+}
