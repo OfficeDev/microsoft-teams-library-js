@@ -1,5 +1,5 @@
 export const PublicAPIMessages = {
-  shareInTeams: 'shareInTeams'
+  shareInTeams: 'shareInTeams',
 };
 
 export enum HostClientType {
@@ -61,4 +61,3 @@ export enum ChannelType {
   Private = 'Private',
   Shared = 'Shared',
 }
-

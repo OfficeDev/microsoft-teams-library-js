@@ -303,7 +303,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 /**
  * @private
  * Feature is under development
- * 
+ *
  * Opens a share-in-teams dialog with a shared url.
  * @param url URL to the app page.
  */
