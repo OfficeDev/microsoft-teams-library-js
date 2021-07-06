@@ -9,11 +9,12 @@ import {
   registerOnLoadHandler,
   registerBeforeUnloadHandler,
   enablePrintCapability,
-  registerChangeSettingsHandler,
+  registerEnterSettingsHandler,
   getContext,
   _initialize,
   _uninitialize,
   registerBackButtonHandler,
+  registerFocusEnterHandler,
   registerOnThemeChangeHandler,
   initialize,
   setFrameContext,
@@ -141,7 +142,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerChangeSettingsHandler(() => {
+    registerEnterSettingsHandler(() => {
       handlerCalled = true;
     });
 
@@ -224,6 +225,18 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     let navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).toBeNull();
+    expect(handlerInvoked).toBe(true);
+  });
+
+  it('should successfully register a focus enter handler and return true', () => {
+    utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    registerFocusEnterHandler(() => {
+      handlerInvoked = true;
+    });
+
+    utils.sendMessage('focusEnter');
     expect(handlerInvoked).toBe(true);
   });
 
