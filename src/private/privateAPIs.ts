@@ -240,5 +240,9 @@ export function registerUserSettingsChangeHandler(
 export function refreshSiteUrl(threadId: string): void {
   ensureInitialized();
 
+  if (!threadId) {
+    throw new Error('[refreshSiteUrl] threadId cannot be null or empty');
+  }
+
   sendMessageToParent(threadId);
 }

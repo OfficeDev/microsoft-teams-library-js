@@ -714,16 +714,9 @@ describe('MicrosoftTeams-privateAPIs', () => {
       expect(() => refreshSiteUrl('threadId')).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls without frame context initialization', () => {
-      utils.initializeWithContext('settings');
-      expect(() => refreshSiteUrl('threadId')).toThrowError(
-        "This call is not allowed in the 'settings' context",
-      );
-    });
-
     it('should not allow calls with null groupId', () => {
       utils.initializeWithContext('content');
-      expect(() => refreshSiteUrl(null)).toThrowError();
+      expect(() => refreshSiteUrl(null)).toThrowError('[refreshSiteUrl] threadId cannot be null or empty');
     });
   });
 });
