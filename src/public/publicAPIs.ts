@@ -12,7 +12,7 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
-import { FrameContexts } from './constants';
+import { FrameContexts, PublicAPIMessages } from './constants';
 import {
   Communication,
   initializeCommunication,
@@ -301,6 +301,25 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 }
 
 /**
+ * @private
+ * Feature is under development
+ * 
+ * Opens a share-in-teams dialog with a shared url.
+ * @param url URL to the app page.
+ */
+export function shareInTeams(url: string): void {
+  ensureInitialized(
+    FrameContexts.content,
+    FrameContexts.sidePanel,
+    FrameContexts.task,
+    FrameContexts.stage,
+    FrameContexts.meetingStage,
+  );
+
+  sendMessageToParent(PublicAPIMessages.shareInTeams, [url]);
+}
+
+/**
  * execute deep link API.
  * @param deepLink deep link.
  */
@@ -328,4 +347,20 @@ export function initializeWithFrameContext(
 ): void {
   initialize(callback, validMessageOrigins);
   setFrameContext(frameContext);
+}
+
+export function checkDevicePermission(
+  deviceType: string,
+  callback: (isPermissionGranted: boolean) => {},
+  promptForReload = false,
+): void {
+  ensureInitialized(
+    FrameContexts.content,
+    FrameContexts.sidePanel,
+    FrameContexts.settings,
+    FrameContexts.task,
+    FrameContexts.stage,
+    FrameContexts.meetingStage,
+  );
+  sendMessageToParent('checkDevicePermission', [deviceType, promptForReload], callback);
 }
