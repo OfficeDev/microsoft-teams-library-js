@@ -60,7 +60,7 @@ export namespace teamsCore {
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
    * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
    */
-  export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
+  export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();
     Handlers.registerHandler('focusEnter', handler);
   }

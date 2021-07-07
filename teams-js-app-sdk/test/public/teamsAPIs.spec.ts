@@ -355,14 +355,13 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toBe(frameContext);
   });
-  
+
   it('should successfully register a focus enter handler and return true', () => {
     utils.initializeWithContext('content');
 
     let handlerInvoked = false;
     teamsCore.registerFocusEnterHandler(() => {
       handlerInvoked = true;
-      return true;
     });
 
     utils.sendMessage('focusEnter');
