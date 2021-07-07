@@ -1,7 +1,7 @@
 import { core } from '../../src/public/publicAPIs';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
-import { TeamType } from '../../src/public/constants';
+import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
   sendCustomMessage,
@@ -205,6 +205,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     let actualContext2: Context;
     core.getContext(context => {
+      console.log(JSON.stringify(context));
       actualContext2 = context;
     });
 
@@ -222,34 +223,102 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let expectedContext1: Context = {
+    let contextBridge1: ContextBridge = {
       locale: 'someLocale1',
-      groupId: 'someGroupId1',
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
+      userObjectId: 'someUserObjectId1',
     };
-    let expectedContext2: Context = {
+    let expectedContext1: Context = {
+      app: {
+        locale: 'someLocale1',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId1',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId1',
+      },
+      channel: {
+        id: 'someChannelId1',
+      },
+    };
+
+    let contextBridge2: ContextBridge = {
       locale: 'someLocale2',
-      groupId: 'someGroupId2',
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
+      userObjectId: 'someUserObjectId2',
     };
-    let expectedContext3: Context = {
+    let expectedContext2: Context = {
+      app: {
+        locale: 'someLocale2',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId2',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId2',
+      },
+      channel: {
+        id: 'someChannelId2',
+      },
+    };
+
+    let contextBridge3: ContextBridge = {
       locale: 'someLocale3',
-      groupId: 'someGroupId3',
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
+      userObjectId: 'someUserObjectId3',
+    };
+    let expectedContext3: Context = {
+      app: {
+        locale: 'someLocale3',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId3',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId3',
+      },
+      channel: {
+        id: 'someChannelId3',
+      },
     };
 
     // respond in the wrong order
-    utils.respondToMessage(getContextMessage3, expectedContext3);
-    utils.respondToMessage(getContextMessage1, expectedContext1);
-    utils.respondToMessage(getContextMessage2, expectedContext2);
+    utils.respondToMessage(getContextMessage3, contextBridge3);
+    utils.respondToMessage(getContextMessage1, contextBridge1);
+    utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
-    expect(actualContext1).toBe(expectedContext1);
-    expect(actualContext2).toBe(expectedContext2);
-    expect(actualContext3).toBe(expectedContext3);
+    expect(actualContext1).toEqual(expectedContext1);
+    expect(actualContext2).toEqual(expectedContext2);
+    expect(actualContext3).toEqual(expectedContext3);
   });
 
   it('should only call callbacks once', () => {
@@ -263,7 +332,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: Context = {
+    let expectedContext: ContextBridge = {
       locale: 'someLocale',
       groupId: 'someGroupId',
       channelId: 'someChannelId',

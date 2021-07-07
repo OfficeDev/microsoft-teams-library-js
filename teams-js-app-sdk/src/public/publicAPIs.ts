@@ -6,8 +6,8 @@ import { ensureInitialized, processAdditionalValidOrigins } from '../internal/in
 import { GlobalVars } from '../internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { pages } from './pages';
-import { DeepLinkParameters, Context } from './interfaces';
-import { compareSDKVersions, getGenericOnCompleteHandler } from '../internal/utils';
+import { DeepLinkParameters, Context, ContextBridge } from './interfaces';
+import { compareSDKVersions, getGenericOnCompleteHandler, transformContext } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 import {
@@ -178,12 +178,28 @@ export namespace core {
   export function getContext(callback: (context: Context) => void): void {
     ensureInitialized();
 
-    sendMessageToParent('getContext', (context: Context) => {
-      if (!context.frameContext) {
-        // Fallback logic for frameContext properties
-        context.frameContext = GlobalVars.frameContext;
-      }
+    sendMessageToParent('getContext', (contextBridge: ContextBridge) => {
+      const context: Context = transformContext(contextBridge);
       callback(context);
+    });
+  }
+
+  /**
+   * @private
+   * Hide from docs.
+   * --Retaining for E2E tests, remove after E2E tests configuration
+   * Retrieves the current context the frame is running in.
+   * @param callback The callback to invoke when the {@link Context} object is retrieved.
+   */
+  export function getContextOld(callback: (contextBridge: ContextBridge) => void): void {
+    ensureInitialized();
+
+    sendMessageToParent('getContext', (contextBridge: ContextBridge) => {
+      if (!contextBridge.frameContext) {
+        // Fallback logic for frameContext properties
+        contextBridge.frameContext = GlobalVars.frameContext;
+      }
+      callback(contextBridge);
     });
   }
 

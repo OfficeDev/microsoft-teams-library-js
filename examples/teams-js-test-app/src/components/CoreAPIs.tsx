@@ -5,14 +5,22 @@ import { noHubSdkMsg } from '../App';
 
 const CoreAPIs = (): ReactElement => {
   const [getContextRes, setGetContextRes] = React.useState('');
+  const [getContextV2Res, setGetContextV2Res] = React.useState('');
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
   const [shareDeepLinkRes, setShareDeepLinkRes] = React.useState('');
   const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
   const getContext = (): void => {
-    setGetContextRes('core.getContext()' + noHubSdkMsg);
-    core.getContext((res: Context) => {
+    setGetContextRes('core.getContextOld()' + noHubSdkMsg);
+    core.getContextOld((res: any) => {
       setGetContextRes(JSON.stringify(res));
+    });
+  };
+
+  const getContextV2 = (): void => {
+    setGetContextV2Res('core.getContext()' + noHubSdkMsg);
+    core.getContext((res: Context) => {
+      setGetContextV2Res(JSON.stringify(res));
     });
   };
 
@@ -51,6 +59,13 @@ const CoreAPIs = (): ReactElement => {
         hasInput={false}
         title="Get Context"
         name="getContext"
+      />
+      <BoxAndButton
+        handleClick={getContextV2}
+        output={getContextV2Res}
+        hasInput={false}
+        title="Get Context"
+        name="getContextV2"
       />
       <BoxAndButton
         handleClickWithInput={executeDeepLink}

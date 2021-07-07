@@ -13,6 +13,15 @@ export {
   DialogInfo,
   TeamInformation,
   FileOpenPreference,
+  AppInfo,
+  AppHostInfo,
+  PageInfo,
+  UserInfo,
+  ChannelInfo,
+  ChatInfo,
+  MeetingInfo,
+  TeamInfo,
+  TenantInfo,
 } from './interfaces';
 export { core } from './publicAPIs';
 export { dialog } from './dialog';

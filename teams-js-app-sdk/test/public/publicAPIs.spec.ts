@@ -1,5 +1,5 @@
-import { Context } from '../../src/public/interfaces';
-import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
+import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
+import { TeamType, UserTeamRole, HostClientType, ChannelType, HostName } from '../../src/public/constants';
 import { core } from '../../src/public/publicAPIs';
 import { pages } from '../../src/public/pages';
 import { FrameContexts } from '../../src/public/constants';
@@ -216,7 +216,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: Context = {
+    let contextBridge: ContextBridge = {
       groupId: 'someGroupId',
       teamId: 'someTeamId',
       teamName: 'someTeamName',
@@ -249,13 +249,97 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
       meetingId: 'dummyMeetingId',
+      appIconPosition: 5,
+      channelType: ChannelType.Shared,
+      defaultOneNoteSectionId: 'someDefaultOneNoteSectionId',
+      hostName: HostName.orange,
+      hostTeamGroupId: 'someHostGroupId',
+      hostTeamTenantId: 'someHostTenantId',
+      isCallingAllowed: true,
+      sourceOrigin: 'www.origin.com',
+      teamTemplateId: 'someTeamTemplateId',
+      userClickTime: 2222,
+      userFileOpenPreference: FileOpenPreference.Inline,
+      isMultiWindow: true,
+      frameContext: FrameContexts.content,
+      userDisplayName: 'someTestUser',
     };
-    //insert expected time comparison here?
-    utils.respondToMessage(getContextMessage, expectedContext);
 
-    expect(actualContext).toBe(expectedContext);
-    expect(actualContext.frameContext).toBe(FrameContexts.content);
-    expect(actualContext.meetingId).toBe('dummyMeetingId');
+    const expectedContext: Context = {
+      app: {
+        iconPositionVertical: 5,
+        locale: 'someLocale',
+        parentMessageId: 'someParentMessageId',
+        sessionId: 'appSessionId',
+        theme: 'someTheme',
+        userClickTime: 2222,
+        userFileOpenPreference: FileOpenPreference.Inline,
+        host: {
+          name: HostName.orange,
+          clientType: HostClientType.web,
+
+          ringId: 'someRingId',
+          sessionId: 'someSessionId',
+        },
+      },
+      page: {
+        id: 'someEntityId',
+        subPageId: 'someSubEntityId',
+        isFullScreen: true,
+        sourceOrigin: 'www.origin.com',
+        frameContext: FrameContexts.content,
+        isMultiWindow: true,
+      },
+      user: {
+        id: 'someUserObjectId',
+        displayName: 'someTestUser',
+        isCallingAllowed: true,
+        licenseType: 'someUserLicenseType',
+        loginHint: 'someLoginHint',
+        userPrincipalName: 'someUserPrincipalName',
+        tenant: {
+          id: 'someTid',
+          sku: 'someTenantSKU',
+        },
+      },
+      channel: {
+        id: 'someChannelId',
+        displayName: 'someChannelName',
+        relativeUrl: 'someChannelRelativeUrl',
+        membershipType: ChannelType.Shared,
+        defaultOneNoteSectionId: 'someDefaultOneNoteSectionId',
+        ownerTenantId: 'someHostTenantId',
+        ownerGroupId: 'someHostGroupId',
+      },
+      chat: {
+        id: 'someChatId',
+      },
+      meeting: {
+        id: 'dummyMeetingId',
+      },
+      sharepoint: {},
+      team: {
+        internalId: 'someTeamId',
+        displayName: 'someTeamName',
+        type: TeamType.Staff,
+        groupId: 'someGroupId',
+        templateId: 'someTeamTemplateId',
+        isArchived: false,
+        userRole: UserTeamRole.Admin,
+      },
+      sharePointSite: {
+        url: 'someSiteUrl',
+        domain: 'someTeamSiteDomain',
+        path: 'someTeamSitePath',
+      },
+    };
+
+    //insert expected time comparison here?
+    utils.respondToMessage(getContextMessage, contextBridge);
+
+    expect(actualContext).toEqual(expectedContext);
+    expect(actualContext.page.frameContext).toBe(FrameContexts.content);
+    expect(actualContext.meeting.id).toBe('dummyMeetingId');
   });
 
   it('should successfully get frame context in side panel', () => {
@@ -271,7 +355,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     utils.respondToMessage(getContextMessage, {});
 
-    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+    expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   it('should successfully get frame context when returned from client', () => {
@@ -287,7 +371,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
 
-    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+    expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   it('should successfully get frame context in side panel with fallback logic if not returned from client', () => {
@@ -303,7 +387,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     utils.respondToMessage(getContextMessage, {});
 
-    expect(actualContext.frameContext).toBe(FrameContexts.sidePanel);
+    expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
   describe('navigateCrossDomain', () => {
