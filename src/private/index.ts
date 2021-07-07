@@ -31,3 +31,4 @@ export { meetingRoom } from './meetingRoom';
 export { remoteCamera } from './remoteCamera';
 export { files } from './files';
 export { appEntity } from './appEntity';
+export { teams } from './teams';
