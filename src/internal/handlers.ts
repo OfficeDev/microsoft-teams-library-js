@@ -70,7 +70,7 @@ function handleBackButtonPress(): void {
   }
 }
 
-export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
   HandlersPrivate.focusEnterHandler = handler;
   handler && sendMessageToParent('registerHandler', ['focusEnter']);
 }

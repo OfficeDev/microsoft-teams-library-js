@@ -3,7 +3,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 
 /**
- * Namespace to interact with the files specific part of the SDK.
+ * Namespace to interact with the `teams` specific part of the SDK.
  *
  * @private
  * Hide from docs
