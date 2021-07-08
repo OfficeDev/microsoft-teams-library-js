@@ -322,19 +322,21 @@ describe('media', () => {
     expect(message.args.length).toBe(1);
 
     let callbackId = message.id;
-    let filesArray = [{
-      content: 'base64encodedImage',
-      preview: null,
-      format: media.FileFormat.ID,
-      mimeType: 'video/mp4',
-      size: 300,
-    } as media.Media];
+    let filesArray = [
+      {
+        content: 'base64encodedImage',
+        preview: null,
+        format: media.FileFormat.ID,
+        mimeType: 'video/mp4',
+        size: 300,
+      } as media.Media,
+    ];
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, filesArray]
-      }
-    } as DOMMessageEvent)
+        args: [undefined, filesArray],
+      },
+    } as DOMMessageEvent);
 
     expect(mediaError).toBeFalsy();
     expect(mediaAttachments.length).toBe(1);
