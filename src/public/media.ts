@@ -433,7 +433,7 @@ export namespace media {
     }
 
     if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-      if (GlobalVars.hostClientType !== HostClientType.android && GlobalVars.hostClientType !== HostClientType.ios) {
+      if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
         const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         callback(notSupportedError, null);
         return;
