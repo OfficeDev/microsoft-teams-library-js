@@ -218,7 +218,7 @@ describe('media', () => {
   });
 
   it('selectMedia call for mediaType = 3 in mediaAPISupportVersion of platform support fails', () => {
-    mobilePlatformMock.initializeWithContext(FrameContexts.task);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaError: SdkError;
     let mediaInputs: media.MediaInputs = {
@@ -305,7 +305,7 @@ describe('media', () => {
   });
 
   it('selectMedia calls with successful result for mediaType = 3', () => {
-    mobilePlatformMock.initializeWithContext(FrameContexts.content);
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
     mobilePlatformMock.setClientSupportedSDKVersion(videoAndImageMediaAPISupportVersion);
     let mediaAttachments: media.Media[], mediaError: SdkError;
     let mediaInputs: media.MediaInputs = {
