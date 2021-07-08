@@ -1,3 +1,3 @@
-import * as msft from '@microsoft/teams-js';
+import { authentication } from '@microsoft/teamsjs-app-sdk';
 
 authentication.getAuthToken();

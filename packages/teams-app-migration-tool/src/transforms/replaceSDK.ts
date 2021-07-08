@@ -14,7 +14,6 @@ import core, {
   Transform,
 } from 'jscodeshift';
 import { Collection } from 'jscodeshift/src/Collection';
-import { replaceMethodLogger } from '../loggers';
 import { replacement } from './replacement';
 import { build } from './replacementsGenerator';
 
@@ -76,34 +75,6 @@ function reachCallee(p: any): any {
 }
 
 /**
- * This function is to traverse each node of prefix for Teams Client SDK method call and finally
- * concatenate all the names from nodes to make a fully qualified references
- * @param p AST node with different types
- * @returns a string of fully qualified function reference from Teams Client SDK
- */
-function getOriginalMethodReference(p: any): string {
-  /**
-   * if parent of current AST node has type CallExpression, it means that we reach to the node representing
-   * method name, where we should stop traversing / concatenating the string
-   * i.e. in 'microsoftTeams.initialize()', node whose property name is 'initialize' represents
-   * the end of traverse since we start from node with name 'microsoftTeams'
-   */
-  if (p.parent.node.type === 'CallExpression') {
-    return p.node.property.name;
-  }
-  /**
-   * the first node would always be like a node having name 'microsoftTeams', which
-   * is a namespace. It's a special identifier node that doesn't have property
-   * rest of nodes should have property attribute
-   */
-  if (typeof p.node.property !== 'undefined') {
-    return p.node.property.name + '.' + getOriginalMethodReference(p.parent);
-  } else {
-    return p.node.name + '.' + getOriginalMethodReference(p.parent);
-  }
-}
-
-/**
  * findReplacement function is trying to find a replacement having mapping from current function reference
  * in Teams Client SDK to the function reference in teamsjs App SDK
  * @param rules an array of replacements
@@ -127,14 +98,12 @@ function findReplacement(rules: Array<replacement>, p: ASTPath<MemberExpression>
  */
 function buildMethodASTNode(tokens: Array<string>): any {
   let node: MemberExpression | Identifier | null = null;
-
   if (tokens.length == 1) {
     node = identifier(String(tokens.pop()));
   } else if (tokens.length > 1) {
     const property: string | undefined = tokens.pop();
     node = memberExpression(buildMethodASTNode(tokens), identifier(String(property)));
   }
-
   return node;
 }
 
@@ -179,8 +148,8 @@ function getTeamsClientSDKFunctionRefernecePrefixes(importPath: Collection<Impor
            * i.e. "import * as msft from '@microsoft/teams-js" and msft would be a specifier name
            */
           (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportNamespaceSpecifier') &&
-          specifier.local !== null &&
           typeof specifier.local !== 'undefined' &&
+          specifier.local !== null &&
           specifier.local.type === 'Identifier'
         ) {
           namespacesImported.add(specifier.local.name);
@@ -205,10 +174,12 @@ const transform: Transform = (file: FileInfo, api: API): string => {
   const j: core.JSCodeshift = api.jscodeshift;
   const root: Collection<any> = j(file.source);
   /**
-   * initialize local namespacesImported set for each file to record
-   * namespaces imported from Teams Client SDK
+   * initialize local namespacesImported sets for each file to record
+   * namespaces imported from Teams Client SDK and replaced to those under
+   * teamsjs App SDK
    */
   const namespacesImportedFromTeamsClientSDK: Set<string> = new Set();
+  const namespacesForMosAppSDK: Set<string> = new Set();
   /**
    * build replacements
    */
@@ -254,12 +225,19 @@ const transform: Transform = (file: FileInfo, api: API): string => {
        * find right replacement and build string of original method reference for log
        */
       const rule: replacement | void = findReplacement(replacements, callee);
-      const originalMethodReference: string = getOriginalMethodReference(path);
       /**
        * if there is an one-on-one mapping, (somehow there might not be one, i.e. forget to add rules)
        * replace function reference from Teams Client SDK to teamsjs App SDK
        */
       if (typeof rule !== 'undefined') {
+        /**
+         * The first prefix token in arry of targetPrefixTokens in replacement provides a namespace that would definitely
+         * cover the method replaced to and we don't have to take care of the situation like, a namespace is
+         * under another one. The first prefix token provides the namespace under teamsjs App SDK and has no overlap among
+         * each other.
+         * The namespaces in this set would finally be used to build import declaration(s).
+         */
+        namespacesForMosAppSDK.add(rule.targetPrefixTokens[0]);
         /**
          * prepare an array of tokens, which are function references in teamsjs App SDK,
          * i.e. ['core', 'initialize']
@@ -272,17 +250,32 @@ const transform: Transform = (file: FileInfo, api: API): string => {
          */
         callee.replace(buildMethodASTNode(replacedMosAppSDKFunctionReference));
         /**
-         * prompt log for developers to show where the tool makes replacement
+         * TODO: log(s) of replacing current method references from Teams Client SDK
+         * to one from MOS App SDK
          */
-        const replacedMethodReference = rule.targetPrefixTokens.join('.').concat('.' + rule.targetMethod);
-        if (typeof path.node.loc !== 'undefined' && path.node.loc !== null) {
-          replaceMethodLogger(originalMethodReference, replacedMethodReference, path.node.loc.start.line);
-        } else {
-          replaceMethodLogger(originalMethodReference, replacedMethodReference);
-        }
       }
     });
+
+    /**
+     * Insert new line(s) of import declaration(s) at the head of the file,
+     * it would be easier to prompt which line we insert the import declaration to,
+     * i.e. insert at 1st line
+     */
+    teamsClientSDKImportDeclarationPaths.insertBefore(
+      buildteamsjsAppSDKImportDeclaration(Array.from(namespacesForMosAppSDK)),
+    );
+    /**
+     * TODO: log(s) of adding import declarations from MOS App SDK
+     */
   }
+
+  /**
+   * remove possible import declarations from Teams Client SDK
+   */
+  teamsClientSDKImportDeclarationPaths.remove();
+  /**
+   * TODO: log(s) of removing import declarations from Teams Client SDK
+   */
 
   return root.toSource({ quote: 'single' });
 };

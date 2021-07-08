@@ -39,6 +39,26 @@
     {
       "source" : "microsoftTeams.authentication.registerAuthenticationHandlers",
       "target" : "teamsjs.authentication.registerAuthenticationHandlers"
+    },
+    {
+      "source" : "microsoftTeams.settings.getSettings",
+      "target" : "teamsjs.pages.config.getConfig"
+    },
+    {
+      "source" : "microsoftTeams.settings.setSettings",
+      "target" : "teamsjs.pages.config.setConfig"
+    },
+    {
+      "source" : "microsoftTeams.settings.setValidityState",
+      "target" : "teamsjs.pages.config.setValidityState"
+    },
+    {
+      "source" : "microsoftTeams.settings.registerOnSaveHandler",
+      "target" : "teamsjs.pages.config.registerOnSaveHandler"
+    },
+    {
+      "source" : "microsoftTeams.settings.registerOnRemoveHandler",
+      "target" : "teamsjs.pages.config.registerOnRemoveHandler"
     }
   ]
 }

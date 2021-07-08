@@ -1,10 +1,16 @@
 import { build } from '../replacementsGenerator';
 
+/**
+ * constant package name defined here
+ */
+const sourcePackage = 'microsoftTeams';
+const targetPackage = 'teamsjs';
+
 test('build replacements through mappings.json', () => {
   expect(build()).toEqual([
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: [],
       targetPrefixTokens: ['core'],
       sourceMethod: 'initialize',
@@ -12,8 +18,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'initialize'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: [],
       targetPrefixTokens: ['core'],
       sourceMethod: 'getContext',
@@ -21,8 +27,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'getContext'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: [],
       targetPrefixTokens: ['core'],
       sourceMethod: 'shareDeepLink',
@@ -30,8 +36,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'shareDeepLink'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: [],
       targetPrefixTokens: ['core'],
       sourceMethod: 'executeDeepLink',
@@ -39,8 +45,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'executeDeepLink'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: [],
       targetPrefixTokens: ['core'],
       sourceMethod: 'registerOnThemeChangeHandler',
@@ -48,8 +54,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'registerOnThemeChangeHandler'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: ['authentication'],
       targetPrefixTokens: ['authentication'],
       sourceMethod: 'authenticate',
@@ -57,8 +63,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'authentication', 'authenticate'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: ['authentication'],
       targetPrefixTokens: ['authentication'],
       sourceMethod: 'getAuthToken',
@@ -66,8 +72,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'authentication', 'getAuthToken'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: ['authentication'],
       targetPrefixTokens: ['authentication'],
       sourceMethod: 'notifyFailure',
@@ -75,8 +81,8 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'authentication', 'notifyFailure'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: ['authentication'],
       targetPrefixTokens: ['authentication'],
       sourceMethod: 'notifySuccess',
@@ -84,13 +90,58 @@ test('build replacements through mappings.json', () => {
       sourceTokens: ['microsoftTeams', 'authentication', 'notifySuccess'],
     },
     {
-      sourcePackage: 'microsoftTeams',
-      targetPackage: 'teamsjs',
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
       sourcePrefixTokens: ['authentication'],
       targetPrefixTokens: ['authentication'],
       sourceMethod: 'registerAuthenticationHandlers',
       targetMethod: 'registerAuthenticationHandlers',
       sourceTokens: ['microsoftTeams', 'authentication', 'registerAuthenticationHandlers'],
+    },
+    {
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
+      sourcePrefixTokens: ['settings'],
+      targetPrefixTokens: ['pages', 'config'],
+      sourceMethod: 'getSettings',
+      targetMethod: 'getConfig',
+      sourceTokens: ['microsoftTeams', 'settings', 'getSettings'],
+    },
+    {
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
+      sourcePrefixTokens: ['settings'],
+      targetPrefixTokens: ['pages', 'config'],
+      sourceMethod: 'setSettings',
+      targetMethod: 'setConfig',
+      sourceTokens: ['microsoftTeams', 'settings', 'setSettings'],
+    },
+    {
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
+      sourcePrefixTokens: ['settings'],
+      targetPrefixTokens: ['pages', 'config'],
+      sourceMethod: 'setValidityState',
+      targetMethod: 'setValidityState',
+      sourceTokens: ['microsoftTeams', 'settings', 'setValidityState'],
+    },
+    {
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
+      sourcePrefixTokens: ['settings'],
+      targetPrefixTokens: ['pages', 'config'],
+      sourceMethod: 'registerOnSaveHandler',
+      targetMethod: 'registerOnSaveHandler',
+      sourceTokens: ['microsoftTeams', 'settings', 'registerOnSaveHandler'],
+    },
+    {
+      sourcePackage: sourcePackage,
+      targetPackage: targetPackage,
+      sourcePrefixTokens: ['settings'],
+      targetPrefixTokens: ['pages', 'config'],
+      sourceMethod: 'registerOnRemoveHandler',
+      targetMethod: 'registerOnRemoveHandler',
+      sourceTokens: ['microsoftTeams', 'settings', 'registerOnRemoveHandler'],
     },
   ]);
 });
