@@ -16,10 +16,11 @@ import { media } from '../../src/public/media';
 describe('media', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils();
+  const originalDefaultPlatformVersion = '1.6.0';
   const minVersionForCaptureImage = '1.7.0';
   const mediaAPISupportVersion = '1.8.0';
   const scanBarCodeAPISupportVersion = '1.9.0';
-  const originalDefaultPlatformVersion = '1.6.0';
+  const videoAndImageMediaAPISupportVersion = '2.0.2';
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -216,6 +217,21 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
   });
 
+  it('selectMedia call for mediaType = 3 in mediaAPISupportVersion of platform support fails', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+    let mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.VideoAndImage,
+      maxMediaCount: 10,
+    };
+    media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
+      mediaError = error;
+    });
+    expect(mediaError).not.toBeNull();
+    expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+  });
+
   it('selectMedia call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
@@ -242,7 +258,7 @@ describe('media', () => {
     expect(message.args.length).toBe(1);
   });
 
-  it('selectMedia calls with successful result', () => {
+  it('selectMedia calls with successful result for mediaType = 1', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
     let mediaAttachments: media.Media[], mediaError: SdkError;
@@ -282,6 +298,52 @@ describe('media', () => {
     expect(mediaAttachment).not.toBeNull();
     expect(mediaAttachment.format).toBe(media.FileFormat.ID);
     expect(mediaAttachment.mimeType).toBe('image/jpeg');
+    expect(mediaAttachment.content).not.toBeNull();
+    expect(mediaAttachment.size).not.toBeNull();
+    expect(typeof mediaAttachment.size === 'number').toBeTruthy();
+    expect(mediaAttachment.getMedia).toBeDefined();
+  });
+
+  it('selectMedia calls with successful result for mediaType = 3', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
+    mobilePlatformMock.setClientSupportedSDKVersion(videoAndImageMediaAPISupportVersion);
+    let mediaAttachments: media.Media[], mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.VideoAndImage,
+      maxMediaCount: 10,
+    };
+    media.selectMedia(mediaInputs, (e: SdkError, m: media.Media[]) => {
+      mediaError = e;
+      mediaAttachments = m;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('selectMedia');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    let filesArray = [
+      {
+        content: 'base64encodedImage',
+        preview: null,
+        format: media.FileFormat.ID,
+        mimeType: 'video/mp4',
+        size: 300,
+      } as media.Media,
+    ];
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, filesArray],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBeFalsy();
+    expect(mediaAttachments.length).toBe(1);
+    let mediaAttachment = mediaAttachments[0];
+    expect(mediaAttachment).not.toBeNull();
+    expect(mediaAttachment.format).toBe(media.FileFormat.ID);
+    expect(mediaAttachment.mimeType).toBe('video/mp4');
     expect(mediaAttachment.content).not.toBeNull();
     expect(mediaAttachment.size).not.toBeNull();
     expect(typeof mediaAttachment.size === 'number').toBeTruthy();
