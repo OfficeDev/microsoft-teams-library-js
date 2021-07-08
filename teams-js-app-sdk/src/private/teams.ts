@@ -3,6 +3,12 @@ import { FrameContexts } from '../public/constants';
 import { sendMessageToParent } from '../internal/communication';
 import { SdkError } from '../public/interfaces';
 
+/**
+ * Namespace to interact with the `teams` specific part of the SDK.
+ *
+ * @private
+ * Hide from docs
+ */
 export namespace teams {
   export enum ChannelType {
     Regular = 0,
