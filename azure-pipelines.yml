@@ -132,14 +132,21 @@ steps:
     inputs:
       ArtifactType: M365
     condition: succeededOrFailed()
+  
+  # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
   - task: AssetRetention@3
     inputs:
       ArrowServiceConnection: 'Arrow_office_ISS_PROD'
       AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
       AssetNumber: '$(Build.BuildId)'
-      IsShipped: false
+      IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
       DropsToRetain: 'CodeAnalysisLogs'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
     displayName: 'Artifact Retention(Arrow)'
 
   - task: PostAnalysis@2
@@ -147,7 +154,7 @@ steps:
     displayName: 'Guardian Break'
     inputs:
       GdnBreakPolicyMinSev: Warning
-      GdnBreakAllTools: true
+      GdnBreakAllTools: true 
       GdnBreakGdnToolCredScan: true
       GdnBreakGdnToolCredScanSeverity: Warning
       GdnBreakGdnToolESLint: true
