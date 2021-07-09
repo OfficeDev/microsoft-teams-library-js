@@ -340,4 +340,3 @@ export function initializeWithFrameContext(
   initialize(callback, validMessageOrigins);
   setFrameContext(frameContext);
 }
-
