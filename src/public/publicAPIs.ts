@@ -12,7 +12,7 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
-import { FrameContexts, PublicAPIMessages } from './constants';
+import { FrameContexts } from './constants';
 import {
   Communication,
   initializeCommunication,
@@ -309,25 +309,6 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
   ]);
-}
-
-/**
- * @private
- * Feature is under development
- *
- * Opens a share-in-teams dialog with a shared url.
- * @param url URL to the app page.
- */
-export function shareInTeams(url: string): void {
-  ensureInitialized(
-    FrameContexts.content,
-    FrameContexts.sidePanel,
-    FrameContexts.task,
-    FrameContexts.stage,
-    FrameContexts.meetingStage,
-  );
-
-  sendMessageToParent(PublicAPIMessages.shareInTeams, [url]);
 }
 
 /**

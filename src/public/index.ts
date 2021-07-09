@@ -35,7 +35,6 @@ export {
   registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
-  shareInTeams,
   checkDevicePermission,
 } from './publicAPIs';
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
@@ -47,3 +46,4 @@ export { location } from './location';
 export { meeting } from './meeting';
 export { people } from './people';
 export { video } from './video';
+export { share } from './share';
