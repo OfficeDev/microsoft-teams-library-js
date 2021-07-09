@@ -33,7 +33,7 @@ export namespace pages {
     callback?: () => void,
     validMessageOrigins?: string[],
   ): void {
-    core.initialize(callback, validMessageOrigins);
+    core.initialize(validMessageOrigins).then(() => callback && callback());
     setCurrentFrame(frameInfo);
   }
 

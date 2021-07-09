@@ -32,25 +32,25 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       );
     });
 
-    it('should not allow calls without frame context initialization', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
       expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
-    it('should not allow calls with null groupId', () => {
-      utils.initializeWithContext('content');
+    it('should not allow calls with null groupId', async () => {
+      await utils.initializeWithContext('content');
       expect(() => teams.getTeamChannels(null, emptyCallback)).toThrowError();
     });
 
-    it('should not allow calls with empty callback', () => {
-      utils.initializeWithContext('content');
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
       expect(() => teams.getTeamChannels('groupId', null)).toThrowError();
     });
 
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+    it('should trigger callback correctly', async () => {
+      await utils.initializeWithContext('content');
       const mockTeamsChannels: teams.ChannelInfo[] = [
         {
           siteUrl: 'https://microsoft.sharepoint.com/teams/teamsName',

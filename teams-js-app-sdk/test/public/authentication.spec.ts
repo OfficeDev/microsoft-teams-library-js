@@ -36,8 +36,8 @@ describe('authentication', () => {
     );
   });
 
-  it('should not allow authentication.authenticate calls from authentication context', () => {
-    utils.initializeWithContext('authentication');
+  it('should not allow authentication.authenticate calls from authentication context', async () => {
+    await utils.initializeWithContext('authentication');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -50,8 +50,8 @@ describe('authentication', () => {
     );
   });
 
-  it('should allow authentication.authenticate calls from content context', () => {
-    utils.initializeWithContext('content');
+  it('should allow authentication.authenticate calls from content context', async () => {
+    await utils.initializeWithContext('content');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -61,8 +61,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should allow authentication.authenticate calls from settings context', () => {
-    utils.initializeWithContext('settings');
+  it('should allow authentication.authenticate calls from settings context', async () => {
+    await utils.initializeWithContext('settings');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -72,8 +72,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should allow authentication.authenticate calls from sidePanel context', () => {
-    utils.initializeWithContext('sidePanel');
+  it('should allow authentication.authenticate calls from sidePanel context', async () => {
+    await utils.initializeWithContext('sidePanel');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -83,8 +83,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should allow authentication.authenticate calls from remove context', () => {
-    utils.initializeWithContext('remove');
+  it('should allow authentication.authenticate calls from remove context', async () => {
+    await utils.initializeWithContext('remove');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -94,8 +94,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should allow authentication.authenticate calls from task context', () => {
-    utils.initializeWithContext('task');
+  it('should allow authentication.authenticate calls from task context', async () => {
+    await utils.initializeWithContext('task');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -105,8 +105,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should allow authentication.authenticate calls from stage context', () => {
-    utils.initializeWithContext('stage');
+  it('should allow authentication.authenticate calls from stage context', async () => {
+    await utils.initializeWithContext('stage');
 
     const authenticationParams = {
       url: 'https://someurl/',
@@ -116,8 +116,8 @@ describe('authentication', () => {
     authentication.authenticate(authenticationParams);
   });
 
-  it('should successfully pop up the auth window', () => {
-    utils.initializeWithContext('content');
+  it('should successfully pop up the auth window', async () => {
+    await utils.initializeWithContext('content');
 
     let windowOpenCalled = false;
     spyOn(utils.mockWindow, 'open').and.callFake(
@@ -140,8 +140,8 @@ describe('authentication', () => {
     expect(windowOpenCalled).toBe(true);
   });
 
-  it('should successfully pop up the auth window when authenticate called without authenticationParams for connectors', () => {
-    utils.initializeWithContext('content');
+  it('should successfully pop up the auth window when authenticate called without authenticationParams for connectors', async () => {
+    await utils.initializeWithContext('content');
 
     let windowOpenCalled = false;
     spyOn(utils.mockWindow, 'open').and.callFake(
@@ -165,8 +165,8 @@ describe('authentication', () => {
     expect(windowOpenCalled).toBe(true);
   });
 
-  it('should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called', () => {
-    utils.initializeWithContext('content');
+  it('should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called', async () => {
+    await utils.initializeWithContext('content');
 
     let windowOpenCalled = false;
     spyOn(utils.mockWindow, 'open').and.callFake(
@@ -199,8 +199,8 @@ describe('authentication', () => {
     }, 101);
   });
 
-  it('should successfully handle auth success', () => {
-    utils.initializeWithContext('content');
+  it('should successfully handle auth success', async () => {
+    await utils.initializeWithContext('content');
 
     let successResult: string;
     let failureReason: string;
@@ -227,8 +227,8 @@ describe('authentication', () => {
     expect(failureReason).toBeUndefined();
   });
 
-  it('should successfully handle auth failure', () => {
-    utils.initializeWithContext('content');
+  it('should successfully handle auth failure', async () => {
+    await utils.initializeWithContext('content');
 
     let successResult: string;
     let failureReason: string;
@@ -256,8 +256,8 @@ describe('authentication', () => {
   });
 
   ['android', 'ios', 'desktop'].forEach(hostClientType => {
-    it(`should successfully pop up the auth window in the ${hostClientType} client`, () => {
-      utils.initializeWithContext('content', hostClientType);
+    it(`should successfully pop up the auth window in the ${hostClientType} client`, async () => {
+      await utils.initializeWithContext('content', hostClientType);
 
       let authenticationParams = {
         url: 'https://someUrl',
@@ -274,8 +274,8 @@ describe('authentication', () => {
       expect(message.args[2]).toBe(authenticationParams.height);
     });
 
-    it(`should successfully handle auth success in the ${hostClientType} client`, () => {
-      utils.initializeWithContext('content', hostClientType);
+    it(`should successfully handle auth success in the ${hostClientType} client`, async () => {
+      await utils.initializeWithContext('content', hostClientType);
 
       let successResult: string;
       let failureReason: string;
@@ -297,8 +297,8 @@ describe('authentication', () => {
       expect(failureReason).toBeUndefined();
     });
 
-    it(`should successfully handle auth failure in the ${hostClientType} client`, () => {
-      utils.initializeWithContext('content', hostClientType);
+    it(`should successfully handle auth failure in the ${hostClientType} client`, async () => {
+      await utils.initializeWithContext('content', hostClientType);
 
       let successResult: string;
       let failureReason: string;
@@ -321,8 +321,8 @@ describe('authentication', () => {
     });
   });
 
-  it('should successfully notify auth success', () => {
-    utils.initializeWithContext('authentication');
+  it('should successfully notify auth success', async () => {
+    await utils.initializeWithContext('authentication');
 
     authentication.notifySuccess('someResult');
     let message = utils.findMessageByFunc('authentication.authenticate.success');
@@ -331,7 +331,7 @@ describe('authentication', () => {
     expect(message.args[0]).toBe('someResult');
   });
 
-  it('should do window redirect if callbackUrl is for win32 Outlook', () => {
+  it('should do window redirect if callbackUrl is for win32 Outlook', async () => {
     let windowAssignSpyCalled = false;
     spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
       windowAssignSpyCalled = true;
@@ -340,7 +340,7 @@ describe('authentication', () => {
       );
     });
 
-    utils.initializeWithContext('authentication');
+    await utils.initializeWithContext('authentication');
 
     authentication.notifySuccess(
       'someResult',
@@ -349,7 +349,7 @@ describe('authentication', () => {
     expect(windowAssignSpyCalled).toBe(true);
   });
 
-  it('should do window redirect if callbackUrl is for win32 Outlook and no result param specified', () => {
+  it('should do window redirect if callbackUrl is for win32 Outlook and no result param specified', async () => {
     let windowAssignSpyCalled = false;
     spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
       windowAssignSpyCalled = true;
@@ -358,7 +358,7 @@ describe('authentication', () => {
       );
     });
 
-    utils.initializeWithContext('authentication');
+    await utils.initializeWithContext('authentication');
 
     authentication.notifySuccess(
       null,
@@ -367,7 +367,7 @@ describe('authentication', () => {
     expect(windowAssignSpyCalled).toBe(true);
   });
 
-  it('should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments', () => {
+  it('should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments', async () => {
     let windowAssignSpyCalled = false;
     spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
       windowAssignSpyCalled = true;
@@ -376,7 +376,7 @@ describe('authentication', () => {
       );
     });
 
-    utils.initializeWithContext('authentication');
+    await utils.initializeWithContext('authentication');
 
     authentication.notifySuccess(
       'someResult',
@@ -385,8 +385,8 @@ describe('authentication', () => {
     expect(windowAssignSpyCalled).toBe(true);
   });
 
-  it('should successfully notify auth success if callbackUrl is not for win32 Outlook', () => {
-    utils.initializeWithContext('authentication');
+  it('should successfully notify auth success if callbackUrl is not for win32 Outlook', async () => {
+    await utils.initializeWithContext('authentication');
 
     authentication.notifySuccess(
       'someResult',
@@ -398,8 +398,8 @@ describe('authentication', () => {
     expect(message.args[0]).toBe('someResult');
   });
 
-  it('should successfully notify auth failure', () => {
-    utils.initializeWithContext('authentication');
+  it('should successfully notify auth failure', async () => {
+    await utils.initializeWithContext('authentication');
 
     authentication.notifyFailure('someReason');
 
@@ -409,7 +409,7 @@ describe('authentication', () => {
     expect(message.args[0]).toBe('someReason');
   });
 
-  it('should do window redirect if callbackUrl is for win32 Outlook and auth failure happens', () => {
+  it('should do window redirect if callbackUrl is for win32 Outlook and auth failure happens', async () => {
     let windowAssignSpyCalled = false;
     spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
       windowAssignSpyCalled = true;
@@ -418,7 +418,7 @@ describe('authentication', () => {
       );
     });
 
-    utils.initializeWithContext('authentication');
+    await utils.initializeWithContext('authentication');
 
     authentication.notifyFailure(
       'someReason',
@@ -427,12 +427,12 @@ describe('authentication', () => {
     expect(windowAssignSpyCalled).toBe(true);
   });
 
-  it('should successfully notify auth failure if callbackUrl is not for win32 Outlook', () => {
+  it('should successfully notify auth failure if callbackUrl is not for win32 Outlook', async () => {
     spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
       expect(url).toEqual('https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure');
     });
 
-    utils.initializeWithContext('authentication');
+    await utils.initializeWithContext('authentication');
 
     authentication.notifyFailure(
       'someReason',
@@ -444,10 +444,10 @@ describe('authentication', () => {
     expect(message.args[0]).toBe('someReason');
   });
 
-  it('should not close auth window before notify success message has been sent', () => {
+  it('should not close auth window before notify success message has been sent', async () => {
     let closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
 
-    core.initialize();
+    const initPromise = core.initialize();
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
@@ -457,6 +457,7 @@ describe('authentication', () => {
     expect(closeWindowSpy).not.toHaveBeenCalled();
 
     utils.respondToMessage(initMessage, 'authentication');
+    await initPromise;
     message = utils.findMessageByFunc('authentication.authenticate.success');
     expect(message).not.toBeNull();
 
@@ -466,10 +467,10 @@ describe('authentication', () => {
     }, 301);
   });
 
-  it('should not close auth window before notify failure message has been sent', () => {
+  it('should not close auth window before notify failure message has been sent', async () => {
     let closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
 
-    core.initialize();
+    const initPromise = core.initialize();
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
@@ -479,6 +480,7 @@ describe('authentication', () => {
     expect(closeWindowSpy).not.toHaveBeenCalled();
 
     utils.respondToMessage(initMessage, 'authentication');
+    await initPromise;
     message = utils.findMessageByFunc('authentication.authenticate.failure');
     expect(message).not.toBeNull();
 
@@ -506,8 +508,8 @@ describe('authentication', () => {
     );
   });
 
-  it('should successfully return getAuthToken in case of success', done => {
-    utils.initializeWithContext('content');
+  it('should successfully return getAuthToken in case of success', async done => {
+    await utils.initializeWithContext('content');
 
     const authTokenRequest: authentication.AuthTokenRequest = {
       resources: ['https://someresource/'],
@@ -534,8 +536,8 @@ describe('authentication', () => {
     utils.respondToMessage(message, true, 'token');
   });
 
-  it('should successfully return error from getAuthToken in case of failure', done => {
-    utils.initializeWithContext('content');
+  it('should successfully return error from getAuthToken in case of failure', async done => {
+    await utils.initializeWithContext('content');
 
     const authTokenRequest: authentication.AuthTokenRequest = {
       resources: ['https://someresource/'],

@@ -7,7 +7,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { pages } from './pages';
 import { DeepLinkParameters, Context, ContextBridge } from './interfaces';
-import { compareSDKVersions, getGenericOnCompleteHandler, transformContext } from '../internal/utils';
+import { compareSDKVersions, transformContext } from '../internal/utils';
 import { logs } from '../private/logs';
 import { FrameContexts } from './constants';
 import {
@@ -15,6 +15,8 @@ import {
   initializeCommunication,
   sendMessageToParent,
   uninitializeCommunication,
+  sendAndUnwrap,
+  sendAndHandleStatusAndReason as send,
 } from '../internal/communication';
 import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
@@ -32,121 +34,78 @@ export namespace core {
   /**
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
-   * @param callback - Optionally specify a callback to invoke when App SDK has successfully initialized
-   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. There must have
+   * @param validMessageOrigins Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https://www.example.com
+   * @returns Promise that will be fulfilled when initialization has completed
    */
-  export function initialize(callback?: () => void, validMessageOrigins?: string[]): void {
-    // Independent components might not know whether the SDK is initialized so might call it to be safe.
-    // Just no-op if that happens to make it easier to use.
-    if (!GlobalVars.initializeCalled) {
-      GlobalVars.initializeCalled = true;
+  export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    return new Promise<void>(resolve => {
+      // Independent components might not know whether the SDK is initialized so might call it to be safe.
+      // Just no-op if that happens to make it easier to use.
+      if (!GlobalVars.initializeCalled) {
+        GlobalVars.initializeCalled = true;
 
-      Handlers.initializeHandlers();
-      initializeCommunication(
-        (
-          context: FrameContexts,
-          clientType: string,
-          runtimeConfig: string,
-          clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
-        ) => {
-          GlobalVars.frameContext = context;
-          GlobalVars.hostClientType = clientType;
-          GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
+        Handlers.initializeHandlers();
+        GlobalVars.initializePromise = initializeCommunication(validMessageOrigins).then(
+          ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
+            GlobalVars.frameContext = context;
+            GlobalVars.hostClientType = clientType;
+            GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
-          // Temporary workaround while the Hub is updated with the new argument order.
-          // For now, we might receive any of these possibilities:
-          // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
-          // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
-          // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
-          // This code supports any of these possibilities
+            // Temporary workaround while the Hub is updated with the new argument order.
+            // For now, we might receive any of these possibilities:
+            // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
+            // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
+            // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
+            // This code supports any of these possibilities
 
-          // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
-          // so we assume that if we don't have it, we must be running in Teams.
-          // After Teams switches to the hub SDK, we can remove this default code.
-          try {
-            const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
-            runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
-          } catch (e) {
-            if (e instanceof SyntaxError) {
-              try {
-                const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
-                clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
-              } catch (e) {
-                if (e instanceof SyntaxError) {
-                  // if the given runtime config was actually meant to be a SDK version, store it as such.
-                  // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-                  // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
-                  // remove this feature.
-                  if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
-                    GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+            // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
+            // so we assume that if we don't have it, we must be running in Teams.
+            // After Teams switches to the hub SDK, we can remove this default code.
+            try {
+              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
+              runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
+            } catch (e) {
+              if (e instanceof SyntaxError) {
+                try {
+                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
+                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                } catch (e) {
+                  if (e instanceof SyntaxError) {
+                    // if the given runtime config was actually meant to be a SDK version, store it as such.
+                    // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+                    // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+                    // remove this feature.
+                    if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
+                      GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+                    }
+                    applyRuntimeConfig(teamsRuntimeConfig);
+                  } else {
+                    throw e;
                   }
-                  applyRuntimeConfig(teamsRuntimeConfig);
-                } else {
-                  throw e;
                 }
+              } else {
+                // If it's any error that's not a JSON parsing error, we want the program to fail.
+                throw e;
               }
-            } else {
-              // If it's any error that's not a JSON parsing error, we want the program to fail.
-              throw e;
             }
-          }
 
-          // Notify all waiting callers that the initialization has completed
-          GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
-          GlobalVars.initializeCallbacks = [];
-          GlobalVars.initializeCompleted = true;
-        },
-        validMessageOrigins,
-      );
+            GlobalVars.initializeCompleted = true;
+          },
+        );
 
-      authentication.initialize();
-      pages.config.initialize();
-      initializePrivateApis();
+        authentication.initialize();
+        pages.config.initialize();
+        initializePrivateApis();
+      }
 
-      // Undocumented function used to clear state between unit tests
-      this._uninitialize = () => {
-        if (GlobalVars.frameContext) {
-          registerOnThemeChangeHandler(null);
-          pages.backStack.registerBackButtonHandler(null);
-          pages.registerFullScreenHandler(null);
-          teamsCore.registerBeforeUnloadHandler(null);
-          teamsCore.registerOnLoadHandler(null);
-          logs.registerGetLogHandler(null);
-        }
+      // Handle additional valid message origins if specified
+      if (Array.isArray(validMessageOrigins)) {
+        processAdditionalValidOrigins(validMessageOrigins);
+      }
 
-        if (GlobalVars.frameContext === FrameContexts.settings) {
-          pages.config.registerOnSaveHandler(null);
-        }
-
-        if (GlobalVars.frameContext === FrameContexts.remove) {
-          pages.config.registerOnRemoveHandler(null);
-        }
-
-        GlobalVars.initializeCalled = false;
-        GlobalVars.initializeCompleted = false;
-        GlobalVars.initializeCallbacks = [];
-        GlobalVars.additionalValidOrigins = [];
-        GlobalVars.frameContext = null;
-        GlobalVars.hostClientType = null;
-        GlobalVars.isFramelessWindow = false;
-
-        uninitializeCommunication();
-      };
-    }
-
-    // Handle additional valid message origins if specified
-    if (Array.isArray(validMessageOrigins)) {
-      processAdditionalValidOrigins(validMessageOrigins);
-    }
-
-    // Handle the callback if specified:
-    // 1. If initialization has already completed then just call it right away
-    // 2. If initialization hasn't completed then add it to the array of callbacks
-    //    that should be invoked once initialization does complete
-    if (callback) {
-      GlobalVars.initializeCompleted ? callback() : GlobalVars.initializeCallbacks.push(callback);
-    }
+      resolve(GlobalVars.initializePromise);
+    });
   }
 
   /**
@@ -169,19 +128,48 @@ export namespace core {
    *
    * @internal
    */
-  export function _uninitialize(): void {}
+  export function _uninitialize(): void {
+    if (!GlobalVars.initializeCalled) {
+      return;
+    }
+
+    if (GlobalVars.frameContext) {
+      registerOnThemeChangeHandler(null);
+      pages.backStack.registerBackButtonHandler(null);
+      pages.registerFullScreenHandler(null);
+      teamsCore.registerBeforeUnloadHandler(null);
+      teamsCore.registerOnLoadHandler(null);
+      logs.registerGetLogHandler(null);
+    }
+
+    if (GlobalVars.frameContext === FrameContexts.settings) {
+      pages.config.registerOnSaveHandler(null);
+    }
+
+    if (GlobalVars.frameContext === FrameContexts.remove) {
+      pages.config.registerOnRemoveHandler(null);
+    }
+
+    GlobalVars.initializeCalled = false;
+    GlobalVars.initializeCompleted = false;
+    GlobalVars.initializePromise = null;
+    GlobalVars.additionalValidOrigins = [];
+    GlobalVars.frameContext = null;
+    GlobalVars.hostClientType = null;
+    GlobalVars.isFramelessWindow = false;
+
+    uninitializeCommunication();
+  }
 
   /**
    * Retrieves the current context the frame is running in.
-   * @param callback - The callback to invoke when the {@link Context} object is retrieved.
+   * @returns Promise that will resolve with the {@link Context} object.
    */
-  export function getContext(callback: (context: Context) => void): void {
-    ensureInitialized();
-
-    sendMessageToParent('getContext', (contextBridge: ContextBridge) => {
-      const context: Context = transformContext(contextBridge);
-      callback(context);
-    });
+  export function getContext(): Promise<Context> {
+    return new Promise<ContextBridge>(resolve => {
+      ensureInitialized();
+      resolve(sendAndUnwrap('getContext'));
+    }).then(contextBridge => transformContext(contextBridge));
   }
 
   /**
@@ -189,17 +177,17 @@ export namespace core {
    * Hide from docs.
    * --Retaining for E2E tests, remove after E2E tests configuration
    * Retrieves the current context the frame is running in.
-   * @param callback The callback to invoke when the {@link Context} object is retrieved.
    */
-  export function getContextOld(callback: (contextBridge: ContextBridge) => void): void {
-    ensureInitialized();
-
-    sendMessageToParent('getContext', (contextBridge: ContextBridge) => {
+  export function getContextOld(): Promise<ContextBridge> {
+    return new Promise<ContextBridge>(resolve => {
+      ensureInitialized();
+      resolve(sendAndUnwrap('getContext'));
+    }).then(contextBridge => {
       if (!contextBridge.frameContext) {
         // Fallback logic for frameContext properties
         contextBridge.frameContext = GlobalVars.frameContext;
       }
-      callback(contextBridge);
+      return contextBridge;
     });
   }
 
@@ -230,16 +218,19 @@ export namespace core {
   /**
    * execute deep link API.
    * @param deepLink - deep link.
+   * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
-    sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
+  export function executeDeepLink(deepLink: string): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      );
+      resolve(send('executeDeepLink', deepLink));
+    });
   }
 }

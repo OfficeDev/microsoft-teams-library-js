@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { FrameContexts } from '../public/constants';
+import { SdkError } from '../public/interfaces';
 import { validOriginRegExp, version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -18,12 +20,22 @@ class CommunicationPrivate {
   public static childMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: {
-    [id: number]: Function;
+    [id: number]: Function; // (arg1, arg2, ...etc) => void
+  } = {};
+  public static promiseCallbacks: {
+    [id: number]: Function; // (args[]) => void
   } = {};
   public static messageListener: Function;
 }
 
-export function initializeCommunication(callback: Function, validMessageOrigins: string[] | undefined): void {
+type InitializeResponse = {
+  context: FrameContexts;
+  clientType: string;
+  runtimeConfig: string;
+  clientSupportedSDKVersion: string;
+};
+
+export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
@@ -52,7 +64,11 @@ export function initializeCommunication(callback: Function, validMessageOrigins:
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    sendMessageToParent('initialize', [version], callback);
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+      ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
+        return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
+      },
+    );
   } finally {
     Communication.parentOrigin = null;
   }
@@ -71,9 +87,55 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
 }
 
+export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+}
+
+export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
+  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
+    if (!status) {
+      throw new Error(reason);
+    }
+  });
+}
+
+export function sendAndHandleStatusAndReasonWithDefaultError(
+  actionName: string,
+  defaultError: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
+    if (!status) {
+      throw new Error(reason ? reason : defaultError);
+    }
+  });
+}
+
+export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
+    if (error) {
+      throw error;
+    }
+    return result;
+  });
+}
+
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
+export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
+  return new Promise(resolve => {
+    const request = sendMessageToParentHelper(actionName, args);
+    resolve(waitForResponse<T>(request.id));
+  });
+}
+
+function waitForResponse<T>(requestId: number): Promise<T> {
+  return new Promise<T>(resolve => {
+    CommunicationPrivate.promiseCallbacks[requestId] = resolve;
+  });
+}
+
 export function sendMessageToParent(actionName: string, callback?: Function): void;
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
@@ -87,6 +149,13 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
+  const request = sendMessageToParentHelper(actionName, args);
+  if (callback) {
+    CommunicationPrivate.callbacks[request.id] = callback;
+  }
+}
+
+function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
@@ -104,10 +173,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
-
-  if (callback) {
-    CommunicationPrivate.callbacks[request.id] = callback;
-  }
+  return request;
 }
 
 function processMessage(evt: DOMMessageEvent): void {
@@ -206,6 +272,11 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       if (!isPartialResponse(evt)) {
         delete CommunicationPrivate.callbacks[message.id];
       }
+    }
+    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
+    if (promiseCallback) {
+      promiseCallback(message.args);
+      delete CommunicationPrivate.promiseCallbacks[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler

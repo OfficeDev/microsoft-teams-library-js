@@ -29,8 +29,8 @@ describe('bot', () => {
         }),
       ).toThrowError('The library has not yet been initialized');
     });
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('content');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('content');
       const request = {
         query: 'some query',
       };
@@ -63,8 +63,8 @@ describe('bot', () => {
       expect(botResponse).toEqual({ data: ['some', 'queried', 'items'] });
       expect(error).toBeUndefined();
     });
-    it('should invoke error callback', () => {
-      utils.initializeWithContext('content');
+    it('should invoke error callback', async () => {
+      await utils.initializeWithContext('content');
       const request = {
         query: 'some broken query',
       };
@@ -103,8 +103,8 @@ describe('bot', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('content');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('content');
 
       let botResponse: bot.Command[];
       let error: string;
@@ -134,8 +134,8 @@ describe('bot', () => {
       expect(error).toBeUndefined();
     });
 
-    it('should invoke error callback', () => {
-      utils.initializeWithContext('content');
+    it('should invoke error callback', async () => {
+      await utils.initializeWithContext('content');
 
       let botResponse: bot.Command[];
       let error: string;
@@ -180,8 +180,8 @@ describe('bot', () => {
     });
   });
 
-  it('should successfully send a request', () => {
-    utils.initializeWithContext('content');
+  it('should successfully send a request', async () => {
+    await utils.initializeWithContext('content');
     const request = {
       query: '',
       commandId: 'someCommand',
@@ -217,8 +217,8 @@ describe('bot', () => {
     expect(error).toBeUndefined();
   });
 
-  it('should invoke error callback on unauthorized', () => {
-    utils.initializeWithContext('content');
+  it('should invoke error callback on unauthorized', async () => {
+    await utils.initializeWithContext('content');
     const request = {
       query: '',
       commandId: 'someCommand',

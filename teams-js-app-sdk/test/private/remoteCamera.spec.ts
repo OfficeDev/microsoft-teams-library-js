@@ -53,8 +53,8 @@ describe('remoteCamera', () => {
         '[remoteCamera.getCapableParticipants] Callback cannot be null',
       );
     });
-    it('should successfully get list of participants with controllable cameras', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully get list of participants with controllable cameras', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedParticipant: remoteCamera.Participant[] | null = null;
       let returnedSdkError: SdkError | null = null;
       const callback = (sdkError: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
@@ -76,8 +76,8 @@ describe('remoteCamera', () => {
       expect(returnedParticipant).toEqual(capableParticipantsMock);
       expect(returnedSdkError).toBeNull();
     });
-    it('should return an error object if response has error', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should return an error object if response has error', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedParticipant: remoteCamera.Participant[] | null = null;
       let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
@@ -121,8 +121,8 @@ describe('remoteCamera', () => {
         '[remoteCamera.requestControl] Callback cannot be null',
       );
     });
-    it('should request control of remote camera', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should request control of remote camera', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedRequestResponse: boolean | null = null;
       let returnedSdkError: SdkError | null = null;
       const callbackMock = (sdkError: SdkError | null, requestResult: boolean | null): void => {
@@ -145,8 +145,8 @@ describe('remoteCamera', () => {
       expect(returnedRequestResponse).toEqual(true);
       expect(returnedSdkError).toBeNull();
     });
-    it('should return an error object if response has error', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should return an error object if response has error', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedRequestResponse: boolean | null = null;
       let returnedSdkError: SdkError | null = null;
       const sdkErrorMock: SdkError = {
@@ -190,8 +190,8 @@ describe('remoteCamera', () => {
         '[remoteCamera.sendControlCommand] Callback cannot be null',
       );
     });
-    it('should send control command to the remote camera', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should send control command to the remote camera', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const callbackMock = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
@@ -210,8 +210,8 @@ describe('remoteCamera', () => {
       // check data is returned properly
       expect(returnedSdkError).toBeNull();
     });
-    it('should return an error object if response has error', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should return an error object if response has error', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
@@ -244,8 +244,8 @@ describe('remoteCamera', () => {
         '[remoteCamera.terminateSession] Callback cannot be null',
       );
     });
-    it('should terminate remote camera control session', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should terminate remote camera control session', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const callback = (sdkError: SdkError | null): void => {
         returnedSdkError = sdkError;
@@ -263,8 +263,8 @@ describe('remoteCamera', () => {
       // check data is returned properly
       expect(returnedSdkError).toBeNull();
     });
-    it('should return an error object if response has error', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should return an error object if response has error', async () => {
+      await utils.initializeWithContext('sidePanel');
       let returnedSdkError: SdkError | null;
       const sdkErrorMock: SdkError = {
         errorCode: 500,
@@ -294,14 +294,14 @@ describe('remoteCamera', () => {
         'The library has not yet been initialized',
       );
     });
-    it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should not allow calls with null handler ', async () => {
+      await utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnCapableParticipantsChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the capable participants change', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully register a handler for when the capable participants change', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let CapableParticipants: remoteCamera.Participant[];
@@ -324,14 +324,14 @@ describe('remoteCamera', () => {
         'The library has not yet been initialized',
       );
     });
-    it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should not allow calls with null handler ', async () => {
+      await utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnErrorHandler(null)).toThrowError(
         '[remoteCamera.registerOnErrorHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the handler encounters an error', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully register a handler for when the handler encounters an error', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let handlerError: remoteCamera.ErrorReason;
@@ -354,14 +354,14 @@ describe('remoteCamera', () => {
         'The library has not yet been initialized',
       );
     });
-    it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should not allow calls with null handler ', async () => {
+      await utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnDeviceStateChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the device state changes', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully register a handler for when the device state changes', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let deviceState: remoteCamera.DeviceState;
@@ -384,14 +384,14 @@ describe('remoteCamera', () => {
         'The library has not yet been initialized',
       );
     });
-    it('should not allow calls with null handler ', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should not allow calls with null handler ', async () => {
+      await utils.initializeWithContext('sidePanel');
       expect(() => remoteCamera.registerOnSessionStatusChangeHandler(null)).toThrowError(
         '[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null',
       );
     });
-    it('should successfully register a handler for when the session status changes', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully register a handler for when the session status changes', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       let handlerInvoked = false;
       let sessionStatus: remoteCamera.SessionStatus;

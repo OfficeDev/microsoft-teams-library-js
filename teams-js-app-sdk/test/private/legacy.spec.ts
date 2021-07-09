@@ -35,8 +35,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should allow a valid optional parameter set to true', () => {
-      utils.initializeWithContext('content');
+    it('should allow a valid optional parameter set to true', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
       legacy.fullTrust.getUserJoinedTeams(
@@ -52,8 +52,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackCalled).toBe(true);
     });
 
-    it('should allow a valid optional parameter set to false', () => {
-      utils.initializeWithContext('content');
+    it('should allow a valid optional parameter set to false', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
       legacy.fullTrust.getUserJoinedTeams(
@@ -69,8 +69,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackCalled).toBe(true);
     });
 
-    it('should allow a missing optional parameter', () => {
-      utils.initializeWithContext('content');
+    it('should allow a missing optional parameter', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
       legacy.fullTrust.getUserJoinedTeams(() => {
@@ -83,8 +83,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackCalled).toBe(true);
     });
 
-    it('should allow a missing and valid optional parameter', () => {
-      utils.initializeWithContext('content');
+    it('should allow a missing and valid optional parameter', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
       legacy.fullTrust.getUserJoinedTeams(
@@ -110,8 +110,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should allow a valid parameter', () => {
-      utils.initializeWithContext('content');
+    it('should allow a valid parameter', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled: boolean = false;
       legacy.fullTrust.getConfigSetting(() => {

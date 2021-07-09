@@ -29,36 +29,36 @@ describe('Dialog', () => {
       expect(() => dialog.open(dialogInfo)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
 
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'settings' context");
     });
 
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
+    it('should not allow calls from authentication context', async () => {
+      await utils.initializeWithContext('authentication');
 
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'authentication' context");
     });
 
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
+    it('should not allow calls from remove context', async () => {
+      await utils.initializeWithContext('remove');
 
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'remove' context");
     });
 
-    it('should not allow calls from task context', () => {
-      utils.initializeWithContext('task');
+    it('should not allow calls from task context', async () => {
+      await utils.initializeWithContext('task');
 
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'task' context");
     });
 
-    it('should pass along entire DialogInfo parameter in sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should pass along entire DialogInfo parameter in sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       const dialogInfo: DialogInfo = {
         card: 'someCard',
@@ -79,8 +79,8 @@ describe('Dialog', () => {
       expect(openMessage.args).toEqual([dialogInfo]);
     });
 
-    it('should pass along entire DialogInfo parameter in content', () => {
-      utils.initializeWithContext('content');
+    it('should pass along entire DialogInfo parameter in content', async () => {
+      await utils.initializeWithContext('content');
 
       const dialogInfo: DialogInfo = {
         card: 'someCard',
@@ -101,8 +101,8 @@ describe('Dialog', () => {
       expect(openMessage.args).toEqual([dialogInfo]);
     });
 
-    it('should invoke callback with result', () => {
-      utils.initializeWithContext('content');
+    it('should invoke callback with result', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled = false;
       const dialogInfo: DialogInfo = {};
@@ -118,8 +118,8 @@ describe('Dialog', () => {
       expect(callbackCalled).toBe(true);
     });
 
-    it('should invoke callback with error', () => {
-      utils.initializeWithContext('content');
+    it('should invoke callback with error', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled = false;
       const dialogInfo: DialogInfo = {};
@@ -142,8 +142,8 @@ describe('Dialog', () => {
       expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully pass DialogInfo in sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully pass DialogInfo in sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
       const dialogInfo = { width: 10, height: 10 };
 
       dialog.resize(dialogInfo);
@@ -153,8 +153,8 @@ describe('Dialog', () => {
       expect(resizeMessage.args).toEqual([dialogInfo]);
     });
 
-    it('should successfully pass DialogInfo in Task context', () => {
-      utils.initializeWithContext('task');
+    it('should successfully pass DialogInfo in Task context', async () => {
+      await utils.initializeWithContext('task');
       const dialogInfo = { width: 10, height: 10 };
 
       dialog.resize(dialogInfo);
@@ -164,8 +164,8 @@ describe('Dialog', () => {
       expect(resizeMessage.args).toEqual([dialogInfo]);
     });
 
-    it('should throw an error if extra properties are provided', () => {
-      utils.initializeWithContext('task');
+    it('should throw an error if extra properties are provided', async () => {
+      await utils.initializeWithContext('task');
       const dialogInfo = { width: 10, height: 10, title: 'anything' };
 
       expect(() => dialog.resize(dialogInfo)).toThrowError(
@@ -179,26 +179,26 @@ describe('Dialog', () => {
       expect(() => dialog.submit()).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
 
       expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'settings' context");
     });
 
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
+    it('should not allow calls from authentication context', async () => {
+      await utils.initializeWithContext('authentication');
 
       expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'authentication' context");
     });
 
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
+    it('should not allow calls from remove context', async () => {
+      await utils.initializeWithContext('remove');
 
       expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'remove' context");
     });
 
-    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully pass result and appIds parameters when called from sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
 
@@ -208,8 +208,8 @@ describe('Dialog', () => {
       expect(submitMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
-    it('should successfully pass result and appIds parameters when called from Task context', () => {
-      utils.initializeWithContext('task');
+    it('should successfully pass result and appIds parameters when called from Task context', async () => {
+      await utils.initializeWithContext('task');
 
       dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
 
@@ -218,8 +218,8 @@ describe('Dialog', () => {
       expect(submitMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
-    it('should handle a single string passed as appIds parameter', () => {
-      utils.initializeWithContext('task');
+    it('should handle a single string passed as appIds parameter', async () => {
+      await utils.initializeWithContext('task');
 
       dialog.submit('someResult', 'someAppId');
 

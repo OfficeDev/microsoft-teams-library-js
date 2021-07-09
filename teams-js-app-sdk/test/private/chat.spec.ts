@@ -31,8 +31,8 @@ describe('chat', () => {
       expect(() => chat.openConversation(conversationRequest)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
 
       const conversationRequest: OpenConversationRequest = {
         subEntityId: 'someEntityId',
@@ -44,8 +44,8 @@ describe('chat', () => {
       );
     });
 
-    it('should successfully pass conversationRequest', () => {
-      utils.initializeWithContext('content');
+    it('should successfully pass conversationRequest', async () => {
+      await utils.initializeWithContext('content');
       const conversationRequest: OpenConversationRequest = {
         subEntityId: 'someEntityId',
         title: 'someTitle',
@@ -59,8 +59,8 @@ describe('chat', () => {
       expect(openConversationMessage.args).toEqual([conversationRequest]);
     });
 
-    it('should successfully pass conversationRequest in a personal scope', () => {
-      utils.initializeWithContext('content');
+    it('should successfully pass conversationRequest in a personal scope', async () => {
+      await utils.initializeWithContext('content');
       const conversationRequest: OpenConversationRequest = {
         subEntityId: 'someEntityId',
         title: 'someTitle',
@@ -81,8 +81,8 @@ describe('chat', () => {
       expect(() => chat.closeConversation()).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
       expect(() => chat.closeConversation()).toThrowError("This call is not allowed in the 'settings' context");
     });
   });
@@ -96,8 +96,8 @@ describe('chat', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully get chat members', () => {
-      utils.initializeWithContext('content');
+    it('should successfully get chat members', async () => {
+      await utils.initializeWithContext('content');
 
       let callbackCalled = false;
       chat.getChatMembers(() => {

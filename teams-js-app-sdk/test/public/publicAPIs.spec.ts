@@ -31,11 +31,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should not allow calls before initialization', () => {
-    expect(() =>
-      core.getContext(() => {
-        return;
-      }),
-    ).toThrowError('The library has not yet been initialized');
+    return expect(core.getContext()).rejects.toThrowError('The library has not yet been initialized');
   });
 
   it('should successfully initialize', () => {
@@ -54,7 +50,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should listen to frame messages for a frameless window', () => {
-    utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(['https://www.example.com']);
 
     expect(utils.processMessage).not.toBeNull();
     expect(utils.messages.length).toBe(1);
@@ -77,14 +73,14 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(utils.messages.length).toBe(1);
   });
 
-  it('should invoke all callbacks once initialization completes', () => {
+  it('should invoke all callbacks once initialization completes', async () => {
     let firstCallbackInvoked = false;
-    core.initialize(() => {
+    core.initialize().then(() => {
       firstCallbackInvoked = true;
     });
 
     let secondCallbackInvoked = false;
-    core.initialize(() => {
+    const initPromise = core.initialize().then(() => {
       secondCallbackInvoked = true;
     });
 
@@ -96,33 +92,36 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, 'content');
+    await initPromise;
 
     expect(firstCallbackInvoked).toBe(true);
     expect(secondCallbackInvoked).toBe(true);
   });
 
-  it('should invoke callback immediately if initialization has already completed', () => {
-    core.initialize();
+  it('should invoke callback immediately if initialization has already completed', async () => {
+    const initPromise = core.initialize();
 
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, 'content');
+    await initPromise;
 
     let callbackInvoked = false;
-    core.initialize(() => {
+    await core.initialize().then(() => {
       callbackInvoked = true;
     });
 
     expect(callbackInvoked).toBe(true);
   });
 
-  it('should use teams runtime config if no runtime config is given', () => {
-    core.initialize();
+  it('should use teams runtime config if no runtime config is given', async () => {
+    const initPromise = core.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
+    await initPromise;
 
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
@@ -152,8 +151,8 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null)).toThrowError;
   });
 
-  it('should not use the teams config as a default if another proper config is given', () => {
-    core.initialize();
+  it('should not use the teams config as a default if another proper config is given', async () => {
+    const initPromise = core.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(
@@ -162,13 +161,14 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       HostClientType.web,
       '{"apiVersion":1, "supports":{"mail":{}}}',
     );
+    await initPromise;
 
     expect(runtime).not.toEqual(teamsRuntimeConfig);
     expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
   });
 
-  it('should assign clientSupportedSDKVersion correctly when a proper runtime config is given', () => {
-    core.initialize();
+  it('should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
+    const initPromise = core.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(
@@ -178,13 +178,14 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       '{"apiVersion":1, "supports":{"mail":{}}}',
       '1.0.0',
     );
+    await initPromise;
 
     expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
     expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
   });
 
-  it('should successfully register a theme change handler', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a theme change handler', async () => {
+    await utils.initializeWithContext('content');
 
     let newTheme: string;
     core.registerOnThemeChangeHandler(theme => {
@@ -196,8 +197,8 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(newTheme).toBe('someTheme');
   });
 
-  it('should call navigateBack automatically when no back button handler is registered', () => {
-    utils.initializeWithContext('content');
+  it('should call navigateBack automatically when no back button handler is registered', async () => {
+    await utils.initializeWithContext('content');
 
     utils.sendMessage('backButtonPress');
 
@@ -205,13 +206,10 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     expect(navigateBackMessage).not.toBeNull();
   });
 
-  it('should successfully get context', () => {
-    utils.initializeWithContext('content');
+  it('should successfully get context', async () => {
+    await utils.initializeWithContext('content');
 
-    let actualContext: Context;
-    core.getContext(context => {
-      actualContext = context;
-    });
+    const contextPromise = core.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
@@ -336,56 +334,51 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
     //insert expected time comparison here?
     utils.respondToMessage(getContextMessage, contextBridge);
+    const actualContext = await contextPromise;
 
     expect(actualContext).toEqual(expectedContext);
     expect(actualContext.page.frameContext).toBe(FrameContexts.content);
     expect(actualContext.meeting.id).toBe('dummyMeetingId');
   });
 
-  it('should successfully get frame context in side panel', () => {
-    utils.initializeWithContext(FrameContexts.sidePanel);
+  it('should successfully get frame context in side panel', async () => {
+    await utils.initializeWithContext(FrameContexts.sidePanel);
 
-    let actualContext: Context;
-    core.getContext(context => {
-      actualContext = context;
-    });
+    const contextPromise = core.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, {});
+    const actualContext = await contextPromise;
 
     expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
-  it('should successfully get frame context when returned from client', () => {
-    utils.initializeWithContext(FrameContexts.content);
+  it('should successfully get frame context when returned from client', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
 
-    let actualContext: Context;
-    core.getContext(context => {
-      actualContext = context;
-    });
+    const contextPromise = core.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
+    const actualContext = await contextPromise;
 
     expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
-  it('should successfully get frame context in side panel with fallback logic if not returned from client', () => {
-    utils.initializeWithContext(FrameContexts.sidePanel);
+  it('should successfully get frame context in side panel with fallback logic if not returned from client', async () => {
+    await utils.initializeWithContext(FrameContexts.sidePanel);
 
-    let actualContext: Context;
-    core.getContext(context => {
-      actualContext = context;
-    });
+    const contextPromise = core.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, {});
+    const actualContext = await contextPromise;
 
     expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
@@ -397,52 +390,52 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       );
     });
 
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
+    it('should not allow calls from authentication context', async () => {
+      await utils.initializeWithContext('authentication');
 
       expect(() => pages.navigateCrossDomain('https://valid.origin.com')).toThrowError(
         "This call is not allowed in the 'authentication' context",
       );
     });
 
-    it('should allow calls from content context', () => {
-      utils.initializeWithContext('content');
+    it('should allow calls from content context', async () => {
+      await utils.initializeWithContext('content');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should allow calls from sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should allow calls from sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
+    it('should allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
+    it('should allow calls from remove context', async () => {
+      await utils.initializeWithContext('remove');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should allow calls from task context', () => {
-      utils.initializeWithContext('task');
+    it('should allow calls from task context', async () => {
+      await utils.initializeWithContext('task');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should allow calls from stage context', () => {
-      utils.initializeWithContext('stage');
+    it('should allow calls from stage context', async () => {
+      await utils.initializeWithContext('stage');
 
       pages.navigateCrossDomain('https://valid.origin.com');
     });
 
-    it('should successfully navigate cross-origin', () => {
-      utils.initializeWithContext('content');
+    it('should successfully navigate cross-origin', async () => {
+      await utils.initializeWithContext('content');
 
       pages.navigateCrossDomain('https://valid.origin.com');
 
@@ -452,8 +445,8 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
     });
 
-    it('should throw on invalid cross-origin navigation request', () => {
-      utils.initializeWithContext('settings');
+    it('should throw on invalid cross-origin navigation request', async () => {
+      await utils.initializeWithContext('settings');
 
       pages.navigateCrossDomain('https://invalid.origin.com');
 
@@ -472,24 +465,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   describe('executeDeepLink in content context ', () => {
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        core.executeDeepLink('dummyLink', () => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('content');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -504,23 +491,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       };
 
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
 
-    it('should invoke error callback', () => {
-      utils.initializeWithContext('content');
+    it('should invoke error callback', async () => {
+      await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -535,23 +517,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
         error: 'Something went wrong...',
       };
       utils.respondToMessage(message, data.success, data.error);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(false);
-      expect(error).toBe('Something went wrong...');
+      return expect(promise).rejects.toThrowError('Something went wrong...');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('content');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -565,33 +542,24 @@ describe('teamsjsAppSDK-publicAPIs', () => {
         success: true,
       };
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
   });
 
   describe('executeDeepLink in sidePanel context ', () => {
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        core.executeDeepLink('dummyLink', () => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -606,23 +574,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       };
 
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
 
-    it('should invoke error callback', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should invoke error callback', async () => {
+      await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -637,23 +600,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
         error: 'Something went wrong...',
       };
       utils.respondToMessage(message, data.success, data.error);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(false);
-      expect(error).toBe('Something went wrong...');
+      return expect(promise).rejects.toThrowError('Something went wrong...');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -667,33 +625,24 @@ describe('teamsjsAppSDK-publicAPIs', () => {
         success: true,
       };
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
   });
 
   describe('executeDeepLink in task module context ', () => {
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        core.executeDeepLink('dummyLink', () => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext(FrameContexts.task);
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -708,23 +657,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       };
 
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
 
-    it('should invoke error callback', () => {
-      utils.initializeWithContext(FrameContexts.task);
+    it('should invoke error callback', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -740,23 +684,18 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       };
 
       utils.respondToMessage(message, data.success, data.error);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(false);
-      expect(error).toBe('Something went wrong...');
+      return expect(promise).rejects.toThrowError('Something went wrong...');
     });
 
-    it('should successfully send a request', () => {
-      utils.initializeWithContext('content');
+    it('should successfully send a request', async () => {
+      await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
       let requestResponse: boolean;
       let error: string;
 
-      const onComplete = (status: boolean, reason?: string) => ((requestResponse = status), (error = reason));
-
       // send message request
-      core.executeDeepLink(request, onComplete);
+      const promise = core.executeDeepLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -771,16 +710,13 @@ describe('teamsjsAppSDK-publicAPIs', () => {
       };
 
       utils.respondToMessage(message, data.success);
-
-      // check data is returned properly
-      expect(requestResponse).toBe(true);
-      expect(error).toBeUndefined();
+      return expect(promise).resolves;
     });
   });
 
   describe('returnFocus', () => {
-    it('should successfully returnFocus', () => {
-      utils.initializeWithContext('content');
+    it('should successfully returnFocus', async () => {
+      await utils.initializeWithContext('content');
 
       pages.returnFocus(true);
 

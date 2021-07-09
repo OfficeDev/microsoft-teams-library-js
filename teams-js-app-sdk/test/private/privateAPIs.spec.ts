@@ -54,10 +54,10 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
-    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, () => {
-      utils.initializeWithContext('content', null, null, ['http://invalid.origin.com']);
+    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
+      await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
       let callbackCalled: boolean = false;
-      core.getContext(() => {
+      core.getContext().then(() => {
         callbackCalled = true;
       });
 
@@ -102,12 +102,9 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   ];
 
   supportedDomains.forEach(supportedDomain => {
-    it('should allow utils.messages from supported domain ' + supportedDomain, () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com', 'https://www.example.com']);
-      let callbackCalled: boolean = false;
-      core.getContext(() => {
-        callbackCalled = true;
-      });
+    it('should allow utils.messages from supported domain ' + supportedDomain, async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
+      const contextPromise = core.getContext();
 
       let getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
@@ -125,12 +122,12 @@ describe('teamsjsAppSDK-privateAPIs', () => {
         } as MessageResponse,
       } as MessageEvent);
 
-      expect(callbackCalled).toBe(true);
+      return expect(contextPromise).resolves;
     });
   });
 
-  it('should not make calls to unsupported domains', () => {
-    core.initialize(null, ['http://some-invalid-origin.com']);
+  it('should not make calls to unsupported domains', async () => {
+    core.initialize(['http://some-invalid-origin.com']);
 
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
@@ -146,7 +143,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     // Try to make a call
     let callbackCalled: boolean = false;
-    core.getContext(() => {
+    core.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -161,7 +158,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    core.getContext(() => {
+    core.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -171,13 +168,11 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(callbackCalled).toBe(false);
   });
 
-  it('should successfully handle calls queued before init completes', () => {
-    core.initialize();
+  it('should successfully handle calls queued before init completes', async () => {
+    const initPromise = core.initialize();
 
     // Another call made before the init response
-    core.getContext(() => {
-      return;
-    });
+    core.getContext();
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
@@ -187,34 +182,25 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     // init completes
     utils.respondToMessage(initMessage, 'content');
+    await initPromise;
 
     // Now the getContext call should have been dequeued
     expect(utils.messages.length).toBe(2);
     expect(utils.findMessageByFunc('getContext')).not.toBeNull();
   });
 
-  it('should successfully handle out of order calls', () => {
-    utils.initializeWithContext('content');
+  it('should successfully handle out of order calls', async () => {
+    await utils.initializeWithContext('content');
 
-    let actualContext1: Context;
-    core.getContext(context => {
-      actualContext1 = context;
-    });
+    const contextPromise1 = core.getContext();
 
     let getContextMessage1 = utils.messages[utils.messages.length - 1];
 
-    let actualContext2: Context;
-    core.getContext(context => {
-      console.log(JSON.stringify(context));
-      actualContext2 = context;
-    });
+    const contextPromise2 = core.getContext();
 
     let getContextMessage2 = utils.messages[utils.messages.length - 1];
 
-    let actualContext3: Context;
-    core.getContext(context => {
-      actualContext3 = context;
-    });
+    const contextPromise3 = core.getContext();
 
     let getContextMessage3 = utils.messages[utils.messages.length - 1];
 
@@ -316,16 +302,16 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
-    expect(actualContext1).toEqual(expectedContext1);
-    expect(actualContext2).toEqual(expectedContext2);
-    expect(actualContext3).toEqual(expectedContext3);
+    expect(contextPromise1).resolves.toBe(expectedContext1);
+    expect(contextPromise2).resolves.toBe(expectedContext2);
+    expect(contextPromise3).resolves.toBe(expectedContext3);
   });
 
-  it('should only call callbacks once', () => {
-    utils.initializeWithContext('content');
+  it('should only call callbacks once', async () => {
+    await utils.initializeWithContext('content');
 
     let callbackCalled = 0;
-    core.getContext(() => {
+    const contextPromise = core.getContext().then(() => {
       callbackCalled++;
     });
 
@@ -351,13 +337,14 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     for (let i = 0; i < 100; i++) {
       utils.respondToMessage(getContextMessage, expectedContext);
     }
+    await contextPromise;
 
     // Still only called the callback once.
     expect(callbackCalled).toBe(1);
   });
 
-  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a userSettingsChange handler and execute it on setting change', async () => {
+    await utils.initializeWithContext('content');
 
     let changedUserSettingType, changedUserSettingValue;
 
@@ -373,7 +360,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
-    utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
     utils.processMessage({
@@ -391,7 +378,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should properly pass partial responses to nested child frames ', () => {
-    utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
     utils.processMessage({
@@ -423,8 +410,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   describe('sendCustomMessage', () => {
-    it('should successfully pass message and provided arguments', () => {
-      utils.initializeWithContext('content');
+    it('should successfully pass message and provided arguments', async () => {
+      await utils.initializeWithContext('content');
 
       sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
@@ -435,8 +422,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   describe('sendCustomMessageToChild', () => {
-    it('should successfully pass message and provided arguments', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should successfully pass message and provided arguments', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       //trigger child window setup
       //trigger processing of message received from child
@@ -459,9 +446,9 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     });
   });
 
-  describe('addCustomHandler', () => {
-    it('should successfully pass message and provided arguments of customAction from parent', () => {
-      utils.initializeWithContext('content');
+  describe('addCustomHandler', async () => {
+    it('should successfully pass message and provided arguments of customAction from parent', async () => {
+      await utils.initializeWithContext('content');
 
       const customActionName = 'customAction1';
       let callbackCalled = false,
@@ -477,8 +464,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should successfully pass message and provided arguments of customAction from child', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should successfully pass message and provided arguments of customAction from child', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
       let callbackCalled = false,
@@ -504,8 +491,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should not process be invoked due to invalid origin message from child window', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should not process be invoked due to invalid origin message from child window', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
       let callbackCalled = false,

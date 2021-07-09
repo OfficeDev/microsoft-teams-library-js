@@ -60,5 +60,8 @@
       "tsx",
       "js"
     ]
+  },
+  "dependencies": {
+    "es6-promise": "^4.2.8"
   }
 }

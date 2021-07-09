@@ -12,30 +12,24 @@ const CoreAPIs = (): ReactElement => {
 
   const getContext = (): void => {
     setGetContextRes('core.getContextOld()' + noHubSdkMsg);
-    core.getContextOld((res: any) => {
+    core.getContextOld().then((res: any) => {
       setGetContextRes(JSON.stringify(res));
     });
   };
 
   const getContextV2 = (): void => {
     setGetContextV2Res('core.getContext()' + noHubSdkMsg);
-    core.getContext((res: Context) => {
+    core.getContext().then((res: Context) => {
       setGetContextV2Res(JSON.stringify(res));
     });
   };
 
   const executeDeepLink = (deepLink: string): void => {
     setExecuteDeepLinkRes('core.executeDeepLink()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setExecuteDeepLinkRes(reason);
-        }
-      } else {
-        setExecuteDeepLinkRes('Completed');
-      }
-    };
-    core.executeDeepLink(deepLink, onComplete);
+    core
+      .executeDeepLink(deepLink)
+      .then(() => setExecuteDeepLinkRes('Completed'))
+      .catch(reason => setExecuteDeepLinkRes(reason));
   };
 
   const shareDeepLink = (deepLinkParamsInput: string): void => {

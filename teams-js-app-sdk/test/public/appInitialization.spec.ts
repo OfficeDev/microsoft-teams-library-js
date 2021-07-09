@@ -24,8 +24,8 @@ describe('appInitialization', () => {
     }
   });
 
-  it('should call notifyAppLoaded correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyAppLoaded correctly', async () => {
+    await utils.initializeWithContext('content');
 
     appInitialization.notifyAppLoaded();
     const message = utils.findMessageByFunc(appInitialization.Messages.AppLoaded);
@@ -34,8 +34,8 @@ describe('appInitialization', () => {
     expect(message.args[0]).toEqual(version);
   });
 
-  it('should call notifySuccess correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifySuccess correctly', async () => {
+    await utils.initializeWithContext('content');
 
     appInitialization.notifySuccess();
     const message = utils.findMessageByFunc(appInitialization.Messages.Success);
@@ -44,8 +44,8 @@ describe('appInitialization', () => {
     expect(message.args[0]).toEqual(version);
   });
 
-  it('should call notifyExpectedFailure correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyExpectedFailure correctly', async () => {
+    await utils.initializeWithContext('content');
 
     appInitialization.notifyExpectedFailure({
       reason: appInitialization.ExpectedFailureReason.PermissionError,
@@ -58,8 +58,8 @@ describe('appInitialization', () => {
     expect(message.args[1]).toEqual('Permission denied');
   });
 
-  it('should call notifyFailure correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyFailure correctly', async () => {
+    await utils.initializeWithContext('content');
 
     appInitialization.notifyFailure({
       reason: appInitialization.FailedReason.AuthFailed,

@@ -42,13 +42,14 @@ export class FramelessPostMocks {
     this.mockWindow.self = this.mockWindow as ExtendedWindow;
   }
 
-  public initializeWithContext = (frameContext: string, hostClientType?: string, callback?: () => void, validMessageOrigins?: string[]): void => {
+  public initializeWithContext = async (frameContext: string, hostClientType?: string, validMessageOrigins?: string[]): Promise<void> => {
     core._initialize(this.mockWindow);
-    core.initialize(callback, validMessageOrigins);
+    const initPromise = core.initialize(validMessageOrigins);
     expect(GlobalVars.isFramelessWindow).toBeTruthy();
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
     this.respondToInitMessage(initMessage, frameContext, hostClientType);
+    await initPromise;
     expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
   };
 
