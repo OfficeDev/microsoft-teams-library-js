@@ -35,7 +35,6 @@ export {
   registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
-  checkDevicePermission,
 } from './publicAPIs';
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';

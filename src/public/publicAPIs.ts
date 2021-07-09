@@ -341,18 +341,3 @@ export function initializeWithFrameContext(
   setFrameContext(frameContext);
 }
 
-export function checkDevicePermission(
-  deviceType: string,
-  callback: (isPermissionGranted: boolean) => {},
-  promptForReload = false,
-): void {
-  ensureInitialized(
-    FrameContexts.content,
-    FrameContexts.sidePanel,
-    FrameContexts.settings,
-    FrameContexts.task,
-    FrameContexts.stage,
-    FrameContexts.meetingStage,
-  );
-  sendMessageToParent('checkDevicePermission', [deviceType, promptForReload], callback);
-}
