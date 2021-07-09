@@ -14,7 +14,7 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /**
-   * Return focus to the main teamsjs app. Will focus search bar if navigating forward and app bar if navigating back.
+   * Return focus to the main teamsjs app.
    * @param navigateForward - Determines the direction to focus in teamsjs app.
    */
   export function returnFocus(navigateForward?: boolean): void {
