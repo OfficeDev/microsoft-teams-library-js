@@ -16,6 +16,11 @@ steps:
       versionSpec: '1.x'
     displayName: 'Yarn 1.x'
 
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "14.x"
+    displayName: "Install Node.js"
+
   - task: Yarn@3
     inputs:
       Arguments: 'install'
@@ -170,4 +175,25 @@ steps:
       )
     inputs:
       Arguments: 'publish-sdk'
-    displayName: 'yarn publish-sdk'
+    displayName: 'yarn publish-sdk (main)'
+
+  - script: 'node prepNextRelease.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'yarn node prepNextRelease.js'
+
+  - task: Yarn@3
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    inputs:
+      Arguments: 'publish-sdk --tag next'
+    displayName: 'yarn publish-sdk (develop)'
