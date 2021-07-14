@@ -334,7 +334,8 @@ export interface Context {
   isTeamArchived?: boolean;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
