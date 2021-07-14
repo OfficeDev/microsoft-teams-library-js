@@ -67,6 +67,19 @@ steps:
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
     displayName: 'Post bundle analysis result as PR comment in github'
 
+  - task: ComponentGovernanceComponentDetection@0
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      scanType: "LogOnly"
+      verbosity: "Verbose"
+      alertWarningLevel: "High"
+      failOnAlert: true
+    displayName: 'Security check - Component Governance (Pull Request)'
+
+  - task: ComponentGovernanceComponentDetection@0
+    condition: and(in(variables['Build.SourceBranch'], 'refs/heads/main', 'refs/heads/dev'), ne(variables['Build.Reason'], 'PullRequest'))
+    displayName: 'Security check - Component Governance (main/develop)'
+
   - task: CopyFiles@2
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
     inputs:
