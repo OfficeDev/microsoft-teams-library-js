@@ -176,13 +176,14 @@ export function transformContext(contextBridge: ContextBridge): Context {
           userRole: contextBridge.userTeamRole,
         }
       : undefined,
-    sharePointSite: contextBridge.teamSiteUrl
-      ? {
-          url: contextBridge.teamSiteUrl,
-          domain: contextBridge.teamSiteDomain,
-          path: contextBridge.teamSitePath,
-        }
-      : undefined,
+    sharePointSite:
+      contextBridge.teamSiteUrl || contextBridge.teamSiteDomain || contextBridge.teamSitePath
+        ? {
+            url: contextBridge.teamSiteUrl,
+            domain: contextBridge.teamSiteDomain,
+            path: contextBridge.teamSitePath,
+          }
+        : undefined,
   };
 
   return context;
