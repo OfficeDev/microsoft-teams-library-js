@@ -77,7 +77,7 @@ steps:
     displayName: 'Security check - Component Governance (Pull Request)'
 
   - task: ComponentGovernanceComponentDetection@0
-    condition: and(in(variables['Build.SourceBranch'], 'refs/heads/main', 'refs/heads/dev'), ne(variables['Build.Reason'], 'PullRequest'))
+    condition: and(in(variables['Build.SourceBranch'], 'refs/heads/main', 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Security check - Component Governance (main/develop)'
 
   - task: CopyFiles@2
