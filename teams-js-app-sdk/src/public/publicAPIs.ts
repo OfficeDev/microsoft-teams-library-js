@@ -31,6 +31,23 @@ import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
  */
 export namespace core {
   // ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
+
+  /**
+   * Checks whether the App SDK has been initialized.
+   * @returns whether the App SDK has been initialized.
+   */
+  export function isInitialized(): boolean {
+    return GlobalVars.initializeCalled;
+  }
+
+  /**
+   * Gets the Frame Context that the App is running in. {@see FrameContexts} for the list of possible values.
+   * @returns the Frame Context.
+   */
+  export function getFrameContext(): FrameContexts {
+    return GlobalVars.frameContext;
+  }
+
   /**
    * Initializes the library. This must be called before any other SDK calls
    * but after the frame is loaded successfully.
