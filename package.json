@@ -13,28 +13,41 @@
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
+    "build:all": "yarn build-sdk && yarn build-bundle-size-tools && yarn build-perf-app && yarn build-test-app",
+    "build-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn build)",
+    "build-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn build)",
     "build-sdk": "(cd ./teamsjs-app-sdk/ && yarn lint && webpack)",
     "build-test-app": "(cd ./examples/teamsjs-test-app/ && yarn build)",
-    "build-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn build)",
-    "build-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn build)",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "clean": "if exist node_modules (rd /s /q node_modules)",
     "clean:all": "yarn clean-sdk && yarn clean-test-app && yarn clean-perf-app && yarn clean-bundle-size-tools && yarn clean",
     "clean-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn clean:all)",
+    "clean-install-build:all": "yarn clean:all && yarn && yarn build:all",
     "clean-sdk": "(cd ./teamsjs-app-sdk/ && yarn clean)",
-    "clean-test-app": "(cd ./examples/teamsjs-test-app/ && yarn clean)",
     "clean-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn clean)",
-    "efb-test-app": "(cd ./examples/teamsjs-test-app/ && yarn eslint-fix-build)",
+    "clean-test-app": "(cd ./examples/teamsjs-test-app/ && yarn clean)",
     "efb-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn eslint-fix-build)",
+    "efb-test-app": "(cd ./examples/teamsjs-test-app/ && yarn eslint-fix-build)",
     "publish-sdk": "yarn publish teamsjs-app-sdk",
-    "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
     "start-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn start)",
+    "start-test-app": "(cd ./examples/teamsjs-test-app/ && yarn start)",
     "test-sdk": "(cd ./teamsjs-app-sdk/ && yarn test)"
   },
   "devDependencies": {
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "fs-extra": "^9.1.0"
+  },
+  "resolutions": {
+    "dns-packet": "^1.3.2",
+    "glob-parent": "^5.1.2",
+    "lodash": "^4.17.21",
+    "merge": "^2.1.1",
+    "serialize-javascript": "^3.1.0",
+    "set-value": "^2.0.1",
+    "underscore": "1.12.1",
+    "url-parse": "^1.5.0",
+    "y18n": "^4.0.1"
   }
 }
