@@ -1,4 +1,6 @@
-import { teams } from '../../src/private/teams';
+import {
+  teams
+} from '../../src/private/teams';
 import { Utils } from '../utils';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 
@@ -73,4 +75,16 @@ describe('teams', () => {
       expect(callback).toHaveBeenCalled();
     });
   });
+
+  describe('refreshSiteUrl', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => teams.refreshSiteUrl('threadId')).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with null groupId', () => {
+      utils.initializeWithContext('content');
+      expect(() => teams.refreshSiteUrl(null)).toThrowError('[refreshSiteUrl] threadId cannot be null or empty');
+    });
+  });
+
 });

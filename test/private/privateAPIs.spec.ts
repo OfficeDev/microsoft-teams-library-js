@@ -13,8 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
-  registerUserSettingsChangeHandler,
-  refreshSiteUrl,
+  registerUserSettingsChangeHandler
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
