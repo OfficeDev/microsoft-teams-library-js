@@ -4,7 +4,7 @@ import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
 
-describe('meeting', () => {
+describe('monetization', () => {
   const desktopPlatformMock = new FramelessPostMocks();
   const utils = new Utils();
 
@@ -42,8 +42,11 @@ describe('meeting', () => {
         callbackCalled = "true";
         returnedSdkError = error;
       });
-      expect(callbackCalled).toBe("true");
-      expect(returnedSdkError).toBeNull();
+      var millisecondsToWait = 50;
+      setTimeout(function() {
+        expect(callbackCalled).toBe("true");
+        expect(returnedSdkError).toBeNull();
+      }, millisecondsToWait);
     });
   });
 });
