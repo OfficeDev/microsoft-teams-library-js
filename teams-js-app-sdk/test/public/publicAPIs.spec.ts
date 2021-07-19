@@ -385,7 +385,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   describe('navigateCrossDomain', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => pages.navigateCrossDomain('https://valid.origin.com')).toThrowError(
+      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -393,7 +393,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => pages.navigateCrossDomain('https://valid.origin.com')).toThrowError(
+      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
         "This call is not allowed in the 'authentication' context",
       );
     });
@@ -448,18 +448,16 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     it('should throw on invalid cross-origin navigation request', async () => {
       await utils.initializeWithContext('settings');
 
-      pages.navigateCrossDomain('https://invalid.origin.com');
+      const promise = pages.navigateCrossDomain('https://invalid.origin.com');
 
-      let navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
       expect(navigateCrossDomainMessage).not.toBeNull();
       expect(navigateCrossDomainMessage.args.length).toBe(1);
       expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
 
-      let respondWithFailure = () => {
-        utils.respondToMessage(navigateCrossDomainMessage, false);
-      };
+      utils.respondToMessage(navigateCrossDomainMessage, false);
 
-      expect(respondWithFailure).toThrow();
+      return expect(promise).rejects.toThrowError();
     });
   });
 

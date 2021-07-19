@@ -114,8 +114,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      pages.tabs.getTabInstances(tabInfo => tabInfo);
-      pages.tabs.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getTabInstances();
+      pages.tabs.getTabInstances({} as TabInstanceParameters);
     });
   });
 
@@ -123,8 +123,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo);
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getMruTabInstances();
+      pages.tabs.getMruTabInstances({} as TabInstanceParameters);
     });
   });
 
@@ -355,7 +355,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toBe(frameContext);
   });
-  
+
   it('should successfully register a focus enter handler and return true', async () => {
     await utils.initializeWithContext('content');
 

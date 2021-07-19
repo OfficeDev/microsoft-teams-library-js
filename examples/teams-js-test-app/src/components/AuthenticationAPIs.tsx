@@ -4,7 +4,6 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const AuthenticationAPIs = (): ReactElement => {
-  const [registerAuthHandlersRes, setRegisterAuthHAndlerRes] = React.useState('');
   const [getTokenRes, setGetTokenRes] = React.useState('');
   const [getUserRes, setGetUserRes] = React.useState('');
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
@@ -12,38 +11,21 @@ const AuthenticationAPIs = (): ReactElement => {
   const [authenticateRes, setAuthenticateRes] = React.useState('');
   const [initializeRes, setInitializeRes] = React.useState('');
 
-  const registerAuthenticationHandlers = (authParams: string): void => {
-    authentication.registerAuthenticationHandlers(JSON.parse(authParams));
-    setRegisterAuthHAndlerRes('called');
-  };
-
   const authGetToken = (unformattedAuthParams: string): void => {
     setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
     const authParams: authentication.AuthTokenRequest = JSON.parse(unformattedAuthParams);
-    try {
-      authParams.successCallback = (result?: string) => {
-        setGetTokenRes('Success: ' + result);
-      };
-      authParams.failureCallback = (reason?: string) => {
-        setGetTokenRes('Failure: ' + reason);
-      };
-    } catch (e) {
-      setGetTokenRes('No Auth');
-    }
-    authentication.getAuthToken(authParams);
+    authentication
+      .getAuthToken(authParams)
+      .then(result => setGetTokenRes('Success: ' + result))
+      .catch(reason => setGetTokenRes('Failure: ' + reason));
   };
 
   const authGetUser = (): void => {
     setGetUserRes('authentication.getUser()' + noHubSdkMsg);
-    const userRequest = {
-      successCallback: (user: authentication.UserProfile) => {
-        setGetUserRes('Success: ' + JSON.stringify(user));
-      },
-      failureCallback: (reason: string) => {
-        setGetUserRes('Failure: ' + reason);
-      },
-    };
-    authentication.getUser(userRequest);
+    authentication
+      .getUser()
+      .then(user => setGetUserRes('Success: ' + JSON.stringify(user)))
+      .catch(reason => setGetUserRes('Failure: ' + reason));
   };
 
   const authNotifyFailure = (reason: string): void => {
@@ -64,17 +46,10 @@ const AuthenticationAPIs = (): ReactElement => {
   const authAuthenticate = (unformattedAuthParams: string): void => {
     setAuthenticateRes('authentication.authenticate()' + noHubSdkMsg);
     const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
-    try {
-      authParams.successCallback = (token?: string) => {
-        setAuthenticateRes('Success: ' + token);
-      };
-      authParams.failureCallback = (reason?: string) => {
-        setAuthenticateRes('Failure: ' + reason);
-      };
-    } catch (e) {
-      setAuthenticateRes('No Auth');
-    }
-    authentication.authenticate(authParams);
+    authentication
+      .authenticate(authParams)
+      .then(token => setAuthenticateRes('Success: ' + token))
+      .catch((reason: Error) => setAuthenticateRes('Failure: ' + reason.message));
   };
 
   return (
@@ -86,13 +61,6 @@ const AuthenticationAPIs = (): ReactElement => {
         hasInput={false}
         title="Initialize"
         name="initialize"
-      />
-      <BoxAndButton
-        handleClickWithInput={registerAuthenticationHandlers}
-        output={registerAuthHandlersRes}
-        hasInput={true}
-        title="register Authentication Handlers"
-        name="registerAuthenticationHandlers"
       />
       <BoxAndButton
         handleClickWithInput={authGetToken}

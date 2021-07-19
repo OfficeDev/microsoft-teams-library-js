@@ -75,10 +75,7 @@ describe('config', () => {
   it('should successfully get settings', async () => {
     await utils.initializeWithContext('settings');
 
-    let actualSettings: pages.config.Config;
-    pages.config.getConfig(settings => {
-      actualSettings = settings;
-    });
+    const promise = pages.config.getConfig();
 
     let message = utils.findMessageByFunc('settings.getSettings');
     expect(message).not.toBeNull();
@@ -92,7 +89,7 @@ describe('config', () => {
 
     utils.respondToMessage(message, expectedSettings);
 
-    expect(actualSettings).toBe(expectedSettings);
+    return expect(promise).resolves.toBe(expectedSettings);
   });
 
   it('should successfully set settings', async () => {

@@ -302,9 +302,11 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
-    expect(contextPromise1).resolves.toBe(expectedContext1);
-    expect(contextPromise2).resolves.toBe(expectedContext2);
-    expect(contextPromise3).resolves.toBe(expectedContext3);
+    return Promise.all([
+      expect(contextPromise1).resolves.toEqual(expectedContext1),
+      expect(contextPromise2).resolves.toEqual(expectedContext2),
+      expect(contextPromise3).resolves.toEqual(expectedContext3),
+    ]);
   });
 
   it('should only call callbacks once', async () => {
