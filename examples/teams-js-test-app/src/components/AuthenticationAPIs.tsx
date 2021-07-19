@@ -19,7 +19,7 @@ const AuthenticationAPIs = (): ReactElement => {
 
   const authGetToken = (unformattedAuthParams: string): void => {
     setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
-    const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
+    const authParams: authentication.AuthTokenRequest = JSON.parse(unformattedAuthParams);
     try {
       authParams.successCallback = (result?: string) => {
         setGetTokenRes('Success: ' + result);
