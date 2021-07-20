@@ -1,9 +1,9 @@
-import { messaging } from '../../src/public/messaging';
+import { sharing } from '../../src/public/sharing';
 import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
 import { ErrorCode } from '../../src/public/interfaces';
 
-describe('messages', () => {
+describe('sharing', () => {
 
   const utils = new Utils();
 
@@ -27,14 +27,14 @@ describe('messages', () => {
   it('should handle share web content in success scenario', () => {
     utils.initializeWithContext('content');
     const cb = jasmine.createSpy('callback');
-    const shareRequest: messaging.IShareWebContentRequest = {
+    const shareRequest: sharing.IShareWebContentRequest = {
       url: 'https://www.microsoft.com',
       preview: true,
       message: 'Test'
     };
 
-    messaging.shareWebContent(shareRequest, cb);
-    const shareMessage = utils.findMessageByFunc(messaging.MessagingAPIMessages.shareWebContent);
+    sharing.shareWebContent(shareRequest, cb);
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args.length).toBe(1);
     expect(shareMessage.args[0]).toEqual(shareRequest);
@@ -51,10 +51,10 @@ describe('messages', () => {
     };
 
     let response: any;
-    messaging.shareWebContent(shareRequest, (res) => {
+    sharing.shareWebContent(shareRequest, (res) => {
       response = res;
     });
-    const shareMessage = utils.findMessageByFunc(messaging.MessagingAPIMessages.shareWebContent);
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
     expect(response).toEqual(error);
   });
@@ -68,30 +68,43 @@ describe('messages', () => {
     };
 
     let response: any;
-    messaging.shareWebContent(shareRequest, (res) => {
+    sharing.shareWebContent(shareRequest, (res) => {
       response = res;
     });
-    const shareMessage = utils.findMessageByFunc(messaging.MessagingAPIMessages.shareWebContent);
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args[0]).toEqual(shareRequest);
     utils.respondToMessage(shareMessage, error);
     expect(response).toEqual(error);
   });
 
-  it('should handle class assignment creation', () => {
+  it('should handle class assignment creation with standard content', () => {
     utils.initializeWithContext('content');
     const cb = jasmine.createSpy('callback');
-    const shareRequest: messaging.ICreateAssignmentRequest = {
+    const shareRequest: sharing.ICreateAssignmentRequest = {
       url: 'https://www.microsoft.com',
       title: 'Essay 1',
       instruction: 'Write an essay about this'
     };
 
-    messaging.createAssignment(shareRequest, cb);
-    const shareMessage = utils.findMessageByFunc(messaging.MessagingAPIMessages.createAssignment);
+    sharing.createAssignment(shareRequest, cb);
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.createAssignment);
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args.length).toBe(1);
     expect(shareMessage.args[0]).toEqual(shareRequest);
+    utils.respondToMessage(shareMessage);
+    expect(cb).toHaveBeenCalledWith(undefined);
+  });
+
+  it('should handle class assignment creation with empty content', () => {
+    utils.initializeWithContext('content');
+    const cb = jasmine.createSpy('callback');
+
+    sharing.createAssignment(undefined, cb);
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.createAssignment);
+    expect(shareMessage).not.toBeNull();
+    expect(shareMessage.args.length).toBe(1);
+    expect(shareMessage.args[0]).toEqual(undefined);
     utils.respondToMessage(shareMessage);
     expect(cb).toHaveBeenCalledWith(undefined);
   });

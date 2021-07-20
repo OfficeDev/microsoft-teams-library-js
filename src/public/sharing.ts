@@ -3,10 +3,10 @@ import { sendMessageToParent } from '../internal/communication';
 import { ErrorCode, SdkError } from './interfaces';
 import { FrameContexts } from './constants';
 
-export namespace messaging {
-  export const MessagingAPIMessages = {
-    shareWebContent: 'messaging.shareWebContent',
-    createAssignment: 'messaging.createAssignment',
+export namespace sharing {
+  export const SharingAPIMessages = {
+    shareWebContent: 'sharing.shareWebContent',
+    createAssignment: 'sharing.createAssignment',
   };
 
   export interface IShareWebContentRequest {
@@ -77,7 +77,7 @@ export namespace messaging {
       FrameContexts.meetingStage,
     );
 
-    sendMessageToParent(MessagingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
+    sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
   }
 
   /**
@@ -85,11 +85,11 @@ export namespace messaging {
    * Feature is under development
    *
    * Opens a share dialog for creating a class asignment
-   * @param shareWebContentRequest web content info
+   * @param createAssignmentRequest assignment info
    * @param callback optional callback
    */
   export function createAssignment(
-    createAssignmentRequest: ICreateAssignmentRequest,
+    createAssignmentRequest?: ICreateAssignmentRequest,
     callback?: (err?: SdkError) => void,
   ): void {
     ensureInitialized(
@@ -100,6 +100,6 @@ export namespace messaging {
       FrameContexts.meetingStage,
     );
 
-    sendMessageToParent(MessagingAPIMessages.createAssignment, [createAssignmentRequest], callback);
+    sendMessageToParent(SharingAPIMessages.createAssignment, [createAssignmentRequest], callback);
   }
 }

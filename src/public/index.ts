@@ -45,4 +45,4 @@ export { location } from './location';
 export { meeting } from './meeting';
 export { people } from './people';
 export { video } from './video';
-export { messaging } from './messaging';
+export { sharing } from './sharing';
