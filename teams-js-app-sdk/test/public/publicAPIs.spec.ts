@@ -297,7 +297,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
         userPrincipalName: 'someUserPrincipalName',
         tenant: {
           id: 'someTid',
-          sku: 'someTenantSKU',
+          teamsSku: 'someTenantSKU',
         },
       },
       channel: {

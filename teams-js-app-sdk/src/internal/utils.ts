@@ -139,7 +139,7 @@ export function transformContext(contextBridge: ContextBridge): Context {
       tenant: contextBridge.tid
         ? {
             id: contextBridge.tid,
-            sku: contextBridge.tenantSKU,
+            teamsSku: contextBridge.tenantSKU,
           }
         : undefined,
     },

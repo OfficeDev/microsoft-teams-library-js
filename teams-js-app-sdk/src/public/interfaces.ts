@@ -976,7 +976,7 @@ export interface TenantInfo {
   /**
    * The type of license for the current users tenant.
    */
-  sku?: string;
+  teamsSku?: string;
 }
 
 export interface SharePointSiteInfo {
