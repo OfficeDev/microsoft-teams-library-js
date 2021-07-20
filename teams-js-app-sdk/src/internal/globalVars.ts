@@ -3,7 +3,6 @@ export class GlobalVars {
   public static initializeCalled = false;
   public static initializeCompleted = false;
   public static additionalValidOrigins: string[] = [];
-  public static additionalValidOriginsRegexp: RegExp = null;
   public static initializePromise: Promise<void>;
   public static isFramelessWindow = false;
   public static frameContext: FrameContexts;

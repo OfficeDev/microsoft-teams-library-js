@@ -3,25 +3,29 @@ import * as uuid from 'uuid';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
+import { validOriginObject } from './constants';
 
-// This will return a reg expression a given url
-function generateRegExpFromUrl(url: string): string {
-  let urlRegExpPart = '^';
-  const urlParts = url.split('.');
-  for (let j = 0; j < urlParts.length; j++) {
-    urlRegExpPart += (j > 0 ? '[.]' : '') + urlParts[j].replace('*', '[^/^.]+');
+// This will return a url object for list of url
+export function generateUrlObjects(urls: string[]): URL[] {
+  const urlObjects: URL[] = [];
+  for (let i = 0; i < urls.length; i++) {
+    urlObjects.push(new URL(urls[i]));
   }
-  urlRegExpPart += '$';
-  return urlRegExpPart;
+  return urlObjects;
 }
 
-// This will return a reg expression for list of url
-export function generateRegExpFromUrls(urls: string[]): RegExp {
-  let urlRegExp = '';
-  for (let i = 0; i < urls.length; i++) {
-    urlRegExp += (i === 0 ? '' : '|') + generateRegExpFromUrl(urls[i]);
+export function validateOrigin(messageOrigin: string): boolean {
+  const urlOrigin = messageOrigin.substr(0, 8).toLowerCase() == 'https://' ? messageOrigin : 'https://' + messageOrigin;
+  const url = new URL(urlOrigin);
+  for (let k = 0; k < validOriginObject.length; k++) {
+    if (validOriginObject[k].host[0] == '*' &&
+        validOriginObject[k].host.split('.').slice(1).toString() === 
+        url.host.split('.').slice(1).toString()) {
+          return true;
+    }
   }
-  return new RegExp(urlRegExp);
+  return validOriginObject.filter(validOriginObject => 
+      validOriginObject.host === url.host).length !== 0
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {

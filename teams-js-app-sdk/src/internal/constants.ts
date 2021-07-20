@@ -1,4 +1,4 @@
-import { generateRegExpFromUrls } from './utils';
+import { generateUrlObjects } from './utils';
 
 export const version = '1.10.0';
 /**
@@ -79,7 +79,7 @@ export const validOrigins = [
   'https://*.www.office.com',
 ];
 
-export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
+export const validOriginObject = generateUrlObjects(validOrigins);
 
 /**
  * USer specified message origins should satisfy this test
