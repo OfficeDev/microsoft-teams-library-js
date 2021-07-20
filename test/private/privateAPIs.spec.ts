@@ -279,6 +279,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       teamSiteUrl: 'someSiteUrl',
       sessionId: 'someSessionId',
       appSessionId: 'appSessionId',
+      appLaunchId: 'appLaunchId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
