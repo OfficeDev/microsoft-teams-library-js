@@ -2,11 +2,40 @@
 
 ## v0.0.12
 
+### Context interface changes
+The previous Context interface has been renamed to ContextBridge, and there is now a new Context interface with different properties.
+
+### FrameContext changes
+FrameContext's user.tenant.sku has been renamed to user.tenant.teamsSku to reflect that it is used by Teams for a different purpose than from the Graph API's user.tenant.sku's.
+
+### Promises introduced
+The following APIs that took in a callback function as a parameter now instead return a Promise. 
+  * ChildAppWindow.postMessage
+  * ParentAppWindow.postMessage
+  * authentication APIs
+  * core.executeDeepLink
+  * core.initialize
+  * core.getContext
+  * pages APIs
+
+### Fixed: FrameContexts.dialog deleted for back compat 
+FrameContexts.dialog from public/constants.ts is deleted and all instances where it's used is replaced by FrameContexts.task to fix an internal back compat issue.
+
+### Fixed: core.initialize() in Teams
+The App SDK can now assign a default runtime in case the Hub does not provide a runtime. The only case this is currently expected to happen is when the said Hub is Teams. 
+
+### MOS Test App dialog.submit changes
 In the MOS test app, dialog.submit() will now take in a JSON string with optional keys result and appIds rather than a string of just result.
+
+### Moved APIs
 The following APIs have been moved from `teams.fullTrust` to `legacy.fullTrust`:
 * `getUserJoinedTeams`
-* `getConfigSettings`
+* `getConfig`
 * `isSupported`
+
+### Breaking changes from Teams JS Client SDK repo
+meeting.requestStartLiveStreaming and meeting.requestStopLiveStreaming no longer take in the parameter liveStreamState.
+
 
 ## v0.0.11
 Corresponding microsoft-teams-library-js version: 1.9.0
@@ -35,6 +64,8 @@ The `FrameContext` interface has been renamed `FrameInfo`
 
 ### Support for `hostName` added to context
 The name of the hub the app is running in is now part of the application context in the `hostName` property. For details on how to use this property correctly, please view the [Hub Name and Capabilities](https://office.visualstudio.com/ISS/_wiki/wikis/teamsjs%20Docs/31719/Hub-Name-And-Capabilities) page.
+
+
 ## v0.0.10
 Corresponding microsoft-teams-library-js version: 1.9.0
 
