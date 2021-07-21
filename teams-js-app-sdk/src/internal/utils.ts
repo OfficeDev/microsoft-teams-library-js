@@ -3,29 +3,28 @@ import * as uuid from 'uuid';
 import { GlobalVars } from '../internal/globalVars';
 import { FrameContexts, HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
-import { validOriginObject } from './constants';
+import { validOrigins } from './constants';
 
-// This will return a url object for list of url
-export function generateUrlObjects(urls: string[]): URL[] {
-  const urlObjects: URL[] = [];
-  for (let i = 0; i < urls.length; i++) {
-    urlObjects.push(new URL(urls[i]));
-  }
-  return urlObjects;
-}
-
-export function validateOrigin(messageOrigin: string): boolean {
-  const urlOrigin = messageOrigin.substr(0, 8).toLowerCase() == 'https://' ? messageOrigin : 'https://' + messageOrigin;
-  const url = new URL(urlOrigin);
-  for (let k = 0; k < validOriginObject.length; k++) {
-    if (validOriginObject[k].host[0] == '*' &&
-        validOriginObject[k].host.split('.').slice(1).toString() === 
-        url.host.split('.').slice(1).toString()) {
-          return true;
+export function validateOrigin(messageOriginObject: URL): boolean {
+  // Check whether the url is in the whitelist or supplied by user
+  for (let i = 0; i < validOrigins.length; i++) {
+    if (
+      validOrigins[i][0] === '*' &&
+      validOrigins[i].split('.').slice(1) === messageOriginObject.host.split('.').slice(1)
+    ) {
+      return true;
+    } else if (validOrigins[i] === messageOriginObject.host) {
+      return true;
     }
   }
-  return validOriginObject.filter(validOriginObject => 
-      validOriginObject.host === url.host).length !== 0
+  for (let j = 0; j < GlobalVars.additionalValidOrigins.length; j++) {
+    if (GlobalVars.additionalValidOrigins[j][8] === '*') {
+      return true;
+    } else if (GlobalVars.additionalValidOrigins[j] === messageOriginObject.origin) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {

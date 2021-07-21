@@ -218,7 +218,7 @@ export function shouldProcessMessage(messageSource: Window, messageOrigin: strin
   ) {
     return true;
   } else {
-    return validateOrigin(messageOrigin);
+    return validateOrigin(new URL(messageOrigin));
   }
 }
 
