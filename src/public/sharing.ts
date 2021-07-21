@@ -6,10 +6,25 @@ import { FrameContexts } from './constants';
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
-    createAssignment: 'sharing.createAssignment',
   };
 
-  export interface IShareWebContentRequest {
+  // More types can be added as we expand share capability
+  type SharedContentType = 'URL' | 'Text';
+
+  interface ISharedContent {
+    type: SharedContentType;
+  }
+
+  // More types can be added as we expand share capability
+  export type IShareRequestContentType = IURLContent;
+
+  export interface IShareRequest<T> {
+    content: T[];
+  }
+
+  export interface IURLContent extends ISharedContent {
+    type: 'URL';
+
     /**
      * Required URL
      */
@@ -26,25 +41,13 @@ export namespace sharing {
     preview?: boolean;
   }
 
-  /**
-   * EDU users only
-   * Create an assignment
-   */
-  export interface ICreateAssignmentRequest {
-    /**
-     * URL to share
-     */
-    url?: string;
+  export interface ITextContent extends ISharedContent {
+    type: 'Text';
 
     /**
-     * Assignment title
+     * Default initial message text
      */
-    title?: string;
-
-    /**
-     * Instruction text
-     */
-    instruction?: string;
+    message?: string;
   }
 
   /**
@@ -56,17 +59,51 @@ export namespace sharing {
    * @param callback optional callback
    */
   export function shareWebContent(
-    shareWebContentRequest: IShareWebContentRequest,
+    shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,
   ): void {
-    if (!(shareWebContentRequest && shareWebContentRequest.url)) {
+    if (!(shareWebContentRequest && shareWebContentRequest.content && shareWebContentRequest.content.length)) {
       if (callback) {
         callback({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'URL is required.',
+          message: 'Shared content is missing',
         });
       }
       return;
+    }
+
+    if (shareWebContentRequest.content.some(item => !item.type)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Shared content type cannot be undefined',
+        });
+      }
+      return;
+    }
+
+    if (shareWebContentRequest.content.some(item => item.type !== shareWebContentRequest.content[0].type)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Shared content must all be of the same type',
+        });
+      }
+      return;
+    }
+
+    // Checks for specific content types
+
+    if (shareWebContentRequest.content[0].type === 'URL') {
+      if (shareWebContentRequest.content.some(item => !item.url)) {
+        if (callback) {
+          callback({
+            errorCode: ErrorCode.INVALID_ARGUMENTS,
+            message: 'URLs are required for URL content types',
+          });
+        }
+        return;
+      }
     }
 
     ensureInitialized(
@@ -78,28 +115,5 @@ export namespace sharing {
     );
 
     sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
-  }
-
-  /**
-   * @private
-   * Feature is under development
-   *
-   * Opens a share dialog for creating a class asignment
-   * @param createAssignmentRequest assignment info
-   * @param callback optional callback
-   */
-  export function createAssignment(
-    createAssignmentRequest?: ICreateAssignmentRequest,
-    callback?: (err?: SdkError) => void,
-  ): void {
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
-
-    sendMessageToParent(SharingAPIMessages.createAssignment, [createAssignmentRequest], callback);
   }
 }
