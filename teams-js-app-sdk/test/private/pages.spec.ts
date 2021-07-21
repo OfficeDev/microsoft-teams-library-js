@@ -1,4 +1,4 @@
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 
@@ -13,13 +13,13 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

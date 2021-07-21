@@ -1,6 +1,6 @@
 import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamType, UserTeamRole, HostClientType, ChannelType, HostName } from '../../src/public/constants';
-import { core } from '../../src/public/publicAPIs';
+import { app, core } from '../../src/public/app';
 import { pages } from '../../src/public/pages';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -8,7 +8,7 @@ import { version } from '../../src/internal/constants';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { GlobalVars } from '../../src/internal/globalVars';
 
-describe('teamsjsAppSDK-publicAPIs', () => {
+describe('teamsjsAppSDK-app', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
@@ -20,22 +20,22 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
   it('should not allow calls before initialization', () => {
-    return expect(core.getContext()).rejects.toThrowError('The library has not yet been initialized');
+    return expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
   });
 
   it('should successfully initialize', () => {
-    core.initialize();
+    app.initialize();
 
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
@@ -65,7 +65,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   it('should allow multiple initialize calls', () => {
     for (let i = 0; i < 100; i++) {
-      core.initialize();
+      app.initialize();
     }
 
     // Still only one message actually sent, the extra calls just no-op'ed
@@ -75,12 +75,12 @@ describe('teamsjsAppSDK-publicAPIs', () => {
 
   it('should invoke all callbacks once initialization completes', async () => {
     let firstCallbackInvoked = false;
-    core.initialize().then(() => {
+    app.initialize().then(() => {
       firstCallbackInvoked = true;
     });
 
     let secondCallbackInvoked = false;
-    const initPromise = core.initialize().then(() => {
+    const initPromise = app.initialize().then(() => {
       secondCallbackInvoked = true;
     });
 
@@ -99,7 +99,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should invoke callback immediately if initialization has already completed', async () => {
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
 
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
@@ -109,7 +109,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     await initPromise;
 
     let callbackInvoked = false;
-    await core.initialize().then(() => {
+    await app.initialize().then(() => {
       callbackInvoked = true;
     });
 
@@ -117,7 +117,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should use teams runtime config if no runtime config is given', async () => {
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
@@ -127,7 +127,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should use teams runtime config if an empty runtime config is given', () => {
-    core.initialize();
+    app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
@@ -136,7 +136,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should use teams runtime config if a JSON parsing error is thrown by a given runtime config', () => {
-    core.initialize();
+    app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
@@ -145,14 +145,14 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should throw an error if the given runtime config causes a non parsing related error', () => {
-    core.initialize();
+    app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     expect(utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null)).toThrowError;
   });
 
   it('should not use the teams config as a default if another proper config is given', async () => {
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(
@@ -168,7 +168,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   });
 
   it('should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(
@@ -188,7 +188,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
     await utils.initializeWithContext('content');
 
     let newTheme: string;
-    core.registerOnThemeChangeHandler(theme => {
+    app.registerOnThemeChangeHandler(theme => {
       newTheme = theme;
     });
 
@@ -209,7 +209,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it('should successfully get context', async () => {
     await utils.initializeWithContext('content');
 
-    const contextPromise = core.getContext();
+    const contextPromise = app.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
@@ -344,7 +344,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it('should successfully get frame context in side panel', async () => {
     await utils.initializeWithContext(FrameContexts.sidePanel);
 
-    const contextPromise = core.getContext();
+    const contextPromise = app.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
@@ -358,7 +358,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it('should successfully get frame context when returned from client', async () => {
     await utils.initializeWithContext(FrameContexts.content);
 
-    const contextPromise = core.getContext();
+    const contextPromise = app.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
@@ -372,7 +372,7 @@ describe('teamsjsAppSDK-publicAPIs', () => {
   it('should successfully get frame context in side panel with fallback logic if not returned from client', async () => {
     await utils.initializeWithContext(FrameContexts.sidePanel);
 
-    const contextPromise = core.getContext();
+    const contextPromise = app.getContext();
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();

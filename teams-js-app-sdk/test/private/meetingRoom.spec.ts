@@ -1,7 +1,7 @@
 import { Utils } from '../utils';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { meetingRoom } from '../../src/private/meetingRoom';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 
@@ -33,13 +33,13 @@ describe('meetingRoom', () => {
     desktopPlatformMock.messages = [];
 
     // Set a mock window for testing
-    core._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -47,7 +47,9 @@ describe('meetingRoom', () => {
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => meetingRoom.getPairedMeetingRoomInfo(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meetingRoom.getPairedMeetingRoomInfo(() => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should successfully get meeting room info on mobile', async () => {

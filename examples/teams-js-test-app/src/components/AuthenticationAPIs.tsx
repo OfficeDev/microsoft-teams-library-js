@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { authentication, core } from '@microsoft/teamsjs-app-sdk';
+import { app, authentication } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -39,7 +39,7 @@ const AuthenticationAPIs = (): ReactElement => {
   };
 
   const initialize = (): void => {
-    core.initialize();
+    app.initialize();
     setInitializeRes('called');
   };
 

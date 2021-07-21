@@ -1,5 +1,5 @@
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { video } from '../../src/public/video';
 import { Utils } from '../utils';
@@ -14,13 +14,13 @@ describe('video', () => {
     mobilePlatformMock.messages = [];
 
     // Set a mock window for testing
-    core._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

@@ -1,6 +1,6 @@
 # Breaking Changes
 
-## v0.0.12
+## v0.1.0
 
 ### Context interface changes
 The previous Context interface has been renamed to ContextBridge, and there is now a new Context interface with different properties.
@@ -14,14 +14,14 @@ The following APIs that took in a callback function as a parameter now instead r
   * ParentAppWindow.postMessage
   * authentication APIs
   * core.executeDeepLink
-  * core.initialize
-  * core.getContext
+  * app.initialize
+  * app.getContext
   * pages APIs
 
 ### Fixed: FrameContexts.dialog deleted for back compat 
 FrameContexts.dialog from public/constants.ts is deleted and all instances where it's used is replaced by FrameContexts.task to fix an internal back compat issue.
 
-### Fixed: core.initialize() in Teams
+### Fixed: app.initialize() in Teams
 The App SDK can now assign a default runtime in case the Hub does not provide a runtime. The only case this is currently expected to happen is when the said Hub is Teams. 
 
 ### MOS Test App dialog.submit changes
@@ -32,6 +32,17 @@ The following APIs have been moved from `teams.fullTrust` to `legacy.fullTrust`:
 * `getUserJoinedTeams`
 * `getConfig`
 * `isSupported`
+
+The following APIs have been moved from `core` to `app`:
+* `initialize`
+* `getContext`
+* `registerOnThemeChangeHandler`
+
+The following APIs have been moved from `appInitialization` to `app`:
+* `notifyAppLoaded`
+* `notifySuccess`
+* `notifyFailure`
+* `notifyExpectedFailure`
 
 ### Breaking changes from Teams JS Client SDK repo
 meeting.requestStartLiveStreaming and meeting.requestStopLiveStreaming no longer take in the parameter liveStreamState.

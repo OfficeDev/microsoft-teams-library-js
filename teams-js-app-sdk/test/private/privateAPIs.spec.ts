@@ -1,4 +1,4 @@
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
@@ -23,18 +23,18 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
   it('should exist in the global namespace', () => {
-    expect(core).toBeDefined();
+    expect(app).toBeDefined();
   });
 
   const unSupportedDomains = [
@@ -57,7 +57,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
       await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
       let callbackCalled: boolean = false;
-      core.getContext().then(() => {
+      app.getContext().then(() => {
         callbackCalled = true;
       });
 
@@ -104,7 +104,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   supportedDomains.forEach(supportedDomain => {
     it('should allow utils.messages from supported domain ' + supportedDomain, async () => {
       await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
-      const contextPromise = core.getContext();
+      const contextPromise = app.getContext();
 
       let getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
@@ -127,7 +127,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should not make calls to unsupported domains', async () => {
-    core.initialize(['http://some-invalid-origin.com']);
+    app.initialize(['http://some-invalid-origin.com']);
 
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
@@ -143,7 +143,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     // Try to make a call
     let callbackCalled: boolean = false;
-    core.getContext().then(() => {
+    app.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -158,7 +158,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    core.getContext().then(() => {
+    app.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -169,10 +169,10 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should successfully handle calls queued before init completes', async () => {
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
 
     // Another call made before the init response
-    core.getContext();
+    app.getContext();
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
@@ -192,15 +192,15 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   it('should successfully handle out of order calls', async () => {
     await utils.initializeWithContext('content');
 
-    const contextPromise1 = core.getContext();
+    const contextPromise1 = app.getContext();
 
     let getContextMessage1 = utils.messages[utils.messages.length - 1];
 
-    const contextPromise2 = core.getContext();
+    const contextPromise2 = app.getContext();
 
     let getContextMessage2 = utils.messages[utils.messages.length - 1];
 
-    const contextPromise3 = core.getContext();
+    const contextPromise3 = app.getContext();
 
     let getContextMessage3 = utils.messages[utils.messages.length - 1];
 
@@ -313,7 +313,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     await utils.initializeWithContext('content');
 
     let callbackCalled = 0;
-    const contextPromise = core.getContext().then(() => {
+    const contextPromise = app.getContext().then(() => {
       callbackCalled++;
     });
 

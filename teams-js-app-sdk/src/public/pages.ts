@@ -8,7 +8,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
-import { core } from './publicAPIs';
+import { app } from './app';
 import { runtime } from './runtime';
 
 /**
@@ -37,7 +37,7 @@ export namespace pages {
     callback?: () => void,
     validMessageOrigins?: string[],
   ): void {
-    core.initialize(validMessageOrigins).then(() => callback && callback());
+    app.initialize(validMessageOrigins).then(() => callback && callback());
     setCurrentFrame(frameInfo);
   }
 

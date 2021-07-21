@@ -1,6 +1,6 @@
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('authentication', () => {
   // Use to send a mock message from the app.
@@ -14,13 +14,13 @@ describe('authentication', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -395,7 +395,7 @@ describe('authentication', () => {
   it('should not close auth window before notify success message has been sent', async () => {
     const closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
 
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
     const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
@@ -418,7 +418,7 @@ describe('authentication', () => {
   it('should not close auth window before notify failure message has been sent', async () => {
     const closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
 
-    const initPromise = core.initialize();
+    const initPromise = app.initialize();
     const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 

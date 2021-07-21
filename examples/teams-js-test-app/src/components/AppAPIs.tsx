@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import { Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
+import { app, Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
-const CoreAPIs = (): ReactElement => {
+const AppAPIs = (): ReactElement => {
   const [getContextRes, setGetContextRes] = React.useState('');
   const [getContextV2Res, setGetContextV2Res] = React.useState('');
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
@@ -11,15 +11,15 @@ const CoreAPIs = (): ReactElement => {
   const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
   const getContext = (): void => {
-    setGetContextRes('core.getContextOld()' + noHubSdkMsg);
-    core.getContextOld().then((res: any) => {
+    setGetContextRes('app.getContextOld()' + noHubSdkMsg);
+    app.getContextOld().then((res: any) => {
       setGetContextRes(JSON.stringify(res));
     });
   };
 
   const getContextV2 = (): void => {
-    setGetContextV2Res('core.getContext()' + noHubSdkMsg);
-    core.getContext().then((res: Context) => {
+    setGetContextV2Res('app.getContext()' + noHubSdkMsg);
+    app.getContext().then((res: Context) => {
       setGetContextV2Res(JSON.stringify(res));
     });
   };
@@ -39,14 +39,14 @@ const CoreAPIs = (): ReactElement => {
   };
 
   const registerOnThemeChangeHandler = (): void => {
-    core.registerOnThemeChangeHandler((theme: string) => {
+    app.registerOnThemeChangeHandler((theme: string) => {
       setRegisterOnThemeChangeHandlerRes(theme);
     });
   };
 
   return (
     <>
-      <h1>core</h1>
+      <h1>app</h1>
       <BoxAndButton
         handleClick={getContext}
         output={getContextRes}
@@ -86,4 +86,4 @@ const CoreAPIs = (): ReactElement => {
   );
 };
 
-export default CoreAPIs;
+export default AppAPIs;

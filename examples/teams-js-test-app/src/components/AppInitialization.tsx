@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { appInitialization } from '@microsoft/teamsjs-app-sdk';
+import { app } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 
 const AppInitializationAPIs = (): ReactElement => {
@@ -8,18 +8,18 @@ const AppInitializationAPIs = (): ReactElement => {
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
 
   const notifyLoaded = (): void => {
-    appInitialization.notifyAppLoaded();
+    app.notifyAppLoaded();
     setNotifyLoadedRes('called');
   };
 
   const notifySuccess = (): void => {
-    appInitialization.notifySuccess();
+    app.notifySuccess();
     setNotifySuccessRes('called');
   };
 
   const notifyFailure = (reason?: string): void => {
-    appInitialization.notifyFailure({
-      reason: (reason as appInitialization.FailedReason) || appInitialization.FailedReason.Other,
+    app.notifyFailure({
+      reason: (reason as app.FailedReason) || app.FailedReason.Other,
     });
     setNotifyFailureRes('called');
   };

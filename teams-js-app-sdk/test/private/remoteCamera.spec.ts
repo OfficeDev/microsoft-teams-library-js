@@ -1,6 +1,6 @@
 import { Utils } from '../utils';
 import { remoteCamera } from '../../src/private/remoteCamera';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { SdkError } from '../../src/public/interfaces';
 
 describe('remoteCamera', () => {
@@ -34,12 +34,12 @@ describe('remoteCamera', () => {
   };
   beforeEach(() => {
     utils.messages = [];
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
   describe('getCapableParticipants', () => {
