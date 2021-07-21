@@ -9,10 +9,10 @@ export namespace sharing {
   };
 
   // More types can be added as we expand share capability
-  type SharedContentType = 'URL' | 'Text';
+  type ContentType = 'URL';
 
-  interface ISharedContent {
-    type: SharedContentType;
+  interface IBaseSharedContent {
+    type: ContentType;
   }
 
   // More types can be added as we expand share capability
@@ -22,7 +22,7 @@ export namespace sharing {
     content: T[];
   }
 
-  export interface IURLContent extends ISharedContent {
+  export interface IURLContent extends IBaseSharedContent {
     type: 'URL';
 
     /**
@@ -41,15 +41,6 @@ export namespace sharing {
     preview?: boolean;
   }
 
-  export interface ITextContent extends ISharedContent {
-    type: 'Text';
-
-    /**
-     * Default initial message text
-     */
-    message?: string;
-  }
-
   /**
    * @private
    * Feature is under development
@@ -62,48 +53,16 @@ export namespace sharing {
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,
   ): void {
-    if (!(shareWebContentRequest && shareWebContentRequest.content && shareWebContentRequest.content.length)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content is missing',
-        });
-      }
+    if (!validateNonEmptyContent(shareWebContentRequest, callback)) {
       return;
     }
 
-    if (shareWebContentRequest.content.some(item => !item.type)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content type cannot be undefined',
-        });
-      }
+    if (!validateTypeConsistency(shareWebContentRequest, callback)) {
       return;
     }
 
-    if (shareWebContentRequest.content.some(item => item.type !== shareWebContentRequest.content[0].type)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content must all be of the same type',
-        });
-      }
+    if (!validateContentForSupportedTypes(shareWebContentRequest, callback)) {
       return;
-    }
-
-    // Checks for specific content types
-
-    if (shareWebContentRequest.content[0].type === 'URL') {
-      if (shareWebContentRequest.content.some(item => !item.url)) {
-        if (callback) {
-          callback({
-            errorCode: ErrorCode.INVALID_ARGUMENTS,
-            message: 'URLs are required for URL content types',
-          });
-        }
-        return;
-      }
     }
 
     ensureInitialized(
@@ -115,5 +74,75 @@ export namespace sharing {
     );
 
     sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
+  }
+
+  // Error checks
+  function validateNonEmptyContent(
+    shareRequest: IShareRequest<IShareRequestContentType>,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Shared content is missing',
+        });
+      }
+      return false;
+    }
+    return true;
+  }
+
+  function validateTypeConsistency(
+    shareRequest: IShareRequest<IShareRequestContentType>,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    if (shareRequest.content.some(item => !item.type)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Shared content type cannot be undefined',
+        });
+      }
+      return false;
+    }
+
+    if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Shared content must all be of the same type',
+        });
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  function validateContentForSupportedTypes(
+    shareRequest: IShareRequest<IShareRequestContentType>,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    if (shareRequest.content[0].type === 'URL') {
+      if (shareRequest.content.some(item => !item.url)) {
+        if (callback) {
+          callback({
+            errorCode: ErrorCode.INVALID_ARGUMENTS,
+            message: 'URLs are required for URL content types',
+          });
+        }
+        return false;
+      }
+    } else {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'Content type is unsupported',
+        });
+      }
+      return false;
+    }
+    return true;
   }
 }

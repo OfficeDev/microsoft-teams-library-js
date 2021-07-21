@@ -162,6 +162,30 @@ describe('sharing', () => {
     expect(response).toEqual(error);
   });
 
+  it('should handle share web content when content is an unsupported type', () => {
+    utils.initializeWithContext('content');
+    const shareRequest = {
+      content: [
+        {
+          type: 'image',
+          src: 'Test'
+        }
+      ]
+    };
+    const error = {
+      errorCode: ErrorCode.INVALID_ARGUMENTS,
+      message: 'Content type is unsupported'
+    };
+
+    let response: any;
+    sharing.shareWebContent(shareRequest as any, (res) => {
+      response = res;
+    });
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+    expect(shareMessage).toBeNull();
+    expect(response).toEqual(error);
+  });
+
   it('should handle share web content when other errors occur', () => {
     utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
