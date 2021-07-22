@@ -13,23 +13,23 @@ describe('utils', () => {
     expect(compareSDKVersions('1.9.1', '1.9.0.0')).toEqual(1);
   });
   it('validateOrigin returns true if origin is in teams pre-known allowlist', () => {
-    const messageOriginObject = new URL('https://teams.microsoft.com');
-    const result = validateOrigin(messageOriginObject);
+    const messageOrigin = new URL('https://teams.microsoft.com');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(true);
   });
   it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', () => {
-    const messageOriginObject = new URL('https://subdomain.teams.microsoft.com');
-    const result = validateOrigin(messageOriginObject);
+    const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(true);
   });
   it('validateOrigin returns false if origin is not in teams pre-known allowlist', () => {
-    const messageOriginObject = new URL('https://badorigin.com');
-    const result = validateOrigin(messageOriginObject);
+    const messageOrigin = new URL('https://badorigin.com');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
   it('validateOrigin returns false if origin is not an exact match in teams pre-known allowlist', () => {
-    const messageOriginObject = new URL('https://team.microsoft.com');
-    const result = validateOrigin(messageOriginObject);
+    const messageOrigin = new URL('https://team.microsoft.com');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
   it('validateOrigin returns true if origin is valid origin supplied by user ', () => {
@@ -57,14 +57,24 @@ describe('utils', () => {
     expect(result).toBe(false);
   });
   it('validateOrigin returns false if the port number of valid origin is not in teams pre-known allowlist', () => {
-    const messageOriginObject = new URL('https://local.teams.live.com:4000');
-    const result = validateOrigin(messageOriginObject);
+    const messageOrigin = new URL('https://local.teams.live.com:4000');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
   it('validateOrigin returns false if the port number of valid origin is not in the user supplied list', () => {
-    const messageOriginObject = new URL('https://testorigin.com:4000');
+    const messageOrigin = new URL('https://testorigin.com:4000');
     GlobalVars.additionalValidOrigins = ['https://testorigin.com:8080'];
-    const result = validateOrigin(messageOriginObject);
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(false);
+  });
+  it('validateOrigin returns false if origin has extra appended', () => {
+    const messageOrigin = new URL('https://team.microsoft.com.evil.com');
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(false);
+  });
+  it("validateOrigin returns false if the protocol of origin is not 'https:'", () => {
+    const messageOrigin = new URL('http://team.microsoft.com');
+    const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
 });

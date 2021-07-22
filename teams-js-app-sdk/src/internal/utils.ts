@@ -5,43 +5,34 @@ import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
-export function validateOrigin(messageOriginObject: URL): boolean {
+function validateHostAgainstPattern(pattern: string, host: string, ): boolean {
+  if (pattern.substring(0, 2) === "*.") { //vaild Origin
+    const suffix = pattern.substring(2);
+    if (host.length > suffix.length
+      && host.substring(host.length - suffix.length) === suffix) {
+        return true;
+      }
+  } else if (pattern.substring(8, 10) === "*.") { //GlobalVar
+    const suffix = pattern.substring(10);
+    if (host.length > suffix.length
+      && host.substring(host.length - suffix.length) === suffix) {
+        return true;
+      }
+  } else if (pattern === host || pattern.substring(8) === host) {
+    return true;
+  }
+return false;
+}
+
+export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
-  for (let i = 0; i < validOrigins.length; i++) {
-    if (
-      validOrigins[i][0] === '*' &&
-      validOrigins[i]
-        .split('.')
-        .slice(1)
-        .toString() ===
-        messageOriginObject.host
-          .split('.')
-          .slice(1)
-          .toString()
-    ) {
-      return true;
-    } else if (validOrigins[i] === messageOriginObject.host) {
-      return true;
-    }
+  if (messageOrigin.protocol !== 'https:') {
+    return false;
   }
-  for (let j = 0; j < GlobalVars.additionalValidOrigins.length; j++) {
-    if (
-      GlobalVars.additionalValidOrigins[j][8] === '*' &&
-      GlobalVars.additionalValidOrigins[j]
-        .split('.')
-        .slice(1)
-        .toString() ===
-        messageOriginObject.host
-          .split('.')
-          .slice(1)
-          .toString()
-    ) {
-      return true;
-    } else if (GlobalVars.additionalValidOrigins[j] === messageOriginObject.origin) {
-      return true;
-    }
-  }
-  return false;
+  const messageOriginHost = messageOrigin.host;
+
+  return validOrigins.some((p) => validateHostAgainstPattern(p, messageOriginHost))
+        || GlobalVars.additionalValidOrigins.some((p) => validateHostAgainstPattern(p, messageOriginHost));
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
