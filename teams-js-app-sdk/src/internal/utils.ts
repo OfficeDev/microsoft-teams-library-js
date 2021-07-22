@@ -5,23 +5,16 @@ import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
-function validateHostAgainstPattern(pattern: string, host: string, ): boolean {
-  if (pattern.substring(0, 2) === "*.") { //vaild Origin
+function validateHostAgainstPattern(pattern: string, host: string): boolean {
+  if (pattern.substring(0, 2) === '*.') {
     const suffix = pattern.substring(2);
-    if (host.length > suffix.length
-      && host.substring(host.length - suffix.length) === suffix) {
-        return true;
-      }
-  } else if (pattern.substring(8, 10) === "*.") { //GlobalVar
-    const suffix = pattern.substring(10);
-    if (host.length > suffix.length
-      && host.substring(host.length - suffix.length) === suffix) {
-        return true;
-      }
-  } else if (pattern === host || pattern.substring(8) === host) {
+    if (host.length > suffix.length && host.substring(host.length - suffix.length) === suffix) {
+      return true;
+    }
+  } else if (pattern === host) {
     return true;
   }
-return false;
+  return false;
 }
 
 export function validateOrigin(messageOrigin: URL): boolean {
@@ -31,8 +24,18 @@ export function validateOrigin(messageOrigin: URL): boolean {
   }
   const messageOriginHost = messageOrigin.host;
 
-  return validOrigins.some((p) => validateHostAgainstPattern(p, messageOriginHost))
-        || GlobalVars.additionalValidOrigins.some((p) => validateHostAgainstPattern(p, messageOriginHost));
+  if (validOrigins.some(p => validateHostAgainstPattern(p, messageOriginHost))) {
+    return true;
+  }
+
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
