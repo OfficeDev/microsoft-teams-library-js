@@ -341,7 +341,8 @@ export interface ContextBridge {
   hostName?: HostName;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel (deprecated, use teamsRoomsWindows instead),
+   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
@@ -976,7 +977,7 @@ export interface TenantInfo {
   /**
    * The type of license for the current users tenant.
    */
-  sku?: string;
+  teamsSku?: string;
 }
 
 export interface SharePointSiteInfo {

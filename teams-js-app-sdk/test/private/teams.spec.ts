@@ -1,5 +1,5 @@
 import { teams } from '../../src/private';
-import { core } from '../../src/public';
+import { app } from '../../src/public';
 import { Utils } from '../utils';
 
 describe('teamsjsAppSDK-privateAPIs', () => {
@@ -15,13 +15,13 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

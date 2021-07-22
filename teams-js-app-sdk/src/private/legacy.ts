@@ -24,7 +24,10 @@ export namespace legacy {
       ensureInitialized();
 
       if (
-        GlobalVars.hostClientType === HostClientType.android &&
+        (GlobalVars.hostClientType === HostClientType.android ||
+          GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+          GlobalVars.hostClientType === HostClientType.teamsPhones ||
+          GlobalVars.hostClientType === HostClientType.teamsDisplays) &&
         !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
       ) {
         const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };

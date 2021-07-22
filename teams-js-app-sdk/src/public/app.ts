@@ -4,7 +4,7 @@
 
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { defaultSDKVersionForCompatCheck } from '../internal/constants';
+import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
 import { pages } from './pages';
 import { DeepLinkParameters, Context, ContextBridge } from './interfaces';
 import { compareSDKVersions, transformContext } from '../internal/utils';
@@ -25,12 +25,43 @@ import { teamsCore } from './teamsAPIs';
 import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
 
 /**
- * Namespace to interact with the core part of the teamsjs App SDK.
+ * Namespace to interact with app initialization and lifecycle.
  *
  * @beta
  */
-export namespace core {
+export namespace app {
   // ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
+
+  export const Messages = {
+    AppLoaded: 'appInitialization.appLoaded',
+    Success: 'appInitialization.success',
+    Failure: 'appInitialization.failure',
+    ExpectedFailure: 'appInitialization.expectedFailure',
+  };
+
+  export enum FailedReason {
+    AuthFailed = 'AuthFailed',
+    Timeout = 'Timeout',
+    Other = 'Other',
+  }
+
+  export enum ExpectedFailureReason {
+    PermissionError = 'PermissionError',
+    NotFound = 'NotFound',
+    Throttling = 'Throttling',
+    Offline = 'Offline',
+    Other = 'Other',
+  }
+
+  export interface IFailedRequest {
+    reason: FailedReason;
+    message?: string;
+  }
+
+  export interface IExpectedFailureRequest {
+    reason: ExpectedFailureReason;
+    message?: string;
+  }
 
   /**
    * Checks whether the App SDK has been initialized.
@@ -209,6 +240,41 @@ export namespace core {
   }
 
   /**
+   * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
+   */
+  export function notifyAppLoaded(): void {
+    ensureInitialized();
+    sendMessageToParent(Messages.AppLoaded, [version]);
+  }
+
+  /**
+   * Notifies the frame that app initialization is successful and is ready for user interaction.
+   */
+  export function notifySuccess(): void {
+    ensureInitialized();
+    sendMessageToParent(Messages.Success, [version]);
+  }
+
+  /**
+   * Notifies the frame that app initialization has failed and to show an error page in its place.
+   */
+  export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
+    ensureInitialized();
+    sendMessageToParent(Messages.Failure, [
+      appInitializationFailedRequest.reason,
+      appInitializationFailedRequest.message,
+    ]);
+  }
+
+  /**
+   * Notifies the frame that app initialized with some expected errors.
+   */
+  export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
+    ensureInitialized();
+    sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
+  }
+
+  /**
    * Registers a handler for theme changes.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler - The handler to invoke when the user changes their theme.
@@ -217,7 +283,9 @@ export namespace core {
     ensureInitialized();
     Handlers.registerOnThemeChangeHandler(handler);
   }
+}
 
+export namespace core {
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
    * @param deepLinkParameters - ID and label for the link and fallback URL.

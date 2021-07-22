@@ -1,5 +1,5 @@
 import { TabInstanceParameters, FrameInfo } from '../../src/public/interfaces';
-import { core } from '../../src/public/publicAPIs';
+import { app, core } from '../../src/public/app';
 import { teamsCore } from '../../src/public/teamsAPIs';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
@@ -16,13 +16,13 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -114,8 +114,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      pages.tabs.getTabInstances(tabInfo => tabInfo);
-      pages.tabs.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getTabInstances();
+      pages.tabs.getTabInstances({} as TabInstanceParameters);
     });
   });
 
@@ -123,14 +123,14 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo);
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getMruTabInstances();
+      pages.tabs.getMruTabInstances({} as TabInstanceParameters);
     });
   });
 
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     spyOn(teamsCore, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -146,7 +146,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
 
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     spyOn(teamsCore, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -162,7 +162,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
 
   it('print handler should successfully call default print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -175,7 +175,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
 
   it('Ctrl+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -192,7 +192,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
 
   it('Cmd+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -355,7 +355,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toBe(frameContext);
   });
-  
+
   it('should successfully register a focus enter handler and return true', async () => {
     await utils.initializeWithContext('content');
 

@@ -1,4 +1,4 @@
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 
@@ -13,13 +13,13 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -31,13 +31,17 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => pages.fullTrust.enterFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => pages.fullTrust.enterFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context",
+      );
     });
 
     it('should not allow calls from remove context', async () => {
@@ -76,7 +80,9 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => pages.fullTrust.exitFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
+        "This call is not allowed in the 'authentication' context",
+      );
     });
 
     it('should not allow calls from remove context', async () => {

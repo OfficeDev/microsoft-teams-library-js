@@ -6,7 +6,7 @@ import { resolve } from 'path';
  * @param source the source directory
  * @param target the target directory
  */
-function copyDir(sourceDir: string, targetDir: string): void {
+export function copyDir(sourceDir: string, targetDir: string): void {
   const sourcePath: string = resolve('${__dirname}', sourceDir); // resolve path from source directory
   const targetPath: string = resolve('${__dirname}', targetDir); // resolve path from target directory
 

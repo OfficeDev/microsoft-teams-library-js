@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import * as uuid from 'uuid';
-import { GlobalVars } from '../internal/globalVars';
-import { FrameContexts, HostClientType, HostName } from '../public/constants';
-import { Context, ContextBridge } from '../public/interfaces';
 import { validOrigins } from './constants';
+import { GlobalVars } from '../internal/globalVars';
+import { HostClientType, HostName } from '../public/constants';
+import { Context, ContextBridge } from '../public/interfaces';
 
 export function validateOrigin(messageOriginObject: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
@@ -159,7 +159,7 @@ export function transformContext(contextBridge: ContextBridge): Context {
       tenant: contextBridge.tid
         ? {
             id: contextBridge.tid,
-            sku: contextBridge.tenantSKU,
+            teamsSku: contextBridge.tenantSKU,
           }
         : undefined,
     },

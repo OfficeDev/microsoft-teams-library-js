@@ -1,4 +1,4 @@
-import { core } from '../src/public/publicAPIs';
+import { app } from '../src/public/app';
 import { ExtendedWindow, MessageRequest, MessageResponse, DOMMessageEvent } from '../src/internal/interfaces';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
@@ -43,8 +43,8 @@ export class FramelessPostMocks {
   }
 
   public initializeWithContext = async (frameContext: string, hostClientType?: string, validMessageOrigins?: string[]): Promise<void> => {
-    core._initialize(this.mockWindow);
-    const initPromise = core.initialize(validMessageOrigins);
+    app._initialize(this.mockWindow);
+    const initPromise = app.initialize(validMessageOrigins);
     expect(GlobalVars.isFramelessWindow).toBeTruthy();
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();

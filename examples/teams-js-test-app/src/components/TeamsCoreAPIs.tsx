@@ -60,17 +60,17 @@ const TeamsCoreAPIs = (): ReactElement => {
   const getTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
-    pages.tabs.getTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetTabInstanceRes(JSON.stringify(tabInfo));
-    }, tabInstanceParams);
+    });
   };
 
   const getMRUTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
-    pages.tabs.getMruTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getMruTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
-    }, tabInstanceParams);
+    });
   };
 
   const registerBeforeUnload = (readyToUnloadDelay: string): void => {

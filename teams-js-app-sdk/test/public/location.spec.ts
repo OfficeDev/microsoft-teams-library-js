@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ErrorCode, location, SdkError } from '../../src/public/index';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
 import { FrameContexts } from '../../src/public/constants';
@@ -24,13 +24,13 @@ describe('location', () => {
     mobilePlatformMock.messages = [];
 
     // Set a mock window for testing
-    core._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

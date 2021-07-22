@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
@@ -26,13 +26,13 @@ describe('media', () => {
     mobilePlatformMock.messages = [];
 
     // Set a mock window for testing
-    core._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

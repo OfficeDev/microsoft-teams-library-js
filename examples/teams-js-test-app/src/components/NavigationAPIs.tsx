@@ -13,44 +13,26 @@ const NavigationAPIs = (): ReactElement => {
 
   const navigateCrossDomainFunc = (url: string): void => {
     setNavigateCrossDomainRes('navigateCrossDomain()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setNavigateCrossDomainRes(reason);
-        }
-      } else {
-        setNavigateCrossDomainRes('Completed');
-      }
-    };
-    pages.navigateCrossDomain(url, onComplete);
+    pages
+      .navigateCrossDomain(url)
+      .then(() => setNavigateCrossDomainRes('Completed'))
+      .catch(reason => setNavigateCrossDomainRes(reason));
   };
 
   const navigateToTabFunc = (inputParams: string): void => {
     setNavigateToTabRes('navigateToTab()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setNavigateToTabRes(reason);
-        }
-      } else {
-        setNavigateToTabRes('Completed');
-      }
-    };
-    pages.tabs.navigateToTab(JSON.parse(inputParams), onComplete);
+    pages.tabs
+      .navigateToTab(JSON.parse(inputParams))
+      .then(() => setNavigateToTabRes('Completed'))
+      .catch(reason => setNavigateToTabRes(reason));
   };
 
   const navigateBackFunc = (): void => {
     setNavigateBackRes('navigateBack()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setNavigateBackRes(reason);
-        }
-      } else {
-        setNavigateBackRes('Completed');
-      }
-    };
-    pages.backStack.navigateBack(onComplete);
+    pages.backStack
+      .navigateBack()
+      .then(() => setNavigateBackRes('Completed'))
+      .catch(reason => setNavigateBackRes(reason));
   };
 
   const returnFocusFunc = (navigateForward: string): void => {

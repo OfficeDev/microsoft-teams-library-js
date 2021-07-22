@@ -2,7 +2,7 @@ import { meeting } from '../../src/public/meeting';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public';
 import { Utils } from '../utils';
 
@@ -12,13 +12,13 @@ describe('meeting', () => {
 
   beforeEach(() => {
     desktopPlatformMock.messages = [];
-    core._initialize(desktopPlatformMock.mockWindow);
+    app._initialize(desktopPlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

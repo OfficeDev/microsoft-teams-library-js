@@ -29,12 +29,12 @@ class CommunicationPrivate {
   public static messageListener: Function;
 }
 
-type InitializeResponse = {
+interface InitializeResponse {
   context: FrameContexts;
   clientType: string;
   runtimeConfig: string;
   clientSupportedSDKVersion: string;
-};
+}
 
 export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
   // Listen for messages post to our window

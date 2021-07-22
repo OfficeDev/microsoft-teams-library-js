@@ -521,7 +521,11 @@ export namespace media {
     if (
       GlobalVars.hostClientType === HostClientType.desktop ||
       GlobalVars.hostClientType === HostClientType.web ||
-      GlobalVars.hostClientType === HostClientType.rigel
+      GlobalVars.hostClientType === HostClientType.rigel ||
+      GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+      GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+      GlobalVars.hostClientType === HostClientType.teamsPhones ||
+      GlobalVars.hostClientType === HostClientType.teamsDisplays
     ) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
       callback(notSupportedError, null);

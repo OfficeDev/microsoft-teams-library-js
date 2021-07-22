@@ -6,6 +6,7 @@ import {
   sendMessageToParent,
   sendMessageEventToChild,
   waitForMessageQueue,
+  sendMessageToParentAsync,
 } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 
@@ -14,7 +15,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
  * This object is used for starting or completing authentication flows.
  */
 export namespace authentication {
-  let authParams: AuthenticateParameters;
+  let authHandlers: { success: (string) => void; fail: (string) => void };
   let authWindowMonitor: number;
 
   export function initialize(): void {
@@ -23,72 +24,83 @@ export namespace authentication {
   }
 
   /**
-   * Registers the authentication Communication.handlers
-   * @param authenticateParameters A set of values that configure the authentication pop-up.
-   */
-  export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
-    authParams = authenticateParameters;
-  }
-
-  /**
    * Initiates an authentication request, which opens a new window with the specified settings.
+   * @param authenticateParameters The parameters for the authentication request
+   * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
+   * @throws if the authentication request fails or is canceled by the user.
    */
-  export function authenticate(authenticateParameters?: AuthenticateParameters): void {
-    const authenticateParams = authenticateParameters !== undefined ? authenticateParameters : authParams;
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.remove,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
-    if (
-      GlobalVars.hostClientType === HostClientType.desktop ||
-      GlobalVars.hostClientType === HostClientType.android ||
-      GlobalVars.hostClientType === HostClientType.ios ||
-      GlobalVars.hostClientType === HostClientType.rigel
-    ) {
-      // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-      const link = document.createElement('a');
-      link.href = authenticateParams.url;
-      // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      sendMessageToParent(
-        'authentication.authenticate',
-        [link.href, authenticateParams.width, authenticateParams.height],
-        (success: boolean, response: string) => {
-          if (success) {
-            authenticateParams.successCallback(response);
-          } else {
-            authenticateParams.failureCallback(response);
-          }
-        },
+  export function authenticate(authenticateParameters: AuthenticateParameters): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.remove,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
       );
-    } else {
-      // Open an authentication window with the parameters provided by the caller.
-      openAuthenticationWindow(authenticateParams);
-    }
+      if (
+        GlobalVars.hostClientType === HostClientType.desktop ||
+        GlobalVars.hostClientType === HostClientType.android ||
+        GlobalVars.hostClientType === HostClientType.ios ||
+        GlobalVars.hostClientType === HostClientType.rigel ||
+        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+        GlobalVars.hostClientType === HostClientType.teamsPhones ||
+        GlobalVars.hostClientType === HostClientType.teamsDisplays
+      ) {
+        // Convert any relative URLs into absolute URLs before sending them over to the parent window.
+        const link = document.createElement('a');
+        link.href = authenticateParameters.url;
+        // Ask the parent window to open an authentication window with the parameters provided by the caller.
+        resolve(
+          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
+            link.href,
+            authenticateParameters.width,
+            authenticateParameters.height,
+          ]).then(([success, response]: [boolean, string]) => {
+            if (success) {
+              return response;
+            } else {
+              throw new Error(response);
+            }
+          }),
+        );
+      } else {
+        // Open an authentication window with the parameters provided by the caller.
+        authHandlers = {
+          success: resolve,
+          fail: reject,
+        };
+        openAuthenticationWindow(authenticateParameters);
+      }
+    });
   }
 
   /**
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    * @param authTokenRequest A set of values that configure the token request.
+   * @returns Promise that will be fulfilled with the token if successful.
    */
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): void {
-    ensureInitialized();
-    sendMessageToParent(
-      'authentication.getAuthToken',
-      [authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
-      (success: boolean, result: string) => {
-        if (success) {
-          authTokenRequest.successCallback(result);
-        } else {
-          authTokenRequest.failureCallback(result);
-        }
-      },
-    );
+  export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
+    return new Promise<[boolean, string]>(resolve => {
+      ensureInitialized();
+      resolve(
+        sendMessageToParentAsync('authentication.getAuthToken', [
+          authTokenRequest.resources,
+          authTokenRequest.claims,
+          authTokenRequest.silent,
+        ]),
+      );
+    }).then(([success, result]: [boolean, string]) => {
+      if (success) {
+        return result;
+      } else {
+        throw new Error(result);
+      }
+    });
   }
 
   /**
@@ -96,14 +108,17 @@ export namespace authentication {
    * Hide from docs.
    * ------
    * Requests the decoded Azure AD user identity on behalf of the app.
+   * @returns Promise that resolves with the {@link UserProfile}.
    */
-  export function getUser(userRequest: UserRequest): void {
-    ensureInitialized();
-    sendMessageToParent('authentication.getUser', (success: boolean, result: UserProfile | string) => {
+  export function getUser(): Promise<UserProfile> {
+    return new Promise<[boolean, UserProfile | string]>(resolve => {
+      ensureInitialized();
+      resolve(sendMessageToParentAsync('authentication.getUser'));
+    }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
-        userRequest.successCallback(result as UserProfile);
+        return result as UserProfile;
       } else {
-        userRequest.failureCallback(result as string);
+        throw new Error(result as string);
       }
     });
   }
@@ -123,18 +138,17 @@ export namespace authentication {
   }
 
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-    authParams = authenticateParameters;
     // Close the previously opened window if we have one
     closeAuthenticationWindow();
     // Start with a sensible default size
-    let width = authParams.width || 600;
-    let height = authParams.height || 400;
+    let width = authenticateParameters.width || 600;
+    let height = authenticateParameters.height || 400;
     // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
-    link.href = authParams.url;
+    link.href = authenticateParameters.url;
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
@@ -243,22 +257,22 @@ export namespace authentication {
 
   function handleSuccess(result?: string): void {
     try {
-      if (authParams && authParams.successCallback) {
-        authParams.successCallback(result);
+      if (authHandlers) {
+        authHandlers.success(result);
       }
     } finally {
-      authParams = null;
+      authHandlers = null;
       closeAuthenticationWindow();
     }
   }
 
   function handleFailure(reason?: string): void {
     try {
-      if (authParams && authParams.failureCallback) {
-        authParams.failureCallback(reason);
+      if (authHandlers) {
+        authHandlers.fail(new Error(reason));
       }
     } finally {
-      authParams = null;
+      authHandlers = null;
       closeAuthenticationWindow();
     }
   }
@@ -322,14 +336,6 @@ export namespace authentication {
      * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
      */
     height?: number;
-    /**
-     * A function that is called if the authentication succeeds, with the result returned from the authentication pop-up.
-     */
-    successCallback?: (result?: string) => void;
-    /**
-     * A function that is called if the authentication fails, with the reason for the failure returned from the authentication pop-up.
-     */
-    failureCallback?: (reason?: string) => void;
   }
 
   export interface AuthTokenRequest {
@@ -345,32 +351,6 @@ export namespace authentication {
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
-    /**
-     * A function that is called if the token request succeeds, with the resulting token.
-     */
-    successCallback?: (token: string) => void;
-    /**
-     * A function that is called if the token request fails, with the reason for the failure.
-     */
-    failureCallback?: (reason: string) => void;
-  }
-
-  /**
-   * @private
-   * Hide from docs.
-   * ------
-   *
-   * @internal
-   */
-  export interface UserRequest {
-    /**
-     * A function that is called if the token request succeeds, with the resulting token.
-     */
-    successCallback?: (user: UserProfile) => void;
-    /**
-     * A function that is called if the token request fails, with the reason for the failure.
-     */
-    failureCallback?: (reason: string) => void;
   }
 
   /**

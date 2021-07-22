@@ -1,10 +1,14 @@
-import { sendMessageToParent } from '../internal/communication';
+import {
+  sendMessageToParent,
+  sendAndHandleStatusAndReason as send,
+  sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
+  sendAndUnwrap,
+} from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
-import { core } from './publicAPIs';
+import { app } from './app';
 import { runtime } from './runtime';
 
 /**
@@ -33,7 +37,7 @@ export namespace pages {
     callback?: () => void,
     validMessageOrigins?: string[],
   ): void {
-    core.initialize(validMessageOrigins).then(() => callback && callback());
+    app.initialize(validMessageOrigins).then(() => callback && callback());
     setCurrentFrame(frameInfo);
   }
 
@@ -44,25 +48,24 @@ export namespace pages {
    * than the current one in a way that keeps the app informed of the change and allows the SDK to
    * continue working.
    * @param url - The URL to navigate the frame to.
+   * @returns Promise that resolves when the navigation has completed.
    */
-  export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.remove,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+  export function navigateCrossDomain(url: string): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.remove,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      );
 
-    const errorMessage =
-      'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-    sendMessageToParent(
-      'navigateCrossDomain',
-      [url],
-      onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
-    );
+      const errorMessage =
+        'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
+      resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
+    });
   }
 
   /**
@@ -119,47 +122,38 @@ export namespace pages {
     /**
      * Navigates the Microsoft teamsjs app to the specified tab instance.
      * @param tabInstance The tab instance to navigate to.
+     * @returns Promise that resolves when the navigation has completed.
      */
-    export function navigateToTab(
-      tabInstance: TabInstance,
-      onComplete?: (status: boolean, reason?: string) => void,
-    ): void {
-      ensureInitialized();
-
-      const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-      sendMessageToParent(
-        'navigateToTab',
-        [tabInstance],
-        onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
-      );
+    export function navigateToTab(tabInstance: TabInstance): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized();
+        const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
+        resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
+      });
     }
     /**
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-     * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+     * @returns Promise that resolves with the {@link TabInformation}.
      */
-    export function getTabInstances(
-      callback: (tabInfo: TabInformation) => void,
-      tabInstanceParameters?: TabInstanceParameters,
-    ): void {
-      ensureInitialized();
-
-      sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
+    export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
+      return new Promise<TabInformation>(resolve => {
+        ensureInitialized();
+        resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
+      });
     }
 
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
-     * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
+     * @returns Promise that resolves with the {@link TabInformation}.
      */
-    export function getMruTabInstances(
-      callback: (tabInfo: TabInformation) => void,
-      tabInstanceParameters?: TabInstanceParameters,
-    ): void {
-      ensureInitialized();
-
-      sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
+    export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
+      return new Promise<TabInformation>(resolve => {
+        ensureInitialized();
+        resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
+      });
     }
 
     /**
@@ -194,25 +188,26 @@ export namespace pages {
 
     /**
      * Gets the config for the current instance.
-     * @param callback The callback to invoke when the {@link Config} object is retrieved.
+     * @returns Promise that resolves with the {@link Config} object.
      */
-    export function getConfig(callback: (instanceSettings: Config) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
-      sendMessageToParent('settings.getSettings', callback);
+    export function getConfig(): Promise<Config> {
+      return new Promise<Config>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+        resolve(sendAndUnwrap('settings.getSettings'));
+      });
     }
 
     /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
      * @param Config The desired config for this instance.
+     * @returns Promise that resolves when the operation has completed.
      */
-    export function setConfig(instanceSettings: Config, onComplete?: (status: boolean, reason?: string) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
-      sendMessageToParent(
-        'settings.setSettings',
-        [instanceSettings],
-        onComplete ? onComplete : getGenericOnCompleteHandler(),
-      );
+    export function setConfig(instanceSettings: Config): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+        resolve(send('settings.setSettings', instanceSettings));
+      });
     }
 
     /**
@@ -403,12 +398,14 @@ export namespace pages {
     /**
      * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
      * it's appropriate to use this method.
+     * @returns Promise that resolves when the navigation has completed.
      */
-    export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
-      ensureInitialized();
-
-      const errorMessage = 'Back navigation is not supported in the current client or context.';
-      sendMessageToParent('navigateBack', [], onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage));
+    export function navigateBack(): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized();
+        const errorMessage = 'Back navigation is not supported in the current client or context.';
+        resolve(sendAndDefaultError('navigateBack', errorMessage));
+      });
     }
 
     /**

@@ -1,6 +1,6 @@
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('config', () => {
   // Use to send a mock message from the app.
@@ -16,8 +16,8 @@ describe('config', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -75,10 +75,7 @@ describe('config', () => {
   it('should successfully get settings', async () => {
     await utils.initializeWithContext('settings');
 
-    let actualSettings: pages.config.Config;
-    pages.config.getConfig(settings => {
-      actualSettings = settings;
-    });
+    const promise = pages.config.getConfig();
 
     let message = utils.findMessageByFunc('settings.getSettings');
     expect(message).not.toBeNull();
@@ -92,7 +89,7 @@ describe('config', () => {
 
     utils.respondToMessage(message, expectedSettings);
 
-    expect(actualSettings).toBe(expectedSettings);
+    return expect(promise).resolves.toBe(expectedSettings);
   });
 
   it('should successfully set settings', async () => {

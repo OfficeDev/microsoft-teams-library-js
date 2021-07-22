@@ -1,7 +1,7 @@
 import { OpenConversationRequest } from '../../src/public/interfaces';
 import { chat } from '../../src/private/chat';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('chat', () => {
   // Use to send a mock message from the app.
@@ -16,8 +16,8 @@ describe('chat', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

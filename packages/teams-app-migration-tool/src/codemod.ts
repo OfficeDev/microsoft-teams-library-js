@@ -4,7 +4,7 @@ import { SpawnSyncReturns } from 'child_process';
  * run transform function with jscodeshift executable
  * @param files files that need to be transformed
  */
-function applyTransform(files: string): void {
+export function applyTransform(files: string): void {
   /**
    * find absolute file path for jscodeshift to be executed
    */

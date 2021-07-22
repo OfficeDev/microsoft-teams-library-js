@@ -2,8 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions, validateOrigin } from '../../src/internal/utils';
 
 describe('utils', () => {
-
-  test("compareSDKVersions", () => {
+  test('compareSDKVersions', () => {
     expect(compareSDKVersions('1.2', '1.2.0')).toEqual(0);
     expect(compareSDKVersions('1.2a', '1.2b')).toEqual(NaN);
     expect(compareSDKVersions('1.2', '1.3')).toEqual(-1);

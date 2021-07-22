@@ -1,4 +1,3 @@
-export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
 export { FrameContexts, HostClientType, DialogDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
@@ -23,7 +22,7 @@ export {
   TeamInfo,
   TenantInfo,
 } from './interfaces';
-export { core } from './publicAPIs';
+export { app, core } from './app';
 export { dialog } from './dialog';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';

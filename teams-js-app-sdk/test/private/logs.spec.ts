@@ -1,6 +1,6 @@
 import { logs } from '../../src/private/logs';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('logs', () => {
   // Use to send a mock message from the app.
@@ -15,8 +15,8 @@ describe('logs', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

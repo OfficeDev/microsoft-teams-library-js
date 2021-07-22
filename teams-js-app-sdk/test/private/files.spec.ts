@@ -1,6 +1,6 @@
 import { files } from '../../src/private/files';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { FileOpenPreference } from '../../src/public/interfaces';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 
@@ -16,13 +16,13 @@ describe('files', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -194,46 +194,53 @@ describe('files', () => {
       ownerDisplayName: 'owner',
     };
 
-    const mockCloudStorageFolderItems: files.CloudStorageFolderItem[] = [{
-      id: 'test2',
-      title: 'test2.pptx',
-      isSubdirectory: false,
-      type: '.pptx',
-      size: 100,
-      objectUrl: 'https://api.com/test2.pptx',
-      lastModifiedTime: '2021-04-14T15:08:35Z'
-    }, {
-      id: 'test3',
-      title: 'test3.pptx',
-      isSubdirectory: false,
-      type: '.pptx',
-      size: 100,
-      objectUrl: 'https://api.com/test3.pptx',
-      lastModifiedTime: '2021-04-14T15:08:35Z'
-    }];
+    const mockCloudStorageFolderItems: files.CloudStorageFolderItem[] = [
+      {
+        id: 'test2',
+        title: 'test2.pptx',
+        isSubdirectory: false,
+        type: '.pptx',
+        size: 100,
+        objectUrl: 'https://api.com/test2.pptx',
+        lastModifiedTime: '2021-04-14T15:08:35Z',
+      },
+      {
+        id: 'test3',
+        title: 'test3.pptx',
+        isSubdirectory: false,
+        type: '.pptx',
+        size: 100,
+        objectUrl: 'https://api.com/test3.pptx',
+        lastModifiedTime: '2021-04-14T15:08:35Z',
+      },
+    ];
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback)).toThrowError(
-        "This call is not allowed in the 'settings' context",
-      );
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError("This call is not allowed in the 'settings' context");
     });
 
     it('should not allow calls with null folder', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box, emptyCallback)).toThrowError();
+      expect(() =>
+        files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError();
     });
 
     it('should not allow calls for a file item', async () => {
       await utils.initializeWithContext('content');
       const mockFileItem = mockCloudStorageFolderItems[0];
-      expect(() => files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box, emptyCallback)).toThrowError();
+      expect(() =>
+        files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError();
     });
 
     it('should not allow calls without providerCode', async () => {
@@ -243,7 +250,9 @@ describe('files', () => {
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, null)).toThrowError();
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, null),
+      ).toThrowError();
     });
 
     it('should trigger callback correctly for cloud storage folder', async () => {
@@ -277,7 +286,7 @@ describe('files', () => {
         type: '',
         size: 100,
         objectUrl: 'https://api.com/test',
-        lastModifiedTime: '2021-04-14T15:08:35Z'
+        lastModifiedTime: '2021-04-14T15:08:35Z',
       };
       files.getCloudStorageFolderContents(mockCloudStorageFolderItem, files.CloudStorageProvider.Box, callback);
 
@@ -296,7 +305,7 @@ describe('files', () => {
       type: '.pptx',
       size: 100,
       objectUrl: 'https://api.com/test.pptx',
-      lastModifiedTime: '2021-04-14T15:08:35Z'
+      lastModifiedTime: '2021-04-14T15:08:35Z',
     };
 
     it('should not allow calls before initialization', () => {
@@ -331,10 +340,12 @@ describe('files', () => {
         type: '',
         size: 100,
         objectUrl: 'https://api.com/test',
-        lastModifiedTime: '2021-04-14T15:08:35Z'
+        lastModifiedTime: '2021-04-14T15:08:35Z',
       };
 
-      expect(() => files.openCloudStorageFile(mockFolderCloudStorageItem, files.CloudStorageProvider.Box)).toThrowError();
+      expect(() =>
+        files.openCloudStorageFile(mockFolderCloudStorageItem, files.CloudStorageProvider.Box),
+      ).toThrowError();
     });
 
     it('should send the message to parent if file is provided correctly', async () => {
@@ -344,9 +355,13 @@ describe('files', () => {
 
       const openCloudStorageFileMessage = utils.findMessageByFunc('files.openCloudStorageFile');
       expect(openCloudStorageFileMessage).not.toBeNull();
-      expect(openCloudStorageFileMessage.args).toEqual([mockCloudStorageFolderItem, files.CloudStorageProvider.Box, FileOpenPreference.Inline]);
+      expect(openCloudStorageFileMessage.args).toEqual([
+        mockCloudStorageFolderItem,
+        files.CloudStorageProvider.Box,
+        FileOpenPreference.Inline,
+      ]);
     });
-  })
+  });
   describe('openFilePreview', () => {
     it('should successfully open a file preview', async () => {
       await utils.initializeWithContext('content');
