@@ -6,11 +6,18 @@ import { Context, ContextBridge } from '../public/interfaces';
 import { validOrigins } from './constants';
 
 export function validateOrigin(messageOriginObject: URL): boolean {
-  // Check whether the url is in the whitelist or supplied by user
+  // Check whether the url is in the pre-known allowlist or supplied by user
   for (let i = 0; i < validOrigins.length; i++) {
     if (
       validOrigins[i][0] === '*' &&
-      validOrigins[i].split('.').slice(1) === messageOriginObject.host.split('.').slice(1)
+      validOrigins[i]
+        .split('.')
+        .slice(1)
+        .toString() ===
+        messageOriginObject.host
+          .split('.')
+          .slice(1)
+          .toString()
     ) {
       return true;
     } else if (validOrigins[i] === messageOriginObject.host) {
@@ -18,7 +25,17 @@ export function validateOrigin(messageOriginObject: URL): boolean {
     }
   }
   for (let j = 0; j < GlobalVars.additionalValidOrigins.length; j++) {
-    if (GlobalVars.additionalValidOrigins[j][8] === '*') {
+    if (
+      GlobalVars.additionalValidOrigins[j][8] === '*' &&
+      GlobalVars.additionalValidOrigins[j]
+        .split('.')
+        .slice(1)
+        .toString() ===
+        messageOriginObject.host
+          .split('.')
+          .slice(1)
+          .toString()
+    ) {
       return true;
     } else if (GlobalVars.additionalValidOrigins[j] === messageOriginObject.origin) {
       return true;
