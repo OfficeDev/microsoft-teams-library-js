@@ -45,3 +45,4 @@ export { location } from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
 export { people } from './people';
+export { video } from './video';
