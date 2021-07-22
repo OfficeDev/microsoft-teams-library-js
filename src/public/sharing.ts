@@ -111,12 +111,11 @@ export namespace sharing {
       if (callback) {
         callback({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content must all be of the same type',
+          message: 'Shared content must be of the same type',
         });
       }
       return false;
     }
-
     return true;
   }
 

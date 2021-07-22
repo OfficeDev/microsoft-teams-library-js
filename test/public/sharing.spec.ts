@@ -126,7 +126,7 @@ describe('sharing', () => {
     };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content must all be of the same type'
+      message: 'Shared content must be of the same type'
     };
 
     let response: any;
@@ -213,5 +213,4 @@ describe('sharing', () => {
     utils.respondToMessage(shareMessage, error);
     expect(response).toEqual(error);
   });
-
 });
