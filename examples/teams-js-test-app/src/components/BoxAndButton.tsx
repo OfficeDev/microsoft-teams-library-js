@@ -3,6 +3,7 @@ import * as React from 'react';
 interface BoxAndButtonProps {
   handleClick?: () => void;
   handleClickWithInput?: (input: string) => void;
+  defaultInput?: string;
   hasInput: boolean;
   title: string;
   name: string; // system identifiable unique name in context of MOS App and should contain no spaces or dots
@@ -13,12 +14,13 @@ interface BoxAndButtonProps {
 const BoxAndButton = ({
   handleClick,
   handleClickWithInput,
+  defaultInput,
   hasInput,
   output,
   title,
   name,
 }: BoxAndButtonProps): React.ReactElement => {
-  const [input, setInput] = React.useState('');
+  const ref = React.useRef<HTMLInputElement>(null);
 
   if (!handleClick === !handleClickWithInput) {
     throw new Error('Please implement exactly one of either handleClick or handleClickWithInput for ' + title + '. ');
@@ -27,9 +29,12 @@ const BoxAndButton = ({
     if (handleClick) {
       handleClick();
     } else if (handleClickWithInput) {
-      handleClickWithInput(input);
+      if (ref != null && ref.current != null) {
+        handleClickWithInput(ref.current.value);
+      }
     }
   };
+
   return (
     <div
       className="boxAndButton"
@@ -42,7 +47,7 @@ const BoxAndButton = ({
       }}
       id={`box_${name}`}
     >
-      {hasInput && <input type="text" onChange={e => setInput(e.target.value)} />}
+      {hasInput && <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={ref} />}
       <input name={`button_${name}`} type="button" value={title} onClick={getOutput} />
       <div
         className="box"

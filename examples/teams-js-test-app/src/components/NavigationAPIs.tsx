@@ -37,7 +37,32 @@ const NavigationAPIs = (): ReactElement => {
 
   const returnFocusFunc = (navigateForward: string): void => {
     setReturnFocusRes('Current navigateForward state is ' + navigateForward);
-    pages.returnFocus(navigateForward === 'true');
+    if (navigateForward) {
+      pages.returnFocus(navigateForward === 'true');
+    } else {
+      pages.returnFocus();
+    }
+  };
+
+  const returnFocus = (inputParams: string): void => {
+    if (inputParams) {
+      try {
+        const param = JSON.parse(inputParams);
+        if (param.navigateForward) {
+          pages.returnFocus(param.navigateForward);
+          setReturnFocusRes('called with param: ' + param.navigateForward);
+          return;
+        } else {
+          pages.returnFocus();
+        }
+      } catch (error) {
+        setReturnFocusRes(error.message);
+        return;
+      }
+    } else {
+      pages.returnFocus();
+    }
+    setReturnFocusRes('called with no param');
   };
 
   const pagesCapabilityCheck = (): void => {
@@ -57,6 +82,15 @@ const NavigationAPIs = (): ReactElement => {
         title="Navigate Cross Domain"
         name="navigateCrossDomain"
       />
+      <BoxAndButton
+        handleClickWithInput={returnFocus}
+        output={returnFocusRes}
+        hasInput={true}
+        title="Return Focus (non-checkbox)"
+        // eslint-disable-next-line
+        defaultInput={'{\"navigateForward\": \"true\"}'}
+        name="returnFocusUncontrolled"
+      />
       <CheckboxAndButton
         handleClickWithInput={returnFocusFunc}
         output={returnFocusRes}
@@ -74,7 +108,7 @@ const NavigationAPIs = (): ReactElement => {
         name="navigateToTab"
       />
       <BoxAndButton
-        handleClickWithInput={navigateBackFunc}
+        handleClick={navigateBackFunc}
         output={navigateBackRes}
         hasInput={false}
         title="Navigate Back"
