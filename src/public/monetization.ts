@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { SdkError } from './interfaces';
+import { FrameContexts } from './constants';
 
 export namespace monetization {
   /**
@@ -31,7 +32,7 @@ export namespace monetization {
     if (!callback) {
       throw new Error('[open purchase experience] Callback cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(FrameContexts.content);
     sendMessageToParent('monetization.openPurchaseExperience', [planInfo], callback);
   }
 }

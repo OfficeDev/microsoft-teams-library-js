@@ -3,6 +3,7 @@ import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
+import { FrameContexts } from '../../src/public';
 
 describe('monetization', () => {
   const desktopPlatformMock = new FramelessPostMocks();
@@ -34,7 +35,7 @@ describe('monetization', () => {
     });
 
     it('should successfully execute callback and sdkError should be null', () => {
-      desktopPlatformMock.initializeWithContext('content');
+      desktopPlatformMock.initializeWithContext(FrameContexts.content);
 
       let callbackCalled = "false";
       let returnedSdkError: SdkError | null;
