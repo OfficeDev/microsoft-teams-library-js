@@ -3,10 +3,11 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
-import { validOriginRegExp, version } from './constants';
+import { version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
+import { validateOrigin } from './utils';
 export class Communication {
   public static currentWindow: Window | any;
   public static parentOrigin: string;
@@ -28,12 +29,12 @@ class CommunicationPrivate {
   public static messageListener: Function;
 }
 
-type InitializeResponse = {
+interface InitializeResponse {
   context: FrameContexts;
   clientType: string;
   runtimeConfig: string;
   clientSupportedSDKVersion: string;
-};
+}
 
 export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
   // Listen for messages post to our window
@@ -204,7 +205,7 @@ function processMessage(evt: DOMMessageEvent): void {
 /**
  * Validates the message source and origin, if it should be processed
  */
-function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -216,14 +217,9 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
     messageOrigin === Communication.currentWindow.location.origin
   ) {
     return true;
-  } else if (
-    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
-    (GlobalVars.additionalValidOriginsRegexp &&
-      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
-  ) {
-    return true;
+  } else {
+    return validateOrigin(messageOrigin);
   }
-  return false;
 }
 
 function updateRelationships(messageSource: Window, messageOrigin: string): void {

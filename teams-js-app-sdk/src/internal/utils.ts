@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import * as uuid from 'uuid';
+import { validOrigins } from './constants';
 import { GlobalVars } from '../internal/globalVars';
-import { FrameContexts, HostClientType, HostName } from '../public/constants';
+import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
 // This will return a reg expression a given url
@@ -97,6 +98,19 @@ export function deepFreeze<T extends object>(obj: T): T {
     if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
   });
   return Object.freeze(obj);
+}
+
+export function validateOrigin(messageOrigin: string): boolean {
+  const validOriginRegExp = generateRegExpFromUrls(validOrigins);
+  if (
+    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
+    (GlobalVars.additionalValidOriginsRegexp &&
+      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**

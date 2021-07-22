@@ -79,8 +79,6 @@ export const validOrigins = [
   'https://*.www.office.com',
 ];
 
-export const validOriginRegExp = generateRegExpFromUrls(validOrigins);
-
 /**
  * USer specified message origins should satisfy this test
  */
