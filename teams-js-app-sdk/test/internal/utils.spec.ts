@@ -30,7 +30,6 @@ describe('utils', () => {
   it('validateOrigin returns false if origin is not an exact match in teams pre-known allowlist', () => {
     const messageOriginObject = new URL('https://team.microsoft.com');
     const result = validateOrigin(messageOriginObject);
-    console.log(messageOriginObject.host)
     expect(result).toBe(false);
   });
   it('validateOrigin returns true if origin is valid origin supplied by user ', () => {
