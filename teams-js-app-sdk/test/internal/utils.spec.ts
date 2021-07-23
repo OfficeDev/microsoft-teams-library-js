@@ -78,12 +78,12 @@ describe('utils', () => {
     expect(result).toBe(false);
   });
   it("validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist", () => {
-    const messageOrigin = new URL('https://myteams.microsoft.com ');
+    const messageOrigin = new URL('https://myteams.microsoft.com');
     const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
   it("validateOrigin returns false if first end of origin is not matched valid subdomains in the user supplied list", () => {
-    const messageOrigin = new URL('https://myteams.microsoft.com ');
+    const messageOrigin = new URL('https://myteams.microsoft.com');
     const result = validateOrigin(messageOrigin);
     GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
     expect(result).toBe(false);
