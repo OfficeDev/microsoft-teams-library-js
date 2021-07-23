@@ -6,8 +6,8 @@ import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
 /**
- * @param pattern pre-know valid pattern
- * @param host messageOrigin's host
+ * @param pattern reference pattern
+ * @param host candidate string
  * returns true if host matches pre-know valid pattern
  * For example,
  *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
