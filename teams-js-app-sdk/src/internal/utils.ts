@@ -5,24 +5,45 @@ import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
-// This will return a reg expression a given url
-function generateRegExpFromUrl(url: string): string {
-  let urlRegExpPart = '^';
-  const urlParts = url.split('.');
-  for (let j = 0; j < urlParts.length; j++) {
-    urlRegExpPart += (j > 0 ? '[.]' : '') + urlParts[j].replace('*', '[^/^.]+');
+/**
+ * @param pattern reference pattern
+ * @param host candidate string
+ * returns true if host matches pre-know valid pattern
+ * For example,
+ *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
+ *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
+ */
+function validateHostAgainstPattern(pattern: string, host: string): boolean {
+  if (pattern.substring(0, 2) === '*.') {
+    const suffix = pattern.substring(1);
+    if (host.length > suffix.length && host.substring(host.length - suffix.length) === suffix) {
+      return true;
+    }
+  } else if (pattern === host) {
+    return true;
   }
-  urlRegExpPart += '$';
-  return urlRegExpPart;
+  return false;
 }
 
-// This will return a reg expression for list of url
-export function generateRegExpFromUrls(urls: string[]): RegExp {
-  let urlRegExp = '';
-  for (let i = 0; i < urls.length; i++) {
-    urlRegExp += (i === 0 ? '' : '|') + generateRegExpFromUrl(urls[i]);
+export function validateOrigin(messageOrigin: URL): boolean {
+  // Check whether the url is in the pre-known allowlist or supplied by user
+  if (messageOrigin.protocol !== 'https:') {
+    return false;
   }
-  return new RegExp(urlRegExp);
+  const messageOriginHost = messageOrigin.host;
+
+  if (validOrigins.some(pattern => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    return true;
+  }
+
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
@@ -98,19 +119,6 @@ export function deepFreeze<T extends object>(obj: T): T {
     if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
   });
   return Object.freeze(obj);
-}
-
-export function validateOrigin(messageOrigin: string): boolean {
-  const validOriginRegExp = generateRegExpFromUrls(validOrigins);
-  if (
-    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
-    (GlobalVars.additionalValidOriginsRegexp &&
-      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
-  ) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 /**
