@@ -126,20 +126,22 @@ describe('teamsjsAppSDK-app', () => {
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
-  it('should use teams runtime config if an empty runtime config is given', () => {
-    app.initialize();
+  it('should use teams runtime config if an empty runtime config is given', async () => {
+    const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
+    await initPromise;
 
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
-  it('should use teams runtime config if a JSON parsing error is thrown by a given runtime config', () => {
-    app.initialize();
+  it('should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
+    const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
+    await initPromise;
 
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
@@ -182,6 +184,33 @@ describe('teamsjsAppSDK-app', () => {
 
     expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
     expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
+  });
+
+  it('should initialized with clientSupportedSDKVersion and runtimeConfig arguments flipped', async () => {
+    const initPromise = app.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(
+      initMessage,
+      FrameContexts.content,
+      HostClientType.web,
+      '1.0.0',
+      '{"apiVersion":1, "supports":{"mail":{}}}',
+    );
+    await initPromise;
+
+    expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+    expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
+  });
+
+  it('should initialized with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
+    const initPromise = app.initialize();
+
+    const initMessage = utils.findMessageByFunc('initialize');
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr');
+    await initPromise;
+
+    expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
   it('should successfully register a theme change handler', async () => {
