@@ -19,10 +19,10 @@ describe('communication', () => {
     communication.Communication.currentWindow = window;
     jest.spyOn(utils, 'validateOrigin').mockReturnValue(true);
     const messageOrigin = 'http://someorigin';
-    const messageOriginObject = new URL(messageOrigin);
+    const messageOriginURL = new URL(messageOrigin);
     const result = communication.shouldProcessMessage(null, messageOrigin);
     expect(utils.validateOrigin).toBeCalled();
-    expect(utils.validateOrigin).toBeCalledWith(messageOriginObject);
-    expect(result).toBe(utils.validateOrigin(messageOriginObject));
+    expect(utils.validateOrigin).toBeCalledWith(messageOriginURL);
+    expect(result).toBe(utils.validateOrigin(messageOriginURL));
   });
 });

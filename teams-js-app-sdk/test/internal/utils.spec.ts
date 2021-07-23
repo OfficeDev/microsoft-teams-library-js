@@ -84,7 +84,7 @@ describe('utils', () => {
     expect(result).toBe(false);
   });
   it("validateOrigin returns false if the protocol of origin is not 'https:'", () => {
-    const messageOrigin = new URL('http://team.microsoft.com');
+    const messageOrigin = new URL('http://teams.microsoft.com');
     const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });

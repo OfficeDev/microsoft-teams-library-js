@@ -5,6 +5,14 @@ import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
 
+/**
+ * @param pattern pre-know valid pattern
+ * @param host messageOrigin's host
+ * returns true if host matches pre-know valid pattern
+ * For example,
+ *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
+ *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
+ */
 function validateHostAgainstPattern(pattern: string, host: string): boolean {
   if (pattern.substring(0, 2) === '*.') {
     const suffix = pattern.substring(1);
@@ -24,7 +32,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
   }
   const messageOriginHost = messageOrigin.host;
 
-  if (validOrigins.some(p => validateHostAgainstPattern(p, messageOriginHost))) {
+  if (validOrigins.some(pattern => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
   }
 
