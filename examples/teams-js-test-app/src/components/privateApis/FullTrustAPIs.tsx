@@ -72,14 +72,14 @@ const FullTrustAPIs = (): ReactElement => {
         name="getConfigSetting"
       />
       <BoxAndButton
-        handleClickWithInput={returnEnterFullscreen}
+        handleClick={returnEnterFullscreen}
         output={enterFullscreenRes}
         hasInput={false}
         title="Enter Fullscreen"
         name="enterFullscreen"
       />
       <BoxAndButton
-        handleClickWithInput={returnExitFullscreen}
+        handleClick={returnExitFullscreen}
         output={exitFullscreenRes}
         hasInput={false}
         title="Exit Fullscreen"
