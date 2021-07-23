@@ -67,6 +67,17 @@ describe('utils', () => {
     const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
+  it('validateOrigin returns true if the port number of valid origin is in teams pre-known allowlist', () => {
+    const messageOrigin = new URL('https://local.teams.live.com:8080');
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(true);
+  });
+  it('validateOrigin returns true if the port number of valid origin is in the user supplied list', () => {
+    const messageOrigin = new URL('https://testorigin.com:8080');
+    GlobalVars.additionalValidOrigins = ['https://testorigin.com:8080'];
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(true);
+  });
   it('validateOrigin returns false if origin has extra appended', () => {
     const messageOrigin = new URL('https://teams.microsoft.com.evil.com');
     const result = validateOrigin(messageOrigin);
