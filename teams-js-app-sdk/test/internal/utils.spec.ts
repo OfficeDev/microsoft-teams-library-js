@@ -68,13 +68,24 @@ describe('utils', () => {
     expect(result).toBe(false);
   });
   it('validateOrigin returns false if origin has extra appended', () => {
-    const messageOrigin = new URL('https://team.microsoft.com.evil.com');
+    const messageOrigin = new URL('https://teams.microsoft.com.evil.com');
     const result = validateOrigin(messageOrigin);
     expect(result).toBe(false);
   });
   it("validateOrigin returns false if the protocol of origin is not 'https:'", () => {
     const messageOrigin = new URL('http://team.microsoft.com');
     const result = validateOrigin(messageOrigin);
+    expect(result).toBe(false);
+  });
+  it("validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist", () => {
+    const messageOrigin = new URL('https://myteams.microsoft.com ');
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(false);
+  });
+  it("validateOrigin returns false if first end of origin is not matched valid subdomains in the user supplied list", () => {
+    const messageOrigin = new URL('https://myteams.microsoft.com ');
+    const result = validateOrigin(messageOrigin);
+    GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
     expect(result).toBe(false);
   });
 });

@@ -7,7 +7,7 @@ import { Context, ContextBridge } from '../public/interfaces';
 
 function validateHostAgainstPattern(pattern: string, host: string): boolean {
   if (pattern.substring(0, 2) === '*.') {
-    const suffix = pattern.substring(2);
+    const suffix = pattern.substring(1);
     if (host.length > suffix.length && host.substring(host.length - suffix.length) === suffix) {
       return true;
     }
