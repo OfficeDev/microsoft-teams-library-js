@@ -169,6 +169,10 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
+/**
+ * @private
+ * Represents structure of the context message received
+ */
 export interface ContextBridge {
   /**
    * The Office 365 group ID for the team with which the content is associated.
