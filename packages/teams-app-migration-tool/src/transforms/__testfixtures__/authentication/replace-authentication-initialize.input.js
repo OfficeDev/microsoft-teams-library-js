@@ -1,9 +1,9 @@
 import * as msft from '@microsoft/teams-js';
 
-msft.authentication.authenticate();
+msft.authentication.initialize();
 
 import { authentication as auth } from '@microsoft/teams-js';
 
-auth.authenticate();
+auth.initialize();
 
-authentication.authenticate();
+authentication.initialize();

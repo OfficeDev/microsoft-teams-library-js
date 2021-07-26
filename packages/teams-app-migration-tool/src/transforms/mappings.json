@@ -37,8 +37,8 @@
       "target" : "teamsjs.authentication.notifySuccess"
     },
     {
-      "source" : "microsoftTeams.authentication.registerAuthenticationHandlers",
-      "target" : "teamsjs.authentication.registerAuthenticationHandlers"
+      "source" : "microsoftTeams.authentication.initialize",
+      "target" : "teamsjs.authentication.initialize"
     },
     {
       "source" : "microsoftTeams.settings.getSettings",
@@ -59,6 +59,46 @@
     {
       "source" : "microsoftTeams.settings.registerOnRemoveHandler",
       "target" : "teamsjs.pages.config.registerOnRemoveHandler"
+    },
+    {
+      "source" : "microsoftTeams.settings.initialize",
+      "target" : "teamsjs.pages.config.initialize"
+    },
+    {
+      "source" : "microsoftTeams.tasks.startTask",
+      "target" : "teamsjs.dialog.open"
+    },
+    {
+      "source" : "microsoftTeams.tasks.submitTask",
+      "target" : "teamsjs.dialog.submit"
+    },
+    {
+      "source" : "microsoftTeams.tasks.updateTask",
+      "target" : "teamsjs.dialog.resize"
+    },
+    {
+      "source" : "microsoftTeams.appInitialization.notifyAppLoaded",
+      "target" : "teamsjs.appInitialization.notifyAppLoaded"
+    },
+    {
+      "source" : "microsoftTeams.appInitialization.notifyExpectedFailure",
+      "target" : "teamsjs.appInitialization.notifyExpectedFailure"
+    },
+    {
+      "source" : "microsoftTeams.appInitialization.notifyFailure",
+      "target" : "teamsjs.appInitialization.notifyFailure"
+    },
+    {
+      "source" : "microsoftTeams.appInitialization.notifySuccess",
+      "target" : "teamsjs.appInitialization.notifySuccess"
+    },
+    {
+      "source" : "microsoftTeams.location.getLocation",
+      "target" : "teamsjs.location.getLocation"
+    },
+    {
+      "source" : "microsoftTeams.location.showLocation",
+      "target" : "teamsjs.location.showLocation"
     }
   ]
 }

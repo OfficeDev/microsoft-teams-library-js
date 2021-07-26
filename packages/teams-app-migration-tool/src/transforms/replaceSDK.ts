@@ -75,15 +75,72 @@ function reachCallee(p: any): any {
 }
 
 /**
- * findReplacement function is trying to find a replacement having mapping from current function reference
- * in Teams Client SDK to the function reference in teamsjs App SDK
- * @param rules an array of replacements
- * @param p AST node path to node with callee attribute under CallExpression node
- * @returns if a replacement is found, then a replament is returned, otherwise, null would be returned
+ * transform the alias to its real name if it exists in map
+ * @param specifierName name of specifier
+ * @param aliasToName a map which maps alias to its real name
+ * @returns a name
  */
-function findReplacement(rules: Array<replacement>, p: ASTPath<MemberExpression>): replacement | void {
+function getSpecifierName(specifierName: string, aliasToName: Map<string, string>): string {
+  return aliasToName.has(specifierName) ? (aliasToName.get(specifierName) as string) : specifierName;
+}
+
+/**
+ * Recursively compare each token in source token array with proper node name to identify
+ * whether this replacement is a mapping for current callee branch
+ * @param sourceTokenIndex index that we should read from array with source tokens
+ * @param sourceTokens an array with source tokens
+ * @param aliasToName a map which maps alias to its real name
+ * @param p a path
+ * @returns boolean value, true if it is the matched replacement
+ */
+function isCorrespondingReplacement(
+  sourceTokenIndex: number,
+  sourceTokens: Array<string>,
+  aliasToName: Map<string, string>,
+  p: any,
+): boolean {
+  /**
+   * Exit condition for recursion if it is the right replacement
+   */
+  if (sourceTokenIndex === sourceTokens.length && p.node.type === 'CallExpression') {
+    return true;
+  } else if (
+    sourceTokenIndex < sourceTokens.length &&
+    sourceTokens[sourceTokenIndex] ===
+      getSpecifierName(p.node.type === 'Identifier' ? p.node.name : p.node.property.name, aliasToName)
+  ) {
+    /**
+     * in this situation, we haven't compare each token with the token in AST node,
+     * from start to the end in the array with source tokens, so further check is required
+     */
+    return isCorrespondingReplacement(sourceTokenIndex + 1, sourceTokens, aliasToName, p.parent);
+  }
+  return false;
+}
+
+/**
+ * This function is to find replacement for a method reference
+ * @param rules an array with all of pre-defined replacement
+ * @param aliasToName a map which maps alias to its real name
+ * @param p an AST path of identifier node
+ * @returns a replacement with right info denoting how to transform the method
+ */
+function findReplacement(
+  rules: Array<replacement>,
+  aliasToName: Map<string, string>,
+  p: ASTPath<Identifier>,
+): replacement | void {
   for (const rule of rules) {
-    if (p.node.property.type === 'Identifier' && rule.sourceTokens.includes(p.node.property.name)) {
+    /**
+     * determine the starting index since the first prefix token may various,
+     * i.e. 'microsoftTeams' and 'location' would start from different places
+     * in sourceTokenArray
+     */
+    const startSourceTokenIndex = rule.sourceTokens.indexOf(getSpecifierName(p.node.name, aliasToName));
+    if (
+      startSourceTokenIndex >= 0 &&
+      isCorrespondingReplacement(startSourceTokenIndex, rule.sourceTokens, aliasToName, p)
+    ) {
       return rule;
     }
   }
@@ -113,8 +170,11 @@ function buildMethodASTNode(tokens: Array<string>): any {
  * @param importPath a collection of import declarations in a file such as alias of SDK, authentication, settings ...
  * @returns a set of namespaces from Teams Client SDK
  */
-function getTeamsClientSDKFunctionRefernecePrefixes(importPath: Collection<ImportDeclaration>): Set<string> {
+function getTeamsClientSDKFunctionRefernecePrefixes(
+  importPath: Collection<ImportDeclaration>,
+): [Set<string>, Map<string, string>] {
   const namespacesImported: Set<string> = new Set();
+  const aliasToName: Map<string, string> = new Map();
   importPath.forEach(path => {
     if (typeof path.node.specifiers !== 'undefined') {
       path.node.specifiers.forEach(specifier => {
@@ -139,25 +199,48 @@ function getTeamsClientSDKFunctionRefernecePrefixes(importPath: Collection<Impor
            */
           if (specifier.local !== null && typeof specifier.local !== 'undefined') {
             namespacesImported.add(specifier.local.name);
+            /**
+             * if alias for namespace doesn't exsit in current map,
+             * set a mapping for a namespace imported from alias to name
+             */
+            if (!aliasToName.has(specifier.local.name)) {
+              aliasToName.set(specifier.local.name, specifier.imported.name);
+            }
           }
         } else if (
           /**
            * Specifier type of default import declaration would be ImportDefaultSpecifier,
-           * i.e. "import default_namespace from ...", and
-           * typically, specifier type of namespace of package would be ImportNamespaceSpecifier
-           * i.e. "import * as msft from '@microsoft/teams-js" and msft would be a specifier name
+           * i.e. "import default_namespace from ..."
            */
-          (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportNamespaceSpecifier') &&
+          specifier.type === 'ImportDefaultSpecifier' &&
           typeof specifier.local !== 'undefined' &&
           specifier.local !== null &&
           specifier.local.type === 'Identifier'
         ) {
           namespacesImported.add(specifier.local.name);
+        } else if (
+          /**
+           * typically, specifier type of namespace of package would be ImportNamespaceSpecifier
+           * i.e. "import * as msft from '@microsoft/teams-js" and msft would be a specifier name
+           */
+          specifier.type === 'ImportNamespaceSpecifier' &&
+          typeof specifier.local !== 'undefined' &&
+          specifier.local !== null &&
+          specifier.local.type === 'Identifier'
+        ) {
+          namespacesImported.add(specifier.local.name);
+          /**
+           * if alias for package doesn't exsit in current map,
+           * set a mapping from alias to name
+           */
+          if (!aliasToName.has(specifier.local.name)) {
+            aliasToName.set(specifier.local.name, 'microsoftTeams');
+          }
         }
       });
     }
   });
-  return namespacesImported;
+  return [namespacesImported, aliasToName];
 }
 
 /**
@@ -202,9 +285,10 @@ const transform: Transform = (file: FileInfo, api: API): string => {
      * namespaces are used to determine whether a method call is from Teams Client SDK, because it would have the format
      * like, "authentication.getAuthToken(AuthTokenRequest)"
      */
-    getTeamsClientSDKFunctionRefernecePrefixes(teamsClientSDKImportDeclarationPaths).forEach(specifierName =>
-      namespacesImportedFromTeamsClientSDK.add(specifierName),
+    const [specifierNames, aliasToName] = getTeamsClientSDKFunctionRefernecePrefixes(
+      teamsClientSDKImportDeclarationPaths,
     );
+    specifierNames.forEach(specifierName => namespacesImportedFromTeamsClientSDK.add(specifierName));
     /**
      * second step, find all of method calls related to Teams Client SDK using namespacesImportedFromTeamsClientSDK set
      */
@@ -217,14 +301,9 @@ const transform: Transform = (file: FileInfo, api: API): string => {
      */
     teamsClientSDKMethodPaths.forEach(path => {
       /**
-       * to replace the method call is actually to replace the callee node in AST
-       * so we have to reach callee node and then keep the node
+       * find right replacement for each method related to Teams Client SDK
        */
-      const callee: ASTPath<MemberExpression> = reachCallee(path);
-      /**
-       * find right replacement and build string of original method reference for log
-       */
-      const rule: replacement | void = findReplacement(replacements, callee);
+      const rule: replacement | void = findReplacement(replacements, aliasToName, path);
       /**
        * if there is an one-on-one mapping, (somehow there might not be one, i.e. forget to add rules)
        * replace function reference from Teams Client SDK to teamsjs App SDK
@@ -246,9 +325,10 @@ const transform: Transform = (file: FileInfo, api: API): string => {
         const replacedMosAppSDKFunctionReference: Array<string> = Object.assign([], rule.targetPrefixTokens);
         replacedMosAppSDKFunctionReference.push(rule.targetMethod);
         /**
+         * to replace the method call is actually to reach the callee node in AST and then
          * replace AST node using jscodeshift inner replacing function
          */
-        callee.replace(buildMethodASTNode(replacedMosAppSDKFunctionReference));
+        reachCallee(path).replace(buildMethodASTNode(replacedMosAppSDKFunctionReference));
         /**
          * TODO: log(s) of replacing current method references from Teams Client SDK
          * to one from MOS App SDK
@@ -258,12 +338,14 @@ const transform: Transform = (file: FileInfo, api: API): string => {
 
     /**
      * Insert new line(s) of import declaration(s) at the head of the file,
-     * it would be easier to prompt which line we insert the import declaration to,
+     * thus 'at(0)' is called because multiple import declarations from Teams Client SDK may occur
+     * we don't want to insert before each declarations
+     * it would be easier to prompt which line we insert the import declaration to as well,
      * i.e. insert at 1st line
      */
-    teamsClientSDKImportDeclarationPaths.insertBefore(
-      buildteamsjsAppSDKImportDeclaration(Array.from(namespacesForMosAppSDK)),
-    );
+    teamsClientSDKImportDeclarationPaths
+      .at(0)
+      .insertBefore(buildteamsjsAppSDKImportDeclaration(Array.from(namespacesForMosAppSDK)));
     /**
      * TODO: log(s) of adding import declarations from MOS App SDK
      */
