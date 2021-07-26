@@ -187,7 +187,7 @@ steps:
 
   - task: Yarn@3
     condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
