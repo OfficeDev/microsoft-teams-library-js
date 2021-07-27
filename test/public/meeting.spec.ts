@@ -553,5 +553,77 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
+    describe('startAppSegmentSharing', () => {
+      it('should not allow to start app segment sharing with null callback', () => {
+        expect(() => meeting.startAppSegmentSharing('', null)).toThrowError(
+          '[start app segment sharing] Callback cannot be null',
+        );
+      });
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.startAppSegmentSharing('', () => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully start the app segment sharing', () => {
+        desktopPlatformMock.initializeWithContext('sidePanel');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        let requestUrl = 'validUrl';
+        meeting.startAppSegmentSharing(requestUrl, (error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.startAppSegmentSharing');
+        expect(startAppSegmentSharingMessage).not.toBeNull();
+        let callbackId = startAppSegmentSharingMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+        expect(startAppSegmentSharingMessage.args).toContain(requestUrl);
+      });
+
+      it('should return error code 500', () => {
+        desktopPlatformMock.initializeWithContext('sidePanel');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        let requestUrl = 'invalidAppUrl';
+        meeting.startAppSegmentSharing(requestUrl, (error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.startAppSegmentSharing');
+        expect(startAppSegmentSharingMessage).not.toBeNull();
+        let callbackId = startAppSegmentSharingMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).not.toBeNull();
+        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+        expect(returnedResult).toBe(null);
+        expect(startAppSegmentSharingMessage.args).toContain(requestUrl);
+        expect;
+      });
+    });
   });
 });
