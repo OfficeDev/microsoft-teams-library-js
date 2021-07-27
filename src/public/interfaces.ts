@@ -376,6 +376,11 @@ export interface Context {
   appSessionId?: string;
 
   /**
+   * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
+   */
+  appLaunchId?: string;
+
+  /**
    * Represents whether calling is allowed for the current logged in User
    */
   isCallingAllowed?: boolean;
