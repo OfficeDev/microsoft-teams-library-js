@@ -425,14 +425,9 @@ export interface Context {
   userFileOpenPreference?: FileOpenPreference;
 
   /**
-   * Teamsite ID
+   * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
-
-  /**
-   * channel folder ID
-   */
-  channelFolderId?: string;
 }
 
 export interface DeepLinkParameters {
