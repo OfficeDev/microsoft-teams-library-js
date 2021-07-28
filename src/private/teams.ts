@@ -50,11 +50,15 @@ export namespace teams {
    * when site admin renames siteurl.
    * @param threadId ID of the thread where the app entity will be created
    */
-  export function refreshSiteUrl(threadId: string): void {
+  export function refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void {
     ensureInitialized();
 
     if (!threadId) {
-      throw new Error('[refreshSiteUrl] threadId cannot be null or empty');
+      throw new Error('[teams.refreshSiteUrl] threadId cannot be null or empty');
+    }
+
+    if (!callback) {
+      throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
     }
 
     sendMessageToParent(threadId);
