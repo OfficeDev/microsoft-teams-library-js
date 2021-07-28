@@ -707,15 +707,4 @@ describe('MicrosoftTeams-privateAPIs', () => {
       expect(exitFullscreenMessage).not.toBeNull();
     });
   });
-
-  describe('refreshSiteUrl', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => refreshSiteUrl('threadId')).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls with null groupId', () => {
-      utils.initializeWithContext('content');
-      expect(() => refreshSiteUrl(null)).toThrowError('[refreshSiteUrl] threadId cannot be null or empty');
-    });
-  });
 });
