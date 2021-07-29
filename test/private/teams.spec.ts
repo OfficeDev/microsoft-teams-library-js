@@ -81,9 +81,9 @@ describe('teams', () => {
       expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls with null groupId', () => {
+    it('should not allow calls with null threadId', () => {
       utils.initializeWithContext('content');
-      expect(() => teams.refreshSiteUrl(null, emptyCallback)).toThrowError('[refreshSiteUrl] threadId cannot be null or empty');
+      expect(() => teams.refreshSiteUrl(null, emptyCallback)).toThrowError();
     });
   });
 
