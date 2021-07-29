@@ -1,13 +1,20 @@
+/**
+ * try to split this test files and mappings.json file to multiple files for easy updating
+ * i.e. a function is removed, renamed, updated
+ */
 import { testHelper } from '../testHelper';
 
 const testList = [
   /**
-   * appInitialization namespace
+   * app namespace
    */
-  'appInitialization/replace-appInitialization-notifyAppLoaded',
-  'appInitialization/replace-appInitialization-notifyExpectedFailure',
-  'appInitialization/replace-appInitialization-notifyFailure',
-  'appInitialization/replace-appInitialization-notifySuccess',
+  'app/replace-appInitialization-notifyAppLoaded',
+  'app/replace-appInitialization-notifyExpectedFailure',
+  'app/replace-appInitialization-notifyFailure',
+  'app/replace-appInitialization-notifySuccess',
+  'app/replace-initialize',
+  'app/replace-getContext',
+  'app/replace-registerOnThemeChangeHandler',
   /**
    * authentication namespace
    */
@@ -23,11 +30,8 @@ const testList = [
   /**
    * core namespace
    */
-  'core/replace-initialize',
-  'core/replace-getContext',
   'core/replace-shareDeepLink',
   'core/replace-executeDeepLink',
-  'core/replace-registerOnThemeChangeHandler',
   /**
    * dialog namespace
    */

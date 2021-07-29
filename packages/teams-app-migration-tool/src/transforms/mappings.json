@@ -2,11 +2,11 @@
   "mappings" : [
     {
       "source" : "microsoftTeams.initialize",
-      "target" : "teamsjs.core.initialize"
+      "target" : "teamsjs.app.initialize"
     },
     {
       "source" : "microsoftTeams.getContext",
-      "target" : "teamsjs.core.getContext"
+      "target" : "teamsjs.app.getContext"
     },
     {
       "source" : "microsoftTeams.shareDeepLink",
@@ -18,7 +18,7 @@
     },
     {
       "source" : "microsoftTeams.registerOnThemeChangeHandler",
-      "target" : "teamsjs.core.registerOnThemeChangeHandler"
+      "target" : "teamsjs.app.registerOnThemeChangeHandler"
     },
     {
       "source" : "microsoftTeams.authentication.authenticate",
@@ -78,19 +78,19 @@
     },
     {
       "source" : "microsoftTeams.appInitialization.notifyAppLoaded",
-      "target" : "teamsjs.appInitialization.notifyAppLoaded"
+      "target" : "teamsjs.app.notifyAppLoaded"
     },
     {
       "source" : "microsoftTeams.appInitialization.notifyExpectedFailure",
-      "target" : "teamsjs.appInitialization.notifyExpectedFailure"
+      "target" : "teamsjs.app.notifyExpectedFailure"
     },
     {
       "source" : "microsoftTeams.appInitialization.notifyFailure",
-      "target" : "teamsjs.appInitialization.notifyFailure"
+      "target" : "teamsjs.app.notifyFailure"
     },
     {
       "source" : "microsoftTeams.appInitialization.notifySuccess",
-      "target" : "teamsjs.appInitialization.notifySuccess"
+      "target" : "teamsjs.app.notifySuccess"
     },
     {
       "source" : "microsoftTeams.location.getLocation",
