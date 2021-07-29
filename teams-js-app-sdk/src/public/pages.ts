@@ -18,8 +18,9 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /**
-   * Return focus to the main teamsjs app.
-   * @param navigateForward - Determines the direction to focus in teamsjs app.
+   * Return focus to the hub/host. Will move focus forward or backward based on where the teamsjs App container falls in
+   * the F6/Tab accessiblity loop in the hub/host.
+   * @param navigateForward - Determines the direction to focus in hub/host.
    */
   export function returnFocus(navigateForward?: boolean): void {
     ensureInitialized(FrameContexts.content);
