@@ -153,6 +153,8 @@ export class Utils {
   };
 
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,

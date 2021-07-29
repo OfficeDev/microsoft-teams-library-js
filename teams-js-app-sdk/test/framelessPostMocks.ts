@@ -21,11 +21,9 @@ export class FramelessPostMocks {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
-      },
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
-      },
-      nativeInterface : {
+      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
+      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
+      nativeInterface: {
         framelessPostMessage: function(message: string): void {
           let msg = JSON.parse(message);
           that.messages.push(msg);
@@ -34,15 +32,19 @@ export class FramelessPostMocks {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function (url: string): void {
+        assign: function(url: string): void {
           return;
         },
-      }
+      },
     };
     this.mockWindow.self = this.mockWindow as ExtendedWindow;
   }
 
-  public initializeWithContext = async (frameContext: string, hostClientType?: string, validMessageOrigins?: string[]): Promise<void> => {
+  public initializeWithContext = async (
+    frameContext: string,
+    hostClientType?: string,
+    validMessageOrigins?: string[],
+  ): Promise<void> => {
     app._initialize(this.mockWindow);
     const initPromise = app.initialize(validMessageOrigins);
     expect(GlobalVars.isFramelessWindow).toBeTruthy();
@@ -58,7 +60,7 @@ export class FramelessPostMocks {
    */
   public setClientSupportedSDKVersion = (version: string) => {
     GlobalVars.clientSupportedSDKVersion = version;
-  }
+  };
 
   public findMessageByFunc = (func: string): MessageRequest => {
     for (let i = 0; i < this.messages.length; i++) {
@@ -77,10 +79,14 @@ export class FramelessPostMocks {
         args: args,
       } as MessageResponse,
     } as DOMMessageEvent;
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage(domEvent);
   };
 
   public respondToMessage = (event: DOMMessageEvent): void => {
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage(event);
-  }
+  };
 }
