@@ -1,7 +1,7 @@
 import { monetization } from '../../src/public/monetization';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { app } from '../src/public/app';
 import { Utils } from '../utils';
 import { FrameContexts } from '../../src/public';
 
@@ -11,13 +11,13 @@ describe('monetization', () => {
 
   beforeEach(() => {
     desktopPlatformMock.messages = [];
-    _initialize(desktopPlatformMock.mockWindow);
+    app._initialize(desktopPlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 

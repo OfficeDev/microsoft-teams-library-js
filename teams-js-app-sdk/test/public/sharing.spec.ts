@@ -1,5 +1,5 @@
 import { sharing } from '../../src/public/sharing';
-import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
+import { app } from '../src/public/app';
 import { Utils } from '../utils';
 import { ErrorCode } from '../../src/public/interfaces';
 
@@ -14,13 +14,13 @@ describe('sharing', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
