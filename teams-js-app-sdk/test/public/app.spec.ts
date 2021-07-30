@@ -289,6 +289,7 @@ describe('teamsjsAppSDK-app', () => {
       userFileOpenPreference: FileOpenPreference.Inline,
       isMultiWindow: true,
       frameContext: FrameContexts.content,
+      appLaunchId: 'appLaunchId',
       userDisplayName: 'someTestUser',
     };
 
