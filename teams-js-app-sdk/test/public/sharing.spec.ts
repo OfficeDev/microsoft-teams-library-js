@@ -1,5 +1,5 @@
 import { sharing } from '../../src/public/sharing';
-import { app } from '../src/public/app';
+import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 import { ErrorCode } from '../../src/public/interfaces';
 

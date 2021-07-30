@@ -1,7 +1,7 @@
 import { monetization } from '../../src/public/monetization';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { app } from '../src/public/app';
+import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 import { FrameContexts } from '../../src/public';
 
