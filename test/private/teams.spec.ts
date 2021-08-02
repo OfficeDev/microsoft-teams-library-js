@@ -78,12 +78,7 @@ describe('teams', () => {
 
   describe('refreshSiteUrl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls with null threadId', () => {
-      utils.initializeWithContext('content');
-      expect(() => teams.refreshSiteUrl(null, emptyCallback)).toThrowError();
+      expect(() => teams.refreshSiteUrl(emptyCallback, 'threadId')).toThrowError('The library has not yet been initialized');
     });
   });
 
