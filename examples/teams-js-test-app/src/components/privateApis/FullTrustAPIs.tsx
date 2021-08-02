@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
-import { legacy, pages } from '@microsoft/teamsjs-app-sdk';
+import { legacy, pages, UserJoinedTeamsInformation } from '@microsoft/teamsjs-app-sdk';
 
 const FullTrustAPIs = (): ReactElement => {
   const [getUserJoinedTeamsRes, setGetUserJoinedTeamsRes] = React.useState('');
@@ -14,7 +14,7 @@ const FullTrustAPIs = (): ReactElement => {
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
     const teamInstanceParams = JSON.parse(teamInstanceParamsInput);
     setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHubSdkMsg);
-    const onComplete = (userJoinedTeamsInfo: teamsjs.UserJoinedTeamsInformation): void => {
+    const onComplete = (userJoinedTeamsInfo: UserJoinedTeamsInformation): void => {
       setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo));
     };
     legacy.fullTrust.getUserJoinedTeams(onComplete, teamInstanceParams);

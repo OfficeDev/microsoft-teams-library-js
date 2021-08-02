@@ -21,6 +21,7 @@ export {
   MeetingInfo,
   TeamInfo,
   TenantInfo,
+  OpenConversationRequest,
 } from './interfaces';
 export { app, core } from './app';
 export { dialog } from './dialog';
