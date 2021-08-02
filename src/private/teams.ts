@@ -51,7 +51,7 @@ export namespace teams {
    * @param threadId ID of the thread where the app entity will be created; if threadId is not 
    * provided, the threadId from route params will be used.
    */
-  export function refreshSiteUrl(threadId?: string, callback: (error: SdkError) => void): void {
+  export function refreshSiteUrl(callback: (error: SdkError) => void, threadId?: string): void {
     ensureInitialized();
 
     if (!callback) {
