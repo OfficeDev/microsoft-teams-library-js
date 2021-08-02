@@ -48,14 +48,11 @@ export namespace teams {
    * @private
    * Allow 1st party apps to call this function when they receive migrated errors to inform Teams refresh siteurl
    * when site admin renames siteurl.
-   * @param threadId ID of the thread where the app entity will be created
+   * @param threadId ID of the thread where the app entity will be created; if threadId is not 
+   * provided, the threadId from route params will be used.
    */
-  export function refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void {
+  export function refreshSiteUrl(threadId?: string, callback: (error: SdkError) => void): void {
     ensureInitialized();
-
-    if (!threadId) {
-      throw new Error('[teams.refreshSiteUrl] threadId cannot be null or empty');
-    }
 
     if (!callback) {
       throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
