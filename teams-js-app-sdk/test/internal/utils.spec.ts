@@ -99,4 +99,15 @@ describe('utils', () => {
     GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
     expect(result).toBe(false);
   });
+  it("validateOrigin returns false if origin for subdomains does not match in teams pre-known allowlist", () => {
+    const messageOrigin = new URL('https://a.b.sharepoint.com');
+    const result = validateOrigin(messageOrigin);
+    expect(result).toBe(false);
+  });
+  it("validateOrigin returns false if origin for subdomains does not match in the user supplied list", () => {
+    const messageOrigin = new URL('https://a.b.testdomain.com');
+    const result = validateOrigin(messageOrigin);
+    GlobalVars.additionalValidOrigins = ['https://*.testdomain.com'];
+    expect(result).toBe(false);
+  });
 });
