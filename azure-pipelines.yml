@@ -4,8 +4,14 @@
 # https://aka.ms/yaml
 
 trigger:
-  - main
-  - develop
+  branches:
+    include:
+      - main
+      - develop
+      - "release*"
+  tags:
+    include:
+      - "v*"
 
 pool:
   vmImage: 'windows-latest'
@@ -15,6 +21,11 @@ steps:
     inputs:
       versionSpec: '1.x'
     displayName: 'Yarn 1.x'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "14.x"
+    displayName: "Install Node.js"
 
   - task: Yarn@3
     inputs:
@@ -61,6 +72,19 @@ steps:
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
     displayName: 'Post bundle analysis result as PR comment in github'
+
+  - task: ComponentGovernanceComponentDetection@0
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      scanType: "LogOnly"
+      verbosity: "Verbose"
+      alertWarningLevel: "High"
+      failOnAlert: true
+    displayName: 'Security check - Component Governance (Pull Request)'
+
+  - task: ComponentGovernanceComponentDetection@0
+    condition: and(in(variables['Build.SourceBranch'], 'refs/heads/main', 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest'))
+    displayName: 'Security check - Component Governance (main/develop)'
 
   - task: CopyFiles@2
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
@@ -113,13 +137,95 @@ steps:
       package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloud roll'
 
-  - task: Yarn@3
+  - task: ESLint@1
+    inputs:
+      Configuration: 'required'
+      TargetType: 'eslint'
+      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      ErrorLevel: 'warn'
+    displayName: 'Run ESLint'
+
+  - task: CredScan@3
+    condition: succeededOrFailed()
+    displayName: 'Run Credential Scanner'
+    inputs:
+      debugMode: false
+
+  - task: PublishSecurityAnalysisLogs@3
+    displayName: 'Publish Guardian Artifacts - All Tools'
+    inputs:
+      ArtifactType: M365
+    condition: succeededOrFailed()
+  
+  # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
+  - task: AssetRetention@3
+    inputs:
+      ArrowServiceConnection: 'Arrow_office_ISS_PROD'
+      AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+      AssetNumber: '$(Build.BuildId)'
+      IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
+      DropsToRetain: 'CodeAnalysisLogs'
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/main'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
       )
+    displayName: 'Artifact Retention(Arrow)'
+
+  - task: PostAnalysis@2
+    condition: succeededOrFailed()
+    displayName: 'Guardian Break'
+    inputs:
+      GdnBreakPolicyMinSev: Warning
+      GdnBreakAllTools: true 
+      GdnBreakGdnToolCredScan: true
+      GdnBreakGdnToolCredScanSeverity: Warning
+      GdnBreakGdnToolESLint: true
+      GdnBreakGdnToolESLintSeverity: Warning
+      GdnBreakPolicy: M365
+
+  - task: Yarn@3
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
     inputs:
       Arguments: 'publish-sdk'
-    displayName: 'yarn publish-sdk'
+    displayName: 'yarn publish-sdk (main)'
+
+  - script: 'node prepNextRelease.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'yarn node prepNextRelease.js'
+
+  - task: Yarn@3
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    inputs:
+      Arguments: 'publish-sdk --tag next'
+    displayName: 'yarn publish-sdk (develop)'
+  
+  # IMPORTANT
+  # If you need to change $(secret.private-preview-ado-token), you need to base64 encode the string given to you when creating the Personal Access Token, even if it looks like its already base64 encoded.
+  - script: 'node tools/cli/deployPrivatePreview.js'
+    condition: and(
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+        in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+        ne(variables['Build.Reason'], 'PullRequest'),
+        ne(variables['Build.Reason'], 'Manual')
+      )
+    env:
+      PRIVATE_PREVIEW_TOKEN: $(secret.private-preview-ado-token)
+    displayName: 'yarn publish-sdk (private preview)'

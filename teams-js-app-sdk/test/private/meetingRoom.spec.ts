@@ -1,7 +1,7 @@
 import { Utils } from '../utils';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { meetingRoom } from '../../src/private/meetingRoom';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 
@@ -33,13 +33,13 @@ describe('meetingRoom', () => {
     desktopPlatformMock.messages = [];
 
     // Set a mock window for testing
-    core._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(mobilePlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -47,11 +47,13 @@ describe('meetingRoom', () => {
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => meetingRoom.getPairedMeetingRoomInfo(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => meetingRoom.getPairedMeetingRoomInfo(() => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
-    it('should successfully get meeting room info on mobile', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should successfully get meeting room info on mobile', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedMeetingRoomInfo: meetingRoom.MeetingRoomInfo = null;
@@ -82,8 +84,8 @@ describe('meetingRoom', () => {
       expect(returnedSdkError).toBeNull();
     });
 
-    it('pass sdkError while get meeting room info on mobile', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('pass sdkError while get meeting room info on mobile', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedMeetingRoomInfo: meetingRoom.MeetingRoomInfo = null;
@@ -112,8 +114,8 @@ describe('meetingRoom', () => {
       expect(returnedSdkError.message).toBe(errorMessage);
     });
 
-    it('should allow getPairedMeetingRoomInfo calls on desktop', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should allow getPairedMeetingRoomInfo calls on desktop', async () => {
+      await desktopPlatformMock.initializeWithContext('content');
 
       meetingRoom.getPairedMeetingRoomInfo(emptyCallback);
 
@@ -130,29 +132,29 @@ describe('meetingRoom', () => {
       );
     });
 
-    it('should not allow calls with null command name', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should not allow calls with null command name', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
       expect(() => meetingRoom.sendCommandToPairedMeetingRoom(null, emptyCallback)).toThrowError(
         '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
-    it('should not allow calls with empty command name', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should not allow calls with empty command name', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
       expect(() => meetingRoom.sendCommandToPairedMeetingRoom('', emptyCallback)).toThrowError(
         '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
-    it('should not allow calls with null callback', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should not allow calls with null callback', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
       expect(() => meetingRoom.sendCommandToPairedMeetingRoom('mute', null)).toThrowError(
         '[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null',
       );
     });
 
-    it('should successfully send commands on mobile', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should successfully send commands on mobile', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedSdkError: SdkError;
@@ -179,8 +181,8 @@ describe('meetingRoom', () => {
       expect(returnedSdkError.message).toBe('command failed');
     });
 
-    it('should successfully send commands on desktop', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully send commands on desktop', async () => {
+      await desktopPlatformMock.initializeWithContext('content');
 
       meetingRoom.sendCommandToPairedMeetingRoom('mute', emptyCallback);
 
@@ -191,8 +193,8 @@ describe('meetingRoom', () => {
     });
   });
 
-  describe('registerMeetingRoomCapabilitiesUpdateHandler', () => {
-    it('should not allow calls with null callback ', () => {
+  describe('registerMeetingRoomCapabilitiesUpdateHandler', async () => {
+    await it('should not allow calls with null callback ', () => {
       expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(null)).toThrowError(
         '[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null',
       );
@@ -204,8 +206,8 @@ describe('meetingRoom', () => {
       );
     });
 
-    it('should successful register capabilities update handler on mobile', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should successful register capabilities update handler on mobile', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedCapabilities;
@@ -232,8 +234,8 @@ describe('meetingRoom', () => {
       expect(returnedCapabilities.meetingControls).toBe(meetingRoomCapability.meetingControls);
     });
 
-    it('should successful register capabilities update handler on desktop', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successful register capabilities update handler on desktop', async () => {
+      await desktopPlatformMock.initializeWithContext('content');
 
       meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyCallback);
 
@@ -257,8 +259,8 @@ describe('meetingRoom', () => {
       );
     });
 
-    it('should successful register states update handler on mobile', () => {
-      mobilePlatformMock.initializeWithContext('content');
+    it('should successful register states update handler on mobile', async () => {
+      await mobilePlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedStates;
@@ -287,8 +289,8 @@ describe('meetingRoom', () => {
       expect(returnedStates.leaveMeeting).toBe(meetingRoomState.leaveMeeting);
     });
 
-    it('should successful register states update handler on desktop', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successful register states update handler on desktop', async () => {
+      await desktopPlatformMock.initializeWithContext('content');
 
       meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyCallback);
 

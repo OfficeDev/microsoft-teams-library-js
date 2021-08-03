@@ -8,10 +8,10 @@ const PeopleAPIs = (): ReactElement => {
 
   const selectPeople = (peoplePickerInputsStr: string): void => {
     const callback = (error: SdkError, people: people.PeoplePickerResult[]): void => {
-      if (error != null) {
-        setSelectPeopleRes(people.toString());
-      } else {
+      if (error) {
         setSelectPeopleRes('Error code: ' + error);
+      } else {
+        setSelectPeopleRes(JSON.stringify(people));
       }
     };
     setSelectPeopleRes('people.selectPeople' + noHubSdkMsg);
@@ -24,6 +24,7 @@ const PeopleAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>people</h1>
       <BoxAndButton
         handleClickWithInput={selectPeople}
         output={selectPeopleRes}

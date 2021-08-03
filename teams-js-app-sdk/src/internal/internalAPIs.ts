@@ -1,6 +1,6 @@
 import { userOriginUrlValidationRegExp, defaultSDKVersionForCompatCheck } from './constants';
 import { GlobalVars } from './globalVars';
-import { generateRegExpFromUrls, compareSDKVersions } from './utils';
+import { compareSDKVersions } from './utils';
 
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCalled) {
@@ -45,7 +45,7 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
       return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
     }),
   );
-  let dedupUrls: { [url: string]: boolean } = {};
+  const dedupUrls: { [url: string]: boolean } = {};
   combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
     if (dedupUrls[_originUrl]) {
       return false;
@@ -54,9 +54,4 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
     return true;
   });
   GlobalVars.additionalValidOrigins = combinedOriginUrls;
-  if (GlobalVars.additionalValidOrigins.length > 0) {
-    GlobalVars.additionalValidOriginsRegexp = generateRegExpFromUrls(GlobalVars.additionalValidOrigins);
-  } else {
-    GlobalVars.additionalValidOriginsRegexp = null;
-  }
 }

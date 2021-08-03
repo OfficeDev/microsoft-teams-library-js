@@ -1,4 +1,3 @@
-export { appInitialization } from './appInitialization';
 export { authentication } from './authentication';
 export { FrameContexts, HostClientType, DialogDimension, TeamType, UserTeamRole, ChannelType } from './constants';
 export {
@@ -13,8 +12,17 @@ export {
   DialogInfo,
   TeamInformation,
   FileOpenPreference,
+  AppInfo,
+  AppHostInfo,
+  PageInfo,
+  UserInfo,
+  ChannelInfo,
+  ChatInfo,
+  MeetingInfo,
+  TeamInfo,
+  TenantInfo,
 } from './interfaces';
-export { core } from './publicAPIs';
+export { app, core } from './app';
 export { dialog } from './dialog';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
@@ -25,3 +33,4 @@ export { calendar } from './calendar';
 export { mail } from './mail';
 export { teamsCore } from './teamsAPIs';
 export { people } from './people';
+export { video } from './video';

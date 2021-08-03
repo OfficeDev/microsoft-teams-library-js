@@ -1,19 +1,25 @@
-import { sendMessageToParent } from '../internal/communication';
+import {
+  sendMessageToParent,
+  sendAndHandleStatusAndReason as send,
+  sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
+  sendAndUnwrap,
+} from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
-import { core } from './publicAPIs';
+import { app } from './app';
 import { runtime } from './runtime';
 
+/**
+ * Navigation specific part of the SDK.
+ *
+ * @beta
+ */
 export namespace pages {
   /**
-   * Navigation specific part of the SDK.
-   */
-  /**
-   * Return focus to the main teamsjs app. Will focus search bar if navigating forward and app bar if navigating back.
-   * @param navigateForward Determines the direction to focus in teamsjs app.
+   * Return focus to the main teamsjs app.
+   * @param navigateForward - Determines the direction to focus in teamsjs app.
    */
   export function returnFocus(navigateForward?: boolean): void {
     ensureInitialized(FrameContexts.content);
@@ -31,7 +37,7 @@ export namespace pages {
     callback?: () => void,
     validMessageOrigins?: string[],
   ): void {
-    core.initialize(callback, validMessageOrigins);
+    app.initialize(validMessageOrigins).then(() => callback && callback());
     setCurrentFrame(frameInfo);
   }
 
@@ -41,32 +47,31 @@ export namespace pages {
    * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
    * than the current one in a way that keeps the app informed of the change and allows the SDK to
    * continue working.
-   * @param url The URL to navigate the frame to.
+   * @param url - The URL to navigate the frame to.
+   * @returns Promise that resolves when the navigation has completed.
    */
-  export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.remove,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+  export function navigateCrossDomain(url: string): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.remove,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      );
 
-    const errorMessage =
-      'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-    sendMessageToParent(
-      'navigateCrossDomain',
-      [url],
-      onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
-    );
+      const errorMessage =
+        'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
+      resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
+    });
   }
 
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the user toggles full-screen view for a tab.
+   * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
@@ -76,7 +81,7 @@ export namespace pages {
   /**
    * Registers a handler for clicking the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when the personal app button is clicked in the app bar.
+   * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
    */
   export function registerAppButtonClickHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
@@ -86,7 +91,7 @@ export namespace pages {
   /**
    * Registers a handler for entering hover of the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
+   * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
    */
   export function registerAppButtonHoverEnterHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
@@ -96,7 +101,7 @@ export namespace pages {
   /**
    * Registers a handler for exiting hover of the app button.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
+   * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
    */
   export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
     ensureInitialized(FrameContexts.content);
@@ -117,47 +122,38 @@ export namespace pages {
     /**
      * Navigates the Microsoft teamsjs app to the specified tab instance.
      * @param tabInstance The tab instance to navigate to.
+     * @returns Promise that resolves when the navigation has completed.
      */
-    export function navigateToTab(
-      tabInstance: TabInstance,
-      onComplete?: (status: boolean, reason?: string) => void,
-    ): void {
-      ensureInitialized();
-
-      const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-      sendMessageToParent(
-        'navigateToTab',
-        [tabInstance],
-        onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage),
-      );
+    export function navigateToTab(tabInstance: TabInstance): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized();
+        const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
+        resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
+      });
     }
     /**
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-     * @param callback The callback to invoke when the {@link TabInstanceParameters} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+     * @returns Promise that resolves with the {@link TabInformation}.
      */
-    export function getTabInstances(
-      callback: (tabInfo: TabInformation) => void,
-      tabInstanceParameters?: TabInstanceParameters,
-    ): void {
-      ensureInitialized();
-
-      sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
+    export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
+      return new Promise<TabInformation>(resolve => {
+        ensureInitialized();
+        resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
+      });
     }
 
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
-     * @param callback The callback to invoke when the {@link TabInformation} object is retrieved.
      * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
+     * @returns Promise that resolves with the {@link TabInformation}.
      */
-    export function getMruTabInstances(
-      callback: (tabInfo: TabInformation) => void,
-      tabInstanceParameters?: TabInstanceParameters,
-    ): void {
-      ensureInitialized();
-
-      sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
+    export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
+      return new Promise<TabInformation>(resolve => {
+        ensureInitialized();
+        resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
+      });
     }
 
     /**
@@ -192,25 +188,26 @@ export namespace pages {
 
     /**
      * Gets the config for the current instance.
-     * @param callback The callback to invoke when the {@link Config} object is retrieved.
+     * @returns Promise that resolves with the {@link Config} object.
      */
-    export function getConfig(callback: (instanceSettings: Config) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove);
-      sendMessageToParent('settings.getSettings', callback);
+    export function getConfig(): Promise<Config> {
+      return new Promise<Config>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+        resolve(sendAndUnwrap('settings.getSettings'));
+      });
     }
 
     /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
      * @param Config The desired config for this instance.
+     * @returns Promise that resolves when the operation has completed.
      */
-    export function setConfig(instanceSettings: Config, onComplete?: (status: boolean, reason?: string) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings);
-      sendMessageToParent(
-        'settings.setSettings',
-        [instanceSettings],
-        onComplete ? onComplete : getGenericOnCompleteHandler(),
-      );
+    export function setConfig(instanceSettings: Config): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+        resolve(send('settings.setSettings', instanceSettings));
+      });
     }
 
     /**
@@ -322,7 +319,7 @@ export namespace pages {
      * Hide from docs, since this class is not directly used.
      */
     class SaveEventImpl implements SaveEvent {
-      public notified: boolean = false;
+      public notified = false;
       public result: SaveParameters;
       public constructor(result?: SaveParameters) {
         this.result = result ? result : {};
@@ -359,7 +356,7 @@ export namespace pages {
      * Hide from docs, since this class is not directly used.
      */
     class RemoveEventImpl implements RemoveEvent {
-      public notified: boolean = false;
+      public notified = false;
 
       public notifySuccess(): void {
         this.ensureNotNotified();
@@ -401,12 +398,14 @@ export namespace pages {
     /**
      * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
      * it's appropriate to use this method.
+     * @returns Promise that resolves when the navigation has completed.
      */
-    export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
-      ensureInitialized();
-
-      const errorMessage = 'Back navigation is not supported in the current client or context.';
-      sendMessageToParent('navigateBack', [], onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage));
+    export function navigateBack(): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized();
+        const errorMessage = 'Back navigation is not supported in the current client or context.';
+        resolve(sendAndDefaultError('navigateBack', errorMessage));
+      });
     }
 
     /**
@@ -432,6 +431,36 @@ export namespace pages {
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
+    }
+  }
+
+  export namespace fullTrust {
+    /**
+     * @private
+     * Hide from docs
+     * ------
+     * Place the tab into full-screen mode.
+     */
+    export function enterFullscreen(): void {
+      ensureInitialized(FrameContexts.content);
+      sendMessageToParent('enterFullscreen', []);
+    }
+
+    /**
+     * @private
+     * Hide from docs
+     * ------
+     * Reverts the tab into normal-screen mode.
+     */
+    export function exitFullscreen(): void {
+      ensureInitialized(FrameContexts.content);
+      sendMessageToParent('exitFullscreen', []);
+    }
+    /**
+     * Checks if pages.fullTrust capability is supported currently
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
     }
   }
 }

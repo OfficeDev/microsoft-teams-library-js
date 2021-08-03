@@ -13,11 +13,6 @@ export {
   UserSettingTypes,
 } from './interfaces';
 export {
-  enterFullscreen,
-  exitFullscreen,
-  getConfigSetting,
-  getUserJoinedTeams,
-  openFilePreview,
   sendCustomMessage,
   sendCustomEvent,
   registerCustomHandler,
@@ -26,7 +21,9 @@ export {
 } from './privateAPIs';
 export { chat } from './chat';
 export { files } from './files';
+export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';
 export { appEntity } from './appEntity';
+export { teams } from './teams';

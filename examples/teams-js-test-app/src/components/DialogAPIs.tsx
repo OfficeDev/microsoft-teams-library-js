@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { DialogInfo, dialog } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
-import { noHubSdkMsg } from '../App';
+import { noHubSdkMsg, generateJsonParseErrorMsg } from '../App';
 
 const DialogAPIs = (): ReactElement => {
   const [openRes, setOpenRes] = React.useState('');
@@ -10,23 +10,37 @@ const DialogAPIs = (): ReactElement => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const openDialog = (dialogInfoInput: string): void => {
-    let dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
+    const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     const onComplete = (err: string, result: string): void => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
-    dialog.open(dialogInfo, onComplete);
     setOpenRes('dialog.open' + noHubSdkMsg);
+    dialog.open(dialogInfo, onComplete);
   };
 
   const resizeDialog = (dialogInfoInput: string): void => {
-    let dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
+    const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     dialog.resize(dialogInfo);
     setResizeRes('App SDK call dialog.resize was called');
   };
 
-  const submitDialog = (result: string): void => {
-    dialog.submit(result);
-    setSubmitRes('App SDK call dialog.submit was called');
+  const submitDialogWithInput = (submitDialogInput: string): void => {
+    if (submitDialogInput.length == 0) {
+      dialog.submit();
+      setSubmitRes('App SDK call dialog.submit was called with no arguments');
+    } else {
+      try {
+        const parsedInput = JSON.parse(submitDialogInput);
+        dialog.submit(parsedInput.result, parsedInput.appIds);
+        setSubmitRes('App SDK call dialog.submit was called with arguments');
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          setSubmitRes(generateJsonParseErrorMsg());
+        } else {
+          setSubmitRes(error.message);
+        }
+      }
+    }
   };
 
   const checkDialogCapability = (): void => {
@@ -39,6 +53,7 @@ const DialogAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>dialog</h1>
       <BoxAndButton
         handleClick={checkDialogCapability}
         output={capabilityCheckRes}
@@ -61,11 +76,11 @@ const DialogAPIs = (): ReactElement => {
         name="dialogResize"
       />
       <BoxAndButton
-        handleClickWithInput={submitDialog}
+        handleClickWithInput={submitDialogWithInput}
         output={submitRes}
         hasInput={true}
-        title="Dialog Submit"
-        name="dialogSubmit"
+        title="Dialog Submit With Input"
+        name="dialogSubmitWithInput"
       />
     </>
   );

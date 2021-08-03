@@ -26,7 +26,9 @@ const MailAPIs = (): ReactElement => {
     setOpenMailItemRes('mail.openMailItem()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setOpenMailItemRes(reason);
+        if (reason) {
+          setOpenMailItemRes(reason);
+        }
       } else {
         setOpenMailItemRes('Completed');
       }
@@ -44,6 +46,7 @@ const MailAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>mail</h1>
       <BoxAndButton
         handleClickWithInput={composeMail}
         output={composeMailRes}

@@ -20,10 +20,7 @@ const ConfigAPIs = (): ReactElement => {
 
   const getConfig = (): void => {
     setGetConfigRes('config.getConfig()' + noHubSdkMsg);
-    const onComplete = (instanceConfigs: pages.config.Config): void => {
-      setGetConfigRes(JSON.stringify(instanceConfigs));
-    };
-    pages.config.getConfig(onComplete);
+    pages.config.getConfig().then(instanceConfigs => setGetConfigRes(JSON.stringify(instanceConfigs)));
   };
 
   const registerOnSaveHandler = (): void => {
@@ -35,14 +32,12 @@ const ConfigAPIs = (): ReactElement => {
   };
 
   const setConfig = (instanceConfigInput: string): void => {
-    let instanceConfig: pages.config.Config = JSON.parse(instanceConfigInput);
+    const instanceConfig: pages.config.Config = JSON.parse(instanceConfigInput);
     setSetConfigRes('config.setConfig()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string | undefined): void => {
-      let output = '';
-      if (reason) output += 'reason: ' + reason + ', \n';
-      setSetConfigRes(output + 'status: ' + status.toString());
-    };
-    pages.config.setConfig(instanceConfig, onComplete);
+    pages.config
+      .setConfig(instanceConfig)
+      .then(() => setSetConfigRes('Completed'))
+      .catch(reason => setSetConfigRes('reason: ' + reason));
   };
 
   const setValidityState = (validityState: string): void => {
@@ -74,6 +69,7 @@ const ConfigAPIs = (): ReactElement => {
   };
   return (
     <>
+      <h1>pages.config</h1>
       <BoxAndButton
         handleClick={initialize}
         output={initializeRes}

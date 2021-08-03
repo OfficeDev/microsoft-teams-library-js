@@ -1,99 +1,14 @@
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts, HostClientType } from '../public/constants';
-import {
-  ChatMembersInformation,
-  ShowNotificationParameters,
-  FilePreviewParameters,
-  TeamInstanceParameters,
-  UserJoinedTeamsInformation,
-  UserSettingTypes,
-} from './interfaces';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { ensureInitialized } from '../internal/internalAPIs';
+import { UserSettingTypes } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
 import { menus } from './menus';
 import { registerHandler } from '../internal/handlers';
-import { GlobalVars } from '../internal/globalVars';
-import { ErrorCode, SdkError } from '../public/interfaces';
-import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 
 export function initializePrivateApis(): void {
   menus.initialize();
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Allows an app to retrieve information of all user joined teams
- * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
- * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
- */
-export function getUserJoinedTeams(
-  callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
-  teamInstanceParameters?: TeamInstanceParameters,
-): void {
-  ensureInitialized();
-
-  if (
-    GlobalVars.hostClientType === HostClientType.android &&
-    !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
-  ) {
-    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-    throw new Error(JSON.stringify(oldPlatformError));
-  }
-
-  sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Place the tab into full-screen mode.
- */
-export function enterFullscreen(): void {
-  ensureInitialized(FrameContexts.content);
-  sendMessageToParent('enterFullscreen', []);
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Reverts the tab into normal-screen mode.
- */
-export function exitFullscreen(): void {
-  ensureInitialized(FrameContexts.content);
-  sendMessageToParent('exitFullscreen', []);
-}
-
-/**
- * @private
- * Hide from docs.
- * ------
- * Opens a client-friendly preview of the specified file.
- * @param file The file to preview.
- */
-export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(FrameContexts.content);
-
-  const params = [
-    filePreviewParameters.entityId,
-    filePreviewParameters.title,
-    filePreviewParameters.description,
-    filePreviewParameters.type,
-    filePreviewParameters.objectUrl,
-    filePreviewParameters.downloadUrl,
-    filePreviewParameters.webPreviewUrl,
-    filePreviewParameters.webEditUrl,
-    filePreviewParameters.baseUrl,
-    filePreviewParameters.editFile,
-    filePreviewParameters.subEntityId,
-    filePreviewParameters.viewerAction,
-    filePreviewParameters.fileOpenPreference,
-  ];
-
-  sendMessageToParent('openFilePreview', params);
 }
 
 /**
@@ -171,20 +86,6 @@ export function registerCustomHandler(
   registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
   });
-}
-
-/**
- * @private
- * Hide from docs
- * ------
- * Allows an app to get the configuration setting value
- * @param callback The callback to invoke when the value is retrieved.
- * @param key The key for the config setting
- */
-export function getConfigSetting(callback: (value: string) => void, key: string): void {
-  ensureInitialized();
-
-  sendMessageToParent('getConfigSetting', [key], callback);
 }
 
 /**

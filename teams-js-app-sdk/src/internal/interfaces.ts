@@ -3,6 +3,8 @@
  * Hide from docs
  * Shim in definitions used for browser-compat
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface DOMMessageEvent {
   origin?: any;
   source?: any;

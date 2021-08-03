@@ -12,7 +12,9 @@ const CalendarAPIs = (): ReactElement => {
     setComposeMeetingRes('calendar.composeMeeting()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setComposeMeetingRes(reason);
+        if (reason) {
+          setComposeMeetingRes(reason);
+        }
       } else {
         setComposeMeetingRes('Completed');
       }
@@ -24,7 +26,9 @@ const CalendarAPIs = (): ReactElement => {
     setOpenCalendarItemRes('calendar.openCalendarItem()' + noHubSdkMsg);
     const onComplete = (status: boolean, reason?: string): void => {
       if (!status) {
-        if (reason) setOpenCalendarItemRes(reason);
+        if (reason) {
+          setOpenCalendarItemRes(reason);
+        }
       } else {
         setOpenCalendarItemRes('Completed');
       }
@@ -42,6 +46,7 @@ const CalendarAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>calendar</h1>
       <BoxAndButton
         handleClick={checkCalendarCapability}
         output={capabilityCheckRes}

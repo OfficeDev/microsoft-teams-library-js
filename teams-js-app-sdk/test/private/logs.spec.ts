@@ -1,6 +1,6 @@
 import { logs } from '../../src/private/logs';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('logs', () => {
   // Use to send a mock message from the app.
@@ -15,8 +15,8 @@ describe('logs', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -29,8 +29,8 @@ describe('logs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a get log handler', () => {
-      utils.initializeWithContext('content');
+    it('should successfully register a get log handler', async () => {
+      await utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       logs.registerGetLogHandler(() => {
@@ -43,8 +43,8 @@ describe('logs', () => {
       expect(handlerInvoked).toBe(true);
     });
 
-    it('getLog should call the get log handler and send the log', () => {
-      utils.initializeWithContext('content');
+    it('getLog should call the get log handler and send the log', async () => {
+      await utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       const log: string = '1/1/2019 Info - App initialized';
@@ -61,8 +61,8 @@ describe('logs', () => {
       expect(handlerInvoked).toBe(true);
     });
 
-    it('should not send log when no get log handler is registered', () => {
-      utils.initializeWithContext('content');
+    it('should not send log when no get log handler is registered', async () => {
+      await utils.initializeWithContext('content');
 
       utils.sendMessage('log.request');
 

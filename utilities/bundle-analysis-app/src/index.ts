@@ -1,4 +1,4 @@
-import { core, appInitialization } from '@microsoft/teamsjs-app-sdk';
+import { app } from '@microsoft/teamsjs-app-sdk';
 
-core.initialize();
-appInitialization.notifyAppLoaded();
+app.initialize();
+app.notifyAppLoaded();

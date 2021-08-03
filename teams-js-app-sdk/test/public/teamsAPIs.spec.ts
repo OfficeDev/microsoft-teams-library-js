@@ -1,8 +1,6 @@
-import { TabInstanceParameters, Context, FrameInfo } from '../../src/public/interfaces';
-import { TeamType, UserTeamRole, HostClientType } from '../../src/public/constants';
-import { core } from '../../src/public/publicAPIs';
+import { TabInstanceParameters, FrameInfo } from '../../src/public/interfaces';
+import { app, core } from '../../src/public/app';
 import { teamsCore } from '../../src/public/teamsAPIs';
-import { FrameContexts } from '../../src/public/constants';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
@@ -18,18 +16,18 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
-  it('should successfully register a change settings handler', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a change settings handler', async () => {
+    await utils.initializeWithContext('content');
     let handlerCalled = false;
 
     pages.config.registerChangeConfigHandler(() => {
@@ -41,8 +39,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully register a app button click handler', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a app button click handler', async () => {
+    await utils.initializeWithContext('content');
     let handlerCalled = false;
 
     pages.registerAppButtonClickHandler(() => {
@@ -54,8 +52,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully register a app button hover enter handler', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a app button hover enter handler', async () => {
+    await utils.initializeWithContext('content');
     let handlerCalled = false;
 
     pages.registerAppButtonHoverEnterHandler(() => {
@@ -67,8 +65,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully register a app button hover leave handler', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a app button hover leave handler', async () => {
+    await utils.initializeWithContext('content');
     let handlerCalled = false;
 
     pages.registerAppButtonHoverLeaveHandler(() => {
@@ -80,8 +78,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully register a back button handler and not call navigateBack if it returns true', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a back button handler and not call navigateBack if it returns true', async () => {
+    await utils.initializeWithContext('content');
 
     let handlerInvoked = false;
     pages.backStack.registerBackButtonHandler(() => {
@@ -96,8 +94,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerInvoked).toBe(true);
   });
 
-  it('should successfully register a back button handler and call navigateBack if it returns false', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a back button handler and call navigateBack if it returns false', async () => {
+    await utils.initializeWithContext('content');
 
     let handlerInvoked = false;
     pages.backStack.registerBackButtonHandler(() => {
@@ -113,26 +111,26 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
   });
 
   describe('getTabInstances', () => {
-    it('should allow a missing and valid optional parameter', () => {
-      utils.initializeWithContext('content');
+    it('should allow a missing and valid optional parameter', async () => {
+      await utils.initializeWithContext('content');
 
-      pages.tabs.getTabInstances(tabInfo => tabInfo);
-      pages.tabs.getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getTabInstances();
+      pages.tabs.getTabInstances({} as TabInstanceParameters);
     });
   });
 
   describe('getMruTabInstances', () => {
-    it('should allow a missing and valid optional parameter', () => {
-      utils.initializeWithContext('content');
+    it('should allow a missing and valid optional parameter', async () => {
+      await utils.initializeWithContext('content');
 
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo);
-      pages.tabs.getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      pages.tabs.getMruTabInstances();
+      pages.tabs.getMruTabInstances({} as TabInstanceParameters);
     });
   });
 
-  it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     spyOn(teamsCore, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -146,9 +144,9 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeFalsy();
   });
 
-  it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Cmd+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     spyOn(teamsCore, 'print').and.callFake((): void => {
       handlerCalled = true;
     });
@@ -162,9 +160,9 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeFalsy();
   });
 
-  it('print handler should successfully call default print handler', () => {
+  it('print handler should successfully call default print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -175,9 +173,9 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Ctrl+P should successfully call print handler', () => {
+  it('Ctrl+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -192,9 +190,9 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Cmd+P should successfully call print handler', () => {
+  it('Cmd+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    core.initialize();
+    app.initialize();
     teamsCore.enablePrintCapability();
     spyOn(window, 'print').and.callFake((): void => {
       handlerCalled = true;
@@ -217,8 +215,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
         }),
       ).toThrowError('The library has not yet been initialized');
     });
-    it('should successfully register handler', () => {
-      utils.initializeWithContext('content');
+    it('should successfully register handler', async () => {
+      await utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       teamsCore.registerOnLoadHandler(() => {
@@ -241,8 +239,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a before unload handler', () => {
-      utils.initializeWithContext('content');
+    it('should successfully register a before unload handler', async () => {
+      await utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       teamsCore.registerBeforeUnloadHandler(() => {
@@ -255,8 +253,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
       expect(handlerInvoked).toBe(true);
     });
 
-    it('should call readyToUnload automatically when no before unload handler is registered', () => {
-      utils.initializeWithContext('content');
+    it('should call readyToUnload automatically when no before unload handler is registered', async () => {
+      await utils.initializeWithContext('content');
 
       utils.sendMessage('beforeUnload');
 
@@ -264,8 +262,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
       expect(readyToUnloadMessage).not.toBeNull();
     });
 
-    it('should successfully share a deep link in content context', () => {
-      utils.initializeWithContext('content');
+    it('should successfully share a deep link in content context', async () => {
+      await utils.initializeWithContext('content');
 
       core.shareDeepLink({
         subEntityId: 'someSubEntityId',
@@ -281,8 +279,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
       expect(message.args[2]).toBe('someSubEntityWebUrl');
     });
 
-    it('should successfully share a deep link in sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully share a deep link in sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       core.shareDeepLink({
         subEntityId: 'someSubEntityId',
@@ -298,8 +296,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
       expect(message.args[2]).toBe('someSubEntityWebUrl');
     });
 
-    it('should successfully register a before unload handler and not call readyToUnload if it returns true', () => {
-      utils.initializeWithContext('content');
+    it('should successfully register a before unload handler and not call readyToUnload if it returns true', async () => {
+      await utils.initializeWithContext('content');
 
       let handlerInvoked = false;
       let readyToUnloadFunc: () => void;
@@ -321,8 +319,8 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     });
   });
 
-  it('should successfully frame context', () => {
-    utils.initializeWithContext('content');
+  it('should successfully frame context', async () => {
+    await utils.initializeWithContext('content');
 
     let frameContext: FrameInfo = {
       contentUrl: 'someContentUrl',
@@ -356,5 +354,17 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toBe(frameContext);
+  });
+
+  it('should successfully register a focus enter handler and return true', async () => {
+    await utils.initializeWithContext('content');
+
+    let handlerInvoked = false;
+    teamsCore.registerFocusEnterHandler(() => {
+      handlerInvoked = true;
+    });
+
+    utils.sendMessage('focusEnter');
+    expect(handlerInvoked).toBe(true);
   });
 });

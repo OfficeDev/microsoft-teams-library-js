@@ -2,7 +2,7 @@ import { meeting } from '../../src/public/meeting';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public';
 import { Utils } from '../utils';
 
@@ -12,13 +12,13 @@ describe('meeting', () => {
 
   beforeEach(() => {
     desktopPlatformMock.messages = [];
-    core._initialize(desktopPlatformMock.mockWindow);
+    app._initialize(desktopPlatformMock.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -36,8 +36,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully toggle the incoming client audio', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully toggle the incoming client audio', async () => {
+      await desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -62,8 +62,8 @@ describe('meeting', () => {
       expect(returnedResult).toBe(true);
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -103,8 +103,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully get the incoming client audio state', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully get the incoming client audio state', async () => {
+      await desktopPlatformMock.initializeWithContext('sidePanel');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -129,8 +129,8 @@ describe('meeting', () => {
       expect(returnedResult).toBe(true);
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -168,8 +168,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully get the meeting details', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully get the meeting details', async () => {
+      await desktopPlatformMock.initializeWithContext('content');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -214,8 +214,8 @@ describe('meeting', () => {
       expect(returnedMeetingResult).toStrictEqual(meetingDetails);
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -255,8 +255,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully get the anonymous user token of the user in meeting', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should successfully get the anonymous user token of the user in meeting', async () => {
+      await desktopPlatformMock.initializeWithContext('meetingStage');
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -283,8 +283,8 @@ describe('meeting', () => {
       expect(returnedSdkError).toBeNull();
       expect(returnedSkypeToken).toBe(mockAuthenticationToken);
     });
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext('content');
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext('sidePanel');
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
       let returnedSkypeToken: string | null;
@@ -321,8 +321,8 @@ describe('meeting', () => {
       expect(() => meeting.getLiveStreamState(() => {})).toThrowError('The library has not yet been initialized');
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -351,8 +351,8 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).toBe(null);
     });
 
-    it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully get live stream state', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
@@ -395,18 +395,16 @@ describe('meeting', () => {
       );
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
       meeting.requestStartLiveStreaming(
-        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        (error: SdkError) => {
           callbackCalled = true;
           returnedSdkError = error;
-          returnedLiveStreamState = liveStreamState;
         },
         'streamurl',
         'streamkey',
@@ -426,21 +424,18 @@ describe('meeting', () => {
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedLiveStreamState).toBe(null);
     });
 
-    it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully request start live streaming', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
       meeting.requestStartLiveStreaming(
-        (error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+        (error: SdkError) => {
           callbackCalled = true;
           returnedSdkError = error;
-          returnedLiveStreamState = liveStreamState;
         },
         'streamurl',
         'streamkey',
@@ -459,8 +454,7 @@ describe('meeting', () => {
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
-      expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
+      expect(requestStartLiveStreamMessage.args).toEqual(['streamurl', 'streamkey']);
     });
   });
 
@@ -475,17 +469,15 @@ describe('meeting', () => {
       expect(() => meeting.requestStopLiveStreaming(() => {})).toThrowError('The library has not yet been initialized');
     });
 
-    it('should return error code 500', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should return error code 500', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+      meeting.requestStopLiveStreaming((error: SdkError) => {
         callbackCalled = true;
         returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
       });
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
@@ -502,20 +494,17 @@ describe('meeting', () => {
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).not.toBeNull();
       expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedLiveStreamState).toBe(null);
     });
 
-    it('should successfully get live stream state', () => {
-      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully request start live streaming', async () => {
+      await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
 
-      meeting.requestStopLiveStreaming((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
+      meeting.requestStopLiveStreaming((error: SdkError) => {
         callbackCalled = true;
         returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
       });
 
       let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
@@ -531,8 +520,6 @@ describe('meeting', () => {
 
       expect(callbackCalled).toBe(true);
       expect(returnedSdkError).toBe(null);
-      expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: false });
     });
   });
 
@@ -549,8 +536,8 @@ describe('meeting', () => {
       );
     });
 
-    it('should successfully register a handler for when live stream is changed', () => {
-      utils.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when live stream is changed', async () => {
+      await utils.initializeWithContext(FrameContexts.sidePanel);
 
       let handlerCalled = false;
       let returnedLiveStreamState: meeting.LiveStreamState | null;

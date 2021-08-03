@@ -8,7 +8,7 @@ const NotificationAPIs = (): ReactElement => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const returnShowNotification = (showNotificationParamsInput: string): void => {
-    let showNotificationParams: ShowNotificationParameters = JSON.parse(showNotificationParamsInput);
+    const showNotificationParams: ShowNotificationParameters = JSON.parse(showNotificationParamsInput);
     setShowNotification('showNotification()' + noHubSdkMsg);
     notifications.showNotification(showNotificationParams);
   };
@@ -23,6 +23,7 @@ const NotificationAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>notifications</h1>
       <BoxAndButton
         handleClickWithInput={returnShowNotification}
         output={showNotification}

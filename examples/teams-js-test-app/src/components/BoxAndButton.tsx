@@ -34,6 +34,7 @@ const BoxAndButton = ({
     <div
       className="boxAndButton"
       style={{
+        display: 'inline-block',
         height: 200,
         width: 400,
         border: '5px solid black',
@@ -41,8 +42,8 @@ const BoxAndButton = ({
       }}
       id={`box_${name}`}
     >
-      <input name={`button_${name}`} type="button" value={title} onClick={getOutput} />
       {hasInput && <input type="text" onChange={e => setInput(e.target.value)} />}
+      <input name={`button_${name}`} type="button" value={title} onClick={getOutput} />
       <div
         className="box"
         style={{

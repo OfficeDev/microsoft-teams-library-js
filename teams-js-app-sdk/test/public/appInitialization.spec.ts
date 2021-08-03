@@ -1,10 +1,8 @@
 import { version } from '../../src/internal/constants';
-import { appInitialization } from '../../src/public/appInitialization';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
 describe('appInitialization', () => {
-
   const utils = new Utils();
 
   beforeEach(() => {
@@ -14,62 +12,61 @@ describe('appInitialization', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
-  it('should call notifyAppLoaded correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyAppLoaded correctly', async () => {
+    await utils.initializeWithContext('content');
 
-    appInitialization.notifyAppLoaded();
-    const message = utils.findMessageByFunc(appInitialization.Messages.AppLoaded);
+    app.notifyAppLoaded();
+    const message = utils.findMessageByFunc(app.Messages.AppLoaded);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(version);
   });
 
-  it('should call notifySuccess correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifySuccess correctly', async () => {
+    await utils.initializeWithContext('content');
 
-    appInitialization.notifySuccess();
-    const message = utils.findMessageByFunc(appInitialization.Messages.Success);
+    app.notifySuccess();
+    const message = utils.findMessageByFunc(app.Messages.Success);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(version);
   });
 
-  it('should call notifyExpectedFailure correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyExpectedFailure correctly', async () => {
+    await utils.initializeWithContext('content');
 
-    appInitialization.notifyExpectedFailure({
-      reason: appInitialization.ExpectedFailureReason.PermissionError,
-      message: 'Permission denied'
+    app.notifyExpectedFailure({
+      reason: app.ExpectedFailureReason.PermissionError,
+      message: 'Permission denied',
     });
-    const message = utils.findMessageByFunc(appInitialization.Messages.ExpectedFailure);
+    const message = utils.findMessageByFunc(app.Messages.ExpectedFailure);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
-    expect(message.args[0]).toEqual(appInitialization.ExpectedFailureReason.PermissionError);
+    expect(message.args[0]).toEqual(app.ExpectedFailureReason.PermissionError);
     expect(message.args[1]).toEqual('Permission denied');
   });
 
-  it('should call notifyFailure correctly', () => {
-    utils.initializeWithContext('content');
+  it('should call notifyFailure correctly', async () => {
+    await utils.initializeWithContext('content');
 
-    appInitialization.notifyFailure({
-      reason: appInitialization.FailedReason.AuthFailed,
-      message: 'Failed message'
+    app.notifyFailure({
+      reason: app.FailedReason.AuthFailed,
+      message: 'Failed message',
     });
-    const message = utils.findMessageByFunc(appInitialization.Messages.Failure);
+    const message = utils.findMessageByFunc(app.Messages.Failure);
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(2);
-    expect(message.args[0]).toEqual(appInitialization.FailedReason.AuthFailed);
+    expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
     expect(message.args[1]).toEqual('Failed message');
   });
-
 });

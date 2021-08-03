@@ -1,6 +1,6 @@
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
-import { core } from '../../src/public/publicAPIs';
+import { app } from '../../src/public/app';
 
 describe('config', () => {
   // Use to send a mock message from the app.
@@ -16,19 +16,19 @@ describe('config', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
-  it('should not allow calls from the wrong context', () => {
-    utils.initializeWithContext('content');
+  it('should not allow calls from the wrong context', async () => {
+    await utils.initializeWithContext('content');
 
     expect(() => pages.config.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
   });
 
-  it('should successfully notify success on save when there is no registered handler', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully notify success on save when there is no registered handler', async () => {
+    await utils.initializeWithContext('settings');
 
     utils.sendMessage('settings.save');
 
@@ -37,8 +37,8 @@ describe('config', () => {
     expect(message.args.length).toBe(0);
   });
 
-  it('should successfully register a remove handler', () => {
-    utils.initializeWithContext('remove');
+  it('should successfully register a remove handler', async () => {
+    await utils.initializeWithContext('remove');
 
     let handlerCalled = false;
     pages.config.registerOnRemoveHandler(() => {
@@ -50,8 +50,8 @@ describe('config', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('should successfully set validity state to true', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully set validity state to true', async () => {
+    await utils.initializeWithContext('settings');
 
     pages.config.setValidityState(true);
 
@@ -61,8 +61,8 @@ describe('config', () => {
     expect(message.args[0]).toBe(true);
   });
 
-  it('should successfully set validity state to false', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully set validity state to false', async () => {
+    await utils.initializeWithContext('settings');
 
     pages.config.setValidityState(false);
 
@@ -72,13 +72,10 @@ describe('config', () => {
     expect(message.args[0]).toBe(false);
   });
 
-  it('should successfully get settings', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully get settings', async () => {
+    await utils.initializeWithContext('settings');
 
-    let actualSettings: pages.config.Config;
-    pages.config.getConfig(settings => {
-      actualSettings = settings;
-    });
+    const promise = pages.config.getConfig();
 
     let message = utils.findMessageByFunc('settings.getSettings');
     expect(message).not.toBeNull();
@@ -92,11 +89,11 @@ describe('config', () => {
 
     utils.respondToMessage(message, expectedSettings);
 
-    expect(actualSettings).toBe(expectedSettings);
+    return expect(promise).resolves.toBe(expectedSettings);
   });
 
-  it('should successfully set settings', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully set settings', async () => {
+    await utils.initializeWithContext('settings');
 
     let settingsObj: pages.config.Config = {
       suggestedDisplayName: 'someSuggestedDisplayName',
@@ -112,8 +109,8 @@ describe('config', () => {
     expect(message.args[0]).toBe(settingsObj);
   });
 
-  it('should successfully register a save handler', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully register a save handler', async () => {
+    await utils.initializeWithContext('settings');
 
     let handlerCalled = false;
     pages.config.registerOnSaveHandler(() => {
@@ -125,8 +122,8 @@ describe('config', () => {
     expect(handlerCalled).toBe(true);
   });
 
-  it('should successfully register a remove handler', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully register a remove handler', async () => {
+    await utils.initializeWithContext('settings');
 
     let handlerCalled = false;
     pages.config.registerOnSaveHandler(saveEvent => {
@@ -143,8 +140,8 @@ describe('config', () => {
     expect(handlerCalled).toBe(true);
   });
 
-  it('should successfully override a save handler with another', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully override a save handler with another', async () => {
+    await utils.initializeWithContext('settings');
 
     let handler1Called = false;
     let handler2Called = false;
@@ -161,8 +158,8 @@ describe('config', () => {
     expect(handler2Called).toBe(true);
   });
 
-  it('should successfully notify success from the registered save handler', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully notify success from the registered save handler', async () => {
+    await utils.initializeWithContext('settings');
 
     let handlerCalled = false;
     pages.config.registerOnSaveHandler(saveEvent => {
@@ -178,8 +175,8 @@ describe('config', () => {
     expect(message.args.length).toBe(0);
   });
 
-  it('should successfully notify failure from the registered save handler', () => {
-    utils.initializeWithContext('settings');
+  it('should successfully notify failure from the registered save handler', async () => {
+    await utils.initializeWithContext('settings');
 
     let handlerCalled = false;
     pages.config.registerOnSaveHandler(saveEvent => {
@@ -196,8 +193,8 @@ describe('config', () => {
     expect(message.args[0]).toBe('someReason');
   });
 
-  it('should successfully notify success on remove when there is no registered handler', () => {
-    utils.initializeWithContext('remove');
+  it('should successfully notify success on remove when there is no registered handler', async () => {
+    await utils.initializeWithContext('remove');
 
     utils.sendMessage('settings.remove');
 
@@ -206,8 +203,8 @@ describe('config', () => {
     expect(message.args.length).toBe(0);
   });
 
-  it('should successfully notify success from the registered remove handler', () => {
-    utils.initializeWithContext('remove');
+  it('should successfully notify success from the registered remove handler', async () => {
+    await utils.initializeWithContext('remove');
 
     let handlerCalled = false;
     pages.config.registerOnRemoveHandler(removeEvent => {
@@ -223,8 +220,8 @@ describe('config', () => {
     expect(message.args.length).toBe(0);
   });
 
-  it('should successfully notify failure from the registered remove handler', () => {
-    utils.initializeWithContext('remove');
+  it('should successfully notify failure from the registered remove handler', async () => {
+    await utils.initializeWithContext('remove');
 
     let handlerCalled = false;
     pages.config.registerOnRemoveHandler(removeEvent => {
@@ -241,8 +238,8 @@ describe('config', () => {
     expect(message.args[0]).toBe('someReason');
   });
 
-  it('should not allow multiple notifies from the registered save handler', () => {
-    utils.initializeWithContext('settings');
+  it('should not allow multiple notifies from the registered save handler', async () => {
+    await utils.initializeWithContext('settings');
 
     let handlerCalled = false;
     pages.config.registerOnSaveHandler(saveEvent => {

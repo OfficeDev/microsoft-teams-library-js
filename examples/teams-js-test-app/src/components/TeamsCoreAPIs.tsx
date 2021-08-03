@@ -19,6 +19,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   const [checkPagesTabsCapabilityRes, setCheckPagesTabsCapabilityRes] = React.useState('');
   const [registerOnLoadRes, setRegisterOnLoadRes] = React.useState('');
   const [registerFullScreenChangeHandlerRes, setRegisterFullScreenChangeHandlerRes] = React.useState('');
+  const [registerFocusEnterHandlerRes, setRegisterFocusEnterHandlerRes] = React.useState('');
 
   const enablePrintCapability = (): void => {
     teamsCore.enablePrintCapability();
@@ -59,17 +60,17 @@ const TeamsCoreAPIs = (): ReactElement => {
   const getTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
-    pages.tabs.getTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetTabInstanceRes(JSON.stringify(tabInfo));
-    }, tabInstanceParams);
+    });
   };
 
   const getMRUTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
     setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
-    pages.tabs.getMruTabInstances((tabInfo: TabInformation): void => {
+    pages.tabs.getMruTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
-    }, tabInstanceParams);
+    });
   };
 
   const registerBeforeUnload = (readyToUnloadDelay: string): void => {
@@ -86,7 +87,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   };
 
   const addStates = (): void => {
-    let newNumStates = totalStates + 1;
+    const newNumStates = totalStates + 1;
     setTotalStates(newNumStates);
     window.history.pushState({ some: 'state', id: newNumStates }, 'tab state' + newNumStates, '/testTab');
     setAddStatesRes('total States: ' + newNumStates);
@@ -105,7 +106,7 @@ const TeamsCoreAPIs = (): ReactElement => {
     setRegisterBackButtonHandlerRes('total States: ' + totalStates);
     pages.backStack.registerBackButtonHandler((): boolean => {
       if (totalStates > 0) {
-        let newNumStates = totalStates - 1;
+        const newNumStates = totalStates - 1;
         setTotalStates(newNumStates);
         setRegisterBackButtonHandlerRes('back button clicked. total remaining state: ' + newNumStates);
         return true;
@@ -136,8 +137,17 @@ const TeamsCoreAPIs = (): ReactElement => {
     }
   };
 
+  const registerFocusEnterHandler = (): void => {
+    setRegisterFocusEnterHandlerRes('teamsCore.registerOnFocusHandler()' + noHubSdkMsg);
+    teamsCore.registerFocusEnterHandler(navigateForward => {
+      setRegisterFocusEnterHandlerRes('successfully called with nativateForward:' + navigateForward);
+      return true;
+    });
+  };
+
   return (
     <>
+      <h1>teamsCore</h1>
       <BoxAndButton
         handleClick={enablePrintCapability}
         output={enablePrintCapRes}
@@ -229,6 +239,13 @@ const TeamsCoreAPIs = (): ReactElement => {
         hasInput={false}
         title="Check Page Tabs Capability"
         name="checkPageTabsCapability"
+      />
+      <BoxAndButton
+        handleClick={registerFocusEnterHandler}
+        output={registerFocusEnterHandlerRes}
+        hasInput={false}
+        title="Register On Focus Enter Handler"
+        name="registerFocusEnterHandler"
       />
     </>
   );

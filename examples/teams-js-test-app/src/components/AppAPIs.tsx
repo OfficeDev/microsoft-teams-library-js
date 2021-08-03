@@ -1,55 +1,50 @@
 import React, { ReactElement } from 'react';
-import { Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
+import { app, Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
-const CoreAPIs = (): ReactElement => {
-  const [getContextRes, setGetContextRes] = React.useState('');
+const AppAPIs = (): ReactElement => {
+  const [getContextV2Res, setGetContextV2Res] = React.useState('');
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
   const [shareDeepLinkRes, setShareDeepLinkRes] = React.useState('');
   const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
-  const getContext = (): void => {
-    setGetContextRes('core.getContext()' + noHubSdkMsg);
-    core.getContext((res: Context) => {
-      setGetContextRes(JSON.stringify(res));
+  const getContextV2 = (): void => {
+    setGetContextV2Res('app.getContext()' + noHubSdkMsg);
+    app.getContext().then((res: Context) => {
+      setGetContextV2Res(JSON.stringify(res));
     });
   };
 
   const executeDeepLink = (deepLink: string): void => {
     setExecuteDeepLinkRes('core.executeDeepLink()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setExecuteDeepLinkRes(reason);
-        }
-      } else {
-        setExecuteDeepLinkRes('Completed');
-      }
-    };
-    core.executeDeepLink(deepLink, onComplete);
+    core
+      .executeDeepLink(deepLink)
+      .then(() => setExecuteDeepLinkRes('Completed'))
+      .catch(reason => setExecuteDeepLinkRes(reason));
   };
 
   const shareDeepLink = (deepLinkParamsInput: string): void => {
-    let deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
+    const deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
     core.shareDeepLink(deepLinkParams);
     setShareDeepLinkRes('called shareDeepLink.');
   };
 
   const registerOnThemeChangeHandler = (): void => {
-    core.registerOnThemeChangeHandler((theme: string) => {
+    app.registerOnThemeChangeHandler((theme: string) => {
       setRegisterOnThemeChangeHandlerRes(theme);
     });
   };
 
   return (
     <>
+      <h1>app</h1>
       <BoxAndButton
-        handleClick={getContext}
-        output={getContextRes}
+        handleClick={getContextV2}
+        output={getContextV2Res}
         hasInput={false}
         title="Get Context"
-        name="getContext"
+        name="getContextV2"
       />
       <BoxAndButton
         handleClickWithInput={executeDeepLink}
@@ -76,4 +71,4 @@ const CoreAPIs = (): ReactElement => {
   );
 };
 
-export default CoreAPIs;
+export default AppAPIs;

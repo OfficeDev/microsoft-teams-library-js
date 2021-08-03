@@ -3,8 +3,15 @@ export enum HostClientType {
   web = 'web',
   android = 'android',
   ios = 'ios',
+  /**
+   * @deprecated Use teamsRoomsWindows instead.
+   */
   rigel = 'rigel',
   surfaceHub = 'surfaceHub',
+  teamsRoomsWindows = 'teamsRoomsWindows',
+  teamsRoomsAndroid = 'teamsRoomsAndroid',
+  teamsPhones = 'teamsPhones',
+  teamsDisplays = 'teamsDisplays',
 }
 
 export enum HostName {
@@ -21,7 +28,6 @@ export enum FrameContexts {
   authentication = 'authentication',
   remove = 'remove',
   task = 'task',
-  dialog = 'dialog',
   sidePanel = 'sidePanel',
   stage = 'stage',
   meetingStage = 'meetingStage',
@@ -49,7 +55,7 @@ export enum UserTeamRole {
 }
 
 /**
- * Task module dimension enum
+ * Dialog module dimension enum
  */
 export enum DialogDimension {
   Large = 'large',

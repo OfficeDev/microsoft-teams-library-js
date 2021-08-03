@@ -101,13 +101,9 @@ const MeetingAPIs = (): ReactElement => {
 
     if (streamInput.hasOwnProperty(STREAM_URL)) {
       setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHubSdkMsg);
-      const callback = (error: SdkError | null, liveStreamState: meeting.LiveStreamState | null): void => {
+      const callback = (error: SdkError | null): void => {
         if (error) {
           setRequestStartLiveStreamingRes(JSON.stringify(error));
-        } else {
-          liveStreamState
-            ? setRequestStartLiveStreamingRes(liveStreamState.isStreaming.toString())
-            : setRequestStartLiveStreamingRes(NULL);
         }
       };
       streamInput.hasOwnProperty(STREAM_KEY)
@@ -122,13 +118,9 @@ const MeetingAPIs = (): ReactElement => {
 
   const requestStopLiveStreaming = (): void => {
     setRequestStopLiveStreamingRes('meeting.requestStopLiveStreaming' + noHubSdkMsg);
-    const callback = (error: SdkError | null, liveStreamState: meeting.LiveStreamState | null): void => {
+    const callback = (error: SdkError | null): void => {
       if (error) {
         setRequestStopLiveStreamingRes(JSON.stringify(error));
-      } else {
-        liveStreamState
-          ? setRequestStopLiveStreamingRes(liveStreamState.isStreaming.toString())
-          : setRequestStopLiveStreamingRes(NULL);
       }
     };
     meeting.requestStopLiveStreaming(callback);
@@ -190,6 +182,7 @@ const MeetingAPIs = (): ReactElement => {
 
   return (
     <>
+      <h1>meeting</h1>
       <BoxAndButton
         handleClick={getIncomingClientAudioState}
         output={getIncomingClientAudioStateRes}

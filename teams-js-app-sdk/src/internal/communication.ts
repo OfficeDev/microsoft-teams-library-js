@@ -1,8 +1,13 @@
-import { validOriginRegExp, version } from './constants';
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { FrameContexts } from '../public/constants';
+import { SdkError } from '../public/interfaces';
+import { version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
-
+import { validateOrigin } from './utils';
 export class Communication {
   public static currentWindow: Window | any;
   public static parentOrigin: string;
@@ -14,14 +19,24 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId: number = 0;
+  public static nextMessageId = 0;
   public static callbacks: {
-    [id: number]: Function;
+    [id: number]: Function; // (arg1, arg2, ...etc) => void
+  } = {};
+  public static promiseCallbacks: {
+    [id: number]: Function; // (args[]) => void
   } = {};
   public static messageListener: Function;
 }
 
-export function initializeCommunication(callback: Function, validMessageOrigins: string[] | undefined): void {
+type InitializeResponse = {
+  context: FrameContexts;
+  clientType: string;
+  runtimeConfig: string;
+  clientSupportedSDKVersion: string;
+};
+
+export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
@@ -41,6 +56,7 @@ export function initializeCommunication(callback: Function, validMessageOrigins:
 
   if (!Communication.parentWindow) {
     GlobalVars.isFramelessWindow = true;
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
     // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage = handleParentMessage;
   }
@@ -49,7 +65,11 @@ export function initializeCommunication(callback: Function, validMessageOrigins:
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    sendMessageToParent('initialize', [version], callback);
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+      ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
+        return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
+      },
+    );
   } finally {
     Communication.parentOrigin = null;
   }
@@ -68,9 +88,55 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
 }
 
+export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+}
+
+export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
+  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
+    if (!status) {
+      throw new Error(reason);
+    }
+  });
+}
+
+export function sendAndHandleStatusAndReasonWithDefaultError(
+  actionName: string,
+  defaultError: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
+    if (!status) {
+      throw new Error(reason ? reason : defaultError);
+    }
+  });
+}
+
+export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
+    if (error) {
+      throw error;
+    }
+    return result;
+  });
+}
+
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
+export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
+  return new Promise(resolve => {
+    const request = sendMessageToParentHelper(actionName, args);
+    resolve(waitForResponse<T>(request.id));
+  });
+}
+
+function waitForResponse<T>(requestId: number): Promise<T> {
+  return new Promise<T>(resolve => {
+    CommunicationPrivate.promiseCallbacks[requestId] = resolve;
+  });
+}
+
 export function sendMessageToParent(actionName: string, callback?: Function): void;
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
@@ -84,6 +150,13 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
+  const request = sendMessageToParentHelper(actionName, args);
+  if (callback) {
+    CommunicationPrivate.callbacks[request.id] = callback;
+  }
+}
+
+function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
   if (GlobalVars.isFramelessWindow) {
@@ -101,10 +174,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
-
-  if (callback) {
-    CommunicationPrivate.callbacks[request.id] = callback;
-  }
+  return request;
 }
 
 function processMessage(evt: DOMMessageEvent): void {
@@ -135,7 +205,7 @@ function processMessage(evt: DOMMessageEvent): void {
 /**
  * Validates the message source and origin, if it should be processed
  */
-function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -147,14 +217,9 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
     messageOrigin === Communication.currentWindow.location.origin
   ) {
     return true;
-  } else if (
-    validOriginRegExp.test(messageOrigin.toLowerCase()) ||
-    (GlobalVars.additionalValidOriginsRegexp &&
-      GlobalVars.additionalValidOriginsRegexp.test(messageOrigin.toLowerCase()))
-  ) {
-    return true;
+  } else {
+    return validateOrigin(new URL(messageOrigin));
   }
-  return false;
 }
 
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
@@ -203,6 +268,11 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       if (!isPartialResponse(evt)) {
         delete CommunicationPrivate.callbacks[message.id];
       }
+    }
+    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
+    if (promiseCallback) {
+      promiseCallback(message.args);
+      delete CommunicationPrivate.promiseCallbacks[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler

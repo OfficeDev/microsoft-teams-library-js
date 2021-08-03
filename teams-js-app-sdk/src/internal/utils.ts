@@ -1,22 +1,53 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as uuid from 'uuid';
-// This will return a reg expression a given url
-function generateRegExpFromUrl(url: string): string {
-  let urlRegExpPart = '^';
-  const urlParts = url.split('.');
-  for (let j = 0; j < urlParts.length; j++) {
-    urlRegExpPart += (j > 0 ? '[.]' : '') + urlParts[j].replace('*', '[^/^.]+');
+import { validOrigins } from './constants';
+import { GlobalVars } from '../internal/globalVars';
+import { HostClientType, HostName } from '../public/constants';
+import { Context, ContextBridge } from '../public/interfaces';
+
+/**
+ * @param pattern reference pattern
+ * @param host candidate string
+ * returns true if host matches pre-know valid pattern
+ * For example,
+ *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
+ *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
+ */
+function validateHostAgainstPattern(pattern: string, host: string): boolean {
+  if (pattern.substring(0, 2) === '*.') {
+    const suffix = pattern.substring(1);
+    if (
+      host.length > suffix.length &&
+      host.split('.').length === suffix.split('.').length &&
+      host.substring(host.length - suffix.length) === suffix
+    ) {
+      return true;
+    }
+  } else if (pattern === host) {
+    return true;
   }
-  urlRegExpPart += '$';
-  return urlRegExpPart;
+  return false;
 }
 
-// This will return a reg expression for list of url
-export function generateRegExpFromUrls(urls: string[]): RegExp {
-  let urlRegExp = '';
-  for (let i = 0; i < urls.length; i++) {
-    urlRegExp += (i === 0 ? '' : '|') + generateRegExpFromUrl(urls[i]);
+export function validateOrigin(messageOrigin: URL): boolean {
+  // Check whether the url is in the pre-known allowlist or supplied by user
+  if (messageOrigin.protocol !== 'https:') {
+    return false;
   }
-  return new RegExp(urlRegExp);
+  const messageOriginHost = messageOrigin.host;
+
+  if (validOrigins.some(pattern => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    return true;
+  }
+
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
@@ -92,4 +123,94 @@ export function deepFreeze<T extends object>(obj: T): T {
     if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
   });
   return Object.freeze(obj);
+}
+
+/**
+ * Transforms the Context bridge object received from Messages to the structured Context object
+ */
+export function transformContext(contextBridge: ContextBridge): Context {
+  const context: Context = {
+    app: {
+      locale: contextBridge.locale,
+      sessionId: contextBridge.appSessionId ? contextBridge.appSessionId : '',
+      theme: contextBridge.theme ? contextBridge.theme : 'default',
+      iconPositionVertical: contextBridge.appIconPosition,
+      osLocaleInfo: contextBridge.osLocaleInfo,
+      parentMessageId: contextBridge.parentMessageId,
+      userClickTime: contextBridge.userClickTime,
+      userFileOpenPreference: contextBridge.userFileOpenPreference,
+      host: {
+        name: contextBridge.hostName ? contextBridge.hostName : HostName.teams,
+        clientType: contextBridge.hostClientType ? contextBridge.hostClientType : HostClientType.web,
+        sessionId: contextBridge.sessionId ? contextBridge.sessionId : '',
+        ringId: contextBridge.ringId,
+      },
+    },
+    page: {
+      id: contextBridge.entityId,
+      frameContext: contextBridge.frameContext ? contextBridge.frameContext : GlobalVars.frameContext,
+      subPageId: contextBridge.subEntityId,
+      isFullScreen: contextBridge.isFullScreen,
+      isMultiWindow: contextBridge.isMultiWindow,
+      sourceOrigin: contextBridge.sourceOrigin,
+    },
+    user: {
+      id: contextBridge.userObjectId,
+      displayName: contextBridge.userDisplayName,
+      isCallingAllowed: contextBridge.isCallingAllowed,
+      isPSTNCallingAllowed: contextBridge.isPSTNCallingAllowed,
+      licenseType: contextBridge.userLicenseType,
+      loginHint: contextBridge.loginHint,
+      userPrincipalName: contextBridge.userPrincipalName,
+      tenant: contextBridge.tid
+        ? {
+            id: contextBridge.tid,
+            teamsSku: contextBridge.tenantSKU,
+          }
+        : undefined,
+    },
+    channel: contextBridge.channelId
+      ? {
+          id: contextBridge.channelId,
+          displayName: contextBridge.channelName,
+          relativeUrl: contextBridge.channelRelativeUrl,
+          membershipType: contextBridge.channelType,
+          defaultOneNoteSectionId: contextBridge.defaultOneNoteSectionId,
+          ownerGroupId: contextBridge.hostTeamGroupId,
+          ownerTenantId: contextBridge.hostTeamTenantId,
+        }
+      : undefined,
+    chat: contextBridge.chatId
+      ? {
+          id: contextBridge.chatId,
+        }
+      : undefined,
+    meeting: contextBridge.meetingId
+      ? {
+          id: contextBridge.meetingId,
+        }
+      : undefined,
+    sharepoint: contextBridge.sharepoint,
+    team: contextBridge.teamId
+      ? {
+          internalId: contextBridge.teamId,
+          displayName: contextBridge.teamName,
+          type: contextBridge.teamType,
+          groupId: contextBridge.groupId,
+          templateId: contextBridge.teamTemplateId,
+          isArchived: contextBridge.isTeamArchived,
+          userRole: contextBridge.userTeamRole,
+        }
+      : undefined,
+    sharePointSite:
+      contextBridge.teamSiteUrl || contextBridge.teamSiteDomain || contextBridge.teamSitePath
+        ? {
+            url: contextBridge.teamSiteUrl,
+            domain: contextBridge.teamSiteDomain,
+            path: contextBridge.teamSitePath,
+          }
+        : undefined,
+  };
+
+  return context;
 }

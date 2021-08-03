@@ -1,16 +1,11 @@
-import { core } from '../../src/public/publicAPIs';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { app } from '../../src/public/app';
+import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
-import { TeamType } from '../../src/public/constants';
+import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
-  openFilePreview,
-  getUserJoinedTeams,
   sendCustomMessage,
   registerCustomHandler,
-  getConfigSetting,
-  enterFullscreen,
-  exitFullscreen,
   sendCustomEvent,
   registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
@@ -28,18 +23,18 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    core._initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (core._uninitialize) {
-      core._uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
   it('should exist in the global namespace', () => {
-    expect(core).toBeDefined();
+    expect(app).toBeDefined();
   });
 
   const unSupportedDomains = [
@@ -59,10 +54,10 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
-    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, () => {
-      utils.initializeWithContext('content', null, null, ['http://invalid.origin.com']);
+    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
+      await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
       let callbackCalled: boolean = false;
-      core.getContext(() => {
+      app.getContext().then(() => {
         callbackCalled = true;
       });
 
@@ -107,12 +102,9 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   ];
 
   supportedDomains.forEach(supportedDomain => {
-    it('should allow utils.messages from supported domain ' + supportedDomain, () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com', 'https://www.example.com']);
-      let callbackCalled: boolean = false;
-      core.getContext(() => {
-        callbackCalled = true;
-      });
+    it('should allow utils.messages from supported domain ' + supportedDomain, async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
+      const contextPromise = app.getContext();
 
       let getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
@@ -130,12 +122,12 @@ describe('teamsjsAppSDK-privateAPIs', () => {
         } as MessageResponse,
       } as MessageEvent);
 
-      expect(callbackCalled).toBe(true);
+      return expect(contextPromise).resolves;
     });
   });
 
-  it('should not make calls to unsupported domains', () => {
-    core.initialize(null, ['http://some-invalid-origin.com']);
+  it('should not make calls to unsupported domains', async () => {
+    app.initialize(['http://some-invalid-origin.com']);
 
     let initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
@@ -151,7 +143,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     // Try to make a call
     let callbackCalled: boolean = false;
-    core.getContext(() => {
+    app.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -166,7 +158,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    core.getContext(() => {
+    app.getContext().then(() => {
       callbackCalled = true;
       return;
     });
@@ -176,13 +168,11 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(callbackCalled).toBe(false);
   });
 
-  it('should successfully handle calls queued before init completes', () => {
-    core.initialize();
+  it('should successfully handle calls queued before init completes', async () => {
+    const initPromise = app.initialize();
 
     // Another call made before the init response
-    core.getContext(() => {
-      return;
-    });
+    app.getContext();
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
@@ -192,33 +182,25 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
     // init completes
     utils.respondToMessage(initMessage, 'content');
+    await initPromise;
 
     // Now the getContext call should have been dequeued
     expect(utils.messages.length).toBe(2);
     expect(utils.findMessageByFunc('getContext')).not.toBeNull();
   });
 
-  it('should successfully handle out of order calls', () => {
-    utils.initializeWithContext('content');
+  it('should successfully handle out of order calls', async () => {
+    await utils.initializeWithContext('content');
 
-    let actualContext1: Context;
-    core.getContext(context => {
-      actualContext1 = context;
-    });
+    const contextPromise1 = app.getContext();
 
     let getContextMessage1 = utils.messages[utils.messages.length - 1];
 
-    let actualContext2: Context;
-    core.getContext(context => {
-      actualContext2 = context;
-    });
+    const contextPromise2 = app.getContext();
 
     let getContextMessage2 = utils.messages[utils.messages.length - 1];
 
-    let actualContext3: Context;
-    core.getContext(context => {
-      actualContext3 = context;
-    });
+    const contextPromise3 = app.getContext();
 
     let getContextMessage3 = utils.messages[utils.messages.length - 1];
 
@@ -227,48 +209,118 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let expectedContext1: Context = {
+    let contextBridge1: ContextBridge = {
       locale: 'someLocale1',
-      groupId: 'someGroupId1',
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
+      userObjectId: 'someUserObjectId1',
     };
-    let expectedContext2: Context = {
+    let expectedContext1: Context = {
+      app: {
+        locale: 'someLocale1',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId1',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId1',
+      },
+      channel: {
+        id: 'someChannelId1',
+      },
+    };
+
+    let contextBridge2: ContextBridge = {
       locale: 'someLocale2',
-      groupId: 'someGroupId2',
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
+      userObjectId: 'someUserObjectId2',
     };
-    let expectedContext3: Context = {
+    let expectedContext2: Context = {
+      app: {
+        locale: 'someLocale2',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId2',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId2',
+      },
+      channel: {
+        id: 'someChannelId2',
+      },
+    };
+
+    let contextBridge3: ContextBridge = {
       locale: 'someLocale3',
-      groupId: 'someGroupId3',
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
+      userObjectId: 'someUserObjectId3',
+    };
+    let expectedContext3: Context = {
+      app: {
+        locale: 'someLocale3',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teams,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId3',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId3',
+      },
+      channel: {
+        id: 'someChannelId3',
+      },
     };
 
     // respond in the wrong order
-    utils.respondToMessage(getContextMessage3, expectedContext3);
-    utils.respondToMessage(getContextMessage1, expectedContext1);
-    utils.respondToMessage(getContextMessage2, expectedContext2);
+    utils.respondToMessage(getContextMessage3, contextBridge3);
+    utils.respondToMessage(getContextMessage1, contextBridge1);
+    utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
-    expect(actualContext1).toBe(expectedContext1);
-    expect(actualContext2).toBe(expectedContext2);
-    expect(actualContext3).toBe(expectedContext3);
+    return Promise.all([
+      expect(contextPromise1).resolves.toEqual(expectedContext1),
+      expect(contextPromise2).resolves.toEqual(expectedContext2),
+      expect(contextPromise3).resolves.toEqual(expectedContext3),
+    ]);
   });
 
-  it('should only call callbacks once', () => {
-    utils.initializeWithContext('content');
+  it('should only call callbacks once', async () => {
+    await utils.initializeWithContext('content');
 
     let callbackCalled = 0;
-    core.getContext(() => {
+    const contextPromise = app.getContext().then(() => {
       callbackCalled++;
     });
 
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: Context = {
+    let expectedContext: ContextBridge = {
       locale: 'someLocale',
       groupId: 'someGroupId',
       channelId: 'someChannelId',
@@ -287,50 +339,14 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     for (let i = 0; i < 100; i++) {
       utils.respondToMessage(getContextMessage, expectedContext);
     }
+    await contextPromise;
 
     // Still only called the callback once.
     expect(callbackCalled).toBe(1);
   });
 
-  it('should successfully open a file preview', () => {
-    utils.initializeWithContext('content');
-
-    openFilePreview({
-      entityId: 'someEntityId',
-      title: 'someTitle',
-      description: 'someDescription',
-      type: 'someType',
-      objectUrl: 'someObjectUrl',
-      downloadUrl: 'someDownloadUrl',
-      webPreviewUrl: 'someWebPreviewUrl',
-      webEditUrl: 'someWebEditUrl',
-      baseUrl: 'someBaseUrl',
-      editFile: true,
-      subEntityId: 'someSubEntityId',
-      viewerAction: ViewerActionTypes.view,
-      fileOpenPreference: FileOpenPreference.Web,
-    });
-
-    let message = utils.findMessageByFunc('openFilePreview');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(13);
-    expect(message.args[0]).toBe('someEntityId');
-    expect(message.args[1]).toBe('someTitle');
-    expect(message.args[2]).toBe('someDescription');
-    expect(message.args[3]).toBe('someType');
-    expect(message.args[4]).toBe('someObjectUrl');
-    expect(message.args[5]).toBe('someDownloadUrl');
-    expect(message.args[6]).toBe('someWebPreviewUrl');
-    expect(message.args[7]).toBe('someWebEditUrl');
-    expect(message.args[8]).toBe('someBaseUrl');
-    expect(message.args[9]).toBe(true);
-    expect(message.args[10]).toBe('someSubEntityId');
-    expect(message.args[11]).toBe('view');
-    expect(message.args[12]).toBe(FileOpenPreference.Web);
-  });
-
-  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
-    utils.initializeWithContext('content');
+  it('should successfully register a userSettingsChange handler and execute it on setting change', async () => {
+    await utils.initializeWithContext('content');
 
     let changedUserSettingType, changedUserSettingValue;
 
@@ -346,7 +362,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should treat messages to frameless windows as coming from the child', () => {
-    utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
     utils.processMessage({
@@ -364,7 +380,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   it('should properly pass partial responses to nested child frames ', () => {
-    utils.initializeAsFrameless(null, ['https://www.example.com']);
+    utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
     utils.processMessage({
@@ -395,84 +411,9 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     expect(secondChildMessage.isPartialResponse).toBeFalsy();
   });
 
-  describe('getUserJoinedTeams', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() =>
-        getUserJoinedTeams(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should allow a valid optional parameter set to true', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        { favoriteTeamsOnly: true } as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a valid optional parameter set to false', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        { favoriteTeamsOnly: false } as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a missing optional parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(() => {
-        callbackCalled = true;
-      });
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should allow a missing and valid optional parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getUserJoinedTeams(
-        () => {
-          callbackCalled = true;
-        },
-        {} as TeamInstanceParameters,
-      );
-
-      let getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
-      expect(getUserJoinedTeamsMessage).not.toBeNull();
-      utils.respondToMessage(getUserJoinedTeamsMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-  });
-
   describe('sendCustomMessage', () => {
-    it('should successfully pass message and provided arguments', () => {
-      utils.initializeWithContext('content');
+    it('should successfully pass message and provided arguments', async () => {
+      await utils.initializeWithContext('content');
 
       sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
@@ -483,8 +424,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
   });
 
   describe('sendCustomMessageToChild', () => {
-    it('should successfully pass message and provided arguments', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should successfully pass message and provided arguments', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       //trigger child window setup
       //trigger processing of message received from child
@@ -507,9 +448,9 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     });
   });
 
-  describe('addCustomHandler', () => {
-    it('should successfully pass message and provided arguments of customAction from parent', () => {
-      utils.initializeWithContext('content');
+  describe('addCustomHandler', async () => {
+    it('should successfully pass message and provided arguments of customAction from parent', async () => {
+      await utils.initializeWithContext('content');
 
       const customActionName = 'customAction1';
       let callbackCalled = false,
@@ -525,8 +466,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should successfully pass message and provided arguments of customAction from child', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should successfully pass message and provided arguments of customAction from child', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
       let callbackCalled = false,
@@ -552,8 +493,8 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should not process be invoked due to invalid origin message from child window', () => {
-      utils.initializeWithContext('content', null, null, ['https://tasks.office.com']);
+    it('should not process be invoked due to invalid origin message from child window', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
       let callbackCalled = false,
@@ -577,108 +518,6 @@ describe('teamsjsAppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
-    });
-  });
-
-  describe('getConfigSetting', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() =>
-        getConfigSetting(() => {
-          return;
-        }, 'key'),
-      ).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should allow a valid parameter', () => {
-      utils.initializeWithContext('content');
-
-      let callbackCalled: boolean = false;
-      getConfigSetting(() => {
-        callbackCalled = true;
-      }, 'key');
-
-      let getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
-      expect(getConfigSettingMessage).not.toBeNull();
-      utils.respondToMessage(getConfigSettingMessage, {});
-      expect(callbackCalled).toBe(true);
-    });
-  });
-
-  describe('enterFullscreen', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => enterFullscreen()).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
-    });
-
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
-    });
-
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
-    });
-
-    it('should not allow calls from task context', () => {
-      utils.initializeWithContext('task');
-
-      expect(() => enterFullscreen()).toThrowError("This call is not allowed in the 'task' context");
-    });
-
-    it('should successfully enter fullscreen', () => {
-      utils.initializeWithContext('content');
-
-      enterFullscreen();
-
-      const enterFullscreenMessage = utils.findMessageByFunc('enterFullscreen');
-      expect(enterFullscreenMessage).not.toBeNull();
-    });
-  });
-
-  describe('exitFullscreen', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => exitFullscreen()).toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls from settings context', () => {
-      utils.initializeWithContext('settings');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
-    });
-
-    it('should not allow calls from authentication context', () => {
-      utils.initializeWithContext('authentication');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'authentication' context");
-    });
-
-    it('should not allow calls from remove context', () => {
-      utils.initializeWithContext('remove');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
-    });
-
-    it('should not allow calls from task context', () => {
-      utils.initializeWithContext('task');
-
-      expect(() => exitFullscreen()).toThrowError("This call is not allowed in the 'task' context");
-    });
-
-    it('should successfully exit fullscreen', () => {
-      utils.initializeWithContext('content');
-
-      exitFullscreen();
-
-      const exitFullscreenMessage = utils.findMessageByFunc('exitFullscreen');
-      expect(exitFullscreenMessage).not.toBeNull();
     });
   });
 });

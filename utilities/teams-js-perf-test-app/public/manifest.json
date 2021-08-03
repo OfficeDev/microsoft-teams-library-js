@@ -1,0 +1,10 @@
+{
+  "short_name": "MOS Perf Test App",
+  "name": "teamsjs Perf Test App",
+  "icons": [
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

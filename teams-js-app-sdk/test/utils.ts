@@ -1,4 +1,4 @@
-import { core } from '../src/public/publicAPIs';
+import { app } from '../src/public/app';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
@@ -99,25 +99,25 @@ export class Utils {
 
   public processMessage: (ev: MessageEvent) => void;
 
-  public initializeWithContext = (
+  public initializeWithContext = async (
     frameContext: string,
     hostClientType?: string,
-    callback?: () => void,
     validMessageOrigins?: string[],
-  ): void => {
-    core._initialize(this.mockWindow);
-    core.initialize(callback, validMessageOrigins);
+  ): Promise<void> => {
+    app._initialize(this.mockWindow);
+    const promise = app.initialize(validMessageOrigins);
 
     const initMessage = this.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
+    await promise;
     expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
   };
 
-  public initializeAsFrameless = (callback?: () => void, validMessageOrigins?: string[]): void => {
+  public initializeAsFrameless = (validMessageOrigins?: string[]): Promise<void> => {
     this.mockWindow.parent = null;
-    core.initialize(callback, validMessageOrigins);
+    return app.initialize(validMessageOrigins);
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {
