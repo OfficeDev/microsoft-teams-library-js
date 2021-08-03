@@ -14,7 +14,7 @@ import { runtime } from './runtime';
  */
 export namespace dialog {
   /**
-   * Allows an app to open the task module.
+   * Allows an app to open the dialog module.
    * @param dialogInfo An object containing the parameters of the dialog module
    * @param submitHandler Handler to call when the task module is completed
    */

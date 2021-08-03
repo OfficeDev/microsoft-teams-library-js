@@ -4,18 +4,10 @@ import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
 const AppAPIs = (): ReactElement => {
-  const [getContextRes, setGetContextRes] = React.useState('');
   const [getContextV2Res, setGetContextV2Res] = React.useState('');
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
   const [shareDeepLinkRes, setShareDeepLinkRes] = React.useState('');
   const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
-
-  const getContext = (): void => {
-    setGetContextRes('app.getContextOld()' + noHubSdkMsg);
-    app.getContextOld().then((res: any) => {
-      setGetContextRes(JSON.stringify(res));
-    });
-  };
 
   const getContextV2 = (): void => {
     setGetContextV2Res('app.getContext()' + noHubSdkMsg);
@@ -47,13 +39,6 @@ const AppAPIs = (): ReactElement => {
   return (
     <>
       <h1>app</h1>
-      <BoxAndButton
-        handleClick={getContext}
-        output={getContextRes}
-        hasInput={false}
-        title="Get Context"
-        name="getContext"
-      />
       <BoxAndButton
         handleClick={getContextV2}
         output={getContextV2Res}

@@ -4,8 +4,14 @@
 # https://aka.ms/yaml
 
 trigger:
-  - main
-  - develop
+  branches:
+    include:
+      - main
+      - develop
+      - "release*"
+  tags:
+    include:
+      - "v*"
 
 pool:
   vmImage: 'windows-latest'
@@ -181,7 +187,7 @@ steps:
 
   - task: Yarn@3
     condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
@@ -213,13 +219,13 @@ steps:
   
   # IMPORTANT
   # If you need to change $(secret.private-preview-ado-token), you need to base64 encode the string given to you when creating the Personal Access Token, even if it looks like its already base64 encoded.
-  # - script: 'node tools/cli/deployPrivatePreview.js'
-  #   condition: and(
-  #     eq(variables['Build.SourceBranch'], 'refs/heads/private-preview'),
-  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-  #     ne(variables['Build.Reason'], 'PullRequest'),
-  #     ne(variables['Build.Reason'], 'Manual')
-  #     )
-  #   env:
-  #     PRIVATE_PREVIEW_TOKEN: $(secret.private-preview-ado-token)
-  #   displayName: 'yarn publish-sdk (private preview)'
+  - script: 'node tools/cli/deployPrivatePreview.js'
+    condition: and(
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+        in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+        ne(variables['Build.Reason'], 'PullRequest'),
+        ne(variables['Build.Reason'], 'Manual')
+      )
+    env:
+      PRIVATE_PREVIEW_TOKEN: $(secret.private-preview-ado-token)
+    displayName: 'yarn publish-sdk (private preview)'

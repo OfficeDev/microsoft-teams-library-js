@@ -221,25 +221,6 @@ export namespace app {
   }
 
   /**
-   * @private
-   * Hide from docs.
-   * --Retaining for E2E tests, remove after E2E tests configuration
-   * Retrieves the current context the frame is running in.
-   */
-  export function getContextOld(): Promise<ContextBridge> {
-    return new Promise<ContextBridge>(resolve => {
-      ensureInitialized();
-      resolve(sendAndUnwrap('getContext'));
-    }).then(contextBridge => {
-      if (!contextBridge.frameContext) {
-        // Fallback logic for frameContext properties
-        contextBridge.frameContext = GlobalVars.frameContext;
-      }
-      return contextBridge;
-    });
-  }
-
-  /**
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {

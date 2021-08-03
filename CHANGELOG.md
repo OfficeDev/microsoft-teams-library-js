@@ -3,7 +3,7 @@
 ## v0.1.0
 
 ### Context interface changes
-The previous Context interface has been renamed to ContextBridge, and there is now a new Context interface with different properties.
+The Context interface has been updated to group similar properties for better scalability in a multi-hub environment.
 
 ### FrameContext changes
 FrameContext's user.tenant.sku has been renamed to user.tenant.teamsSku to reflect that it is used by Teams for a different purpose than from the Graph API's user.tenant.sku's.
