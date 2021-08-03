@@ -55,7 +55,7 @@ export enum UserTeamRole {
 }
 
 /**
- * Task module dimension enum
+ * Dialog module dimension enum
  */
 export enum DialogDimension {
   Large = 'large',
