@@ -769,6 +769,11 @@ export interface AppInfo {
    * Where the user prefers the file to be opened from by default during file open
    */
   userFileOpenPreference?: FileOpenPreference;
+
+  /**
+   * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data.
+   */
+  appLaunchId?: string;
 }
 
 export interface AppHostInfo {

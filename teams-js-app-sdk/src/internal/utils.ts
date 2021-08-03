@@ -145,6 +145,7 @@ export function transformContext(contextBridge: ContextBridge): Context {
         sessionId: contextBridge.sessionId ? contextBridge.sessionId : '',
         ringId: contextBridge.ringId,
       },
+      appLaunchId: contextBridge.appLaunchId,
     },
     page: {
       id: contextBridge.entityId,

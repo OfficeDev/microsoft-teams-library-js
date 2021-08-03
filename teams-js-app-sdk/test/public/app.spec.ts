@@ -302,6 +302,7 @@ describe('teamsjsAppSDK-app', () => {
         theme: 'someTheme',
         userClickTime: 2222,
         userFileOpenPreference: FileOpenPreference.Inline,
+        appLaunchId: 'appLaunchId',
         host: {
           name: HostName.orange,
           clientType: HostClientType.web,
