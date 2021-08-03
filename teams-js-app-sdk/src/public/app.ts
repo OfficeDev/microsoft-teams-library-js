@@ -116,17 +116,17 @@ export namespace app {
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
+                  // if the given runtime config was actually meant to be a SDK version, store it as such.
+                  // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+                  // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+                  // remove this feature.
+                  if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
+                    GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+                  }
                   const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
                   clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    // if the given runtime config was actually meant to be a SDK version, store it as such.
-                    // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-                    // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
-                    // remove this feature.
-                    if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
-                      GlobalVars.clientSupportedSDKVersion = runtimeConfig;
-                    }
                     applyRuntimeConfig(teamsRuntimeConfig);
                   } else {
                     throw e;
