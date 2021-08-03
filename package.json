@@ -13,6 +13,7 @@
     "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
   },
   "scripts": {
+    "auth": "yarn global add vsts-npm-auth --registry https://registry.npmjs.com --always-auth false && vsts-npm-auth -config .npmrc",
     "build:all": "yarn build-sdk && yarn build-bundle-size-tools && yarn build-perf-app && yarn build-test-app",
     "build-bundle-size-tools": "(cd ./packages/bundle-size-tools/ && yarn build)",
     "build-perf-app": "(cd ./utilities/teamsjs-perf-test-app/ && yarn build)",
