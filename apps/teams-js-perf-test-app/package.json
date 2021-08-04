@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",
-    "clean": "if exist node_modules (rd /s /q node_modules)",
+    "clean": "rimraf ./build",
     "eslint-fix-build": "yarn eslint --fix ./src/**/*.tsx && webpack",
     "start": "webpack serve"
   },

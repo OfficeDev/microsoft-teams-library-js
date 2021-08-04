@@ -47,7 +47,7 @@ steps:
   - task: Yarn@2
     displayName: "Build app-sdk"
     inputs:
-      Arguments: "build-sdk"
+      Arguments: "build"
       ProjectDirectory: "teamsjs-app-sdk"
 
   - task: CmdLine@2

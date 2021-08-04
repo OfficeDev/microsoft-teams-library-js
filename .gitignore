@@ -18,6 +18,6 @@ coverage/
 yarn-error.log
 
 # bundle analysis folders
-/examples/*/bundleAnalysis
-/utilities/*/bundleAnalysis
+/packages/*/bundleAnalysis
+/apps/*/bundleAnalysis
 /common/*

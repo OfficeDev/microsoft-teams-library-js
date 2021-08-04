@@ -34,23 +34,13 @@ steps:
 
   - task: Yarn@3
     inputs:
-      Arguments: 'build-sdk'
-    displayName: 'yarn build-sdk'
+      Arguments: 'build'
+    displayName: 'yarn build'
 
   - task: Yarn@3
     inputs:
-      Arguments: 'test-sdk'
-    displayName: 'yarn test-sdk'
-
-  - task: Yarn@3
-    inputs:
-      Arguments: 'build-test-app'
-    displayName: 'yarn build-test-app'
-
-  - task: Yarn@3
-    inputs:
-      Arguments: 'build-bundle-size-tools'
-    displayName: 'yarn build-bundle-size-tools'
+      Arguments: 'test'
+    displayName: 'yarn test'
 
   - task: Yarn@2
     inputs:
@@ -89,7 +79,7 @@ steps:
   - task: CopyFiles@2
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
     inputs:
-      sourceFolder: 'examples/teamsjs-test-app/build'
+      sourceFolder: 'apps/teamsjs-test-app/build'
       contents: '**'
       targetFolder: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
     displayName: 'Copy teamsjs test app to artifacts staging directory'
@@ -150,6 +140,7 @@ steps:
     displayName: 'Run Credential Scanner'
     inputs:
       debugMode: false
+      suppressionsFile: '.sdl\CredScanSuppressions.json'
 
   - task: PublishSecurityAnalysisLogs@3
     displayName: 'Publish Guardian Artifacts - All Tools'

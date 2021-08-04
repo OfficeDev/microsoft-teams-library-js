@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "yarn lint && webpack",
-    "clean": "if exist node_modules (rd /s /q node_modules)",
+    "clean": "rimraf ./dist",
     "doctor": "yarn lint --fix",
     "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",

@@ -8,8 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn tsc",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "clean:all": "rimraf dist && rimraf tsconfig.tsbuildinfo &&  if exist node_modules (rd /s /q node_modules)"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.2",
