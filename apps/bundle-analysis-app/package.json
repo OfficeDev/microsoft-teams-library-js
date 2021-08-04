@@ -10,15 +10,6 @@
     "webpack:profile": "webpack"
   },
   "dependencies": {
-    "@microsoft/teamsjs-app-sdk": "^0.1.0-beta.1"
-  },
-  "devDependencies": {
-    "@mixer/webpack-bundle-compare": "^0.1.0",
-    "html-webpack-plugin": "^4.5.0",
-    "path": "^0.12.7",
-    "ts-loader": "^7.0.5",
-    "webpack-bundle-analyzer": "^4.3.0",
-    "webpack": "^5.10.0",
-    "webpack-cli": "^4.2.0"
+    "@microsoft/teamsjs-app-sdk": "file:../../packages/teamsjs-app-sdk"
   }
 }
