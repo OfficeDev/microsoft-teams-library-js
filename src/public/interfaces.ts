@@ -334,7 +334,8 @@ export interface Context {
   isTeamArchived?: boolean;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
@@ -373,6 +374,11 @@ export interface Context {
    * Unique ID for the current session for use in correlating telemetry data.
    */
   appSessionId?: string;
+
+  /**
+   * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
+   */
+  appLaunchId?: string;
 
   /**
    * Represents whether calling is allowed for the current logged in User
