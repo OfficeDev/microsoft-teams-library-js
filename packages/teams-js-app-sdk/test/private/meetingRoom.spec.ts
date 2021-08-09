@@ -193,8 +193,8 @@ describe('meetingRoom', () => {
     });
   });
 
-  describe('registerMeetingRoomCapabilitiesUpdateHandler', async () => {
-    await it('should not allow calls with null callback ', () => {
+  describe('registerMeetingRoomCapabilitiesUpdateHandler', () => {
+    it('should not allow calls with null callback ', () => {
       expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(null)).toThrowError(
         '[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null',
       );

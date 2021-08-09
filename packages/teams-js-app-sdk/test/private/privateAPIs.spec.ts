@@ -449,7 +449,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
     });
   });
 
-  describe('addCustomHandler', async () => {
+  describe('addCustomHandler', () => {
     it('should successfully pass message and provided arguments of customAction from parent', async () => {
       await utils.initializeWithContext('content');
 
