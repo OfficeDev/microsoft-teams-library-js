@@ -553,8 +553,8 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
-    describe('startAppSegmentSharing', () => {
-      it('should not allow to start app segment sharing with null callback', () => {
+    describe('shareAppContentToStage', () => {
+      it('should not allow to share app content to stage with null callback', () => {
         expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
           '[share app content to stage] Callback cannot be null',
         );
@@ -580,9 +580,9 @@ describe('meeting', () => {
           returnedSdkError = error;
         }, requestUrl);
 
-        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
-        expect(startAppSegmentSharingMessage).not.toBeNull();
-        let callbackId = startAppSegmentSharingMessage.id;
+        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        expect(shareAppContentToStageMessage).not.toBeNull();
+        let callbackId = shareAppContentToStageMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
@@ -592,7 +592,7 @@ describe('meeting', () => {
         expect(callbackCalled).toBe(true);
         expect(returnedSdkError).toBeNull();
         expect(returnedResult).toBe(true);
-        expect(startAppSegmentSharingMessage.args).toContain(requestUrl);
+        expect(shareAppContentToStageMessage.args).toContain(requestUrl);
       });
 
       it('should return error code 500', () => {
@@ -608,9 +608,9 @@ describe('meeting', () => {
           returnedSdkError = error;
         }, requestUrl);
 
-        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
-        expect(startAppSegmentSharingMessage).not.toBeNull();
-        let callbackId = startAppSegmentSharingMessage.id;
+        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        expect(shareAppContentToStageMessage).not.toBeNull();
+        let callbackId = shareAppContentToStageMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
@@ -621,7 +621,7 @@ describe('meeting', () => {
         expect(returnedSdkError).not.toBeNull();
         expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         expect(returnedResult).toBe(null);
-        expect(startAppSegmentSharingMessage.args).toContain(requestUrl);
+        expect(shareAppContentToStageMessage.args).toContain(requestUrl);
         expect;
       });
     });
