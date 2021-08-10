@@ -567,7 +567,7 @@ describe('meeting', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
-      it('should successfully start the app segment sharing', () => {
+      it('should successfully share app content to stage', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
 
         let callbackCalled = false;
