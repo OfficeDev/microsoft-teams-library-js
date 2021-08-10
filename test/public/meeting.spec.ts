@@ -555,15 +555,15 @@ describe('meeting', () => {
     });
     describe('startAppSegmentSharing', () => {
       it('should not allow to start app segment sharing with null callback', () => {
-        expect(() => meeting.startAppSegmentSharing('', null)).toThrowError(
-          '[start app segment sharing] Callback cannot be null',
+        expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
+          '[share app content to stage] Callback cannot be null',
         );
       });
       it('should not allow calls before initialization', () => {
         expect(() =>
-          meeting.startAppSegmentSharing('', () => {
+          meeting.shareAppContentToStage(() => {
             return;
-          }),
+          }, ''),
         ).toThrowError('The library has not yet been initialized');
       });
 
@@ -574,13 +574,13 @@ describe('meeting', () => {
         let returnedSdkError: SdkError | null;
         let returnedResult: boolean | null;
         let requestUrl = 'validUrl';
-        meeting.startAppSegmentSharing(requestUrl, (error: SdkError, result: boolean) => {
+        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
           callbackCalled = true;
           returnedResult = result;
           returnedSdkError = error;
-        });
+        }, requestUrl);
 
-        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.startAppSegmentSharing');
+        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
         expect(startAppSegmentSharingMessage).not.toBeNull();
         let callbackId = startAppSegmentSharingMessage.id;
         desktopPlatformMock.respondToMessage({
@@ -602,13 +602,13 @@ describe('meeting', () => {
         let returnedSdkError: SdkError | null;
         let returnedResult: boolean | null;
         let requestUrl = 'invalidAppUrl';
-        meeting.startAppSegmentSharing(requestUrl, (error: SdkError, result: boolean) => {
+        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
           callbackCalled = true;
           returnedResult = result;
           returnedSdkError = error;
-        });
+        }, requestUrl);
 
-        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.startAppSegmentSharing');
+        let startAppSegmentSharingMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
         expect(startAppSegmentSharingMessage).not.toBeNull();
         let callbackId = startAppSegmentSharingMessage.id;
         desktopPlatformMock.respondToMessage({
