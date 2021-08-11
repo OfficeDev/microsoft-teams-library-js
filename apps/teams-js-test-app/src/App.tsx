@@ -22,6 +22,7 @@ import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -93,6 +94,7 @@ const App = (): ReactElement => {
       <MailAPIs />
       <MediaAPIs />
       <MeetingAPIs />
+      <MonetizationAPIs />
       <NavigationAPIs />
       <NotificationAPIs />
       <PeopleAPIs />
