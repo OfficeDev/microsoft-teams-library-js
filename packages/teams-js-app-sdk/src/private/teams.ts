@@ -44,4 +44,21 @@ export namespace teams {
 
     sendMessageToParent('teams.getTeamChannels', [groupId], callback);
   }
+
+  /**
+   * @private
+   * Allow 1st party apps to call this function when they receive migrated errors to inform Teams refresh siteurl
+   * when site admin renames siteurl.
+   * @param threadId ID of the thread where the app entity will be created; if threadId is not
+   * provided, the threadId from route params will be used.
+   */
+  export function refreshSiteUrl(callback: (error: SdkError) => void, threadId?: string): void {
+    ensureInitialized();
+
+    if (!callback) {
+      throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
+    }
+
+    sendMessageToParent(threadId);
+  }
 }

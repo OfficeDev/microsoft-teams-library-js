@@ -445,6 +445,11 @@ export interface ContextBridge {
    * The address book name of the current user.
    */
   userDisplayName?: string;
+  
+  /**
+   * Teamsite ID, aka sharepoint site id.
+   */
+  teamSiteId?: string;
 }
 
 export interface DeepLinkParameters {
