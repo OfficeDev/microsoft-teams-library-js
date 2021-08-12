@@ -5,6 +5,7 @@ import BoxAndButton from '../BoxAndButton';
 
 const TeamsAPIs: React.FC = () => {
   const [getTeamChannelsRes, setGetTeamChannelsRes] = React.useState('');
+  const [refreshSiteUrlRes, setRefreshSiteUrlRes] = React.useState('');
 
   const getTeamChannels = (groupId: string): void => {
     setGetTeamChannelsRes('getTeamChannels()' + noHubSdkMsg);
@@ -17,6 +18,18 @@ const TeamsAPIs: React.FC = () => {
     };
     teams.getTeamChannels(groupId, onComplete);
   };
+
+  const refreshSiteUrl = (): void => {
+    const callback = (error: SdkError) => {
+      if (error) {
+        setRefreshSiteUrlRes(JSON.stringify(error));
+      } else {
+        setRefreshSiteUrlRes('Success');
+      }
+    };
+    teams.refreshSiteUrl(callback);
+  };
+
   return (
     <>
       <h1>TeamsAPIs</h1>
@@ -26,6 +39,13 @@ const TeamsAPIs: React.FC = () => {
         hasInput={true}
         title="Get Team Channels"
         name="getTeamChannels"
+      />
+      <BoxAndButton
+        handleClick={refreshSiteUrl}
+        output={refreshSiteUrlRes}
+        hasInput={false}
+        title="Refresh site url"
+        name="refreshSiteUrl"
       />
     </>
   );
