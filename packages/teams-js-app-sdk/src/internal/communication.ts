@@ -177,7 +177,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   return request;
 }
 
-function processMessage(evt: DOMMessageEvent): void {
+export function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;

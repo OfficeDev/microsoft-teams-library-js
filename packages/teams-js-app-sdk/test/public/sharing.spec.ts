@@ -213,4 +213,43 @@ describe('sharing', () => {
     utils.respondToMessage(shareMessage, error);
     expect(response).toEqual(error);
   });
+
+  it('should handle share web content when request is null', () => {
+    utils.initializeWithContext('content');
+    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = null;
+
+    let response: any;
+    sharing.shareWebContent(shareRequest, (res) => {
+      response = res;
+    });
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+    expect(shareMessage).toBeNull();
+  });
+
+  it('should handle share web content when request is undefined', () => {
+    utils.initializeWithContext('content');
+    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = undefined;
+
+    let response: any;
+    sharing.shareWebContent(shareRequest, (res) => {
+      response = res;
+    });
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+    expect(shareMessage).toBeNull();
+  });
+
+  it('should handle share web content when request is invalid object', () => {
+    utils.initializeWithContext('content');
+    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+      first: 1,
+      second: 2,
+    } as any) as sharing.IShareRequest<sharing.IURLContent>;
+
+    let response: any;
+    sharing.shareWebContent(shareRequest, (res) => {
+      response = res;
+    });
+    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+    expect(shareMessage).toBeNull();
+  });
 });

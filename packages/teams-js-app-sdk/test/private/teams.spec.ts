@@ -44,6 +44,11 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       expect(() => teams.getTeamChannels(null, emptyCallback)).toThrowError();
     });
 
+    it('should not allow calls with empty groupId', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => teams.getTeamChannels('', emptyCallback)).toThrowError();
+    });
+
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
       expect(() => teams.getTeamChannels('groupId', null)).toThrowError();

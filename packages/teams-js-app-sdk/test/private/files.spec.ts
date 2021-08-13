@@ -45,6 +45,16 @@ describe('files', () => {
       expect(() => files.getCloudStorageFolders(null, emptyCallback)).toThrowError();
     });
 
+    it('should not allow calls with undefined channelId', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.getCloudStorageFolders(undefined, emptyCallback)).toThrowError();
+    });
+
+    it('should not allow calls with empty channelId', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.getCloudStorageFolders('', emptyCallback)).toThrowError();
+    });
+
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
       expect(() => files.getCloudStorageFolders('channelId', null)).toThrowError();
@@ -94,6 +104,11 @@ describe('files', () => {
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
       expect(() => files.addCloudStorageFolder(null, emptyCallback)).toThrowError();
+    });
+
+    it('should not allow calls with empty channelId', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.addCloudStorageFolder('', emptyCallback)).toThrowError();
     });
 
     it('should not allow calls with empty callback', async () => {
@@ -155,6 +170,11 @@ describe('files', () => {
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
       expect(() => files.deleteCloudStorageFolder(null, mockCloudStorageFolder, emptyCallback)).toThrowError();
+    });
+
+    it('should not allow calls with empty channelId', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageFolder('', mockCloudStorageFolder, emptyCallback)).toThrowError();
     });
 
     it('should not allow calls with null folderToDelete', async () => {

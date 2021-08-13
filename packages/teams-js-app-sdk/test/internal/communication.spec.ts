@@ -1,7 +1,38 @@
 import * as communication from '../../src/internal/communication';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as utils from '../../src/internal/utils';
 
 describe('communication', () => {
+  it('processMessage fail if message has a missing data property', () => {
+    const event = ({ badData: '' } as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
+  it('processMessage fail if message is empty', () => {
+    const event = ({} as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
+  it('processMessage fail if data property is not an object', () => {
+    const event = ({ data: '' } as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
+  it('processMessage fail if message has random data', () => {
+    const event = ({ badData: '', notAnOrigin: 'blah' } as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
+  it('processMessage fail if data is undefined', () => {
+    const event = ({ data: undefined } as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
+  it('processMessage fail if data is null', () => {
+    const event = ({ data: null } as any) as DOMMessageEvent;
+    const result = communication.processMessage(event);
+    expect(result).toBeUndefined();
+  });
   it('shouldProcessMessage fail if message source is same window ', () => {
     communication.Communication.currentWindow = window;
     // window object should now equal Communication.currentWindow

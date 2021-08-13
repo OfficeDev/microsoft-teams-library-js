@@ -392,6 +392,57 @@ describe('authentication', () => {
     expect(message.args[0]).toBe('someReason');
   });
 
+  it('should successfully notify auth failure if callbackUrl is not for win32 Outlook and reason is empty', async () => {
+    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+      expect(url).toEqual('');
+    });
+
+    await utils.initializeWithContext('authentication');
+
+    authentication.notifyFailure(
+      '',
+      'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
+    );
+    const message = utils.findMessageByFunc('authentication.authenticate.failure');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe('');
+  });
+
+  it('should successfully notify auth failure if callbackUrl and reason are empty', async () => {
+    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+      expect(url).toEqual('');
+    });
+
+    await utils.initializeWithContext('authentication');
+
+    authentication.notifyFailure(
+      '',
+      '',
+    );
+    const message = utils.findMessageByFunc('authentication.authenticate.failure');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe('');
+  });
+
+  it('should successfully notify auth failure if callbackUrl is empty', async () => {
+    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+      expect(url).toEqual('');
+    });
+
+    await utils.initializeWithContext('authentication');
+
+    authentication.notifyFailure(
+      'someReason',
+      '',
+    );
+    const message = utils.findMessageByFunc('authentication.authenticate.failure');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toBe('someReason');
+  });
+
   it('should not close auth window before notify success message has been sent', async () => {
     const closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
 
