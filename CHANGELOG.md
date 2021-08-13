@@ -1,5 +1,13 @@
 # Breaking Changes
 
+## v0.1.1
+
+### Moved APIs
+The following APIs have been renamed and moved from `pages` to a new `pages.appButton` sub-capability
+* `registerAppButtonClickHandler` has moved to `pages.appButton.onClick`
+* `registerAppButtonHoverEnterHandler` has moved to `pages.appButton.onHoverEnter`
+* `regsiterAppButtonHoverLeaveHandler` has moved to `pages.appButton.onHoverLeave`
+
 ## v0.1.0
 
 ### Context interface changes

@@ -43,7 +43,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     await utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    pages.registerAppButtonClickHandler(() => {
+    pages.appButton.onClick(() => {
       handlerCalled = true;
     });
 
@@ -56,7 +56,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     await utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    pages.registerAppButtonHoverEnterHandler(() => {
+    pages.appButton.onHoverEnter(() => {
       handlerCalled = true;
     });
 
@@ -69,7 +69,7 @@ describe('teamsjsAppSDK-TeamsAPIs', () => {
     await utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    pages.registerAppButtonHoverLeaveHandler(() => {
+    pages.appButton.onHoverLeave(() => {
       handlerCalled = true;
     });
 
