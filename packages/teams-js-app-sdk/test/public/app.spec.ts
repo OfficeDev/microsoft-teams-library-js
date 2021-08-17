@@ -291,6 +291,7 @@ describe('teamsjsAppSDK-app', () => {
       frameContext: FrameContexts.content,
       appLaunchId: 'appLaunchId',
       userDisplayName: 'someTestUser',
+      teamSiteId: 'someSiteId'
     };
 
     const expectedContext: Context = {
@@ -360,6 +361,7 @@ describe('teamsjsAppSDK-app', () => {
         url: 'someSiteUrl',
         domain: 'someTeamSiteDomain',
         path: 'someTeamSitePath',
+        id: 'someSiteId',
       },
     };
 

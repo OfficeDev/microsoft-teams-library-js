@@ -445,7 +445,7 @@ export interface ContextBridge {
    * The address book name of the current user.
    */
   userDisplayName?: string;
-  
+
   /**
    * Teamsite ID, aka sharepoint site id.
    */
@@ -1014,4 +1014,9 @@ export interface SharePointSiteInfo {
    * The relative path to the SharePoint site associated with the team.
    */
   path?: string;
+
+  /**
+   * Teamsite ID, aka sharepoint site id.
+   */
+  id?: string;
 }

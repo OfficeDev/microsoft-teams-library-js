@@ -20,7 +20,7 @@ const TeamsAPIs: React.FC = () => {
   };
 
   const refreshSiteUrl = (): void => {
-    const callback = (error: SdkError) => {
+    const callback = (error: SdkError): void => {
       if (error) {
         setRefreshSiteUrlRes(JSON.stringify(error));
       } else {

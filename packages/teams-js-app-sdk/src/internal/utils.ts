@@ -209,6 +209,7 @@ export function transformContext(contextBridge: ContextBridge): Context {
             url: contextBridge.teamSiteUrl,
             domain: contextBridge.teamSiteDomain,
             path: contextBridge.teamSitePath,
+            id: contextBridge.teamSiteId,
           }
         : undefined,
   };
