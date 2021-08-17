@@ -14,6 +14,7 @@ export interface IRuntime {
     readonly meeting?: {};
     readonly notifications?: {};
     readonly pages?: {
+      readonly appButton?: {};
       readonly tabs?: {};
       readonly config?: {};
       readonly backStack?: {};
@@ -37,6 +38,7 @@ export let runtime: IRuntime = {
     meeting: undefined,
     notifications: undefined,
     pages: {
+      appButton: undefined,
       tabs: undefined,
       config: undefined,
       backStack: undefined,
@@ -59,6 +61,7 @@ export const teamsRuntimeConfig: IRuntime = {
     meeting: {},
     notifications: {},
     pages: {
+      appButton: {},
       tabs: {},
       config: {},
       backStack: {},

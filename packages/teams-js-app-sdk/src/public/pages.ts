@@ -80,36 +80,6 @@ export namespace pages {
   }
 
   /**
-   * Registers a handler for clicking the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
-   */
-  export function registerAppButtonClickHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    registerHandler('appButtonClick', handler);
-  }
-
-  /**
-   * Registers a handler for entering hover of the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
-   */
-  export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    registerHandler('appButtonHoverEnter', handler);
-  }
-
-  /**
-   * Registers a handler for exiting hover of the app button.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
-   */
-  export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-    ensureInitialized(FrameContexts.content);
-    registerHandler('appButtonHoverLeave', handler);
-  }
-
-  /**
    * Checks if page capability is supported currently
    */
   export function isSupported(): boolean {
@@ -462,6 +432,48 @@ export namespace pages {
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
+    }
+  }
+
+  /**
+   * Namespace to interact with the app button part of the SDK.
+   */
+  export namespace appButton {
+    /**
+     * Registers a handler for clicking the app button.
+     * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+     * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
+     */
+    export function onClick(handler: () => void): void {
+      ensureInitialized(FrameContexts.content);
+      registerHandler('appButtonClick', handler);
+    }
+
+    /**
+     * Registers a handler for entering hover of the app button.
+     * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+     * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
+     */
+    export function onHoverEnter(handler: () => void): void {
+      ensureInitialized(FrameContexts.content);
+      registerHandler('appButtonHoverEnter', handler);
+    }
+
+    /**
+     * Registers a handler for exiting hover of the app button.
+     * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+     * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
+     */
+    export function onHoverLeave(handler: () => void): void {
+      ensureInitialized(FrameContexts.content);
+      registerHandler('appButtonHoverLeave', handler);
+    }
+
+    /**
+     * Checks if pages.appButton capability is supported currently
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
     }
   }
 }

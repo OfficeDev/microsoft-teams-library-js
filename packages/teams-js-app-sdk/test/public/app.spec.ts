@@ -423,6 +423,36 @@ describe('teamsjsAppSDK-app', () => {
       );
     });
 
+    it('should not allow calls with a bad origin', () => {
+      return expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with an empty origin', () => {
+      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with a blank origin', () => {
+      return expect(pages.navigateCrossDomain(' ')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with an origin without base', () => {
+      return expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with an origin without suffix', () => {
+      return expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with an origin with invalid base', () => {
+      return expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with an empty origin', () => {
+      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
+    });
+
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 

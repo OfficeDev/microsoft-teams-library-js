@@ -74,6 +74,21 @@ describe('chat', () => {
       expect(openConversationMessage).not.toBeNull();
       expect(openConversationMessage.args).toEqual([conversationRequest]);
     });
+
+    it('conversationRequest with empty strings should succeed', async () => {
+      await utils.initializeWithContext('content');
+      const conversationRequest: OpenConversationRequest = {
+        subEntityId: '',
+        title: '',
+        entityId: '',
+      };
+
+      chat.openConversation(conversationRequest);
+
+      const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
+      expect(openConversationMessage).not.toBeNull();
+      expect(openConversationMessage.args).toEqual([conversationRequest]);
+    });
   });
 
   describe('closeConversation', () => {
@@ -109,5 +124,15 @@ describe('chat', () => {
       utils.respondToMessage(getChatMembersMessage, {});
       expect(callbackCalled).toBe(true);
     });
+  });
+
+  it('should allow calls with empty callback', async () => {
+    await utils.initializeWithContext('content');
+
+    chat.getChatMembers(null);
+
+    let getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
+    expect(getChatMembersMessage).not.toBeNull();
+    utils.respondToMessage(getChatMembersMessage, {});
   });
 });

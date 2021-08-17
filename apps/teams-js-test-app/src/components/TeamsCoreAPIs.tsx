@@ -38,21 +38,21 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const registerAppButtonClickHandler = (): void => {
     setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHubSdkMsg);
-    pages.registerAppButtonClickHandler((): void => {
+    pages.appButton.onClick((): void => {
       setRegisterAppButtonClickHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverEnterHandler = (): void => {
     setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHubSdkMsg);
-    pages.registerAppButtonHoverEnterHandler((): void => {
+    pages.appButton.onHoverEnter((): void => {
       setRegisterAppButtonHoverEnterHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverLeaveHandler = (): void => {
     setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHubSdkMsg);
-    pages.registerAppButtonHoverLeaveHandler((): void => {
+    pages.appButton.onHoverLeave((): void => {
       setRegisterAppButtonHoverLeaveHandlerRes('successfully called');
     });
   };

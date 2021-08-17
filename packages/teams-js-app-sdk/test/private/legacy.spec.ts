@@ -123,5 +123,49 @@ describe('teamsjsAppSDK-privateAPIs', () => {
       utils.respondToMessage(getConfigSettingMessage, {});
       expect(callbackCalled).toBe(true);
     });
+
+    it('should allow an empty key', async () => {
+      await utils.initializeWithContext('content');
+
+      let callbackCalled: boolean = false;
+      legacy.fullTrust.getConfigSetting(() => {
+        callbackCalled = true;
+      }, '');
+
+      let getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
+      expect(getConfigSettingMessage).not.toBeNull();
+      utils.respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    
+    it('should allow a null key', async () => {
+      await utils.initializeWithContext('content');
+
+      let callbackCalled: boolean = false;
+      legacy.fullTrust.getConfigSetting(() => {
+        callbackCalled = true;
+      }, null);
+
+      let getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
+      expect(getConfigSettingMessage).not.toBeNull();
+      utils.respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
+
+    
+    it('should allow an undefined key', async () => {
+      await utils.initializeWithContext('content');
+
+      let callbackCalled: boolean = false;
+      legacy.fullTrust.getConfigSetting(() => {
+        callbackCalled = true;
+      }, undefined);
+
+      let getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
+      expect(getConfigSettingMessage).not.toBeNull();
+      utils.respondToMessage(getConfigSettingMessage, {});
+      expect(callbackCalled).toBe(true);
+    });
   });
 });
