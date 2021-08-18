@@ -32,7 +32,12 @@ export namespace monetization {
     if (!callback) {
       throw new Error('[open purchase experience] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(
+      FrameContexts.sidePanel,
+      FrameContexts.meetingStage,
+      FrameContexts.settings,
+      FrameContexts.content,
+    );
     sendMessageToParent('monetization.openPurchaseExperience', [planInfo], callback);
   }
 }
