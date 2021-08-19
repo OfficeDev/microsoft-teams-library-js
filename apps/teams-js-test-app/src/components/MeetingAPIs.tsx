@@ -12,6 +12,7 @@ const MeetingAPIs = (): ReactElement => {
   const [requestStartLiveStreamingRes, setRequestStartLiveStreamingRes] = React.useState('');
   const [requestStopLiveStreamingRes, setRequestStopLiveStreamingRes] = React.useState('');
   const [registerLiveStreamChangedHandlerRes, setRegisterLiveStreamChangedHandlerRes] = React.useState('');
+  const [shareAppContentToStageRes, setShareAppContentToStageRes] = React.useState('');
   const [getPairedMeetingRoomInfoRes, setGetPairedMeetingRoomInfoRes] = React.useState('');
   const [sendCommandToPairedMeetingRoomRes, setSendCommandToPairedMeetingRoomRes] = React.useState('');
   const [registerMeetingRoomCapUpdateHandlerRes, setRegisterMeetingRoomCapUpdateHandlerRes] = React.useState('');
@@ -134,6 +135,22 @@ const MeetingAPIs = (): ReactElement => {
     meeting.registerLiveStreamChangedHandler(handler);
   };
 
+  const shareAppContentToStage = (appContentUrl: string): void => {
+    setShareAppContentToStageRes('shareAppContentToStage' + noHubSdkMsg);
+    const handler = (error: SdkError | null, result: boolean | null): void => {
+      if (error) {
+        setShareAppContentToStageRes(JSON.stringify(error));
+      } else {
+        if (result) {
+          setShareAppContentToStageRes('shareAppContentToStage() succeeded');
+        } else {
+          setShareAppContentToStageRes('shareAppContentToStage() failed');
+        }
+      }
+    };
+    meeting.shareAppContentToStage(handler, appContentUrl);
+  };
+
   const getPairedMeetingRoomInfo = (): void => {
     setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHubSdkMsg);
     const callback = (sdkError: SdkError, meetingRoomInfo: meetingRoom.MeetingRoomInfo): void => {
@@ -238,6 +255,13 @@ const MeetingAPIs = (): ReactElement => {
         hasInput={false}
         title="Register LiveStream Changed Handler"
         name="registerLiveStreamChangedHandler"
+      />
+      <BoxAndButton
+        handleClickWithInput={shareAppContentToStage}
+        output={shareAppContentToStageRes}
+        hasInput={true}
+        title="Share App Content To Stage"
+        name="shareAppContentToStage"
       />
       <BoxAndButton
         handleClick={getPairedMeetingRoomInfo}
