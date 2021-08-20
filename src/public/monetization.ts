@@ -37,6 +37,8 @@ export namespace monetization {
       FrameContexts.meetingStage,
       FrameContexts.settings,
       FrameContexts.content,
+      FrameContexts.task,
+      FrameContexts.stage,
     );
     sendMessageToParent('monetization.openPurchaseExperience', [planInfo], callback);
   }
