@@ -625,5 +625,56 @@ describe('meeting', () => {
         expect;
       });
     });
+
+    describe('getAppContentStageSharingCapabilities', () => {
+      it('should not allow to share app content to stage with null callback', () => {
+        expect(() => meeting.getAppContentStageSharingCapabilities(null)).toThrowError(
+          '[share app content to stage] Callback cannot be null',
+        );
+      });
+
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.getAppContentStageSharingCapabilities(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully get info', () => {
+        desktopPlatformMock.initializeWithContext('sidePanel');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingCapabilities | null;
+        meeting.getAppContentStageSharingCapabilities(
+          (error: SdkError, appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingCapabilities;
+          },
+        );
+
+        const appContentStageSharingCapabilities = {
+          appContentStageSharingCapabilities: true,
+        };
+
+        const appContentStageSharingCapabilitiesMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingCapabilities',
+        );
+        expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
+        let callbackId = appContentStageSharingCapabilitiesMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingCapabilities],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toStrictEqual(appContentStageSharingCapabilities);
+      });
+    });
   });
 });
