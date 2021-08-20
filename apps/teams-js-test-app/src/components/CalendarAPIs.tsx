@@ -10,30 +10,18 @@ const CalendarAPIs = (): ReactElement => {
 
   const composeMeeting = (meetingParams: string): void => {
     setComposeMeetingRes('calendar.composeMeeting()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setComposeMeetingRes(reason);
-        }
-      } else {
-        setComposeMeetingRes('Completed');
-      }
-    };
-    calendar.composeMeeting(JSON.parse(meetingParams), onComplete);
+    calendar
+      .composeMeeting(JSON.parse(meetingParams))
+      .then(() => setComposeMeetingRes('Completed'))
+      .catch(reason => setComposeMeetingRes(reason));
   };
 
   const openCalendarItem = (calendarParams: string): void => {
     setOpenCalendarItemRes('calendar.openCalendarItem()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setOpenCalendarItemRes(reason);
-        }
-      } else {
-        setOpenCalendarItemRes('Completed');
-      }
-    };
-    calendar.openCalendarItem(JSON.parse(calendarParams), onComplete);
+    calendar
+      .openCalendarItem(JSON.parse(calendarParams))
+      .then(() => setOpenCalendarItemRes('Completed'))
+      .catch(reason => setOpenCalendarItemRes(reason));
   };
 
   const checkCalendarCapability = (): void => {
