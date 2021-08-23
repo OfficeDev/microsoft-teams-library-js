@@ -3,7 +3,7 @@ import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
-import { peoplePickerRequiredVersion } from '../internal/constants';
+import { openCardRequiredVersion, peoplePickerRequiredVersion } from '../internal/constants';
 
 export namespace people {
   /**
@@ -84,5 +84,86 @@ export namespace people {
      * Optional; email of the selected user
      */
     email?: string;
+  }
+
+  /**
+   * TODO
+   * @param callback TODO
+   * @param openCardInputs TODO
+   */
+  export function openCard(callback: (error: SdkError) => void, openCardInputs?: OpenCardInputs): void {
+    if (!callback) {
+      throw new Error('[open card] Callback cannot be null');
+    }
+
+    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
+
+    // if (!isAPISupportedByPlatform(openCardRequiredVersion)) {
+    //   const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    //   callback(oldPlatformError);
+    //   return;
+    // }
+
+    // if (!validatePeoplePickerInput(peoplePickerInputs)) {
+    //   const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    //   callback(invalidInput);
+    //   return;
+    // }
+
+    sendMessageToParent('people.openCard', [openCardInputs], callback);
+  }
+
+  /**
+   * The type of the persona to resolve.
+   *  - User: An organization or consumer user.
+   *  - External: A user external to the current organization.
+   *  - NotResolved: ???
+   */
+  export type PersonaType = 'User' | 'External' | 'NotResolved';
+
+  /**
+   * The type of the card trigger.
+   *  - MouseHover: The user hovered a target.
+   *  - MouseClick: The user clicked a target.
+   *  - KeyboardPress: The user initiated the card with their keyboard (typically pressing enter or space while focusing a target).
+   *  - HostAppRequest: The card is being opened programmatically.
+   */
+  export type OpenCardTriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'HostAppRequest';
+
+  /**
+   * The identifiers that are supported for resolving the user while opening the card.
+   */
+  export interface PersonaIdentifiers {
+    readonly HostAppPersonaId?: string;
+    readonly OlsPersonaId?: string;
+    readonly LocationId?: string;
+    readonly TeamsMri?: string;
+    readonly AadObjectId?: string;
+    readonly SatoriId?: string;
+    readonly Smtp?: string;
+    readonly Upn?: string;
+    readonly PersonaType: PersonaType;
+    readonly PermanentEntryId?: string;
+    readonly DisplayName?: string;
+  }
+
+  /**
+   * Input parameters provided to the openCard API.
+   */
+  export interface OpenCardInputs {
+    /**
+     * The bounding rectangle of the target.
+     */
+    targetBoundingRect: ClientRect;
+
+    /**
+     * The identifiers to resolve the user when opening the card.
+     */
+    identifiers: PersonaIdentifiers;
+
+    /**
+     * The trigger type of the card open.
+     */
+    openCardTriggerType: OpenCardTriggerType;
   }
 }
