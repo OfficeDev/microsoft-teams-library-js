@@ -627,9 +627,9 @@ describe('meeting', () => {
     });
 
     describe('getAppContentStageSharingCapabilities', () => {
-      it('should not allow to share app content to stage with null callback', () => {
+      it('should throw error if callback is not provided', () => {
         expect(() => meeting.getAppContentStageSharingCapabilities(null)).toThrowError(
-          '[share app content to stage] Callback cannot be null',
+          '[get app content stage sharing capabilities] Callback cannot be null',
         );
       });
 
