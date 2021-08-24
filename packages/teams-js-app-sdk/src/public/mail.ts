@@ -1,35 +1,24 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 
 export namespace mail {
-  export function openMailItem(
-    openMailItemParams: OpenMailItemParams,
-    onComplete?: (status: boolean, reason?: string) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
-    if (!isSupported()) throw 'Not Supported';
+  export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(FrameContexts.content);
+      if (!isSupported()) throw 'Not Supported';
 
-    sendMessageToParent(
-      'mail.openMailItem',
-      [openMailItemParams],
-      onComplete ? onComplete : getGenericOnCompleteHandler(),
-    );
+      resolve(sendAndHandleError('mail.openMailItem', openMailItemParams));
+    });
   }
-  export function composeMail(
-    composeMailParams: ComposeMailParams,
-    onComplete?: (status: boolean, reason?: string) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
-    if (!isSupported()) throw 'Not Supported';
+  export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(FrameContexts.content);
+      if (!isSupported()) throw 'Not Supported';
 
-    sendMessageToParent(
-      'mail.composeMail',
-      [composeMailParams],
-      onComplete ? onComplete : getGenericOnCompleteHandler(),
-    );
+      resolve(sendAndHandleError('mail.composeMail', composeMailParams));
+    });
   }
   export function isSupported(): boolean {
     return runtime.supports.mail ? true : false;

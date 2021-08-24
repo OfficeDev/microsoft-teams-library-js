@@ -10,30 +10,18 @@ const MailAPIs = (): ReactElement => {
 
   const composeMail = (mailParams: string): void => {
     setComposeMailRes('mail.composeMail()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setComposeMailRes(reason);
-        }
-      } else {
-        setComposeMailRes('Completed');
-      }
-    };
-    mail.composeMail(JSON.parse(mailParams), onComplete);
+    mail
+      .composeMail(JSON.parse(mailParams))
+      .then(() => setComposeMailRes('Completed'))
+      .catch(reason => setComposeMailRes(reason));
   };
 
   const openMailItem = (mailParams: string): void => {
     setOpenMailItemRes('mail.openMailItem()' + noHubSdkMsg);
-    const onComplete = (status: boolean, reason?: string): void => {
-      if (!status) {
-        if (reason) {
-          setOpenMailItemRes(reason);
-        }
-      } else {
-        setOpenMailItemRes('Completed');
-      }
-    };
-    mail.openMailItem(JSON.parse(mailParams), onComplete);
+    mail
+      .openMailItem(JSON.parse(mailParams))
+      .then(() => setOpenMailItemRes('Completed'))
+      .catch(reason => setOpenMailItemRes(reason));
   };
 
   const mailCapabilityCheck = (): void => {
