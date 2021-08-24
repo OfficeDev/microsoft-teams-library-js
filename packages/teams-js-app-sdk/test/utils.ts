@@ -182,4 +182,10 @@ export class Utils {
   public setClientSupportedSDKVersion = (version: string) => {
     GlobalVars.clientSupportedSDKVersion = version;
   };
+
+  /**
+   * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
+   * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
+   */
+     public flushPromises = () => new Promise(setImmediate);
 }

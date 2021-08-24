@@ -77,6 +77,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
           ],
         } as MessageResponse,
       } as MessageEvent);
+      await utils.flushPromises();
 
       expect(callbackCalled).toBe(false);
     });
@@ -121,6 +122,7 @@ describe('teamsjsAppSDK-privateAPIs', () => {
           ],
         } as MessageResponse,
       } as MessageEvent);
+      await contextPromise;
 
       return expect(contextPromise).resolves;
     });
