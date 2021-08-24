@@ -656,7 +656,7 @@ describe('meeting', () => {
         );
 
         const appContentStageSharingCapabilities = {
-          appContentStageSharingCapabilities: true,
+          doesAppHaveSharePermission: true,
         };
 
         const appContentStageSharingCapabilitiesMessage = desktopPlatformMock.findMessageByFunc(
