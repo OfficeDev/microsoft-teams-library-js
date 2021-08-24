@@ -641,8 +641,40 @@ describe('meeting', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
+      it('should return correct error information', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingCapabilities | null;
+        meeting.getAppContentStageSharingCapabilities(
+          (error: SdkError, appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingCapabilities;
+          },
+        );
+
+        const appContentStageSharingCapabilitiesMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingCapabilities',
+        );
+        expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
+        let callbackId = appContentStageSharingCapabilitiesMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).not.toBeNull();
+        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+        expect(returnedResult).toBe(null);
+      });
+
       it('should successfully get info', () => {
-        desktopPlatformMock.initializeWithContext('sidePanel');
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
         let callbackCalled = false;
         let returnedSdkError: SdkError | null;
