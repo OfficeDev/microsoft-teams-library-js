@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
@@ -233,6 +234,11 @@ export namespace media {
     imageProps?: ImageProps;
 
     /**
+     * Additional properties for customization of select media - Video in mobile devices
+     */
+    videoProps?: VideoProps;
+
+    /**
      * Additional properties for customization of select media - VideoAndImage in mobile devices
      */
     videoAndImageProps?: VideoAndImageProps;
@@ -293,17 +299,39 @@ export namespace media {
   }
 
   /**
-   * @private
-   * Hide from docs
-   * --------
    * All properties in VideoProps are optional and have default values in the platform
    */
-  interface VideoProps extends MediaProps {
+  export interface VideoProps extends MediaProps {
     /**
      * Optional; the maximum duration in minutes after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
+
+    /**
+     * Optional; to determine if the video capturing flow needs to be launched
+     * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
+     * Default value is true, indicating video will always launch in Full Screen Mode via lens.
+     */
+    isFullScreenMode?: boolean;
+
+    /**
+     * Optional; controls the visibility of pause button in PictureInPicture Mode.
+     * Default value is true, indicating the user will be able to pause the video.
+     */
+    isPauseButtonVisible?: boolean;
+
+    /**
+     * Optional; controls the visibility of stop button in PictureInPicture Mode.
+     * Default value is true, indicating the user will be able to stop the video.
+     */
+    isStopButtonVisible?: boolean;
+
+    /**
+     * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
+     * Your app can also control the experience while capturing the video by notifying the platform client about VideoControllerEvent.
+     */
+    videoController?: VideoController;
   }
 
   /**
@@ -316,10 +344,171 @@ export namespace media {
    */
   export interface AudioProps {
     /**
-     * Optional; the maximum duration in minutes after which the recording should terminate automatically.
+     * Optional; the maximum duration in minutes after which the recording should terminate automatically
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
+
+    /**
+     * Optional; setting AudioController will register your app to listen to the lifecycle events during the audio recording flow.
+     * Your app can also control the experience while recording the audio by notifying the platform client about AudioControllerEvent.
+     */
+    audioController?: AudioController;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Events which are used to communicate between the app and the platform client
+   */
+  enum MediaControllerEvent {
+    PreviewStart = 1,
+    RecordingStart = 2,
+    RecordingPause = 3,
+    RecordingResume = 4,
+    RecordingStop = 5,
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Base class which holds the callback and notifies events to the platform client
+   */
+  abstract class MediaController<T> {
+    protected controllerCallback: T;
+
+    constructor(controllerCallback?: T) {
+      this.controllerCallback = controllerCallback;
+    }
+
+    protected abstract getMediaType(): MediaType;
+
+    /**
+     * @private
+     * Hide from docs
+     * --------
+     * This function will be implemented by the respective media class which holds the logic
+     * of which event is specific to that media type and needs to be notified to the app.
+     * @param mediaEvent indicates the event signed by the platform client to the app
+     */
+    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
+
+    /**
+     * Function to notify the platform client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the platform client
+     * @param callback indicates if platform client has successfully handled the notification event or not
+     */
+    protected notifyEventToClient(mediaEvent: MediaControllerEvent, callback: (err?: SdkError) => void): void {
+      const params = { MediaType: this.getMediaType(), MediaControllerEvent: mediaEvent };
+      sendMessageToParent('mediaController', [params], (err?: SdkError) => {
+        callback(err);
+      });
+    }
+  }
+
+  /**
+   * Callback which will register your app to listen to lifecycle events during the video capture flow
+   */
+  export interface VideoControllerCallback {
+    onPreviewStart(): void;
+    onRecordingStart(): void;
+    onRecordingPause(): void;
+    onRecordingResume(): void;
+    onPictureInPictureMode(): void;
+  }
+
+  /**
+   * VideoController class is used to communicate between the app and the platform client during the video capture flow
+   */
+  export class VideoController extends MediaController<VideoControllerCallback> {
+    protected getMediaType(): MediaType {
+      return MediaType.Video;
+    }
+
+    public pauseVideo(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingPause, callback);
+    }
+
+    public resumeVideo(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingResume, callback);
+    }
+
+    public stopVideo(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingStop, callback);
+    }
+
+    notifyEventToApp(mediaEvent: MediaControllerEvent): void {
+      if (!this.controllerCallback) {
+        // Early return as app has not registered with the callback
+        return;
+      }
+
+      switch (mediaEvent) {
+        case MediaControllerEvent.PreviewStart:
+          this.controllerCallback.onPreviewStart();
+          break;
+        case MediaControllerEvent.RecordingStart:
+          this.controllerCallback.onRecordingStart();
+          break;
+        case MediaControllerEvent.RecordingPause:
+          this.controllerCallback.onRecordingPause();
+          break;
+        case MediaControllerEvent.RecordingResume:
+          this.controllerCallback.onRecordingResume();
+          break;
+      }
+    }
+  }
+
+  /**
+   * Callback which will register your app to listen to lifecycle events during the audio recording flow
+   */
+  export interface AudioControllerCallback {
+    onRecordingStart(): void;
+    onRecordingPause(): void;
+    onRecordingResume(): void;
+  }
+
+  /**
+   * AudioController class is used to communicate between the app and the platform client during the audio recording flow
+   */
+  export class AudioController extends MediaController<AudioControllerCallback> {
+    protected getMediaType(): MediaType {
+      return MediaType.Audio;
+    }
+
+    public pauseAudio(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingPause, callback);
+    }
+
+    public resumeAudio(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingResume, callback);
+    }
+
+    public stopAudio(callback: (err?: SdkError) => void): void {
+      this.notifyEventToClient(MediaControllerEvent.RecordingStop, callback);
+    }
+
+    notifyEventToApp(mediaEvent: MediaControllerEvent): void {
+      if (!this.controllerCallback) {
+        // Early return as app has not registered with the callback
+        return;
+      }
+
+      switch (mediaEvent) {
+        case MediaControllerEvent.RecordingStart:
+          this.controllerCallback.onRecordingStart();
+          break;
+        case MediaControllerEvent.RecordingPause:
+          this.controllerCallback.onRecordingPause();
+          break;
+        case MediaControllerEvent.RecordingResume:
+          this.controllerCallback.onRecordingResume();
+          break;
+      }
+    }
   }
 
   /**
@@ -345,7 +534,7 @@ export namespace media {
    */
   export enum MediaType {
     Image = 1,
-    // Video = 2, // Not implemented yet
+    Video = 2,
     VideoAndImage = 3,
     Audio = 4,
   }
@@ -451,18 +640,34 @@ export namespace media {
     }
 
     const params = [mediaInputs];
-    // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-    sendMessageToParent('selectMedia', params, (err: SdkError, localAttachments: Media[]) => {
-      if (!localAttachments) {
-        callback(err, null);
-        return;
-      }
-      let mediaArray: Media[] = [];
-      for (let attachment of localAttachments) {
-        mediaArray.push(new Media(attachment));
-      }
-      callback(err, mediaArray);
-    });
+    // What comes back from native as attachments would just be objects and will be missing getMedia method on them
+    sendMessageToParent(
+      'selectMedia',
+      params,
+      (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
+        // MediaNotificationEventFromClient are used to notify lifecycle events and is intermediate response to selectMedia
+        if (mediaEvent) {
+          if (mediaInputs.mediaType == 2 && mediaInputs.videoProps && mediaInputs.videoProps.videoController) {
+            mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
+          } else if (mediaInputs.mediaType == 4 && mediaInputs.audioProps && mediaInputs.audioProps.audioController) {
+            mediaInputs.audioProps.audioController.notifyEventToApp(mediaEvent);
+          }
+          return;
+        }
+
+        // Media Attachments are final response to selectMedia
+        if (!localAttachments) {
+          callback(err, null);
+          return;
+        }
+
+        let mediaArray: Media[] = [];
+        for (let attachment of localAttachments) {
+          mediaArray.push(new Media(attachment));
+        }
+        callback(err, mediaArray);
+      },
+    );
   }
 
   /**
