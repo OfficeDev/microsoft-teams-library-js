@@ -91,7 +91,7 @@ export namespace people {
    * @param callback TODO
    * @param openCardInputs TODO
    */
-  export function openCard(callback: (error: SdkError) => void, openCardInputs?: OpenCardInputs): void {
+  export function openCard(callback: (error: SdkError) => void, openCardRequest?: OpenCardRequest): void {
     if (!callback) {
       throw new Error('[open card] Callback cannot be null');
     }
@@ -110,14 +110,14 @@ export namespace people {
     //   return;
     // }
 
-    sendMessageToParent('people.openCard', [openCardInputs], callback);
+    sendMessageToParent('people.openCard', [openCardRequest], callback);
   }
 
   /**
    * The type of the persona to resolve.
    *  - User: An organization or consumer user.
    *  - External: A user external to the current organization.
-   *  - NotResolved: ???
+   *  - NotResolved: TODO
    */
   export type PersonaType = 'User' | 'External' | 'NotResolved';
 
@@ -131,9 +131,9 @@ export namespace people {
   export type OpenCardTriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'HostAppRequest';
 
   /**
-   * The identifiers that are supported for resolving the user while opening the card.
+   * TODO: Document this.
    */
-  export interface PersonaIdentifiers {
+  export interface IHostAppProvidedPersonaIdentifiers {
     readonly HostAppPersonaId?: string;
     readonly OlsPersonaId?: string;
     readonly LocationId?: string;
@@ -148,22 +148,49 @@ export namespace people {
   }
 
   /**
+   * TODO: Document this.
+   */
+  export interface IHostAppProvidedPersona {
+    identifiers: IHostAppProvidedPersonaIdentifiers;
+    displayName?: string;
+    firstName?: string;
+    lastName?: string;
+    // isUnauthenticatedSender?: boolean;
+    // isTier3Brand?: boolean;
+    // skypeId?: string;
+  }
+
+  /**
+   * TODO: Document this.
+   */
+  export interface ILivePersonaCardParameters {
+    personaInfo: IHostAppProvidedPersona;
+    // behavior: ILivePersonaCardBehavior;
+    // externalAppSessionCorrelationId?: string;
+    // clientScenario?: string;
+    // ariaLabel?: string;
+    /**
+     * If this is set to true, the hover-target does not set nor interfere with accessibility-properties on
+     * the child element.
+     * @default false
+     */
+    // disableAccessibilityDefaults?: boolean;
+    // tabIndex?: number;
+    openCardTriggerType?: OpenCardTriggerType;
+  }
+
+  /**
    * Input parameters provided to the openCard API.
    */
-  export interface OpenCardInputs {
+  export interface OpenCardRequest {
     /**
      * The bounding rectangle of the target.
      */
     targetBoundingRect: ClientRect;
 
     /**
-     * The identifiers to resolve the user when opening the card.
+     * The parameters to provide to the live persona card when opening the card.
      */
-    identifiers: PersonaIdentifiers;
-
-    /**
-     * The trigger type of the card open.
-     */
-    openCardTriggerType: OpenCardTriggerType;
+    parameters: ILivePersonaCardParameters;
   }
 }
