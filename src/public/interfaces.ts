@@ -429,6 +429,11 @@ export interface Context {
    * Where the user prefers the file to be opened from by default during file open
    */
   userFileOpenPreference?: FileOpenPreference;
+
+  /**
+   * Teamsite ID, aka sharepoint site id.
+   */
+  teamSiteId?: string;
 }
 
 export interface DeepLinkParameters {
