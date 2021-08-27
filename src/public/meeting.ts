@@ -97,6 +97,13 @@ export namespace meeting {
     };
   }
 
+  export interface IAppContentStageSharingCapabilities {
+    /**
+     * indicates whether app has permission to share contents to meeting stage
+     */
+    doesAppHaveSharePermission: boolean;
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -255,5 +262,25 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+  }
+
+  /**
+   * Provides information related app's in-meeting sharing capabilities
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * appContentStageSharingCapabilities can either contain an IAppContentStageSharingCapabilities object
+   * (indication of successful retrieval), or null (indication of failed retrieval)
+   */
+  export function getAppContentStageSharingCapabilities(
+    callback: (
+      error: SdkError | null,
+      appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
+    ) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
 }
