@@ -283,4 +283,20 @@ export namespace meeting {
     ensureInitialized(FrameContexts.sidePanel);
     sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
+
+  /**
+   * Terminates current stage sharing session in meeting
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   */
+  export function stopSharingAppContentToStage(
+    callback: (error: SdkError | null, result: boolean | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[stop sharing app content to stage] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
+  }
 }
