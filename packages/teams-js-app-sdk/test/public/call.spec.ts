@@ -35,7 +35,7 @@ describe('call', () => {
     expect.assertions(7); // 4 assertions are made in Utils.initializeWithContext
     utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
-      apiVersion: 2,
+      apiVersion: 1,
       supports: {
         call: {},
       },
