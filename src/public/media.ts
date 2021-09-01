@@ -12,7 +12,10 @@ import {
   validateViewImagesInput,
   validateScanBarCodeInput,
   isMediaCallForVideoAndImageInputs,
+  isVideoControllerRegistered,
+  isApiSupportedOnMobile,
 } from '../internal/mediaUtil';
+import { MediaControllerEvent } from '../private/interfaces';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import {
@@ -21,6 +24,7 @@ import {
   getMediaCallbackSupportVersion,
   scanBarCodeAPIMobileSupportVersion,
   videoAndImageMediaAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
 } from '../internal/constants';
 
 export namespace media {
@@ -316,12 +320,6 @@ export namespace media {
     isFullScreenMode?: boolean;
 
     /**
-     * Optional; controls the visibility of pause button in PictureInPicture Mode.
-     * Default value is true, indicating the user will be able to pause the video.
-     */
-    isPauseButtonVisible?: boolean;
-
-    /**
      * Optional; controls the visibility of stop button in PictureInPicture Mode.
      * Default value is true, indicating the user will be able to stop the video.
      */
@@ -329,7 +327,7 @@ export namespace media {
 
     /**
      * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
-     * Your app can also control the experience while capturing the video by notifying the platform client about VideoControllerEvent.
+     * Your app can also control the experience while capturing the video by notifying the host client about VideoControllerEvent.
      */
     videoController?: VideoController;
   }
@@ -348,33 +346,13 @@ export namespace media {
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
-
-    /**
-     * Optional; setting AudioController will register your app to listen to the lifecycle events during the audio recording flow.
-     * Your app can also control the experience while recording the audio by notifying the platform client about AudioControllerEvent.
-     */
-    audioController?: AudioController;
   }
 
   /**
    * @private
    * Hide from docs
    * --------
-   * Events which are used to communicate between the app and the platform client
-   */
-  enum MediaControllerEvent {
-    PreviewStart = 1,
-    RecordingStart = 2,
-    RecordingPause = 3,
-    RecordingResume = 4,
-    RecordingStop = 5,
-  }
-
-  /**
-   * @private
-   * Hide from docs
-   * --------
-   * Base class which holds the callback and notifies events to the platform client
+   * Base class which holds the callback and notifies events to the host client
    */
   abstract class MediaController<T> {
     protected controllerCallback: T;
@@ -391,20 +369,38 @@ export namespace media {
      * --------
      * This function will be implemented by the respective media class which holds the logic
      * of which event is specific to that media type and needs to be notified to the app.
-     * @param mediaEvent indicates the event signed by the platform client to the app
+     * @param mediaEvent indicates the event signed by the host client to the app
      */
     protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
 
     /**
-     * Function to notify the platform client to programatically control the experience
-     * @param mediaEvent indicates what the event that needs to be signaled to the platform client
-     * @param callback indicates if platform client has successfully handled the notification event or not
+     * @private
+     * Hide from docs
+     * --------
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToClient(mediaEvent: MediaControllerEvent, callback: (err?: SdkError) => void): void {
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      let err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      if (err) {
+        if (callback) {
+          callback(err);
+        }
+        return;
+      }
+
       const params = { MediaType: this.getMediaType(), MediaControllerEvent: mediaEvent };
       sendMessageToParent('mediaController', [params], (err?: SdkError) => {
-        callback(err);
+        if (callback) {
+          callback(err);
+        }
       });
+    }
+
+    public stop(callback?: (err?: SdkError) => void): void {
+      this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
   }
 
@@ -412,33 +408,17 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   export interface VideoControllerCallback {
-    onPreviewStart(): void;
-    onRecordingStart(): void;
-    onRecordingPause(): void;
-    onRecordingResume(): void;
-    onPictureInPictureMode(): void;
+    onRecordingStarted?(): void;
   }
 
   /**
-   * VideoController class is used to communicate between the app and the platform client during the video capture flow
+   * VideoController class is used to communicate between the app and the host client during the video capture flow
    */
   export class VideoController extends MediaController<VideoControllerCallback> {
     protected getMediaType(): MediaType {
       return MediaType.Video;
     }
 
-    public pauseVideo(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingPause, callback);
-    }
-
-    public resumeVideo(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingResume, callback);
-    }
-
-    public stopVideo(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingStop, callback);
-    }
-
     notifyEventToApp(mediaEvent: MediaControllerEvent): void {
       if (!this.controllerCallback) {
         // Early return as app has not registered with the callback
@@ -446,67 +426,10 @@ export namespace media {
       }
 
       switch (mediaEvent) {
-        case MediaControllerEvent.PreviewStart:
-          this.controllerCallback.onPreviewStart();
-          break;
-        case MediaControllerEvent.RecordingStart:
-          this.controllerCallback.onRecordingStart();
-          break;
-        case MediaControllerEvent.RecordingPause:
-          this.controllerCallback.onRecordingPause();
-          break;
-        case MediaControllerEvent.RecordingResume:
-          this.controllerCallback.onRecordingResume();
-          break;
-      }
-    }
-  }
-
-  /**
-   * Callback which will register your app to listen to lifecycle events during the audio recording flow
-   */
-  export interface AudioControllerCallback {
-    onRecordingStart(): void;
-    onRecordingPause(): void;
-    onRecordingResume(): void;
-  }
-
-  /**
-   * AudioController class is used to communicate between the app and the platform client during the audio recording flow
-   */
-  export class AudioController extends MediaController<AudioControllerCallback> {
-    protected getMediaType(): MediaType {
-      return MediaType.Audio;
-    }
-
-    public pauseAudio(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingPause, callback);
-    }
-
-    public resumeAudio(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingResume, callback);
-    }
-
-    public stopAudio(callback: (err?: SdkError) => void): void {
-      this.notifyEventToClient(MediaControllerEvent.RecordingStop, callback);
-    }
-
-    notifyEventToApp(mediaEvent: MediaControllerEvent): void {
-      if (!this.controllerCallback) {
-        // Early return as app has not registered with the callback
-        return;
-      }
-
-      switch (mediaEvent) {
-        case MediaControllerEvent.RecordingStart:
-          this.controllerCallback.onRecordingStart();
-          break;
-        case MediaControllerEvent.RecordingPause:
-          this.controllerCallback.onRecordingPause();
-          break;
-        case MediaControllerEvent.RecordingResume:
-          this.controllerCallback.onRecordingResume();
-          break;
+        case MediaControllerEvent.StartRecording:
+          if (this.controllerCallback.onRecordingStarted) {
+            this.controllerCallback.onRecordingStarted();
+          }
       }
     }
   }
@@ -622,13 +545,9 @@ export namespace media {
     }
 
     if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-      if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
-        const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-        callback(notSupportedError, null);
-        return;
-      } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
-        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        callback(oldPlatformError, null);
+      let err = isApiSupportedOnMobile(videoAndImageMediaAPISupportVersion);
+      if (err) {
+        callback(err, null);
         return;
       }
     }
@@ -645,12 +564,10 @@ export namespace media {
       'selectMedia',
       params,
       (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
-        // MediaNotificationEventFromClient are used to notify lifecycle events and is intermediate response to selectMedia
+        // MediaControllerEvent response is used to notify the app about events and is an intermediate response to selectMedia
         if (mediaEvent) {
-          if (mediaInputs.mediaType == 2 && mediaInputs.videoProps && mediaInputs.videoProps.videoController) {
+          if (isVideoControllerRegistered(mediaInputs)) {
             mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
-          } else if (mediaInputs.mediaType == 4 && mediaInputs.audioProps && mediaInputs.audioProps.audioController) {
-            mediaInputs.audioProps.audioController.notifyEventToApp(mediaEvent);
           }
           return;
         }

@@ -1,5 +1,36 @@
+import { GlobalVars } from '../internal/globalVars';
+import { HostClientType } from '../public/constants';
 import { people } from '../public/people';
 import { media } from '../public/media';
+import { SdkError, ErrorCode } from '../public/interfaces';
+import { isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { defaultSDKVersionForCompatCheck } from './constants';
+
+/**
+ * Helper function to identify if host client is either android or ios
+ */
+export function isHostClientMobile(): boolean {
+  if (GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Helper function which indicates if current API is supported on mobile or not.
+ * @returns SdkError if host client is not android/ios or if the requiredVersion is not
+ *          supported by platform or not. Null is returned in case of success.
+ */
+export function isApiSupportedOnMobile(requiredVersion: string = defaultSDKVersionForCompatCheck): SdkError {
+  if (!isHostClientMobile()) {
+    const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    return notSupportedError;
+  } else if (!isAPISupportedByPlatform(requiredVersion)) {
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    return oldPlatformError;
+  }
+  return null;
+}
 
 /**
  * Helper function to create a blob from media chunks based on their sequence
@@ -64,6 +95,16 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
     if (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps) {
       return true;
     }
+  }
+  return false;
+}
+
+/**
+ * Function returns true if the app has registered to listen to video controller events, else false.
+ */
+export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
+  if (mediaInputs.mediaType == 2 && mediaInputs.videoProps && mediaInputs.videoProps.videoController) {
+    return true;
   }
   return false;
 }

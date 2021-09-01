@@ -14,6 +14,11 @@ export const defaultSDKVersionForCompatCheck = '2.0.1';
 export const videoAndImageMediaAPISupportVersion = '2.0.2';
 
 /**
+ * This is the SDK version when selectMedia API - Video with non-full screen mode is supported on mobile.
+ */
+export const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
+
+/**
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
  */
 export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
