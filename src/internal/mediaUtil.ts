@@ -33,6 +33,16 @@ export function isApiSupportedOnMobile(requiredVersion: string = defaultSDKVersi
 }
 
 /**
+ * Function returns true if the app has registered to listen to video controller events, else false.
+ */
+export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
+  if (mediaInputs.mediaType == 2 && mediaInputs.videoProps && mediaInputs.videoProps.videoController) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Helper function to create a blob from media chunks based on their sequence
  */
 export function createFile(assembleAttachment: media.AssembleAttachment[], mimeType: string): Blob {
@@ -95,16 +105,6 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
     if (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps) {
       return true;
     }
-  }
-  return false;
-}
-
-/**
- * Function returns true if the app has registered to listen to video controller events, else false.
- */
-export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
-  if (mediaInputs.mediaType == 2 && mediaInputs.videoProps && mediaInputs.videoProps.videoController) {
-    return true;
   }
   return false;
 }

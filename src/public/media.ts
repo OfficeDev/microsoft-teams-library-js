@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
@@ -564,7 +563,7 @@ export namespace media {
       'selectMedia',
       params,
       (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
-        // MediaControllerEvent response is used to notify the app about events and is an intermediate response to selectMedia
+        // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
         if (mediaEvent) {
           if (isVideoControllerRegistered(mediaInputs)) {
             mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
