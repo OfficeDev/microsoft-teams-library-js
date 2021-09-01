@@ -17,6 +17,11 @@ export namespace call {
     source?: string[];
   }
 
+  /**
+   * Starts a call with other users
+   * @param startCallParams Parameters for the call
+   * @returns If the call is accepted
+   */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
     return new Promise(resolve => {
       ensureInitialized(FrameContexts.content);
