@@ -122,7 +122,9 @@ export function _initialize(hostWindow: any): void {
  * ------
  * Undocumented function used to clear state between unit tests
  */
-export function _uninitialize(): void {}
+export function _uninitialize(): void {
+  //used to clear state between unit tests
+}
 
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P

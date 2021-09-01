@@ -14,7 +14,7 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId: number = 0;
+  public static nextMessageId = 0;
   public static callbacks: {
     [id: number]: Function;
   } = {};
