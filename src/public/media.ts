@@ -356,7 +356,7 @@ export namespace media {
   abstract class MediaController<T> {
     protected controllerCallback: T;
 
-    constructor(controllerCallback?: T) {
+    public constructor(controllerCallback?: T) {
       this.controllerCallback = controllerCallback;
     }
 
