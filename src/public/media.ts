@@ -418,7 +418,7 @@ export namespace media {
       return MediaType.Video;
     }
 
-    notifyEventToApp(mediaEvent: MediaControllerEvent): void {
+    public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
       if (!this.controllerCallback) {
         // Early return as app has not registered with the callback
         return;
