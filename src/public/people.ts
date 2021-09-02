@@ -1,9 +1,9 @@
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
-import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
-import { openCardRequiredVersion, peoplePickerRequiredVersion } from '../internal/constants';
+import { peoplePickerRequiredVersion } from '../internal/constants';
+import { validateOpenCardRequest, validatePeoplePickerInput } from '../internal/peopleUtil';
 
 export namespace people {
   /**
@@ -98,17 +98,11 @@ export namespace people {
 
     ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
-    // if (!isAPISupportedByPlatform(openCardRequiredVersion)) {
-    //   const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-    //   callback(oldPlatformError);
-    //   return;
-    // }
-
-    // if (!validatePeoplePickerInput(peoplePickerInputs)) {
-    //   const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-    //   callback(invalidInput);
-    //   return;
-    // }
+    if (!validateOpenCardRequest(openCardRequest)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput);
+      return;
+    }
 
     sendMessageToParent('people.openCard', [openCardRequest], callback);
   }
@@ -133,18 +127,19 @@ export namespace people {
   /**
    * TODO: Document this.
    */
+  export type LivePersonaCardPlacementMode = "Default" | "AnchorSide";
+
+  /**
+   * TODO: Document this.
+   */
   export interface IHostAppProvidedPersonaIdentifiers {
     readonly HostAppPersonaId?: string;
     readonly OlsPersonaId?: string;
-    readonly LocationId?: string;
     readonly TeamsMri?: string;
     readonly AadObjectId?: string;
-    readonly SatoriId?: string;
     readonly Smtp?: string;
     readonly Upn?: string;
     readonly PersonaType: PersonaType;
-    readonly PermanentEntryId?: string;
-    readonly DisplayName?: string;
   }
 
   /**
@@ -153,11 +148,14 @@ export namespace people {
   export interface IHostAppProvidedPersona {
     identifiers: IHostAppProvidedPersonaIdentifiers;
     displayName?: string;
-    firstName?: string;
-    lastName?: string;
-    // isUnauthenticatedSender?: boolean;
-    // isTier3Brand?: boolean;
-    // skypeId?: string;
+  }
+
+  /**
+   * TODO: Document this.
+   */
+  export interface ILivePersonaCardBehavior {
+    enableStickiness?: boolean;
+    cardPlacementMode?: LivePersonaCardPlacementMode;
   }
 
   /**
@@ -165,17 +163,7 @@ export namespace people {
    */
   export interface ILivePersonaCardParameters {
     personaInfo: IHostAppProvidedPersona;
-    // behavior: ILivePersonaCardBehavior;
-    // externalAppSessionCorrelationId?: string;
-    // clientScenario?: string;
-    // ariaLabel?: string;
-    /**
-     * If this is set to true, the hover-target does not set nor interfere with accessibility-properties on
-     * the child element.
-     * @default false
-     */
-    // disableAccessibilityDefaults?: boolean;
-    // tabIndex?: number;
+    behavior: ILivePersonaCardBehavior;
     openCardTriggerType?: OpenCardTriggerType;
   }
 

@@ -29,12 +29,6 @@ export const locationAPIsRequiredVersion = '1.9.0';
 export const peoplePickerRequiredVersion = '2.0.0';
 
 /**
- * This is the SDK version when open card API is supported on mobile.
- * TODO: Work out what this version should be
- */
-export const openCardRequiredVersion = '2.0.0';
-
-/**
  * This is the SDK version when captureImage API is supported on mobile.
  */
 export const captureImageMobileSupportVersion = '1.7.0';
