@@ -94,6 +94,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.subEntityId,
     filePreviewParameters.viewerAction,
     filePreviewParameters.fileOpenPreference,
+    filePreviewParameters.conversationId
   ];
 
   sendMessageToParent('openFilePreview', params);

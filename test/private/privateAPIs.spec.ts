@@ -312,6 +312,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
       subEntityId: 'someSubEntityId',
       viewerAction: ViewerActionTypes.view,
       fileOpenPreference: FileOpenPreference.Web,
+      conversationId: 'someConversationId'
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
@@ -330,6 +331,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[10]).toBe('someSubEntityId');
     expect(message.args[11]).toBe('view');
     expect(message.args[12]).toBe(FileOpenPreference.Web);
+    expect(message.args[13]).toBe('someConversationId');
   });
 
   it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
