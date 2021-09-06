@@ -317,7 +317,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(13);
+    expect(message.args.length).toBe(14);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
