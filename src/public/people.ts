@@ -87,9 +87,9 @@ export namespace people {
   }
 
   /**
-   * TODO
-   * @param callback TODO
-   * @param openCardInputs TODO
+   * Opens a profile card at a specified position to show profile information about a person.
+   * @param callback Returns an error if one occurred, or null if the card open succeeded.
+   * @param openCardRequest The parameters to position the card and identify the target user.
    */
   export function openCard(callback: (error: SdkError) => void, openCardRequest?: OpenCardRequest): void {
     if (!callback) {
@@ -111,7 +111,7 @@ export namespace people {
    * The type of the persona to resolve.
    *  - User: An organization or consumer user.
    *  - External: A user external to the current organization.
-   *  - NotResolved: TODO
+   *  - NotResolved: A user with unknown type.
    */
   export type PersonaType = 'User' | 'External' | 'NotResolved';
 
@@ -125,46 +125,95 @@ export namespace people {
   export type OpenCardTriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'HostAppRequest';
 
   /**
-   * TODO: Document this.
+   * The relative position to place the card.
+   *  - Default: Positions the card over the target.
+   *  - AnchorSide: Positions the card to the side of the target.
    */
-  export type LivePersonaCardPlacementMode = "Default" | "AnchorSide";
+  export type LivePersonaCardPlacementMode = 'Default' | 'AnchorSide';
 
   /**
-   * TODO: Document this.
+   * The set of identifiers that are supported for resolving the persona.
    */
   export interface IHostAppProvidedPersonaIdentifiers {
-    readonly HostAppPersonaId?: string;
+    /**
+     * The Exchange contact ID.
+     */
     readonly OlsPersonaId?: string;
+
+    /**
+     * The Teams messaging resource identifier.
+     */
     readonly TeamsMri?: string;
+
+    /**
+     * The AAD object id.
+     */
     readonly AadObjectId?: string;
+
+    /**
+     * The primary SMTP address.
+     */
     readonly Smtp?: string;
+
+    /**
+     * The user principle name.
+     */
     readonly Upn?: string;
+
+    /**
+     * The type of the persona.
+     */
     readonly PersonaType: PersonaType;
   }
 
   /**
-   * TODO: Document this.
+   * The persona to open the card for.
    */
   export interface IHostAppProvidedPersona {
+    /**
+     * The set of identifiers that are supported for resolving the persona.
+     */
     identifiers: IHostAppProvidedPersonaIdentifiers;
+
+    /**
+     * Optional display name override. If not specified the user's display name will be resolved normally.
+     */
     displayName?: string;
   }
 
   /**
-   * TODO: Document this.
+   * Optional behavior configuration for the card.
    */
   export interface ILivePersonaCardBehavior {
+    /**
+     * Configures if the card should remain open until the user clicks outside the card.
+     */
     enableStickiness?: boolean;
+
+    /**
+     * Configures how the card should be placed relative to the target.
+     */
     cardPlacementMode?: LivePersonaCardPlacementMode;
   }
 
   /**
-   * TODO: Document this.
+   * The parameters used by the live persona card package to configure the card.
    */
   export interface ILivePersonaCardParameters {
+    /**
+     * The information about the persona to open the card for.
+     */
     personaInfo: IHostAppProvidedPersona;
-    behavior: ILivePersonaCardBehavior;
-    openCardTriggerType?: OpenCardTriggerType;
+
+    /**
+     * Specifies which user interaction was used to trigger the API call.
+     */
+    openCardTriggerType: OpenCardTriggerType;
+
+    /**
+     * Optional configuration of the card behavior.
+     */
+    behavior?: ILivePersonaCardBehavior;
   }
 
   /**
@@ -177,7 +226,7 @@ export namespace people {
     targetBoundingRect: ClientRect;
 
     /**
-     * The parameters to provide to the live persona card when opening the card.
+     * The parameters to provide to the live persona card component when opening the card.
      */
     parameters: ILivePersonaCardParameters;
   }

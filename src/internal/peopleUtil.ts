@@ -3,7 +3,7 @@ import { people } from '../public/people';
 /**
  * Returns true if the people picker params are valid and false otherwise
  */
- export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
+export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {
     if (peoplePickerInputs.title) {
       if (typeof peoplePickerInputs.title !== 'string') {
@@ -31,6 +31,57 @@ import { people } from '../public/people';
   return true;
 }
 
+/**
+ * Validates the request parameters
+ * @param openCardRequest The request parameters
+ * @returns true if the parameters are valid, false otherwise
+ */
 export function validateOpenCardRequest(openCardRequest: people.OpenCardRequest): boolean {
-  return !!openCardRequest;
+  if (!openCardRequest || !openCardRequest.parameters || !openCardRequest.parameters.personaInfo) {
+    return false;
+  }
+
+  if (!validateHostAppProvidedPersonaIdentifiers(openCardRequest.parameters.personaInfo.identifiers)) {
+    return false;
+  }
+
+  if (
+    !openCardRequest.parameters.openCardTriggerType ||
+    typeof openCardRequest.parameters.openCardTriggerType !== 'string'
+  ) {
+    return false;
+  }
+
+  if (!openCardRequest.targetBoundingRect || typeof openCardRequest.targetBoundingRect !== 'object') {
+    return false;
+  }
+
+  if (openCardRequest.parameters.behavior && openCardRequest.parameters.behavior !== 'object') {
+    return false;
+  }
+
+  return true;
+}
+
+function validateHostAppProvidedPersonaIdentifiers(identifiers: people.IHostAppProvidedPersonaIdentifiers): boolean {
+  if (!identifiers || typeof identifiers !== 'object') {
+    return false;
+  }
+
+  if (!identifiers.PersonaType || typeof identifiers.PersonaType !== 'string') {
+    return false;
+  }
+
+  // Validate at least one identifier was passed.
+  if (
+    !identifiers.AadObjectId &&
+    !identifiers.OlsPersonaId &&
+    !identifiers.Smtp &&
+    !identifiers.TeamsMri &&
+    !identifiers.Upn
+  ) {
+    return false;
+  }
+
+  return true;
 }
