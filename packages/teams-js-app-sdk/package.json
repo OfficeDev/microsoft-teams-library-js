@@ -25,6 +25,7 @@
     "LICENSE"
   ],
   "jest": {
+    "testRunner": "jest-jasmine2",
     "transform": {
       ".(ts|tsx)": "ts-jest"
     },
@@ -35,7 +36,7 @@
       "tsx",
       "js"
     ]
-  },
+ },
   "dependencies": {
     "es6-promise": "^4.2.8"
   }
