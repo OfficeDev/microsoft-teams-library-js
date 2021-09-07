@@ -254,6 +254,24 @@ export namespace meeting {
   }
 
   /**
+   * Allows an app to share contents in the meeting
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError, incase of an error, or null when share is successful
+   * result can either contain a true value, incase of a successful share or null when the share fails
+   * @param appContentUrl is the input URL which needs to be shared on to the stage
+   */
+  export function shareAppContentToStage(
+    callback: (error: SdkError | null, result: boolean | null) => void,
+    appContentUrl: string,
+  ): void {
+    if (!callback) {
+      throw new Error('[share app content to stage] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+  }
+
+  /**
    * Provides information related app's in-meeting sharing capabilities
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
@@ -274,21 +292,19 @@ export namespace meeting {
   }
 
   /**
-   * Allows an app to share contents in the meeting
+   * Terminates current stage sharing session in meeting
    * @param callback Callback contains 2 parameters, error and result.
-   * error can either contain an error of type SdkError, incase of an error, or null when share is successful
-   * result can either contain a true value, incase of a successful share or null when the share fails
-   * @param appContentUrl is the input URL which needs to be shared on to the stage
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    */
-  export function shareAppContentToStage(
+  export function stopSharingAppContentToStage(
     callback: (error: SdkError | null, result: boolean | null) => void,
-    appContentUrl: string,
   ): void {
     if (!callback) {
-      throw new Error('[share app content to stage] Callback cannot be null');
+      throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel);
-    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 
   /**
@@ -306,21 +322,5 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
-  }
-
-  /**
-   * Terminates current stage sharing session in meeting
-   * @param callback Callback contains 2 parameters, error and result.
-   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
-   */
-  export function stopSharingAppContentToStage(
-    callback: (error: SdkError | null, result: boolean | null) => void,
-  ): void {
-    if (!callback) {
-      throw new Error('[stop sharing app content to stage] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.sidePanel);
-    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 }
