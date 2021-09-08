@@ -228,6 +228,6 @@ export namespace people {
     /**
      * The parameters to provide to the live persona card component when opening the card.
      */
-    parameters: ILivePersonaCardParameters;
+    cardParameters: ILivePersonaCardParameters;
   }
 }

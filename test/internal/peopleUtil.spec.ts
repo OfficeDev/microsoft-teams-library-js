@@ -29,7 +29,7 @@ describe('peopleUtil', () => {
   describe('validateOpenCardRequest', () => {
     const validInput: people.OpenCardRequest = {
       targetBoundingRect: { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 },
-      parameters: {
+      cardParameters: {
         personaInfo: { identifiers: { PersonaType: 'User', Smtp: 'test@microsoft.com' } },
         openCardTriggerType: 'MouseHover',
       },
@@ -40,7 +40,7 @@ describe('peopleUtil', () => {
     });
 
     it('should return false if targetBoundingRect property is missing', () => {
-      const missingTargetBoundingRect = { ...validInput.parameters } as any;
+      const missingTargetBoundingRect = { ...validInput.cardParameters } as any;
       expect(validateOpenCardRequest(missingTargetBoundingRect)).toBeFalsy();
     });
 
@@ -52,7 +52,7 @@ describe('peopleUtil', () => {
     it('should return false if openCardTriggerType property is missing', () => {
       const missingOpenCardTriggerType = {
         ...validInput.targetBoundingRect,
-        parameters: { ...validInput.parameters, openCardTriggerType: undefined },
+        parameters: { ...validInput.cardParameters, openCardTriggerType: undefined },
       } as any;
 
       expect(validateOpenCardRequest(missingOpenCardTriggerType)).toBeFalsy();
@@ -62,10 +62,10 @@ describe('peopleUtil', () => {
       const missingPersonaType = {
         ...validInput,
         parameters: {
-          ...validInput.parameters,
+          ...validInput.cardParameters,
           personaInfo: {
-            ...validInput.parameters.personaInfo,
-            identifiers: { ...validInput.parameters.personaInfo.identifiers, PersonaType: undefined },
+            ...validInput.cardParameters.personaInfo,
+            identifiers: { ...validInput.cardParameters.personaInfo.identifiers, PersonaType: undefined },
           },
         },
       } as any;
@@ -77,9 +77,9 @@ describe('peopleUtil', () => {
       const missingIdentifier = {
         ...validInput,
         parameters: {
-          ...validInput.parameters,
+          ...validInput.cardParameters,
           personaInfo: {
-            ...validInput.parameters.personaInfo,
+            ...validInput.cardParameters.personaInfo,
             identifiers: { PersonaType: 'User' },
           },
         },
@@ -91,7 +91,7 @@ describe('peopleUtil', () => {
     it('should return false if behavior is invalid', () => {
       const missingIdentifier = {
         ...validInput,
-        parameters: { ...validInput.parameters, behavior: 'invalid' },
+        parameters: { ...validInput.cardParameters, behavior: 'invalid' },
       } as any;
 
       expect(validateOpenCardRequest(missingIdentifier)).toBeFalsy();

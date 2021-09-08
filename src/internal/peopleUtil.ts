@@ -37,17 +37,17 @@ export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePicke
  * @returns true if the parameters are valid, false otherwise
  */
 export function validateOpenCardRequest(openCardRequest: people.OpenCardRequest): boolean {
-  if (!openCardRequest || !openCardRequest.parameters || !openCardRequest.parameters.personaInfo) {
+  if (!openCardRequest || !openCardRequest.cardParameters || !openCardRequest.cardParameters.personaInfo) {
     return false;
   }
 
-  if (!validateHostAppProvidedPersonaIdentifiers(openCardRequest.parameters.personaInfo.identifiers)) {
+  if (!validateHostAppProvidedPersonaIdentifiers(openCardRequest.cardParameters.personaInfo.identifiers)) {
     return false;
   }
 
   if (
-    !openCardRequest.parameters.openCardTriggerType ||
-    typeof openCardRequest.parameters.openCardTriggerType !== 'string'
+    !openCardRequest.cardParameters.openCardTriggerType ||
+    typeof openCardRequest.cardParameters.openCardTriggerType !== 'string'
   ) {
     return false;
   }
@@ -56,7 +56,7 @@ export function validateOpenCardRequest(openCardRequest: people.OpenCardRequest)
     return false;
   }
 
-  if (openCardRequest.parameters.behavior && openCardRequest.parameters.behavior !== 'object') {
+  if (openCardRequest.cardParameters.behavior && openCardRequest.cardParameters.behavior !== 'object') {
     return false;
   }
 
