@@ -48,7 +48,9 @@ export namespace appEntity {
    *
    * Open the Tab Gallery and retrieve the app entity
    * @param threadId ID of the thread where the app entity will be created
-   * @param categories A list of app categories that will be displayed in the open tab gallery
+   * @param categories A list of app categories that will be displayed in the opened tab gallery
+   * @param launchContext An object that will be made available to the application being configured
+   *                      through the Teams Context's subEntityId field.
    * @param callback Callback that will be triggered once the app entity information is available.
    *                 The callback takes two arguments: the app entity configuration, if available and
    *                 an optional SdkError in case something happened (i.e. the window was closed)
@@ -56,6 +58,7 @@ export namespace appEntity {
   export function selectAppEntity(
     threadId: string,
     categories: string[],
+    launchContext: string,
     callback: (appEntity: AppEntity, sdkError?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
@@ -68,6 +71,6 @@ export namespace appEntity {
       throw new Error('[appEntity.selectAppEntity] Callback cannot be null');
     }
 
-    sendMessageToParent('appEntity.selectAppEntity', [threadId, categories], callback);
+    sendMessageToParent('appEntity.selectAppEntity', [threadId, categories, launchContext], callback);
   }
 }
