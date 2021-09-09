@@ -52,7 +52,7 @@ describe('peopleUtil', () => {
     it('should return false if openCardTriggerType property is missing', () => {
       const missingOpenCardTriggerType = {
         ...validInput.targetBoundingRect,
-        parameters: { ...validInput.cardParameters, openCardTriggerType: undefined },
+        cardParameters: { ...validInput.cardParameters, openCardTriggerType: undefined },
       } as any;
 
       expect(validateOpenCardRequest(missingOpenCardTriggerType)).toBeFalsy();
@@ -61,7 +61,7 @@ describe('peopleUtil', () => {
     it('should return false if PersonaType identifier is missing', () => {
       const missingPersonaType = {
         ...validInput,
-        parameters: {
+        cardParameters: {
           ...validInput.cardParameters,
           personaInfo: {
             ...validInput.cardParameters.personaInfo,
@@ -76,7 +76,7 @@ describe('peopleUtil', () => {
     it('should return false if no identifiers are provided', () => {
       const missingIdentifier = {
         ...validInput,
-        parameters: {
+        cardParameters: {
           ...validInput.cardParameters,
           personaInfo: {
             ...validInput.cardParameters.personaInfo,
@@ -91,7 +91,7 @@ describe('peopleUtil', () => {
     it('should return false if behavior is invalid', () => {
       const missingIdentifier = {
         ...validInput,
-        parameters: { ...validInput.cardParameters, behavior: 'invalid' },
+        cardParameters: { ...validInput.cardParameters, behavior: 'invalid' },
       } as any;
 
       expect(validateOpenCardRequest(missingIdentifier)).toBeFalsy();
