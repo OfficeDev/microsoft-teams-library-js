@@ -18,9 +18,8 @@ export namespace call {
     // typically an email address, or in case of a PSTN call, it supports a pstn
     // mri 4:<phonenumber>.
     targets: string[];
-    // An optional boolean parameter indicating whether the call should be a video
-    // call. Default is audio-only.
-    modalities?: CallModalities[];
+    // List of modalities for the call. Defaults to [“audio”].
+    requestedModalities?: CallModalities[];
     // An optional parameter that informs about the source of the deep link
     source?: string;
   }
