@@ -5,7 +5,7 @@ describe('call', () => {
   const utils = new Utils();
   const mockStartCallParams: call.StartCallParams = {
     targets: ['user'],
-    modalities: [call.CallModalities.Audio],
+    requestedModalities: [call.CallModalities.Audio],
     source: 'source',
   };
 
