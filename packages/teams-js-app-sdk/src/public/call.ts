@@ -35,7 +35,6 @@ export namespace call {
       if (!isSupported()) throw 'Not supported';
       return sendMessageToParent('call.startCall', [startCallParams], resolve);
     });
-    
   }
 
   export function isSupported(): boolean {
