@@ -30,7 +30,7 @@ import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
  * @beta
  */
 export namespace app {
-  // ::::::::::::::::::::::: teamsjs App SDK public API ::::::::::::::::::::
+  // ::::::::::::::::::::::: M365 App SDK public API ::::::::::::::::::::
 
   export const Messages = {
     AppLoaded: 'appInitialization.appLoaded',

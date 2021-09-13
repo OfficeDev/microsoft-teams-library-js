@@ -2,7 +2,7 @@ import { app } from '../../src/public';
 import { Utils } from '../utils';
 import { legacy, TeamInstanceParameters } from '../../src/private';
 
-describe('teamsjsAppSDK-privateAPIs', () => {
+describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
