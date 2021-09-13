@@ -1,14 +1,14 @@
-import { FrameContexts } from '@microsoft/teamsjs-app-sdk/public/constants';
-import { sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
+import { FrameContexts } from './constants';
+import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from './runtime';
 
-export interface OpenAPPInstallDialogParams {
-  appId: string;
-}
-
 export namespace appInstallDialog {
-  export async function openAppInstallDialog(openAPPInstallDialogParams: OpenAPPInstallDialogParams): Promise<void> {
+  export interface OpenAppInstallDialogParams {
+    appId: string;
+  }
+
+  export async function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
     if (!isSupported()) throw 'Not supported';
     ensureInitialized(FrameContexts.content);
     await sendMessageToParentAsync<void>('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
