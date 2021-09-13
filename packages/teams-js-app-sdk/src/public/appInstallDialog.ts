@@ -9,8 +9,8 @@ export namespace appInstallDialog {
   }
 
   export async function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
-    if (!isSupported()) throw 'Not supported';
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) throw 'Not supported';
     await sendMessageToParentAsync<void>('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
   }
 
