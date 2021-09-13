@@ -6,6 +6,7 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstall?: {},
     readonly calendar?: {};
+    readonly call?: {};
     readonly chat?: {};
     readonly dialog?: {};
     readonly files?: {};
@@ -32,6 +33,7 @@ export let runtime: IRuntime = {
   supports: {
     appInstall: undefined,
     calendar: undefined,
+    call: undefined,
     chat: undefined,
     dialog: undefined,
     location: undefined,

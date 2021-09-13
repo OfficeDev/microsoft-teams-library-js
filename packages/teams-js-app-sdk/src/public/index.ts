@@ -38,3 +38,4 @@ export { teamsCore } from './teamsAPIs';
 export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
+export { call } from './call';

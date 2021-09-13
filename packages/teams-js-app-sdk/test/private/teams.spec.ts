@@ -2,7 +2,7 @@ import { teams } from '../../src/private';
 import { app } from '../../src/public';
 import { Utils } from '../utils';
 
-describe('teamsjsAppSDK-privateAPIs', () => {
+describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
   const emptyCallback = () => {};
