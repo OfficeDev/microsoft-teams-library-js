@@ -4,6 +4,7 @@ import { deepFreeze } from '../internal/utils';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
+    readonly appInstall?: {},
     readonly calendar?: {};
     readonly chat?: {};
     readonly dialog?: {};
@@ -29,6 +30,7 @@ export interface IRuntime {
 export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
+    appInstall: undefined,
     calendar: undefined,
     chat: undefined,
     dialog: undefined,
@@ -53,6 +55,7 @@ export let runtime: IRuntime = {
 export const teamsRuntimeConfig: IRuntime = {
   apiVersion: 1,
   supports: {
+    appInstall: {},
     chat: {},
     dialog: {},
     files: {},
