@@ -1,5 +1,5 @@
 import { FrameContexts } from './constants';
-import { sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from './runtime';
 
@@ -29,10 +29,13 @@ export namespace call {
    * @param startCallParams Parameters for the call
    * @returns If the call is accepted
    */
-  export async function startCall(startCallParams: StartCallParams): Promise<boolean> {
-    ensureInitialized(FrameContexts.content);
-    if (!isSupported()) throw 'Not supported';
-    return sendMessageToParentAsync('call.startCall', [startCallParams]);
+  export function startCall(startCallParams: StartCallParams): Promise<boolean> {
+    return new Promise(resolve => {
+      ensureInitialized(FrameContexts.content);
+      if (!isSupported()) throw 'Not supported';
+      return sendMessageToParent('call.startCall', [startCallParams], resolve);
+    });
+    
   }
 
   export function isSupported(): boolean {
