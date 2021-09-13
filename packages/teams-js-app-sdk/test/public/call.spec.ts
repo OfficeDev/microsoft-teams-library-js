@@ -4,9 +4,9 @@ import { Utils } from '../utils';
 describe('call', () => {
   const utils = new Utils();
   const mockStartCallParams: call.StartCallParams = {
-    users: ['user'],
-    source: ['source'],
-    withVideo: true,
+    targets: ['user'],
+    modalities: [call.CallModalities.Audio],
+    source: 'source',
   };
 
   beforeEach(() => {

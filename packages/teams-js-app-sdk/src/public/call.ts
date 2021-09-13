@@ -4,17 +4,25 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from './runtime';
 
 export namespace call {
+  export enum CallModalities {
+    Unknown = 'unknown',
+    Audio = 'audio',
+    Video = 'video',
+    VideoBasedScreenSharing = 'videoBasedScreenSharing',
+    Data = 'data',
+  }
+
   export interface StartCallParams {
     // comma-separated list of user IDs representing the participants of the call.
     // Currently the User ID field supports the Azure AD UserPrincipalName,
     // typically an email address, or in case of a PSTN call, it supports a pstn
     // mri 4:<phonenumber>.
-    users: string[];
+    targets: string[];
     // An optional boolean parameter indicating whether the call should be a video
     // call. Default is audio-only.
-    withVideo?: boolean;
+    modalities?: CallModalities[];
     // An optional parameter that informs about the source of the deep link
-    source?: string[];
+    source?: string;
   }
 
   /**
