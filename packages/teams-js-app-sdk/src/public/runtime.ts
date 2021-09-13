@@ -4,7 +4,7 @@ import { deepFreeze } from '../internal/utils';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
-    readonly appInstall?: {},
+    readonly appInstall?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
