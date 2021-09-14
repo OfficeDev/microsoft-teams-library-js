@@ -45,9 +45,9 @@
     "yargs": "^8.0.1"
   },
   "files": [
-    "Microsoft teamsjs SDK Private Preview Agreement - Software Development Kit (SDK) Use Terms.pdf",
     "dist/**",
     "dts/**",
+    "Microsoft teamsjs SDK Private Preview Agreement - Software Development Kit (SDK) Use Terms.pdf",
     "NOTICE.txt",
     "README.md"
   ],
