@@ -129,17 +129,12 @@ export namespace people {
    *  - Default: Positions the card over the target.
    *  - AnchorSide: Positions the card to the side of the target.
    */
-  export type LivePersonaCardPlacementMode = 'Default' | 'AnchorSide';
+  export type CardPlacementMode = 'Default' | 'AnchorSide';
 
   /**
    * The set of identifiers that are supported for resolving the persona.
    */
-  export interface IHostAppProvidedPersonaIdentifiers {
-    /**
-     * The Exchange contact ID.
-     */
-    readonly OlsPersonaId?: string;
-
+  export interface PersonaIdentifiers {
     /**
      * The Teams messaging resource identifier.
      */
@@ -169,11 +164,11 @@ export namespace people {
   /**
    * The persona to open the card for.
    */
-  export interface IHostAppProvidedPersona {
+  export interface Persona {
     /**
      * The set of identifiers that are supported for resolving the persona.
      */
-    identifiers: IHostAppProvidedPersonaIdentifiers;
+    identifiers: PersonaIdentifiers;
 
     /**
      * Optional display name override. If not specified the user's display name will be resolved normally.
@@ -184,7 +179,7 @@ export namespace people {
   /**
    * Optional behavior configuration for the card.
    */
-  export interface ILivePersonaCardBehavior {
+  export interface CardBehavior {
     /**
      * Configures if the card should remain open until the user clicks outside the card.
      */
@@ -193,17 +188,17 @@ export namespace people {
     /**
      * Configures how the card should be placed relative to the target.
      */
-    cardPlacementMode?: LivePersonaCardPlacementMode;
+    cardPlacementMode?: CardPlacementMode;
   }
 
   /**
-   * The parameters used by the live persona card package to configure the card.
+   * The parameters used by the persona card component to configure the card.
    */
-  export interface ILivePersonaCardParameters {
+  export interface CardParameters {
     /**
      * The information about the persona to open the card for.
      */
-    personaInfo: IHostAppProvidedPersona;
+    personaInfo: Persona;
 
     /**
      * Specifies which user interaction was used to trigger the API call.
@@ -213,7 +208,7 @@ export namespace people {
     /**
      * Optional configuration of the card behavior.
      */
-    behavior?: ILivePersonaCardBehavior;
+    behavior?: CardBehavior;
   }
 
   /**
@@ -226,8 +221,8 @@ export namespace people {
     targetBoundingRect: ClientRect;
 
     /**
-     * The parameters to provide to the live persona card component when opening the card.
+     * The parameters to provide to the persona card component when opening the card.
      */
-    cardParameters: ILivePersonaCardParameters;
+    cardParameters: CardParameters;
   }
 }

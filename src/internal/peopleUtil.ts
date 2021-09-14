@@ -41,7 +41,7 @@ export function validateOpenCardRequest(openCardRequest: people.OpenCardRequest)
     return false;
   }
 
-  if (!validateHostAppProvidedPersonaIdentifiers(openCardRequest.cardParameters.personaInfo.identifiers)) {
+  if (!validatePersonaIdentifiers(openCardRequest.cardParameters.personaInfo.identifiers)) {
     return false;
   }
 
@@ -63,7 +63,7 @@ export function validateOpenCardRequest(openCardRequest: people.OpenCardRequest)
   return true;
 }
 
-function validateHostAppProvidedPersonaIdentifiers(identifiers: people.IHostAppProvidedPersonaIdentifiers): boolean {
+function validatePersonaIdentifiers(identifiers: people.PersonaIdentifiers): boolean {
   if (!identifiers || typeof identifiers !== 'object') {
     return false;
   }
@@ -73,13 +73,7 @@ function validateHostAppProvidedPersonaIdentifiers(identifiers: people.IHostAppP
   }
 
   // Validate at least one identifier was passed.
-  if (
-    !identifiers.AadObjectId &&
-    !identifiers.OlsPersonaId &&
-    !identifiers.Smtp &&
-    !identifiers.TeamsMri &&
-    !identifiers.Upn
-  ) {
+  if (!identifiers.AadObjectId && !identifiers.Smtp && !identifiers.TeamsMri && !identifiers.Upn) {
     return false;
   }
 
