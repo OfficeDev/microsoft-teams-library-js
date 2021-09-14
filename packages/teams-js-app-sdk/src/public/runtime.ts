@@ -5,6 +5,7 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly supports: {
     readonly calendar?: {};
+    readonly call?: {};
     readonly chat?: {};
     readonly dialog?: {};
     readonly files?: {};
@@ -30,6 +31,7 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     calendar: undefined,
+    call: undefined,
     chat: undefined,
     dialog: undefined,
     location: undefined,
