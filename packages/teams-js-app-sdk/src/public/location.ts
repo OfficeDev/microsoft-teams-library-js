@@ -1,7 +1,7 @@
-import { SdkError, ErrorCode } from './interfaces';
+import { ErrorCode } from './interfaces';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { runtime } from './runtime';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 
@@ -43,49 +43,40 @@ export namespace location {
 
   /**
    * Fetches current user coordinates or allows user to choose location on map
-   * @param callback Callback to invoke when current user location is fetched
+   * @param props {@link LocationProps} specifying how the location request is handled
+   * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void {
-    if (!callback) {
-      throw new Error('[location.getLocation] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function getLocation(props: LocationProps): Promise<Location> {
+    return new Promise<Location>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, undefined);
-      return;
-    }
-    if (!props) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, undefined);
-      return;
-    }
-    sendMessageToParent('location.getLocation', [props], callback);
+      if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
+      if (!props) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      resolve(sendAndHandleError('location.getLocation', props));
+    });
   }
 
   /**
    * Shows the location on map corresponding to the given coordinates
    * @param location {@link Location} which needs to be shown on map
-   * @param callback Callback to invoke when the location is opened on map
+   * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
-    if (!callback) {
-      throw new Error('[location.showLocation] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function showLocation(location: Location): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, undefined);
-      return;
-    }
-    if (!location) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, undefined);
-      return;
-    }
-    sendMessageToParent('location.showLocation', [location], callback);
+      if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
+      if (!location) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      resolve(sendAndHandleError('location.showLocation', location));
+    });
   }
 
   export function isSupported(): boolean {
