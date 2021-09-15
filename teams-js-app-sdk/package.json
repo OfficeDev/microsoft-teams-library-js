@@ -47,7 +47,6 @@
   "files": [
     "dist/**",
     "dts/**",
-    "Microsoft teamsjs SDK Private Preview Agreement - Software Development Kit (SDK) Use Terms.pdf",
     "NOTICE.txt",
     "README.md"
   ],
