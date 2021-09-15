@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teamsjs-app-sdk",
   "author": "Microsoft teamsjs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "teamsjs App SDK for building teamsjs apps",
   "main": "./dist/teamsjs.min.js",
   "typings": "./dist/teamsjs.d.ts",
@@ -47,7 +47,6 @@
   "files": [
     "dist/**",
     "dts/**",
-    "Microsoft teamsjs SDK Private Preview Agreement - Software Development Kit (SDK) Use Terms.pdf",
     "NOTICE.txt",
     "README.md"
   ],
