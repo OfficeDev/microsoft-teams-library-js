@@ -1,4 +1,6 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
+import { media } from '../public/media';
+
 /**
  * @private
  * Hide from docs
@@ -172,4 +174,22 @@ export enum MediaControllerEvent {
   PauseRecording = 3,
   ResumeRecording = 4,
   StopRecording = 5,
+}
+
+/**
+ * @private
+ * Hide from docs
+ * --------
+ * Interface with relevant info to send communication from the app to the host client
+ */
+export interface MediaControllerParam {
+  /**
+   * List of team information
+   */
+  mediaType: media.MediaType;
+
+  /**
+   * List of team information
+   */
+  mediaControllerEvent: MediaControllerEvent;
 }

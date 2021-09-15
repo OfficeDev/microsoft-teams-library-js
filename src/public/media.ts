@@ -14,7 +14,7 @@ import {
   isVideoControllerRegistered,
   isApiSupportedOnMobile,
 } from '../internal/mediaUtil';
-import { MediaControllerEvent } from '../private/interfaces';
+import { MediaControllerEvent, MediaControllerParam } from '../private/interfaces';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import {
@@ -367,7 +367,7 @@ export namespace media {
      * Hide from docs
      * --------
      * This function will be implemented by the respective media class which holds the logic
-     * of which event is specific to that media type and needs to be notified to the app.
+     * of specific events that needs to be notified to the app.
      * @param mediaEvent indicates the event signed by the host client to the app
      */
     protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
@@ -390,7 +390,7 @@ export namespace media {
         return;
       }
 
-      const params = { MediaType: this.getMediaType(), MediaControllerEvent: mediaEvent };
+      const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
       sendMessageToParent('mediaController', [params], (err?: SdkError) => {
         if (callback) {
           callback(err);
