@@ -1,4 +1,8 @@
-import { sendMessageToParent } from '../internal/communication';
+import {
+  sendMessageToParent,
+  sendMessageToParentAsync,
+  sendAndHandleSdkError as sendAndHandleError,
+} from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 import { runtime } from '../public/runtime';
@@ -132,22 +136,17 @@ export namespace files {
    *
    * Gets a list of cloud storage folders added to the channel
    * @param channelId ID of the channel whose cloud storage folders should be retrieved
-   * @param callback Callback that will be triggered post folders load
    */
-  export function getCloudStorageFolders(
-    channelId: string,
-    callback: (error: SdkError, folders: CloudStorageFolder[]) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
+  export function getCloudStorageFolders(channelId: string): Promise<CloudStorageFolder[]> {
+    return new Promise<CloudStorageFolder[]>(resolve => {
+      ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
-      throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
-    }
-    if (!callback) {
-      throw new Error('[files.getCloudStorageFolders] Callback cannot be null');
-    }
+      if (!channelId || channelId.length == 0) {
+        throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
+      }
 
-    sendMessageToParent('files.getCloudStorageFolders', [channelId], callback);
+      resolve(sendAndHandleError('files.getCloudStorageFolders', channelId));
+    });
   }
 
   /**
@@ -156,22 +155,23 @@ export namespace files {
    *
    * Initiates the add cloud storage folder flow
    * @param channelId ID of the channel to add cloud storage folder
-   * @param callback Callback that will be triggered post add folder flow is compelete
    */
-  export function addCloudStorageFolder(
-    channelId: string,
-    callback: (error: SdkError, isFolderAdded: boolean, folders: CloudStorageFolder[]) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
+  export function addCloudStorageFolder(channelId: string): Promise<[boolean, CloudStorageFolder[]]> {
+    return new Promise<[SdkError, boolean, CloudStorageFolder[]]>(resolve => {
+      ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
-      throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
-    }
-    if (!callback) {
-      throw new Error('[files.addCloudStorageFolder] Callback cannot be null');
-    }
+      if (!channelId || channelId.length == 0) {
+        throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
+      }
 
-    sendMessageToParent('files.addCloudStorageFolder', [channelId], callback);
+      resolve(sendMessageToParentAsync('files.addCloudStorageFolder', [channelId]));
+    }).then(([error, isFolderAdded, folders]: [SdkError, boolean, CloudStorageFolder[]]) => {
+      if (error) {
+        throw error;
+      }
+      const result: [boolean, CloudStorageFolder[]] = [isFolderAdded, folders];
+      return result;
+    });
   }
 
   /**
@@ -181,26 +181,20 @@ export namespace files {
    * Deletes a cloud storage folder from channel
    * @param channelId ID of the channel where folder is to be deleted
    * @param folderToDelete cloud storage folder to be deleted
-   * @param callback Callback that will be triggered post delete
    */
-  export function deleteCloudStorageFolder(
-    channelId: string,
-    folderToDelete: CloudStorageFolder,
-    callback: (error: SdkError, isFolderDeleted: boolean) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
+  export function deleteCloudStorageFolder(channelId: string, folderToDelete: CloudStorageFolder): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      ensureInitialized(FrameContexts.content);
 
-    if (!channelId) {
-      throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
-    }
-    if (!folderToDelete) {
-      throw new Error('[files.deleteCloudStorageFolder] folderToDelete cannot be null or empty');
-    }
-    if (!callback) {
-      throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
-    }
+      if (!channelId) {
+        throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
+      }
+      if (!folderToDelete) {
+        throw new Error('[files.deleteCloudStorageFolder] folderToDelete cannot be null or empty');
+      }
 
-    sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
+      resolve(sendAndHandleError('files.deleteCloudStorageFolder', channelId, folderToDelete));
+    });
   }
 
   /**
@@ -215,23 +209,20 @@ export namespace files {
   export function getCloudStorageFolderContents(
     folder: CloudStorageFolder | CloudStorageFolderItem,
     providerCode: CloudStorageProvider,
-    callback: (error: SdkError, items: CloudStorageFolderItem[]) => void,
-  ): void {
-    ensureInitialized(FrameContexts.content);
+  ): Promise<CloudStorageFolderItem[]> {
+    return new Promise<CloudStorageFolderItem[]>(resolve => {
+      ensureInitialized(FrameContexts.content);
 
-    if (!folder || !providerCode) {
-      throw new Error('[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty');
-    }
+      if (!folder || !providerCode) {
+        throw new Error('[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty');
+      }
 
-    if (!callback) {
-      throw new Error('[files.getCloudStorageFolderContents] Callback cannot be null');
-    }
+      if ('isSubdirectory' in folder && !folder.isSubdirectory) {
+        throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
+      }
 
-    if ('isSubdirectory' in folder && !folder.isSubdirectory) {
-      throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
-    }
-
-    sendMessageToParent('files.getCloudStorageFolderContents', [folder, providerCode], callback);
+      resolve(sendAndHandleError('files.getCloudStorageFolderContents', folder, providerCode));
+    });
   }
 
   /**

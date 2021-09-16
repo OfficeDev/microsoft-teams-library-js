@@ -5,6 +5,7 @@ import AppAPIs from './components/AppAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
+import CallAPIs from './components/CallAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import MediaAPIs from './components/MediaAPIs';
@@ -85,6 +86,7 @@ const App = (): ReactElement => {
       <AppInitializationAPIs />
       <AuthenticationAPIs />
       <CalendarAPIs />
+      <CallAPIs />
       <ChatAPIs />
       <ConfigAPIs />
       <DialogAPIs />

@@ -2,7 +2,7 @@ import { FramelessPostMocks } from '../framelessPostMocks';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { SdkError, ErrorCode } from '../../src/public/interfaces';
+import { ErrorCode } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
 
 /**
@@ -27,60 +27,37 @@ describe('peoplePicker', () => {
     }
   });
 
-  let emptyCallback = () => {};
-
   /**
    * People Picker tests
    */
-  it('should not allow selectPeople calls with null callback', () => {
-    expect(() => people.selectPeople(null)).toThrowError('[people picker] Callback cannot be null');
-  });
-
   it('should allow selectPeople calls with null peoplePickerInputs', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerError: SdkError;
-    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
-      peoplePickerError = error;
-    }, null);
-    expect(peoplePickerError).toBeUndefined();
+    return expect(people.selectPeople(null)).resolves;
   });
 
   it('should allow selectPeople calls with no peoplePickerInputs', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerError: SdkError;
-    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
-      peoplePickerError = error;
-    });
-    expect(peoplePickerError).toBeUndefined();
+    return expect(people.selectPeople()).resolves;
   });
 
   it('should allow selectPeople calls with undefined peoplePickerInputs', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerError: SdkError;
-    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
-      peoplePickerError = error;
-    }, undefined);
-    expect(peoplePickerError).toBeUndefined();
+    return expect(people.selectPeople(undefined)).resolves;
   });
 
   it('selectPeople call in default version of platform support fails', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-    let peoplePickerError: SdkError;
-    people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
-      peoplePickerError = error;
-    });
-    expect(peoplePickerError).not.toBeNull();
-    expect(peoplePickerError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+    return expect(people.selectPeople()).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
   });
 
   it('selectPeople call in task frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    people.selectPeople(emptyCallback);
+    people.selectPeople();
     const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -89,7 +66,7 @@ describe('peoplePicker', () => {
   it('selectPeople call in content frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    people.selectPeople(emptyCallback);
+    people.selectPeople();
     const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -98,11 +75,7 @@ describe('peoplePicker', () => {
   it('selectPeople calls with successful result', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerResult: people.PeoplePickerResult[], peoplePickerError: SdkError;
-    people.selectPeople((e: SdkError, m: people.PeoplePickerResult[]) => {
-      peoplePickerError = e;
-      peoplePickerResult = m;
-    });
+    const promise = people.selectPeople();
 
     const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
@@ -123,9 +96,9 @@ describe('peoplePicker', () => {
       },
     } as DOMMessageEvent);
 
-    expect(peoplePickerError).toBeFalsy();
-    expect(result.length).toBe(1);
-    const person = result[0];
+    const peopleResult = await promise;
+    expect(peopleResult.length).toBe(1);
+    const person = peopleResult[0];
     expect(person).not.toBeNull();
     expect(person.objectId).not.toBeNull();
     expect(typeof person.objectId === 'string').toBeTruthy();
@@ -139,17 +112,13 @@ describe('peoplePicker', () => {
   it('selectPeople calls with error', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-    let peoplePickerResult: people.PeoplePickerResult[], peoplePickerError: SdkError;
     const peoplePickerInput: people.PeoplePickerInputs = {
       title: 'Hello World',
       setSelected: null,
       openOrgWideSearchInChatOrChannel: true,
       singleSelect: true,
     };
-    people.selectPeople((e: SdkError, m: people.PeoplePickerResult[]) => {
-      peoplePickerError = e;
-      peoplePickerResult = m;
-    }, peoplePickerInput);
+    const promise = people.selectPeople(peoplePickerInput);
 
     const message = mobilePlatformMock.findMessageByFunc('people.selectPeople');
     expect(message).not.toBeNull();
@@ -163,7 +132,6 @@ describe('peoplePicker', () => {
       },
     } as DOMMessageEvent);
 
-    expect(peoplePickerResult).toBeFalsy();
-    expect(peoplePickerError.errorCode).toBe(ErrorCode.INTERNAL_ERROR);
+    expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
   });
 });

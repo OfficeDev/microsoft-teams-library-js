@@ -6,7 +6,6 @@ import { ViewerActionTypes } from '../../src/private/interfaces';
 
 describe('files', () => {
   const utils = new Utils();
-  const emptyCallback = () => {};
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -28,39 +27,34 @@ describe('files', () => {
 
   describe('getCloudStorageFolders', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
+      expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
+      expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolders(null, emptyCallback)).toThrowError();
+      expect(files.getCloudStorageFolders(null)).rejects.toThrowError();
     });
 
     it('should not allow calls with undefined channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolders(undefined, emptyCallback)).toThrowError();
+      expect(files.getCloudStorageFolders(undefined)).rejects.toThrowError();
     });
 
     it('should not allow calls with empty channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolders('', emptyCallback)).toThrowError();
+      expect(files.getCloudStorageFolders('')).rejects.toThrowError();
     });
 
-    it('should not allow calls with empty callback', async () => {
-      await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolders('channelId', null)).toThrowError();
-    });
-
-    it('should trigger callback correctly', async () => {
+    it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('content');
       const mockCloudStorageFolders: files.CloudStorageFolder[] = [
         {
@@ -73,50 +67,38 @@ describe('files', () => {
         },
       ];
 
-      const callback = jest.fn((err, folders) => {
-        expect(err).toBeFalsy();
-        expect(folders).toEqual(mockCloudStorageFolders);
-      });
-
-      files.getCloudStorageFolders('channelId', callback);
+      const promise = files.getCloudStorageFolders('channelId');
 
       const getCloudStorageFoldersMessage = utils.findMessageByFunc('files.getCloudStorageFolders');
       expect(getCloudStorageFoldersMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFoldersMessage, false, mockCloudStorageFolders);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toEqual(mockCloudStorageFolders);
     });
   });
 
   describe('addCloudStorageFolder', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
+      expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.addCloudStorageFolder(null, emptyCallback)).toThrowError();
+      expect(files.addCloudStorageFolder(null)).rejects.toThrowError();
     });
 
     it('should not allow calls with empty channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.addCloudStorageFolder('', emptyCallback)).toThrowError();
+      expect(files.addCloudStorageFolder('')).rejects.toThrowError();
     });
 
-    it('should not allow calls with empty callback', async () => {
-      await utils.initializeWithContext('content');
-      expect(() => files.addCloudStorageFolder('channelId', null)).toThrowError();
-    });
-
-    it('should trigger callback correctly', async () => {
+    it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('content');
       const mockCloudStorageFolders: files.CloudStorageFolder[] = [
         {
@@ -129,18 +111,15 @@ describe('files', () => {
         },
       ];
 
-      const callback = jest.fn((err, isFolderAdded, folders) => {
-        expect(err).toBeFalsy();
-        expect(isFolderAdded).toEqual(true);
-        expect(folders).toEqual(mockCloudStorageFolders);
-      });
-
-      files.addCloudStorageFolder('channelId', callback);
+      const promise = files.addCloudStorageFolder('channelId');
 
       const addCloudStorageFolderMessage = utils.findMessageByFunc('files.addCloudStorageFolder');
       expect(addCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(addCloudStorageFolderMessage, false, true, mockCloudStorageFolders);
-      expect(callback).toHaveBeenCalled();
+
+      const [isFolderAdded, folders] = await promise;
+      expect(isFolderAdded).toBe(true);
+      expect(folders).toEqual(mockCloudStorageFolders);
     });
   });
 
@@ -155,52 +134,42 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
+      expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
+      expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.deleteCloudStorageFolder(null, mockCloudStorageFolder, emptyCallback)).toThrowError();
+      expect(files.deleteCloudStorageFolder(null, mockCloudStorageFolder)).rejects.toThrowError();
     });
 
     it('should not allow calls with empty channelId', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.deleteCloudStorageFolder('', mockCloudStorageFolder, emptyCallback)).toThrowError();
+      expect(files.deleteCloudStorageFolder('', mockCloudStorageFolder)).rejects.toThrowError();
     });
 
     it('should not allow calls with null folderToDelete', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.deleteCloudStorageFolder('channelId', null, emptyCallback)).toThrowError();
+      expect(files.deleteCloudStorageFolder('channelId', null)).rejects.toThrowError();
     });
 
-    it('should not allow calls with empty callback', async () => {
-      await utils.initializeWithContext('content');
-      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, null)).toThrowError();
-    });
-
-    it('should trigger callback correctly', async () => {
+    it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('content');
 
-      const callback = jest.fn((err, isFolderDeleted) => {
-        expect(err).toBeFalsy();
-        expect(isFolderDeleted).toEqual(true);
-      });
-
-      files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, callback);
+      const promise = files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder);
 
       const deleteCloudStorageFolderMessage = utils.findMessageByFunc('files.deleteCloudStorageFolder');
       expect(deleteCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(deleteCloudStorageFolderMessage, false, true);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toBe(true);
     });
   });
 
@@ -236,68 +205,49 @@ describe('files', () => {
     ];
 
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError('The library has not yet been initialized');
+      return expect(
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
+      ).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() =>
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError("This call is not allowed in the 'settings' context");
+      return expect(
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
+      ).rejects.toThrowError("This call is not allowed in the 'settings' context");
     });
 
     it('should not allow calls with null folder', async () => {
       await utils.initializeWithContext('content');
-      expect(() =>
-        files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError();
+      return expect(files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box)).rejects.toThrowError();
     });
 
     it('should not allow calls for a file item', async () => {
       await utils.initializeWithContext('content');
       const mockFileItem = mockCloudStorageFolderItems[0];
-      expect(() =>
-        files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError();
+      return expect(
+        files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box),
+      ).rejects.toThrowError();
     });
 
     it('should not allow calls without providerCode', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.getCloudStorageFolderContents(mockCloudStorageFolder, null, emptyCallback)).toThrowError();
+      return expect(files.getCloudStorageFolderContents(mockCloudStorageFolder, null)).rejects.toThrowError();
     });
 
-    it('should not allow calls with empty callback', async () => {
-      await utils.initializeWithContext('content');
-      expect(() =>
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, null),
-      ).toThrowError();
-    });
-
-    it('should trigger callback correctly for cloud storage folder', async () => {
+    it('should resolve promise correctly for cloud storage folder', async () => {
       await utils.initializeWithContext('content');
 
-      const callback = jest.fn((err, contents) => {
-        expect(err).toBeFalsy();
-        expect(contents).toEqual(mockCloudStorageFolderItems);
-      });
-
-      files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, callback);
+      const promise = files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box);
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toEqual(mockCloudStorageFolderItems);
     });
 
-    it('should trigger callback correctly for cloud storage item', async () => {
+    it('should resolve promise correctly for cloud storage item', async () => {
       await utils.initializeWithContext('content');
-
-      const callback = jest.fn((err, isFolderDeleted) => {
-        expect(err).toBeFalsy();
-        expect(isFolderDeleted).toEqual(mockCloudStorageFolderItems);
-      });
 
       const mockCloudStorageFolderItem: files.CloudStorageFolderItem = {
         id: 'test1',
@@ -308,12 +258,12 @@ describe('files', () => {
         objectUrl: 'https://api.com/test',
         lastModifiedTime: '2021-04-14T15:08:35Z',
       };
-      files.getCloudStorageFolderContents(mockCloudStorageFolderItem, files.CloudStorageProvider.Box, callback);
+      const promise = files.getCloudStorageFolderContents(mockCloudStorageFolderItem, files.CloudStorageProvider.Box);
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toEqual(mockCloudStorageFolderItems);
     });
   });
 
@@ -402,7 +352,7 @@ describe('files', () => {
         fileOpenPreference: FileOpenPreference.Web,
       });
 
-      let message = utils.findMessageByFunc('openFilePreview');
+      const message = utils.findMessageByFunc('openFilePreview');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(13);
       expect(message.args[0]).toBe('someEntityId');
@@ -440,7 +390,7 @@ describe('files', () => {
       fileOpenPreference: FileOpenPreference.Web,
     });
 
-    let message = utils.findMessageByFunc('openFilePreview');
+    const message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(13);
     expect(message.args[0]).toBe('someEntityId');

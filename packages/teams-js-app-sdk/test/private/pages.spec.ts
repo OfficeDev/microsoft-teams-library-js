@@ -2,7 +2,7 @@ import { app } from '../../src/public/app';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 
-describe('teamsjsAppSDK-TeamsAPIs', () => {
+describe('AppSDK-TeamsAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
