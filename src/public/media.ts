@@ -398,6 +398,10 @@ export namespace media {
       });
     }
 
+    /**
+     * Function to programatically stop the ongoing media event
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
+     */
     public stop(callback?: (err?: SdkError) => void): void {
       this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
