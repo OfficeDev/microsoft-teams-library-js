@@ -37,7 +37,7 @@ describe('appInstallDialog', () => {
     utils.setRuntimeConfig({
       apiVersion: 1,
       supports: {
-        appInstall: {},
+        appInstallDialog: {},
       },
     });
     const promise = appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams);
