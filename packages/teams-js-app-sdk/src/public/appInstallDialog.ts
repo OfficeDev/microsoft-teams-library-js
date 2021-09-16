@@ -1,5 +1,5 @@
 import { FrameContexts } from './constants';
-import { sendMessageToParentAsync } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from './runtime';
 
@@ -8,10 +8,12 @@ export namespace appInstallDialog {
     appId: string;
   }
 
-  export async function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
-    ensureInitialized(FrameContexts.content);
-    if (!isSupported()) throw 'Not supported';
-    await sendMessageToParentAsync<void>('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+  export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
+    return new Promise(resolve => {
+      ensureInitialized(FrameContexts.content);
+      if (!isSupported()) throw 'Not supported';
+      sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams], resolve);
+    });
   }
 
   export function isSupported(): boolean {
