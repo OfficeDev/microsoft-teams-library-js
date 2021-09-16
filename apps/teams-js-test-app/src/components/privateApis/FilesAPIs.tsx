@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { FilePreviewParameters, files, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { FilePreviewParameters, files } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from '../BoxAndButton';
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
 
@@ -25,57 +25,37 @@ const FilesAPIs = (): ReactElement => {
 
   const returnGetCloudStorageFolders = (channelId: string): void => {
     setGetCloudStorageFoldersRes('getCloudStorageFolders()' + noHubSdkMsg);
-    files.getCloudStorageFolders(channelId, (err: SdkError, folders: files.CloudStorageFolder[]): void => {
-      if (err) {
-        setGetCloudStorageFoldersRes(err.errorCode.toString + ' ' + err.message);
-        return;
-      }
-      setGetCloudStorageFoldersRes(JSON.stringify(folders));
-    });
+    files
+      .getCloudStorageFolders(channelId)
+      .then(folders => setGetCloudStorageFoldersRes(JSON.stringify(folders)))
+      .catch(err => setGetCloudStorageFoldersRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const returnAddCloudStorageFolder = (channelId: string): void => {
     setAddCloudStorageFolderRes('addCloudStorageFolder()' + noHubSdkMsg);
-    files.addCloudStorageFolder(
-      channelId,
-      (err: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
-        if (err) {
-          setAddCloudStorageFolderRes(err.errorCode.toString + ' ' + err.message);
-          return;
-        }
-        setAddCloudStorageFolderRes(JSON.stringify({ isFolderAdded, folders }));
-      },
-    );
+    files
+      .addCloudStorageFolder(channelId)
+      .then(([isFolderAdded, folders]) => setAddCloudStorageFolderRes(JSON.stringify({ isFolderAdded, folders })))
+      .catch(err => setAddCloudStorageFolderRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const returnDeleteCloudStorageFolder = (input: string): void => {
     const deleteCloudStorageParams: DeleteCloudStorageParams = JSON.parse(input);
     setDeleteCloudStorageFolderRes('deleteCloudStorageFolder()' + noHubSdkMsg);
-    files.deleteCloudStorageFolder(
-      deleteCloudStorageParams.channelId,
-      deleteCloudStorageParams.folderToDelete,
-      (err: SdkError, isFolderDeleted: boolean): void => {
-        if (err) {
-          setDeleteCloudStorageFolderRes(err.errorCode.toString + ' ' + err.message);
-          return;
-        }
-        setDeleteCloudStorageFolderRes(JSON.stringify(isFolderDeleted));
-      },
-    );
+    files
+      .deleteCloudStorageFolder(deleteCloudStorageParams.channelId, deleteCloudStorageParams.folderToDelete)
+      .then(isFolderDeleted => setDeleteCloudStorageFolderRes(JSON.stringify(isFolderDeleted)))
+      .catch(err => setDeleteCloudStorageFolderRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const getCloudStorageFolderContents = (input: string): void => {
     try {
       const parsedInput = JSON.parse(input);
-      const callback = (error: SdkError, items: files.CloudStorageFolderItem[]): void => {
-        if (error) {
-          setGetCloudStorageFolderContentsRes(JSON.stringify(error));
-        } else {
-          setGetCloudStorageFolderContentsRes(JSON.stringify(items));
-        }
-      };
       setGetCloudStorageFolderContentsRes('getCloudStorageFolderContents()' + noHubSdkMsg);
-      files.getCloudStorageFolderContents(parsedInput.folder, parsedInput.providerCode, callback);
+      files
+        .getCloudStorageFolderContents(parsedInput.folder, parsedInput.providerCode)
+        .then(items => setGetCloudStorageFolderContentsRes(JSON.stringify(items)))
+        .catch(error => setGetCloudStorageFolderContentsRes(JSON.stringify(error)));
     } catch (e) {
       if (e instanceof SyntaxError) {
         setGetCloudStorageFolderContentsRes(generateJsonParseErrorMsg());

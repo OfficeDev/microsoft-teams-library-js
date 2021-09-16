@@ -1,5 +1,22 @@
 # Breaking Changes
 
+## v0.1.3
+
+### Promises introduced
+
+The following function that took in a callback function as a parameter now instead returns a Promise.
+
+* people.selectPeople
+
+## v0.1.2
+
+### Promises introduced
+
+The following APIs that took in a callback function as a parameter now instead return a Promise.
+
+* Location.getLocation
+* Location.showLocation
+
 ## v0.1.1
 
 ### Moved APIs

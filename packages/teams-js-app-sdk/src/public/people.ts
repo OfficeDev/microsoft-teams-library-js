@@ -1,8 +1,8 @@
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import { ErrorCode } from './interfaces';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
 
 export namespace people {
@@ -11,29 +11,22 @@ export namespace people {
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
    * @param callback Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
    * @param peoplePickerInputs Input parameters to launch customized people picker
+   * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function selectPeople(
-    callback: (error: SdkError, people: PeoplePickerResult[]) => void,
-    peoplePickerInputs?: PeoplePickerInputs,
-  ): void {
-    if (!callback) {
-      throw new Error('[people picker] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
+  export function selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
+    return new Promise<PeoplePickerResult[]>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
-    if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, undefined);
-      return;
-    }
+      if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
 
-    if (!validatePeoplePickerInput(peoplePickerInputs)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, null);
-      return;
-    }
+      if (!validatePeoplePickerInput(peoplePickerInputs)) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
 
-    sendMessageToParent('people.selectPeople', [peoplePickerInputs], callback);
+      resolve(sendAndHandleError('people.selectPeople', peoplePickerInputs));
+    });
   }
 
   /**

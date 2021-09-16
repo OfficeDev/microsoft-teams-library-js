@@ -1,25 +1,16 @@
 import React, { ReactElement } from 'react';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
-import { people, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { people } from '@microsoft/teamsjs-app-sdk';
 
 const PeopleAPIs = (): ReactElement => {
   const [selectPeopleRes, setSelectPeopleRes] = React.useState('');
 
   const selectPeople = (peoplePickerInputsStr: string): void => {
-    const callback = (error: SdkError, people: people.PeoplePickerResult[]): void => {
-      if (error) {
-        setSelectPeopleRes('Error code: ' + error);
-      } else {
-        setSelectPeopleRes(JSON.stringify(people));
-      }
-    };
     setSelectPeopleRes('people.selectPeople' + noHubSdkMsg);
-    if (peoplePickerInputsStr) {
-      people.selectPeople(callback, JSON.parse(peoplePickerInputsStr));
-    } else {
-      people.selectPeople(callback);
-    }
+    (peoplePickerInputsStr ? people.selectPeople(JSON.parse(peoplePickerInputsStr)) : people.selectPeople())
+      .then(people => setSelectPeopleRes(people.toString()))
+      .catch(error => setSelectPeopleRes('Error code: ' + error));
   };
 
   return (
