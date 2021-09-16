@@ -13,11 +13,10 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 ## Getting Started
 
-1. Clone the repo
-2. Navigate to the repo root and run `yarn install`
-    * If you get a 401 when running `yarn install` (something like this: `error An unexpected error occurred: "https://office.pkgs.visualstudio.com/_packaging/ISS/npm/registry/@microsoft/teams-js/-/teams-js-1.10.0.tgz: Request failed \"401 Unauthorized\""`) then you should run `yarn auth` . You will not need to run this every time.
-3. `yarn build` from repo root
-4. to run Unit test `yarn test`
+1.  Clone the repo
+2.  Navigate to the repo root and run `yarn install`
+3.  `yarn build-sdk` from repo root 
+4.  to run Unit test `yarn test-sdk` 
 
   TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
 
@@ -25,15 +24,15 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 To install the stable version:
 
-### npm
+#### npm
 
 `npm install --save @microsoft/teamsjs-app-sdk`
 
-### yarn
+#### yarn
 
 `yarn add @microsoft/teamsjs-app-sdk`
 
-### Production
+#### Production
 
 **TODO:** Update this URL once we have released the App SDK publicly and published it to a CDN (currently the URL points to the Teams SDK)
 You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.

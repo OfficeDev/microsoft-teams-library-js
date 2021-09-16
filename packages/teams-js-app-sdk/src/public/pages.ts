@@ -18,7 +18,7 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /**
-   * Return focus to the hub/host. Will move focus forward or backward based on where the teamsjs App container falls in
+   * Return focus to the hub/host. Will move focus forward or backward based on where the app container falls in
    * the F6/Tab accessiblity loop in the hub/host.
    * @param navigateForward - Determines the direction to focus in hub/host.
    */
@@ -91,7 +91,7 @@ export namespace pages {
    */
   export namespace tabs {
     /**
-     * Navigates the Microsoft teamsjs app to the specified tab instance.
+     * Navigates the hosted app to the specified tab instance.
      * @param tabInstance The tab instance to navigate to.
      * @returns Promise that resolves when the navigation has completed.
      */
@@ -367,7 +367,7 @@ export namespace pages {
     }
 
     /**
-     * Navigates back in the teamsjs app. See registerBackButtonHandler for more information on when
+     * Navigates back in the hosted app. See registerBackButtonHandler for more information on when
      * it's appropriate to use this method.
      * @returns Promise that resolves when the navigation has completed.
      */

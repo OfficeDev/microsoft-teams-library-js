@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { location, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { location } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -11,25 +11,19 @@ const LocationAPIs = (): ReactElement => {
   const getLocation = (locationPropsInput: string): void => {
     const locationProps: location.LocationProps = JSON.parse(locationPropsInput);
     setGetLocationRes('location.getLocation()' + noHubSdkMsg);
-    location.getLocation(locationProps, (err: SdkError, location: location.Location): void => {
-      if (err) {
-        setGetLocationRes(err.errorCode.toString + ' ' + err.message);
-        return;
-      }
-      setGetLocationRes(JSON.stringify(location));
-    });
+    location
+      .getLocation(locationProps)
+      .then(location => setGetLocationRes(JSON.stringify(location)))
+      .catch(err => setGetLocationRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const showLocation = (locationInput: string): void => {
     const locationParam: location.Location = JSON.parse(locationInput);
     setShowLocationRes('location.showLocation()' + noHubSdkMsg);
-    location.showLocation(locationParam, (err: SdkError, result: boolean): void => {
-      if (err) {
-        setShowLocationRes(err.errorCode.toString + ' ' + err.message);
-        return;
-      }
-      setShowLocationRes('result: ' + result);
-    });
+    location
+      .showLocation(locationParam)
+      .then(() => setShowLocationRes('Completed'))
+      .catch(err => setShowLocationRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const locationCapabilityCheck = (): void => {

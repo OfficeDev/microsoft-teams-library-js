@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-object-literal-type-assertion */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { ErrorCode, location, SdkError } from '../../src/public/index';
+import { ErrorCode, location } from '../../src/public/index';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
@@ -34,71 +31,47 @@ describe('location', () => {
     }
   });
 
-  let emptyCallback = () => {};
-
-  it('should not allow getLocation calls with null callback', () => {
-    expect(() => location.getLocation(defaultLocationProps, null)).toThrowError(
-      '[location.getLocation] Callback cannot be null',
-    );
-  });
-  it('should not allow getLocation calls with null callback after init context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.content);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.getLocation(defaultLocationProps, null)).toThrowError(
-      '[location.getLocation] Callback cannot be null',
-    );
-  });
   it('should not allow getLocation calls before initialization', () => {
-    expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
+    return expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
       'The library has not yet been initialized',
     );
   });
   it('getLocation call in default version of platform support fails', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-    let error;
-    location.getLocation(defaultLocationProps, (e: SdkError, l: location.Location) => {
-      error = e;
-    });
-    expect(error).not.toBeNull();
-    expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+    await expect(location.getLocation(defaultLocationProps)).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
   });
   it('should not allow getLocation calls for authentication frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
+    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
       "This call is not allowed in the 'authentication' context",
     );
   });
   it('should not allow getLocation calls for remove frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
+    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
       "This call is not allowed in the 'remove' context",
     );
   });
   it('should not allow getLocation calls for settings frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
+    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
       "This call is not allowed in the 'settings' context",
     );
   });
   it('should not allow getLocation calls without props', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let error;
-    location.getLocation(undefined, (e: SdkError, l: location.Location) => {
-      error = e;
-    });
-    expect(error).not.toBeNull();
-    expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+    await expect(location.getLocation(undefined)).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
   });
   it('should allow getLocation calls in desktop', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.getLocation(defaultLocationProps, emptyCallback);
-    let message = desktopPlatformMock.findMessageByFunc('location.getLocation');
+    location.getLocation(defaultLocationProps);
+    const message = desktopPlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -106,8 +79,8 @@ describe('location', () => {
   it('getLocation call in task frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.getLocation(defaultLocationProps, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
+    location.getLocation(defaultLocationProps);
+    const message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -115,8 +88,8 @@ describe('location', () => {
   it('getLocation call in content frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.getLocation(defaultLocationProps, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
+    location.getLocation(defaultLocationProps);
+    const message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
@@ -124,18 +97,14 @@ describe('location', () => {
   it('getLocation calls with successful result', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let loc, error;
-    location.getLocation(defaultLocationProps, (e: SdkError, l: location.Location) => {
-      error = e;
-      loc = l;
-    });
+    const promise = location.getLocation(defaultLocationProps);
 
-    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
+    const message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
 
-    let callbackId = message.id;
+    const callbackId = message.id;
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -143,28 +112,19 @@ describe('location', () => {
       },
     } as DOMMessageEvent);
 
-    expect(error).toBeFalsy();
-    expect(location).not.toBeNull();
-    expect(loc.latitude).toBe(defaultLocation.latitude);
-    expect(loc.longitude).toBe(defaultLocation.longitude);
-    expect(loc.accuracy).toBe(defaultLocation.accuracy);
-    expect(loc.timestamp).toBe(defaultLocation.timestamp);
+    await expect(promise).resolves.toBe(defaultLocation);
   });
   it('getLocation calls with error', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let loc, error;
-    location.getLocation(defaultLocationProps, (e: SdkError, l: location.Location) => {
-      error = e;
-      loc = l;
-    });
+    const promise = location.getLocation(defaultLocationProps);
 
-    let message = mobilePlatformMock.findMessageByFunc('location.getLocation');
+    const message = mobilePlatformMock.findMessageByFunc('location.getLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocationProps);
 
-    let callbackId = message.id;
+    const callbackId = message.id;
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -172,73 +132,50 @@ describe('location', () => {
       },
     } as DOMMessageEvent);
 
-    expect(loc).toBeFalsy();
-    expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
+    await expect(promise).rejects.toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
   });
 
-  it('should not allow showLocation calls with null callback', () => {
-    expect(() => location.showLocation(defaultLocation, null)).toThrowError(
-      '[location.showLocation] Callback cannot be null',
-    );
-  });
-  it('should not allow showLocation calls with null callback after init context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.content);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.showLocation(defaultLocation, null)).toThrowError(
-      '[location.showLocation] Callback cannot be null',
-    );
-  });
   it('should not allow showLocation calls before initialization', () => {
-    expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
+    return expect(location.showLocation(defaultLocation)).rejects.toThrowError(
       'The library has not yet been initialized',
     );
   });
   it('showLocation call in default version of platform support fails', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-    let error;
-    location.showLocation(defaultLocation, (e: SdkError, v: boolean) => {
-      error = e;
-    });
-    expect(error).not.toBeNull();
-    expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+    await expect(location.showLocation(defaultLocation)).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
   });
   it('should not allow showLocation calls for authentication frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
+    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
       "This call is not allowed in the 'authentication' context",
     );
   });
   it('should not allow showLocation calls for remove frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
+    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
       "This call is not allowed in the 'remove' context",
     );
   });
   it('should not allow showLocation calls for settings frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
+    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
       "This call is not allowed in the 'settings' context",
     );
   });
   it('should not allow showLocation calls without props', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let error;
-    location.showLocation(null, (e: SdkError, v: boolean) => {
-      error = e;
-    });
-    expect(error).not.toBeNull();
-    expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+    await expect(location.showLocation(null)).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
   });
   it('should allow showLocation calls in desktop', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.showLocation(defaultLocation, emptyCallback);
-    let message = desktopPlatformMock.findMessageByFunc('location.showLocation');
+    location.showLocation(defaultLocation);
+    const message = desktopPlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -246,8 +183,8 @@ describe('location', () => {
   it('showLocation call in task frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.showLocation(defaultLocation, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
+    location.showLocation(defaultLocation);
+    const message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -255,8 +192,8 @@ describe('location', () => {
   it('showLocation call in content frameContext works', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    location.showLocation(defaultLocation, emptyCallback);
-    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
+    location.showLocation(defaultLocation);
+    const message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
@@ -264,18 +201,14 @@ describe('location', () => {
   it('showLocation calls with successful result', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let value, error;
-    location.showLocation(defaultLocation, (e: SdkError, v: boolean) => {
-      error = e;
-      value = v;
-    });
+    const promise = location.showLocation(defaultLocation);
 
-    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
+    const message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
 
-    let callbackId = message.id;
+    const callbackId = message.id;
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -283,24 +216,19 @@ describe('location', () => {
       },
     } as DOMMessageEvent);
 
-    expect(error).toBeFalsy();
-    expect(value).toBe(true);
+    return expect(promise).resolves;
   });
   it('showLocation calls with error', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.content);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    let value, error;
-    location.showLocation(defaultLocation, (e: SdkError, v: boolean) => {
-      error = e;
-      value = v;
-    });
+    const promise = location.showLocation(defaultLocation);
 
-    let message = mobilePlatformMock.findMessageByFunc('location.showLocation');
+    const message = mobilePlatformMock.findMessageByFunc('location.showLocation');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
     expect(message.args[0]).toEqual(defaultLocation);
 
-    let callbackId = message.id;
+    const callbackId = message.id;
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
@@ -308,7 +236,6 @@ describe('location', () => {
       },
     } as DOMMessageEvent);
 
-    expect(value).toBeFalsy();
-    expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
+    await expect(promise).rejects.toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
   });
 });
