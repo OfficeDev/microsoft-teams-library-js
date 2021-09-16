@@ -5,7 +5,7 @@ import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/
 
 export namespace mail {
   export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) throw 'Not Supported';
 
@@ -14,7 +14,7 @@ export namespace mail {
   }
 
   export function composeMail(composeScenarioParams: ComposeScenarioParams): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) throw 'Not Supported';
 
