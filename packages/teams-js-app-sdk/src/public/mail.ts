@@ -30,17 +30,6 @@ export namespace mail {
     itemId: string;
   }
 
-  /**
-   * Properties shared between compose scenarios
-   */
-  interface ComposeProps {
-    toRecipients?: string[];
-    ccRecipients?: string[];
-    bccRecipients?: string[];
-    subject?: string;
-    message?: string;
-  }
-
   export enum ComposeMailType {
     New = 'new',
     Reply = 'reply',
