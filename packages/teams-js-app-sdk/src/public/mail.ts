@@ -13,12 +13,12 @@ export namespace mail {
     });
   }
 
-  export function composeMail(composeScenarioParams: ComposeScenarioParams): Promise<void> {
+  export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) throw 'Not Supported';
 
-      resolve(sendAndHandleError('mail.composeMail', composeScenarioParams));
+      resolve(sendAndHandleError('mail.composeMail', composeMailParams));
     });
   }
 
@@ -57,7 +57,7 @@ export namespace mail {
     itemid: string;
   }
 
-  export type ComposeScenarioParams =
+  export type ComposeMailParams =
     | ComposeNewParams
     | ComposeReplyOrForwardParams<ComposeMailType.Reply>
     | ComposeReplyOrForwardParams<ComposeMailType.ReplyAll>
