@@ -1,5 +1,5 @@
 import { meeting } from '../../src/public/meeting';
-import { SdkError, ErrorCode } from '../../src/public/interfaces';
+import { ErrorCode } from '../../src/public/interfaces';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { app } from '../../src/public/app';
@@ -23,166 +23,96 @@ describe('meeting', () => {
   });
 
   describe('toggleIncomingClientAudio', () => {
-    it('should not allow toggle incoming client audio calls with null callback', () => {
-      expect(() => meeting.toggleIncomingClientAudio(null)).toThrowError(
-        '[toggle incoming client audio] Callback cannot be null',
-      );
-    });
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        meeting.toggleIncomingClientAudio(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      expect(meeting.toggleIncomingClientAudio()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully toggle the incoming client audio', async () => {
       await desktopPlatformMock.initializeWithContext('sidePanel');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedResult: boolean | null;
-      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
-        callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = error;
-      });
+      const promise = meeting.toggleIncomingClientAudio();
 
-      let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('toggleIncomingClientAudio');
+      const toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('toggleIncomingClientAudio');
       expect(toggleIncomingClientAudioMessage).not.toBeNull();
-      let callbackId = toggleIncomingClientAudioMessage.id;
+      const callbackId = toggleIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, true],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBeNull();
-      expect(returnedResult).toBe(true);
+      await expect(promise).resolves.toBe(true);
     });
 
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext('meetingStage');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedResult: boolean | null;
-      meeting.toggleIncomingClientAudio((error: SdkError, result: boolean) => {
-        callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = error;
-      });
+      const promise = meeting.toggleIncomingClientAudio();
 
-      let toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('toggleIncomingClientAudio');
+      const toggleIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('toggleIncomingClientAudio');
       expect(toggleIncomingClientAudioMessage).not.toBeNull();
-      let callbackId = toggleIncomingClientAudioMessage.id;
+      const callbackId = toggleIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedResult).toBe(null);
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
   });
   describe('getIncomingClientAudioState', () => {
-    it('should not allow get incoming client audio calls with null callback', () => {
-      expect(() => meeting.getIncomingClientAudioState(null)).toThrowError(
-        '[get incoming client audio state] Callback cannot be null',
-      );
-    });
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        meeting.getIncomingClientAudioState(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      expect(meeting.getIncomingClientAudioState()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully get the incoming client audio state', async () => {
       await desktopPlatformMock.initializeWithContext('sidePanel');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedResult: boolean | null;
-      meeting.getIncomingClientAudioState((error: SdkError, result: boolean) => {
-        callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getIncomingClientAudioState();
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
+      const getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
       expect(getIncomingClientAudioMessage).not.toBeNull();
-      let callbackId = getIncomingClientAudioMessage.id;
+      const callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, true],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBeNull();
-      expect(returnedResult).toBe(true);
+      await expect(promise).resolves.toBe(true);
     });
 
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext('meetingStage');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedResult: boolean | null;
-      meeting.getIncomingClientAudioState((error: SdkError, result: boolean) => {
-        callbackCalled = true;
-        returnedResult = result;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getIncomingClientAudioState();
 
-      let getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
+      const getIncomingClientAudioMessage = desktopPlatformMock.findMessageByFunc('getIncomingClientAudioState');
       expect(getIncomingClientAudioMessage).not.toBeNull();
-      let callbackId = getIncomingClientAudioMessage.id;
+      const callbackId = getIncomingClientAudioMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedResult).toBe(null);
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
   });
   describe('getMeetingDetails', () => {
-    it('should not allow get meeting details calls with null callback', () => {
-      expect(() => meeting.getMeetingDetails(null)).toThrowError('[get meeting details] Callback cannot be null');
-    });
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        meeting.getMeetingDetails(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      expect(meeting.getMeetingDetails()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully get the meeting details', async () => {
       await desktopPlatformMock.initializeWithContext('content');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedMeetingResult: meeting.IMeetingDetails | null;
-      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
-        callbackCalled = true;
-        returnedMeetingResult = meetingDetails;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getMeetingDetails();
 
-      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
+      const getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
-      let callbackId = getMeetingDetailsMessage.id;
+      const callbackId = getMeetingDetailsMessage.id;
       const details: meeting.IDetails = {
         scheduledStartTime: '2020-12-21T21:30:00+00:00',
         scheduledEndTime: '2020-12-21T22:00:00+00:00',
@@ -209,135 +139,85 @@ describe('meeting', () => {
           args: [null, meetingDetails],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBeNull();
-      expect(returnedMeetingResult).toStrictEqual(meetingDetails);
+      await expect(promise).resolves.toBe(meetingDetails);
     });
 
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext('meetingStage');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedMeetingDetails: meeting.IMeetingDetails | null;
-      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
-        callbackCalled = true;
-        returnedMeetingDetails = meetingDetails;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getMeetingDetails();
 
-      let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
+      const getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
-      let callbackId = getMeetingDetailsMessage.id;
+      const callbackId = getMeetingDetailsMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedMeetingDetails).toBe(null);
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
   });
   describe('getAuthenticationTokenForAnonymousUser', () => {
-    it('should not allow get anonymous user token with null callback', () => {
-      expect(() => meeting.getAuthenticationTokenForAnonymousUser(null)).toThrowError(
-        '[get Authentication Token For AnonymousUser] Callback cannot be null',
-      );
-    });
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        meeting.getAuthenticationTokenForAnonymousUser(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      expect(meeting.getAuthenticationTokenForAnonymousUser()).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should successfully get the anonymous user token of the user in meeting', async () => {
       await desktopPlatformMock.initializeWithContext('meetingStage');
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedSkypeToken: string | null;
-      meeting.getAuthenticationTokenForAnonymousUser((error: SdkError, authenticationTokenOfAnonymousUser: string) => {
-        callbackCalled = true;
-        returnedSkypeToken = authenticationTokenOfAnonymousUser;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getAuthenticationTokenForAnonymousUser();
 
-      let getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
+      const getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
         'meeting.getAuthenticationTokenForAnonymousUser',
       );
       expect(getAnonymousUserTokenMessage).not.toBeNull();
-      let callbackId = getAnonymousUserTokenMessage.id;
-      let mockAuthenticationToken = '1234567890oiuytrdeswasdcfvbgnhjmuy6t54ewsxdcvbnu743edfvbnm,o98';
+      const callbackId = getAnonymousUserTokenMessage.id;
+      const mockAuthenticationToken = '1234567890oiuytrdeswasdcfvbgnhjmuy6t54ewsxdcvbnu743edfvbnm,o98';
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, mockAuthenticationToken],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBeNull();
-      expect(returnedSkypeToken).toBe(mockAuthenticationToken);
+      await expect(promise).resolves.toBe(mockAuthenticationToken);
     });
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext('sidePanel');
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedSkypeToken: string | null;
-      meeting.getAuthenticationTokenForAnonymousUser((error: SdkError, authenticationTokenOfAnonymousUser: string) => {
-        callbackCalled = true;
-        returnedSkypeToken = authenticationTokenOfAnonymousUser;
-        returnedSdkError = error;
-      });
+      const promise = meeting.getAuthenticationTokenForAnonymousUser();
 
-      let getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
+      const getAnonymousUserTokenMessage = desktopPlatformMock.findMessageByFunc(
         'meeting.getAuthenticationTokenForAnonymousUser',
       );
       expect(getAnonymousUserTokenMessage).not.toBeNull();
-      let callbackId = getAnonymousUserTokenMessage.id;
+      const callbackId = getAnonymousUserTokenMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
         },
       } as DOMMessageEvent);
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedSkypeToken).toBe(null);
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
   });
 
   describe('getLiveStreamState', () => {
-    it('should fail when called without a callback', () => {
-      expect(() => meeting.getLiveStreamState(null)).toThrowError('[get live stream state] Callback cannot be null');
-    });
-
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.getLiveStreamState(() => {})).toThrowError('The library has not yet been initialized');
+      expect(meeting.getLiveStreamState()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
+      const promise = meeting.getLiveStreamState();
 
-      meeting.getLiveStreamState((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
-
-      let getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
+      const getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
       expect(getLiveStreamStateMessage).not.toBeNull();
 
-      let callbackId = getLiveStreamStateMessage.id;
+      const callbackId = getLiveStreamStateMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -345,29 +225,18 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-      expect(returnedLiveStreamState).toBe(null);
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
 
     it('should successfully get live stream state', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
-      let returnedLiveStreamState: meeting.LiveStreamState | null;
+      const promise = meeting.getLiveStreamState();
 
-      meeting.getLiveStreamState((error: SdkError, liveStreamState: meeting.LiveStreamState) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-        returnedLiveStreamState = liveStreamState;
-      });
-
-      let getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
+      const getLiveStreamStateMessage = desktopPlatformMock.findMessageByFunc('meeting.getLiveStreamState');
       expect(getLiveStreamStateMessage).not.toBeNull();
 
-      let callbackId = getLiveStreamStateMessage.id;
+      const callbackId = getLiveStreamStateMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -375,22 +244,13 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBe(null);
-      expect(returnedLiveStreamState).not.toBeNull();
-      expect(returnedLiveStreamState).toEqual({ isStreaming: true });
+      await expect(promise).resolves.toEqual({ isStreaming: true });
     });
   });
 
   describe('requestStartLiveStreaming', () => {
-    it('should fail when called without a callback', () => {
-      expect(() => meeting.requestStartLiveStreaming(null, 'streamurl', 'streamkey')).toThrowError(
-        '[request start live streaming] Callback cannot be null',
-      );
-    });
-
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStartLiveStreaming(() => {}, 'streamurl', 'streamkey')).toThrowError(
+      expect(meeting.requestStartLiveStreaming('streamurl', 'streamkey')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -398,22 +258,12 @@ describe('meeting', () => {
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
+      const promise = meeting.requestStartLiveStreaming('streamurl', 'streamkey');
 
-      meeting.requestStartLiveStreaming(
-        (error: SdkError) => {
-          callbackCalled = true;
-          returnedSdkError = error;
-        },
-        'streamurl',
-        'streamkey',
-      );
-
-      let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
+      const requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
       expect(requestStartLiveStreamMessage).not.toBeNull();
 
-      let callbackId = requestStartLiveStreamMessage.id;
+      const callbackId = requestStartLiveStreamMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -421,30 +271,18 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
 
     it('should successfully request start live streaming', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
+      const promise = meeting.requestStartLiveStreaming('streamurl', 'streamkey');
 
-      meeting.requestStartLiveStreaming(
-        (error: SdkError) => {
-          callbackCalled = true;
-          returnedSdkError = error;
-        },
-        'streamurl',
-        'streamkey',
-      );
-
-      let requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
+      const requestStartLiveStreamMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStartLiveStreaming');
       expect(requestStartLiveStreamMessage).not.toBeNull();
 
-      let callbackId = requestStartLiveStreamMessage.id;
+      const callbackId = requestStartLiveStreamMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -452,38 +290,25 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBe(null);
+      await expect(promise).resolves;
       expect(requestStartLiveStreamMessage.args).toEqual(['streamurl', 'streamkey']);
     });
   });
 
   describe('requestStopLiveStreaming', () => {
-    it('should fail when called without a callback', () => {
-      expect(() => meeting.requestStopLiveStreaming(null)).toThrowError(
-        '[request stop live streaming] Callback cannot be null',
-      );
-    });
-
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStopLiveStreaming(() => {})).toThrowError('The library has not yet been initialized');
+      expect(meeting.requestStopLiveStreaming()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should return error code 500', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
+      const promise = meeting.requestStopLiveStreaming();
 
-      meeting.requestStopLiveStreaming((error: SdkError) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-      });
-
-      let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
+      const requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
       expect(requestStopLiveStreamingMessage).not.toBeNull();
 
-      let callbackId = requestStopLiveStreamingMessage.id;
+      const callbackId = requestStopLiveStreamingMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -491,26 +316,18 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).not.toBeNull();
-      expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
     });
 
     it('should successfully request start live streaming', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      let callbackCalled = false;
-      let returnedSdkError: SdkError | null;
+      const promise = meeting.requestStopLiveStreaming();
 
-      meeting.requestStopLiveStreaming((error: SdkError) => {
-        callbackCalled = true;
-        returnedSdkError = error;
-      });
-
-      let requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
+      const requestStopLiveStreamingMessage = desktopPlatformMock.findMessageByFunc('meeting.requestStopLiveStreaming');
       expect(requestStopLiveStreamingMessage).not.toBeNull();
 
-      let callbackId = requestStopLiveStreamingMessage.id;
+      const callbackId = requestStopLiveStreamingMessage.id;
       desktopPlatformMock.respondToMessage({
         data: {
           id: callbackId,
@@ -518,8 +335,7 @@ describe('meeting', () => {
         },
       } as DOMMessageEvent);
 
-      expect(callbackCalled).toBe(true);
-      expect(returnedSdkError).toBe(null);
+      await expect(promise).resolves;
     });
   });
 
@@ -531,6 +347,7 @@ describe('meeting', () => {
     });
 
     it('should fail when called before app is initialized', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       expect(() => meeting.registerLiveStreamChangedHandler(() => {})).toThrowError(
         'The library has not yet been initialized',
       );
@@ -553,113 +370,73 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
+
     describe('shareAppContentToStage', () => {
-      it('should not allow to share app content to stage with null callback', () => {
-        expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
-          '[share app content to stage] Callback cannot be null',
-        );
-      });
       it('should not allow calls before initialization', () => {
-        expect(() =>
-          meeting.shareAppContentToStage(() => {
-            return;
-          }, ''),
-        ).toThrowError('The library has not yet been initialized');
+        return expect(meeting.shareAppContentToStage('')).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
       it('should successfully share app content to stage', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: boolean | null;
-        let requestUrl = 'validUrl';
-        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
-          callbackCalled = true;
-          returnedResult = result;
-          returnedSdkError = error;
-        }, requestUrl);
+        const requestUrl = 'validUrl';
+        const promise = meeting.shareAppContentToStage(requestUrl);
 
-        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        const shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
         expect(shareAppContentToStageMessage).not.toBeNull();
-        let callbackId = shareAppContentToStageMessage.id;
+        const callbackId = shareAppContentToStageMessage.id;
+
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
             args: [null, true],
           },
         } as DOMMessageEvent);
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).toBeNull();
-        expect(returnedResult).toBe(true);
+
+        expect(promise).resolves.toEqual(true);
         expect(shareAppContentToStageMessage.args).toContain(requestUrl);
       });
 
       it('should return error code 500', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: boolean | null;
-        let requestUrl = 'invalidAppUrl';
-        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
-          callbackCalled = true;
-          returnedResult = result;
-          returnedSdkError = error;
-        }, requestUrl);
+        const requestUrl = 'invalidAppUrl';
+        const promise = meeting.shareAppContentToStage(requestUrl);
 
-        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        const shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
         expect(shareAppContentToStageMessage).not.toBeNull();
-        let callbackId = shareAppContentToStageMessage.id;
+        const callbackId = shareAppContentToStageMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
           },
         } as DOMMessageEvent);
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).not.toBeNull();
-        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-        expect(returnedResult).toBe(null);
+        expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         expect(shareAppContentToStageMessage.args).toContain(requestUrl);
         expect;
       });
     });
 
     describe('getAppContentStageSharingCapabilities', () => {
-      it('should throw error if callback is not provided', () => {
-        expect(() => meeting.getAppContentStageSharingCapabilities(null)).toThrowError(
-          '[get app content stage sharing capabilities] Callback cannot be null',
-        );
-      });
-
       it('should not allow calls before initialization', () => {
-        expect(() =>
-          meeting.getAppContentStageSharingCapabilities(() => {
-            return;
-          }),
-        ).toThrowError('The library has not yet been initialized');
+        return expect(meeting.getAppContentStageSharingCapabilities).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
       it('should return correct error information', () => {
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: meeting.IAppContentStageSharingCapabilities | null;
-        meeting.getAppContentStageSharingCapabilities(
-          (error: SdkError, appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities) => {
-            callbackCalled = true;
-            returnedSdkError = error;
-            returnedResult = appContentStageSharingCapabilities;
-          },
-        );
+        const promise = meeting.getAppContentStageSharingCapabilities();
 
         const appContentStageSharingCapabilitiesMessage = desktopPlatformMock.findMessageByFunc(
           'meeting.getAppContentStageSharingCapabilities',
         );
         expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
-        let callbackId = appContentStageSharingCapabilitiesMessage.id;
+        const callbackId = appContentStageSharingCapabilitiesMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
@@ -667,25 +444,13 @@ describe('meeting', () => {
           },
         } as DOMMessageEvent);
 
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).not.toBeNull();
-        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-        expect(returnedResult).toBe(null);
+        expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
       });
 
       it('should successfully get info', () => {
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: meeting.IAppContentStageSharingCapabilities | null;
-        meeting.getAppContentStageSharingCapabilities(
-          (error: SdkError, appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities) => {
-            callbackCalled = true;
-            returnedSdkError = error;
-            returnedResult = appContentStageSharingCapabilities;
-          },
-        );
+        const promise = meeting.getAppContentStageSharingCapabilities();
 
         const appContentStageSharingCapabilities = {
           doesAppHaveSharePermission: true,
@@ -695,7 +460,7 @@ describe('meeting', () => {
           'meeting.getAppContentStageSharingCapabilities',
         );
         expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
-        let callbackId = appContentStageSharingCapabilitiesMessage.id;
+        const callbackId = appContentStageSharingCapabilitiesMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
@@ -703,82 +468,53 @@ describe('meeting', () => {
           },
         } as DOMMessageEvent);
 
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).toBeNull();
-        expect(returnedResult).toStrictEqual(appContentStageSharingCapabilities);
+        expect(promise).resolves.toStrictEqual(appContentStageSharingCapabilities);
       });
     });
 
     describe('stopSharingAppContentToStage', () => {
-      it('should not allow to terminate stage sharing session with null callback', () => {
-        expect(() => meeting.stopSharingAppContentToStage(null)).toThrowError(
-          '[stop sharing app content to stage] Callback cannot be null',
-        );
-      });
-
       it('should not allow calls before initialization', () => {
-        expect(() =>
-          meeting.stopSharingAppContentToStage(() => {
-            return;
-          }),
-        ).toThrowError('The library has not yet been initialized');
+        return expect(meeting.stopSharingAppContentToStage).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
       it('should successfully terminate app content stage sharing session', () => {
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: boolean | null;
-        meeting.stopSharingAppContentToStage((error: SdkError, result: boolean) => {
-          callbackCalled = true;
-          returnedResult = result;
-          returnedSdkError = error;
-        });
+        const promise = meeting.stopSharingAppContentToStage();
 
-        let stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
+        const stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
           'meeting.stopSharingAppContentToStage',
         );
         expect(stopSharingAppContentToStageMessage).not.toBeNull();
-        let callbackId = stopSharingAppContentToStageMessage.id;
+        const callbackId = stopSharingAppContentToStageMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
             args: [null, true],
           },
         } as DOMMessageEvent);
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).toBeNull();
-        expect(returnedResult).toBe(true);
+        expect(promise).resolves.toBe(true);
       });
 
       it('should return correct error information', () => {
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-        let callbackCalled = false;
-        let returnedSdkError: SdkError | null;
-        let returnedResult: boolean | null;
-        meeting.stopSharingAppContentToStage((error: SdkError, result: boolean) => {
-          callbackCalled = true;
-          returnedResult = result;
-          returnedSdkError = error;
-        });
+        const promise = meeting.stopSharingAppContentToStage();
 
-        let stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
+        const stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
           'meeting.stopSharingAppContentToStage',
         );
         expect(stopSharingAppContentToStageMessage).not.toBeNull();
-        let callbackId = stopSharingAppContentToStageMessage.id;
+        const callbackId = stopSharingAppContentToStageMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
           },
         } as DOMMessageEvent);
-        expect(callbackCalled).toBe(true);
-        expect(returnedSdkError).not.toBeNull();
-        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-        expect(returnedResult).toBe(null);
+        expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
       });
     });
   });
