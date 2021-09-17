@@ -28,7 +28,9 @@ describe('chat', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      expect(() => chat.openConversation(conversationRequest)).toThrowError('The library has not yet been initialized');
+      return expect(chat.openConversation(conversationRequest)).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should not allow calls from settings context', async () => {
@@ -39,7 +41,7 @@ describe('chat', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      expect(() => chat.openConversation(conversationRequest)).toThrowError(
+      return expect(chat.openConversation(conversationRequest)).rejects.toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
@@ -104,35 +106,18 @@ describe('chat', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        chat.getChatMembers(() => {
-          return;
-        }),
-      ).toThrowError('The library has not yet been initialized');
+      return expect(chat.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully get chat members', async () => {
       await utils.initializeWithContext('content');
 
-      let callbackCalled = false;
-      chat.getChatMembers(() => {
-        callbackCalled = true;
-      });
+      const promise = chat.getChatMembers();
 
-      let getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
+      const getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
       expect(getChatMembersMessage).not.toBeNull();
       utils.respondToMessage(getChatMembersMessage, {});
-      expect(callbackCalled).toBe(true);
+      return expect(promise).resolves;
     });
-  });
-
-  it('should allow calls with empty callback', async () => {
-    await utils.initializeWithContext('content');
-
-    chat.getChatMembers(null);
-
-    let getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
-    expect(getChatMembersMessage).not.toBeNull();
-    utils.respondToMessage(getChatMembersMessage, {});
   });
 });

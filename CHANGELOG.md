@@ -6,6 +6,8 @@
 
 The following APIs that took in a callback function as a parameter now instead return a Promise.
 
+* chat.getChatMembers
+* chat.openConversation
 * files.addCloudStorageFolder
 * files.deleteCloudStorageFolder
 * files.getCloudStorageFolderContents
