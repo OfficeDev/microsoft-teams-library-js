@@ -9,11 +9,10 @@ export namespace appInstallDialog {
   }
 
   export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
-    return new Promise(resolve => {
-      ensureInitialized(FrameContexts.content);
-      if (!isSupported()) throw 'Not supported';
-      sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams], resolve);
-    });
+    ensureInitialized(FrameContexts.content);
+    if (!isSupported()) throw 'Not supported';
+    sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+    return Promise.resolve();
   }
 
   export function isSupported(): boolean {

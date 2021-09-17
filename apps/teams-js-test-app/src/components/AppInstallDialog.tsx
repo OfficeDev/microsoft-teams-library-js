@@ -11,15 +11,15 @@ const AppInstallDialogAPIs: React.FC = () => {
     setOpenAppInstallDialogRes('appInstallDialog.openAppInstallDialog()' + noHubSdkMsg);
     appInstallDialog
       .openAppInstallDialog(JSON.parse(openAppInstallDialogParams))
-      .then(() => setOpenAppInstallDialogRes('Success'))
+      .then(() => setOpenAppInstallDialogRes('called'))
       .catch(reason => setOpenAppInstallDialogRes(JSON.stringify(reason)));
   };
 
   const checkAppInstallDialogCapability = (): void => {
     if (appInstallDialog.isSupported()) {
-      setCheckAppInstallDialogCapabilityRes('App Install Dialog module is supported');
+      setCheckAppInstallDialogCapabilityRes('AppInstallDialog module is supported');
     } else {
-      setCheckAppInstallDialogCapabilityRes('App Install Dialog module is not supported');
+      setCheckAppInstallDialogCapabilityRes('AppInstallDialog module is not supported');
     }
   };
 
