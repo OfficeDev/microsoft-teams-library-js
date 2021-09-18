@@ -9,7 +9,7 @@ const PeopleAPIs = (): ReactElement => {
   const selectPeople = (peoplePickerInputsStr: string): void => {
     setSelectPeopleRes('people.selectPeople' + noHubSdkMsg);
     (peoplePickerInputsStr ? people.selectPeople(JSON.parse(peoplePickerInputsStr)) : people.selectPeople())
-      .then(people => setSelectPeopleRes(people.toString()))
+      .then(people => setSelectPeopleRes(JSON.stringify(people)))
       .catch(error => setSelectPeopleRes('Error code: ' + error));
   };
 
