@@ -1,5 +1,5 @@
-import { getChunkParsedSize } from "./getChunkParsedSize";
-import { WebpackStatsJson } from "../BundleBuddyTypes";
+import { WebpackStatsJson } from '../BundleBuddyTypes';
+import { getChunkParsedSize } from './getChunkParsedSize';
 
 /*!
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -34,23 +34,16 @@ export interface AggregatedChunkAnalysis {
  * @param stats - The webpack stats file
  * @param chunkName - The name of the chunk we wish to analyze.
  */
-export function getChunkAndDependencySizes(
-  stats: WebpackStatsJson,
-  chunkName: string
-): AggregatedChunkAnalysis {
+export function getChunkAndDependencySizes(stats: WebpackStatsJson, chunkName: string): AggregatedChunkAnalysis {
   if (stats.chunks === undefined) {
-    throw new Error("No chunks in the stats file given for bundle analysis");
+    throw new Error('No chunks in the stats file given for bundle analysis');
   }
 
   // Find a chunk that has the desired name
-  const rootChunk = stats.chunks.find(
-    (c) => c.names.length > 0 && c.names.find((name) => name === chunkName)
-  );
+  const rootChunk = stats.chunks.find(c => c.names.length > 0 && c.names.find(name => name === chunkName));
 
   if (rootChunk === undefined) {
-    throw new Error(
-      `Could not find chunk with name: ${chunkName} in the stats file`
-    );
+    throw new Error(`Could not find chunk with name: ${chunkName} in the stats file`);
   }
 
   const dependencySizeInfo: ChunkSizeInfo[] = [];
@@ -67,7 +60,7 @@ export function getChunkAndDependencySizes(
     if (!processedDependencies.has(chunkToProcess)) {
       dependencySizeInfo.push({
         chunkId: chunkToProcess,
-        size: getChunkParsedSize(stats, chunkToProcess)
+        size: getChunkParsedSize(stats, chunkToProcess),
       });
       processedDependencies.add(chunkToProcess);
     }
@@ -76,6 +69,6 @@ export function getChunkAndDependencySizes(
   return {
     name: chunkName,
     dependencies: dependencySizeInfo,
-    size: getChunkParsedSize(stats, rootChunk.id)
+    size: getChunkParsedSize(stats, rootChunk.id),
   };
 }

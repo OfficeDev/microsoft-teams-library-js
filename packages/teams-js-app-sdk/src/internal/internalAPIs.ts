@@ -1,4 +1,4 @@
-import { userOriginUrlValidationRegExp, defaultSDKVersionForCompatCheck } from './constants';
+import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { compareSDKVersions } from './utils';
 

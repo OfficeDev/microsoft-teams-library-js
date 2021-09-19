@@ -10,7 +10,7 @@ import { join } from 'path';
  * @param sourceFolder - The path of the directory to scan
  * @param partialPathPrefix - The partial path built up as we recurse through directories. External callers probably don't want to set this.
  */
-export async function getAllFilesInDirectory(sourceFolder: string, partialPathPrefix: string = ''): Promise<string[]> {
+export async function getAllFilesInDirectory(sourceFolder: string, partialPathPrefix = ''): Promise<string[]> {
   const result: string[] = [];
   for (const file of await fsPromises.readdir(sourceFolder)) {
     const fullPath = join(sourceFolder, file);

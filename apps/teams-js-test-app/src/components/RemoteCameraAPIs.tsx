@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { remoteCamera, SdkError } from '@microsoft/teamsjs-app-sdk';
+import React, { ReactElement } from 'react';
+
+import { generateJsonParseErrorMsg, generateRegistrationMsg, noHubSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
-import { generateJsonParseErrorMsg, noHubSdkMsg, generateRegistrationMsg } from '../App';
 
 const RemoteCameraAPIs = (): ReactElement => {
   const [getCapableParticipantsRes, setGetCapableParticipantsRes] = React.useState('');

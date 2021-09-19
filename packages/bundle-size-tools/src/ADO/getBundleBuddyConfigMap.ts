@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
  */
 
-import { BundleFileData } from './getBundleFilePathsFromFolder';
 import { BundleBuddyConfig } from '../BundleBuddyTypes';
+import { BundleFileData } from './getBundleFilePathsFromFolder';
 
 export interface GetBundleBuddyConfigMapArgs {
   bundleFileData: BundleFileData[];
@@ -13,17 +13,17 @@ export interface GetBundleBuddyConfigMapArgs {
 }
 
 export async function getBundleBuddyConfigMap(
-  args: GetBundleBuddyConfigMapArgs
+  args: GetBundleBuddyConfigMapArgs,
 ): Promise<Map<string, BundleBuddyConfig>> {
   const result = new Map<string, BundleBuddyConfig>();
 
   const asyncWork: Promise<void>[] = [];
-  args.bundleFileData.forEach((bundle) => {
+  args.bundleFileData.forEach(bundle => {
     if (bundle.relativePathToConfigFile) {
       asyncWork.push(
-        args.getBundleBuddyConfig(bundle.relativePathToConfigFile).then((configFile) => {
+        args.getBundleBuddyConfig(bundle.relativePathToConfigFile).then(configFile => {
           result.set(bundle.bundleName, configFile);
-        })
+        }),
       );
     }
   });

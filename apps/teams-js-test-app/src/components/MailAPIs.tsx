@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { mail } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const MailAPIs = (): ReactElement => {
   const [composeMailRes, setComposeMailRes] = React.useState('');

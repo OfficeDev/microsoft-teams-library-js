@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { BundleSummaries, BundleComparison } from './BundleBuddyTypes';
+import { BundleComparison, BundleSummaries } from './BundleBuddyTypes';
 
 /**
  * Compares all the bundle summaries for a "baseline" and a "compare" bundle.
@@ -24,7 +24,7 @@ export function compareBundles(baseline: BundleSummaries, compare: BundleSummari
 
         if (!compareMetric) {
           console.log(
-            `Baseline has metric '${metricName}' in bundle '${bundleName}' that does not exist in the comparison bundle'`
+            `Baseline has metric '${metricName}' in bundle '${bundleName}' that does not exist in the comparison bundle'`,
           );
         } else {
           bundleComparison.commonBundleMetrics[metricName] = { baseline: baselineMetric, compare: compareMetric };
@@ -44,7 +44,7 @@ export function compareBundles(baseline: BundleSummaries, compare: BundleSummari
  */
 export function bundlesContainNoChanges(comparisons: BundleComparison[]): boolean {
   for (const { commonBundleMetrics } of comparisons) {
-    let metrics = Object.values(commonBundleMetrics);
+    const metrics = Object.values(commonBundleMetrics);
     for (const { baseline, compare } of metrics) {
       if (baseline.parsedSize !== compare.parsedSize) {
         return false;

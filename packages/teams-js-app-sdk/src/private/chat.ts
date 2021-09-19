@@ -1,12 +1,12 @@
+import {
+  sendAndHandleStatusAndReason as sendAndHandleError,
+  sendAndUnwrap,
+  sendMessageToParent,
+} from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
-import {
-  sendAndUnwrap,
-  sendMessageToParent,
-  sendAndHandleStatusAndReason as sendAndHandleError,
-} from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 

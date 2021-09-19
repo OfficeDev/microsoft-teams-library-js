@@ -4,21 +4,22 @@
  * self-made log helper could be referred from kangxuan/demo
  */
 import core, {
-  identifier,
-  importDeclaration,
-  importSpecifier,
-  literal,
-  memberExpression,
   API,
   ASTPath,
   FileInfo,
   Identifier,
+  identifier,
   ImportDeclaration,
+  importDeclaration,
   ImportSpecifier,
+  importSpecifier,
+  literal,
   MemberExpression,
+  memberExpression,
   Transform,
 } from 'jscodeshift';
 import { Collection } from 'jscodeshift/src/Collection';
+
 import { replacement } from './replacement';
 import { build } from './replacementsGenerator';
 

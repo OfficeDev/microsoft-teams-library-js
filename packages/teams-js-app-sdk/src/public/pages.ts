@@ -1,14 +1,14 @@
 import {
-  sendMessageToParent,
   sendAndHandleStatusAndReason as send,
   sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
   sendAndUnwrap,
+  sendMessageToParent,
 } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { app } from './app';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
-import { app } from './app';
 import { runtime } from './runtime';
 
 /**

@@ -40,6 +40,6 @@ export async function getBuilds(adoConnection: WebApi, options: GetBuildOptions)
     undefined,
     undefined,
     undefined,
-    options.maxBuildsPerDefinition
+    options.maxBuildsPerDefinition,
   );
 }

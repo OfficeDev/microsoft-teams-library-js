@@ -1,30 +1,32 @@
-import React, { ReactElement } from 'react';
 import './App.css';
+
 import { app } from '@microsoft/teamsjs-app-sdk';
+import React, { ReactElement } from 'react';
+
 import AppAPIs from './components/AppAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
-import ChatAPIs from './components/privateApis/ChatAPIs';
-import LocationAPIs from './components/LocationAPIs';
-import MediaAPIs from './components/MediaAPIs';
-import NavigationAPIs from './components/NavigationAPIs';
-import DialogAPIs from './components/DialogAPIs';
 import ConfigAPIs from './components/ConfigAPIs';
-import TeamsCoreAPIs from './components/TeamsCoreAPIs';
-import MailAPIs from './components/MailAPIs';
-import NotificationAPIs from './components/privateApis/NotificationAPIs';
-import MeetingAPIs from './components/MeetingAPIs';
-import PeopleAPIs from './components/PeopleAPIs';
-import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import DialogAPIs from './components/DialogAPIs';
+import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
-import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import MailAPIs from './components/MailAPIs';
+import MediaAPIs from './components/MediaAPIs';
+import MeetingAPIs from './components/MeetingAPIs';
+import NavigationAPIs from './components/NavigationAPIs';
+import PeopleAPIs from './components/PeopleAPIs';
+import ChatAPIs from './components/privateApis/ChatAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
+import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
+import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
-import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
+import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 

@@ -1,5 +1,5 @@
-import { replacement } from './replacement';
 import * as rules from './mappings.json';
+import { replacement } from './replacement';
 
 /**
  * interface functionReferenceFragments defines that a fully qualified function reference

@@ -1,7 +1,7 @@
-import { decode } from "msgpack-lite";
-import { inflate } from "pako";
+import { decode } from 'msgpack-lite';
+import { inflate } from 'pako';
 
-import { WebpackStatsJson } from "../BundleBuddyTypes";
+import { WebpackStatsJson } from '../BundleBuddyTypes';
 
 /*!
  * Copyright (c) Microsoft Corporation. All rights reserved.
