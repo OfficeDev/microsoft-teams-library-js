@@ -73,7 +73,7 @@ function run(): void {
   /**
    * migrate the project if every argument is valid
    */
-  if (validSourcePath(argv.sourcePath) && validTargetPath(argv.targetPath)) {
+   if (argv.sourcePath && validSourcePath(argv.sourcePath) && argv.targetPath && validTargetPath(argv.targetPath)) {
     /**
      * beginning logs
      */

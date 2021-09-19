@@ -6,6 +6,9 @@
   "author": "Microsoft Inc.",
   "license": "MIT",
   "scripts": {
+    "build": "yarn clean && yarn tsc",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
     "test": "jest"
   },
   "dependencies": {

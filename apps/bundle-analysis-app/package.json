@@ -7,6 +7,7 @@
   "scripts": {
     "build": "webpack",
     "clean": "rimraf ./dist ./bundleAnalysis",
+    "eslint-fix-build": "yarn eslint ./src --fix && webpack",
     "webpack:profile": "webpack"
   },
   "dependencies": {
