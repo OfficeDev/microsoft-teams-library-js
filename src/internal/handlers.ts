@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { LoadContext, navigateBack } from '../public';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 

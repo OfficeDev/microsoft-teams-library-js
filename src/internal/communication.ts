@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { validOriginRegExp, version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -41,6 +42,7 @@ export function initializeCommunication(callback: Function, validMessageOrigins:
 
   if (!Communication.parentWindow) {
     GlobalVars.isFramelessWindow = true;
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
     // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage = handleParentMessage;
   }
