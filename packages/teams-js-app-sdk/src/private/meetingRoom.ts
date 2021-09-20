@@ -1,6 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { SdkError } from '../public/interfaces';
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 
 export namespace meetingRoom {
@@ -132,13 +131,13 @@ export namespace meetingRoom {
    * Hide from docs
    *
    * Fetch the meeting room info that paired with current client.
-   * @param callback Callback to invoke when the meeting room info is fetched.
+   * @returns Promise resolved with meeting room info or rejected with SdkError value
    */
-  export function getPairedMeetingRoomInfo(
-    callback: (sdkError: SdkError, meetingRoomInfo: MeetingRoomInfo) => void,
-  ): void {
-    ensureInitialized();
-    sendMessageToParent('meetingRoom.getPairedMeetingRoomInfo', callback);
+  export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
+    return new Promise<MeetingRoomInfo>(resolve => {
+      ensureInitialized();
+      resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
+    });
   }
 
   /**
@@ -147,17 +146,16 @@ export namespace meetingRoom {
    *
    * Send a command to paired meeting room.
    * @param commandName The command name.
-   * @param callback Callback to invoke when the command response returns.
+   * @returns Promise resolved upon completion or rejected with SdkError value
    */
-  export function sendCommandToPairedMeetingRoom(commandName: string, callback: (sdkError: SdkError) => void): void {
-    if (!commandName || commandName.length == 0) {
-      throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
-    }
-    if (!callback) {
-      throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Callback cannot be null');
-    }
-    ensureInitialized();
-    sendMessageToParent('meetingRoom.sendCommandToPairedMeetingRoom', [commandName], callback);
+  export function sendCommandToPairedMeetingRoom(commandName: string): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (!commandName || commandName.length == 0) {
+        throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
+      }
+      ensureInitialized();
+      resolve(sendAndHandleSdkError('meetingRoom.sendCommandToPairedMeetingRoom', commandName));
+    });
   }
 
   /**
@@ -179,7 +177,6 @@ export namespace meetingRoom {
       ensureInitialized();
       handler(capabilities);
     });
-    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomCapabilitiesUpdate']);
   }
 
   /**
@@ -198,6 +195,5 @@ export namespace meetingRoom {
       ensureInitialized();
       handler(states);
     });
-    // handler && Communication.sendMessageToParent('registerHandler', ['meetingRoom.meetingRoomStatesUpdate']);
   }
 }

@@ -4,22 +4,27 @@
 
 ### Promises introduced
 
-The following function that took in a callback function as a parameter now instead returns a Promise.
-
-* people.selectPeople
-
-## v0.1.2
-
-### Promises introduced
-
 The following APIs that took in a callback function as a parameter now instead return a Promise.
 
+* chat.getChatMembers
+* chat.openConversation
 * files.addCloudStorageFolder
 * files.deleteCloudStorageFolder
 * files.getCloudStorageFolderContents
 * files.getCloudStorageFolders
 * location.getLocation
 * location.showLocation
+* meeting.getAppContentStageSharingCapabilities
+* meeting.getAuthenticationTokenForAnonymousUser
+* meeting.getIncomingClientAudioState
+* meeting.getLiveStreamState
+* meeting.getMeetingDetails
+* meeting.requestStartLiveStreaming
+* meeting.requestStopLiveStreaming
+* meeting.shareAppContentToStage
+* meeting.stopSharingAppContentToStage
+* meeting.toggleIncomingClientAudio
+* people.selectPeople
 
 ## v0.1.1
 
