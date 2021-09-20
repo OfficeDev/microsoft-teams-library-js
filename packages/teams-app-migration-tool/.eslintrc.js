@@ -1,7 +1,7 @@
 module.exports = {
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
-    'curly': 'off',
+    curly: 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react-hooks/rules-of-hooks': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -9,6 +9,6 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-var-requires' : 'off'
+    '@typescript-eslint/no-var-requires': 'off',
   },
 };
