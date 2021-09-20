@@ -2,6 +2,7 @@ import { app } from '../src/public/app';
 import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 export interface MessageRequest {
   id: number;
   func: string;
@@ -182,6 +183,13 @@ export class Utils {
   public setClientSupportedSDKVersion = (version: string) => {
     GlobalVars.clientSupportedSDKVersion = version;
   };
+
+  /**
+   * To be called after initializeWithContext to set the runtimeConfig
+   */
+  public setRuntimeConfig = (runtime: IRuntime) => {
+    applyRuntimeConfig(runtime);
+  }
 
   /**
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.

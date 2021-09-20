@@ -8,7 +8,7 @@ import { version } from '../../src/internal/constants';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { GlobalVars } from '../../src/internal/globalVars';
 
-describe('teamsjsAppSDK-app', () => {
+describe('AppSDK-app', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 

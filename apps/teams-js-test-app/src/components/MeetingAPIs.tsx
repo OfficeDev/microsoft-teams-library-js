@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { meeting, meetingRoom, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { meeting, meetingRoom } from '@microsoft/teamsjs-app-sdk';
 import BoxAndButton from './BoxAndButton';
 import { noHubSdkMsg } from '../App';
 
@@ -18,72 +18,52 @@ const MeetingAPIs = (): ReactElement => {
   const [registerMeetingRoomCapUpdateHandlerRes, setRegisterMeetingRoomCapUpdateHandlerRes] = React.useState('');
   const [registerMeetingRoomStatesUpdateHandlerRes, setRegisterMeetingRoomStatesUpdateHandlerRes] = React.useState('');
   const [checkMeetingCapabilityRes, setCheckMeetingCapabilityRes] = React.useState('');
+  const [getAppContentStageSharingCapabilitiesRes, setGetAppContentStageSharingCapabilitiesRes] = React.useState('');
+  const [stopSharingAppContentToStageRes, setStopSharingAppContentToStageRes] = React.useState('');
   const NULL = 'null';
 
   const getIncomingClientAudioState = (): void => {
     setGetIncomingClientAudioStateRes('getIncomingClientAudioState()' + noHubSdkMsg);
-    meeting.getIncomingClientAudioState((err: SdkError | null, result: boolean | null): void => {
-      if (err) {
-        setGetIncomingClientAudioStateRes(err.errorCode.toString() + ' ' + err.message);
-        return;
-      }
-      if (result !== null) {
-        setGetIncomingClientAudioStateRes(result.toString());
-      }
-    });
+    meeting
+      .getIncomingClientAudioState()
+      .then(result => setGetIncomingClientAudioStateRes(result.toString()))
+      .catch(err => setGetIncomingClientAudioStateRes(err.errorCode.toString() + ' ' + err.message));
   };
 
   const toggleIncomingClientAudio = (): void => {
     setToggleIncomingClientAudioRes('toggleIncomingClientAudio()' + noHubSdkMsg);
-    meeting.toggleIncomingClientAudio((err: SdkError | null, result: boolean | null): void => {
-      if (err) {
-        setToggleIncomingClientAudioRes(err.errorCode.toString() + ' ' + err.message);
-        return;
-      }
-      if (result !== null) {
-        setToggleIncomingClientAudioRes(result.toString());
-      }
-    });
+    meeting
+      .toggleIncomingClientAudio()
+      .then(result => setToggleIncomingClientAudioRes(result.toString()))
+      .catch(err => setToggleIncomingClientAudioRes(err.errorCode.toString() + ' ' + err.message));
   };
 
   const getMeetingDetails = (): void => {
     setGetMeetingDetailsRes('meeting.getMeetingDetails()' + noHubSdkMsg);
-    meeting.getMeetingDetails((err: SdkError | null, meetingDetails: meeting.IMeetingDetails | null): void => {
-      if (err) {
-        setGetMeetingDetailsRes(err.errorCode.toString() + ' ' + err.message);
-        return;
-      }
-      if (meetingDetails) {
-        setGetMeetingDetailsRes(JSON.stringify(meetingDetails));
-      }
-    });
+    meeting
+      .getMeetingDetails()
+      .then(meetingDetails => setGetMeetingDetailsRes(JSON.stringify(meetingDetails)))
+      .catch(err => setGetMeetingDetailsRes(err.errorCode.toString() + ' ' + err.message));
   };
 
   const getAuthenticationToken = (): void => {
     setGetAuthenticationTokenRes('meeting.getAuthenticationTokenForAnonymousUser()' + noHubSdkMsg);
-    meeting.getAuthenticationTokenForAnonymousUser((err: SdkError | null, authToken: string | null): void => {
-      if (err) {
-        setGetAuthenticationTokenRes(err.errorCode.toString() + ' ' + err.message);
-        return;
-      }
-      if (authToken) {
-        setGetAuthenticationTokenRes(authToken);
-      }
-    });
+    meeting
+      .getAuthenticationTokenForAnonymousUser()
+      .then(authToken => setGetAuthenticationTokenRes(authToken))
+      .catch(err => setGetAuthenticationTokenRes(err.errorCode.toString() + ' ' + err.message));
   };
 
   const getLiveStreamState = (): void => {
     setGetLiveStreamStateRes('meeting.getLiveStreamState()' + noHubSdkMsg);
-    const callback = (error: SdkError | null, liveStreamState: meeting.LiveStreamState | null): void => {
-      if (error) {
-        setGetLiveStreamStateRes(JSON.stringify(error));
-      } else {
+    meeting
+      .getLiveStreamState()
+      .then(liveStreamState =>
         liveStreamState
           ? setGetLiveStreamStateRes(liveStreamState.isStreaming.toString())
-          : setGetLiveStreamStateRes(NULL);
-      }
-    };
-    meeting.getLiveStreamState(callback);
+          : setGetLiveStreamStateRes(NULL),
+      )
+      .catch(error => setGetLiveStreamStateRes(JSON.stringify(error)));
   };
 
   const requestStartLiveStreaming = (input: string): void => {
@@ -102,14 +82,12 @@ const MeetingAPIs = (): ReactElement => {
 
     if (streamInput.hasOwnProperty(STREAM_URL)) {
       setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHubSdkMsg);
-      const callback = (error: SdkError | null): void => {
-        if (error) {
-          setRequestStartLiveStreamingRes(JSON.stringify(error));
-        }
-      };
-      streamInput.hasOwnProperty(STREAM_KEY)
-        ? meeting.requestStartLiveStreaming(callback, streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
-        : meeting.requestStartLiveStreaming(callback, streamInput.get(STREAM_URL));
+      (streamInput.hasOwnProperty(STREAM_KEY)
+        ? meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
+        : meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL))
+      )
+        .then(() => setRequestStartLiveStreamingRes('Complete'))
+        .catch(error => setRequestStartLiveStreamingRes(JSON.stringify(error)));
     } else {
       setRequestStartLiveStreamingRes(
         `Please include a ${STREAM_URL}. Your input should be JSON formatted containing at least a ${STREAM_URL} and an optional ${STREAM_KEY}. For example, {"${STREAM_URL}": "https://bing.com"}`,
@@ -119,12 +97,10 @@ const MeetingAPIs = (): ReactElement => {
 
   const requestStopLiveStreaming = (): void => {
     setRequestStopLiveStreamingRes('meeting.requestStopLiveStreaming' + noHubSdkMsg);
-    const callback = (error: SdkError | null): void => {
-      if (error) {
-        setRequestStopLiveStreamingRes(JSON.stringify(error));
-      }
-    };
-    meeting.requestStopLiveStreaming(callback);
+    meeting
+      .requestStopLiveStreaming()
+      .then(() => setRequestStopLiveStreamingRes('Complete'))
+      .catch(error => setRequestStopLiveStreamingRes(JSON.stringify(error)));
   };
 
   const registerLiveStreamChangedHandler = (): void => {
@@ -137,40 +113,26 @@ const MeetingAPIs = (): ReactElement => {
 
   const shareAppContentToStage = (appContentUrl: string): void => {
     setShareAppContentToStageRes('shareAppContentToStage' + noHubSdkMsg);
-    const handler = (error: SdkError | null, result: boolean | null): void => {
-      if (error) {
-        setShareAppContentToStageRes(JSON.stringify(error));
-      } else {
-        if (result) {
-          setShareAppContentToStageRes('shareAppContentToStage() succeeded');
-        } else {
-          setShareAppContentToStageRes('shareAppContentToStage() failed');
-        }
-      }
-    };
-    meeting.shareAppContentToStage(handler, appContentUrl);
+    meeting
+      .shareAppContentToStage(appContentUrl)
+      .then(() => setShareAppContentToStageRes('shareAppContentToStage() succeeded'))
+      .catch(error => setShareAppContentToStageRes(JSON.stringify(error)));
   };
 
   const getPairedMeetingRoomInfo = (): void => {
     setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHubSdkMsg);
-    const callback = (sdkError: SdkError, meetingRoomInfo: meetingRoom.MeetingRoomInfo): void => {
-      if (sdkError) {
-        setGetPairedMeetingRoomInfoRes(JSON.stringify(sdkError));
-      } else {
-        setGetPairedMeetingRoomInfoRes(JSON.stringify(meetingRoomInfo));
-      }
-    };
-    meetingRoom.getPairedMeetingRoomInfo(callback);
+    meetingRoom
+      .getPairedMeetingRoomInfo()
+      .then(meetingRoomInfo => setGetPairedMeetingRoomInfoRes(JSON.stringify(meetingRoomInfo)))
+      .catch(sdkError => setGetPairedMeetingRoomInfoRes(JSON.stringify(sdkError)));
   };
 
   const sendCommandToPairedMeetingRoom = (commandName: string): void => {
     setSendCommandToPairedMeetingRoomRes('sendCommandToPairedMeetingRoom' + noHubSdkMsg);
-    const callback = (sdkError: SdkError): void => {
-      sdkError
-        ? setSendCommandToPairedMeetingRoomRes(JSON.stringify(sdkError))
-        : setSendCommandToPairedMeetingRoomRes('Success');
-    };
-    meetingRoom.sendCommandToPairedMeetingRoom(commandName, callback);
+    meetingRoom
+      .sendCommandToPairedMeetingRoom(commandName)
+      .then(() => setSendCommandToPairedMeetingRoomRes('Success'))
+      .catch(sdkError => setSendCommandToPairedMeetingRoomRes(JSON.stringify(sdkError)));
   };
 
   const registerMeetingRoomCapabilitiesUpdateHandler = (): void => {
@@ -195,6 +157,34 @@ const MeetingAPIs = (): ReactElement => {
     } else {
       setCheckMeetingCapabilityRes('Meeting module is not supported');
     }
+  };
+
+  const getAppContentStageSharingCapabilities = (): void => {
+    setGetAppContentStageSharingCapabilitiesRes('getAppContentStageSharingCapabilities' + noHubSdkMsg);
+    meeting
+      .getAppContentStageSharingCapabilities()
+      .then(appContentStageSharingCapabilities =>
+        setGetAppContentStageSharingCapabilitiesRes(
+          'getAppContentStageSharingCapabilities() succeeded: ' + JSON.stringify(appContentStageSharingCapabilities),
+        ),
+      )
+      .catch(error =>
+        setGetAppContentStageSharingCapabilitiesRes(
+          'getAppContentStageSharingCapabilities() failed: ' + JSON.stringify(error),
+        ),
+      );
+  };
+
+  const stopSharingAppContentToStage = (): void => {
+    setStopSharingAppContentToStageRes('stopSharingAppContentToStage' + noHubSdkMsg);
+    meeting
+      .stopSharingAppContentToStage()
+      .then(result =>
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() succeeded: ' + result),
+      )
+      .catch(error =>
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() failed: ' + JSON.stringify(error)),
+      );
   };
 
   return (
@@ -297,6 +287,20 @@ const MeetingAPIs = (): ReactElement => {
         hasInput={false}
         title="Check Meeting Capability"
         name="checkMeetingCapability"
+      />
+      <BoxAndButton
+        handleClick={getAppContentStageSharingCapabilities}
+        output={getAppContentStageSharingCapabilitiesRes}
+        hasInput={false}
+        title="Get App Content Stage Sharing Capabilities"
+        name="getAppContentStageSharingCapabilities"
+      />
+      <BoxAndButton
+        handleClick={stopSharingAppContentToStage}
+        output={stopSharingAppContentToStageRes}
+        hasInput={false}
+        title="Stop Sharing App Content To Stage"
+        name="stopSharingAppContentToStage"
       />
     </>
   );

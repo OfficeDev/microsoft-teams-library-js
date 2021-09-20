@@ -10,7 +10,7 @@ import {
   registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
 
-describe('teamsjsAppSDK-privateAPIs', () => {
+describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
 
   const utils = new Utils();

@@ -36,11 +36,7 @@ const ConversationsAPIs = (): ReactElement => {
           conversationResponse.channelId,
       );
     };
-    try {
-      chat.openConversation(openConversationRequest);
-    } catch (e) {
-      setOpenConversationRes('Error' + e);
-    }
+    chat.openConversation(openConversationRequest).catch(e => setOpenConversationRes('Error' + e));
   };
 
   const closeConversation = (): void => {
@@ -50,10 +46,11 @@ const ConversationsAPIs = (): ReactElement => {
 
   const returnGetChatMembers = (): void => {
     setGetChatMembersRes('getChatMembers()' + noHubSdkMsg);
-    const onComplete = (chatMembersInformation: ChatMembersInformation): void => {
-      setGetChatMembersRes(JSON.stringify(chatMembersInformation));
-    };
-    chat.getChatMembers(onComplete);
+    chat
+      .getChatMembers()
+      .then((chatMembersInformation: ChatMembersInformation) =>
+        setGetChatMembersRes(JSON.stringify(chatMembersInformation)),
+      );
   };
 
   const checkChatCapability = (): void => {
