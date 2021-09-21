@@ -14,18 +14,16 @@ const FullTrustAPIs = (): ReactElement => {
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
     const teamInstanceParams = JSON.parse(teamInstanceParamsInput);
     setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHubSdkMsg);
-    const onComplete = (userJoinedTeamsInfo: UserJoinedTeamsInformation): void => {
-      setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo));
-    };
-    legacy.fullTrust.getUserJoinedTeams(onComplete, teamInstanceParams);
+    legacy.fullTrust
+      .getUserJoinedTeams(teamInstanceParams)
+      .then((userJoinedTeamsInfo: UserJoinedTeamsInformation) =>
+        setGetUserJoinedTeamsRes(JSON.stringify(userJoinedTeamsInfo)),
+      );
   };
 
   const returnGetConfigSetting = (key: string): void => {
     setGetConfigSettingRes('getConfigSetting()' + noHubSdkMsg);
-    const onComplete = (value: string): void => {
-      setGetConfigSettingRes(value);
-    };
-    legacy.fullTrust.getConfigSetting(onComplete, key);
+    legacy.fullTrust.getConfigSetting(key).then(value => setGetConfigSettingRes(value));
   };
 
   const returnEnterFullscreen = (): void => {

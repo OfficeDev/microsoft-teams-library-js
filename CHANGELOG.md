@@ -12,6 +12,8 @@ The following APIs that took in a callback function as a parameter now instead r
 * files.deleteCloudStorageFolder
 * files.getCloudStorageFolderContents
 * files.getCloudStorageFolders
+* legacy.fulltrust.getConfigSetting
+* legacy.fulltrust.getUserJoinedTeams
 * location.getLocation
 * location.showLocation
 * meeting.getAppContentStageSharingCapabilities
