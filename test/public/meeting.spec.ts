@@ -781,5 +781,56 @@ describe('meeting', () => {
         expect(returnedResult).toBe(null);
       });
     });
+
+    describe('getAppContentStageSharingState', () => {
+      it('should throw error if callback is not provided', () => {
+        expect(() => meeting.getAppContentStageSharingState(null)).toThrowError(
+          '[get app content stage sharing state] Callback cannot be null',
+        );
+      });
+
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.getAppContentStageSharingState(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully get current stage sharing state information', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingState | null;
+        meeting.getAppContentStageSharingState(
+          (error: SdkError, appContentStageSharingState: meeting.IAppContentStageSharingState) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingState;
+          },
+        );
+
+        const appContentStageSharingState = {
+          isAppSharing: true,
+        };
+
+        const appContentStageSharingStateMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingState',
+        );
+        expect(appContentStageSharingStateMessage).not.toBeNull();
+        let callbackId = appContentStageSharingStateMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingState],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toStrictEqual(appContentStageSharingState);
+      });
+    });
   });
 });
