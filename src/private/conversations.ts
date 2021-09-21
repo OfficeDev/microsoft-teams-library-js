@@ -1,7 +1,8 @@
-import { ensureInitialized, sendMessageRequestToParent } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
-import { frameContexts } from '../internal/constants';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from '../public/constants';
 import { OpenConversationRequest } from '../public/interfaces';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 
 /**
  * Namespace to interact with the conversational subEntities inside the tab
@@ -14,23 +15,48 @@ export namespace conversations {
    * Allows the user to start or continue a conversation with each subentity inside the tab
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): void {
-    ensureInitialized(frameContexts.content);
-    const messageId = sendMessageRequestToParent('conversations.openConversation', [
-      {
-        title: openConversationRequest.title,
-        subEntityId: openConversationRequest.subEntityId,
-        conversationId: openConversationRequest.conversationId,
-        channelId: openConversationRequest.channelId,
-        entityId: openConversationRequest.entityId,
+    ensureInitialized(FrameContexts.content);
+    sendMessageToParent(
+      'conversations.openConversation',
+      [
+        {
+          title: openConversationRequest.title,
+          subEntityId: openConversationRequest.subEntityId,
+          conversationId: openConversationRequest.conversationId,
+          channelId: openConversationRequest.channelId,
+          entityId: openConversationRequest.entityId,
+        },
+      ],
+      (status: boolean, reason: string) => {
+        if (!status) {
+          throw new Error(reason);
+        }
       },
-    ]);
-    GlobalVars.onCloseConversationHandler = openConversationRequest.onCloseConversation;
-    GlobalVars.onStartConversationHandler = openConversationRequest.onStartConversation;
-    GlobalVars.callbacks[messageId] = (status: boolean, reason: string) => {
-      if (!status) {
-        throw new Error(reason);
-      }
-    };
+    );
+    if (openConversationRequest.onStartConversation) {
+      registerHandler(
+        'startConversation',
+        (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
+          openConversationRequest.onStartConversation({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
+      );
+    }
+    if (openConversationRequest.onCloseConversation) {
+      registerHandler(
+        'closeConversation',
+        (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
+          openConversationRequest.onCloseConversation({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
+      );
+    }
   }
 
   /**
@@ -40,9 +66,9 @@ export namespace conversations {
    * Allows the user to close the conversation in the right pane
    */
   export function closeConversation(): void {
-    ensureInitialized(frameContexts.content);
-    sendMessageRequestToParent('conversations.closeConversation');
-    GlobalVars.onCloseConversationHandler = null;
-    GlobalVars.onStartConversationHandler = null;
+    ensureInitialized(FrameContexts.content);
+    sendMessageToParent('conversations.closeConversation');
+    removeHandler('startConversation');
+    removeHandler('closeConversation');
   }
 }

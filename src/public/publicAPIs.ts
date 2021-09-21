@@ -1,18 +1,10 @@
-import {
-  processMessage,
-  ensureInitialized,
-  sendMessageRequestToParent,
-  handleParentMessage,
-  processAdditionalValidOrigins,
-} from '../internal/internalAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { version, frameContexts } from '../internal/constants';
-import { ExtendedWindow, DOMMessageEvent } from '../internal/interfaces';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { settings } from './settings';
 import {
   TabInformation,
   TabInstanceParameters,
-  TabInstance,
   DeepLinkParameters,
   Context,
   LoadContext,
@@ -20,6 +12,16 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { logs } from '../private/logs';
+import { FrameContexts } from './constants';
+import {
+  Communication,
+  initializeCommunication,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
+import { authentication } from './authentication';
+import { initializePrivateApis } from '../private/privateAPIs';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
 /**
@@ -35,42 +37,28 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
   if (!GlobalVars.initializeCalled) {
     GlobalVars.initializeCalled = true;
 
-    // Listen for messages post to our window
-    const messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
-
-    // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
-    // it's the window that opened us (i.e., window.opener)
-    GlobalVars.currentWindow = GlobalVars.currentWindow || window;
-    GlobalVars.parentWindow =
-      GlobalVars.currentWindow.parent !== GlobalVars.currentWindow.self
-        ? GlobalVars.currentWindow.parent
-        : GlobalVars.currentWindow.opener;
-
-    if (!GlobalVars.parentWindow) {
-      GlobalVars.isFramelessWindow = true;
-      (window as ExtendedWindow).onNativeMessage = handleParentMessage;
-    } else {
-      // For iFrame scenario, add listener to listen 'message'
-      GlobalVars.currentWindow.addEventListener('message', messageListener, false);
-    }
-
-    try {
-      // Send the initialized message to any origin, because at this point we most likely don't know the origin
-      // of the parent window, and this message contains no data that could pose a security risk.
-      GlobalVars.parentOrigin = '*';
-      const messageId = sendMessageRequestToParent('initialize', [version]);
-      GlobalVars.callbacks[messageId] = (context: string, clientType: string) => {
+    Handlers.initializeHandlers();
+    initializeCommunication(
+      (
+        context: FrameContexts,
+        clientType: string,
+        clientSupportedSDKVersion: string = defaultSDKVersionForCompatCheck,
+      ) => {
         GlobalVars.frameContext = context;
         GlobalVars.hostClientType = clientType;
+        GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
         // Notify all waiting callers that the initialization has completed
         GlobalVars.initializeCallbacks.forEach(initCallback => initCallback());
         GlobalVars.initializeCallbacks = [];
         GlobalVars.initializeCompleted = true;
-      };
-    } finally {
-      GlobalVars.parentOrigin = null;
-    }
+      },
+      validMessageOrigins,
+    );
+
+    authentication.initialize();
+    settings.initialize();
+    initializePrivateApis();
 
     // Undocumented function used to clear state between unit tests
     this._uninitialize = () => {
@@ -79,37 +67,28 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
         registerFullScreenHandler(null);
         registerBackButtonHandler(null);
         registerBeforeUnloadHandler(null);
+        registerFocusEnterHandler(null);
         registerOnLoadHandler(null);
         logs.registerGetLogHandler(null);
       }
 
-      if (GlobalVars.frameContext === frameContexts.settings) {
+      if (GlobalVars.frameContext === FrameContexts.settings) {
         settings.registerOnSaveHandler(null);
       }
 
-      if (GlobalVars.frameContext === frameContexts.remove) {
+      if (GlobalVars.frameContext === FrameContexts.remove) {
         settings.registerOnRemoveHandler(null);
-      }
-
-      if (!GlobalVars.isFramelessWindow) {
-        GlobalVars.currentWindow.removeEventListener('message', messageListener, false);
       }
 
       GlobalVars.initializeCalled = false;
       GlobalVars.initializeCompleted = false;
       GlobalVars.initializeCallbacks = [];
       GlobalVars.additionalValidOrigins = [];
-      GlobalVars.parentWindow = null;
-      GlobalVars.parentOrigin = null;
-      GlobalVars.parentMessageQueue = [];
-      GlobalVars.childWindow = null;
-      GlobalVars.childOrigin = null;
-      GlobalVars.childMessageQueue = [];
-      GlobalVars.nextMessageId = 0;
-      GlobalVars.callbacks = {};
       GlobalVars.frameContext = null;
       GlobalVars.hostClientType = null;
       GlobalVars.isFramelessWindow = false;
+
+      uninitializeCommunication();
     };
   }
 
@@ -134,7 +113,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
  * Undocumented function used to set a mock window for unit tests
  */
 export function _initialize(hostWindow: any): void {
-  GlobalVars.currentWindow = hostWindow;
+  Communication.currentWindow = hostWindow;
 }
 
 /**
@@ -178,8 +157,13 @@ export function print(): void {
 export function getContext(callback: (context: Context) => void): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getContext');
-  GlobalVars.callbacks[messageId] = callback;
+  sendMessageToParent('getContext', (context: Context) => {
+    if (!context.frameContext) {
+      // Fallback logic for frameContext properties
+      context.frameContext = GlobalVars.frameContext;
+    }
+    callback(context);
+  });
 }
 
 /**
@@ -189,8 +173,7 @@ export function getContext(callback: (context: Context) => void): void {
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   ensureInitialized();
-  GlobalVars.themeChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['themeChange']);
+  Handlers.registerOnThemeChangeHandler(handler);
 }
 
 /**
@@ -200,9 +183,37 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
   ensureInitialized();
+  Handlers.registerHandler('fullScreenChange', handler);
+}
 
-  GlobalVars.fullScreenChangeHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['fullScreen']);
+/**
+ * Registers a handler for clicking the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when the personal app button is clicked in the app bar.
+ */
+export function registerAppButtonClickHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
+  Handlers.registerHandler('appButtonClick', handler);
+}
+
+/**
+ * Registers a handler for entering hover of the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when entering hover of the personal app button in the app bar.
+ */
+export function registerAppButtonHoverEnterHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
+  Handlers.registerHandler('appButtonHoverEnter', handler);
+}
+
+/**
+ * Registers a handler for exiting hover of the app button.
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * @param handler The handler to invoke when exiting hover of the personal app button in the app bar.
+ */
+export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
+  Handlers.registerHandler('appButtonHoverLeave', handler);
 }
 
 /**
@@ -214,21 +225,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  */
 export function registerBackButtonHandler(handler: () => boolean): void {
   ensureInitialized();
-
-  GlobalVars.backButtonPressHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['backButton']);
-}
-
-/**
- * Navigates back in the Teams client. See registerBackButtonHandler for more information on when
- * it's appropriate to use this method.
- */
-export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized();
-
-  const messageId = sendMessageRequestToParent('navigateBack', []);
-  const errorMessage = 'Back navigation is not supported in the current client or context.';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  Handlers.registerBackButtonHandler(handler);
 }
 
 /**
@@ -238,9 +235,7 @@ export function navigateBack(onComplete?: (status: boolean, reason?: string) => 
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   ensureInitialized();
-
-  GlobalVars.loadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['load']);
+  Handlers.registerOnLoadHandler(handler);
 }
 
 /**
@@ -251,37 +246,26 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   ensureInitialized();
+  Handlers.registerBeforeUnloadHandler(handler);
+}
 
-  GlobalVars.beforeUnloadHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['beforeUnload']);
+/**
+ * @private
+ * Registers a handler when focus needs to be passed from teams to the place of choice on app.
+ * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
+ */
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
+  ensureInitialized();
+  Handlers.registerFocusEnterHandler(handler);
 }
 
 /**
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
  */
-export function registerChangeSettingsHandler(handler: () => void): void {
-  ensureInitialized(frameContexts.content);
-
-  GlobalVars.changeSettingsHandler = handler;
-  handler && sendMessageRequestToParent('registerHandler', ['changeSettings']);
-}
-
-/**
- * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
- * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
- * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
- * than the current one in a way that keeps the app informed of the change and allows the SDK to
- * continue working.
- * @param url The URL to navigate the frame to.
- */
-export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.settings, frameContexts.remove, frameContexts.task);
-
-  const messageId = sendMessageRequestToParent('navigateCrossDomain', [url]);
-  const errorMessage =
-    'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+export function registerEnterSettingsHandler(handler: () => void): void {
+  ensureInitialized(FrameContexts.content);
+  Handlers.registerHandler('changeSettings', handler);
 }
 
 /**
@@ -296,8 +280,7 @@ export function getTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  sendMessageToParent('getTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -311,8 +294,7 @@ export function getMruTabInstances(
 ): void {
   ensureInitialized();
 
-  const messageId = sendMessageRequestToParent('getMruTabInstances', [tabInstanceParameters]);
-  GlobalVars.callbacks[messageId] = callback;
+  sendMessageToParent('getMruTabInstances', [tabInstanceParameters], callback);
 }
 
 /**
@@ -320,9 +302,9 @@ export function getMruTabInstances(
  * @param deepLinkParameters ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  ensureInitialized(frameContexts.content);
+  ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-  sendMessageRequestToParent('shareDeepLink', [
+  sendMessageToParent('shareDeepLink', [
     deepLinkParameters.subEntityId,
     deepLinkParameters.subEntityLabel,
     deepLinkParameters.subEntityWebUrl,
@@ -334,27 +316,20 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized(frameContexts.content, frameContexts.task);
-  const messageId = sendMessageRequestToParent('executeDeepLink', [deepLink]);
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler();
-}
-
-/**
- * Navigates the Microsoft Teams app to the specified tab instance.
- * @param tabInstance The tab instance to navigate to.
- */
-export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized();
-
-  const messageId = sendMessageRequestToParent('navigateToTab', [tabInstance]);
-
-  const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-  GlobalVars.callbacks[messageId] = onComplete ? onComplete : getGenericOnCompleteHandler(errorMessage);
+  ensureInitialized(
+    FrameContexts.content,
+    FrameContexts.sidePanel,
+    FrameContexts.settings,
+    FrameContexts.task,
+    FrameContexts.stage,
+    FrameContexts.meetingStage,
+  );
+  sendMessageToParent('executeDeepLink', [deepLink], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 export function setFrameContext(frameContext: FrameContext): void {
-  ensureInitialized(frameContexts.content);
-  sendMessageRequestToParent('setFrameContext', [frameContext]);
+  ensureInitialized(FrameContexts.content);
+  sendMessageToParent('setFrameContext', [frameContext]);
 }
 
 export function initializeWithFrameContext(

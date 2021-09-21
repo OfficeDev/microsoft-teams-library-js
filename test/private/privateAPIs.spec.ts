@@ -1,6 +1,6 @@
 import * as microsoftTeams from '../../src/public/publicAPIs';
-import { Context } from '../../src/public/interfaces';
-import { TeamInstanceParameters } from '../../src/private/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
 import {
@@ -13,6 +13,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   sendCustomEvent,
+  registerUserSettingsChangeHandler,
 } from '../../src/private/privateAPIs';
 import { initialize, _initialize, _uninitialize, getContext } from '../../src/public/publicAPIs';
 
@@ -26,6 +27,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     utils.messages = [];
     utils.childMessages = [];
     utils.childWindow.closed = false;
+    utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
     _initialize(utils.mockWindow);
@@ -55,7 +57,7 @@ describe('MicrosoftTeams-privateAPIs', () => {
     'http://microsoft.sharepoint-df.com',
     'https://a.b.sharepoint.com',
     'https://a.b.c.sharepoint.com',
-    'http://invalid.origin.com'
+    'http://invalid.origin.com',
   ];
 
   unSupportedDomains.forEach(unSupportedDomain => {
@@ -174,7 +176,6 @@ describe('MicrosoftTeams-privateAPIs', () => {
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
     expect(callbackCalled).toBe(false);
-
   });
 
   it('should successfully handle calls queued before init completes', () => {
@@ -278,6 +279,11 @@ describe('MicrosoftTeams-privateAPIs', () => {
       teamSiteUrl: 'someSiteUrl',
       sessionId: 'someSessionId',
       appSessionId: 'appSessionId',
+      appLaunchId: 'appLaunchId',
+      sourceOrigin: 'someOrigin',
+      userClickTime: 1000,
+      teamTemplateId: 'com.microsoft.teams.ManageAProject',
+      userFileOpenPreference: FileOpenPreference.Web,
     };
 
     // Get many responses to the same message
@@ -304,11 +310,13 @@ describe('MicrosoftTeams-privateAPIs', () => {
       baseUrl: 'someBaseUrl',
       editFile: true,
       subEntityId: 'someSubEntityId',
+      viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
     });
 
     let message = utils.findMessageByFunc('openFilePreview');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(11);
+    expect(message.args.length).toBe(13);
     expect(message.args[0]).toBe('someEntityId');
     expect(message.args[1]).toBe('someTitle');
     expect(message.args[2]).toBe('someDescription');
@@ -320,6 +328,74 @@ describe('MicrosoftTeams-privateAPIs', () => {
     expect(message.args[8]).toBe('someBaseUrl');
     expect(message.args[9]).toBe(true);
     expect(message.args[10]).toBe('someSubEntityId');
+    expect(message.args[11]).toBe('view');
+    expect(message.args[12]).toBe(FileOpenPreference.Web);
+  });
+
+  it('should successfully register a userSettingsChange handler and execute it on setting change', () => {
+    utils.initializeWithContext('content');
+
+    let changedUserSettingType, changedUserSettingValue;
+
+    registerUserSettingsChangeHandler([UserSettingTypes.fileOpenPreference], (updatedSettingType, updatedValue) => {
+      changedUserSettingType = updatedSettingType;
+      changedUserSettingValue = updatedValue;
+    });
+
+    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
+
+    expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
+    expect(changedUserSettingValue).toBe('value');
+  });
+
+  it('should treat messages to frameless windows as coming from the child', () => {
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 0,
+        func: 'themeChange',
+        args: ['testTheme'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // The frameless window should send a response back to the child window
+    expect(utils.childMessages.length).toBe(1);
+  });
+
+  it('should properly pass partial responses to nested child frames ', () => {
+    utils.initializeAsFrameless(null, ['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'testPartialFunc1',
+        args: ['testArgs'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // Send a partial response back
+    const parentMessage = utils.findMessageByFunc('testPartialFunc1');
+    utils.respondToNativeMessage(parentMessage, true, {});
+
+    // The child window should properly receive the partial response
+    expect(utils.childMessages.length).toBe(1);
+    const firstChildMessage = utils.childMessages[0];
+    expect(firstChildMessage.isPartialResponse).toBeTruthy();
+
+    // Pass the final response (non partial)
+    utils.respondToNativeMessage(parentMessage, false, {});
+
+    // The child window should properly receive the non-partial response
+    expect(utils.childMessages.length).toBe(2);
+    const secondChildMessage = utils.childMessages[1];
+    expect(secondChildMessage.isPartialResponse).toBeFalsy();
   });
 
   describe('getUserJoinedTeams', () => {
@@ -401,12 +477,11 @@ describe('MicrosoftTeams-privateAPIs', () => {
     it('should successfully pass message and provided arguments', () => {
       utils.initializeWithContext('content');
 
-      const id = sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
+      sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
       let message = utils.findMessageByFunc('customMessage');
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
-      expect(id).toBe(message.id);
     });
   });
 

@@ -1,4 +1,5 @@
 import { TaskModuleDimension, HostClientType, TeamType, UserTeamRole, ChannelType } from './constants';
+import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
@@ -128,7 +129,44 @@ export interface TeamInformation {
    * Role of current user in the team
    */
   userTeamRole?: UserTeamRole;
+
+  /**
+   * The type of the team.
+   */
+  teamType?: TeamType;
+
+  /**
+   * The locked status of the team
+   */
+  isTeamLocked?: boolean;
+
+  /**
+   * The archived status of the team
+   */
+  isTeamArchived?: boolean;
 }
+
+/**
+ * Represents OS locale info used for formatting date and time data
+ */
+export interface LocaleInfo {
+  platform: 'windows' | 'macos';
+  regionalFormat: string;
+  shortDate: string;
+  longDate: string;
+  shortTime: string;
+  longTime: string;
+}
+
+/**
+ * Allowed user file open preferences
+ */
+export enum FileOpenPreference {
+  Inline = 'inline',
+  Desktop = 'desktop',
+  Web = 'web',
+}
+
 export interface Context {
   /**
    * The Office 365 group ID for the team with which the content is associated.
@@ -168,7 +206,8 @@ export interface Context {
 
   /**
    * The developer-defined unique ID for the sub-entity this content points to.
-   * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
+   * This field should be used to restore to a specific state within an entity,
+   * such as scrolling to or activating a specific piece of content.
    */
   subEntityId?: string;
 
@@ -177,6 +216,13 @@ export interface Context {
    * languageId-countryId (for example, en-us).
    */
   locale: string;
+
+  /**
+   * More detailed locale info from the user's OS if available. Can be used together with
+   * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
+   * time format configuration
+   */
+  osLocaleInfo?: LocaleInfo;
 
   /**
    * @deprecated Use loginHint or userPrincipalName.
@@ -224,6 +270,16 @@ export interface Context {
    * The relative path to the SharePoint site associated with the team.
    */
   teamSitePath?: string;
+
+  /**
+   * The tenant ID of the host team.
+   */
+  hostTeamTenantId?: string;
+
+  /**
+   * The AAD group ID of the host team.
+   */
+  hostTeamGroupId?: string;
 
   /**
    * The relative path to the SharePoint folder associated with the channel.
@@ -278,9 +334,15 @@ export interface Context {
   isTeamArchived?: boolean;
 
   /**
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
+
+  /**
+   * The context where tab url is loaded (content, task, setting, remove, sidePanel)
+   */
+  frameContext?: FrameContexts;
 
   /**
    * SharePoint context. This is only available when hosted in SharePoint.
@@ -314,6 +376,11 @@ export interface Context {
   appSessionId?: string;
 
   /**
+   * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
+   */
+  appLaunchId?: string;
+
+  /**
    * Represents whether calling is allowed for the current logged in User
    */
   isCallingAllowed?: boolean;
@@ -324,9 +391,49 @@ export interface Context {
   isPSTNCallingAllowed?: boolean;
 
   /**
+   * Meeting Id used by tab when running in meeting context
+   */
+  meetingId?: string;
+
+  /**
    * The OneNote section ID that is linked to the channel.
    */
   defaultOneNoteSectionId?: string;
+
+  /**
+   * Indication whether the tab is in a pop out window
+   */
+  isMultiWindow?: boolean;
+
+  /**
+   * Personal app icon y coordinate position
+   */
+  appIconPosition?: number;
+
+  /**
+   * Source origin from where the tab is opened
+   */
+  sourceOrigin?: string;
+
+  /**
+   * Time when the user clicked on the tab
+   */
+  userClickTime?: number;
+
+  /**
+   * Team Template ID if there was a Team Template associated with the creation of the team.
+   */
+  teamTemplateId?: string;
+
+  /**
+   * Where the user prefers the file to be opened from by default during file open
+   */
+  userFileOpenPreference?: FileOpenPreference;
+
+  /**
+   * Teamsite ID, aka sharepoint site id.
+   */
+  teamSiteId?: string;
 }
 
 export interface DeepLinkParameters {
@@ -482,4 +589,80 @@ export interface FrameContext {
    * The current URL that needs to be used for opening the website when the user clicks on 'Go to website'
    */
   websiteUrl: string;
+}
+
+export interface SdkError {
+  /**
+  error code
+  */
+  errorCode: ErrorCode;
+  /**
+  Optional description for the error. This may contain useful information for web-app developers.
+  This string will not be localized and is not for end-user consumption. 
+  App should not depend on the string content. The exact value may change. This is only for debugging purposes.
+  */
+  message?: string;
+}
+
+export enum ErrorCode {
+  /**
+   * API not supported in the current platform.
+   */
+  NOT_SUPPORTED_ON_PLATFORM = 100,
+  /**
+   * Internal error encountered while performing the required operation.
+   */
+  INTERNAL_ERROR = 500,
+  /**
+   * API is not supported in the current context
+   */
+  NOT_SUPPORTED_IN_CURRENT_CONTEXT = 501,
+  /**
+  Permissions denied by user
+  */
+  PERMISSION_DENIED = 1000,
+  /**
+   * Network issue
+   */
+  NETWORK_ERROR = 2000,
+  /**
+   * Underlying hardware doesn't support the capability
+   */
+  NO_HW_SUPPORT = 3000,
+  /**
+   * One or more arguments are invalid
+   */
+  INVALID_ARGUMENTS = 4000,
+  /**
+   * User is not authorized for this operation
+   */
+  UNAUTHORIZED_USER_OPERATION = 5000,
+  /**
+   * Could not complete the operation due to insufficient resources
+   */
+  INSUFFICIENT_RESOURCES = 6000,
+  /**
+   * Platform throttled the request because of API was invoked too frequently
+   */
+  THROTTLE = 7000,
+  /**
+   * User aborted the operation
+   */
+  USER_ABORT = 8000,
+  /**
+   * Could not complete the operation in the given time interval
+   */
+  OPERATION_TIMED_OUT = 8001,
+  /**
+   * Platform code is old and doesn't implement this API
+   */
+  OLD_PLATFORM = 9000,
+  /**
+   * The file specified was not found on the given location
+   */
+  FILE_NOT_FOUND = 404,
+  /**
+   * The return value is too big and has exceeded our size boundries
+   */
+  SIZE_EXCEEDED = 10000,
 }

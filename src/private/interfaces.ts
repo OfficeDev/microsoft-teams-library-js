@@ -1,4 +1,4 @@
-import { TeamInformation } from '../public/interfaces';
+import { FileOpenPreference, TeamInformation } from '../public/interfaces';
 /**
  * @private
  * Hide from docs
@@ -22,7 +22,7 @@ export interface ThreadMember {
   upn: string;
 }
 
-export const enum NotificationTypes {
+export enum NotificationTypes {
   fileDownloadStart = 'fileDownloadStart',
   fileDownloadComplete = 'fileDownloadComplete',
 }
@@ -30,6 +30,34 @@ export const enum NotificationTypes {
 export interface ShowNotificationParameters {
   message: string;
   notificationType: NotificationTypes;
+}
+
+/**
+ * @private
+ * Hide from docs.
+ * ------
+ */
+export enum ViewerActionTypes {
+  view = 'view',
+  edit = 'edit',
+  editNew = 'editNew',
+}
+
+/**
+ * * @private
+ * Hide from docs.
+ * ------
+ * User setting changes that can be subscribed to,
+ */
+export enum UserSettingTypes {
+  /**
+   * Use this key to subscribe to changes in user's file open preference
+   */
+  fileOpenPreference = 'fileOpenPreference',
+  /**
+   * Use this key to subscribe to theme changes
+   */
+  theme = 'theme',
 }
 
 /**
@@ -84,6 +112,7 @@ export interface FilePreviewParameters {
   baseUrl?: string;
 
   /**
+   * Deprecated; prefer using viewerAction instead
    * Optional; indicates whether the file should be opened in edit mode
    */
   editFile?: boolean;
@@ -93,6 +122,16 @@ export interface FilePreviewParameters {
    * This field should be used to restore to a specific state within an entity, such as scrolling to or activating a specific piece of content.
    */
   subEntityId?: string;
+
+  /**
+   * Optional; indicates the mode in which file should be opened. Takes precedence over edit mode.
+   */
+  viewerAction?: ViewerActionTypes;
+
+  /**
+   * Optional; indicates how user prefers to open the file
+   */
+  fileOpenPreference?: FileOpenPreference;
 }
 
 /**
