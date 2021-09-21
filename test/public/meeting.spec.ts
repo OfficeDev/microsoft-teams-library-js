@@ -708,5 +708,129 @@ describe('meeting', () => {
         expect(returnedResult).toStrictEqual(appContentStageSharingCapabilities);
       });
     });
+
+    describe('stopSharingAppContentToStage', () => {
+      it('should not allow to terminate stage sharing session with null callback', () => {
+        expect(() => meeting.stopSharingAppContentToStage(null)).toThrowError(
+          '[stop sharing app content to stage] Callback cannot be null',
+        );
+      });
+
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.stopSharingAppContentToStage(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully terminate app content stage sharing session', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        meeting.stopSharingAppContentToStage((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        let stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.stopSharingAppContentToStage',
+        );
+        expect(stopSharingAppContentToStageMessage).not.toBeNull();
+        let callbackId = stopSharingAppContentToStageMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+      });
+
+      it('should return correct error information', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        meeting.stopSharingAppContentToStage((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        let stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.stopSharingAppContentToStage',
+        );
+        expect(stopSharingAppContentToStageMessage).not.toBeNull();
+        let callbackId = stopSharingAppContentToStageMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).not.toBeNull();
+        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+        expect(returnedResult).toBe(null);
+      });
+    });
+
+    describe('getAppContentStageSharingState', () => {
+      it('should throw error if callback is not provided', () => {
+        expect(() => meeting.getAppContentStageSharingState(null)).toThrowError(
+          '[get app content stage sharing state] Callback cannot be null',
+        );
+      });
+
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.getAppContentStageSharingState(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully get current stage sharing state information', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingState | null;
+        meeting.getAppContentStageSharingState(
+          (error: SdkError, appContentStageSharingState: meeting.IAppContentStageSharingState) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingState;
+          },
+        );
+
+        const appContentStageSharingState = {
+          isAppSharing: true,
+        };
+
+        const appContentStageSharingStateMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingState',
+        );
+        expect(appContentStageSharingStateMessage).not.toBeNull();
+        let callbackId = appContentStageSharingStateMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingState],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toStrictEqual(appContentStageSharingState);
+      });
+    });
   });
 });
