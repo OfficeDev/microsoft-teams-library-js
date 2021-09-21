@@ -16,8 +16,6 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'warn',
     '@typescript-eslint/interface-name-prefix': 'off',
-    //'@typescript-eslint/ban-types': 'off',
-    //'@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/explicit-function-return-type': [
       'error',
       {
