@@ -59,37 +59,6 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
     authentication.initialize();
     settings.initialize();
     initializePrivateApis();
-
-    // Undocumented function used to clear state between unit tests
-    this._uninitialize = () => {
-      if (GlobalVars.frameContext) {
-        registerOnThemeChangeHandler(null);
-        registerFullScreenHandler(null);
-        registerBackButtonHandler(null);
-        registerBeforeUnloadHandler(null);
-        registerFocusEnterHandler(null);
-        registerOnLoadHandler(null);
-        logs.registerGetLogHandler(null);
-      }
-
-      if (GlobalVars.frameContext === FrameContexts.settings) {
-        settings.registerOnSaveHandler(null);
-      }
-
-      if (GlobalVars.frameContext === FrameContexts.remove) {
-        settings.registerOnRemoveHandler(null);
-      }
-
-      GlobalVars.initializeCalled = false;
-      GlobalVars.initializeCompleted = false;
-      GlobalVars.initializeCallbacks = [];
-      GlobalVars.additionalValidOrigins = [];
-      GlobalVars.frameContext = null;
-      GlobalVars.hostClientType = null;
-      GlobalVars.isFramelessWindow = false;
-
-      uninitializeCommunication();
-    };
   }
 
   // Handle additional valid message origins if specified
@@ -122,7 +91,40 @@ export function _initialize(hostWindow: any): void {
  * ------
  * Undocumented function used to clear state between unit tests
  */
-export function _uninitialize(): void {}
+export function _uninitialize(): void {
+  //used to clear state between unit tests
+
+  if (!GlobalVars.initializeCalled) {
+    return;
+  }
+  if (GlobalVars.frameContext) {
+    registerOnThemeChangeHandler(null);
+    registerFullScreenHandler(null);
+    registerBackButtonHandler(null);
+    registerBeforeUnloadHandler(null);
+    registerFocusEnterHandler(null);
+    registerOnLoadHandler(null);
+    logs.registerGetLogHandler(null);
+  }
+
+  if (GlobalVars.frameContext === FrameContexts.settings) {
+    settings.registerOnSaveHandler(null);
+  }
+
+  if (GlobalVars.frameContext === FrameContexts.remove) {
+    settings.registerOnRemoveHandler(null);
+  }
+
+  GlobalVars.initializeCalled = false;
+  GlobalVars.initializeCompleted = false;
+  GlobalVars.initializeCallbacks = [];
+  GlobalVars.additionalValidOrigins = [];
+  GlobalVars.frameContext = null;
+  GlobalVars.hostClientType = null;
+  GlobalVars.isFramelessWindow = false;
+
+  uninitializeCommunication();
+}
 
 /**
  * Enable print capability to support printing page using Ctrl+P and cmd+P
