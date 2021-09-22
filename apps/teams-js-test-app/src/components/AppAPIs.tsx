@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { app, Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const AppAPIs = (): ReactElement => {
   const [getContextV2Res, setGetContextV2Res] = React.useState('');

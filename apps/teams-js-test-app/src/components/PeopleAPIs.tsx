@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
-import BoxAndButton from './BoxAndButton';
-import { noHubSdkMsg } from '../App';
 import { people } from '@microsoft/teamsjs-app-sdk';
+import React, { ReactElement } from 'react';
+
+import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const PeopleAPIs = (): ReactElement => {
   const [selectPeopleRes, setSelectPeopleRes] = React.useState('');

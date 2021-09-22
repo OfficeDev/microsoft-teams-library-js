@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { location } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const LocationAPIs = (): ReactElement => {
   const [getLocationRes, setGetLocationRes] = React.useState('');

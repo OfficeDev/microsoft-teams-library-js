@@ -1,8 +1,8 @@
-import { ensureInitialized } from '../internal/internalAPIs';
-import { SdkError } from '../public/interfaces';
-import { FrameContexts } from '../public/constants';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from '../public/constants';
+import { SdkError } from '../public/interfaces';
 
 export namespace remoteCamera {
   /**

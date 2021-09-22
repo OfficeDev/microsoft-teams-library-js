@@ -1,6 +1,6 @@
-import { ensureInitialized } from '../internal/internalAPIs';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
  * Namespace to interact with the logging part of the SDK.

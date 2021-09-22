@@ -1,7 +1,8 @@
+import { notifications, ShowNotificationParameters } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
-import { notifications, ShowNotificationParameters } from '@microsoft/teamsjs-app-sdk';
 
 const NotificationAPIs = (): ReactElement => {
   const [showNotification, setShowNotification] = React.useState('');

@@ -1,6 +1,6 @@
-import { ensureInitialized } from '../internal/internalAPIs';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
 
 export namespace meetingRoom {
   /**

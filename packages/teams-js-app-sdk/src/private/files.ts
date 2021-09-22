@@ -1,7 +1,7 @@
 import {
+  sendAndHandleSdkError as sendAndHandleError,
   sendMessageToParent,
   sendMessageToParentAsync,
-  sendAndHandleSdkError as sendAndHandleError,
 } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';

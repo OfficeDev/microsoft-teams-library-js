@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
  */
 
-import { getChunkAndDependencySizes } from '../utilities';
 import { BundleMetric, ChunkToAnalyze, WebpackStatsProcessor } from '../BundleBuddyTypes';
+import { getChunkAndDependencySizes } from '../utilities';
 
 export interface BundleBuddyConfigProcessorOptions {
   // Custom callback to customize what text will be used as the metric name
@@ -23,7 +23,7 @@ export function getBundleBuddyConfigProcessor(options: BundleBuddyConfigProcesso
 
     const result = new Map<string, BundleMetric>();
 
-    bundleBuddyConfig.chunksToAnalyze.forEach((chunk) => {
+    bundleBuddyConfig.chunksToAnalyze.forEach(chunk => {
       const chunkAnalysis = getChunkAndDependencySizes(stats, chunk.name);
 
       // Right now we log the size of the chunk plus all it's dependencies. We could support logging just the chunk via a configuration
@@ -31,7 +31,7 @@ export function getBundleBuddyConfigProcessor(options: BundleBuddyConfigProcesso
 
       const metricName = options.metricNameProvider ? options.metricNameProvider(chunk) : chunk.name;
       result.set(metricName, {
-        parsedSize
+        parsedSize,
       });
     });
 

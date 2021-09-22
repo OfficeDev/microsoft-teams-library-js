@@ -31,11 +31,11 @@ export function getBundleFilePathsFromFolder(relativePathsInFolder: string[]): B
   // A map from bundle name to a bundle buddy config
   const configFilePathMap = new Map<string, string>();
 
-  relativePathsInFolder.forEach((relativePath) => {
+  relativePathsInFolder.forEach(relativePath => {
     if (relativePath.endsWith('.msp.gz')) {
       statsFilePaths.push({
         bundleName: getBundleNameFromPath(relativePath),
-        relativePathToStatsFile: relativePath
+        relativePathToStatsFile: relativePath,
       });
     } else if (relativePath.endsWith('bundleBuddyConfig.json')) {
       configFilePathMap.set(getBundleNameFromPath(relativePath), relativePath);
@@ -45,6 +45,6 @@ export function getBundleFilePathsFromFolder(relativePathsInFolder: string[]): B
   return statsFilePaths.map(({ bundleName, relativePathToStatsFile }) => ({
     bundleName,
     relativePathToStatsFile,
-    relativePathToConfigFile: configFilePathMap.get(bundleName)
+    relativePathToConfigFile: configFilePathMap.get(bundleName),
   }));
 }

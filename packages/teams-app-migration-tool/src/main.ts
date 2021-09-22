@@ -1,5 +1,6 @@
-import yargs from 'yargs';
 import { existsSync } from 'fs-extra';
+import yargs from 'yargs';
+
 import { copyDir } from './backupHelper';
 import { applyTransform } from './codemod';
 import { docLinkLogger } from './loggers';
@@ -73,7 +74,7 @@ function run(): void {
   /**
    * migrate the project if every argument is valid
    */
-  if (validSourcePath(argv.sourcePath) && validTargetPath(argv.targetPath)) {
+  if (argv.sourcePath && validSourcePath(argv.sourcePath) && argv.targetPath && validTargetPath(argv.targetPath)) {
     /**
      * beginning logs
      */

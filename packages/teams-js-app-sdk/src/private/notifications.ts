@@ -1,8 +1,8 @@
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { ShowNotificationParameters } from './interfaces';
-import { sendMessageToParent } from '../internal/communication';
 import { runtime } from '../public/runtime';
+import { ShowNotificationParameters } from './interfaces';
 
 export namespace notifications {
   /**

@@ -1,9 +1,9 @@
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
-import { ErrorCode } from './interfaces';
-import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { validatePeoplePickerInput } from '../internal/mediaUtil';
+import { FrameContexts } from './constants';
+import { ErrorCode } from './interfaces';
 
 export namespace people {
   /**

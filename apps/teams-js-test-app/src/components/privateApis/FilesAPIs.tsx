@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { FilePreviewParameters, files } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from '../BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
+import BoxAndButton from '../BoxAndButton';
 
 interface DeleteCloudStorageParams {
   channelId: string;

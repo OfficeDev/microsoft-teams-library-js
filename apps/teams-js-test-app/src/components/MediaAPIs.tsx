@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { media, SdkError } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const MediaAPIs = (): ReactElement => {
   const [captureImageRes, setCaptureImageRes] = React.useState('');

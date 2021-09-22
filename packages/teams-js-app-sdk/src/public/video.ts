@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { registerHandler } from '../internal/handlers';
 /**
  * Namespace to video extensibility of the SDK.
  *

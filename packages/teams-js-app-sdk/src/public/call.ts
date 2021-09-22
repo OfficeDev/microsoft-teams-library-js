@@ -1,6 +1,6 @@
-import { FrameContexts } from './constants';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 export namespace call {
