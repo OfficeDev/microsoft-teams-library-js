@@ -1,7 +1,8 @@
+import { SdkError, sharing } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
-import { sharing, SdkError } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const SharingAPIs = (): ReactElement => {
   const [shareWebContentRes, setShareWebContentRes] = React.useState('');

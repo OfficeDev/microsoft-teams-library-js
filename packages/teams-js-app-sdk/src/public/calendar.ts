@@ -1,6 +1,6 @@
+import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { runtime } from './runtime';
 
 export namespace calendar {

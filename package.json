@@ -58,6 +58,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
     "fs-extra": "^9.1.0",
     "fs-jetpack": "^2.2.2",
     "html-webpack-plugin": "^4.5.0",

@@ -1,14 +1,14 @@
-import { ensureInitialized } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
-import { FrameContexts, HostClientType } from './constants';
 import {
   Communication,
-  sendMessageToParent,
   sendMessageEventToChild,
-  waitForMessageQueue,
+  sendMessageToParent,
   sendMessageToParentAsync,
+  waitForMessageQueue,
 } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts, HostClientType } from './constants';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.

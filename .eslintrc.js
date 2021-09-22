@@ -9,7 +9,7 @@ module.exports = {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
   },
-  plugins: ['@typescript-eslint', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'react-hooks', 'simple-import-sort'],
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     '@typescript-eslint/no-use-before-define': 'off',
@@ -26,6 +26,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'react/prop-types': 'off',
+    'simple-import-sort/imports': 'error'
   },
   settings: {
     react: {

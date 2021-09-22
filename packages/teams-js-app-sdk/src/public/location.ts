@@ -1,9 +1,9 @@
-import { ErrorCode } from './interfaces';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
-import { locationAPIsRequiredVersion } from '../internal/constants';
 
 export namespace location {
   export interface LocationProps {

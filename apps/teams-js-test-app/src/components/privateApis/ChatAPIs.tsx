@@ -1,7 +1,8 @@
+import { chat, ChatMembersInformation, OpenConversationRequest } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
-import { OpenConversationRequest, chat, ChatMembersInformation } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from '../BoxAndButton';
+
 import { noHubSdkMsg } from '../../App';
+import BoxAndButton from '../BoxAndButton';
 
 const ConversationsAPIs = (): ReactElement => {
   const [openConversationRes, setOpenConversationRes] = React.useState('');

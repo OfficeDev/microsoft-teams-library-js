@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ensureInitialized } from '../internal/internalAPIs';
-import { UserSettingTypes } from './interfaces';
-import { getGenericOnCompleteHandler } from '../internal/utils';
-import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
-import { menus } from './menus';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
+import { UserSettingTypes } from './interfaces';
+import { menus } from './menus';
 
 export function initializePrivateApis(): void {
   menus.initialize();

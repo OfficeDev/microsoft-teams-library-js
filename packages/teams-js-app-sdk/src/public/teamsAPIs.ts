@@ -1,7 +1,7 @@
-import { ensureInitialized } from '../internal/internalAPIs';
 import { GlobalVars } from '../internal/globalVars';
-import { LoadContext } from './interfaces';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
+import { ensureInitialized } from '../internal/internalAPIs';
+import { LoadContext } from './interfaces';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.

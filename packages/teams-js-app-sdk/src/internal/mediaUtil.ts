@@ -1,5 +1,5 @@
-import { people } from '../public/people';
 import { media } from '../public/media';
+import { people } from '../public/people';
 
 /**
  * Helper function to create a blob from media chunks based on their sequence

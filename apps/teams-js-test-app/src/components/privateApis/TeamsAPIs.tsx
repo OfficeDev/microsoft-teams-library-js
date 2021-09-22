@@ -1,5 +1,6 @@
-import { teams, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { SdkError, teams } from '@microsoft/teamsjs-app-sdk';
 import React from 'react';
+
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 

@@ -1,6 +1,6 @@
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { sendMessageToParent } from '../internal/communication';
 import { SdkError } from '../public/interfaces';
 
 /**

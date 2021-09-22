@@ -1,7 +1,8 @@
+import { registerUserSettingsChangeHandler, uploadCustomApp, UserSettingTypes } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
-import { uploadCustomApp, registerUserSettingsChangeHandler, UserSettingTypes } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from '../BoxAndButton';
+
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
+import BoxAndButton from '../BoxAndButton';
 
 const PrivateAPIs = (): ReactElement => {
   const [uploadCustomAppRes, setUploadCustomAppRes] = React.useState('');

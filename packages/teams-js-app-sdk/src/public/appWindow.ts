@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
 import { sendAndHandleStatusAndReason as send } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from './constants';
 
 export interface IAppWindow {
   /**
