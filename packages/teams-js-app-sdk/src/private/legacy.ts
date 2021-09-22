@@ -1,7 +1,7 @@
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { HostClientType } from '../public/constants';
 import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndUnwrap } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
@@ -14,27 +14,28 @@ export namespace legacy {
      * Hide from docs
      * ------
      * Allows an app to retrieve information of all user joined teams
-     * @param callback The callback to invoke when the {@link TeamInstanceParameters} object is retrieved.
      * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+     * @returns Promise resolved containing information about the user joined teams or rejected with error
      */
     export function getUserJoinedTeams(
-      callback: (userJoinedTeamsInformation: UserJoinedTeamsInformation) => void,
       teamInstanceParameters?: TeamInstanceParameters,
-    ): void {
-      ensureInitialized();
+    ): Promise<UserJoinedTeamsInformation> {
+      return new Promise<UserJoinedTeamsInformation>(resolve => {
+        ensureInitialized();
 
-      if (
-        (GlobalVars.hostClientType === HostClientType.android ||
-          GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-          GlobalVars.hostClientType === HostClientType.teamsPhones ||
-          GlobalVars.hostClientType === HostClientType.teamsDisplays) &&
-        !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
-      ) {
-        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        throw new Error(JSON.stringify(oldPlatformError));
-      }
+        if (
+          (GlobalVars.hostClientType === HostClientType.android ||
+            GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+            GlobalVars.hostClientType === HostClientType.teamsPhones ||
+            GlobalVars.hostClientType === HostClientType.teamsDisplays) &&
+          !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
+        ) {
+          const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+          throw new Error(JSON.stringify(oldPlatformError));
+        }
 
-      sendMessageToParent('getUserJoinedTeams', [teamInstanceParameters], callback);
+        resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
+      });
     }
 
     /**
@@ -42,12 +43,14 @@ export namespace legacy {
      * Hide from docs
      * ------
      * Allows an app to get the configuration setting value
-     * @param callback The callback to invoke when the value is retrieved.
      * @param key The key for the config setting
+     * @returns Promise resolved containing the value for the provided config setting or rejected with error
      */
-    export function getConfigSetting(callback: (value: string) => void, key: string): void {
-      ensureInitialized();
-      sendMessageToParent('getConfigSetting', [key], callback);
+    export function getConfigSetting(key: string): Promise<string> {
+      return new Promise<string>(resolve => {
+        ensureInitialized();
+        resolve(sendAndUnwrap('getConfigSetting', key));
+      });
     }
 
     /**
