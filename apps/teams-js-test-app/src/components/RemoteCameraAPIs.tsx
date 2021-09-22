@@ -66,6 +66,8 @@ const RemoteCameraAPIs = (): ReactElement => {
         setRequestControlRes(generateJsonParseErrorMsg(exampleInput));
       } else if (error instanceof Error) {
         setRequestControlRes(error.message);
+      } else {
+        setRequestControlRes(JSON.stringify(error));
       }
     }
   };
