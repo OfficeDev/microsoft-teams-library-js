@@ -64,7 +64,7 @@ const RemoteCameraAPIs = (): ReactElement => {
       if (error instanceof SyntaxError) {
         const exampleInput: remoteCamera.Participant = { id: 'idStr' };
         setRequestControlRes(generateJsonParseErrorMsg(exampleInput));
-      } else {
+      } else if (error instanceof Error) {
         setRequestControlRes(error.message);
       }
     }

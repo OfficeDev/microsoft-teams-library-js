@@ -97,6 +97,13 @@ export namespace meeting {
     };
   }
 
+  export interface IAppContentStageSharingState {
+    /**
+     * indicates whether app is currently being shared to stage
+     */
+    isAppSharing: boolean;
+  }
+
   export interface IAppContentStageSharingCapabilities {
     /**
      * indicates whether app has permission to share contents to meeting stage
@@ -257,6 +264,20 @@ export namespace meeting {
     return new Promise<boolean>(resolve => {
       ensureInitialized(FrameContexts.sidePanel);
       resolve(sendAndHandleSdkError('meeting.stopSharingAppContentToStage'));
+    });
+  }
+
+  /**
+   * Provides information related to current stage sharing state for app
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * appContentStageSharingState can either contain an IAppContentStageSharingState object
+   * (indication of successful retrieval), or null (indication of failed retrieval)
+   */
+  export function getAppContentStageSharingState(): Promise<IAppContentStageSharingState> {
+    return new Promise<IAppContentStageSharingState>(resolve => {
+      ensureInitialized(FrameContexts.sidePanel);
+      resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingState'));
     });
   }
 }
