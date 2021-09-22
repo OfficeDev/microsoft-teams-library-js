@@ -6,8 +6,8 @@
   "author": "Microsoft Inc.",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf dist",
     "build": "yarn clean && yarn tsc",
+    "clean": "rimraf dist",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
     "test": "jest"
   },
