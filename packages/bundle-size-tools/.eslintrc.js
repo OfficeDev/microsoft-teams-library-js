@@ -1,6 +1,6 @@
 module.exports = {
   extends: '../../.eslintrc.js',
-  root: 'true',
+  root: true,
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     'curly': 'off',
