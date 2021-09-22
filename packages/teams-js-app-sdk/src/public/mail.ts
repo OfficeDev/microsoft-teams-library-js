@@ -12,6 +12,7 @@ export namespace mail {
       resolve(sendAndHandleError('mail.openMailItem', openMailItemParams));
     });
   }
+
   export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
@@ -20,6 +21,7 @@ export namespace mail {
       resolve(sendAndHandleError('mail.composeMail', composeMailParams));
     });
   }
+
   export function isSupported(): boolean {
     return runtime.supports.mail ? true : false;
   }
@@ -28,11 +30,36 @@ export namespace mail {
     itemId: string;
   }
 
-  export interface ComposeMailParams {
+  export enum ComposeMailType {
+    New = 'new',
+    Reply = 'reply',
+    ReplyAll = 'replyAll',
+    Forward = 'forward',
+  }
+
+  /**
+   * Base of a discriminated union between compose scenarios.
+   */
+  interface ComposeMailBase<T extends ComposeMailType> {
+    type: T;
+  }
+  /**
+   * Interfaces for each type.
+   */
+  export interface ComposeNewParams extends ComposeMailBase<ComposeMailType.New> {
     toRecipients?: string[];
     ccRecipients?: string[];
     bccRecipients?: string[];
     subject?: string;
     message?: string;
   }
+  export interface ComposeReplyOrForwardParams<T extends ComposeMailType> extends ComposeMailBase<T> {
+    itemid: string;
+  }
+
+  export type ComposeMailParams =
+    | ComposeNewParams
+    | ComposeReplyOrForwardParams<ComposeMailType.Reply>
+    | ComposeReplyOrForwardParams<ComposeMailType.ReplyAll>
+    | ComposeReplyOrForwardParams<ComposeMailType.Forward>;
 }

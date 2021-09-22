@@ -142,15 +142,25 @@ describe('Dialog', () => {
       expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully pass DialogInfo in sidePanel context', async () => {
+    it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
-      const dialogInfo = { width: 10, height: 10 };
 
-      dialog.resize(dialogInfo);
+      const dialogInfo: DialogInfo = {};
+      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'sidePanel' context");
+    });
 
-      const resizeMessage = utils.findMessageByFunc('tasks.updateTask');
-      expect(resizeMessage).not.toBeNull();
-      expect(resizeMessage.args).toEqual([dialogInfo]);
+    it('should not allow calls from content context', async () => {
+      await utils.initializeWithContext('content');
+
+      const dialogInfo: DialogInfo = {};
+      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'content' context");
+    });
+    
+    it('should not allow calls from meetingStage context', async () => {
+      await utils.initializeWithContext('meetingStage');
+
+      const dialogInfo: DialogInfo = {};
+      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'meetingStage' context");
     });
 
     it('should successfully pass DialogInfo in Task context', async () => {
@@ -197,15 +207,22 @@ describe('Dialog', () => {
       expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'remove' context");
     });
 
-    it('should successfully pass result and appIds parameters when called from sidePanel context', async () => {
+    it('should not allow calls from content context', async () => {
+      await utils.initializeWithContext('content');
+
+      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'content' context");
+    });
+
+    it('should not allow calls from meetingStage context', async () => {
+      await utils.initializeWithContext('meetingStage');
+
+      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'meetingStage' context");
+    });
+
+    it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
-
-      const submitMessage = utils.findMessageByFunc('tasks.completeTask');
-      expect(submitMessage).not.toBeNull();
-
-      expect(submitMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
+      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'sidePanel' context");
     });
 
     it('should successfully pass result and appIds parameters when called from Task context', async () => {
