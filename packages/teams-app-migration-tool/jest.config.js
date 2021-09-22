@@ -6,4 +6,5 @@ module.exports = {
       diagnostics: false,
     },
   },
+  testRunner: 'jest-jasmine2'
 };
