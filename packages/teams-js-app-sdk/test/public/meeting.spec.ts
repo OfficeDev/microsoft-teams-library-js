@@ -525,7 +525,7 @@ describe('meeting', () => {
       });
 
       it('should successfully get current stage sharing state information', async () => {
-        expect.assertions(5);
+        expect.assertions(5); // 2 assertions from this unit test, and 3 assertions from desktopPlatformMock.initializeWithContext
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
         const promise = meeting.getAppContentStageSharingState()
