@@ -197,7 +197,7 @@ const MeetingAPIs = (): ReactElement => {
         setGetAppContentStageSharingStateRes('getAppContentStageSharingState succeeded: ' + JSON.stringify(result)),
       )
       .catch(error =>
-        setGetAppContentStageSharingStateRes('getAppContentStageSharingState succeeded: ' + JSON.stringify(error)),
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState failed: ' + JSON.stringify(error)),
       );
   };
 
