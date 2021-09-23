@@ -53,7 +53,7 @@ function getSuffix(version) {
 // if the latest tagged version number is equal to the dev version's prefix number, we want to bump the prefix and set the dev number to be 0.
 
 // Gets just what the next dev number should be
-function getDevSuffixNum(latestVer, devVer) {
+function getDevSuffixNum(devVer) {
   // if there is no dev version returned, make a first one
   if (devVer === '') {
     return 0;
@@ -68,6 +68,7 @@ function getDevSuffixNum(latestVer, devVer) {
     throw `The dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`;
   }
   const newDevSuffixNum = devSuffixNum + 1;
+  const latestPrefix = getFileVersion(package.json);
   if (latestPrefix + 1 === devPrefix) {
     return newDevSuffixNum;
   } else if (latestPrefix === devPrefix) {
@@ -79,12 +80,10 @@ function getDevSuffixNum(latestVer, devVer) {
 
 const packageJson = getPackageJson();
 
-// Find version tagged latest
-const { latestStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag latest`);
 // Find version tagged dev
 const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
 
-const versionSuffixNum = getDevSuffixNum(latestStdout, devStdout);
+const versionSuffixNum = getDevSuffixNum(devStdout);
 
 console.log('dev version suffix number: ' + versionSuffixNum);
 
