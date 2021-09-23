@@ -21,11 +21,11 @@ const TeamsAPIs: React.FC = () => {
   };
 
   const refreshSiteUrl = (threadId: string): void => {
-    const callback = (_threadId: string, error: SdkError): void => {
+    const callback = (threadId: string, error: SdkError): void => {
       if (error) {
         setRefreshSiteUrlRes(JSON.stringify(error));
       } else {
-        setRefreshSiteUrlRes('Success');
+        setRefreshSiteUrlRes('Success: ' + JSON.stringify(threadId));
       }
     };
     teams.refreshSiteUrl(threadId, callback);
