@@ -269,10 +269,7 @@ export namespace meeting {
 
   /**
    * Provides information related to current stage sharing state for app
-   * @param callback Callback contains 2 parameters, error and result.
-   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * appContentStageSharingState can either contain an IAppContentStageSharingState object
-   * (indication of successful retrieval), or null (indication of failed retrieval)
+   * @returns Promise resolved to the App Content Stage Sharing State, or rejected with SdkError value
    */
   export function getAppContentStageSharingState(): Promise<IAppContentStageSharingState> {
     return new Promise<IAppContentStageSharingState>(resolve => {
