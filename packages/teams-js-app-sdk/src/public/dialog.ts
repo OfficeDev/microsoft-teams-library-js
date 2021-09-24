@@ -14,7 +14,7 @@ import { runtime } from './runtime';
  * @privateremarks
  * This object is usable only on the content frame.
  * 
- * @alpha 
+ * @beta 
  */
 export namespace dialog {
   /**
@@ -22,8 +22,6 @@ export namespace dialog {
    * 
    * @param dialogInfo - An object containing the parameters of the dialog module
    * @param submitHandler - Handler to call when the task module is completed
-   * 
-   * @alpha
    */
   export function open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -36,8 +34,6 @@ export namespace dialog {
    * Update height/width dialog info properties.
    * 
    * @param dialogInfo - An object containing width and height properties
-   * 
-   * @alpha
    */
   export function resize(dialogInfo: DialogInfo): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
@@ -55,14 +51,12 @@ export namespace dialog {
    * 
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
-   * 
-   * @alpha
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
     /** 
-     * privateRemarks
+     * @privateRemarks
      * Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients 
     */
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
