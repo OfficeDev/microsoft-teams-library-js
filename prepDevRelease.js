@@ -72,7 +72,11 @@ function getDevSuffixNum(devVer, currVersion) {
   } else if (latestPrefix === devPrefix) {
     return 0;
   } else {
-    throw new Error('Inconsistent tags in npm feed');
+    throw new Error(
+      `Inconsistent tags in npm feed. There shouldn't be a dev version that differs from the latest 
+      version by more than one patch version. latest version is ${currVersion} while dev version is 
+      ${devVer}. Please resolve this issue in the npm feed first.`,
+    );
   }
 }
 
