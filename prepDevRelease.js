@@ -39,8 +39,7 @@ function getPrefix(version) {
   }
 }
 
-// Gets just what the next dev number should be
-function getDevSuffixNum(devVer) {
+function getDevSuffixNum(devVer, currVersion) {
   // if there is no dev version returned, make a first one
   if (devVer === undefined) {
     return 0;
@@ -48,37 +47,46 @@ function getDevSuffixNum(devVer) {
   // there is a dev version returned, so grab the devSuffix from it and increment.
   const devIndex = devVer.indexOf('-dev.');
   if (devIndex === -1) {
-    throw `The dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`;
+    throw new Error(
+      `The dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`,
+    );
   }
   const devSuffixNum = parseInt(devVer.substring(devIndex));
   if (devSuffixNum === NaN) {
-    throw `The dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`;
+    throw new Error(
+      `The dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`,
+    );
   }
+
   const newDevSuffixNum = devSuffixNum + 1;
-  const latestPrefix = getFileVersion(package.json);
-  if (latestPrefix + 1 === devPrefix) {
+  const latestPrefix = currVersion;
+  const devPrefix = getPrefix(devVer);
+  const latestPatch = parseInt(latestPrefix.substring(latestPrefix.lastIndexOf('.') + 1));
+  const devPrefixPatch = parseInt(devPrefix.substring(devPrefix.lastIndexOf('.') + 1));
+  // If the current devPrefix is already higher than the latest version's prefix, there has already been a dev version
+  // released after a production version, so we'll need to just bump the dev suffix by one.
+  if (latestPatch + 1 === devPrefixPatch) {
     return newDevSuffixNum;
+  // If the current devPrefix is the same as the latest version's prefix, it means there hasn't been a dev version
+  // released since the production release. Set the dev suffix as 0.
   } else if (latestPrefix === devPrefix) {
     return 0;
   } else {
-    throw 'Inconsistent tags in npm feed';
+    throw new Error('Inconsistent tags in npm feed');
   }
 }
 
 (async () => {
   const packageJson = getPackageJson();
 
-  // Find version tagged dev
-  const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
-
-  const newDevSuffix = getDevSuffixNum(devStdout);
-
-  console.log('dev version suffix number: ' + newDevSuffix);
-
   // get package version from package.json
   let currVersion = getFileVersion(packageJson);
-
   console.log('package.json version: ' + currVersion);
+
+  // Find version tagged dev
+  const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
+  const newDevSuffix = getDevSuffixNum(devStdout, currVersion);
+  console.log('dev version suffix number: ' + newDevSuffix);
 
   const [major, minor, patch] = currVersion.split('.');
   let newDevPrefix = '';
