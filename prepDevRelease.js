@@ -1,5 +1,6 @@
 const fs = require('fs');
 const cp = require("child_process");
+const util = require("util");
 
 let packageJsonPath = './package.json';
 const EXIT_CODE_FATAL_ERROR = 5;
@@ -38,24 +39,10 @@ function getPrefix(version) {
   }
 }
 
-// gets suffix of whole version number. The suffix is separated by '-'
-function getSuffix(version) {
-  const dashIndex = version.indexOf('-');
-  if (dashIndex == -1) {
-    return '';
-  } else {
-    return version.substring(dashIndex + 1);
-  }
-}
-
-// Naming convention is <latest prod version number + .1>-dev.<last published dev version number + 1>
-// if the latest tagged version number is less than the dev version's prefix number, we want to continue incrementing from last dev number
-// if the latest tagged version number is equal to the dev version's prefix number, we want to bump the prefix and set the dev number to be 0.
-
 // Gets just what the next dev number should be
 function getDevSuffixNum(devVer) {
   // if there is no dev version returned, make a first one
-  if (devVer === '') {
+  if (devVer === undefined) {
     return 0;
   }
   // there is a dev version returned, so grab the devSuffix from it and increment.
@@ -78,29 +65,37 @@ function getDevSuffixNum(devVer) {
   }
 }
 
-const packageJson = getPackageJson();
+(async () => {
+  const packageJson = getPackageJson();
 
-// Find version tagged dev
-const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
+  // Find version tagged dev
+  const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
 
-const versionSuffixNum = getDevSuffixNum(devStdout);
+  const newDevSuffix = getDevSuffixNum(devStdout);
 
-console.log('dev version suffix number: ' + versionSuffixNum);
+  console.log('dev version suffix number: ' + newDevSuffix);
 
-// get package version from package.json
-let currVersion = getFileVersion(packageJson);
+  // get package version from package.json
+  let currVersion = getFileVersion(packageJson);
 
-console.log('package.json version: ' + currVersion);
-const devPrefix =
-  currVersion.substring(0, currVersion.lastIndexOf('.') + 1) +
-  (parseInt(currVersion.substring(currVersion.lastIndexOf('.'))) + 1);
+  console.log('package.json version: ' + currVersion);
 
-// append the suffix to form a new version
-const newVersion = devPrefix + '-dev.' + versionSuffixNum;
+  const [major, minor, patch] = currVersion.split('.');
+  let newDevPrefix = '';
 
-console.log('new version: ' + newVersion);
+  if (devStdout !== undefined && getPrefix(devStdout) === currVersion) {
+    newDevPrefix = currVersion;
+  } else {
+    newDevPrefix = `${major}.${minor}.${parseInt(patch) + 1}`;
+  }
 
-// update package.json with the new version
-packageJson.version = newVersion;
+  // append the suffix to form a new version
+  const newVersion = newDevPrefix + '-dev.' + newDevSuffix;
 
-savePackageJson(packageJson);
+  console.log('new version: ' + newVersion);
+
+  // update package.json with the new version
+  packageJson.version = newVersion;
+
+  savePackageJson(packageJson);
+})();
