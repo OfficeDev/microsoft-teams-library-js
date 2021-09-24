@@ -39,7 +39,7 @@ function getPrefix(version) {
   }
 }
 
-function getDevSuffixNum(devVer, currVersion) {
+function getDevSuffixNum(devVer, latestVer) {
   // if there is no dev version returned, make a first one
   if (devVer === undefined) {
     return 0;
@@ -59,7 +59,7 @@ function getDevSuffixNum(devVer, currVersion) {
   }
 
   const newDevSuffixNum = devSuffixNum + 1;
-  const latestPrefix = currVersion;
+  const latestPrefix = latestVer;
   const devPrefix = getPrefix(devVer);
   const latestPatch = parseInt(latestPrefix.substring(latestPrefix.lastIndexOf('.') + 1));
   const devPrefixPatch = parseInt(devPrefix.substring(devPrefix.lastIndexOf('.') + 1));
@@ -74,7 +74,7 @@ function getDevSuffixNum(devVer, currVersion) {
   } else {
     throw new Error(
       `Inconsistent tags in npm feed. There shouldn't be a dev version that differs from the latest 
-      version by more than one patch version. latest version is ${currVersion} while dev version is 
+      version by more than one patch version. latest version is ${latestVer} while dev version is 
       ${devVer}. Please resolve this issue in the npm feed first.`,
     );
   }
