@@ -8,8 +8,6 @@ import { FrameContexts } from './constants';
 import { DialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
-
-
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
  * 
