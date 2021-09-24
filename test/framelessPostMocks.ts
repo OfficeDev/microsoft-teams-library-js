@@ -76,10 +76,12 @@ export class FramelessPostMocks {
         args: args,
       } as MessageResponse,
     } as DOMMessageEvent;
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage(domEvent);
   };
 
   public respondToMessage = (event: DOMMessageEvent): void => {
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage(event);
   }
 }
