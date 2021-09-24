@@ -15,7 +15,7 @@ export namespace location {
     /**
     whether selected location should be shown to user on map or not.
     If allowChooseLocation is true, this parameter will be ignored by platform.
-    If allowChooseLocation is false, and this paramater is not provided, default 
+    If allowChooseLocation is false, and this parameter is not provided, default 
     value will be false.
     */
     showMap?: boolean;
