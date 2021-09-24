@@ -166,7 +166,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
             }
           }
         }
@@ -202,7 +202,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
               removeHandler('getMedia' + actionName);
             }
           }
