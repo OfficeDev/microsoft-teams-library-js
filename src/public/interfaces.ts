@@ -376,6 +376,11 @@ export interface Context {
   appSessionId?: string;
 
   /**
+   * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
+   */
+  appLaunchId?: string;
+
+  /**
    * Represents whether calling is allowed for the current logged in User
    */
   isCallingAllowed?: boolean;
@@ -424,6 +429,11 @@ export interface Context {
    * Where the user prefers the file to be opened from by default during file open
    */
   userFileOpenPreference?: FileOpenPreference;
+
+  /**
+   * Teamsite ID, aka sharepoint site id.
+   */
+  teamSiteId?: string;
 }
 
 export interface DeepLinkParameters {
@@ -559,7 +569,7 @@ export interface ConversationResponse {
  */
 export interface LoadContext {
   /**
-   * The enitity that is requested to be loaded
+   * The entity that is requested to be loaded
    */
   entityId: string;
 

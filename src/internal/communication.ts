@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { validOriginRegExp, version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -14,7 +15,7 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId: number = 0;
+  public static nextMessageId = 0;
   public static callbacks: {
     [id: number]: Function;
   } = {};
@@ -41,6 +42,7 @@ export function initializeCommunication(callback: Function, validMessageOrigins:
 
   if (!Communication.parentWindow) {
     GlobalVars.isFramelessWindow = true;
+    /* eslint-disable  @typescript-eslint/ban-ts-comment */
     // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage = handleParentMessage;
   }
