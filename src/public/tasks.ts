@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { TaskInfo } from './interfaces';
 import { FrameContexts } from './constants';
 import { IAppWindow, ChildAppWindow } from './appWindow';
