@@ -45,7 +45,7 @@ function getDevSuffixNum(devVer, currVersion) {
     return 0;
   }
   // there is a dev version returned, so grab the devSuffix from it and increment.
-  const devIndex = devVer.indexOf('-dev.');
+  const devIndex = devVer.indexOf('-dev.') + '-dev.'.length;
   if (devIndex === -1) {
     throw new Error(
       `The dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`,
