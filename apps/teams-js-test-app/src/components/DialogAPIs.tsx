@@ -37,8 +37,10 @@ const DialogAPIs = (): ReactElement => {
       } catch (error) {
         if (error instanceof SyntaxError) {
           setSubmitRes(generateJsonParseErrorMsg());
-        } else {
+        } else if (error instanceof Error) {
           setSubmitRes(error.message);
+        } else {
+          setSubmitRes(JSON.stringify(error));
         }
       }
     }

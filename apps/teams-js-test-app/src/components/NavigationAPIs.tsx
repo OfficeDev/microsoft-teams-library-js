@@ -57,7 +57,11 @@ const NavigationAPIs = (): ReactElement => {
           pages.returnFocus();
         }
       } catch (error) {
-        setReturnFocusRes(error.message);
+        if (error instanceof Error) {
+          setReturnFocusRes(error.message);
+        } else {
+          setReturnFocusRes(JSON.stringify(error));
+        }
         return;
       }
     } else {

@@ -21,6 +21,7 @@ const MeetingAPIs = (): ReactElement => {
   const [checkMeetingCapabilityRes, setCheckMeetingCapabilityRes] = React.useState('');
   const [getAppContentStageSharingCapabilitiesRes, setGetAppContentStageSharingCapabilitiesRes] = React.useState('');
   const [stopSharingAppContentToStageRes, setStopSharingAppContentToStageRes] = React.useState('');
+  const [getAppContentStageSharingStateRes, setGetAppContentStageSharingStateRes] = React.useState('');
   const NULL = 'null';
 
   const getIncomingClientAudioState = (): void => {
@@ -188,6 +189,18 @@ const MeetingAPIs = (): ReactElement => {
       );
   };
 
+  const getAppContentStageSharingState = (): void => {
+    setGetAppContentStageSharingStateRes('getAppContentStageSharingState' + noHubSdkMsg);
+    meeting
+      .getAppContentStageSharingState()
+      .then(result =>
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState succeeded: ' + JSON.stringify(result)),
+      )
+      .catch(error =>
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState failed: ' + JSON.stringify(error)),
+      );
+  };
+
   return (
     <>
       <h1>meeting</h1>
@@ -302,6 +315,13 @@ const MeetingAPIs = (): ReactElement => {
         hasInput={false}
         title="Stop Sharing App Content To Stage"
         name="stopSharingAppContentToStage"
+      />
+      <BoxAndButton
+        handleClick={getAppContentStageSharingState}
+        output={getAppContentStageSharingStateRes}
+        hasInput={false}
+        title="Get App Content Stage Sharing State"
+        name="getAppContentStageSharingState"
       />
     </>
   );

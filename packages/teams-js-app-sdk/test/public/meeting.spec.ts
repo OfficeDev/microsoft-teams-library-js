@@ -1,5 +1,5 @@
 import { meeting } from '../../src/public/meeting';
-import { ErrorCode } from '../../src/public/interfaces';
+import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { app } from '../../src/public/app';
@@ -515,6 +515,39 @@ describe('meeting', () => {
           },
         } as DOMMessageEvent);
         expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+      });
+    });
+
+    describe('getAppContentStageSharingState', () => {
+      it('should not allow calls before initialization', () => {
+        expect.assertions(1);
+        expect(() => meeting.getAppContentStageSharingState()).rejects.toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully get current stage sharing state information', async () => {
+        expect.assertions(5); // 2 assertions from this unit test, and 3 assertions from desktopPlatformMock.initializeWithContext
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        const promise = meeting.getAppContentStageSharingState()
+
+        const appContentStageSharingState = {
+          isAppSharing: true,
+        };
+
+        const appContentStageSharingStateMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingState',
+        );
+        expect(appContentStageSharingStateMessage).not.toBeNull();
+        let callbackId = appContentStageSharingStateMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingState],
+          },
+        } as DOMMessageEvent);
+
+        const result = await promise;
+        expect(result).toStrictEqual(appContentStageSharingState);
       });
     });
   });
