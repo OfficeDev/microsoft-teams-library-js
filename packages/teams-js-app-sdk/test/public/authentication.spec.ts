@@ -120,7 +120,7 @@ describe('authentication', () => {
     await utils.initializeWithContext('content');
 
     let windowOpenCalled = false;
-    spyOn(utils.mockWindow, 'open').and.callFake(
+    jest.spyOn(utils.mockWindow, 'open').mockImplementation(
       (url: string, name: string, specs: string): Window => {
         expect(url).toEqual('https://someurl/');
         expect(name).toEqual('_blank');
@@ -144,7 +144,7 @@ describe('authentication', () => {
     await utils.initializeWithContext('content');
 
     let windowOpenCalled = false;
-    spyOn(utils.mockWindow, 'open').and.callFake(
+    jest.spyOn(utils.mockWindow, 'open').mockImplementation(
       (url: string, name: string, specs: string): Window => {
         expect(url).toEqual('https://someurl/');
         expect(name).toEqual('_blank');
@@ -281,7 +281,7 @@ describe('authentication', () => {
 
   it('should do window redirect if callbackUrl is for win32 Outlook', async () => {
     let windowAssignSpyCalled = false;
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       windowAssignSpyCalled = true;
       expect(url).toEqual(
         'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess',
@@ -299,7 +299,7 @@ describe('authentication', () => {
 
   it('should do window redirect if callbackUrl is for win32 Outlook and no result param specified', async () => {
     let windowAssignSpyCalled = false;
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       windowAssignSpyCalled = true;
       expect(url).toEqual(
         'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess',
@@ -317,7 +317,7 @@ describe('authentication', () => {
 
   it('should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments', async () => {
     let windowAssignSpyCalled = false;
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       windowAssignSpyCalled = true;
       expect(url).toEqual(
         'https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess',
@@ -359,7 +359,7 @@ describe('authentication', () => {
 
   it('should do window redirect if callbackUrl is for win32 Outlook and auth failure happens', async () => {
     let windowAssignSpyCalled = false;
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       windowAssignSpyCalled = true;
       expect(url).toEqual(
         'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=someReason&authFailure',
@@ -376,7 +376,7 @@ describe('authentication', () => {
   });
 
   it('should successfully notify auth failure if callbackUrl is not for win32 Outlook', async () => {
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       expect(url).toEqual('https://someinvalidurl.com?callbackUrl=test#/configuration&reason=someReason&authFailure');
     });
 
@@ -393,7 +393,7 @@ describe('authentication', () => {
   });
 
   it('should successfully notify auth failure if callbackUrl is not for win32 Outlook and reason is empty', async () => {
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       expect(url).toEqual('');
     });
 
@@ -410,7 +410,7 @@ describe('authentication', () => {
   });
 
   it('should successfully notify auth failure if callbackUrl and reason are empty', async () => {
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       expect(url).toEqual('');
     });
 
@@ -427,7 +427,7 @@ describe('authentication', () => {
   });
 
   it('should successfully notify auth failure if callbackUrl is empty', async () => {
-    spyOn(utils.mockWindow.location, 'assign').and.callFake((url: string): void => {
+    jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
       expect(url).toEqual('');
     });
 
@@ -444,7 +444,7 @@ describe('authentication', () => {
   });
 
   it('should not close auth window before notify success message has been sent', async () => {
-    const closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
+    const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
 
     const initPromise = app.initialize();
     const initMessage = utils.findMessageByFunc('initialize');
@@ -467,7 +467,7 @@ describe('authentication', () => {
   });
 
   it('should not close auth window before notify failure message has been sent', async () => {
-    const closeWindowSpy = spyOn(utils.mockWindow, 'close').and.callThrough();
+    const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
 
     const initPromise = app.initialize();
     const initMessage = utils.findMessageByFunc('initialize');
