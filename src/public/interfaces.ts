@@ -569,7 +569,7 @@ export interface ConversationResponse {
  */
 export interface LoadContext {
   /**
-   * The enitity that is requested to be loaded
+   * The entity that is requested to be loaded
    */
   entityId: string;
 
