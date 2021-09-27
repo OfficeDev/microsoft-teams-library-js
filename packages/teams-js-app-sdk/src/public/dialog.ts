@@ -10,16 +10,16 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
- * 
- * @privateremarks
+ *
+ * @privateRemarks
  * This object is usable only on the content frame.
- * 
- * @beta 
+ *
+ * @beta
  */
 export namespace dialog {
   /**
    * Allows an app to open the dialog module.
-   * 
+   *
    * @param dialogInfo - An object containing the parameters of the dialog module
    * @param submitHandler - Handler to call when the task module is completed
    */
@@ -32,7 +32,7 @@ export namespace dialog {
 
   /**
    * Update height/width dialog info properties.
-   * 
+   *
    * @param dialogInfo - An object containing width and height properties
    */
   export function resize(dialogInfo: DialogInfo): void {
@@ -48,17 +48,17 @@ export namespace dialog {
 
   /**
    * Submit the dialog module.
-   * 
+   *
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
-    /** 
+    /**
      * @privateRemarks
-     * Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients 
-    */
+     * Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+     */
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 

@@ -80,12 +80,12 @@ export namespace app {
   }
 
   /**
-   * Initializes the library. 
-   * 
+   * Initializes the library.
+   *
    * @privateRemarks
    * This must be called before any other SDK calls
    * but after the frame is loaded successfully.
-   * 
+   *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
    * @returns Promise that will be fulfilled when initialization has completed
@@ -106,19 +106,19 @@ export namespace app {
             GlobalVars.frameContext = context;
             GlobalVars.hostClientType = clientType;
             GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
-             /**
-              * @privateRemarks
-              * Temporary workaround while the Hub is updated with the new argument order.
-              * For now, we might receive any of these possibilities:
-              * - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
-              * - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
-              * - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
-              * This code supports any of these possibilities
-              * 
-              * Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
-              * so we assume that if we don't have it, we must be running in Teams.
-              * After Teams switches to the hub SDK, we can remove this default code.
-              */
+            /**
+             * @privateRemarks
+             * Temporary workaround while the Hub is updated with the new argument order.
+             * For now, we might receive any of these possibilities:
+             * - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
+             * - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
+             * - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
+             * This code supports any of these possibilities
+             *
+             * Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
+             * so we assume that if we don't have it, we must be running in Teams.
+             * After Teams switches to the hub SDK, we can remove this default code.
+             */
             try {
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
               runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
@@ -145,9 +145,9 @@ export namespace app {
                   }
                 }
               } else {
-                /** 
+                /**
                  * @privateRemarks
-                 * If it's any error that's not a JSON parsing error, we want the program to fail. 
+                 * If it's any error that's not a JSON parsing error, we want the program to fail.
                  */
                 throw e;
               }
@@ -162,9 +162,9 @@ export namespace app {
         initializePrivateApis();
       }
 
-      /** 
+      /**
        * @privateRemarks
-       * Handle additional valid message origins if specified 
+       * Handle additional valid message origins if specified
        */
       if (Array.isArray(validMessageOrigins)) {
         processAdditionalValidOrigins(validMessageOrigins);
@@ -275,10 +275,10 @@ export namespace app {
 
   /**
    * Registers a handler for theme changes.
-   * 
+   *
    * @privateRemarks
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-   * 
+   *
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
@@ -290,7 +290,7 @@ export namespace app {
 export namespace core {
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
-   * 
+   *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
@@ -305,7 +305,7 @@ export namespace core {
 
   /**
    * execute deep link API.
-   * 
+   *
    * @param deepLink - deep link.
    * @returns Promise that will be fulfilled when the operation has completed
    */
