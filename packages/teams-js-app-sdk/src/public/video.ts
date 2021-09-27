@@ -37,7 +37,7 @@ export namespace video {
     stride?: number;
   }
   /**
-   * Video frame format enum, currentlyl only support NV12
+   * Video frame format enum, currently only support NV12
    */
   export enum VideoFrameFormat {
     NV12,
@@ -67,7 +67,7 @@ export namespace video {
   }
 
   /**
-   *  Video frame call back funtion definition
+   *  Video frame call back function definition
    */
   type VideoFrameCallback = (
     frame: VideoFrame,
@@ -76,7 +76,7 @@ export namespace video {
   ) => void;
 
   /**
-   *  Video effect change call back funtion definition
+   *  Video effect change call back function definition
    */
   type VideoEffectCallBack = (effectId: string | undefined) => void;
 

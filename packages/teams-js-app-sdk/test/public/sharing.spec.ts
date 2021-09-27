@@ -26,7 +26,7 @@ describe('sharing', () => {
 
   it('should handle share web content in success scenario', () => {
     utils.initializeWithContext('content');
-    const cb = jasmine.createSpy('callback');
+    const callback = jest.fn();
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
       content: [
         {
@@ -39,14 +39,14 @@ describe('sharing', () => {
     };
     
     let response;
-    sharing.shareWebContent(shareRequest, cb);
+    sharing.shareWebContent(shareRequest, callback);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
 
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args.length).toBe(1);
     expect(shareMessage.args[0]).toEqual(shareRequest);
     utils.respondToMessage(shareMessage);
-    expect(cb).toHaveBeenCalledWith(undefined);
+    expect(callback).toHaveBeenCalledWith(undefined);
   });
 
   it('should handle share web content when content is missing', () => {

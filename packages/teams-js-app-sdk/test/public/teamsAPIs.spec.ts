@@ -131,7 +131,7 @@ describe('AppSDK-TeamsAPIs', () => {
   it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
     app.initialize();
-    spyOn(teamsCore, 'print').and.callFake((): void => {
+    jest.spyOn(teamsCore, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -147,7 +147,7 @@ describe('AppSDK-TeamsAPIs', () => {
   it("Cmd+P shouldn't call print handler if printCapabilty is disabled", async () => {
     let handlerCalled = false;
     app.initialize();
-    spyOn(teamsCore, 'print').and.callFake((): void => {
+    jest.spyOn(teamsCore, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -164,7 +164,7 @@ describe('AppSDK-TeamsAPIs', () => {
     let handlerCalled = false;
     app.initialize();
     teamsCore.enablePrintCapability();
-    spyOn(window, 'print').and.callFake((): void => {
+    jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
 
@@ -177,7 +177,7 @@ describe('AppSDK-TeamsAPIs', () => {
     let handlerCalled = false;
     app.initialize();
     teamsCore.enablePrintCapability();
-    spyOn(window, 'print').and.callFake((): void => {
+    jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
@@ -194,7 +194,7 @@ describe('AppSDK-TeamsAPIs', () => {
     let handlerCalled = false;
     app.initialize();
     teamsCore.enablePrintCapability();
-    spyOn(window, 'print').and.callFake((): void => {
+    jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     let printEvent = new Event('keydown');
