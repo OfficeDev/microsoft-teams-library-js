@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && yarn tsc",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf dist",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
     "test": "jest"
   },

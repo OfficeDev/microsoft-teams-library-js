@@ -82,7 +82,7 @@ describe('AppSDK-privateAPIs', () => {
 
   describe('refreshSiteUrl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => teams.refreshSiteUrl(emptyCallback, 'threadId')).toThrowError('The library has not yet been initialized');
+      expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError('The library has not yet been initialized');
     });
   });
 

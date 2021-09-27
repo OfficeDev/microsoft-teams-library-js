@@ -20,15 +20,15 @@ const TeamsAPIs: React.FC = () => {
     teams.getTeamChannels(groupId, onComplete);
   };
 
-  const refreshSiteUrl = (): void => {
-    const callback = (error: SdkError): void => {
+  const refreshSiteUrl = (threadId: string): void => {
+    const callback = (threadId: string, error: SdkError): void => {
       if (error) {
         setRefreshSiteUrlRes(JSON.stringify(error));
       } else {
-        setRefreshSiteUrlRes('Success');
+        setRefreshSiteUrlRes('Success: ' + JSON.stringify(threadId));
       }
     };
-    teams.refreshSiteUrl(callback);
+    teams.refreshSiteUrl(threadId, callback);
   };
 
   return (
@@ -42,9 +42,9 @@ const TeamsAPIs: React.FC = () => {
         name="getTeamChannels"
       />
       <BoxAndButton
-        handleClick={refreshSiteUrl}
+        handleClickWithInput={refreshSiteUrl}
         output={refreshSiteUrlRes}
-        hasInput={false}
+        hasInput={true}
         title="Refresh site url"
         name="refreshSiteUrl"
       />

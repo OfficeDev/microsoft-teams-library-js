@@ -195,5 +195,5 @@ export class Utils {
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-     public flushPromises = () => new Promise(setImmediate);
+     public flushPromises = () => new Promise(resolve => setTimeout(resolve));
 }

@@ -36,7 +36,7 @@ export namespace dialog {
    * @param dialogInfo - An object containing width and height properties
    */
   export function resize(dialogInfo: DialogInfo): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+    ensureInitialized(FrameContexts.task);
     const { width, height, ...extra } = dialogInfo;
 
     if (!Object.keys(extra).length) {
@@ -53,7 +53,7 @@ export namespace dialog {
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+    ensureInitialized(FrameContexts.task);
 
     /**
      * @privateRemarks
