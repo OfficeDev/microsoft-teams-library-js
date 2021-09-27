@@ -29,7 +29,13 @@ function getFileVersion(packageJson) {
     return packageJson.version;
   }
 }
-
+/**
+ * Gets the prefix of the given version where prefix is defined as the major.minor.patch
+ * version before any dashes are added.
+ * @param {string} version The whole version to parse and find the prefix from.
+ * @returns The prefix of the given version. If there are no dashes in the given version, the
+ * prefix and the version will be the same.
+ */
 function getPrefix(version) {
   const dashIndex = version.indexOf('-');
   if (dashIndex == -1) {
@@ -39,8 +45,15 @@ function getPrefix(version) {
   }
 }
 
+/**
+ * Uses the given current dev version and latest production version to generate and return
+ * the number of the new dev version. The new dev version numbers are 0-index based.
+ * @param {string} devVer The version currently tagged dev.
+ * @param {string} latestVer The version currently tagged latest. This version should never have a dash.
+ * @returns Just the number of the suffix of the next dev version. i.e. 1.10.0-dev.<dev suffix number to be returned>
+ */
 function getDevSuffixNum(devVer, latestVer) {
-  // if there is no dev version returned, make a first one
+  // if there is no dev version returned, make the first one
   if (devVer === undefined) {
     return 0;
   }
