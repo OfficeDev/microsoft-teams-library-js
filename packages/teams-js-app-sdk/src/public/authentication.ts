@@ -13,7 +13,7 @@ import { FrameContexts, HostClientType } from './constants';
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  * This object is used for starting or completing authentication flows.
- * 
+ *
  * @beta
  */
 export namespace authentication {
@@ -52,15 +52,15 @@ export namespace authentication {
         GlobalVars.hostClientType === HostClientType.teamsPhones ||
         GlobalVars.hostClientType === HostClientType.teamsDisplays
       ) {
-        /** 
+        /**
          * @privateRemarks
-         * Convert any relative URLs into absolute URLs before sending them over to the parent window. 
+         * Convert any relative URLs into absolute URLs before sending them over to the parent window.
          */
         const link = document.createElement('a');
         link.href = authenticateParameters.url;
-        /** 
+        /**
          * @privateRemarks
-         * Ask the parent window to open an authentication window with the parameters provided by the caller. 
+         * Ask the parent window to open an authentication window with the parameters provided by the caller.
          */
         resolve(
           sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
@@ -113,12 +113,12 @@ export namespace authentication {
 
   /**
    * Requests the decoded Azure AD user identity on behalf of the app.
-   * 
+   *
    * @privateRemarks
    * Hide from docs.
    * ------
    * @returns Promise that resolves with the {@link UserProfile}.
-   * 
+   *
    * @internal
    */
   export function getUser(): Promise<UserProfile> {
@@ -135,14 +135,14 @@ export namespace authentication {
   }
 
   function closeAuthenticationWindow(): void {
-    /** 
+    /**
      * @privateRemarks
-     * Stop monitoring the authentication window 
+     * Stop monitoring the authentication window
      */
     stopAuthenticationWindowMonitor();
-    /** 
+    /**
      * @privateRemarks
-     * Try to close the authentication window and clear all properties associated with it 
+     * Try to close the authentication window and clear all properties associated with it
      */
     try {
       if (Communication.childWindow) {
@@ -155,32 +155,32 @@ export namespace authentication {
   }
 
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-    /** 
+    /**
      * @privateRemarks
-     * Close the previously opened window if we have one 
+     * Close the previously opened window if we have one
      */
     closeAuthenticationWindow();
-    /** 
+    /**
      * @privateRemarks
-     * Start with a sensible default size 
+     * Start with a sensible default size
      */
     let width = authenticateParameters.width || 600;
     let height = authenticateParameters.height || 400;
-    /** 
+    /**
      * @privateRemarks
-     * Ensure that the new window is always smaller than our app's window so that it never fully covers up our app 
+     * Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
      */
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
-    /** 
+    /**
      * @privateRemarks
-     * Convert any relative URLs into absolute URLs before sending them over to the parent window 
+     * Convert any relative URLs into absolute URLs before sending them over to the parent window
      */
     const link = document.createElement('a');
     link.href = authenticateParameters.url;
-    /** 
+    /**
      * @privateRemarks
-     * We are running in the browser, so we need to center the new window ourselves 
+     * We are running in the browser, so we need to center the new window ourselves
      */
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
@@ -192,9 +192,9 @@ export namespace authentication {
         : Communication.currentWindow.screenY;
     left += Communication.currentWindow.outerWidth / 2 - width / 2;
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
-    /** 
+    /**
      * @privateRemarks
-     * Open a child window with a desired set of standard browser features 
+     * Open a child window with a desired set of standard browser features
      */
     Communication.childWindow = Communication.currentWindow.open(
       link.href,
@@ -209,15 +209,15 @@ export namespace authentication {
         height,
     );
     if (Communication.childWindow) {
-      /** 
+      /**
        * @privateRemarks
-       * Start monitoring the authentication window so that we can detect if it gets closed before the flow completes 
+       * Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
        */
       startAuthenticationWindowMonitor();
     } else {
-      /** 
+      /**
        * @privateRemarks
-       * If we failed to open the window, fail the authentication flow 
+       * If we failed to open the window, fail the authentication flow
        */
       handleFailure('FailedToOpenWindow');
     }
@@ -233,9 +233,9 @@ export namespace authentication {
   }
 
   function startAuthenticationWindowMonitor(): void {
-    /** 
+    /**
      * @privateRemarks
-     * Stop the previous window monitor if one is running 
+     * Stop the previous window monitor if one is running
      */
     stopAuthenticationWindowMonitor();
     /**
@@ -259,9 +259,9 @@ export namespace authentication {
         }
       }
     }, 100);
-    /** 
+    /**
      * @privateRemarks
-     * Set up an initialize-message handler that gives the authentication window its frame context 
+     * Set up an initialize-message handler that gives the authentication window its frame context
      */
     registerHandler('initialize', () => {
       return [FrameContexts.authentication, GlobalVars.hostClientType];
@@ -280,11 +280,11 @@ export namespace authentication {
 
   /**
    * Notifies the frame that initiated this authentication request that the request was successful.
-   * 
+   *
    * @privateRemarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
-   * 
+   *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
@@ -292,20 +292,20 @@ export namespace authentication {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.success', [result]);
-    /** 
+    /**
      * @privateRemarks
-     * Wait for the message to be sent before closing the window 
+     * Wait for the message to be sent before closing the window
      */
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
 
   /**
    * Notifies the frame that initiated this authentication request that the request failed.
-   * 
+   *
    * @privateRemarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
-   * 
+   *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
@@ -313,9 +313,9 @@ export namespace authentication {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
-    /** 
+    /**
      * @privateRemarks
-     * Wait for the message to be sent before closing the window 
+     * Wait for the message to be sent before closing the window
      */
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
