@@ -292,6 +292,8 @@ export namespace meeting {
   }
 
   /**
+   * @private
+   * Hide from docs
    * Terminates current stage sharing session in meeting
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
