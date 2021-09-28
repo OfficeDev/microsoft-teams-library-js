@@ -1,9 +1,9 @@
-import { ErrorCode } from './interfaces';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
-import { locationAPIsRequiredVersion } from '../internal/constants';
 
 export namespace location {
   export interface LocationProps {
@@ -16,7 +16,7 @@ export namespace location {
     /**
     whether selected location should be shown to user on map or not.
     If allowChooseLocation is true, this parameter will be ignored by platform.
-    If allowChooseLocation is false, and this paramater is not provided, default 
+    If allowChooseLocation is false, and this parameter is not provided, default 
     value will be false.
     */
     showMap?: boolean;

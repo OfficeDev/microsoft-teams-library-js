@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { GlobalVars } from '../internal/globalVars';
-import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
-import { FrameContexts, HostClientType } from './constants';
-import { generateGUID } from '../internal/utils';
-import {
-  createFile,
-  decodeAttachment,
-  validateSelectMediaInputs,
-  validateGetMediaInputs,
-  validateViewImagesInput,
-  validateScanBarCodeInput,
-  isMediaCallForVideoAndImageInputs,
-} from '../internal/mediaUtil';
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
-import { runtime } from './runtime';
 import {
   captureImageMobileSupportVersion,
-  mediaAPISupportVersion,
   getMediaCallbackSupportVersion,
+  mediaAPISupportVersion,
   scanBarCodeAPIMobileSupportVersion,
   videoAndImageMediaAPISupportVersion,
 } from '../internal/constants';
+import { GlobalVars } from '../internal/globalVars';
+import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import {
+  createFile,
+  decodeAttachment,
+  isMediaCallForVideoAndImageInputs,
+  validateGetMediaInputs,
+  validateScanBarCodeInput,
+  validateSelectMediaInputs,
+  validateViewImagesInput,
+} from '../internal/mediaUtil';
+import { generateGUID } from '../internal/utils';
+import { FrameContexts, HostClientType } from './constants';
+import { ErrorCode, SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 export namespace media {
   /**
@@ -169,7 +169,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
             }
           }
         }
@@ -205,7 +205,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
               removeHandler('getMedia' + actionName);
             }
           }

@@ -1,5 +1,6 @@
-import React, { ReactElement } from 'react';
 import { app } from '@microsoft/teamsjs-app-sdk';
+import React, { ReactElement } from 'react';
+
 import BoxAndButton from './BoxAndButton';
 
 const AppInitializationAPIs = (): ReactElement => {

@@ -1,6 +1,8 @@
-import React, { ReactElement } from 'react';
 import './App.css';
+
 import { app } from '@microsoft/teamsjs-app-sdk';
+import React, { ReactElement } from 'react';
+
 import AppInitialization from './components/AppInitialization';
 
 app.initialize();

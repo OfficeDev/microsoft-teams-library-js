@@ -3,13 +3,15 @@
  * Licensed under the MIT License.
  */
 
-import { execSync } from "child_process";
+import { execSync } from 'child_process';
 
 /**
  * Gets the commit in main that the current branch is based on.
  */
 export function getBaselineCommit(baseBranch: string): string {
-  return execSync(`git merge-base origin/${baseBranch} HEAD`).toString().trim();
+  return execSync(`git merge-base origin/${baseBranch} HEAD`)
+    .toString()
+    .trim();
 }
 
 export function getPriorCommit(baseCommit: string): string {

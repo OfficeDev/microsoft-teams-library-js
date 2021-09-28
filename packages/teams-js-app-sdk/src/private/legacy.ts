@@ -1,11 +1,11 @@
+import { sendAndUnwrap } from '../internal/communication';
+import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
+import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { HostClientType } from '../public/constants';
-import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
-import { sendAndUnwrap } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
 import { ErrorCode, SdkError } from '../public/interfaces';
-import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { runtime } from '../public/runtime';
+import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
 
 export namespace legacy {
   export namespace fullTrust {

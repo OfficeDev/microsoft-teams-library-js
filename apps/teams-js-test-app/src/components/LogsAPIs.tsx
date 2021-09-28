@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { logs } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { generateRegistrationMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const LogsAPIs = (): ReactElement => {
   const [registerGetLogHandlerRes, setRegisterGetLogHandlerRes] = React.useState('');

@@ -71,7 +71,7 @@ Stay tuned for examples coming soon.
 
 ## Testing
 
-The [teamsjs Test App](./examples/teamsjs-test-app/README.md) is used to validate the teamsjs App SDK APIs.
+The [teamsjs Test App](./apps/teamsjs-test-app/README.md) is used to validate the teamsjs App SDK APIs.
 
 ## Contributing
 

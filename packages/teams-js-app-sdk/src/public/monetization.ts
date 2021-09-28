@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { SdkError } from './interfaces';
 import { FrameContexts } from './constants';
+import { SdkError } from './interfaces';
 
 export namespace monetization {
   /**

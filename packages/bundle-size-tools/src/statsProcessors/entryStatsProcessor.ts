@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
  */
 
-import { getChunkParsedSize } from '../utilities';
 import { BundleMetric, WebpackStatsProcessor } from '../BundleBuddyTypes';
+import { getChunkParsedSize } from '../utilities';
 
 export interface EntryStatsProcessorOptions {
   // Custom callback to customize what text will be used as the metric name
@@ -15,14 +15,14 @@ export interface EntryStatsProcessorOptions {
  * A simple stats processor that simply returns the size information for the entry chunk
  */
 export function getEntryStatsProcessor(options: EntryStatsProcessorOptions): WebpackStatsProcessor {
-  return (stats) => {
+  return stats => {
     const result = new Map<string, BundleMetric>();
 
     if (!stats.entrypoints) {
       return result;
     }
 
-    Object.entries(stats.entrypoints).forEach((value) => {
+    Object.entries(stats.entrypoints).forEach(value => {
       const [chunkName, chunkGroupStats] = value;
       const metricName = options.metricNameProvider ? options.metricNameProvider(chunkName) : chunkName;
       result.set(metricName, { parsedSize: getChunkParsedSize(stats, chunkGroupStats.chunks[0]) });

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import * as uuid from 'uuid';
-import { validOrigins } from './constants';
+
 import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
 import { Context, ContextBridge } from '../public/interfaces';
+import { validOrigins } from './constants';
 
 /**
  * @param pattern reference pattern

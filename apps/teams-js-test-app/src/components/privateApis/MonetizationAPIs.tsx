@@ -1,7 +1,8 @@
+import { monetization, SdkError } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
-import { monetization, SdkError } from '@microsoft/teamsjs-app-sdk';
 
 const MonetizationAPIs = (): ReactElement => {
   const [openPurchaseExperienceRes, setOpenPurchaseExperienceRes] = React.useState('');

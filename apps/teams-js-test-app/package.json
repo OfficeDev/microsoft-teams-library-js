@@ -7,7 +7,7 @@
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",
     "clean": "rimraf ./build",
-    "eslint-fix-build": "yarn eslint --fix ./src/**/*.tsx && webpack",
+    "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
     "start": "webpack serve"
   },
   "dependencies": {

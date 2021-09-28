@@ -84,7 +84,9 @@ function getMetricRow(metricName: string, baselineMetric: BundleMetric, compareM
   const parsedSizeDiff = compareMetric.parsedSize - baselineMetric.parsedSize;
   const glyph = getColorGlyph(parsedSizeDiff);
 
-  return `<tr><td>${metricName}</td><td>${formatBytes(baselineMetric.parsedSize)}</td><td>${formatBytes(compareMetric.parsedSize)}</td><td>${glyph} ${formatDiff(parsedSizeDiff)}</td></tr>`;
+  return `<tr><td>${metricName}</td><td>${formatBytes(baselineMetric.parsedSize)}</td><td>${formatBytes(
+    compareMetric.parsedSize,
+  )}</td><td>${glyph} ${formatDiff(parsedSizeDiff)}</td></tr>`;
 }
 
 /**

@@ -68,7 +68,7 @@ export interface WebpackStatsJson {
  */
 export type WebpackStatsProcessor = (
   stats: WebpackStatsJson,
-  config: BundleBuddyConfig | undefined
+  config: BundleBuddyConfig | undefined,
 ) => BundleMetricSet | undefined;
 
 /**

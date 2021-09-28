@@ -1,4 +1,4 @@
-import { BundleBuddyConfig, BundleMetricSet, WebpackStatsJson, WebpackStatsProcessor } from "../BundleBuddyTypes";
+import { BundleBuddyConfig, BundleMetricSet, WebpackStatsJson, WebpackStatsProcessor } from '../BundleBuddyTypes';
 
 /*!
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -16,18 +16,18 @@ export function runProcessorsOnStatsFile(
   bundleName: string,
   stats: WebpackStatsJson,
   config: BundleBuddyConfig | undefined,
-  statsProcessors: WebpackStatsProcessor[]
+  statsProcessors: WebpackStatsProcessor[],
 ): BundleMetricSet {
   const result: BundleMetricSet = new Map();
 
-  statsProcessors.forEach((processor) => {
+  statsProcessors.forEach(processor => {
     const localMetrics = processor(stats, config);
 
     if (localMetrics) {
       localMetrics.forEach((value, key) => {
         if (result.has(key)) {
           throw new Error(
-            `Multiple stats processors tried to write a metric with the same name: ${key} for bundle: ${bundleName}`
+            `Multiple stats processors tried to write a metric with the same name: ${key} for bundle: ${bundleName}`,
           );
         }
 

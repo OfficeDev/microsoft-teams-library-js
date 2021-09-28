@@ -1,7 +1,8 @@
+import { dialog, DialogInfo } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
-import { DialogInfo, dialog } from '@microsoft/teamsjs-app-sdk';
+
+import { generateJsonParseErrorMsg, noHubSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
-import { noHubSdkMsg, generateJsonParseErrorMsg } from '../App';
 
 const DialogAPIs = (): ReactElement => {
   const [openRes, setOpenRes] = React.useState('');
@@ -36,8 +37,10 @@ const DialogAPIs = (): ReactElement => {
       } catch (error) {
         if (error instanceof SyntaxError) {
           setSubmitRes(generateJsonParseErrorMsg());
-        } else {
+        } else if (error instanceof Error) {
           setSubmitRes(error.message);
+        } else {
+          setSubmitRes(JSON.stringify(error));
         }
       }
     }

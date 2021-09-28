@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const TeamsCoreAPIs = (): ReactElement => {
   const [enablePrintCapRes, setEnablePrintCapRes] = React.useState('');

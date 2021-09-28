@@ -1,12 +1,9 @@
-import JSZip from "jszip";
-import { WebApi } from "azure-devops-node-api";
+import { WebApi } from 'azure-devops-node-api';
+import JSZip from 'jszip';
 
-import { decompressStatsFile, unzipStream } from "../utilities";
-import {
-  BundleFileData,
-  getBundleFilePathsFromFolder
-} from "./getBundleFilePathsFromFolder";
-import { BundleBuddyConfig, WebpackStatsJson } from "../BundleBuddyTypes";
+import { BundleBuddyConfig, WebpackStatsJson } from '../BundleBuddyTypes';
+import { decompressStatsFile, unzipStream } from '../utilities';
+import { BundleFileData, getBundleFilePathsFromFolder } from './getBundleFilePathsFromFolder';
 
 /*!
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -19,7 +16,7 @@ import { BundleBuddyConfig, WebpackStatsJson } from "../BundleBuddyTypes";
  */
 export function getBundlePathsFromZipObject(jsZip: JSZip): BundleFileData[] {
   const relativePaths: string[] = [];
-  jsZip.forEach((path) => {
+  jsZip.forEach(path => {
     relativePaths.push(path);
   });
 
@@ -35,25 +32,17 @@ export async function getZipObjectFromArtifact(
   adoConnection: WebApi,
   projectName: string,
   buildNumber: number,
-  bundleAnalysisArtifactName: string
+  bundleAnalysisArtifactName: string,
 ): Promise<JSZip> {
   const buildApi = await adoConnection.getBuildApi();
 
-  const artifactStream = await buildApi.getArtifactContentZip(
-    projectName,
-    buildNumber,
-    bundleAnalysisArtifactName
-  );
+  const artifactStream = await buildApi.getArtifactContentZip(projectName, buildNumber, bundleAnalysisArtifactName);
 
   // We want our relative paths to be clean, so navigating JsZip into the top level folder
-  const result = (await unzipStream(artifactStream)).folder(
-    bundleAnalysisArtifactName
-  );
+  const result = (await unzipStream(artifactStream)).folder(bundleAnalysisArtifactName);
 
   if (!result) {
-    throw new Error(
-      `getZipObjectFromArtifact could not find the folder ${bundleAnalysisArtifactName}`
-    );
+    throw new Error(`getZipObjectFromArtifact could not find the folder ${bundleAnalysisArtifactName}`);
   }
 
   return result;
@@ -64,17 +53,14 @@ export async function getZipObjectFromArtifact(
  * @param jsZip - A zip file that has been processed with the jszip library
  * @param relativePath - The relative path to the file that will be retrieved
  */
-export async function getStatsFileFromZip(
-  jsZip: JSZip,
-  relativePath: string
-): Promise<WebpackStatsJson> {
+export async function getStatsFileFromZip(jsZip: JSZip, relativePath: string): Promise<WebpackStatsJson> {
   const jsZipObject = jsZip.file(relativePath);
 
   if (!jsZipObject) {
     throw new Error(`getStatsFileFromZip could not find file ${relativePath}`);
   }
 
-  const buffer = await jsZipObject.async("nodebuffer");
+  const buffer = await jsZipObject.async('nodebuffer');
   return decompressStatsFile(buffer);
 }
 
@@ -83,18 +69,13 @@ export async function getStatsFileFromZip(
  * @param jsZip - A zip file that has been processed with the jszip library
  * @param relativePath - The relative path to the file that will be retrieved
  */
-export async function getBundleBuddyConfigFileFromZip(
-  jsZip: JSZip,
-  relativePath: string
-): Promise<BundleBuddyConfig> {
+export async function getBundleBuddyConfigFileFromZip(jsZip: JSZip, relativePath: string): Promise<BundleBuddyConfig> {
   const jsZipObject = jsZip.file(relativePath);
 
   if (!jsZipObject) {
-    throw new Error(
-      `getBundleBuddyConfigFileFromZip could not find file ${relativePath}`
-    );
+    throw new Error(`getBundleBuddyConfigFileFromZip could not find file ${relativePath}`);
   }
 
-  const buffer = await jsZipObject.async("nodebuffer");
+  const buffer = await jsZipObject.async('nodebuffer');
   return JSON.parse(buffer.toString());
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { DialogDimension, HostClientType, HostName, TeamType, UserTeamRole, ChannelType } from './constants';
+import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -585,7 +585,7 @@ export interface ConversationResponse {
  */
 export interface LoadContext {
   /**
-   * The enitity that is requested to be loaded
+   * The entity that is requested to be loaded
    */
   entityId: string;
 

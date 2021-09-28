@@ -1,7 +1,7 @@
-import { ensureInitialized } from '../internal/internalAPIs';
 import { sendMessageToParent } from '../internal/communication';
-import { ErrorCode, SdkError } from './interfaces';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { ErrorCode, SdkError } from './interfaces';
 
 export namespace sharing {
   export const SharingAPIMessages = {

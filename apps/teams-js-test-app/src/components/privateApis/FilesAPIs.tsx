@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { FilePreviewParameters, files } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from '../BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
+import BoxAndButton from '../BoxAndButton';
 
 interface DeleteCloudStorageParams {
   channelId: string;
@@ -59,8 +60,10 @@ const FilesAPIs = (): ReactElement => {
     } catch (e) {
       if (e instanceof SyntaxError) {
         setGetCloudStorageFolderContentsRes(generateJsonParseErrorMsg());
-      } else {
+      } else if (e instanceof Error) {
         setGetCloudStorageFolderContentsRes(e.toString());
+      } else {
+        setGetCloudStorageFolderContentsRes(JSON.stringify(e));
       }
     }
   };
@@ -73,8 +76,10 @@ const FilesAPIs = (): ReactElement => {
     } catch (e) {
       if (e instanceof SyntaxError) {
         setOpenCloudStorageFileRes(generateJsonParseErrorMsg());
+      } else if (e instanceof Error) {
+        setOpenCloudStorageFileRes(e.toString());
       } else {
-        setGetCloudStorageFolderContentsRes(e.toString());
+        setOpenCloudStorageFileRes(JSON.stringify(e));
       }
     }
   };

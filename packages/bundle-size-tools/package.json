@@ -8,7 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn tsc",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "eslint-fix-build": "yarn eslint ./src --fix && yarn build"
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.2",

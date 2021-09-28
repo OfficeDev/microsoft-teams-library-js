@@ -2,27 +2,27 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
-import { GlobalVars } from '../internal/globalVars';
-import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
-import { pages } from './pages';
-import { DeepLinkParameters, Context, ContextBridge } from './interfaces';
-import { compareSDKVersions, transformContext } from '../internal/utils';
-import { logs } from '../private/logs';
-import { FrameContexts } from './constants';
 import {
   Communication,
   initializeCommunication,
+  sendAndHandleStatusAndReason as send,
+  sendAndUnwrap,
   sendMessageToParent,
   uninitializeCommunication,
-  sendAndUnwrap,
-  sendAndHandleStatusAndReason as send,
 } from '../internal/communication';
-import { authentication } from './authentication';
-import { initializePrivateApis } from '../private/privateAPIs';
+import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
+import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { teamsCore } from './teamsAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { compareSDKVersions, transformContext } from '../internal/utils';
+import { logs } from '../private/logs';
+import { initializePrivateApis } from '../private/privateAPIs';
+import { authentication } from './authentication';
+import { FrameContexts } from './constants';
+import { Context, ContextBridge, DeepLinkParameters } from './interfaces';
+import { pages } from './pages';
 import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
+import { teamsCore } from './teamsAPIs';
 
 /**
  * Namespace to interact with app initialization and lifecycle.

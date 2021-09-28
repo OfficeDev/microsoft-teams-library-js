@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
 import { app, authentication } from '@microsoft/teamsjs-app-sdk';
-import BoxAndButton from './BoxAndButton';
+import React, { ReactElement } from 'react';
+
 import { noHubSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 
 const AuthenticationAPIs = (): ReactElement => {
   const [getTokenRes, setGetTokenRes] = React.useState('');

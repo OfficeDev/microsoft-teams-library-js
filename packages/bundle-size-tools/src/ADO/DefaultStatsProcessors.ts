@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { getEntryStatsProcessor, getTotalSizeStatsProcessor, getBundleBuddyConfigProcessor } from '../statsProcessors';
+import { getBundleBuddyConfigProcessor, getEntryStatsProcessor, getTotalSizeStatsProcessor } from '../statsProcessors';
 import { totalSizeMetricName } from './Constants';
 
 /**
@@ -11,8 +11,8 @@ import { totalSizeMetricName } from './Constants';
  */
 export const DefaultStatsProcessors = [
   getBundleBuddyConfigProcessor({
-    metricNameProvider: (chunk) => `${chunk.name}.js <span title="Plus dependencies">ℹ</span>`
+    metricNameProvider: chunk => `${chunk.name}.js <span title="Plus dependencies">ℹ</span>`,
   }),
-  getEntryStatsProcessor({ metricNameProvider: (chunkName) => `${chunkName}.js` }),
-  getTotalSizeStatsProcessor({ metricName: totalSizeMetricName })
+  getEntryStatsProcessor({ metricNameProvider: chunkName => `${chunkName}.js` }),
+  getTotalSizeStatsProcessor({ metricName: totalSizeMetricName }),
 ];

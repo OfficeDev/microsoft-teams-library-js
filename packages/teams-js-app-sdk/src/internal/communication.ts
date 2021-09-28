@@ -6,7 +6,7 @@ import { SdkError } from '../public/interfaces';
 import { version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { MessageResponse, MessageRequest, ExtendedWindow, DOMMessageEvent } from './interfaces';
+import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { validateOrigin } from './utils';
 export class Communication {
   public static currentWindow: Window | any;

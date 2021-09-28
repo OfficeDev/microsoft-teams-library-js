@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { DialogInfo } from './interfaces';
-import { FrameContexts } from './constants';
-import { IAppWindow, ChildAppWindow } from './appWindow';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ChildAppWindow, IAppWindow } from './appWindow';
+import { FrameContexts } from './constants';
+import { DialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**

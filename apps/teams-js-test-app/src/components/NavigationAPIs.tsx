@@ -1,8 +1,9 @@
+import { pages } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
+
+import { noHubSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 import CheckboxAndButton from './CheckboxAndButton';
-import { noHubSdkMsg } from '../App';
-import { pages } from '@microsoft/teamsjs-app-sdk';
 
 const NavigationAPIs = (): ReactElement => {
   const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
@@ -56,7 +57,11 @@ const NavigationAPIs = (): ReactElement => {
           pages.returnFocus();
         }
       } catch (error) {
-        setReturnFocusRes(error.message);
+        if (error instanceof Error) {
+          setReturnFocusRes(error.message);
+        } else {
+          setReturnFocusRes(JSON.stringify(error));
+        }
         return;
       }
     } else {
