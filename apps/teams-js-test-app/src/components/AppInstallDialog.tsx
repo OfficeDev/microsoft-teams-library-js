@@ -1,5 +1,6 @@
-import React from 'react';
 import { appInstallDialog } from '@microsoft/teamsjs-app-sdk';
+import React from 'react';
+
 import { noHubSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
