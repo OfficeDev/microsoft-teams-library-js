@@ -1,7 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const DtsBundleWebpack = require('dts-bundle-webpack');
-const libraryName = 'teamsjs';
+const libraryName = 'microsoftTeams';
 
 module.exports = {
   entry: {
@@ -47,9 +47,9 @@ module.exports = {
   },
   plugins: [
     new DtsBundleWebpack({
-      name: '@microsoft/teamsjs-app-sdk',
+      name: '@microsoft/teams-js',
       main: 'dts/index.d.ts',
-      out: '~/dist/teamsjs.d.ts',
+      out: '~/dist/teams.d.ts',
       removeSource: true,
     }),
   ],
