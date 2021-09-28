@@ -10,7 +10,7 @@ import {
   validateGetMediaInputs,
   validateViewImagesInput,
   validateScanBarCodeInput,
-  isMediaCallForVideoAndImageInputs,
+  isMediaCallSupportedOnMobile,
   isVideoControllerRegistered,
   isApiSupportedOnMobile,
 } from '../internal/mediaUtil';
@@ -22,7 +22,6 @@ import {
   mediaAPISupportVersion,
   getMediaCallbackSupportVersion,
   scanBarCodeAPIMobileSupportVersion,
-  videoAndImageMediaAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
 } from '../internal/constants';
 
@@ -326,7 +325,7 @@ export namespace media {
 
     /**
      * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
-     * Your app can also control the experience while capturing the video by notifying the host client about VideoControllerEvent.
+     * Your app can also dynamically control the experience while capturing the video by notifying the host client.
      */
     videoController?: VideoController;
   }
@@ -432,6 +431,7 @@ export namespace media {
         case MediaControllerEvent.StartRecording:
           if (this.controllerCallback.onRecordingStarted) {
             this.controllerCallback.onRecordingStarted();
+            break;
           }
       }
     }
@@ -547,12 +547,10 @@ export namespace media {
       return;
     }
 
-    if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-      let err = isApiSupportedOnMobile(videoAndImageMediaAPISupportVersion);
-      if (err) {
-        callback(err, null);
-        return;
-      }
+    let err = isMediaCallSupportedOnMobile(mediaInputs);
+    if (err) {
+      callback(err, null);
+      return;
     }
 
     if (!validateSelectMediaInputs(mediaInputs)) {
