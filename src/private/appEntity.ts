@@ -52,14 +52,14 @@ export namespace appEntity {
    * @param subEntityId An object that will be made available to the application being configured
    *                      through the Teams Context's subEntityId field.
    * @param callback Callback that will be triggered once the app entity information is available.
-   *                 The callback takes two arguments: the app entity configuration, if available and
-   *                 an optional SdkError in case something happened (i.e. the window was closed)
+   *                 The callback takes two arguments: an SdkError in case something happened (i.e.
+   *                 no permissions to execute the API) and the app entity configuration, if available
    */
   export function selectAppEntity(
     threadId: string,
     categories: string[],
     subEntityId: string,
-    callback: (appEntity: AppEntity, sdkError?: SdkError) => void,
+    callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
