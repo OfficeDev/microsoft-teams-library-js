@@ -381,7 +381,7 @@ export namespace media {
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      let err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
       if (err) {
         if (callback) {
           callback(err);
@@ -547,7 +547,7 @@ export namespace media {
       return;
     }
 
-    let err = isMediaCallSupportedOnMobile(mediaInputs);
+    const err = isMediaCallSupportedOnMobile(mediaInputs);
     if (err) {
       callback(err, null);
       return;
