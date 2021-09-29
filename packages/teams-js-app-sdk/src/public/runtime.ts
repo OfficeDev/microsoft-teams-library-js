@@ -58,11 +58,8 @@ export let runtime: IRuntime = {
 export const teamsRuntimeConfig: IRuntime = {
   apiVersion: 1,
   supports: {
-<<<<<<< HEAD
     appInstallDialog: {},
-=======
     appEntity: {},
->>>>>>> origin/develop
     chat: {},
     dialog: {},
     files: {},
