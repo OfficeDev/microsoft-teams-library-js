@@ -1,4 +1,4 @@
-import { dialog } from '@microsoft/teamsjs-app-sdk';
+import { dialog } from '@microsoft/teams-js';
 
 dialog.resize();
 

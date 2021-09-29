@@ -51,7 +51,7 @@ appInitialization.notifyAppLoaded(); // This test for point 2
 ```
 - output  
 ```
-import { [corresponding namespace in MOS App SDK, i.e. appInitialization as follow] } from '@microsoft/teamsjs-app-sdk';  
+import { [corresponding namespace in MOS App SDK, i.e. appInitialization as follow] } from '@microsoft/teams-js';  
 appInitialization.[corresponding function name in MOS APp SDK, i.e. notifyAppLoaded as follow](); // transformed by point 1  
 appInitialization.notifyAppLoaded(); // transformed by point 3  
 appInitialization.notifyAppLoaded(); // transformed by point 2  
@@ -64,7 +64,7 @@ msft.[namespace for function, i.e.appInitialization as follow](); // This test f
 ```
 - output
 ```
-import { [corresponding namespace in MOS App SDK, i.e. core as follow] } from '@microsoft/teamsjs-app-sdk'; 
+import { [corresponding namespace in MOS App SDK, i.e. core as follow] } from '@microsoft/teams-js'; 
 core.[corresponding function name in MOS APp SDK, i.e. initialize as follow](); // transformed by point 1  
 ```
 ### listing tests custom in ```__tests__``` 

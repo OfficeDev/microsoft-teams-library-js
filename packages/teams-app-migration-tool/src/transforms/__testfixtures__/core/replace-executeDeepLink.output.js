@@ -1,3 +1,3 @@
-import { core } from '@microsoft/teamsjs-app-sdk';
+import { core } from '@microsoft/teams-js';
 
 core.executeDeepLink();

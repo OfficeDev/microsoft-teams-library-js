@@ -1,4 +1,4 @@
-import { meeting, meetingRoom } from '@microsoft/teamsjs-app-sdk';
+import { meeting, meetingRoom } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

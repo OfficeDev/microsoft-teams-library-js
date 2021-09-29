@@ -1,4 +1,4 @@
-import { people } from '@microsoft/teamsjs-app-sdk';
+import { people } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

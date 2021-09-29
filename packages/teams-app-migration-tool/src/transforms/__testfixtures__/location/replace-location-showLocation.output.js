@@ -1,4 +1,4 @@
-import { location } from '@microsoft/teamsjs-app-sdk';
+import { location } from '@microsoft/teams-js';
 
 location.showLocation();
 

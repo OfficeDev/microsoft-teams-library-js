@@ -1,4 +1,4 @@
-import { FilePreviewParameters, files } from '@microsoft/teamsjs-app-sdk';
+import { FilePreviewParameters, files } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';

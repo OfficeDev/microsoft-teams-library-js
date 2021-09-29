@@ -1,4 +1,4 @@
-import { logs } from '@microsoft/teamsjs-app-sdk';
+import { logs } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';

@@ -1,4 +1,4 @@
-import { authentication } from '@microsoft/teamsjs-app-sdk';
+import { authentication } from '@microsoft/teams-js';
 
 authentication.initialize();
 

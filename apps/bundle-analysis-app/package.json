@@ -11,6 +11,6 @@
     "webpack:profile": "webpack"
   },
   "dependencies": {
-    "@microsoft/teamsjs-app-sdk": "file:../../packages/teamsjs-app-sdk"
+    "@microsoft/teams-js": "file:../../packages/teams-js"
   }
 }

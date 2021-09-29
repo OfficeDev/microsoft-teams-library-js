@@ -1,4 +1,4 @@
-import { app, Context, core, DeepLinkParameters } from '@microsoft/teamsjs-app-sdk';
+import { app, Context, core, DeepLinkParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

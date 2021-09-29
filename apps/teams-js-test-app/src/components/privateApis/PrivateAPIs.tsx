@@ -1,4 +1,4 @@
-import { registerUserSettingsChangeHandler, uploadCustomApp, UserSettingTypes } from '@microsoft/teamsjs-app-sdk';
+import { registerUserSettingsChangeHandler, uploadCustomApp, UserSettingTypes } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';

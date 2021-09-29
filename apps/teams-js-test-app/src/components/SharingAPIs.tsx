@@ -1,4 +1,4 @@
-import { SdkError, sharing } from '@microsoft/teamsjs-app-sdk';
+import { SdkError, sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

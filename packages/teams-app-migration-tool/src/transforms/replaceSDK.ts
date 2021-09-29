@@ -29,13 +29,13 @@ import { build } from './replacementsGenerator';
  */
 
 const teamsClientSDK = '@microsoft/teams-js';
-const mosAppSDK = '@microsoft/teamsjs-app-sdk';
+const mosAppSDK = '@microsoft/teams-js';
 
 /**
  * Function helps to build a substituted import declaration from Teams Client SDK to teamsjs App SDK and
  * returns an importDeclaration which would be inserted to a line in migrated file by jscodeshift
  * @param namespaces an array containing all of namespaces from teamsjs App SDK to replace those in Teams Client SDK
- * @returns an import declaration, i.e. "import { namespace_1, namespace_2, ... } from '@microsoft/teamsjs-app-sdk'"
+ * @returns an import declaration, i.e. "import { namespace_1, namespace_2, ... } from '@microsoft/teams-js'"
  */
 function buildteamsjsAppSDKImportDeclaration(namespaces: Array<string>): ImportDeclaration {
   const specifiers: Array<ImportSpecifier> = namespaces.map(namespace => importSpecifier(identifier(namespace)));

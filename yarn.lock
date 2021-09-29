@@ -2008,8 +2008,8 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@microsoft/teamsjs-app-sdk@file:packages/teamsjs-app-sdk":
-  version "0.1.2"
+"@microsoft/teamsjs-app-sdk@file:packages/teams-js", "@microsoft/teams-js@file:packages/teams-js":
+  version "2.0.0-beta.0"
   dependencies:
     es6-promise "^4.2.8"
 

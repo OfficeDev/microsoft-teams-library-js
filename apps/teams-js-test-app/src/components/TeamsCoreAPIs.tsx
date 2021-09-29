@@ -1,4 +1,4 @@
-import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teamsjs-app-sdk';
+import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

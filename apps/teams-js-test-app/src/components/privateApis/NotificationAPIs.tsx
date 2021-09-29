@@ -1,4 +1,4 @@
-import { notifications, ShowNotificationParameters } from '@microsoft/teamsjs-app-sdk';
+import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../../App';

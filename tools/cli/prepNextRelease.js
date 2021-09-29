@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let packageJsonPath = '../../packages/teamsjs-app-sdk/package.json';
+let packageJsonPath = '../../packages/teams-js/package.json';
 const EXIT_CODE_FATAL_ERROR = 5;
 
 function getPackageJson() {

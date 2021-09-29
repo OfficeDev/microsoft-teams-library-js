@@ -1,4 +1,4 @@
-import { monetization, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { monetization, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../../App';
