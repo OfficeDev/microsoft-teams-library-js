@@ -134,6 +134,11 @@ export interface FilePreviewParameters {
    * Optional; indicates how user prefers to open the file
    */
   fileOpenPreference?: FileOpenPreference;
+
+  /**
+   * Optional; id required to enable conversation button in files. Will be channel id in case file is shared in a channel or the chat id in p2p chat case.
+   */
+  conversationId?: string;
 }
 
 /**

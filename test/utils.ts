@@ -153,6 +153,7 @@ export class Utils {
   };
 
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+    // @ts-ignore: window as ExtendedWindow
     (window as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
