@@ -27,7 +27,7 @@ export namespace authentication {
 
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
-   * 
+   *
    * @param authenticateParameters - The parameters for the authentication request
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    * @throws if the authentication request fails or is canceled by the user.
@@ -84,7 +84,7 @@ export namespace authentication {
   /**
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
-   * 
+   *
    * @param authTokenRequest - A set of values that configure the token request.
    * @returns Promise that will be fulfilled with the token if successful.
    */
@@ -112,9 +112,9 @@ export namespace authentication {
    * Hide from docs.
    * ------
    * Requests the decoded Azure AD user identity on behalf of the app.
-   * 
+   *
    * @returns Promise that resolves with the {@link UserProfile}.
-   * 
+   *
    * @internal
    */
   export function getUser(): Promise<UserProfile> {
@@ -260,7 +260,7 @@ export namespace authentication {
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-   export function notifyFailure(reason?: string, callbackUrl?: string): void {
+  export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
