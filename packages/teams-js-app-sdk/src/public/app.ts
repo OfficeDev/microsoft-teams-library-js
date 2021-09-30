@@ -12,7 +12,7 @@ import {
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
-import * as Handlers from '../internal/handlers';
+import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { compareSDKVersions, transformContext } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -82,7 +82,7 @@ export namespace app {
   /**
    * Initializes the library.
    *
-   * @privateRemarks
+   * @remarks
    * This must be called before any other SDK calls
    * but after the frame is loaded successfully.
    *
@@ -92,11 +92,8 @@ export namespace app {
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>(resolve => {
-      /**
-       * @privateRemarks
-       * Independent components might not know whether the SDK is initialized so might call it to be safe.
-       * Just no-op if that happens to make it easier to use.
-       */
+      // Independent components might not know whether the SDK is initialized so might call it to be safe.
+      // Just no-op if that happens to make it easier to use.
       if (!GlobalVars.initializeCalled) {
         GlobalVars.initializeCalled = true;
 
@@ -106,32 +103,26 @@ export namespace app {
             GlobalVars.frameContext = context;
             GlobalVars.hostClientType = clientType;
             GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
-            /**
-             * @privateRemarks
-             * Temporary workaround while the Hub is updated with the new argument order.
-             * For now, we might receive any of these possibilities:
-             * - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
-             * - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
-             * - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
-             * This code supports any of these possibilities
-             *
-             * Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
-             * so we assume that if we don't have it, we must be running in Teams.
-             * After Teams switches to the hub SDK, we can remove this default code.
-             */
+            // Temporary workaround while the Hub is updated with the new argument order.
+            // For now, we might receive any of these possibilities:
+            // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
+            // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
+            // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
+            // This code supports any of these possibilities
+
+            // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
+            // so we assume that if we don't have it, we must be running in Teams.
+            // After Teams switches to the hub SDK, we can remove this default code.
             try {
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
               runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
-                  /**
-                   * @privateRemarks
-                   * if the given runtime config was actually meant to be a SDK version, store it as such.
-                   * TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-                   * it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
-                   * remove this feature.
-                   */
+                  // if the given runtime config was actually meant to be a SDK version, store it as such.
+                  // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+                  // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+                  // remove this feature.
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
@@ -145,10 +136,7 @@ export namespace app {
                   }
                 }
               } else {
-                /**
-                 * @privateRemarks
-                 * If it's any error that's not a JSON parsing error, we want the program to fail.
-                 */
+                // If it's any error that's not a JSON parsing error, we want the program to fail.
                 throw e;
               }
             }
@@ -162,10 +150,7 @@ export namespace app {
         initializePrivateApis();
       }
 
-      /**
-       * @privateRemarks
-       * Handle additional valid message origins if specified
-       */
+      // Handle additional valid message origins if specified
       if (Array.isArray(validMessageOrigins)) {
         processAdditionalValidOrigins(validMessageOrigins);
       }
@@ -276,7 +261,7 @@ export namespace app {
   /**
    * Registers a handler for theme changes.
    *
-   * @privateRemarks
+   * @remarks
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
    * @param handler - The handler to invoke when the user changes their theme.
