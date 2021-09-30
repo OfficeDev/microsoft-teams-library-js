@@ -27,6 +27,7 @@ export namespace authentication {
 
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
+   * 
    * @param authenticateParameters - The parameters for the authentication request
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    * @throws if the authentication request fails or is canceled by the user.
@@ -52,16 +53,10 @@ export namespace authentication {
         GlobalVars.hostClientType === HostClientType.teamsPhones ||
         GlobalVars.hostClientType === HostClientType.teamsDisplays
       ) {
-        /**
-         * @privateRemarks
-         * Convert any relative URLs into absolute URLs before sending them over to the parent window.
-         */
+        // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         const link = document.createElement('a');
         link.href = authenticateParameters.url;
-        /**
-         * @privateRemarks
-         * Ask the parent window to open an authentication window with the parameters provided by the caller.
-         */
+        // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
           sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
             link.href,
@@ -89,7 +84,8 @@ export namespace authentication {
   /**
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
-   * @param authTokenRequest A set of values that configure the token request.
+   * 
+   * @param authTokenRequest - A set of values that configure the token request.
    * @returns Promise that will be fulfilled with the token if successful.
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
@@ -112,13 +108,13 @@ export namespace authentication {
   }
 
   /**
-   * Requests the decoded Azure AD user identity on behalf of the app.
-   *
    * @privateRemarks
    * Hide from docs.
    * ------
+   * Requests the decoded Azure AD user identity on behalf of the app.
+   * 
    * @returns Promise that resolves with the {@link UserProfile}.
-   *
+   * 
    * @internal
    */
   export function getUser(): Promise<UserProfile> {
@@ -135,15 +131,9 @@ export namespace authentication {
   }
 
   function closeAuthenticationWindow(): void {
-    /**
-     * @privateRemarks
-     * Stop monitoring the authentication window
-     */
+    // Stop monitoring the authentication window
     stopAuthenticationWindowMonitor();
-    /**
-     * @privateRemarks
-     * Try to close the authentication window and clear all properties associated with it
-     */
+    // Try to close the authentication window and clear all properties associated with it
     try {
       if (Communication.childWindow) {
         Communication.childWindow.close();
@@ -155,33 +145,18 @@ export namespace authentication {
   }
 
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-    /**
-     * @privateRemarks
-     * Close the previously opened window if we have one
-     */
+    // Close the previously opened window if we have one
     closeAuthenticationWindow();
-    /**
-     * @privateRemarks
-     * Start with a sensible default size
-     */
+    // Start with a sensible default size
     let width = authenticateParameters.width || 600;
     let height = authenticateParameters.height || 400;
-    /**
-     * @privateRemarks
-     * Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-     */
+    // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
-    /**
-     * @privateRemarks
-     * Convert any relative URLs into absolute URLs before sending them over to the parent window
-     */
+    // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
     link.href = authenticateParameters.url;
-    /**
-     * @privateRemarks
-     * We are running in the browser, so we need to center the new window ourselves
-     */
+    // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
         ? Communication.currentWindow.screenLeft
@@ -192,10 +167,7 @@ export namespace authentication {
         : Communication.currentWindow.screenY;
     left += Communication.currentWindow.outerWidth / 2 - width / 2;
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
-    /**
-     * @privateRemarks
-     * Open a child window with a desired set of standard browser features
-     */
+    // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
       link.href,
       '_blank',
@@ -209,16 +181,10 @@ export namespace authentication {
         height,
     );
     if (Communication.childWindow) {
-      /**
-       * @privateRemarks
-       * Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-       */
+      // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
       startAuthenticationWindowMonitor();
     } else {
-      /**
-       * @privateRemarks
-       * If we failed to open the window, fail the authentication flow
-       */
+      // If we failed to open the window, fail the authentication flow
       handleFailure('FailedToOpenWindow');
     }
   }
@@ -233,19 +199,13 @@ export namespace authentication {
   }
 
   function startAuthenticationWindowMonitor(): void {
-    /**
-     * @privateRemarks
-     * Stop the previous window monitor if one is running
-     */
+    // Stop the previous window monitor if one is running
     stopAuthenticationWindowMonitor();
-    /**
-     * @privateRemarks
-     * Create an interval loop that
-     * - Notifies the caller of failure if it detects that the authentication window is closed
-     * - Keeps pinging the authentication window while it is open to re-establish
-     *   contact with any pages along the authentication flow that need to communicate
-     *   with us
-     */
+    // Create an interval loop that
+    // - Notifies the caller of failure if it detects that the authentication window is closed
+    // - Keeps pinging the authentication window while it is open to re-establish
+    //   contact with any pages along the authentication flow that need to communicate
+    //   with us
     authWindowMonitor = Communication.currentWindow.setInterval(() => {
       if (!Communication.childWindow || Communication.childWindow.closed) {
         handleFailure('CancelledByUser');
@@ -259,20 +219,14 @@ export namespace authentication {
         }
       }
     }, 100);
-    /**
-     * @privateRemarks
-     * Set up an initialize-message handler that gives the authentication window its frame context
-     */
+    // Set up an initialize-message handler that gives the authentication window its frame context
     registerHandler('initialize', () => {
       return [FrameContexts.authentication, GlobalVars.hostClientType];
     });
-    /**
-     * @privateRemarks
-     * Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
-     * in the authentication window. We could at some point choose to implement this method via a call to
-     * authenticationWindow.location.href = url; however, we would first need to figure out how to
-     * validate the URL against the tab's list of valid domains.
-     */
+    // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
+    // in the authentication window. We could at some point choose to implement this method via a call to
+    // authenticationWindow.location.href = url; however, we would first need to figure out how to
+    // validate the URL against the tab's list of valid domains.
     registerHandler('navigateCrossDomain', () => {
       return false;
     });
@@ -281,7 +235,7 @@ export namespace authentication {
   /**
    * Notifies the frame that initiated this authentication request that the request was successful.
    *
-   * @privateRemarks
+   * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
    *
@@ -292,31 +246,25 @@ export namespace authentication {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.success', [result]);
-    /**
-     * @privateRemarks
-     * Wait for the message to be sent before closing the window
-     */
+    // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
 
   /**
    * Notifies the frame that initiated this authentication request that the request failed.
    *
-   * @privateRemarks
+   * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-  export function notifyFailure(reason?: string, callbackUrl?: string): void {
+   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
-    /**
-     * @privateRemarks
-     * Wait for the message to be sent before closing the window
-     */
+    // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
 
@@ -390,17 +338,14 @@ export namespace authentication {
 
   export interface AuthenticateParameters {
     /**
-     * @privateRemarks
      * The URL for the authentication pop-up.
      */
     url: string;
     /**
-     * @privateRemarks
      * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
      */
     width?: number;
     /**
-     * @privateRemarks
      * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
      */
     height?: number;
@@ -408,17 +353,14 @@ export namespace authentication {
 
   export interface AuthTokenRequest {
     /**
-     * @privateRemarks
      * An optional list of resource for which to acquire the access token; only used for full trust apps.
      */
     resources?: string[];
     /**
-     * @privateRemarks
      * An optional list of claims which to pass to AAD when requesting the access token.
      */
     claims?: string[];
     /**
-     * @privateRemarks
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
