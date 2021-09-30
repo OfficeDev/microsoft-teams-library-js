@@ -55,7 +55,7 @@ export namespace dialog {
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.task);
 
-    //Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+    // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 
