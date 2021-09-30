@@ -1,6 +1,6 @@
 {
-  "short_name": "MOS Perf Test App",
-  "name": "teamsjs Perf Test App",
+  "short_name": "Teams Perf Test App",
+  "name": "Teams Perf Test App",
   "icons": [
   ],
   "start_url": "/",
