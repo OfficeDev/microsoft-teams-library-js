@@ -103,6 +103,7 @@ export namespace app {
             GlobalVars.frameContext = context;
             GlobalVars.hostClientType = clientType;
             GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
+
             // Temporary workaround while the Hub is updated with the new argument order.
             // For now, we might receive any of these possibilities:
             // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
