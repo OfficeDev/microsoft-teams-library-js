@@ -215,6 +215,7 @@ export namespace app {
 
   /**
    * Retrieves the current context the frame is running in.
+   *
    * @returns Promise that will resolve with the {@link Context} object.
    */
   export function getContext(): Promise<Context> {
