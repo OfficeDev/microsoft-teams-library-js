@@ -11,7 +11,7 @@ import { runtime } from './runtime';
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
  *
- * @privateRemarks
+ * @remarks
  * This object is usable only on the content frame.
  *
  * @beta
@@ -54,11 +54,7 @@ export namespace dialog {
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.task);
-
-    /**
-     * @privateRemarks
-     * Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-     */
+    //Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
   }
 
