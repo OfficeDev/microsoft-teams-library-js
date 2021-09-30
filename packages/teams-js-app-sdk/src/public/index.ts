@@ -24,6 +24,7 @@ export {
   OpenConversationRequest,
 } from './interfaces';
 export { app, core } from './app';
+export { appInstallDialog } from './appInstallDialog';
 export { dialog } from './dialog';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
