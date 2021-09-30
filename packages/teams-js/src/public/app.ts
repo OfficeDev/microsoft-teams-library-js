@@ -30,7 +30,7 @@ import { teamsCore } from './teamsAPIs';
  * @beta
  */
 export namespace app {
-  // ::::::::::::::::::::::: M365 App SDK public API ::::::::::::::::::::
+  // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
   export const Messages = {
     AppLoaded: 'appInitialization.appLoaded',
@@ -64,8 +64,8 @@ export namespace app {
   }
 
   /**
-   * Checks whether the App SDK has been initialized.
-   * @returns whether the App SDK has been initialized.
+   * Checks whether the Teams client SDK has been initialized.
+   * @returns whether the Teams client SDK has been initialized.
    */
   export function isInitialized(): boolean {
     return GlobalVars.initializeCalled;

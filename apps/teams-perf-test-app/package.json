@@ -1,9 +1,9 @@
 {
-  "name": "teamsjs-test-app",
+  "name": "teams-perf-test-app",
   "private": true,
-  "author": "Microsoft teamsjs",
-  "description": "teamsjs Test App utilizing teamsjs App SDK to test teamsjs Hubs",
-  "version": "0.1.2",
+  "author": "Microsoft Teams",
+  "description": "Teams Perf Test App utilizing Teams JavaScript client SDK to test Teams Host Perf",
+  "version": "0.0.1",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",
     "clean": "rimraf ./build",

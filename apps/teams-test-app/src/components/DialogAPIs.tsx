@@ -22,18 +22,18 @@ const DialogAPIs = (): ReactElement => {
   const resizeDialog = (dialogInfoInput: string): void => {
     const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     dialog.resize(dialogInfo);
-    setResizeRes('App SDK call dialog.resize was called');
+    setResizeRes('Teams client SDK call dialog.resize was called');
   };
 
   const submitDialogWithInput = (submitDialogInput: string): void => {
     if (submitDialogInput.length == 0) {
       dialog.submit();
-      setSubmitRes('App SDK call dialog.submit was called with no arguments');
+      setSubmitRes('Teams client SDK call dialog.submit was called with no arguments');
     } else {
       try {
         const parsedInput = JSON.parse(submitDialogInput);
         dialog.submit(parsedInput.result, parsedInput.appIds);
-        setSubmitRes('App SDK call dialog.submit was called with arguments');
+        setSubmitRes('Teams client SDK call dialog.submit was called with arguments');
       } catch (error) {
         if (error instanceof SyntaxError) {
           setSubmitRes(generateJsonParseErrorMsg());
