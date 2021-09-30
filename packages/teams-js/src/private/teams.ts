@@ -47,7 +47,7 @@ export namespace teams {
 
   /**
    * @private
-   * Allow 1st party apps to call this function when they receive migrated errors to inform the Hub/Host to refresh the siteurl
+   * Allow 1st party apps to call this function when they receive migrated errors to inform the Host to refresh the siteurl
    * when site admin renames siteurl.
    * @param threadId ID of the thread where the app entity will be created; if threadId is not
    * provided, the threadId from route params will be used.
