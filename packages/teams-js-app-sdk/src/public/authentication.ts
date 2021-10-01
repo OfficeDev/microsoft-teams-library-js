@@ -13,6 +13,8 @@ import { FrameContexts, HostClientType } from './constants';
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  * This object is used for starting or completing authentication flows.
+ *
+ * @beta
  */
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void };
@@ -25,7 +27,8 @@ export namespace authentication {
 
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
-   * @param authenticateParameters The parameters for the authentication request
+   *
+   * @param authenticateParameters - The parameters for the authentication request
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    * @throws if the authentication request fails or is canceled by the user.
    */
@@ -81,7 +84,8 @@ export namespace authentication {
   /**
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
-   * @param authTokenRequest A set of values that configure the token request.
+   *
+   * @param authTokenRequest - A set of values that configure the token request.
    * @returns Promise that will be fulfilled with the token if successful.
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
@@ -104,11 +108,14 @@ export namespace authentication {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs.
    * ------
    * Requests the decoded Azure AD user identity on behalf of the app.
+   *
    * @returns Promise that resolves with the {@link UserProfile}.
+   *
+   * @internal
    */
   export function getUser(): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>(resolve => {
@@ -227,10 +234,13 @@ export namespace authentication {
 
   /**
    * Notifies the frame that initiated this authentication request that the request was successful.
+   *
+   * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
-   * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
-   * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
+   *
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
@@ -242,10 +252,13 @@ export namespace authentication {
 
   /**
    * Notifies the frame that initiated this authentication request that the request failed.
+   *
+   * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
-   * @param result Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
-   * @param callbackUrl Specifies the url to redirect back to if the client is Win32 Outlook.
+   *
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
