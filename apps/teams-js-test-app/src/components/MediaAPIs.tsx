@@ -1,4 +1,4 @@
-import { media, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { media } from '@microsoft/teamsjs-app-sdk';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';
@@ -15,74 +15,66 @@ const MediaAPIs = (): ReactElement => {
 
   const captureImage = (): void => {
     setCaptureImageRes('media.captureImage()' + noHubSdkMsg);
-    const callback = (error: SdkError, files: media.File[]): void => {
-      if (error) {
-        setCaptureImageRes(error.errorCode.toString + ' ' + error.message);
-        return;
-      }
-      const file: media.File = files[0];
-      let content = '';
-      let len = 20;
-      if (file.content) {
-        len = Math.min(len, file.content.length);
-        content = file.content.substr(0, len);
-      }
-      const output =
-        'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
-      setCaptureImageRes(output);
-    };
-    media.captureImage(callback);
+    media
+      .captureImage()
+      .then(files => {
+        const file: media.File = files[0];
+        let content = '';
+        let len = 20;
+        if (file.content) {
+          len = Math.min(len, file.content.length);
+          content = file.content.substr(0, len);
+        }
+        const output =
+          'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
+        setCaptureImageRes(output);
+      })
+      .catch(error => setCaptureImageRes(error.errorCode.toString + ' ' + error.message));
   };
 
   const selectMedia = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setSelectMediaRes('media.selectMedia()' + noHubSdkMsg);
-    const callback = (error: SdkError, medias: media.Media[]): void => {
-      if (error) {
-        setSelectMediaRes(error.errorCode.toString + ' ' + error.message);
-        return;
-      }
-      let message = '';
-      for (let i = 0; i < medias.length; i++) {
-        const media: media.Media = medias[i];
-        let preview = '';
-        let len = 20;
-        if (media.preview) {
-          len = Math.min(len, media.preview.length);
-          preview = media.preview.substr(0, len);
+    media
+      .selectMedia(mediaInputsParams)
+      .then(medias => {
+        let message = '';
+        for (let i = 0; i < medias.length; i++) {
+          const media: media.Media = medias[i];
+          let preview = '';
+          let len = 20;
+          if (media.preview) {
+            len = Math.min(len, media.preview.length);
+            preview = media.preview.substr(0, len);
+          }
+          message +=
+            '[format: ' +
+            media.format +
+            ', size: ' +
+            media.size +
+            ', mimeType: ' +
+            media.mimeType +
+            ', content: ' +
+            media.content +
+            ', preview: ' +
+            preview +
+            '],';
+          setSelectMediaRes(message);
         }
-        message +=
-          '[format: ' +
-          media.format +
-          ', size: ' +
-          media.size +
-          ', mimeType: ' +
-          media.mimeType +
-          ', content: ' +
-          media.content +
-          ', preview: ' +
-          preview +
-          '],';
-        setSelectMediaRes(message);
-      }
-    };
-    media.selectMedia(mediaInputsParams, callback);
+      })
+      .catch(error => setSelectMediaRes(error.errorCode.toString + ' ' + error.message));
   };
 
   const getMedia = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setGetMediaRes('media.getMedia()' + noHubSdkMsg);
-    media.selectMedia(mediaInputsParams, (error: SdkError, medias: media.Media[]) => {
-      if (error) {
-        setGetMediaRes(error.errorCode.toString + ' ' + error.message);
-        return;
-      }
-      const media: media.Media = medias[0] as media.Media;
-      media.getMedia((gmErr: SdkError, blob: Blob) => {
-        if (gmErr) {
-          setGetMediaRes(gmErr.errorCode.toString + ' ' + gmErr.message);
-          return;
-        }
+    media
+      .selectMedia(mediaInputsParams)
+      .then(medias => {
+        const media: media.Media = medias[0] as media.Media;
+        return media.getMedia();
+      })
+      .then(blob => {
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
@@ -91,34 +83,28 @@ const MediaAPIs = (): ReactElement => {
             setGetMediaRes('Received Blob (length: ' + (reader.result as any).length + ')');
           }
         };
-      });
-    });
+      })
+      .catch(error => setGetMediaRes(error.errorCode.toString + ' ' + error.message));
   };
 
   const viewImagesWithId = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
     setViewImagesWithIdRes('media.viewImagesWithId()' + noHubSdkMsg);
-    media.selectMedia(mediaInputsParams, (err: SdkError, medias: media.Media[]) => {
-      if (err) {
-        setViewImagesWithIdRes(err.errorCode.toString + ' ' + err.message);
-        return;
-      }
-      const urlList: media.ImageUri[] = [];
-      for (let i = 0; i < medias.length; i++) {
-        const media = medias[i];
-        urlList.push({
-          value: media.content,
-          type: 1, //ImageUriType.ID
-        } as media.ImageUri);
-      }
-      media.viewImages(urlList, (gmErr?: SdkError): void => {
-        if (gmErr) {
-          setViewImagesWithIdRes(gmErr.errorCode.toString + ' ' + gmErr.message);
-          return;
+    media
+      .selectMedia(mediaInputsParams)
+      .then(medias => {
+        const urlList: media.ImageUri[] = [];
+        for (let i = 0; i < medias.length; i++) {
+          const media = medias[i];
+          urlList.push({
+            value: media.content,
+            type: 1, //ImageUriType.ID
+          } as media.ImageUri);
         }
-        setViewImagesWithIdRes('Success');
-      });
-    });
+        return media.viewImages(urlList);
+      })
+      .then(() => setViewImagesWithIdRes('Success'))
+      .catch(err => setViewImagesWithIdRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const viewImagesWithUrls = (imageUrlsInput: string): void => {
@@ -132,25 +118,19 @@ const MediaAPIs = (): ReactElement => {
         type: 2, //ImageUriType.URL
       } as media.ImageUri);
     }
-    media.viewImages(urlList, (err?: SdkError): void => {
-      if (err) {
-        setViewImagesWithUrlsRes(err.errorCode.toString + ' ' + err.message);
-      } else {
-        setViewImagesWithUrlsRes('media.viewImagesWithUrls() executed');
-      }
-    });
+    media
+      .viewImages(urlList)
+      .then(() => setViewImagesWithUrlsRes('media.viewImagesWithUrls() executed'))
+      .catch(err => setViewImagesWithUrlsRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const scanBarCode = (scanBarCodeConfigInput: string): void => {
     const scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
     setScanBarCodeRes('media.scanBarCode()' + noHubSdkMsg);
-    media.scanBarCode((err: SdkError, result: string): void => {
-      if (err) {
-        setScanBarCodeRes(err.errorCode.toString + ' ' + err.message);
-      } else {
-        setScanBarCodeRes('result: ' + result);
-      }
-    }, scanBarCodeConfig);
+    media
+      .scanBarCode(scanBarCodeConfig)
+      .then(result => setScanBarCodeRes('result: ' + result))
+      .catch(err => setScanBarCodeRes(err.errorCode.toString + ' ' + err.message));
   };
 
   const mediaCapabilityCheck = (): void => {
