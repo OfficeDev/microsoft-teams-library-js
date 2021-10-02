@@ -1,14 +1,14 @@
-# teamsjs Test App
+# Teams Test App
 
-The teamsjs Test App is a React app used to test the teamsjs App and Hub SDK. It is currently being developed to be used only for this testing and is not meant to serve as official guidance for SDK use for the time being. 
+The Teams Test App is a React app used to test the Teams App and Host SDK. It is currently being developed to be used only for this testing and is not meant to serve as official guidance for SDK use for the time being. 
 
-You can find the teamsjs Test App's released version from our main branch deployed at https://musicalsink.azurewebsites.net. The teamsjs Test App's version in our develop branch is currently being served at https://cloudroll.azurewebsites.net.
+You can find the Teams Test App's released version from our main branch deployed at https://musicalsink.azurewebsites.net. The Teams Test App's version in our develop branch is currently being served at https://cloudroll.azurewebsites.net.
 
 ## Getting Started
 
 ### Running the Test App on its own
 
-If you would like to run this app on its own locally, please follow the steps below. Please note many of the functions in the test app will only work as intended while being run in a teamsjs hub as they communicate with the hub to be carried out.
+If you would like to run this app on its own locally, please follow the steps below. Please note many of the functions in the test app will only work as intended while being run in a host as they communicate with the host to be carried out.
 
 ```
 cd {monorepo root}
@@ -21,7 +21,7 @@ yarn build-test-app
 yarn start-test-app
 ```
 
-or if you have already built the App SDK and would like to build and run directly from the project directory teamsjs-test-app, simply `yarn build` and `yarn start` there.
+or if you have already built the App SDK and would like to build and run directly from the project directory teams-test-app, simply `yarn build` and `yarn start` there.
 
 ## Troubleshooting
 
