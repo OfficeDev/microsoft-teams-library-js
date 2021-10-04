@@ -86,6 +86,7 @@ export namespace bot {
 
   export interface QueryRequest {
     /**
+     * @privateRemarks
      * Query to search for
      */
     query: string;

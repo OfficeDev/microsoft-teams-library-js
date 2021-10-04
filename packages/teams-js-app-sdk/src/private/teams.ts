@@ -8,6 +8,8 @@ import { SdkError } from '../public/interfaces';
  * Namespace to interact with the `teams` specific part of the SDK.
  * ------
  * Hide from docs
+ *
+ * @internal
  */
 export namespace teams {
   export enum ChannelType {

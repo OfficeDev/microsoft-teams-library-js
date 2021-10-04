@@ -7,6 +7,9 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { UserSettingTypes } from './interfaces';
 import { menus } from './menus';
 
+/**
+ * @internal
+ */
 export function initializePrivateApis(): void {
   menus.initialize();
 }
@@ -59,6 +62,7 @@ export function sendCustomMessage(
  * @param actionName - Specifies name of the custom action to be sent
  * @param args - Specifies additional arguments passed to the action
  * @returns id of sent message
+ *
  * @internal
  */
 export function sendCustomEvent(
@@ -104,6 +108,8 @@ export function registerCustomHandler(
  *
  * @param settingTypes - List of user setting changes to subscribe
  * @param handler - When a subscribed setting is updated this handler is called
+ *
+ * @internal
  */
 export function registerUserSettingsChangeHandler(
   settingTypes: UserSettingTypes[],
