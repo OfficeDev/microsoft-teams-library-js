@@ -1,7 +1,7 @@
 {
-  "name": "teamsjs-app-sdk-monorepo",
+  "name": "teams-js-monorepo",
   "private": true,
-  "author": "Microsoft teamsjs",
+  "author": "Microsoft Teams",
   "workspaces": [
     "apps/*",
     "packages/*"
