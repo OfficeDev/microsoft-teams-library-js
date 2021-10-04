@@ -4,18 +4,21 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 
 /**
- * @private
+ * @privateRemarks
  * Namespace to interact with bots using the SDK.
+ *
+ * @alpha
  */
 export namespace bot {
   /**
-   * @private
+   * @privaterRemarks
    * Hide from docs until release.
    * ------
    * Sends query to bot in order to retrieve data.
-   * @param botRequest query to send to bot.
-   * @param onSuccess callback to invoke when data is retrieved from bot
-   * @param onError callback to invoke should an error occur
+   *
+   * @param botRequest - query to send to bot.
+   * @param onSuccess - callback to invoke when data is retrieved from bot
+   * @param onError - callback to invoke should an error occur
    */
   export function sendQuery(
     botRequest: QueryRequest,
@@ -33,12 +36,13 @@ export namespace bot {
     });
   }
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs until release.
    * -----
    * Retrieves list of support commands from bot
-   * @param onSuccess callback to invoke when data is retrieved from bot
-   * @param onError callback to invoke should an error occur
+   *
+   * @param onSuccess - callback to invoke when data is retrieved from bot
+   * @param onError - callback to invoke should an error occur
    */
   export function getSupportedCommands(
     onSuccess?: (response: Command[]) => void,
@@ -55,13 +59,14 @@ export namespace bot {
     });
   }
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs until release.
    * -----
    * Authenticates a user for json tab
-   * @param authRequest callback to invoke when data is retrieved from bot
-   * @param onSuccess callback to invoke when user is authenticated
-   * @param onError callback to invoke should an error occur
+   *
+   * @param authRequest - callback to invoke when data is retrieved from bot
+   * @param onSuccess - callback to invoke when user is authenticated
+   * @param onError - callback to invoke should an error occur
    */
   export function authenticate(
     authRequest: AuthQueryRequest,

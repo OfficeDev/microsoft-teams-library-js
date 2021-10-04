@@ -4,9 +4,9 @@ import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 
 /**
+ * @privateRemarks
  * Namespace to interact with the `teams` specific part of the SDK.
- *
- * @private
+ * ------
  * Hide from docs
  */
 export namespace teams {
@@ -25,11 +25,12 @@ export namespace teams {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Get a list of channels belong to a Team
-   * @param groupId a team's objectId
+   *
+   * @param groupId - a team's objectId
    */
   export function getTeamChannels(groupId: string, callback: (error: SdkError, channels: ChannelInfo[]) => void): void {
     ensureInitialized(FrameContexts.content);
@@ -46,10 +47,11 @@ export namespace teams {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Allow 1st party apps to call this function when they receive migrated errors to inform the Hub/Host to refresh the siteurl
    * when site admin renames siteurl.
-   * @param threadId ID of the thread where the app entity will be created; if threadId is not
+   *
+   * @param threadId - ID of the thread where the app entity will be created; if threadId is not
    * provided, the threadId from route params will be used.
    */
   export function refreshSiteUrl(threadId: string, callback: (threadId: string, error: SdkError) => void): void {
