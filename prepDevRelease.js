@@ -16,11 +16,37 @@ function getPackageJson() {
   return;
 }
 
+/**
+ * Gets the file content in JSON format from the given file path. Exits with the exit code of
+ * fatal error without returning a value if the given file path does not show a valid path to a
+ * JSON file within the system.
+ * @param {string} filePath Path to the desired file.
+ * @returns The file content in JSON format.
+ */
+function getFile(filePath) {
+  if (fs.existsSync(filePath)) {
+    try {
+      return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }));
+    } catch (error) {
+      console.log(JSON.stringify(error));
+    }
+  } else {
+    console.log(`FATAL ERROR: file path ${filePath} could not be found in the file system.`);
+  }
+  process.exitCode = EXIT_CODE_FATAL_ERROR;
+  return;
+}
+
 function savePackageJson(packageJson) {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 }
 
-function getFileVersion(packageJson) {
+/**
+ * Gets the current version of this package specified in the package.json.
+ * @param {any} packageJson The object that contains the content of this project's package.json.
+ * @returns the version of this package specified in the package.json.
+ */
+function getPkgJsonVersion(packageJson) {
   if (!packageJson.version) {
     console.log('FATAL ERROR: a version was not found in the package.json.');
     process.exitCode = EXIT_CODE_FATAL_ERROR;
@@ -29,6 +55,7 @@ function getFileVersion(packageJson) {
     return packageJson.version;
   }
 }
+
 /**
  * Gets the prefix of the given version where prefix is defined as the major.minor.patch
  * version before any dashes are added.
@@ -97,7 +124,7 @@ function getDevSuffixNum(devVer, latestVer) {
   const packageJson = getPackageJson();
 
   // get package version from package.json
-  let currVersion = getFileVersion(packageJson);
+  let currVersion = getPkgJsonVersion(packageJson);
   console.log('package.json version: ' + currVersion);
 
   // Find version tagged dev
