@@ -7,11 +7,16 @@ const EXIT_CODE_FATAL_ERROR = 5;
 
 const exec = util.promisify(cp.exec);
 
+/**
+ * Finds the package.json for the project based on a declared package.json path and returns the content.
+ * Exits the program with a fatal error code if the file can't be found.
+ * @returns the JSON object containing the entire content of the package.json file.
+ */
 function getPackageJson() {
   if (fs.existsSync(packageJsonPath)) {
     return JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
   }
-  console.log('FATAL ERROR: package.json path could not be found in the file system.');
+  console.log(`FATAL ERROR: package.json path ${packageJsonPath} could not be found in the file system.`);
   process.exitCode = EXIT_CODE_FATAL_ERROR;
   return;
 }
@@ -23,7 +28,7 @@ function getPackageJson() {
  * @param {string} filePath Path to the desired file.
  * @returns The file content in JSON format.
  */
-function getFile(filePath) {
+function getFileContent(filePath) {
   if (fs.existsSync(filePath)) {
     try {
       return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }));
@@ -148,6 +153,9 @@ function getDevSuffixNum(devVer, latestVer) {
 
   // update package.json with the new version
   packageJson.version = newVersion;
+
+  // get file content for internal/constants.ts
+  // 
 
   savePackageJson(packageJson);
 })();
