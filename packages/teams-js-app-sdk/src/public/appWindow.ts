@@ -7,18 +7,23 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 
+/**
+ * @alpha
+ */
 export interface IAppWindow {
   /**
    * Send a message to the AppWindow.
-   * @param message The message to send
+   *
+   * @param message - The message to send
    * @returns Promise that will be fulfilled when the AppWindow posts back a response
    */
   postMessage(message): Promise<void>;
 
   /**
    * Add a listener that will be called when an event is received from this AppWindow.
-   * @param type The event to listen to. Currently the only supported type is 'message'.
-   * @param listener The listener that will be called
+   *
+   * @param type - The event to listen to. Currently the only supported type is 'message'.
+   * @param listener - The listener that will be called
    */
   addEventListener(type: string, listener: Function): void;
 }

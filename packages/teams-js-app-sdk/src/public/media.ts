@@ -25,6 +25,9 @@ import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * @alpha
+ */
 export namespace media {
   /**
    * Enum for file formats supported
@@ -68,8 +71,11 @@ export namespace media {
 
   /**
    * Launch camera, capture image or choose image from gallery and return the images as a File[] object
+   *
+   * @remarks
    * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
    * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+   *
    * @returns A promise resolved with a collection of @see File objects or rejected with a @see SdkError
    */
   export function captureImage(): Promise<File[]> {
@@ -112,7 +118,8 @@ export namespace media {
 
     /**
      * Gets the media in chunks irrespecitve of size, these chunks are assembled and sent back to the webapp as file/blob
-     * @param callback returns blob of media
+     *
+     * @param callback - returns blob of media
      */
     public getMedia(): Promise<Blob> {
       return new Promise<Blob>(resolve => {
@@ -221,25 +228,30 @@ export namespace media {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
+   *
+   * @internal
    */
   interface MediaProps {
     /**
+     * @privateRemarks
      * Optional; Lets the developer specify the media source, more than one can be specified.
      * Default value is both camera and gallery
      */
     sources?: Source[];
 
     /**
+     * @privateRemarks
      * Optional; Specify in which mode the camera will be opened.
      * Default value is Photo
      */
     startMode?: CameraStartMode;
 
     /**
+     * @privateRemarks
      * Optional; indicate if user is allowed to move between front and back camera
      * Default value is true
      */
@@ -270,13 +282,16 @@ export namespace media {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------
    * All properties in VideoProps are optional and have default values in the platform
+   *
+   * @internal
    */
   interface VideoProps extends MediaProps {
     /**
+     * @privateRemarks
      * Optional; the maximum duration in minutes after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
@@ -391,7 +406,8 @@ export namespace media {
 
   /**
    * Select an attachment using camera/gallery
-   * @param mediaInputs The input params to customize the media to be selected
+   *
+   * @param mediaInputs - The input params to customize the media to be selected
    * @returns A promise resolved with the collection of @see Media objects selected or rejected with a @see SdkError
    */
   export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]> {
@@ -428,7 +444,8 @@ export namespace media {
 
   /**
    * View images using native image viewer
-   * @param uriList urilist of images to be viewed - can be content uri or server url. Supports up to 10 Images in a single call
+   *
+   * @param uriList - urilist of images to be viewed - can be content uri or server url. Supports up to 10 Images in a single call
    * @returns A promise resolved when the viewing action is completed or rejected with an @see SdkError
    */
   export function viewImages(uriList: ImageUri[]): Promise<void> {
@@ -460,8 +477,11 @@ export namespace media {
 
   /**
    * Scan Barcode/QRcode using camera
+   *
+   * @remarks
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   * @param config optional input configuration to customize the barcode scanning experience
+   *
+   * @param config - optional input configuration to customize the barcode scanning experience
    * @returns A resolved promise with the barcode data or rejected with an @see SdkError
    */
   export function scanBarCode(config?: BarCodeConfig): Promise<string> {
