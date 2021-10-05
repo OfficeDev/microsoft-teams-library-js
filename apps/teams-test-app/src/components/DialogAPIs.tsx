@@ -1,7 +1,7 @@
 import { dialog, DialogInfo } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateJsonParseErrorMsg, noHubSdkMsg } from '../App';
+import { generateJsonParseErrorMsg, noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const DialogAPIs = (): ReactElement => {
@@ -15,7 +15,7 @@ const DialogAPIs = (): ReactElement => {
     const onComplete = (err: string, result: string): void => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
-    setOpenRes('dialog.open' + noHubSdkMsg);
+    setOpenRes('dialog.open' + noHostSdkMsg);
     dialog.open(dialogInfo, onComplete);
   };
 

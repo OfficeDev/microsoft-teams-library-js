@@ -1,7 +1,7 @@
 import { media, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const MediaAPIs = (): ReactElement => {
@@ -14,7 +14,7 @@ const MediaAPIs = (): ReactElement => {
   const [checkMediaCapabilityRes, setCheckMediaCapabilityRes] = React.useState('');
 
   const captureImage = (): void => {
-    setCaptureImageRes('media.captureImage()' + noHubSdkMsg);
+    setCaptureImageRes('media.captureImage()' + noHostSdkMsg);
     const callback = (error: SdkError, files: media.File[]): void => {
       if (error) {
         setCaptureImageRes(error.errorCode.toString + ' ' + error.message);
@@ -36,7 +36,7 @@ const MediaAPIs = (): ReactElement => {
 
   const selectMedia = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
-    setSelectMediaRes('media.selectMedia()' + noHubSdkMsg);
+    setSelectMediaRes('media.selectMedia()' + noHostSdkMsg);
     const callback = (error: SdkError, medias: media.Media[]): void => {
       if (error) {
         setSelectMediaRes(error.errorCode.toString + ' ' + error.message);
@@ -71,7 +71,7 @@ const MediaAPIs = (): ReactElement => {
 
   const getMedia = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
-    setGetMediaRes('media.getMedia()' + noHubSdkMsg);
+    setGetMediaRes('media.getMedia()' + noHostSdkMsg);
     media.selectMedia(mediaInputsParams, (error: SdkError, medias: media.Media[]) => {
       if (error) {
         setGetMediaRes(error.errorCode.toString + ' ' + error.message);
@@ -97,7 +97,7 @@ const MediaAPIs = (): ReactElement => {
 
   const viewImagesWithId = (mediaInputs: string): void => {
     const mediaInputsParams: media.MediaInputs = JSON.parse(mediaInputs);
-    setViewImagesWithIdRes('media.viewImagesWithId()' + noHubSdkMsg);
+    setViewImagesWithIdRes('media.viewImagesWithId()' + noHostSdkMsg);
     media.selectMedia(mediaInputsParams, (err: SdkError, medias: media.Media[]) => {
       if (err) {
         setViewImagesWithIdRes(err.errorCode.toString + ' ' + err.message);
@@ -122,7 +122,7 @@ const MediaAPIs = (): ReactElement => {
   };
 
   const viewImagesWithUrls = (imageUrlsInput: string): void => {
-    setViewImagesWithUrlsRes('media.viewImagesWithUrls()' + noHubSdkMsg);
+    setViewImagesWithUrlsRes('media.viewImagesWithUrls()' + noHostSdkMsg);
     const imageUrls: string[] = imageUrlsInput.split(', ');
     const urlList: media.ImageUri[] = [];
     for (let i = 0; i < imageUrls.length; i++) {
@@ -143,7 +143,7 @@ const MediaAPIs = (): ReactElement => {
 
   const scanBarCode = (scanBarCodeConfigInput: string): void => {
     const scanBarCodeConfig: media.BarCodeConfig = JSON.parse(scanBarCodeConfigInput);
-    setScanBarCodeRes('media.scanBarCode()' + noHubSdkMsg);
+    setScanBarCodeRes('media.scanBarCode()' + noHostSdkMsg);
     media.scanBarCode((err: SdkError, result: string): void => {
       if (err) {
         setScanBarCodeRes(err.errorCode.toString + ' ' + err.message);

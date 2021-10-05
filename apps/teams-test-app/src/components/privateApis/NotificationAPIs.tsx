@@ -1,7 +1,7 @@
 import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../../App';
+import { noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const NotificationAPIs = (): ReactElement => {
@@ -10,7 +10,7 @@ const NotificationAPIs = (): ReactElement => {
 
   const returnShowNotification = (showNotificationParamsInput: string): void => {
     const showNotificationParams: ShowNotificationParameters = JSON.parse(showNotificationParamsInput);
-    setShowNotification('showNotification()' + noHubSdkMsg);
+    setShowNotification('showNotification()' + noHostSdkMsg);
     notifications.showNotification(showNotificationParams);
   };
 

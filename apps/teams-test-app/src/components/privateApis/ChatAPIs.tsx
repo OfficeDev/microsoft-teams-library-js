@@ -1,7 +1,7 @@
 import { chat, ChatMembersInformation, OpenConversationRequest } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../../App';
+import { noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const ConversationsAPIs = (): ReactElement => {
@@ -11,7 +11,7 @@ const ConversationsAPIs = (): ReactElement => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const openConversation = (openConversationRequestInput: string): void => {
-    setOpenConversationRes('conversations.openConversation()' + noHubSdkMsg);
+    setOpenConversationRes('conversations.openConversation()' + noHostSdkMsg);
     const openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
     openConversationRequest.onStartConversation = conversationResponse => {
       setOpenConversationRes(
@@ -46,7 +46,7 @@ const ConversationsAPIs = (): ReactElement => {
   };
 
   const returnGetChatMembers = (): void => {
-    setGetChatMembersRes('getChatMembers()' + noHubSdkMsg);
+    setGetChatMembersRes('getChatMembers()' + noHostSdkMsg);
     chat
       .getChatMembers()
       .then((chatMembersInformation: ChatMembersInformation) =>

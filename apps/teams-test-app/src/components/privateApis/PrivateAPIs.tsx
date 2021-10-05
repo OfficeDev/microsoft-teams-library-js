@@ -1,7 +1,7 @@
 import { registerUserSettingsChangeHandler, uploadCustomApp, UserSettingTypes } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
+import { generateJsonParseErrorMsg, noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const PrivateAPIs = (): ReactElement => {
@@ -32,7 +32,7 @@ const PrivateAPIs = (): ReactElement => {
         }
         setUploadCustomAppRes(message);
       };
-      setUploadCustomAppRes('uploadCustomApp()' + noHubSdkMsg);
+      setUploadCustomAppRes('uploadCustomApp()' + noHostSdkMsg);
       uploadCustomApp(files.item(0) as Blob, onComplete);
     } else {
       setUploadCustomAppRes('Please upload a proper Custom App manifest.');
@@ -46,7 +46,7 @@ const PrivateAPIs = (): ReactElement => {
       const handler = (settingType: UserSettingTypes, value: any): void => {
         setRegisterUserSettingsChangeHandlerRes(`Success. settingType: ${settingType}, value: ${value}`);
       };
-      setRegisterUserSettingsChangeHandlerRes('registerUserSettingsChangeHandler()' + noHubSdkMsg);
+      setRegisterUserSettingsChangeHandlerRes('registerUserSettingsChangeHandler()' + noHostSdkMsg);
       registerUserSettingsChangeHandler(getUserSettingTypesFromInput(settingTypes), handler);
     } catch (error) {
       if (error instanceof SyntaxError) {

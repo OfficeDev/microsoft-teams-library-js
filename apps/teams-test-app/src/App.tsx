@@ -47,7 +47,7 @@ if (
   app.notifySuccess();
 }
 
-export const noHubSdkMsg = ' was called, but there was no response from the Hub SDK.';
+export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
 
 /**
  * Generates and returns an error message explaining that a string input was expected

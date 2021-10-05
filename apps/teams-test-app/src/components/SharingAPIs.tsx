@@ -1,7 +1,7 @@
 import { SdkError, sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const SharingAPIs = (): ReactElement => {
@@ -18,7 +18,7 @@ const SharingAPIs = (): ReactElement => {
         setShareWebContentRes('Success');
       }
     };
-    setShareWebContentRes('sharing.shareWebContent()' + noHubSdkMsg);
+    setShareWebContentRes('sharing.shareWebContent()' + noHostSdkMsg);
     sharing.shareWebContent(shareRequest, callback);
   };
 

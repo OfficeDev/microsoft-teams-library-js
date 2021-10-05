@@ -1,7 +1,7 @@
 import { remoteCamera, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateJsonParseErrorMsg, generateRegistrationMsg, noHubSdkMsg } from '../App';
+import { generateJsonParseErrorMsg, generateRegistrationMsg, noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const RemoteCameraAPIs = (): ReactElement => {
@@ -38,7 +38,7 @@ const RemoteCameraAPIs = (): ReactElement => {
   };
 
   const getCapableParticipants = (): void => {
-    setGetCapableParticipantsRes('remoteCamera.getCapableParticipants' + noHubSdkMsg);
+    setGetCapableParticipantsRes('remoteCamera.getCapableParticipants' + noHostSdkMsg);
     const callback = (error: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
       if (error) {
         setGetCapableParticipantsRes('Error: ' + JSON.stringify(error));
@@ -50,7 +50,7 @@ const RemoteCameraAPIs = (): ReactElement => {
   };
 
   const requestControl = (participantInput: string): void => {
-    setRequestControlRes('remoteCamera.requestControl' + noHubSdkMsg);
+    setRequestControlRes('remoteCamera.requestControl' + noHostSdkMsg);
     try {
       const participant: remoteCamera.Participant = JSON.parse(participantInput);
       const callback = (error: SdkError | null, requestResponse: boolean | null): void => {
@@ -74,7 +74,7 @@ const RemoteCameraAPIs = (): ReactElement => {
   };
 
   const sendControlCommand = (controlCommandInput: string): void => {
-    setSendControlCommandRes('remoteCamera.sendControl' + noHubSdkMsg);
+    setSendControlCommandRes('remoteCamera.sendControl' + noHostSdkMsg);
     const controlCommand: remoteCamera.ControlCommand | null = getControlCommandFromInput(controlCommandInput);
     if (!controlCommand) {
       setSendControlCommandRes(
@@ -93,7 +93,7 @@ const RemoteCameraAPIs = (): ReactElement => {
   };
 
   const terminateSession = (): void => {
-    setTerminateSessionRes('remoteCamera.terminateSession' + noHubSdkMsg);
+    setTerminateSessionRes('remoteCamera.terminateSession' + noHostSdkMsg);
     const callback = (error: SdkError | null): void => {
       if (error) {
         setTerminateSessionRes('Error: ' + JSON.stringify(error));

@@ -1,7 +1,7 @@
 import { meeting, meetingRoom } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const MeetingAPIs = (): ReactElement => {
@@ -25,7 +25,7 @@ const MeetingAPIs = (): ReactElement => {
   const NULL = 'null';
 
   const getIncomingClientAudioState = (): void => {
-    setGetIncomingClientAudioStateRes('getIncomingClientAudioState()' + noHubSdkMsg);
+    setGetIncomingClientAudioStateRes('getIncomingClientAudioState()' + noHostSdkMsg);
     meeting
       .getIncomingClientAudioState()
       .then(result => setGetIncomingClientAudioStateRes(result.toString()))
@@ -33,7 +33,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const toggleIncomingClientAudio = (): void => {
-    setToggleIncomingClientAudioRes('toggleIncomingClientAudio()' + noHubSdkMsg);
+    setToggleIncomingClientAudioRes('toggleIncomingClientAudio()' + noHostSdkMsg);
     meeting
       .toggleIncomingClientAudio()
       .then(result => setToggleIncomingClientAudioRes(result.toString()))
@@ -41,7 +41,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getMeetingDetails = (): void => {
-    setGetMeetingDetailsRes('meeting.getMeetingDetails()' + noHubSdkMsg);
+    setGetMeetingDetailsRes('meeting.getMeetingDetails()' + noHostSdkMsg);
     meeting
       .getMeetingDetails()
       .then(meetingDetails => setGetMeetingDetailsRes(JSON.stringify(meetingDetails)))
@@ -49,7 +49,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getAuthenticationToken = (): void => {
-    setGetAuthenticationTokenRes('meeting.getAuthenticationTokenForAnonymousUser()' + noHubSdkMsg);
+    setGetAuthenticationTokenRes('meeting.getAuthenticationTokenForAnonymousUser()' + noHostSdkMsg);
     meeting
       .getAuthenticationTokenForAnonymousUser()
       .then(authToken => setGetAuthenticationTokenRes(authToken))
@@ -57,7 +57,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getLiveStreamState = (): void => {
-    setGetLiveStreamStateRes('meeting.getLiveStreamState()' + noHubSdkMsg);
+    setGetLiveStreamStateRes('meeting.getLiveStreamState()' + noHostSdkMsg);
     meeting
       .getLiveStreamState()
       .then(liveStreamState =>
@@ -83,7 +83,7 @@ const MeetingAPIs = (): ReactElement => {
     }
 
     if (streamInput.hasOwnProperty(STREAM_URL)) {
-      setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHubSdkMsg);
+      setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHostSdkMsg);
       (streamInput.hasOwnProperty(STREAM_KEY)
         ? meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
         : meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL))
@@ -98,7 +98,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const requestStopLiveStreaming = (): void => {
-    setRequestStopLiveStreamingRes('meeting.requestStopLiveStreaming' + noHubSdkMsg);
+    setRequestStopLiveStreamingRes('meeting.requestStopLiveStreaming' + noHostSdkMsg);
     meeting
       .requestStopLiveStreaming()
       .then(() => setRequestStopLiveStreamingRes('Complete'))
@@ -106,7 +106,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const registerLiveStreamChangedHandler = (): void => {
-    setRegisterLiveStreamChangedHandlerRes('meeting.registerLiveStreamChangedHandler' + noHubSdkMsg);
+    setRegisterLiveStreamChangedHandlerRes('meeting.registerLiveStreamChangedHandler' + noHostSdkMsg);
     const handler = (liveStreamState: meeting.LiveStreamState): void => {
       setRegisterLiveStreamChangedHandlerRes('Live StreamState changed to ' + liveStreamState.isStreaming.toString());
     };
@@ -114,7 +114,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const shareAppContentToStage = (appContentUrl: string): void => {
-    setShareAppContentToStageRes('shareAppContentToStage' + noHubSdkMsg);
+    setShareAppContentToStageRes('shareAppContentToStage' + noHostSdkMsg);
     meeting
       .shareAppContentToStage(appContentUrl)
       .then(() => setShareAppContentToStageRes('shareAppContentToStage() succeeded'))
@@ -122,7 +122,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getPairedMeetingRoomInfo = (): void => {
-    setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHubSdkMsg);
+    setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHostSdkMsg);
     meetingRoom
       .getPairedMeetingRoomInfo()
       .then(meetingRoomInfo => setGetPairedMeetingRoomInfoRes(JSON.stringify(meetingRoomInfo)))
@@ -130,7 +130,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const sendCommandToPairedMeetingRoom = (commandName: string): void => {
-    setSendCommandToPairedMeetingRoomRes('sendCommandToPairedMeetingRoom' + noHubSdkMsg);
+    setSendCommandToPairedMeetingRoomRes('sendCommandToPairedMeetingRoom' + noHostSdkMsg);
     meetingRoom
       .sendCommandToPairedMeetingRoom(commandName)
       .then(() => setSendCommandToPairedMeetingRoomRes('Success'))
@@ -138,7 +138,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const registerMeetingRoomCapabilitiesUpdateHandler = (): void => {
-    setRegisterMeetingRoomCapUpdateHandlerRes('registerMeetingRoomCapabilitiesUpdateHandler' + noHubSdkMsg);
+    setRegisterMeetingRoomCapUpdateHandlerRes('registerMeetingRoomCapabilitiesUpdateHandler' + noHostSdkMsg);
     const handler = (cap: meetingRoom.MeetingRoomCapability): void => {
       setRegisterMeetingRoomCapUpdateHandlerRes('MeetingRoom Capabilities have been updated to ' + JSON.stringify(cap));
     };
@@ -146,7 +146,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const registerMeetingRoomStatesUpdateHandler = (): void => {
-    setRegisterMeetingRoomStatesUpdateHandlerRes('registerMeetingRoomStatesUpdateHandler' + noHubSdkMsg);
+    setRegisterMeetingRoomStatesUpdateHandlerRes('registerMeetingRoomStatesUpdateHandler' + noHostSdkMsg);
     const handler = (states: meetingRoom.MeetingRoomState): void => {
       setRegisterMeetingRoomStatesUpdateHandlerRes('MeetingRoom States have been updated to ' + JSON.stringify(states));
     };
@@ -162,7 +162,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getAppContentStageSharingCapabilities = (): void => {
-    setGetAppContentStageSharingCapabilitiesRes('getAppContentStageSharingCapabilities' + noHubSdkMsg);
+    setGetAppContentStageSharingCapabilitiesRes('getAppContentStageSharingCapabilities' + noHostSdkMsg);
     meeting
       .getAppContentStageSharingCapabilities()
       .then(appContentStageSharingCapabilities =>
@@ -178,7 +178,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const stopSharingAppContentToStage = (): void => {
-    setStopSharingAppContentToStageRes('stopSharingAppContentToStage' + noHubSdkMsg);
+    setStopSharingAppContentToStageRes('stopSharingAppContentToStage' + noHostSdkMsg);
     meeting
       .stopSharingAppContentToStage()
       .then(result =>
@@ -190,7 +190,7 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const getAppContentStageSharingState = (): void => {
-    setGetAppContentStageSharingStateRes('getAppContentStageSharingState' + noHubSdkMsg);
+    setGetAppContentStageSharingStateRes('getAppContentStageSharingState' + noHostSdkMsg);
     meeting
       .getAppContentStageSharingState()
       .then(result =>

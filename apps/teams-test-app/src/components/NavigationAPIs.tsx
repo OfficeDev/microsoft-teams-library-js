@@ -1,7 +1,7 @@
 import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 import CheckboxAndButton from './CheckboxAndButton';
 
@@ -13,7 +13,7 @@ const NavigationAPIs = (): ReactElement => {
   const [checkPagesCapabilityRes, setCheckPagesCapabilityRes] = React.useState('');
 
   const navigateCrossDomainFunc = (url: string): void => {
-    setNavigateCrossDomainRes('navigateCrossDomain()' + noHubSdkMsg);
+    setNavigateCrossDomainRes('navigateCrossDomain()' + noHostSdkMsg);
     pages
       .navigateCrossDomain(url)
       .then(() => setNavigateCrossDomainRes('Completed'))
@@ -21,7 +21,7 @@ const NavigationAPIs = (): ReactElement => {
   };
 
   const navigateToTabFunc = (inputParams: string): void => {
-    setNavigateToTabRes('navigateToTab()' + noHubSdkMsg);
+    setNavigateToTabRes('navigateToTab()' + noHostSdkMsg);
     pages.tabs
       .navigateToTab(JSON.parse(inputParams))
       .then(() => setNavigateToTabRes('Completed'))
@@ -29,7 +29,7 @@ const NavigationAPIs = (): ReactElement => {
   };
 
   const navigateBackFunc = (): void => {
-    setNavigateBackRes('navigateBack()' + noHubSdkMsg);
+    setNavigateBackRes('navigateBack()' + noHostSdkMsg);
     pages.backStack
       .navigateBack()
       .then(() => setNavigateBackRes('Completed'))

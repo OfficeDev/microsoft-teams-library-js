@@ -1,7 +1,7 @@
 import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const CalendarAPIs = (): ReactElement => {
@@ -10,7 +10,7 @@ const CalendarAPIs = (): ReactElement => {
   const [openCalendarItemRes, setOpenCalendarItemRes] = React.useState('');
 
   const composeMeeting = (meetingParams: string): void => {
-    setComposeMeetingRes('calendar.composeMeeting()' + noHubSdkMsg);
+    setComposeMeetingRes('calendar.composeMeeting()' + noHostSdkMsg);
     calendar
       .composeMeeting(JSON.parse(meetingParams))
       .then(() => setComposeMeetingRes('Completed'))
@@ -18,7 +18,7 @@ const CalendarAPIs = (): ReactElement => {
   };
 
   const openCalendarItem = (calendarParams: string): void => {
-    setOpenCalendarItemRes('calendar.openCalendarItem()' + noHubSdkMsg);
+    setOpenCalendarItemRes('calendar.openCalendarItem()' + noHostSdkMsg);
     calendar
       .openCalendarItem(JSON.parse(calendarParams))
       .then(() => setOpenCalendarItemRes('Completed'))

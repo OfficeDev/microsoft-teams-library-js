@@ -1,7 +1,7 @@
 import { LoadContext, pages, TabInformation, teamsCore } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const TeamsCoreAPIs = (): ReactElement => {
@@ -38,21 +38,21 @@ const TeamsCoreAPIs = (): ReactElement => {
   };
 
   const registerAppButtonClickHandler = (): void => {
-    setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHubSdkMsg);
+    setRegisterAppButtonClickHandlerRes('teamsCore.registerAppButtonClickHandler()' + noHostSdkMsg);
     pages.appButton.onClick((): void => {
       setRegisterAppButtonClickHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverEnterHandler = (): void => {
-    setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHubSdkMsg);
+    setRegisterAppButtonHoverEnterHandlerRes('teamsCore.registerAppButtonHoverEnterHandler()' + noHostSdkMsg);
     pages.appButton.onHoverEnter((): void => {
       setRegisterAppButtonHoverEnterHandlerRes('successfully called');
     });
   };
 
   const registerAppButtonHoverLeaveHandler = (): void => {
-    setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHubSdkMsg);
+    setRegisterAppButtonHoverLeaveHandlerRes('teamsCore.registerAppButtonHoverLeaveHandler()' + noHostSdkMsg);
     pages.appButton.onHoverLeave((): void => {
       setRegisterAppButtonHoverLeaveHandlerRes('successfully called');
     });
@@ -60,7 +60,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const getTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
-    setGetTabInstanceRes('teamsCore.getTabInstances()' + noHubSdkMsg);
+    setGetTabInstanceRes('teamsCore.getTabInstances()' + noHostSdkMsg);
     pages.tabs.getTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetTabInstanceRes(JSON.stringify(tabInfo));
     });
@@ -68,7 +68,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const getMRUTabInstances = (input: string): void => {
     const tabInstanceParams = input ? JSON.parse(input) : undefined;
-    setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHubSdkMsg);
+    setGetMRUTabInstanceRes('teamsCore.getMruTabInstances()' + noHostSdkMsg);
     pages.tabs.getMruTabInstances(tabInstanceParams).then((tabInfo: TabInformation): void => {
       setGetMRUTabInstanceRes(JSON.stringify(tabInfo));
     });
@@ -76,7 +76,7 @@ const TeamsCoreAPIs = (): ReactElement => {
 
   const registerBeforeUnload = (readyToUnloadDelay: string): void => {
     const delay = Number(readyToUnloadDelay);
-    setRegisterBeforeUnloadRes('teamsCore.registerBeforeUnload()' + noHubSdkMsg);
+    setRegisterBeforeUnloadRes('teamsCore.registerBeforeUnload()' + noHostSdkMsg);
     teamsCore.registerBeforeUnloadHandler((readyToUnload): boolean => {
       setTimeout(() => {
         readyToUnload();
@@ -117,14 +117,14 @@ const TeamsCoreAPIs = (): ReactElement => {
   };
 
   const registerOnLoadHandler = (): void => {
-    setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHubSdkMsg);
+    setRegisterOnLoadRes('teamsCore.registerOnLoadHandler()' + noHostSdkMsg);
     teamsCore.registerOnLoadHandler((context: LoadContext): void => {
       setRegisterOnLoadRes('successfully called with context:' + JSON.stringify(context));
     });
   };
 
   const registerFullScreenChangeHandler = (): void => {
-    setRegisterFullScreenChangeHandlerRes('teamsCore.registerFullScreenHandler()' + noHubSdkMsg);
+    setRegisterFullScreenChangeHandlerRes('teamsCore.registerFullScreenHandler()' + noHostSdkMsg);
     pages.registerFullScreenHandler((isFullScreen: boolean): void => {
       setRegisterFullScreenChangeHandlerRes('successfully called with isFullScreen:' + isFullScreen);
     });
@@ -139,7 +139,7 @@ const TeamsCoreAPIs = (): ReactElement => {
   };
 
   const registerFocusEnterHandler = (): void => {
-    setRegisterFocusEnterHandlerRes('teamsCore.registerOnFocusHandler()' + noHubSdkMsg);
+    setRegisterFocusEnterHandlerRes('teamsCore.registerOnFocusHandler()' + noHostSdkMsg);
     teamsCore.registerFocusEnterHandler(navigateForward => {
       setRegisterFocusEnterHandlerRes('successfully called with nativateForward:' + navigateForward);
       return true;

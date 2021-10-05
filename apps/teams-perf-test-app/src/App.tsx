@@ -9,7 +9,7 @@ app.initialize();
 app.notifyAppLoaded();
 app.notifySuccess();
 
-export const noHubSdkMsg = ' was called, but there was no response from the Hub SDK.';
+export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
 
 const App = (): ReactElement => {
   return (

@@ -1,7 +1,7 @@
 import { call } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const CallAPIs: React.FC = () => {
@@ -9,7 +9,7 @@ const CallAPIs: React.FC = () => {
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
   const startCall = (callParams: string): void => {
-    setStartCallRes('call.startCall()' + noHubSdkMsg);
+    setStartCallRes('call.startCall()' + noHostSdkMsg);
     call
       .startCall(JSON.parse(callParams))
       .then(success => setStartCallRes('result: ' + success))

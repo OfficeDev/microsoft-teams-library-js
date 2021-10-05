@@ -1,7 +1,7 @@
 import { app, Context, core, DeepLinkParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const AppAPIs = (): ReactElement => {
@@ -11,14 +11,14 @@ const AppAPIs = (): ReactElement => {
   const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
   const getContextV2 = (): void => {
-    setGetContextV2Res('app.getContext()' + noHubSdkMsg);
+    setGetContextV2Res('app.getContext()' + noHostSdkMsg);
     app.getContext().then((res: Context) => {
       setGetContextV2Res(JSON.stringify(res));
     });
   };
 
   const executeDeepLink = (deepLink: string): void => {
-    setExecuteDeepLinkRes('core.executeDeepLink()' + noHubSdkMsg);
+    setExecuteDeepLinkRes('core.executeDeepLink()' + noHostSdkMsg);
     core
       .executeDeepLink(deepLink)
       .then(() => setExecuteDeepLinkRes('Completed'))
