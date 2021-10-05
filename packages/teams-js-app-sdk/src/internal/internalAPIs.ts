@@ -2,6 +2,7 @@ import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from '
 import { GlobalVars } from './globalVars';
 import { compareSDKVersions } from './utils';
 
+/** @internal */
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCalled) {
     throw new Error('The library has not yet been initialized');
@@ -23,9 +24,13 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
 }
 
 /**
+ * @privateRemarks
  * Checks whether the platform has knowledge of this API by doing a comparison
  * on API required version and platform supported version of the SDK
- * @param requiredVersion SDK version required by the API
+ *
+ * @param requiredVersion - SDK version required by the API
+ *
+ * @internal
  */
 export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
@@ -36,8 +41,11 @@ export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVer
 }
 
 /**
+ * @privateRemarks
  * Processes the valid origins specifuied by the user, de-duplicates and converts them into a regexp
  * which is used later for message source/origin validation
+ *
+ * @internal
  */
 export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
   let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
