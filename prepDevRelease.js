@@ -39,17 +39,17 @@ function getFileContent(filePath) {
 }
 
 /**
- * 
- * @param {*} packageJson 
+ * Saves the given package.json content to the set package.json path.
+ * @param {any} packageJson The package.json content to write into the package.json.
  */
 function saveJsonFile(packageJson) {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 }
 
 /**
- * saves the given file content to the given file path.
- * @param {*} filePath 
- * @param {*} fileContent 
+ * Saves the given file content to the given file path.
+ * @param {string} filePath Path to the file to save to.
+ * @param {any} fileContent Content to save onto the file.
  */
 function saveFile(filePath, fileContent) {
   fs.writeFileSync(filePath, fileContent);
@@ -63,8 +63,7 @@ function saveFile(filePath, fileContent) {
 function getPkgJsonVersion(packageJson) {
   if (!packageJson.version) {
     console.log('FATAL ERROR: a version was not found in the package.json.');
-    process.exitCode = EXIT_CODE_FATAL_ERROR;
-    return;
+    process.exit(EXIT_CODE_FATAL_ERROR);
   } else {
     return packageJson.version;
   }
@@ -134,7 +133,12 @@ function getDevSuffixNum(devVer, latestVer) {
   }
 }
 
-function getNewPkgJsonContent() {
+/**
+ * Generates the new package.json content with updated dev version number. The version number is
+ * the only thing that's changed.
+ * @returns the new package.json content in JSON format.
+ */
+async function getNewPkgJsonContent() {
   const packageJson = getPackageJson();
 
   // get package version from package.json
@@ -165,6 +169,10 @@ function getNewPkgJsonContent() {
   return packageJson;
 }
 
+/**
+ * Replaces the version declared in internal/constants.ts with the given version.
+ * @param {string} newVersion the new version to replace the version in the constants.ts file with.
+ */
 function saveNewConstantsContent(newVersion) {
   let constantsFileContent = getFileContent(internalConstantsFilePath);
   const pattern = 'const version = ';
@@ -178,7 +186,7 @@ function saveNewConstantsContent(newVersion) {
 }
 
 (async () => {
-  const newPackageJson = getNewPkgJsonContent();
+  const newPackageJson = await getNewPkgJsonContent();
   const newVersion = newPackageJson.version;
   saveJsonFile(newPackageJson);
   saveNewConstantsContent(newVersion);
