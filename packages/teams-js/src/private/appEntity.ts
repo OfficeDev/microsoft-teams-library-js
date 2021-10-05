@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
-
+import { runtime } from '../public/runtime';
 /**
  * @privateRemarks
  * Namespace to interact with the application entities specific part of the SDK.
@@ -78,5 +78,9 @@ export namespace appEntity {
     }
 
     sendMessageToParent('appEntity.selectAppEntity', [threadId, categories], callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.appEntity ? true : false;
   }
 }
