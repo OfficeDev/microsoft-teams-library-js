@@ -1,8 +1,9 @@
 const fs = require('fs');
-const cp = require("child_process");
-const util = require("util");
+const cp = require('child_process');
+const util = require('util');
 
 let packageJsonPath = './package.json';
+let internalConstantsFilePath = './src/internal/constants.ts';
 const EXIT_CODE_FATAL_ERROR = 5;
 
 const exec = util.promisify(cp.exec);
@@ -22,28 +23,36 @@ function getPackageJson() {
 }
 
 /**
- * Gets the file content in JSON format from the given file path. Exits with the exit code of
+ * Gets the file content in string format from the given file path. Exits with the exit code of
  * fatal error without returning a value if the given file path does not show a valid path to a
- * JSON file within the system.
+ * file within the system.
  * @param {string} filePath Path to the desired file.
- * @returns The file content in JSON format.
+ * @returns The file content in string format.
  */
 function getFileContent(filePath) {
   if (fs.existsSync(filePath)) {
-    try {
-      return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8' }));
-    } catch (error) {
-      console.log(JSON.stringify(error));
-    }
-  } else {
-    console.log(`FATAL ERROR: file path ${filePath} could not be found in the file system.`);
+    return fs.readFileSync(filePath, { encoding: 'utf8' });
   }
+  console.log(`FATAL ERROR: file path ${filePath} could not be found in the file system.`);
   process.exitCode = EXIT_CODE_FATAL_ERROR;
   return;
 }
 
-function savePackageJson(packageJson) {
+/**
+ * 
+ * @param {*} packageJson 
+ */
+function saveJsonFile(packageJson) {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
+}
+
+/**
+ * saves the given file content to the given file path.
+ * @param {*} filePath 
+ * @param {*} fileContent 
+ */
+function saveFile(filePath, fileContent) {
+  fs.writeFileSync(filePath, fileContent);
 }
 
 /**
@@ -112,8 +121,8 @@ function getDevSuffixNum(devVer, latestVer) {
   // released after a production version, so we'll need to just bump the dev suffix by one.
   if (latestPatch + 1 === devPrefixPatch) {
     return newDevSuffixNum;
-  // If the current devPrefix is the same as the latest version's prefix, it means there hasn't been a dev version
-  // released since the production release. Set the dev suffix as 0.
+    // If the current devPrefix is the same as the latest version's prefix, it means there hasn't been a dev version
+    // released since the production release. Set the dev suffix as 0.
   } else if (latestPrefix === devPrefix) {
     return 0;
   } else {
@@ -125,7 +134,7 @@ function getDevSuffixNum(devVer, latestVer) {
   }
 }
 
-(async () => {
+function getNewPkgJsonContent() {
   const packageJson = getPackageJson();
 
   // get package version from package.json
@@ -153,9 +162,25 @@ function getDevSuffixNum(devVer, latestVer) {
 
   // update package.json with the new version
   packageJson.version = newVersion;
+  return packageJson;
+}
 
-  // get file content for internal/constants.ts
-  // 
+function saveNewConstantsContent(newVersion) {
+  let constantsFileContent = getFileContent(internalConstantsFilePath);
+  const pattern = 'const version = ';
+  const verDeclarationIndex = constantsFileContent.indexOf(pattern);
+  const endVerDeclarationIndex = constantsFileContent.indexOf(';', verDeclarationIndex);
+  // whole substring consisting of the declaration to be replaced.
+  const verDeclaration = constantsFileContent.substring(verDeclarationIndex, endVerDeclarationIndex);
+  const newConstantsFileContent = constantsFileContent.replace(verDeclaration, `${pattern}'${newVersion}'`);
+  // save the file
+  saveFile(internalConstantsFilePath, newConstantsFileContent);
+}
 
-  savePackageJson(packageJson);
+(async () => {
+  const newPackageJson = getNewPkgJsonContent();
+  const newVersion = newPackageJson.version;
+  saveJsonFile(newPackageJson);
+  saveNewConstantsContent(newVersion);
+  return newVersion;
 })();
