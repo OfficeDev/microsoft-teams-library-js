@@ -138,15 +138,13 @@ function getDevSuffixNum(devVer, latestVer) {
  * the only thing that's changed.
  * @returns the new package.json content in JSON format.
  */
-async function getNewPkgJsonContent() {
+function getNewPkgJsonContent(devStdout) {
   const packageJson = getPackageJson();
 
   // get package version from package.json
   let currVersion = getPkgJsonVersion(packageJson);
   console.log('package.json version: ' + currVersion);
 
-  // Find version tagged dev
-  const { devStdout, ignore } = await exec(`npm view @microsoft/teams-js version --tag dev`);
   const newDevSuffix = getDevSuffixNum(devStdout, currVersion);
   console.log('dev version suffix number: ' + newDevSuffix);
 
@@ -184,10 +182,14 @@ function saveNewConstantsContent(newVersion) {
   saveFile(internalConstantsFilePath, newConstantsFileContent);
 }
 
-(async () => {
-  const newPackageJson = await getNewPkgJsonContent();
+function prepNewDevRelease(devStdout) {
+  const newPackageJson = getNewPkgJsonContent(devStdout);
   const newVersion = newPackageJson.version;
   saveJsonFile(newPackageJson);
   saveNewConstantsContent(newVersion);
   return newVersion;
+}
+
+(() => {
+  exec(`npm view @microsoft/teams-js version --tag dev`).then(({ stdout, stderr }) => prepNewDevRelease(stdout.trim()));
 })();
