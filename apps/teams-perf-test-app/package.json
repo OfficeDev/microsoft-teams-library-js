@@ -2,7 +2,7 @@
   "name": "teams-perf-test-app",
   "private": true,
   "author": "Microsoft Teams",
-  "description": "Teams Perf Test App utilizing Teams App SDK to test Teams Host Perf",
+  "description": "Teams Perf Test App utilizing Teams JavaScript client SDK to test Teams Host Perf",
   "version": "0.0.1",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",

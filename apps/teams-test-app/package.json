@@ -2,7 +2,7 @@
   "name": "teams-test-app",
   "private": true,
   "author": "Microsoft Teams",
-  "description": "Teams Test App utilizing Teams App SDK to test Hosts",
+  "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
   "version": "0.1.2",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",

@@ -10,7 +10,7 @@ If you would like to run this app on its own locally, please follow the steps be
 ```
 cd {monorepo root}
 
-// Ensuring you have installed and built the App SDK
+// Ensuring you have installed and built the Teams JavaScript client SDK
 yarn install
 yarn build-sdk
 
@@ -18,7 +18,7 @@ yarn build-perf-app
 yarn start-perf-app
 ```
 
-or if you have already built the App SDK and would like to build and run directly from the project directory teams-perf-app, simply `yarn build` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory teams-perf-app, simply `yarn build` and `yarn start` there.
 
 ## Troubleshooting
 
