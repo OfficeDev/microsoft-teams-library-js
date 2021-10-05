@@ -181,7 +181,6 @@ function saveNewConstantsContent(newVersion) {
   // whole substring consisting of the declaration to be replaced.
   const verDeclaration = constantsFileContent.substring(verDeclarationIndex, endVerDeclarationIndex);
   const newConstantsFileContent = constantsFileContent.replace(verDeclaration, `${pattern}'${newVersion}'`);
-  // save the file
   saveFile(internalConstantsFilePath, newConstantsFileContent);
 }
 
