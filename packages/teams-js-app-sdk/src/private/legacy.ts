@@ -7,14 +7,18 @@ import { ErrorCode, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
 
+/**
+ * @internal
+ */
 export namespace legacy {
   export namespace fullTrust {
     /**
-     * @private
+     * @privateRemarks
      * Hide from docs
      * ------
      * Allows an app to retrieve information of all user joined teams
-     * @param teamInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams
+     *
+     * @param teamInstanceParameters - OPTIONAL Flags that specify whether to scope call to favorite teams
      * @returns Promise resolved containing information about the user joined teams or rejected with error
      */
     export function getUserJoinedTeams(
@@ -39,11 +43,12 @@ export namespace legacy {
     }
 
     /**
-     * @private
+     * @privateRemarks
      * Hide from docs
      * ------
      * Allows an app to get the configuration setting value
-     * @param key The key for the config setting
+     *
+     * @param key - The key for the config setting
      * @returns Promise resolved containing the value for the provided config setting or rejected with error
      */
     export function getConfigSetting(key: string): Promise<string> {
