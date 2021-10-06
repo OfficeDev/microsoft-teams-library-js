@@ -2,7 +2,10 @@ import { media } from '../public/media';
 import { people } from '../public/people';
 
 /**
+ * @privateRemarks
  * Helper function to create a blob from media chunks based on their sequence
+ *
+ * @internal
  */
 export function createFile(assembleAttachment: media.AssembleAttachment[], mimeType: string): Blob {
   if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
@@ -25,8 +28,11 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
 }
 
 /**
+ * @privateRemarks
  * Helper function to convert Media chunks into another object type which can be later assemebled
  * Converts base 64 encoded string to byte array and then into an array of blobs
+ *
+ * @internal
  */
 export function decodeAttachment(attachment: media.MediaChunk, mimeType: string): media.AssembleAttachment {
   if (attachment == null || mimeType == null) {
@@ -47,7 +53,10 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 }
 
 /**
+ * @privateRemarks
  * Returns true if the mediaInput params are valid and false otherwise
+ *
+ * @internal
  */
 export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs == null || mediaInputs.maxMediaCount > 10) {
@@ -57,7 +66,10 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
+ * @privateRemarks
  * Returns true if the mediaInput params are called for mediatype VideoAndImage and false otherwise
+ *
+ * @internal
  */
 export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs) {
@@ -69,7 +81,10 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
 }
 
 /**
+ * @privateRemarks
  * Returns true if the get Media params are valid and false otherwise
+ *
+ * @internal
  */
 export function validateGetMediaInputs(mimeType: string, format: media.FileFormat, content: string): boolean {
   if (mimeType == null || format == null || format != media.FileFormat.ID || content == null) {
@@ -79,7 +94,10 @@ export function validateGetMediaInputs(mimeType: string, format: media.FileForma
 }
 
 /**
+ * @privateRemarks
  * Returns true if the view images param is valid and false otherwise
+ *
+ * @internal
  */
 export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
   if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
@@ -89,7 +107,10 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
 }
 
 /**
+ * @privateRemarks
  * Returns true if the scan barcode param is valid and false otherwise
+ *
+ * @internal
  */
 export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): boolean {
   if (barCodeConfig) {
@@ -105,7 +126,10 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
 }
 
 /**
+ * @privateRemarks
  * Returns true if the people picker params are valid and false otherwise
+ *
+ * @internal
  */
 export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {

@@ -7,12 +7,15 @@ import { Context, ContextBridge } from '../public/interfaces';
 import { validOrigins } from './constants';
 
 /**
- * @param pattern reference pattern
- * @param host candidate string
- * returns true if host matches pre-know valid pattern
- * For example,
+ * @param pattern - reference pattern
+ * @param host - candidate string
+ * @returns returns true if host matches pre-know valid pattern
+ *
+ * @example
  *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
  *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
+ *
+ * @internal
  */
 function validateHostAgainstPattern(pattern: string, host: string): boolean {
   if (pattern.substring(0, 2) === '*.') {
@@ -30,6 +33,7 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
   return false;
 }
 
+/**@internal */
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (messageOrigin.protocol !== 'https:') {
@@ -51,6 +55,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
   return false;
 }
 
+/**@internal */
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
   return (success: boolean, reason: string): void => {
     if (!success) {
@@ -60,19 +65,23 @@ export function getGenericOnCompleteHandler(errorMessage?: string): (success: bo
 }
 
 /**
+ * @privateRemarks
  * Compares SDK versions.
- * @param v1 first version
- * @param v2 second version
- * returns NaN in case inputs are not in right format
+ *
+ * @param v1 - first version
+ * @param v2 - second version
+ * @returns NaN in case inputs are not in right format
  *         -1 if v1 < v2
  *          1 if v1 > v2
  *          0 otherwise
- * For example,
+ * @example
  *    compareSDKVersions('1.2', '1.2.0') returns 0
  *    compareSDKVersions('1.2a', '1.2b') returns NaN
  *    compareSDKVersions('1.2', '1.3') returns -1
  *    compareSDKVersions('2.0', '1.3.2') returns 1
  *    compareSDKVersions('2.0', 2.0) returns NaN
+ *
+ * @internal
  */
 export function compareSDKVersions(v1: string, v2: string): number {
   if (typeof v1 !== 'string' || typeof v2 !== 'string') {
@@ -113,7 +122,10 @@ export function compareSDKVersions(v1: string, v2: string): number {
 }
 
 /**
+ * @privateRemarks
  * Generates a GUID
+ *
+ * @internal
  */
 export function generateGUID(): string {
   return uuid.v4();
@@ -127,7 +139,10 @@ export function deepFreeze<T extends object>(obj: T): T {
 }
 
 /**
+ * @privateRemarks
  * Transforms the Context bridge object received from Messages to the structured Context object
+ *
+ * @internal
  */
 export function transformContext(contextBridge: ContextBridge): Context {
   const context: Context = {

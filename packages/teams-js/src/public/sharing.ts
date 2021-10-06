@@ -3,6 +3,9 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
+/**
+ * @alpha
+ */
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
@@ -42,12 +45,14 @@ export namespace sharing {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Feature is under development
-   *
    * Opens a share dialog for web content
-   * @param shareWebContentRequest web content info
-   * @param callback optional callback
+   *
+   * @param shareWebContentRequest - web content info
+   * @param callback - optional callback
+   *
+   * @internal
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
@@ -76,7 +81,10 @@ export namespace sharing {
     sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
   }
 
-  // Error checks
+  /**
+   * Error checks
+   */
+
   function validateNonEmptyContent(
     shareRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,

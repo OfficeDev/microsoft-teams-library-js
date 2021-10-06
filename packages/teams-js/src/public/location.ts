@@ -5,6 +5,9 @@ import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * @alpha
+ */
 export namespace location {
   export interface LocationProps {
     /**
@@ -43,7 +46,8 @@ export namespace location {
 
   /**
    * Fetches current user coordinates or allows user to choose location on map
-   * @param props {@link LocationProps} specifying how the location request is handled
+   *
+   * @param props {@link LocationProps} - specifying how the location request is handled
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function getLocation(props: LocationProps): Promise<Location> {
@@ -62,7 +66,8 @@ export namespace location {
 
   /**
    * Shows the location on map corresponding to the given coordinates
-   * @param location {@link Location} which needs to be shown on map
+   *
+   * @param location {@link Location} - which needs to be shown on map
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function showLocation(location: Location): Promise<void> {

@@ -5,12 +5,16 @@ import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 
+/**
+ * @alpha
+ */
 export namespace people {
   /**
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
-   * @param callback Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
-   * @param peoplePickerInputs Input parameters to launch customized people picker
+   
+   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
+   * @param peoplePickerInputs - Input parameters to launch customized people picker
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {

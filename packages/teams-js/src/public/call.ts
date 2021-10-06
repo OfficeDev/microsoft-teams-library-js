@@ -3,6 +3,9 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * @alpha
+ */
 export namespace call {
   export enum CallModalities {
     Unknown = 'unknown',
@@ -26,7 +29,8 @@ export namespace call {
 
   /**
    * Starts a call with other users
-   * @param startCallParams Parameters for the call
+   *
+   * @param startCallParams - Parameters for the call
    * @returns If the call is accepted
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
