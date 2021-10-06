@@ -154,7 +154,7 @@ function getNewPkgJsonContent(devStdout) {
   if (devStdout !== undefined && getPrefix(devStdout) === currVersion) {
     newDevPrefix = currVersion;
   } else {
-    newDevPrefix = `${major}.${minor}.${parseInt(patch) + 1}`;
+    newDevPrefix = `${major}.${parseInt(minor) + 1}.${patch}`;
   }
 
   // append the suffix to form a new version
