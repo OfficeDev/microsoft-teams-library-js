@@ -1,9 +1,10 @@
 /**
- * @private
+ * @privateRemarks
  * Hide from docs
  * Shim in definitions used for browser-compat
+ *
+ * @internal
  */
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface DOMMessageEvent {
   origin?: any;
@@ -14,22 +15,27 @@ export interface DOMMessageEvent {
 }
 
 /**
- * @private
+ * @privateRemarks
  * Hide from docs
+ *
+ * @internal
  */
 export interface TeamsNativeClient {
   framelessPostMessage(msg: string): void;
 }
 
 /**
- * @private
+ * @privateRemarks
  * Hide from docs
+ *
+ * @internal
  */
 export interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: DOMMessageEvent): void;
 }
 
+/** @internal */
 export interface MessageRequest {
   id?: number;
   func: string;
@@ -37,6 +43,7 @@ export interface MessageRequest {
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
 }
 
+/** @internal */
 export interface MessageResponse {
   id: number;
   args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
@@ -44,7 +51,10 @@ export interface MessageResponse {
 }
 
 /**
+ * @privateRemarks
  * Meant for Message objects that are sent to children without id
+ *
+ * @internal
  */
 export interface DOMMessageEvent {
   func: string;
