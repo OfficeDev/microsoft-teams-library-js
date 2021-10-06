@@ -11,7 +11,7 @@ export namespace remoteCamera {
   /**
    * @privateRemarks
    * Hide from docs
-   * ---
+   * ------
    * Data structure to represent patricipant details needed to request control of camera.
    */
   export interface Participant {
