@@ -9,16 +9,18 @@ import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
 
 /**
+ * @privateRemarks
+ * Hide from docs
+ * ------
  * Namespace to interact with the files specific part of the SDK.
  *
- * @private
- * Hide from docs
+ * @alpha
  */
 export namespace files {
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Cloud storage providers registered with Microsoft Teams
    */
   export enum CloudStorageProvider {
@@ -30,9 +32,9 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Cloud storage provider integration type
    */
   export enum CloudStorageProviderType {
@@ -42,100 +44,119 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Cloud storage folder interface
    */
   export interface CloudStorageFolder {
     /**
+     * @privateRemarks
      * ID of the cloud storage folder
      */
     id: string;
     /**
+     * @privateRemarks
      * Display Name/Title of the cloud storage folder
      */
     title: string;
     /**
+     * @privateRemarks
      * ID of the cloud storage folder in the provider
      */
     folderId: string;
     /**
+     * @privateRemarks
      * Type of the cloud storage folder provider integration
      */
     providerType: CloudStorageProviderType;
     /**
+     * @privateRemarks
      * Code of the supported cloud storage folder provider
      */
     providerCode: CloudStorageProvider;
     /**
+     * @privateRemarks
      * Display name of the owner of the cloud storage folder provider
      */
     ownerDisplayName: string;
     /**
+     * @privateRemarks
      * Sharepoint specific siteURL of the folder
      */
     siteUrl?: string;
     /**
+     * @privateRemarks
      * Sharepoint specific serverRelativeUrl of the folder
      */
     serverRelativeUrl?: string;
     /**
+     * @privateRemarks
      * Sharepoint specific libraryType of the folder
      */
     libraryType?: string;
     /**
+     * @privateRemarks
      * Sharepoint specific accessType of the folder
      */
     accessType?: string;
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Cloud storage item interface
    */
   export interface CloudStorageFolderItem {
     /**
+     * @privateRemarks
      * ID of the item in the provider
      */
     id: string;
     /**
+     * @privateRemarks
      * Display name/title
      */
     title: string;
     /**
+     * @privateRemarks
      * Key to differentiate files and subdirectory
      */
     isSubdirectory: boolean;
     /**
+     * @privateRemarks
      * File extension
      */
     type: string;
     /**
+     * @privateRemarks
      * Last modifed time of the item
      */
     lastModifiedTime: string;
     /**
+     * @privateRemarks
      * Display size of the items in bytes
      */
     size: number;
     /**
+     * @privateRemarks
      * URL of the file
      */
     objectUrl: string;
     /**
+     * @privateRemarks
      * Temporary access token for the item
      */
     accessToken?: string;
   }
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Gets a list of cloud storage folders added to the channel
-   * @param channelId ID of the channel whose cloud storage folders should be retrieved
+   *
+   * @param channelId - ID of the channel whose cloud storage folders should be retrieved
    */
   export function getCloudStorageFolders(channelId: string): Promise<CloudStorageFolder[]> {
     return new Promise<CloudStorageFolder[]>(resolve => {
@@ -150,11 +171,11 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Initiates the add cloud storage folder flow
-   * @param channelId ID of the channel to add cloud storage folder
+   * @param channelId - ID of the channel to add cloud storage folder
    */
   export function addCloudStorageFolder(channelId: string): Promise<[boolean, CloudStorageFolder[]]> {
     return new Promise<[SdkError, boolean, CloudStorageFolder[]]>(resolve => {
@@ -175,12 +196,13 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Deletes a cloud storage folder from channel
-   * @param channelId ID of the channel where folder is to be deleted
-   * @param folderToDelete cloud storage folder to be deleted
+   *
+   * @param channelId - ID of the channel where folder is to be deleted
+   * @param folderToDelete - cloud storage folder to be deleted
    */
   export function deleteCloudStorageFolder(channelId: string, folderToDelete: CloudStorageFolder): Promise<boolean> {
     return new Promise<boolean>(resolve => {
@@ -198,13 +220,14 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Fetches the contents of a Cloud storage folder (CloudStorageFolder) / sub directory
-   * @param folder Cloud storage folder (CloudStorageFolder) / sub directory (CloudStorageFolderItem)
-   * @param providerCode Code of the cloud storage folder provider
-   * @param callback Callback that will be triggered post contents are loaded
+   *
+   * @param folder - Cloud storage folder (CloudStorageFolder) / sub directory (CloudStorageFolderItem)
+   * @param providerCode - Code of the cloud storage folder provider
+   * @param callback - Callback that will be triggered post contents are loaded
    */
   export function getCloudStorageFolderContents(
     folder: CloudStorageFolder | CloudStorageFolderItem,
@@ -226,13 +249,14 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
-   *
+   * ------
    * Open a cloud storage file in teams
-   * @param file cloud storage file that should be opened
-   * @param providerCode Code of the cloud storage folder provider
-   * @param fileOpenPreference Whether file should be opened in web/inline
+   *
+   * @param file - cloud storage file that should be opened
+   * @param providerCode - Code of the cloud storage folder provider
+   * @param fileOpenPreference - Whether file should be opened in web/inline
    */
   export function openCloudStorageFile(
     file: CloudStorageFolderItem,
@@ -253,11 +277,12 @@ export namespace files {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs.
    * ------
    * Opens a client-friendly preview of the specified file.
-   * @param file The file to preview.
+   *
+   * @param file - The file to preview.
    */
   export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
     ensureInitialized(FrameContexts.content);

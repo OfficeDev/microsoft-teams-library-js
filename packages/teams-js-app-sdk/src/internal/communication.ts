@@ -8,6 +8,8 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { validateOrigin } from './utils';
+
+/**@internal */
 export class Communication {
   public static currentWindow: Window | any;
   public static parentOrigin: string;
@@ -16,6 +18,7 @@ export class Communication {
   public static childOrigin: string;
 }
 
+/**@internal */
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
@@ -29,6 +32,7 @@ class CommunicationPrivate {
   public static messageListener: Function;
 }
 
+/**@internal */
 interface InitializeResponse {
   context: FrameContexts;
   clientType: string;
@@ -36,6 +40,7 @@ interface InitializeResponse {
   clientSupportedSDKVersion: string;
 }
 
+/**@internal */
 export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
@@ -75,6 +80,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
   }
 }
 
+/**@internal */
 export function uninitializeCommunication(): void {
   Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
 
@@ -88,6 +94,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
 }
 
+/**@internal */
 export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
 }
@@ -100,6 +107,7 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
   });
 }
 
+/**@internal */
 export function sendAndHandleStatusAndReasonWithDefaultError(
   actionName: string,
   defaultError: string,
@@ -112,6 +120,7 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
   });
 }
 
+/**@internal */
 export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
@@ -122,7 +131,10 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 }
 
 /**
+ * @privateRemarks
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+ *
+ * @internal
  */
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
   return new Promise(resolve => {
@@ -131,17 +143,25 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] = un
   });
 }
 
+/**@internal */
 function waitForResponse<T>(requestId: number): Promise<T> {
   return new Promise<T>(resolve => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
 }
 
+/**@internal */
 export function sendMessageToParent(actionName: string, callback?: Function): void;
+
 /**
+ * @privateRemarks
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+ *
+ * @internal
  */
 export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
+
+/**@internal */
 export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
@@ -156,6 +176,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 }
 
+/**@internal */
 function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
@@ -177,6 +198,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   return request;
 }
 
+/**@internal */
 export function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
@@ -203,7 +225,10 @@ export function processMessage(evt: DOMMessageEvent): void {
 }
 
 /**
+ * @privateRemarks
  * Validates the message source and origin, if it should be processed
+ *
+ * @internal
  */
 export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
@@ -222,6 +247,7 @@ export function shouldProcessMessage(messageSource: Window, messageOrigin: strin
   }
 }
 
+/**@internal */
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
   // Determine whether the source of the message is our parent or child and update our
   // window and origin pointer accordingly
@@ -256,6 +282,7 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   flushMessageQueue(Communication.childWindow);
 }
 
+/**@internal */
 function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -281,10 +308,12 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   }
 }
 
+/**@internal */
 function isPartialResponse(evt: DOMMessageEvent): boolean {
   return evt.data.isPartialResponse === true;
 }
 
+/**@internal */
 function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
@@ -305,6 +334,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
   }
 }
 
+/**@internal */
 function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
   return targetWindow === Communication.parentWindow
     ? CommunicationPrivate.parentMessageQueue
@@ -313,6 +343,7 @@ function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
     : [];
 }
 
+/**@internal */
 function getTargetOrigin(targetWindow: Window): string {
   return targetWindow === Communication.parentWindow
     ? Communication.parentOrigin
@@ -321,6 +352,7 @@ function getTargetOrigin(targetWindow: Window): string {
     : null;
 }
 
+/**@internal */
 function flushMessageQueue(targetWindow: Window | any): void {
   const targetOrigin = getTargetOrigin(targetWindow);
   const targetMessageQueue = getTargetMessageQueue(targetWindow);
@@ -329,6 +361,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   }
 }
 
+/**@internal */
 export function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
   const messageQueueMonitor = Communication.currentWindow.setInterval(() => {
     if (getTargetMessageQueue(targetWindow).length === 0) {
@@ -339,7 +372,10 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
 }
 
 /**
+ * @privateRemarks
  * Send a response to child for a message request that was from child
+ *
+ * @internal
  */
 function sendMessageResponseToChild(
   id: number,
@@ -356,8 +392,11 @@ function sendMessageResponseToChild(
 }
 
 /**
+ * @privateRemarks
  * Send a custom message object that can be sent to child window,
  * instead of a response message to a child
+ *
+ * @internal
  */
 export function sendMessageEventToChild(
   actionName: string,
@@ -377,6 +416,7 @@ export function sendMessageEventToChild(
   }
 }
 
+/**@internal */
 // tslint:disable-next-line:no-any
 function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
@@ -387,6 +427,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
   };
 }
 
+/**@internal */
 // tslint:disable-next-line:no-any
 function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
@@ -397,7 +438,10 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
 }
 
 /**
+ * @privateRemarks
  * Creates a message object without any id, used for custom actions being sent to child frame/window
+ *
+ * @internal
  */
 // tslint:disable-next-line:no-any
 function createMessageEvent(func: string, args: any[]): MessageRequest {
