@@ -23,6 +23,7 @@ export interface TabInstance {
 
   /**
    * @internal
+   * @protected
    */
   internalTabInstanceId?: string;
 
