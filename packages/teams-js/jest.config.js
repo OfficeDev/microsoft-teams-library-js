@@ -3,4 +3,11 @@ const commonSettings = require('../../jest.config.common.js');
 
 module.exports = {
   ...commonSettings,
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        downlevelIteration: true,
+      },
+    },
+  },
 };
