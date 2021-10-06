@@ -5,6 +5,8 @@ import { FrameContexts } from './constants';
 /**
  * Namespace to video extensibility of the SDK.
  *
+ * @alpha
+ *
  */
 export namespace video {
   /**
@@ -97,8 +99,9 @@ export namespace video {
    * video extension should call this to notify Teams Client current selected effect parameter changed.
    * If it's pre-meeting, Teams client will call videoEffectCallback immediately then use the videoEffect.
    * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
-   * @param effectChangeType the effect change type.
-   * @param effectId Newly selected effect id.
+   *
+   * @param effectChangeType - the effect change type.
+   * @param effectId - Newly selected effect id.
    */
   export function notifySelectedVideoEffectChanged(
     effectChangeType: EffectChangeType,

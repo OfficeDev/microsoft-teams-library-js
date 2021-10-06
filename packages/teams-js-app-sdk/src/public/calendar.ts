@@ -3,6 +3,9 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * @alpha
+ */
 export namespace calendar {
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {
     return new Promise<void>(resolve => {
