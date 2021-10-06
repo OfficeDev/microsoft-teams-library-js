@@ -11,7 +11,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
  */
 export namespace bot {
   /**
-   * @privaterRemarks
+   * @privateRemarks
    * Hide from docs until release.
    * ------
    * Sends query to bot in order to retrieve data.
