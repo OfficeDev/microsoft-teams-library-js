@@ -49,7 +49,7 @@ module.exports = {
     new DtsBundleWebpack({
       name: '@microsoft/teams-js',
       main: 'dts/index.d.ts',
-      out: '~/dist/teams.d.ts',
+      out: '~/dist/MicrosoftTeams.d.ts',
       removeSource: true,
     }),
   ],
