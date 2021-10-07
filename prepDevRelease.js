@@ -1,6 +1,7 @@
 const fs = require('fs');
 const cp = require('child_process');
 const util = require('util');
+const { exit } = require('process');
 
 let packageJsonPath = './package.json';
 let internalConstantsFilePath = './src/internal/constants.ts';
@@ -89,15 +90,25 @@ function getPrefix(version) {
  * Uses the given current dev version and latest production version to generate and return
  * the number of the new dev version. The new dev version numbers are 0-index based.
  * @param {string} devVer The version currently tagged dev.
- * @param {string} latestVer The version currently tagged latest. This version should never have a dash.
+ * @param {string} currVer The version taken from the package.json.
  * @returns Just the number of the suffix of the next dev version. i.e. 1.10.0-dev.<dev suffix number to be returned>
  */
-function getDevSuffixNum(devVer, latestVer) {
-  // if there is no dev version returned, make the first one
+function getDevSuffixNum(devVer, currVer) {
   if (devVer === undefined) {
     return 0;
   }
-  // there is a dev version returned, so grab the devSuffix from it and increment.
+
+  const [major, minor, patch] = currVer.split('.');
+  const [devMajor, devMinor, devPatch] = getPrefix(devVer).split('.');
+
+  if (parseInt(devMajor) < parseInt(major)) {
+    return 0;
+  } else if (devMajor == major) {
+    if (parseInt(devMinor) <= parseInt(minor)) {
+      return 0;
+    }
+  }
+  
   const devIndex = devVer.indexOf('-dev.') + '-dev.'.length;
   if (devIndex === -1) {
     throw new Error(
@@ -112,25 +123,7 @@ function getDevSuffixNum(devVer, latestVer) {
   }
 
   const newDevSuffixNum = devSuffixNum + 1;
-  const latestPrefix = latestVer;
-  const devPrefix = getPrefix(devVer);
-  const latestPatch = parseInt(latestPrefix.substring(latestPrefix.lastIndexOf('.') + 1));
-  const devPrefixPatch = parseInt(devPrefix.substring(devPrefix.lastIndexOf('.') + 1));
-  // If the current devPrefix is already higher than the latest version's prefix, there has already been a dev version
-  // released after a production version, so we'll need to just bump the dev suffix by one.
-  if (latestPatch + 1 === devPrefixPatch) {
-    return newDevSuffixNum;
-    // If the current devPrefix is the same as the latest version's prefix, it means there hasn't been a dev version
-    // released since the production release. Set the dev suffix as 0.
-  } else if (latestPrefix === devPrefix) {
-    return 0;
-  } else {
-    throw new Error(
-      `Inconsistent tags in npm feed. There shouldn't be a dev version that differs from the latest 
-      version by more than one patch version. latest version is ${latestVer} while dev version is 
-      ${devVer}. Please resolve this issue in the npm feed first.`,
-    );
-  }
+  return newDevSuffixNum;
 }
 
 /**
@@ -144,20 +137,32 @@ function getNewPkgJsonContent(devStdout) {
   // get package version from package.json
   let currVersion = getPkgJsonVersion(packageJson);
   console.log('package.json version: ' + currVersion);
-
-  const newDevSuffix = getDevSuffixNum(devStdout, currVersion);
-  console.log('dev version suffix number: ' + newDevSuffix);
+  console.log('current dev tagged version: ' + devStdout);
 
   const [major, minor, patch] = currVersion.split('.');
-  let newDevPrefix = '';
+  if (devStdout !== undefined) {
+    const [devMajor, devMinor, devPatch] = getPrefix(devStdout).split('.');
+    devTooNew = false;
 
-  if (devStdout !== undefined && getPrefix(devStdout) === currVersion) {
-    newDevPrefix = currVersion;
-  } else {
-    newDevPrefix = `${major}.${parseInt(minor) + 1}.${patch}`;
+    if (parseInt(devMajor) > parseInt(major)) {
+      devTooNew = true;
+    } else if (devMajor == major) {
+      if (parseInt(devMinor) > parseInt(minor) + 1 || (parseInt(devMinor) == parseInt(minor) + 1 && parseInt(devPatch) > parseInt(patch) + 1)) {
+        devTooNew = true;
+      }
+    }
+
+    if (devTooNew) {
+      console.log(
+        'Currently, releasing a dev version that is older than or equal to the current dev tagged version is not supported. Will not make changes to the versions.',
+      );
+      process.exit();
+    }
   }
 
-  // append the suffix to form a new version
+  let newDevPrefix = `${major}.${parseInt(minor) + 1}.0`;
+
+  const newDevSuffix = getDevSuffixNum(devStdout, currVersion);
   const newVersion = newDevPrefix + '-dev.' + newDevSuffix;
 
   console.log('new version: ' + newVersion);
