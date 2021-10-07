@@ -22,7 +22,6 @@
   "files": [
     "dist/**",
     "dts/**",
-    "NOTICE.txt",
     "README.md"
   ],
   "dependencies": {
