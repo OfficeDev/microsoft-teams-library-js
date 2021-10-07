@@ -11,14 +11,18 @@ import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
+ * @privateRemarks
  * Namespace to interact with the conversational subEntities inside the tab
+ *
+ * @alpha
  */
 export namespace chat {
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------------
    * Allows the user to start or continue a conversation with each subentity inside the tab
+   *
    * @returns Promise resolved upon completion
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
@@ -60,7 +64,7 @@ export namespace chat {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------------
    * Allows the user to close the conversation in the right pane
@@ -73,14 +77,17 @@ export namespace chat {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * ------
    * Allows an app to retrieve information of all chat members
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the members are and never as proof of membership.
+   *
    * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
    * @returns Promise resolved with information on all chat members
+   *
+   * @internal
    */
   export function getChatMembers(): Promise<ChatMembersInformation> {
     return new Promise<ChatMembersInformation>(resolve => {

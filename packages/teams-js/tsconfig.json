@@ -12,11 +12,11 @@
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
   },
   "exclude": [
     "node_modules",
     "./test",
-    "./webpack.config.ts"
+    "./webpack.config.ts",
   ]
 }

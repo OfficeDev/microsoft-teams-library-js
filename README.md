@@ -1,10 +1,6 @@
-# teamsjs App SDK
+# Microsoft Teams JavaScript client SDK
 
-Welcome to the teamsjs App SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root.
-
-## Original Repo
-
-### [Microsoft Teams JavaScript Library](https://github.com/OfficeDev/microsoft-teams-library-js)
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
@@ -19,7 +15,7 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 3. `yarn build` from repo root
 4. to run Unit test `yarn test`
 
-  TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
+  TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the teams-js directory.
 
 ## Installation
 
@@ -27,16 +23,15 @@ To install the stable version:
 
 ### npm
 
-`npm install --save @microsoft/teamsjs-app-sdk`
+`npm install --save @microsoft/teams-js`
 
 ### yarn
 
-`yarn add @microsoft/teamsjs-app-sdk`
+`yarn add @microsoft/teams-js`
 
 ### Production
 
-**TODO:** Update this URL once we have released the App SDK publicly and published it to a CDN (currently the URL points to the Teams SDK)
-You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/teamsjs.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -47,7 +42,7 @@ Install either using npm or yarn.
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
-import { core } from "@microsoft/teamsjs-app-sdk";
+import { core } from "@microsoft/teams-js";
 ```
 
 ### As a script tag
@@ -59,11 +54,11 @@ Reference the SDK inside of your `.html` page using:
 <!-- TODO: Update URL (as above) -->
 <script src="https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js" integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv" crossorigin="anonymous"></script>
 
-<!-- Microsoft teamsjs App JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teamsjs-app-sdk@0.0.11/dist/teamsjs.min.js"></script>
+<!-- Microsoft Teams JavaScript API (via npm) -->
+<script src="node_modules/@microsoft/teams-js@2.0.0-beta.0/dist/MicrosoftTeams.min.js"></script>
 
-<!-- Microsoft teamsjs App JavaScript API (via local) -->
-<script src="teamsjs.min.js"></script>
+<!-- Microsoft Teams JavaScript API (via local) -->
+<script src="MicrosoftTeams.min.js"></script>
 ```
 
 ## Examples
@@ -72,7 +67,7 @@ Stay tuned for examples coming soon.
 
 ## Testing
 
-The [teamsjs Test App](./examples/teamsjs-test-app/README.md) is used to validate the teamsjs App SDK APIs.
+The [Teams Test App](/apps/teams-test-app/README.md) is used to validate the Teams client SDK APIs.
 
 ## Contributing
 

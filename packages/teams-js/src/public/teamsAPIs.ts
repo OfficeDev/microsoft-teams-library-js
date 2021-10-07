@@ -5,6 +5,8 @@ import { LoadContext } from './interfaces';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
+ *
+ * @alpha
  */
 
 export namespace teamsCore {
@@ -35,9 +37,12 @@ export namespace teamsCore {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Registers a handler to be called when the page has been requested to load.
-   * @param handler The handler to invoke when the page is loaded.
+   *
+   * @param handler - The handler to invoke when the page is loaded.
+   *
+   * @internal
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     ensureInitialized();
@@ -45,10 +50,13 @@ export namespace teamsCore {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Registers a handler to be called before the page is unloaded.
-   * @param handler The handler to invoke before the page is unloaded. If this handler returns true the page should
+   *
+   * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
+   *
+   * @internal
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
@@ -56,9 +64,12 @@ export namespace teamsCore {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
-   * @param handler The handler to invoked by the app when they want the focus to be in the place of their choice.
+   *
+   * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
+   *
+   * @internal
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();

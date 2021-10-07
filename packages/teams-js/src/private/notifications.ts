@@ -6,12 +6,15 @@ import { ShowNotificationParameters } from './interfaces';
 
 export namespace notifications {
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs.
    * ------
    * display notification API.
-   * @param message Notification message.
-   * @param notificationType Notification type
+   *
+   * @param message - Notification message.
+   * @param notificationType - Notification type
+   *
+   * @internal
    */
   export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
     ensureInitialized(FrameContexts.content);

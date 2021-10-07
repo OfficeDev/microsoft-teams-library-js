@@ -80,10 +80,14 @@ export namespace app {
   }
 
   /**
-   * Initializes the library. This must be called before any other SDK calls
+   * Initializes the library.
+   *
+   * @remarks
+   * This must be called before any other SDK calls
    * but after the frame is loaded successfully.
-   * @param validMessageOrigins Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https://www.example.com
+   *
+   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
+   * https: protocol otherwise they will be ignored. Example: https:www.example.com
    * @returns Promise that will be fulfilled when initialization has completed
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
@@ -211,6 +215,7 @@ export namespace app {
 
   /**
    * Retrieves the current context the frame is running in.
+   *
    * @returns Promise that will resolve with the {@link Context} object.
    */
   export function getContext(): Promise<Context> {
@@ -257,7 +262,10 @@ export namespace app {
 
   /**
    * Registers a handler for theme changes.
+   *
+   * @remarks
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   *
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
@@ -269,6 +277,7 @@ export namespace app {
 export namespace core {
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
@@ -283,6 +292,7 @@ export namespace core {
 
   /**
    * execute deep link API.
+   *
    * @param deepLink - deep link.
    * @returns Promise that will be fulfilled when the operation has completed
    */

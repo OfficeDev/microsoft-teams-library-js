@@ -5,6 +5,8 @@ import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
+ *
+ * @alpha
  */
 export interface TabInformation {
   teamTabs: TabInstance[];
@@ -20,7 +22,7 @@ export interface TabInstance {
   tabName: string;
 
   /**
-   * Internal: do not use
+   * @internal
    * @protected
    */
   internalTabInstanceId?: string;
@@ -170,47 +172,57 @@ export enum FileOpenPreference {
 }
 
 /**
- * @private
+ * @privateRemarks
  * Represents structure of the context message received
+ *
+ * @internal
  */
 export interface ContextBridge {
   /**
+   * @privateRemarks
    * The Office 365 group ID for the team with which the content is associated.
    * This field is available only when the identity permission is requested in the manifest.
    */
   groupId?: string;
 
   /**
+   * @privateRemarks
    * The Microsoft Teams ID for the team with which the content is associated.
    */
   teamId?: string;
 
   /**
+   * @privateRemarks
    * The name for the team with which the content is associated.
    */
   teamName?: string;
 
   /**
+   * @privateRemarks
    * The Microsoft Teams ID for the channel with which the content is associated.
    */
   channelId?: string;
 
   /**
+   * @privateRemarks
    * The name for the channel with which the content is associated.
    */
   channelName?: string;
 
   /**
+   * @privateRemarks
    * The type of the channel with which the content is associated.
    */
   channelType?: ChannelType;
 
   /**
+   * @privateRemarks
    * The developer-defined unique ID for the entity this content points to.
    */
   entityId: string;
 
   /**
+   * @privateRemarks
    * The developer-defined unique ID for the sub-entity this content points to.
    * This field should be used to restore to a specific state within an entity,
    * such as scrolling to or activating a specific piece of content.
@@ -218,12 +230,14 @@ export interface ContextBridge {
   subEntityId?: string;
 
   /**
+   * @privateRemarks
    * The current locale that the user has configured for the app formatted as
    * languageId-countryId (for example, en-us).
    */
   locale: string;
 
   /**
+   * @privateRemarks
    * More detailed locale info from the user's OS if available. Can be used together with
    * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
    * time format configuration
@@ -231,6 +245,7 @@ export interface ContextBridge {
   osLocaleInfo?: LocaleInfo;
 
   /**
+   * @privateRemarks
    * @deprecated Use loginHint or userPrincipalName.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
@@ -240,6 +255,7 @@ export interface ContextBridge {
   upn?: string;
 
   /**
+   * @privateRemarks
    * The Azure AD tenant ID of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -248,56 +264,67 @@ export interface ContextBridge {
   tid?: string;
 
   /**
+   * @privateRemarks
    * The current UI theme.
    */
   theme?: string;
 
   /**
+   * @privateRemarks
    * Indication whether the tab is in full-screen mode.
    */
   isFullScreen?: boolean;
 
   /**
+   * @privateRemarks
    * The type of the team.
    */
   teamType?: TeamType;
 
   /**
+   * @privateRemarks
    * The root SharePoint site associated with the team.
    */
   teamSiteUrl?: string;
 
   /**
+   * @privateRemarks
    * The domain of the root SharePoint site associated with the team.
    */
   teamSiteDomain?: string;
 
   /**
+   * @privateRemarks
    * The relative path to the SharePoint site associated with the team.
    */
   teamSitePath?: string;
 
   /**
+   * @privateRemarks
    * The tenant ID of the host team.
    */
   hostTeamTenantId?: string;
 
   /**
+   * @privateRemarks
    * The AAD group ID of the host team.
    */
   hostTeamGroupId?: string;
 
   /**
+   * @privateRemarks
    * The relative path to the SharePoint folder associated with the channel.
    */
   channelRelativeUrl?: string;
 
   /**
+   * @privateRemarks
    * Unique ID for the current Teams session for use in correlating telemetry data.
    */
   sessionId?: string;
 
   /**
+   * @privateRemarks
    * The user's role in the team.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to the user's role, and never as proof of her role.
@@ -305,11 +332,13 @@ export interface ContextBridge {
   userTeamRole?: UserTeamRole;
 
   /**
+   * @privateRemarks
    * The Microsoft Teams ID for the chat with which the content is associated.
    */
   chatId?: string;
 
   /**
+   * @privateRemarks
    * A value suitable for use as a login_hint when authenticating with Azure AD.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -318,6 +347,7 @@ export interface ContextBridge {
   loginHint?: string;
 
   /**
+   * @privateRemarks
    * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -326,6 +356,7 @@ export interface ContextBridge {
   userPrincipalName?: string;
 
   /**
+   * @privateRemarks
    * The Azure AD object id of the current user.
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -334,119 +365,142 @@ export interface ContextBridge {
   userObjectId?: string;
 
   /**
+   * @privateRemarks
    * Indicates whether team is archived.
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
    */
   isTeamArchived?: boolean;
 
   /**
+   * @privateRemarks
    * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
    */
   hostName?: HostName;
 
   /**
+   * @privateRemarks
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel (deprecated, use teamsRoomsWindows instead),
    * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
   /**
+   * @privateRemarks
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext?: FrameContexts;
 
   /**
+   * @privateRemarks
    * SharePoint context. This is only available when hosted in SharePoint.
    */
   sharepoint?: any;
 
   /**
+   * @privateRemarks
    * The type of license for the current users tenant.
    */
   tenantSKU?: string;
 
   /**
+   * @privateRemarks
    * The license type for the current user.
    */
   userLicenseType?: string;
 
   /**
+   * @privateRemarks
    * The ID of the parent message from which this task module was launched.
    * This is only available in task modules launched from bot cards.
    */
   parentMessageId?: string;
 
   /**
+   * @privateRemarks
    * Current ring ID
    */
   ringId?: string;
 
   /**
+   * @privateRemarks
    * Unique ID for the current session for use in correlating telemetry data.
    */
   appSessionId?: string;
 
   /**
+   * @privateRemarks
    * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
    */
   appLaunchId?: string;
 
   /**
+   * @privateRemarks
    * Represents whether calling is allowed for the current logged in User
    */
   isCallingAllowed?: boolean;
 
   /**
+   * @privateRemarks
    * Represents whether PSTN calling is allowed for the current logged in User
    */
   isPSTNCallingAllowed?: boolean;
 
   /**
+   * @privateRemarks
    * Meeting Id used by tab when running in meeting context
    */
   meetingId?: string;
 
   /**
+   * @privateRemarks
    * The OneNote section ID that is linked to the channel.
    */
   defaultOneNoteSectionId?: string;
 
   /**
+   * @privateRemarks
    * Indication whether the tab is in a pop out window
    */
   isMultiWindow?: boolean;
 
   /**
+   * @privateRemarks
    * Personal app icon y coordinate position
    */
   appIconPosition?: number;
 
   /**
+   * @privateRemarks
    * Source origin from where the tab is opened
    */
   sourceOrigin?: string;
 
   /**
+   * @privateRemarks
    * Time when the user clicked on the tab
    */
   userClickTime?: number;
 
   /**
+   * @privateRemarks
    * Team Template ID if there was a Team Template associated with the creation of the team.
    */
   teamTemplateId?: string;
 
   /**
+   * @privateRemarks
    * Where the user prefers the file to be opened from by default during file open
    */
   userFileOpenPreference?: FileOpenPreference;
 
   /**
+   * @privateRemarks
    * The address book name of the current user.
    */
   userDisplayName?: string;
 
   /**
+   * @privateRemarks
    * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
@@ -511,85 +565,104 @@ export interface DialogInfo {
 }
 
 /**
- * @private
+ * @privateRemarks
  * Hide from docs.
  * ------
+ *
+ * @internal
  */
 export interface OpenConversationRequest {
   /**
+   * @privateRemarks
    * The Id of the subEntity where the conversation is taking place
    */
   subEntityId: string;
 
   /**
+   * @privateRemarks
    * The title of the conversation
    */
   title: string;
 
   /**
+   * @privateRemarks
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
    */
   conversationId?: string;
 
   /**
+   * @privateRemarks
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
    */
   channelId?: string;
 
   /**
+   * @privateRemarks
    * The entity Id of the tab
    */
   entityId: string;
 
   /**
+   * @privateRemarks
    * A function that is called once the conversation Id has been created
    */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
+   * @privateRemarks
    * A function that is called if the pane is closed
    */
   onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
 /**
- * @private
+ * @privateRemarks
  * Hide from docs.
  * ------
+ *
+ * @internal
  */
 export interface ConversationResponse {
   /**
+   * @privateRemarks
    * The Id of the subEntity where the conversation is taking place
    */
   subEntityId: string;
 
   /**
+   * @privateRemarks
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
    */
   conversationId?: string;
 
   /**
+   * @privateRemarks
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
    */
   channelId?: string;
 
   /**
+   * @privateRemarks
    * The entity Id of the tab
    */
   entityId?: string;
 }
 
 /**
- * @private
+ * @privateRemarks
  * Hide from docs.
+ *
+ * @internal
  */
 export interface LoadContext {
   /**
+   * @privateRemarks
    * The entity that is requested to be loaded
    */
   entityId: string;
 
   /**
+   * @privateRemarks
    * The content URL that is requested to be loaded
    */
   contentUrl: string;

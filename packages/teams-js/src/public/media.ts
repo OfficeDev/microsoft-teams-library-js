@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
@@ -25,6 +25,9 @@ import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * @alpha
+ */
 export namespace media {
   /**
    * Enum for file formats supported
@@ -67,34 +70,28 @@ export namespace media {
   }
 
   /**
-   * Launch camera, capture image or choose image from gallery and return the images as a File[] object to the callback.
-   * Callback will be called with an error, if there are any. App should first check the error.
-   * If it is present the user can be updated with appropriate error message.
-   * If error is null or undefined, then files will have the required result.
+   * Launch camera, capture image or choose image from gallery and return the images as a File[] object
+   *
+   * @remarks
    * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
    * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   * @see File
-   * @see SdkError
+   *
+   * @returns A promise resolved with a collection of @see File objects or rejected with a @see SdkError
    */
-  export function captureImage(callback: (error: SdkError, files: File[]) => void): void {
-    if (!callback) {
-      throw new Error('[captureImage] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function captureImage(): Promise<File[]> {
+    return new Promise<File[]>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!GlobalVars.isFramelessWindow) {
-      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      callback(notSupportedError, undefined);
-      return;
-    }
+      if (!GlobalVars.isFramelessWindow) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
 
-    if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, undefined);
-      return;
-    }
+      if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
 
-    sendMessageToParent('captureImage', callback);
+      resolve(sendAndHandleSdkError('captureImage'));
+    });
   }
 
   /**
@@ -121,98 +118,82 @@ export namespace media {
 
     /**
      * Gets the media in chunks irrespecitve of size, these chunks are assembled and sent back to the webapp as file/blob
-     * @param callback returns blob of media
+     *
+     * @param callback - returns blob of media
      */
-    public getMedia(callback: (error: SdkError, blob: Blob) => void): void {
-      if (!callback) {
-        throw new Error('[get Media] Callback cannot be null');
-      }
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-      if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        callback(oldPlatformError, null);
-        return;
-      }
-      if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
-        const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        callback(invalidInput, null);
-        return;
-      }
-      // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-      if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
-        this.getMediaViaCallback(callback);
-      } else {
-        this.getMediaViaHandler(callback);
-      }
-    }
-
-    private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
-      const helper: MediaHelper = {
-        mediaMimeType: this.mimeType,
-        assembleAttachment: [],
-      };
-      const localUriId = [this.content];
-      function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
-        if (callback) {
-          if (mediaResult && mediaResult.error) {
-            callback(mediaResult.error, null);
-          } else {
-            if (mediaResult && mediaResult.mediaChunk) {
-              // If the chunksequence number is less than equal to 0 implies EOF
-              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
-              if (mediaResult.mediaChunk.chunkSequence <= 0) {
-                const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-                callback(mediaResult.error, file);
-              } else {
-                // Keep pushing chunks into assemble attachment
-                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-                helper.assembleAttachment.push(assemble);
-              }
-            } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
-            }
-          }
+    public getMedia(): Promise<Blob> {
+      return new Promise<Blob>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.task);
+        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-      }
-      sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
+        if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
+        // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+        if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
+          resolve(this.getMediaViaCallback());
+        } else {
+          resolve(this.getMediaViaHandler());
+        }
+      });
     }
 
-    private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
-      const actionName = generateGUID();
-      const helper: MediaHelper = {
-        mediaMimeType: this.mimeType,
-        assembleAttachment: [],
-      };
-      const params = [actionName, this.content];
-      this.content && callback && sendMessageToParent('getMedia', params);
-      function handleGetMediaRequest(response: string): void {
-        if (callback) {
+    private getMediaViaCallback(): Promise<Blob> {
+      return new Promise<Blob>((resolve, reject) => {
+        const helper: MediaHelper = {
+          mediaMimeType: this.mimeType,
+          assembleAttachment: [],
+        };
+        const localUriId = [this.content];
+        sendMessageToParent('getMedia', localUriId, (mediaResult: MediaResult) => {
+          if (mediaResult && mediaResult.error) {
+            reject(mediaResult.error);
+          } else if (!mediaResult || !mediaResult.mediaChunk) {
+            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' });
+          } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+            const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+            resolve(file);
+          } else {
+            // Keep pushing chunks into assemble attachment
+            const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+            helper.assembleAttachment.push(assemble);
+          }
+        });
+      });
+    }
+
+    private getMediaViaHandler(): Promise<Blob> {
+      return new Promise<Blob>((resolve, reject) => {
+        const actionName = generateGUID();
+        const helper: MediaHelper = {
+          mediaMimeType: this.mimeType,
+          assembleAttachment: [],
+        };
+        const params = [actionName, this.content];
+        this.content && sendMessageToParent('getMedia', params);
+
+        registerHandler('getMedia' + actionName, (response: string) => {
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
-            callback(mediaResult.error, null);
+            reject(mediaResult.error);
+            removeHandler('getMedia' + actionName);
+          } else if (!mediaResult || !mediaResult.mediaChunk) {
+            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' });
+            removeHandler('getMedia' + actionName);
+          } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+            // If the chunksequence number is less than equal to 0 implies EOF
+            // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+            const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+            resolve(file);
             removeHandler('getMedia' + actionName);
           } else {
-            if (mediaResult.mediaChunk) {
-              // If the chunksequence number is less than equal to 0 implies EOF
-              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
-              if (mediaResult.mediaChunk.chunkSequence <= 0) {
-                const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-                callback(mediaResult.error, file);
-                removeHandler('getMedia' + actionName);
-              } else {
-                // Keep pushing chunks into assemble attachment
-                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-                helper.assembleAttachment.push(assemble);
-              }
-            } else {
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
-              removeHandler('getMedia' + actionName);
-            }
+            // Keep pushing chunks into assemble attachment
+            const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+            helper.assembleAttachment.push(assemble);
           }
-        }
-      }
-
-      registerHandler('getMedia' + actionName, handleGetMediaRequest);
+        });
+      });
     }
   }
 
@@ -247,25 +228,30 @@ export namespace media {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
+   *
+   * @internal
    */
   interface MediaProps {
     /**
+     * @privateRemarks
      * Optional; Lets the developer specify the media source, more than one can be specified.
      * Default value is both camera and gallery
      */
     sources?: Source[];
 
     /**
+     * @privateRemarks
      * Optional; Specify in which mode the camera will be opened.
      * Default value is Photo
      */
     startMode?: CameraStartMode;
 
     /**
+     * @privateRemarks
      * Optional; indicate if user is allowed to move between front and back camera
      * Default value is true
      */
@@ -296,13 +282,16 @@ export namespace media {
   }
 
   /**
-   * @private
+   * @privateRemarks
    * Hide from docs
    * --------
    * All properties in VideoProps are optional and have default values in the platform
+   *
+   * @internal
    */
   interface VideoProps extends MediaProps {
     /**
+     * @privateRemarks
      * Optional; the maximum duration in minutes after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
@@ -387,7 +376,7 @@ export namespace media {
   /**
    * Output of getMedia API from platform
    */
-  interface MediaResult {
+  export interface MediaResult {
     /**
      * error encountered in getMedia API
      */
@@ -417,81 +406,61 @@ export namespace media {
 
   /**
    * Select an attachment using camera/gallery
-   * @param mediaInputs The input params to customize the media to be selected
-   * @param callback The callback to invoke after fetching the media
+   *
+   * @param mediaInputs - The input params to customize the media to be selected
+   * @returns A promise resolved with the collection of @see Media objects selected or rejected with a @see SdkError
    */
-  export function selectMedia(
-    mediaInputs: MediaInputs,
-    callback: (error: SdkError, attachments: Media[]) => void,
-  ): void {
-    if (!callback) {
-      throw new Error('[select Media] Callback cannot be null');
-    }
-
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, null);
-      return;
-    }
-
-    if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-      if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
-        const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-        callback(notSupportedError, null);
-        return;
-      } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
-        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        callback(oldPlatformError, null);
-        return;
+  export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]> {
+    return new Promise<[SdkError, Media[]]>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
-    }
+      if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
+        if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
+          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
+      }
+      if (!validateSelectMediaInputs(mediaInputs)) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
 
-    if (!validateSelectMediaInputs(mediaInputs)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, null);
-      return;
-    }
-
-    const params = [mediaInputs];
-    // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-    sendMessageToParent('selectMedia', params, (err: SdkError, localAttachments: Media[]) => {
+      const params = [mediaInputs];
+      // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+      resolve(sendMessageToParentAsync<[SdkError, Media[]]>('selectMedia', params));
+    }).then(([err, localAttachments]: [SdkError, Media[]]) => {
       if (!localAttachments) {
-        callback(err, null);
-        return;
+        throw err;
       }
       const mediaArray: Media[] = [];
       for (const attachment of localAttachments) {
         mediaArray.push(new Media(attachment));
       }
-      callback(err, mediaArray);
+      return mediaArray;
     });
   }
 
   /**
    * View images using native image viewer
-   * @param uriList urilist of images to be viewed - can be content uri or server url. supports upto 10 Images in one go
-   * @param callback returns back error if encountered, returns null in case of success
+   *
+   * @param uriList - urilist of images to be viewed - can be content uri or server url. Supports up to 10 Images in a single call
+   * @returns A promise resolved when the viewing action is completed or rejected with an @see SdkError
    */
-  export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {
-    if (!callback) {
-      throw new Error('[view images] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function viewImages(uriList: ImageUri[]): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError);
-      return;
-    }
-    if (!validateViewImagesInput(uriList)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput);
-      return;
-    }
+      if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
+      if (!validateViewImagesInput(uriList)) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
 
-    const params = [uriList];
-    sendMessageToParent('viewImages', params, callback);
+      resolve(sendAndHandleSdkError('viewImages', uriList));
+    });
   }
 
   /**
@@ -508,43 +477,39 @@ export namespace media {
 
   /**
    * Scan Barcode/QRcode using camera
+   *
+   * @remarks
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   * @param callback callback to invoke after scanning the barcode
-   * @param config optional input configuration to customize the barcode scanning experience
+   *
+   * @param config - optional input configuration to customize the barcode scanning experience
+   * @returns A resolved promise with the barcode data or rejected with an @see SdkError
    */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
-    if (!callback) {
-      throw new Error('[media.scanBarCode] Callback cannot be null');
-    }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function scanBarCode(config?: BarCodeConfig): Promise<string> {
+    return new Promise<string>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    if (
-      GlobalVars.hostClientType === HostClientType.desktop ||
-      GlobalVars.hostClientType === HostClientType.web ||
-      GlobalVars.hostClientType === HostClientType.rigel ||
-      GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-      GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-      GlobalVars.hostClientType === HostClientType.teamsPhones ||
-      GlobalVars.hostClientType === HostClientType.teamsDisplays
-    ) {
-      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      callback(notSupportedError, null);
-      return;
-    }
+      if (
+        GlobalVars.hostClientType === HostClientType.desktop ||
+        GlobalVars.hostClientType === HostClientType.web ||
+        GlobalVars.hostClientType === HostClientType.rigel ||
+        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+        GlobalVars.hostClientType === HostClientType.teamsPhones ||
+        GlobalVars.hostClientType === HostClientType.teamsDisplays
+      ) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
 
-    if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, null);
-      return;
-    }
+      if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
 
-    if (!validateScanBarCodeInput(config)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, null);
-      return;
-    }
+      if (!validateScanBarCodeInput(config)) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
 
-    sendMessageToParent('media.scanBarCode', [config], callback);
+      resolve(sendAndHandleSdkError('media.scanBarCode', config));
+    });
   }
 
   export function isSupported(): boolean {
