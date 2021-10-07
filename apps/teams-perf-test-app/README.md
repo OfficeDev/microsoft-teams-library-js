@@ -1,16 +1,16 @@
-# teamsjs Perf Test App
+# Teams Perf Test App
 
-The teamsjs Perf Test App is a React app used to measure teamsjs App perf running with local Hub SDK(Orange). This will be used to measure app loading time.
+The Teams Perf Test App is a React app used to measure Teams App perf running with local host SDK(Orange). This will be used to measure app loading time.
 
 ## Getting Started
 
 ### Running the Perf Test App
-If you would like to run this app on its own locally, please follow the steps below. Please note many of the functions in the test app will only work as intended while being run in a teamsjs hub as they communicate with the hub to be carried out.
+If you would like to run this app on its own locally, please follow the steps below. Please note many of the functions in the test app will only work as intended while being run in a Teams host as they communicate with the host to be carried out.
 
 ```
 cd {monorepo root}
 
-// Ensuring you have installed and built the App SDK
+// Ensuring you have installed and built the Teams JavaScript client SDK
 yarn install
 yarn build-sdk
 
@@ -18,7 +18,7 @@ yarn build-perf-app
 yarn start-perf-app
 ```
 
-or if you have already built the App SDK and would like to build and run directly from the project directory teamsjs-perf-app, simply `yarn build` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory teams-perf-app, simply `yarn build` and `yarn start` there.
 
 ## Troubleshooting
 
