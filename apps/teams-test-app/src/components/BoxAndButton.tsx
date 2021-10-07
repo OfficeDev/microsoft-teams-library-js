@@ -6,7 +6,7 @@ interface BoxAndButtonProps {
   defaultInput?: string;
   hasInput: boolean;
   title: string;
-  name: string; // system identifiable unique name in context of MOS App and should contain no spaces or dots
+  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces or dots
   output: string;
 }
 

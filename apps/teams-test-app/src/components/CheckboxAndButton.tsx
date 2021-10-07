@@ -5,7 +5,7 @@ interface CheckboxAndButtonProps {
   handleClickWithInput?: (input: string) => void;
   hasInput: boolean;
   title: string;
-  name: string; // system identifiable unique name in context of MOS App and should contain no spaces
+  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
   output: string;
   hasTitle: boolean;
   checkBoxTitle?: string;
