@@ -5,8 +5,8 @@ const libraryName = 'microsoftTeams';
 
 module.exports = {
   entry: {
-    [libraryName]: './src/index.ts',
-    [`${libraryName}.min`]: './src/index.ts',
+    MicrosoftTeams: './src/index.ts',
+    'MicrosoftTeams.min': './src/index.ts',
   },
   externals: {
     'es6-promise': 'commonjs es6-promise',

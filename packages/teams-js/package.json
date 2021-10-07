@@ -3,8 +3,8 @@
   "author": "Microsoft Teams",
   "version": "2.0.0-beta.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
-  "main": "./dist/microsoftTeams.min.js",
-  "typings": "./dist/microsoftTeams.d.ts",
+  "main": "./dist/MicrosoftTeams.min.js",
+  "typings": "./dist/MicrosoftTeams.d.ts",
 
   "scripts": {
     "build": "yarn lint && webpack",
