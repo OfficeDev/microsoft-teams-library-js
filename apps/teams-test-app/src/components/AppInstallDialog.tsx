@@ -1,7 +1,7 @@
 import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const AppInstallDialogAPIs: React.FC = () => {
@@ -9,7 +9,7 @@ const AppInstallDialogAPIs: React.FC = () => {
   const [checkAppInstallDialogCapabilityRes, setCheckAppInstallDialogCapabilityRes] = React.useState('');
 
   const openAppInstallDialog = (openAppInstallDialogParams: string): void => {
-    setOpenAppInstallDialogRes('appInstallDialog.openAppInstallDialog()' + noHubSdkMsg);
+    setOpenAppInstallDialogRes('appInstallDialog.openAppInstallDialog()' + noHostSdkMsg);
     appInstallDialog
       .openAppInstallDialog(JSON.parse(openAppInstallDialogParams))
       .then(() => setOpenAppInstallDialogRes('called'))

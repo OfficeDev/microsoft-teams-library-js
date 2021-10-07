@@ -1,7 +1,7 @@
 import { legacy, pages, UserJoinedTeamsInformation } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../../App';
+import { noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const FullTrustAPIs = (): ReactElement => {
@@ -14,7 +14,7 @@ const FullTrustAPIs = (): ReactElement => {
 
   const returnGetUserJoinedTeams = (teamInstanceParamsInput: string): void => {
     const teamInstanceParams = JSON.parse(teamInstanceParamsInput);
-    setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHubSdkMsg);
+    setGetUserJoinedTeamsRes('getUserJoinedTeams()' + noHostSdkMsg);
     legacy.fullTrust
       .getUserJoinedTeams(teamInstanceParams)
       .then((userJoinedTeamsInfo: UserJoinedTeamsInformation) =>
@@ -23,7 +23,7 @@ const FullTrustAPIs = (): ReactElement => {
   };
 
   const returnGetConfigSetting = (key: string): void => {
-    setGetConfigSettingRes('getConfigSetting()' + noHubSdkMsg);
+    setGetConfigSettingRes('getConfigSetting()' + noHostSdkMsg);
     legacy.fullTrust.getConfigSetting(key).then(value => setGetConfigSettingRes(value));
   };
 

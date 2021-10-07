@@ -1,7 +1,7 @@
 import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const ConfigAPIs = (): ReactElement => {
@@ -20,12 +20,12 @@ const ConfigAPIs = (): ReactElement => {
   };
 
   const getConfig = (): void => {
-    setGetConfigRes('config.getConfig()' + noHubSdkMsg);
+    setGetConfigRes('config.getConfig()' + noHostSdkMsg);
     pages.config.getConfig().then(instanceConfigs => setGetConfigRes(JSON.stringify(instanceConfigs)));
   };
 
   const registerOnSaveHandler = (): void => {
-    setRegisterOnSaveHandlerRes('config.registerOnSaveHandler()' + noHubSdkMsg);
+    setRegisterOnSaveHandlerRes('config.registerOnSaveHandler()' + noHostSdkMsg);
     pages.config.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
       setRegisterOnSaveHandlerRes('Save event received.');
       saveEvent.notifySuccess();
@@ -34,7 +34,7 @@ const ConfigAPIs = (): ReactElement => {
 
   const setConfig = (instanceConfigInput: string): void => {
     const instanceConfig: pages.config.Config = JSON.parse(instanceConfigInput);
-    setSetConfigRes('config.setConfig()' + noHubSdkMsg);
+    setSetConfigRes('config.setConfig()' + noHostSdkMsg);
     pages.config
       .setConfig(instanceConfig)
       .then(() => setSetConfigRes('Completed'))
@@ -47,7 +47,7 @@ const ConfigAPIs = (): ReactElement => {
   };
 
   const registerOnRemoveHandler = (): void => {
-    setRegisterOnRemoveHandlerRes('config.registerOnRemoveHandler()' + noHubSdkMsg);
+    setRegisterOnRemoveHandlerRes('config.registerOnRemoveHandler()' + noHostSdkMsg);
     pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
       setRegisterOnRemoveHandlerRes('Remove event received.');
       removeEvent.notifySuccess();
@@ -55,7 +55,7 @@ const ConfigAPIs = (): ReactElement => {
   };
 
   const registerChangeConfigHandler = (): void => {
-    setRegisterChangeConfigHandlerRes('pages.config.registerChangeConfigHandler()' + noHubSdkMsg);
+    setRegisterChangeConfigHandlerRes('pages.config.registerChangeConfigHandler()' + noHostSdkMsg);
     pages.config.registerChangeConfigHandler((): void => {
       setRegisterChangeConfigHandlerRes('successfully called');
     });

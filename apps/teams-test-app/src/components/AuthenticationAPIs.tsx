@@ -1,7 +1,7 @@
 import { app, authentication } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const AuthenticationAPIs = (): ReactElement => {
@@ -13,7 +13,7 @@ const AuthenticationAPIs = (): ReactElement => {
   const [initializeRes, setInitializeRes] = React.useState('');
 
   const authGetToken = (unformattedAuthParams: string): void => {
-    setGetTokenRes('authentication.getToken()' + noHubSdkMsg);
+    setGetTokenRes('authentication.getToken()' + noHostSdkMsg);
     const authParams: authentication.AuthTokenRequest = JSON.parse(unformattedAuthParams);
     authentication
       .getAuthToken(authParams)
@@ -22,7 +22,7 @@ const AuthenticationAPIs = (): ReactElement => {
   };
 
   const authGetUser = (): void => {
-    setGetUserRes('authentication.getUser()' + noHubSdkMsg);
+    setGetUserRes('authentication.getUser()' + noHostSdkMsg);
     authentication
       .getUser()
       .then(user => setGetUserRes('Success: ' + JSON.stringify(user)))
@@ -45,7 +45,7 @@ const AuthenticationAPIs = (): ReactElement => {
   };
 
   const authAuthenticate = (unformattedAuthParams: string): void => {
-    setAuthenticateRes('authentication.authenticate()' + noHubSdkMsg);
+    setAuthenticateRes('authentication.authenticate()' + noHostSdkMsg);
     const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
     authentication
       .authenticate(authParams)

@@ -1,7 +1,7 @@
 import { mail } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const MailAPIs = (): ReactElement => {
@@ -10,7 +10,7 @@ const MailAPIs = (): ReactElement => {
   const [mailCapabilityCheckRes, setMailCapabilityCheckRes] = React.useState('');
 
   const composeMail = (mailParams: string): void => {
-    setComposeMailRes('mail.composeMail()' + noHubSdkMsg);
+    setComposeMailRes('mail.composeMail()' + noHostSdkMsg);
     mail
       .composeMail(JSON.parse(mailParams))
       .then(() => setComposeMailRes('Completed'))
@@ -18,7 +18,7 @@ const MailAPIs = (): ReactElement => {
   };
 
   const openMailItem = (mailParams: string): void => {
-    setOpenMailItemRes('mail.openMailItem()' + noHubSdkMsg);
+    setOpenMailItemRes('mail.openMailItem()' + noHostSdkMsg);
     mail
       .openMailItem(JSON.parse(mailParams))
       .then(() => setOpenMailItemRes('Completed'))

@@ -1,7 +1,7 @@
 import { appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 interface AppEntityParams {
@@ -20,7 +20,7 @@ const AppEntityAPIs = (): ReactElement => {
         setSelectAppEntityRes('Error getting appEntity: ' + JSON.stringify(error));
       }
     };
-    setSelectAppEntityRes('appEntity.selectAppEntity()' + noHubSdkMsg);
+    setSelectAppEntityRes('appEntity.selectAppEntity()' + noHostSdkMsg);
     appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, callback);
   };
   const checkAppEntityCapability = (): void => {

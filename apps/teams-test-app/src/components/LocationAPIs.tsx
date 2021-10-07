@@ -1,7 +1,7 @@
 import { location } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const LocationAPIs = (): ReactElement => {
@@ -11,7 +11,7 @@ const LocationAPIs = (): ReactElement => {
 
   const getLocation = (locationPropsInput: string): void => {
     const locationProps: location.LocationProps = JSON.parse(locationPropsInput);
-    setGetLocationRes('location.getLocation()' + noHubSdkMsg);
+    setGetLocationRes('location.getLocation()' + noHostSdkMsg);
     location
       .getLocation(locationProps)
       .then(location => setGetLocationRes(JSON.stringify(location)))
@@ -20,7 +20,7 @@ const LocationAPIs = (): ReactElement => {
 
   const showLocation = (locationInput: string): void => {
     const locationParam: location.Location = JSON.parse(locationInput);
-    setShowLocationRes('location.showLocation()' + noHubSdkMsg);
+    setShowLocationRes('location.showLocation()' + noHostSdkMsg);
     location
       .showLocation(locationParam)
       .then(() => setShowLocationRes('Completed'))

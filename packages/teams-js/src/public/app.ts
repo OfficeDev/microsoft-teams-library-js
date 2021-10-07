@@ -104,16 +104,16 @@ export namespace app {
             GlobalVars.hostClientType = clientType;
             GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
 
-            // Temporary workaround while the Hub is updated with the new argument order.
+            // Temporary workaround while the Host is updated with the new argument order.
             // For now, we might receive any of these possibilities:
             // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
             // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
             // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
             // This code supports any of these possibilities
 
-            // Until Teams adopts the hub SDK, the Teams AppHost won't provide this runtime config
+            // Teams AppHost won't provide this runtime config
             // so we assume that if we don't have it, we must be running in Teams.
-            // After Teams switches to the hub SDK, we can remove this default code.
+            // After Teams updates its client code, we can remove this default code.
             try {
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
               runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
@@ -122,7 +122,7 @@ export namespace app {
                 try {
                   // if the given runtime config was actually meant to be a SDK version, store it as such.
                   // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-                  // it doesn't provide the runtimeConfig. After Teams switches to the hub SDK, we should
+                  // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
                   // remove this feature.
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;

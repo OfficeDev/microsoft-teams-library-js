@@ -1,7 +1,7 @@
 import { SdkError, teams } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHubSdkMsg } from '../../App';
+import { noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const TeamsAPIs: React.FC = () => {
@@ -9,7 +9,7 @@ const TeamsAPIs: React.FC = () => {
   const [refreshSiteUrlRes, setRefreshSiteUrlRes] = React.useState('');
 
   const getTeamChannels = (groupId: string): void => {
-    setGetTeamChannelsRes('getTeamChannels()' + noHubSdkMsg);
+    setGetTeamChannelsRes('getTeamChannels()' + noHostSdkMsg);
     const onComplete = (error: SdkError, channels: teams.ChannelInfo[]): void => {
       if (error) {
         setGetTeamChannelsRes('getTeamChannels() error: ' + JSON.stringify(error));

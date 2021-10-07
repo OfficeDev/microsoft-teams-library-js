@@ -1,7 +1,7 @@
 import { monetization, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHubSdkMsg } from '../../App';
+import { noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 const MonetizationAPIs = (): ReactElement => {
@@ -15,7 +15,7 @@ const MonetizationAPIs = (): ReactElement => {
         setOpenPurchaseExperienceRes('Success');
       }
     };
-    setOpenPurchaseExperienceRes('monetization.openPurchaseExperience()' + noHubSdkMsg);
+    setOpenPurchaseExperienceRes('monetization.openPurchaseExperience()' + noHostSdkMsg);
     monetization.openPurchaseExperience(callback);
   };
 

@@ -1,7 +1,7 @@
 import { FilePreviewParameters, files } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateJsonParseErrorMsg, noHubSdkMsg } from '../../App';
+import { generateJsonParseErrorMsg, noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
 
 interface DeleteCloudStorageParams {
@@ -20,12 +20,12 @@ const FilesAPIs = (): ReactElement => {
 
   const returnOpenFilePreview = (filePreviewParamsInput: string): void => {
     const filePreviewParams: FilePreviewParameters = JSON.parse(filePreviewParamsInput);
-    setOpenFilePreviewRes('openFilePreview()' + noHubSdkMsg);
+    setOpenFilePreviewRes('openFilePreview()' + noHostSdkMsg);
     files.openFilePreview(filePreviewParams);
   };
 
   const returnGetCloudStorageFolders = (channelId: string): void => {
-    setGetCloudStorageFoldersRes('getCloudStorageFolders()' + noHubSdkMsg);
+    setGetCloudStorageFoldersRes('getCloudStorageFolders()' + noHostSdkMsg);
     files
       .getCloudStorageFolders(channelId)
       .then(folders => setGetCloudStorageFoldersRes(JSON.stringify(folders)))
@@ -33,7 +33,7 @@ const FilesAPIs = (): ReactElement => {
   };
 
   const returnAddCloudStorageFolder = (channelId: string): void => {
-    setAddCloudStorageFolderRes('addCloudStorageFolder()' + noHubSdkMsg);
+    setAddCloudStorageFolderRes('addCloudStorageFolder()' + noHostSdkMsg);
     files
       .addCloudStorageFolder(channelId)
       .then(([isFolderAdded, folders]) => setAddCloudStorageFolderRes(JSON.stringify({ isFolderAdded, folders })))
@@ -42,7 +42,7 @@ const FilesAPIs = (): ReactElement => {
 
   const returnDeleteCloudStorageFolder = (input: string): void => {
     const deleteCloudStorageParams: DeleteCloudStorageParams = JSON.parse(input);
-    setDeleteCloudStorageFolderRes('deleteCloudStorageFolder()' + noHubSdkMsg);
+    setDeleteCloudStorageFolderRes('deleteCloudStorageFolder()' + noHostSdkMsg);
     files
       .deleteCloudStorageFolder(deleteCloudStorageParams.channelId, deleteCloudStorageParams.folderToDelete)
       .then(isFolderDeleted => setDeleteCloudStorageFolderRes(JSON.stringify(isFolderDeleted)))
@@ -52,7 +52,7 @@ const FilesAPIs = (): ReactElement => {
   const getCloudStorageFolderContents = (input: string): void => {
     try {
       const parsedInput = JSON.parse(input);
-      setGetCloudStorageFolderContentsRes('getCloudStorageFolderContents()' + noHubSdkMsg);
+      setGetCloudStorageFolderContentsRes('getCloudStorageFolderContents()' + noHostSdkMsg);
       files
         .getCloudStorageFolderContents(parsedInput.folder, parsedInput.providerCode)
         .then(items => setGetCloudStorageFolderContentsRes(JSON.stringify(items)))
