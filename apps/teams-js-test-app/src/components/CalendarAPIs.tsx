@@ -1,4 +1,4 @@
-import { calendar } from '@microsoft/teamsjs-app-sdk';
+import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

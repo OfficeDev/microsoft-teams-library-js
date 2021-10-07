@@ -1,4 +1,4 @@
-import { appEntity, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

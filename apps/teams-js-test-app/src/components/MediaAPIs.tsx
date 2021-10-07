@@ -1,4 +1,4 @@
-import { media } from '@microsoft/teamsjs-app-sdk';
+import { media } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../App';

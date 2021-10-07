@@ -1,4 +1,4 @@
-import { remoteCamera, SdkError } from '@microsoft/teamsjs-app-sdk';
+import { remoteCamera, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, generateRegistrationMsg, noHubSdkMsg } from '../App';

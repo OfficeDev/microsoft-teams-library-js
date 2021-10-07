@@ -1,4 +1,4 @@
-import { appInstallDialog } from '@microsoft/teamsjs-app-sdk';
+import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHubSdkMsg } from '../App';

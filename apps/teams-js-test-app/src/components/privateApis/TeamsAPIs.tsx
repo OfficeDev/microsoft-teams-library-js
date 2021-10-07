@@ -1,4 +1,4 @@
-import { SdkError, teams } from '@microsoft/teamsjs-app-sdk';
+import { SdkError, teams } from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHubSdkMsg } from '../../App';

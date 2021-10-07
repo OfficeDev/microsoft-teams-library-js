@@ -1,4 +1,4 @@
-import { dialog, DialogInfo } from '@microsoft/teamsjs-app-sdk';
+import { dialog, DialogInfo } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, noHubSdkMsg } from '../App';

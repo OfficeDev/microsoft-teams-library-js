@@ -1,4 +1,4 @@
-import { app } from '@microsoft/teamsjs-app-sdk';
+import { app } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import BoxAndButton from './BoxAndButton';

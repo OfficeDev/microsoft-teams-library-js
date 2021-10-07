@@ -18,9 +18,9 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /**
-   * Return focus to the hub/host. Will move focus forward or backward based on where the app container falls in
-   * the F6/Tab accessiblity loop in the hub/host.
-   * @param navigateForward - Determines the direction to focus in hub/host.
+   * Return focus to the host. Will move focus forward or backward based on where the app container falls in
+   * the F6/Tab accessiblity loop in the host.
+   * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
     ensureInitialized(FrameContexts.content);

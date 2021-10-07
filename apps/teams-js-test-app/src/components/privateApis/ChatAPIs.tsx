@@ -1,4 +1,4 @@
-import { chat, ChatMembersInformation, OpenConversationRequest } from '@microsoft/teamsjs-app-sdk';
+import { chat, ChatMembersInformation, OpenConversationRequest } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHubSdkMsg } from '../../App';
