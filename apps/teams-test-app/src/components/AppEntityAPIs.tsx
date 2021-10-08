@@ -18,7 +18,7 @@ const AppEntityAPIs = (): ReactElement => {
       if (entity) {
         setSelectAppEntityRes(JSON.stringify(entity));
       } else {
-        setSelectAppEntityRes('Error getting appEntity: ' + JSON.stringify(error));
+        setSelectAppEntityRes(JSON.stringify(error));
       }
     };
     setSelectAppEntityRes('appEntity.selectAppEntity()' + noHostSdkMsg);
