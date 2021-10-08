@@ -61,7 +61,7 @@ export namespace appEntity {
    * @param callback Callback that will be triggered once the app entity information is available.
    *                 The callback takes two arguments: an SdkError in case something happened (i.e.
    *                 no permissions to execute the API) and the app entity configuration, if available
-   * 
+   *
    * @alpha
    */
   export function selectAppEntity(
