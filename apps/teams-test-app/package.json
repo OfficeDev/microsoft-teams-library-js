@@ -1,0 +1,20 @@
+{
+  "name": "teams-test-app",
+  "private": true,
+  "author": "Microsoft Teams",
+  "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
+  "version": "0.1.2",
+  "scripts": {
+    "build": "yarn eslint ./src/**/*.tsx && webpack",
+    "clean": "rimraf ./build",
+    "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
+    "start": "webpack serve"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@microsoft/teams-js": "file:../../packages/teams-js"
+  }
+}

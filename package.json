@@ -1,7 +1,7 @@
 {
-  "name": "teamsjs-app-sdk-monorepo",
+  "name": "teams-js-monorepo",
   "private": true,
-  "author": "Microsoft teamsjs",
+  "author": "Microsoft Teams",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -20,9 +20,9 @@
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && if exist node_modules (rd /s /q node_modules)",
     "efb": "lerna run eslint-fix-build",
-    "publish-sdk": "yarn publish packages/teamsjs-app-sdk",
-    "start-perf-app": "yarn workspace teamsjs-perf-test-app start",
-    "start-test-app": "yarn workspace teamsjs-test-app start",
+    "publish-sdk": "yarn publish packages/teams-js",
+    "start-perf-app": "yarn workspace teams-perf-test-app start",
+    "start-test-app": "yarn workspace teams-test-app start",
     "test": "lerna run test --stream"
   },
   "devDependencies": {

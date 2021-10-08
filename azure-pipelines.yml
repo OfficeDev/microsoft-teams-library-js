@@ -79,25 +79,25 @@ steps:
   - task: CopyFiles@2
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
     inputs:
-      sourceFolder: 'apps/teamsjs-test-app/build'
+      sourceFolder: 'apps/teams-test-app/build'
       contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
     displayName: 'Copy teamsjs test app to artifacts staging directory'
 
   - task: ArchiveFiles@2
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
     inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app'
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
       includeRootFolder: false
       archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
       replaceExistingArchive: true
 
   - task: PublishBuildArtifacts@1
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main'))
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
-      ArtifactName: 'teamsjs-test-app'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+      ArtifactName: 'teams-test-app'
     displayName: 'Publish teamsjs test app artifacts'
 
   - task: PublishBuildArtifacts@1
@@ -114,7 +114,7 @@ steps:
       azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
       appType: 'webApp'
       WebAppName: 'musicalsink'
-      package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+      package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to musical sink'
 
   - task: AzureRmWebAppDeployment@4
@@ -124,7 +124,7 @@ steps:
       azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
       appType: 'webApp'
       WebAppName: 'cloudroll'
-      package: '$(Build.ArtifactStagingDirectory)\teamsjs-test-app\$(Build.BuildId).zip'
+      package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloud roll'
 
   - task: ESLint@1
