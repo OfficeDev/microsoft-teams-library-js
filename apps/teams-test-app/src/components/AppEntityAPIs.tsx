@@ -26,7 +26,7 @@ const AppEntityAPIs = (): ReactElement => {
       if (res.page.subPageId !== undefined) {
         appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, res.page.subPageId, callback);
       } else {
-        throw new Error('page.subPageId must exist in order to call this function.');
+        appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, '', callback);
       }
     });
   };
