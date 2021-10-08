@@ -2,7 +2,7 @@
 
 ## v0.1.3
 
-### appEntity.selectAppEntity now takes in an additional parameter and the callback has reversed parameters.
+### appEntity.selectAppEntity now takes in an additional parameter and the callback has reversed parameters with one one of them becoming optional.
 
 ```
 selectAppEntity(
