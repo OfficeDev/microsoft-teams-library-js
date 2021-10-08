@@ -17,7 +17,7 @@ const AppEntityAPIs = (): ReactElement => {
     const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
       if (entity) {
         setSelectAppEntityRes(JSON.stringify(entity));
-      } else {
+      } else if (error) {
         setSelectAppEntityRes(JSON.stringify(error));
       }
     };
