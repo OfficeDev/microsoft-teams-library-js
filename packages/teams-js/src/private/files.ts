@@ -301,6 +301,7 @@ export namespace files {
       filePreviewParameters.subEntityId,
       filePreviewParameters.viewerAction,
       filePreviewParameters.fileOpenPreference,
+      filePreviewParameters.conversationId,
     ];
 
     sendMessageToParent('openFilePreview', params);

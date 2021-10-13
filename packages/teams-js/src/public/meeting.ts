@@ -302,6 +302,9 @@ export namespace meeting {
   }
 
   /**
+   * @privateRemarks
+   * Hide from docs.
+   * ------------------------------------------
    * Terminates current stage sharing session in meeting
    *
    * @param callback - Callback contains 2 parameters, error and result.

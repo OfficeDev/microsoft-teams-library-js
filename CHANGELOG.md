@@ -2,6 +2,35 @@
 
 ## v0.1.3
 
+### appEntity.selectAppEntity now takes in an additional parameter and the callback has reversed parameters with one one of them becoming optional.
+
+```
+selectAppEntity(
+    threadId: string,
+    categories: string[],
+    callback: (appEntity: AppEntity, sdkError?: SdkError) => void,
+  ): void
+```
+is now:
+```
+selectAppEntity(
+    threadId: string,
+    categories: string[],
+    subEntityId: string,
+    callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
+  ): void
+```
+
+### threadId parameter removed from callback passed into teams.refreshSiteUrl()
+
+```
+refreshSiteUrl(threadId: string, callback: (threadId: string, error: SdkError) => void): void
+```
+is now:
+```
+refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void
+```
+
 ### Promises introduced
 
 The following APIs that took in a callback function as a parameter now instead return a Promise.

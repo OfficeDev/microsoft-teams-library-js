@@ -1,4 +1,4 @@
-import { appEntity, SdkError } from '@microsoft/teams-js';
+import { app, appEntity, Context, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -11,18 +11,26 @@ interface AppEntityParams {
 const AppEntityAPIs = (): ReactElement => {
   const [selectAppEntityRes, setSelectAppEntityRes] = React.useState('');
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+
   const handleClickOnSelectAppEntity = (input: string): void => {
     const appEntityParams: AppEntityParams = JSON.parse(input);
-    const callback = (entity: appEntity.AppEntity, error?: SdkError): void => {
+    const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
       if (entity) {
         setSelectAppEntityRes(JSON.stringify(entity));
-      } else {
-        setSelectAppEntityRes('Error getting appEntity: ' + JSON.stringify(error));
+      } else if (error) {
+        setSelectAppEntityRes(JSON.stringify(error));
       }
     };
     setSelectAppEntityRes('appEntity.selectAppEntity()' + noHostSdkMsg);
-    appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, callback);
+    app.getContext().then((res: Context) => {
+      if (res.page.subPageId !== undefined) {
+        appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, res.page.subPageId, callback);
+      } else {
+        appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, '', callback);
+      }
+    });
   };
+
   const checkAppEntityCapability = (): void => {
     if (appEntity.isSupported()) {
       setCapabilityCheckRes('AppEntity is supported');
@@ -45,7 +53,7 @@ const AppEntityAPIs = (): ReactElement => {
         handleClick={checkAppEntityCapability}
         output={capabilityCheckRes}
         hasInput={false}
-        title="Check AppEntity Capability "
+        title="Check AppEntity Capability"
         name="checkAppEntityCapability"
       />
     </>
