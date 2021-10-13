@@ -82,9 +82,9 @@ const MeetingAPIs = (): ReactElement => {
       return;
     }
 
-    if (streamInput.hasOwnProperty(STREAM_URL)) {
+    if (Object.prototype.hasOwnProperty.call(streamInput, STREAM_URL)) {
       setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHostSdkMsg);
-      (streamInput.hasOwnProperty(STREAM_KEY)
+      (Object.prototype.hasOwnProperty.call(streamInput, STREAM_KEY)
         ? meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
         : meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL))
       )
