@@ -15,10 +15,10 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 1.  Clone the repo
 2.  Navigate to the repo root and run `yarn install`
-3.  `yarn build-sdk` from repo root 
-4.  to run Unit test `yarn test-sdk` 
+3.  `yarn build-sdk` from repo root
+4.  to run Unit test `yarn test-sdk`
 
-  TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
+TIP: whenever building or testing the teamsjs App SDK, you can run `yarn build` or `yarn test` from the teamsjs-app-sdk directory.
 
 ## Installation
 
@@ -46,7 +46,7 @@ Install either using npm or yarn.
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
-import { core } from "@microsoft/teamsjs-app-sdk";
+import { core } from '@microsoft/teamsjs-app-sdk';
 ```
 
 ### As a script tag
@@ -56,14 +56,22 @@ Reference the SDK inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <!-- TODO: Update URL (as above) -->
-<script src="https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js" integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv" crossorigin="anonymous"></script>
+<script
+  src="https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js"
+  integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv"
+  crossorigin="anonymous"
+></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teamsjs-app-sdk@0.0.11/dist/teamsjs.min.js"></script>
+<script src="node_modules/@microsoft/teamsjs-app-sdk@0.1.4/dist/teamsjs.min.js"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via local) -->
 <script src="teamsjs.min.js"></script>
 ```
+
+### Dependencies
+
+teamsjs App SDK depends on [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) type. If you support older browsers and devices which may not yet provide it natively (e.g. IE 11), you need to provide a global polyfill, such as [es6-promise](https://www.npmjs.com/package/es6-promise), in your bundled application. If you're using a script tag to reference the teamsjs App SDK, you need to make sure the polyfill is included and initialized before the teamsjs App SDK is.
 
 ## Examples
 
