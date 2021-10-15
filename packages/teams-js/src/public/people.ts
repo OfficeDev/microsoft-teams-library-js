@@ -4,6 +4,7 @@ import { ensureInitialized, isAPISupportedByPlatform } from '../internal/interna
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * @alpha
@@ -81,5 +82,9 @@ export namespace people {
      * Optional; email of the selected user
      */
     email?: string;
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.people ? true : false;
   }
 }

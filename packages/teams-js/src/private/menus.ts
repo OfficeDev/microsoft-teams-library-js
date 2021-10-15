@@ -1,6 +1,8 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from '../public/runtime';
+
 /**
  * @privateRemarks
  * Namespace to interact with the menu-specific part of the SDK.
@@ -181,5 +183,8 @@ export namespace menus {
       ensureInitialized();
       sendMessageToParent('handleActionMenuItemPress', [id]);
     }
+  }
+  export function isSupported(): boolean {
+    return runtime.supports.menus ? true : false;
   }
 }

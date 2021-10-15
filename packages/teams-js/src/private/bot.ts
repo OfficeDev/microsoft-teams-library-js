@@ -2,6 +2,7 @@
 
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from '../public/runtime';
 
 /**
  * @privateRemarks
@@ -133,5 +134,9 @@ export namespace bot {
   export enum ResponseType {
     Results = 'Results',
     Auth = 'Auth',
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.bot ? true : false;
   }
 }
