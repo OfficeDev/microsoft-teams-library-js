@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft teamsjs",
   "description": "teamsjs Test App utilizing teamsjs App SDK to test teamsjs Hubs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",
     "clean": "if exist node_modules (rd /s /q node_modules)",
