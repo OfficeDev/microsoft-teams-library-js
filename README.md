@@ -63,7 +63,7 @@ Reference the SDK inside of your `.html` page using:
 ></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teamsjs-app-sdk@0.1.4/dist/teamsjs.min.js"></script>
+<script src="node_modules/@microsoft/teamsjs-app-sdk@0.1.6/dist/teamsjs.min.js"></script>
 
 <!-- Microsoft teamsjs App JavaScript API (via local) -->
 <script src="teamsjs.min.js"></script>
