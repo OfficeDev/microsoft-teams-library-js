@@ -142,12 +142,6 @@ The following APIs have been moved from `publicAPIs` to new `teamsCore` namespac
 
 * `openAppInstallDialog` is added to new `appInstallDialog` namespace
 
-#### Added Bot capability
-The following APIs have been added to the new `bot` namespace:
-* `sendQuery` is added
-* `getSupportedCommands` is added
-* `authenticate` is added
-
 #### Added Calendar capability
 
 The following APIs have been added to new `calendar` namespace:
@@ -212,7 +206,6 @@ The following APIs have been moved from `privateAPIs` to a new `legacy.fullTrust
 The following APIs have been added to the new `logs` namespace:
 * `registerGetLogHandler` is added
 
-<<<<<<< HEAD
 #### Added MeetingRoom capability
 The following APIs have been added to the new `meetingRoom` namespace:
 * `getPairedMeetingRoomInfo` is added
@@ -230,38 +223,10 @@ The following APIs have been added to the new `menus` namespace:
 * `showActionMenu` is added
 * `handleActionMenuItemPress` is added
 
-=======
->>>>>>> 2d25c12bbfd1b0a466927ff85683da6b6efad584
 #### Added Notifications capability
 
 * `showNotification` has moved from `privateAPIs` to `notifications` namespace
 
-<<<<<<< HEAD
-=======
-#### Added Location, Media, Meeting capabilities
-
-#### Added MeetingRoom capability
-The following APIs have been added to the new `meetingRoom` namespace:
-* `getPairedMeetingRoomInfo` is added
-* `sendCommandToPairedMeetingRoom` is added
-* `registerMeetingRoomCapabilitiesUpdateHandler` is added
-* `registerMeetingRoomStatesUpdateHandler` is added
-
-#### Added Menus capability
-The following APIs have been added to the new `menus` namespace:
-* `initialize` is added
-* `setUpViews` is added
-* `handleViewConfigItemPress` is added
-* `setNavBarMenu` is added
-* `handleNavBarMenuItemPress` is added
-* `showActionMenu` is added
-* `handleActionMenuItemPress` is added
-
-#### Added Monetization capability
-The following APIs have been added to the new `monetization` namespace:
-* `openPurchaseExperience` is added
-
->>>>>>> 2d25c12bbfd1b0a466927ff85683da6b6efad584
 #### Added RemoteCamera capability
 The following APIs have been added to the new `remoteCamera` namespace:
 * `getCapableParticipants` is added
@@ -272,16 +237,6 @@ The following APIs have been added to the new `remoteCamera` namespace:
 * `registerOnErrorHandler` is added
 * `registerOnDeviceStateChangeHandler` is added
 * `registerOnSessionStatusChangeHandler` is added
-<<<<<<< HEAD
-=======
-
-#### Added People capability
-The following APIs have been added to the new `people` namespace:
-* `selectPeople` is added
->>>>>>> 2d25c12bbfd1b0a466927ff85683da6b6efad584
-
-#### Added Runtime capability
-* `applyRuntimeConfig` is added
 
 #### Added Sharing capability
 The following APIs have been added to the new `sharing` namespace:
@@ -297,6 +252,9 @@ The following APIs have been added to the new `video` namespace:
 * `registerForVideoEffect` is added
 * `notifyVideoFrameProcessed` is added
 * `notifyError` is added
+
+#### Added Runtime capability
+* `applyRuntimeConfig` is added
 
 ### Promises introduced
 
