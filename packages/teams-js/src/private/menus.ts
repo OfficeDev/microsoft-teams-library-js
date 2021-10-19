@@ -33,6 +33,7 @@ export namespace menus {
      */
     contentDescription?: string;
   }
+
   /**
    * @privateRemarks
    * Represents information about menu item for Action Menu and Navigation Bar Menu.
@@ -79,6 +80,7 @@ export namespace menus {
      */
     public selected = false;
   }
+
   /**
    * @privateRemarks
    * Represents information about view to show on Navigation Bar Menu item selection
@@ -100,6 +102,7 @@ export namespace menus {
      */
     listItems: MenuItem[];
   }
+
   /**
    * @privateRemarks
    * Represents information about type of list to display in Navigation Bar Menu.
@@ -117,6 +120,7 @@ export namespace menus {
     registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
     registerHandler('setModuleView', handleViewConfigItemPress, false);
   }
+
   /**
    * @privateRemarks
    * Registers list of view configurations and it's handler.
@@ -130,12 +134,14 @@ export namespace menus {
     viewConfigItemPressHandler = handler;
     sendMessageToParent('setUpViews', [viewConfig]);
   }
+
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized();
       sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
+
   /**
    * @privateRemarks
    * Used to set menu items on the Navigation Bar. If icon is available, icon will be shown, otherwise title will be shown.
@@ -148,12 +154,14 @@ export namespace menus {
     navBarMenuItemPressHandler = handler;
     sendMessageToParent('setNavBarMenu', [items]);
   }
+
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized();
       sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
+
   export interface ActionMenuParameters {
     /**
      * @privateRemarks
@@ -166,6 +174,7 @@ export namespace menus {
      */
     items: MenuItem[];
   }
+
   /**
    * @privateRemarks
    * Used to show Action Menu.
@@ -178,12 +187,14 @@ export namespace menus {
     actionMenuItemPressHandler = handler;
     sendMessageToParent('showActionMenu', [params]);
   }
+
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized();
       sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
+
   export function isSupported(): boolean {
     return runtime.supports.menus ? true : false;
   }

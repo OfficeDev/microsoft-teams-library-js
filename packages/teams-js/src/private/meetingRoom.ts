@@ -152,6 +152,7 @@ export namespace meetingRoom {
      */
     leaveMeeting: boolean;
   }
+
   /**
    * @privateRemarks
    * Hide from docs

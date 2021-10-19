@@ -36,6 +36,7 @@ export namespace bot {
       }
     });
   }
+
   /**
    * @privateRemarks
    * Hide from docs until release.
@@ -59,6 +60,7 @@ export namespace bot {
       }
     });
   }
+
   /**
    * @privateRemarks
    * Hide from docs until release.

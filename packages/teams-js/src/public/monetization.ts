@@ -46,6 +46,7 @@ export namespace monetization {
     ensureInitialized(FrameContexts.content);
     sendMessageToParent('monetization.openPurchaseExperience', [planInfo], callback);
   }
+
   export function isSupported(): boolean {
     return runtime.supports.monetization ? true : false;
   }

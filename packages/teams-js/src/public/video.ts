@@ -40,12 +40,14 @@ export namespace video {
      */
     stride?: number;
   }
+
   /**
    * Video frame format enum, currently only support NV12
    */
   export enum VideoFrameFormat {
     NV12,
   }
+
   /**
    * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format.
    */
