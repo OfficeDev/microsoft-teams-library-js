@@ -36,7 +36,9 @@ export namespace call {
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
     return new Promise(resolve => {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) throw 'Not supported';
+      if (!isSupported()) {
+        throw 'Not supported';
+      }
       return sendMessageToParent('call.startCall', [startCallParams], resolve);
     });
   }
