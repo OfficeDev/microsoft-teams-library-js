@@ -57,47 +57,47 @@ export namespace remoteCamera {
   export interface DeviceState {
     /**
      * @privateRemarks
-     * All operation are available to apply.
+     * All operation are available to apply.
      */
     available: boolean;
     /**
      * @privateRemarks
-     * Either camera doesnt support to get state or It unable to apply command.
+     * Either camera doesnt support to get state or It unable to apply command.
      */
     error: boolean;
     /**
      * @privateRemarks
-     * Reset max out or already applied. Client Disable Reset.
+     * Reset max out or already applied. Client Disable Reset.
      */
     reset: boolean;
     /**
      * @privateRemarks
-     * ZoomIn maxed out.
+     * ZoomIn maxed out.
      */
     zoomIn: boolean;
     /**
      * @privateRemarks
-     * ZoomOut maxed out.
+     * ZoomOut maxed out.
      */
     zoomOut: boolean;
     /**
      * @privateRemarks
-     * PanLeft reached max left.
+     * PanLeft reached max left.
      */
     panLeft: boolean;
     /**
      * @privateRemarks
-     * PanRight reached max right.
+     * PanRight reached max right.
      */
     panRight: boolean;
     /**
      * @privateRemarks
-     * TiltUp reached top.
+     * TiltUp reached top.
      */
     tiltUp: boolean;
     /**
      * @privateRemarks
-     * TiltDown reached bottom.
+     * TiltDown reached bottom.
      */
     tiltDown: boolean;
   }

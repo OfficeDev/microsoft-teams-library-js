@@ -113,4 +113,4 @@ export const validOrigins = [
  *
  * @internal
  */
-export const userOriginUrlValidationRegExp = /^https\:\/\//;
+export const userOriginUrlValidationRegExp = /^https:\/\//;

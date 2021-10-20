@@ -54,17 +54,17 @@ export namespace media {
     public format: FileFormat;
 
     /**
-     * Size of the file in KB
+     * Size of the file in KB
      */
     public size: number;
 
     /**
-     * MIME type. This can be used for constructing a dataUrl, if needed.
+     * MIME type. This can be used for constructing a dataUrl, if needed.
      */
     public mimeType: string;
 
     /**
-     * Optional: Name of the file
+     * Optional: Name of the file
      */
     public name?: string;
   }
@@ -368,7 +368,7 @@ export namespace media {
     chunk: string;
 
     /**
-     * chunk sequence number​
+     * chunk sequence number
      */
     chunkSequence: number;
   }
