@@ -31,7 +31,7 @@ To install the stable version:
 
 ### Production
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/teamsjs.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
