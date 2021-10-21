@@ -3,6 +3,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
+import { runtime } from '../public/runtime';
 
 /**
  * @alpha
@@ -301,5 +302,9 @@ export namespace remoteCamera {
     }
     ensureInitialized(FrameContexts.sidePanel);
     registerHandler('remoteCamera.sessionStatusChange', handler);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.remoteCamera ? true : false;
   }
 }

@@ -2,6 +2,7 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
 import { LoadContext } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
@@ -74,5 +75,9 @@ export namespace teamsCore {
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();
     Handlers.registerHandler('focusEnter', handler);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.teamsCore ? true : false;
   }
 }

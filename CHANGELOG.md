@@ -175,7 +175,19 @@ The following APIs have been moved from `privateAPIs` to a new `legacy.fullTrust
 
 * `showNotification` has moved from `privateAPIs` to `notifications` namespace
 
-#### Added Location, Media and Meeting capabilities
+#### Added the following new capabilites from existing namespaces
+* Location
+* Media
+* Meeting
+* Monetization
+* People
+* Sharing
+* Video
+* Bot
+* Logs
+* MeetingRoom
+* Menus
+* RemoteCamera
 
 #### Added Runtime capability
 * `applyRuntimeConfig` is added

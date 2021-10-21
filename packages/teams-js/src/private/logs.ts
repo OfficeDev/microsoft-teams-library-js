@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from '../public/runtime';
 
 /**
  * @privateRemarks
@@ -31,5 +32,9 @@ export namespace logs {
     } else {
       removeHandler('log.request');
     }
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.logs ? true : false;
   }
 }
