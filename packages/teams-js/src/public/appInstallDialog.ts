@@ -21,7 +21,9 @@ export namespace appInstallDialog {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-      if (!isSupported()) throw 'Not supported';
+      if (!isSupported()) {
+        throw 'Not supported';
+      }
       sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
       resolve();
     });

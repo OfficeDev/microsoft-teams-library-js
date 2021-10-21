@@ -31,7 +31,7 @@ To install the stable version:
 
 ### Production
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/teamsjs.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -53,8 +53,8 @@ Reference the SDK inside of your `.html` page using:
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <!-- TODO: Update URL (as above) -->
 <script
-  src="https://statics.teams.cdn.office.net/sdk/v1.10.0/js/MicrosoftTeams.min.js"
-  integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv"
+  src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"
+  integrity="sha384-SCVF3m7OvDKnfAilUzYn2yozEvBeP8n/Oq0yTH8VUI70J4AzrqR70jzjdQ6DI8s2"
   crossorigin="anonymous"
 ></script>
 

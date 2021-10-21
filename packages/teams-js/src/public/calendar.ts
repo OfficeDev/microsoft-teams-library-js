@@ -10,7 +10,9 @@ export namespace calendar {
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) throw 'Not Supported';
+      if (!isSupported()) {
+        throw 'Not Supported';
+      }
 
       resolve(sendAndHandleError('calendar.openCalendarItem', openCalendarItemParams));
     });
@@ -18,7 +20,9 @@ export namespace calendar {
   export function composeMeeting(composeMeetingParams: ComposeMeetingParams): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) throw 'Not Supported';
+      if (!isSupported()) {
+        throw 'Not Supported';
+      }
 
       resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
     });

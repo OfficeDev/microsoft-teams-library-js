@@ -39,3 +39,7 @@ export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
 export { call } from './call';
+/**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export { appInitialization } from './appInitialization';
