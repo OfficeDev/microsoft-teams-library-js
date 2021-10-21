@@ -49,7 +49,9 @@ steps:
 
   # Bundle analysis comparison : should trigger only by PR against main/develop
 
-  - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --adoAccessToken $(System.AccessToken) --pullRequestId=$(System.PullRequest.PullRequestNumber) --commitId=$(System.PullRequest.SourceCommitId)'
+  - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName)'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), in(variables['System.PullRequest.TargetBranch'], 'main', 'develop'))
     name: bundleAnalysisTask
     displayName: 'Analyze bundles against develop and output result'
@@ -104,7 +106,7 @@ steps:
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       PathtoPublish: './common/temp/bundleAnalysis'
-      ArtifactName: 'bundle-analysis-reports'
+      ArtifactName: '$(bundleArtifactName)'
     displayName: 'Publish bundle analysis'
 
   - task: AzureRmWebAppDeployment@4
