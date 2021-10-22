@@ -23,7 +23,8 @@
     "publish-sdk": "yarn publish packages/teams-js",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
-    "test": "lerna run test --stream"
+    "test": "lerna run test --stream",
+    "lint": "lerna run lint"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
