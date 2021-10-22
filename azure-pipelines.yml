@@ -59,7 +59,7 @@ steps:
   - task: GitHubComment@0
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), in(variables['System.PullRequest.TargetBranch'], 'main', 'develop'))
     inputs:
-      gitHubConnection: 'ISS (3)'
+      gitHubConnection: '$(RepoGitHubConnection)'
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
@@ -113,7 +113,7 @@ steps:
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     inputs:
       ConnectionType: 'AzureRM'
-      azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
+      azureSubscription: '$(AzureSubscription)'
       appType: 'webApp'
       WebAppName: 'musicalsink'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
@@ -123,7 +123,7 @@ steps:
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
     inputs:
       ConnectionType: 'AzureRM'
-      azureSubscription: 'Teo(e14ca9d0-b9a4-48dc-9ec1-3516c2eb1d29)'
+      azureSubscription: '$(AzureSubscription)'
       appType: 'webApp'
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
@@ -153,7 +153,7 @@ steps:
   # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
   - task: AssetRetention@3
     inputs:
-      ArrowServiceConnection: 'Arrow_office_ISS_PROD'
+      ArrowServiceConnection: '$(ArrowConnection)'
       AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
       AssetNumber: '$(Build.BuildId)'
       IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
