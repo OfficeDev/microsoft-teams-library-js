@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * @alpha
@@ -151,5 +152,9 @@ export namespace sharing {
       return false;
     }
     return true;
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.sharing ? true : false;
   }
 }

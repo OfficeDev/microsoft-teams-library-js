@@ -6,15 +6,20 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
     readonly dialog?: {};
     readonly files?: {};
     readonly location?: {};
+    readonly logs?: {};
     readonly mail?: {};
     readonly media?: {};
     readonly meeting?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly monetization?: {};
     readonly notifications?: {};
     readonly pages?: {
       readonly appButton?: {};
@@ -23,9 +28,14 @@ export interface IRuntime {
       readonly backStack?: {};
       readonly fullTrust?: {};
     };
+    readonly people?: {};
+    readonly remoteCamera?: {};
+    readonly sharing?: {};
     readonly teams?: {
       readonly fullTrust?: {};
     };
+    readonly teamsCore?: {};
+    readonly video?: {};
   };
 }
 
@@ -33,14 +43,19 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    bot: undefined,
     calendar: undefined,
     call: undefined,
     chat: undefined,
     dialog: undefined,
     location: undefined,
+    logs: undefined,
     mail: undefined,
     media: undefined,
     meeting: undefined,
+    meetingRoom: undefined,
+    menus: undefined,
+    monetization: undefined,
     notifications: undefined,
     pages: {
       appButton: undefined,
@@ -49,9 +64,14 @@ export let runtime: IRuntime = {
       backStack: undefined,
       fullTrust: undefined,
     },
+    people: undefined,
+    remoteCamera: undefined,
+    sharing: undefined,
     teams: {
       fullTrust: undefined,
     },
+    teamsCore: undefined,
+    video: undefined,
   },
 };
 
@@ -60,12 +80,20 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
+    bot: {},
+    calendar: {},
+    call: {},
     chat: {},
     dialog: {},
     files: {},
     location: {},
+    logs: {},
+    mail: {},
     media: {},
     meeting: {},
+    meetingRoom: {},
+    menus: {},
+    monetization: {},
     notifications: {},
     pages: {
       appButton: {},
@@ -74,9 +102,14 @@ export const teamsRuntimeConfig: IRuntime = {
       backStack: {},
       fullTrust: {},
     },
+    people: {},
+    remoteCamera: {},
+    sharing: {},
     teams: {
       fullTrust: {},
     },
+    teamsCore: {},
+    video: {},
   },
 };
 

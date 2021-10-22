@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * @alpha
@@ -44,5 +45,9 @@ export namespace monetization {
     }
     ensureInitialized(FrameContexts.content);
     sendMessageToParent('monetization.openPurchaseExperience', [planInfo], callback);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.monetization ? true : false;
   }
 }

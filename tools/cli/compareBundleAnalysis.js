@@ -1,18 +1,29 @@
 const path = require('path');
 const { argv } = require('yargs')
-  .option('adoAccessToken', {
-    string: true,
-    demandOption: false,
-    description: 'The ado access token is required to connect with the repo',
-  })
-  .option('pullRequestId', {
-    number: true,
-    description: 'The pull request id against to run this js',
-  })
   .option('commitId', {
     string: true,
     demandOption: false,
-    description: 'The commit id of the current',
+    description: 'The commit id of the current changes',
+  })
+  .option('orgUrl', {
+    string: true,
+    demandOption: true,
+    description: 'Organisation',
+  })
+  .option('projectName', {
+    string: true,
+    demandOption: true,
+    description: 'Project name',
+  })
+  .option('buildId', {
+    number: true,
+    demandOption: true,
+    description: 'Build definition id',
+  })
+  .option('bundleArtifactName', {
+    string: true,
+    demandOption: true,
+    description: 'Artifact name of the bundle',
   });
 
 const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = require('bundle-size-tools');
@@ -25,16 +36,13 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
   // This script creates bundle summary for both commits and compare
   // Then it posts the summary as an output variable of Azure devops task which is used by other task to post comment in respective PR
 
-  const adoAccessToken = argv.adoAccessToken;
-  const pullRequestId = argv.pullRequestId;
+  const adoAccessToken = process.env.SYSTEM_ACCESSTOKEN;
   const currentCommitId = argv.commitId;
-
-  console.log(`Logging token : ${adoAccessToken} for pr : ${pullRequestId}`);
   const adoConstants = {
-    orgUrl: 'https://office.visualstudio.com',
-    projectName: 'ISS',
-    ciBuildDefinitionId: 13173,
-    bundleAnalysisArtifactName: 'bundle-analysis-reports',
+    orgUrl: argv.orgUrl,
+    projectName: argv.projectName,
+    ciBuildDefinitionId: argv.buildId,
+    bundleAnalysisArtifactName: argv.bundleArtifactName,
   };
 
   const localReportPath = path.resolve(process.cwd(), './common/temp/bundleAnalysis');

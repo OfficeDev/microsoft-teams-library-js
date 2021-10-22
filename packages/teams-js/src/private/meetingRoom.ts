@@ -1,6 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from '../public/runtime';
 
 /**
  * @alpha
@@ -151,6 +152,7 @@ export namespace meetingRoom {
      */
     leaveMeeting: boolean;
   }
+
   /**
    * @privateRemarks
    * Hide from docs
@@ -224,5 +226,9 @@ export namespace meetingRoom {
       ensureInitialized();
       handler(states);
     });
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.meetingRoom ? true : false;
   }
 }

@@ -2,6 +2,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { runtime } from './runtime';
+
 /**
  * Namespace to video extensibility of the SDK.
  *
@@ -38,12 +40,14 @@ export namespace video {
      */
     stride?: number;
   }
+
   /**
    * Video frame format enum, currently only support NV12
    */
   export enum VideoFrameFormat {
     NV12,
   }
+
   /**
    * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format.
    */
@@ -132,5 +136,9 @@ export namespace video {
    */
   function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.video ? true : false;
   }
 } //end of video namespace
