@@ -1,6 +1,6 @@
+import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
-import { app } from '../../src/public/app';
 
 describe('authentication', () => {
   // Use to send a mock message from the app.
@@ -25,35 +25,35 @@ describe('authentication', () => {
   });
 
   it('should not allow authentication.authenticate calls before initialization', () => {
-    const authenticationParams: authentication.AuthenticateParameters = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
     };
 
-    return expect(authentication.authenticate(authenticationParams)).rejects.toThrowError(
+    expect(() => authentication.authenticate(authenticationParams)).toThrowError(
       'The library has not yet been initialized',
     );
   });
 
-  it('should not allow authentication.authenticate calls from authentication context', async () => {
-    await utils.initializeWithContext('authentication');
+  it('should not allow authentication.authenticate calls from authentication context', () => {
+    return utils.initializeWithContext('authentication').then(() => {
+      const authenticationParams: authentication.AuthenticatePopUpParameters = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+      };
 
-    const authenticationParams = {
-      url: 'https://someurl/',
-      width: 100,
-      height: 200,
-    };
-
-    return expect(authentication.authenticate(authenticationParams)).rejects.toThrowError(
-      "This call is not allowed in the 'authentication' context",
-    );
+      expect(() => authentication.authenticate(authenticationParams)).toThrowError(
+        "This call is not allowed in the 'authentication' context",
+      );
+    });
   });
 
   it('should allow authentication.authenticate calls from content context', async () => {
     await utils.initializeWithContext('content');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -64,7 +64,7 @@ describe('authentication', () => {
   it('should allow authentication.authenticate calls from settings context', async () => {
     await utils.initializeWithContext('settings');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -75,7 +75,7 @@ describe('authentication', () => {
   it('should allow authentication.authenticate calls from sidePanel context', async () => {
     await utils.initializeWithContext('sidePanel');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -86,7 +86,7 @@ describe('authentication', () => {
   it('should allow authentication.authenticate calls from remove context', async () => {
     await utils.initializeWithContext('remove');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -97,7 +97,7 @@ describe('authentication', () => {
   it('should allow authentication.authenticate calls from task context', async () => {
     await utils.initializeWithContext('task');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -108,7 +108,7 @@ describe('authentication', () => {
   it('should allow authentication.authenticate calls from stage context', async () => {
     await utils.initializeWithContext('stage');
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -131,13 +131,71 @@ describe('authentication', () => {
       },
     );
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
     };
     authentication.authenticate(authenticationParams);
     expect(windowOpenCalled).toBe(true);
+  });
+
+  it('should successfully pop up the auth window when authenticate called without authenticationParams for connectors', () => {
+    return utils.initializeWithContext('content').then(() => {
+      let windowOpenCalled = false;
+      jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual('https://someurl/');
+          expect(name).toEqual('_blank');
+          expect(specs.indexOf('width=100')).not.toBe(-1);
+          expect(specs.indexOf('height=200')).not.toBe(-1);
+          windowOpenCalled = true;
+          return utils.childWindow as Window;
+        },
+      );
+
+      const authenticationParams = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+      };
+      authentication.registerAuthenticationHandlers(authenticationParams);
+      authentication.authenticate();
+      expect(windowOpenCalled).toBe(true);
+    });
+  });
+
+  it('should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called in legacy flow', done => {
+    utils.initializeWithContext('content').then(() => {
+      let windowOpenCalled = false;
+      jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual('https://someurl/');
+          expect(name).toEqual('_blank');
+          expect(specs.indexOf('width=100')).not.toBe(-1);
+          expect(specs.indexOf('height=200')).not.toBe(-1);
+          windowOpenCalled = true;
+          return utils.childWindow as Window;
+        },
+      );
+      const authenticationParams = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => {
+          expect(true).toBe(false);
+          done();
+        },
+        failureCallback: (reason: string) => {
+          expect(reason).toEqual('CancelledByUser');
+          done();
+        },
+      };
+      authentication.authenticate(authenticationParams);
+      expect(windowOpenCalled).toBe(true);
+
+      utils.childWindow.closed = true;
+    });
   });
 
   it('should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called', async () => {
@@ -155,7 +213,7 @@ describe('authentication', () => {
       },
     );
 
-    const authenticationParams = {
+    const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
       height: 200,
@@ -165,6 +223,35 @@ describe('authentication', () => {
 
     utils.childWindow.closed = true;
     return expect(promise).rejects.toThrowError('CancelledByUser');
+  });
+
+  it('should successfully handle auth success in legacy flow', done => {
+    utils.initializeWithContext('content').then(() => {
+      const authenticationParams = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => {
+          expect(result).toEqual('someResult');
+          done();
+        },
+        failureCallback: (reason: string) => {
+          expect(true).toBe(false);
+          done();
+        },
+      };
+      authentication.authenticate(authenticationParams);
+
+      utils.processMessage({
+        origin: utils.tabOrigin,
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'authentication.authenticate.success',
+          args: ['someResult'],
+        },
+      } as MessageEvent);
+    });
   });
 
   it('should successfully handle auth success', async () => {
@@ -190,6 +277,35 @@ describe('authentication', () => {
     return expect(promise).resolves.toEqual('someResult');
   });
 
+  it('should successfully handle auth failure in legacy flow', done => {
+    utils.initializeWithContext('content').then(() => {
+      const authenticationParams = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+        successCallback: (result: string) => {
+          expect(true).toBe(false);
+          done();
+        },
+        failureCallback: (reason: string) => {
+          expect(reason).toEqual('someReason');
+          done();
+        },
+      };
+      authentication.authenticate(authenticationParams);
+
+      utils.processMessage({
+        origin: utils.tabOrigin,
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'authentication.authenticate.failure',
+          args: ['someReason'],
+        },
+      } as MessageEvent);
+    });
+  });
+
   it('should successfully handle auth failure', async () => {
     await utils.initializeWithContext('content');
 
@@ -211,6 +327,73 @@ describe('authentication', () => {
     } as MessageEvent);
 
     return expect(promise).rejects.toThrowError('someReason');
+  });
+
+  ['android', 'ios', 'desktop'].forEach(hostClientType => {
+    it(`should successfully pop up the auth window in the ${hostClientType} client in legacy flow`, () => {
+      return utils.initializeWithContext('content', hostClientType).then(() => {
+        const authenticationParams = {
+          url: 'https://someUrl',
+          width: 100,
+          height: 200,
+        };
+        authentication.authenticate(authenticationParams);
+
+        const message = utils.findMessageByFunc('authentication.authenticate');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(3);
+        expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+        expect(message.args[1]).toBe(authenticationParams.width);
+        expect(message.args[2]).toBe(authenticationParams.height);
+      });
+    });
+
+    it(`it should successfully handle auth success in the ${hostClientType} client in legacy flow`, done => {
+      utils.initializeWithContext('content', hostClientType).then(() => {
+        const authenticationParams = {
+          url: 'https://someUrl',
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => {
+            expect(result).toEqual('someResult');
+            done();
+          },
+          failureCallback: (reason: string) => {
+            expect(true).toBe(false);
+            done();
+          },
+        };
+        authentication.authenticate(authenticationParams);
+
+        const message = utils.findMessageByFunc('authentication.authenticate');
+        expect(message).not.toBeNull();
+        utils.respondToMessage(message, true, 'someResult');
+      });
+    });
+
+    it(`should successfully handle auth failure in the ${hostClientType} client in legacy flow`, done => {
+      utils.initializeWithContext('content', hostClientType).then(() => {
+        const authenticationParams = {
+          url: 'https://someUrl',
+          width: 100,
+          height: 200,
+          successCallback: (result: string) => {
+            expect(true).toBe(false);
+            done();
+          },
+          failureCallback: (reason: string) => {
+            expect(reason).toEqual('someReason');
+            done();
+          },
+        };
+        authentication.authenticate(authenticationParams);
+
+        const message = utils.findMessageByFunc('authentication.authenticate');
+        expect(message).not.toBeNull();
+
+        utils.respondToMessage(message, false, 'someReason');
+      });
+    });
   });
 
   ['android', 'ios', 'desktop'].forEach(hostClientType => {
@@ -399,10 +582,7 @@ describe('authentication', () => {
 
     await utils.initializeWithContext('authentication');
 
-    authentication.notifyFailure(
-      '',
-      'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-    );
+    authentication.notifyFailure('', 'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration');
     const message = utils.findMessageByFunc('authentication.authenticate.failure');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -416,10 +596,7 @@ describe('authentication', () => {
 
     await utils.initializeWithContext('authentication');
 
-    authentication.notifyFailure(
-      '',
-      '',
-    );
+    authentication.notifyFailure('', '');
     const message = utils.findMessageByFunc('authentication.authenticate.failure');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -433,10 +610,7 @@ describe('authentication', () => {
 
     await utils.initializeWithContext('authentication');
 
-    authentication.notifyFailure(
-      'someReason',
-      '',
-    );
+    authentication.notifyFailure('someReason', '');
     const message = utils.findMessageByFunc('authentication.authenticate.failure');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
@@ -490,21 +664,76 @@ describe('authentication', () => {
   });
 
   it('should not allow getAuthToken calls before initialization', () => {
-    const authTokenRequest: authentication.AuthTokenRequest = {
+    const authTokenRequest = {
       resources: ['https://someresource/'],
       claims: ['some_claim'],
       silent: false,
     };
 
-    return expect(authentication.getAuthToken(authTokenRequest)).rejects.toThrowError(
+    return expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
       'The library has not yet been initialized',
     );
+  });
+  
+  it('should successfully return getAuthToken in case of success in legacy flow', done => {
+    utils.initializeWithContext('content').then(() => {
+      const authTokenRequest = {
+        resources: ['https://someresource/'],
+        claims: ['some_claim'],
+        silent: false,
+        failureCallback: () => {
+          expect(true).toBe(false);
+          done();
+        },
+        successCallback: result => {
+          expect(result).toEqual('token');
+          done();
+        },
+      };
+
+      authentication.getAuthToken(authTokenRequest);
+
+      const message = utils.findMessageByFunc('authentication.getAuthToken');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toEqual(['https://someresource/']);
+      expect(message.args[1]).toEqual(['some_claim']);
+      expect(message.args[2]).toEqual(false);
+
+      utils.respondToMessage(message, true, 'token');
+    });
+  });
+
+  it('should successfully return error from getAuthToken in case of failure in legacy flow', done => {
+    utils.initializeWithContext('content').then(() => {
+      const authTokenRequest = {
+        resources: ['https://someresource/'],
+        failureCallback: error => {
+          expect(error).toEqual('error');
+          done();
+        },
+        successCallback: () => {
+          fail();
+        },
+      };
+
+      authentication.getAuthToken(authTokenRequest);
+
+      const message = utils.findMessageByFunc('authentication.getAuthToken');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toEqual(['https://someresource/']);
+      expect(message.args[1]).toEqual(undefined);
+      expect(message.args[2]).toEqual(undefined);
+
+      utils.respondToMessage(message, false, 'error');
+    });
   });
 
   it('should successfully return getAuthToken in case of success', async () => {
     await utils.initializeWithContext('content');
 
-    const authTokenRequest: authentication.AuthTokenRequest = {
+    const authTokenRequest = {
       resources: ['https://someresource/'],
       claims: ['some_claim'],
       silent: false,
@@ -526,7 +755,7 @@ describe('authentication', () => {
   it('should successfully return error from getAuthToken in case of failure', async () => {
     await utils.initializeWithContext('content');
 
-    const authTokenRequest: authentication.AuthTokenRequest = {
+    const authTokenRequest: authentication.AuthTokenRequestParameters = {
       resources: ['https://someresource/'],
     };
 

@@ -12,6 +12,7 @@ import { FrameContexts, HostClientType } from './constants';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
+ *
  * This object is used for starting or completing authentication flows.
  *
  * @beta
@@ -25,24 +26,85 @@ export namespace authentication {
     registerHandler('authentication.authenticate.failure', handleFailure, false);
   }
 
+  let authParams: AuthenticateParameters;
+  /**
+   * @deprecated with Teams JS v2 upgrades
+   *
+   * Registers the authentication Communication.handlers
+   *
+   * @param authenticateParameters - A set of values that configure the authentication pop-up.
+   */
+  export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
+    authParams = authenticateParameters;
+  }
+
+  /**
+   * @deprecated with Teams JS v2 upgrades
+   *
+   * Initiates an authentication request, which opens a new window with the specified settings.
+   *
+   * @param authenticateParameters - The parameters for the authentication request.
+   *
+   */
+  export function authenticate(authenticateParameters?: AuthenticateParameters): void;
+
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
-   * @param authenticateParameters - The parameters for the authentication request
+   * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
+   *
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
+   *
    * @throws if the authentication request fails or is canceled by the user.
+   *
    */
-  export function authenticate(authenticateParameters: AuthenticateParameters): Promise<string> {
+  export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
+  export function authenticate(authenticateParameters?: AuthenticateParameters): Promise<string> {
+    const isDifferentParamsInCall: boolean = authenticateParameters !== undefined;
+    const authenticateParams: AuthenticateParameters = isDifferentParamsInCall ? authenticateParameters : authParams;
+    if (!authenticateParams) {
+      throw new Error('No parameters are provided for authentication');
+    }
+    ensureInitialized(
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+    return authenticateHelper(authenticateParams)
+      .then((value: string) => {
+        try {
+          if (authenticateParams && authenticateParams.successCallback) {
+            authenticateParams.successCallback(value);
+            return '';
+          }
+          return value;
+        } finally {
+          if (!isDifferentParamsInCall) {
+            authParams = null;
+          }
+        }
+      })
+      .catch((err: Error) => {
+        try {
+          if (authenticateParams && authenticateParams.failureCallback) {
+            authenticateParams.failureCallback(err.message);
+            return '';
+          }
+          throw err;
+        } finally {
+          if (!isDifferentParamsInCall) {
+            authParams = null;
+          }
+        }
+      });
+  }
+
+  function authenticateHelper(authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      ensureInitialized(
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.settings,
-        FrameContexts.remove,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.meetingStage,
-      );
       if (
         GlobalVars.hostClientType === HostClientType.desktop ||
         GlobalVars.hostClientType === HostClientType.android ||
@@ -82,15 +144,46 @@ export namespace authentication {
   }
 
   /**
+   * @deprecated with Teams JS v2 upgrades
+   *
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    *
    * @param authTokenRequest - A set of values that configure the token request.
+   * It contains callbacks to call in case of success/failure
+   */
+  export function getAuthToken(authTokenRequest: AuthTokenRequest): void;
+
+  /**
+   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
+   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   *
+   * @param authTokenRequest - A set of values that configure the token request.
+   *
    * @returns Promise that will be fulfilled with the token if successful.
    */
+  export function getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>;
   export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
+    ensureInitialized();
+    return getAuthTokenHelper(authTokenRequest)
+      .then((value: string) => {
+        if (authTokenRequest && authTokenRequest.successCallback) {
+          authTokenRequest.successCallback(value);
+          return '';
+        }
+        return value;
+      })
+      .catch((err: Error) => {
+        if (authTokenRequest && authTokenRequest.failureCallback) {
+          authTokenRequest.failureCallback(err.message);
+          return '';
+        }
+        throw err;
+      });
+  }
+
+  function getAuthTokenHelper(authTokenRequest: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>(resolve => {
-      ensureInitialized();
       resolve(
         sendMessageToParentAsync('authentication.getAuthToken', [
           authTokenRequest.resources,
@@ -117,9 +210,41 @@ export namespace authentication {
    *
    * @internal
    */
-  export function getUser(): Promise<UserProfile> {
+  export function getUser(): Promise<UserProfile>;
+
+  /**
+   * @deprecated with Teams JS v2 upgrades
+   *
+   * @privateRemarks
+   * Hide from docs.
+   * ------
+   * Requests the decoded Azure AD user identity on behalf of the app.
+   *
+   * @param userRequest - It passes success/failure callbacks in the userRequest object(deprecated)
+   * @internal
+   */
+  export function getUser(userRequest: UserRequest): void;
+  export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
+    ensureInitialized();
+    return getUserHelper()
+      .then((value: UserProfile) => {
+        if (userRequest && userRequest.successCallback) {
+          userRequest.successCallback(value);
+          return null;
+        }
+        return value;
+      })
+      .catch((err: Error) => {
+        if (userRequest && userRequest.failureCallback) {
+          userRequest.failureCallback(err.message);
+          return null;
+        }
+        throw err;
+      });
+  }
+
+  function getUserHelper(): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>(resolve => {
-      ensureInitialized();
       resolve(sendMessageToParentAsync('authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
@@ -336,7 +461,23 @@ export namespace authentication {
     return uri + hash;
   }
 
-  export interface AuthenticateParameters {
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   */
+  interface LegacyCallBacks {
+    /**
+     * @deprecated with TeamsJS v2 upgrades
+     * A function that is called if the request succeeds.
+     */
+    successCallback?: (result: string) => void;
+    /**
+     * @deprecated with TeamsJS v2 upgrades
+     * A function that is called if the request fails, with the reason for the failure.
+     */
+    failureCallback?: (reason: string) => void;
+  }
+
+  export interface AuthenticatePopUpParameters {
     /**
      * The URL for the authentication pop-up.
      */
@@ -351,7 +492,12 @@ export namespace authentication {
     height?: number;
   }
 
-  export interface AuthTokenRequest {
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   */
+  export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
+
+  export interface AuthTokenRequestParameters {
     /**
      * An optional list of resource for which to acquire the access token; only used for full trust apps.
      */
@@ -365,6 +511,11 @@ export namespace authentication {
      */
     silent?: boolean;
   }
+
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   */
+  export type AuthTokenRequest = AuthTokenRequestParameters & LegacyCallBacks;
 
   /**
    * @privateRemarks
@@ -460,5 +611,23 @@ export namespace authentication {
      * Stores the version number of the token.
      */
     ver: string;
+  }
+
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   * @privateRemarks
+   * Hide from docs.
+   * ------
+   * @internal
+   */
+  export interface UserRequest {
+    /**
+     * A function that is called if the token request succeeds, with the resulting token.
+     */
+    successCallback?: (user: UserProfile) => void;
+    /**
+     * A function that is called if the token request fails, with the reason for the failure.
+     */
+    failureCallback?: (reason: string) => void;
   }
 }

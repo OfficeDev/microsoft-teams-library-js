@@ -14,7 +14,7 @@ const AuthenticationAPIs = (): ReactElement => {
 
   const authGetToken = (unformattedAuthParams: string): void => {
     setGetTokenRes('authentication.getToken()' + noHostSdkMsg);
-    const authParams: authentication.AuthTokenRequest = JSON.parse(unformattedAuthParams);
+    const authParams: authentication.AuthTokenRequestParameters = JSON.parse(unformattedAuthParams);
     authentication
       .getAuthToken(authParams)
       .then(result => setGetTokenRes('Success: ' + result))
@@ -46,7 +46,7 @@ const AuthenticationAPIs = (): ReactElement => {
 
   const authAuthenticate = (unformattedAuthParams: string): void => {
     setAuthenticateRes('authentication.authenticate()' + noHostSdkMsg);
-    const authParams: authentication.AuthenticateParameters = JSON.parse(unformattedAuthParams);
+    const authParams: authentication.AuthenticatePopUpParameters = JSON.parse(unformattedAuthParams);
     authentication
       .authenticate(authParams)
       .then(token => setAuthenticateRes('Success: ' + token))
