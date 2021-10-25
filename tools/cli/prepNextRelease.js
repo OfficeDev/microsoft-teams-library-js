@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const fs = require('fs');
 
 let packageJsonPath = '../../packages/teams-js/package.json';
@@ -44,10 +45,12 @@ console.log('package.json version: ' + version);
 
 // append the suffix to form a new version
 let nextVersion = version + '-' + versionSuffix;
-
 console.log('@next version: ' + nextVersion);
 
 // update package.json with the new version
 packageJson.version = nextVersion;
+
+// Sets result in Azure devops pipeline output variable 'NextVersion'
+console.log(`##vso[task.setvariable variable=NextVersion;isOutput=true]${nextVersion}`);
 
 savePackageJson(packageJson);

@@ -191,13 +191,21 @@ steps:
 
   - script: 'node prepNextRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
     displayName: 'yarn node prepNextRelease.js'
+    name: prepNextRelease
+    
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'packages\teams-js\dist'
+      contents: '**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\$(prepNextRelease.NextVersion)\js'
+    displayName: 'Copy TeamsJS content'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(prepNextRelease.NextVersion)'
+      ArtifactName: '$(prepNextRelease.NextVersion)'
+    displayName: 'Publish TeamsJS to build Artifacts'
 
   - task: Yarn@3
     condition: and(
@@ -209,6 +217,48 @@ steps:
     inputs:
       Arguments: 'publish-sdk --tag next'
     displayName: 'yarn publish-sdk (develop)'
+
+  # # This task will push content to CDN-sdf for every commit to develop
+  # # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
+  # - task: M365CdnAssetsUpload@1
+  #   condition: and(
+  #     eq(variables['Build.SourceBranch'], 'refs/heads/develop'),
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     ne(variables['Build.Reason'], 'PullRequest'),
+  #     ne(variables['Build.Reason'], 'Manual')
+  #     )
+  #   inputs:
+  #    SourcePath: '$(Build.ArtifactStagingDirectory)\$(prepNextRelease.NextVersion)'
+  #    ConnectionType: 'EnvironmentVariables'
+  #    Environment: 'PublicCloudSDF'
+  #    ContainerName: 'teams-js'
+  #    AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
+  #   env:
+  #     M365CDN_APP_ID: $(M365CDNAppIdSdf)
+  #     M365CDN_APP_KEY: $(CDNAppKeySdf)
+  #     M365CDN_TENANT_ID: $(M365CDNTenantId)
+  #   displayName: 'Push TeamsJS to M365 1CDN(SDF) for (develop)'
+
+  # # This task will push content to CDN-Prod for every prod release.
+  # # Sample CDN URL: https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
+  # - task: M365CdnAssetsUpload@1
+  #   condition: and(
+  #     startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     ne(variables['Build.Reason'], 'PullRequest'),
+  #     ne(variables['Build.Reason'], 'Manual')
+  #     )
+  #   inputs:
+  #     SourcePath: '$(Build.ArtifactStagingDirectory)\$(prepNextRelease.NextVersion)'
+  #     ConnectionType: 'EnvironmentVariables'
+  #     Environment: 'PublicCloud'
+  #     ContainerName: 'teams-js'
+  #     AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
+  #   env:
+  #     M365CDN_APP_ID: $(M365CDNAppIdProd)
+  #     M365CDN_APP_KEY: $(CDNAppKeyProd)
+  #     M365CDN_TENANT_ID: $(M365CDNTenantId)
+  #   displayName: 'Push TeamsJS to M365 1CDN(Prod) for (Main)'
   # IMPORTANT
   # If you need to change $(secret.private-preview-ado-token), you need to base64 encode the string given to you when creating the Personal Access Token, even if it looks like its already base64 encoded.
   # - script: 'node tools/cli/deployPrivatePreview.js'
