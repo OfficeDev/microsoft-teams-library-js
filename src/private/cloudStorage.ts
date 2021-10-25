@@ -9,8 +9,7 @@ import { SdkError } from '../public';
  * Hide from docs
  */
 export namespace cloudStorage {
-
-  export type ExternalFilesProviderCode = "DROPBOX" | "BOX" | "SHAREFILE" | "GOOGLEDRIVE" | "EGNYTE";
+  export type ExternalFilesProviderCode = 'DROPBOX' | 'BOX' | 'SHAREFILE' | 'GOOGLEDRIVE' | 'EGNYTE';
 
   export enum FilesNavigationServiceType {
     Recent,
@@ -23,7 +22,7 @@ export namespace cloudStorage {
     PersonalGoogle,
     CustomSpo,
     SharedWithMe,
-    Chats
+    Chats,
   }
 
   export enum FilesProviderType {
@@ -36,7 +35,7 @@ export namespace cloudStorage {
     FileSystem, // Used for Downloaded files on Desktop
     Search, // Used by P2P files with OSearch
     AllFiles, // Used by P2P files with AllFiles API
-    SharedWithMe
+    SharedWithMe,
   }
 
   interface IWopiThumbnail {
@@ -75,17 +74,17 @@ export namespace cloudStorage {
 
   /**
    * @private
-   * Allow 1st party apps to call this function to get the external 
-   * third party cloud storage accounts that the tenant supports.
+   * Allow 1st party apps to call this function to get the external
+   * third party cloud storage accounts that the tenant supports
    */
-  export function getExternalProviders(callback: (error: SdkError, providers: IExternalProvider[]) => void ): void {
+  export function getExternalProviders(callback: (error: SdkError, providers: IExternalProvider[]) => void): void {
     ensureInitialized();
 
     if (!callback) {
       throw new Error('[cloudStorage.getExternalProviders] Callback cannot be null');
     }
 
-    sendMessageToParent('cloudStorage.getExternalProviders', callback);
+    sendMessageToParent('cloudStorage.getExternalProviders', [], callback);
   }
 
   /**
@@ -98,30 +97,32 @@ export namespace cloudStorage {
     providerCode: ExternalFilesProviderCode,
     destinationFolder: ICommonExternalDto,
     destinationProviderCode: ExternalFilesProviderCode,
-    isMove: boolean = false,
-    callback: (error: SdkError) => void ): void {
-      ensureInitialized();
-
-      if (!selectedFiles || selectedFiles.length == 0) {
-        throw new Error('[cloudStorage.copyMoveFiles] selectedFiles cannot be null or empty');
-      }
-
-      if (!providerCode) {
-        throw new Error('[cloudStorage.copyMoveFiles] providerCode cannot be null or empty');
-      }
-
-      if (!destinationFolder) {
-        throw new Error('[cloudStorage.copyMoveFiles] destinationFolder cannot be null or empty');
-      }
-
-      if (!destinationProviderCode) {
-        throw new Error('[cloudStorage.copyMoveFiles] destinationProviderCode cannot be null or empty');
-      }
-  
-      if (!callback) {
-        throw new Error('[cloudStorage.copyMoveFiles] callback cannot be null');
-      }
-  
-      sendMessageToParent('cloudStorage.copyMoveFiles', callback);
+    isMove = false,
+    callback: (error: SdkError) => void,
+  ): void {
+    ensureInitialized();
+    if (isMove === undefined) {
+      throw new Error('[cloudStorage.copyMoveFiles] isMove cannot be null or empty');
+    }
+    if (!selectedFiles || selectedFiles.length === 0) {
+      throw new Error('[cloudStorage.copyMoveFiles] selectedFiles cannot be null or empty');
+    }
+    if (!providerCode) {
+      throw new Error('[cloudStorage.copyMoveFiles] providerCode cannot be null or empty');
+    }
+    if (!destinationFolder) {
+      throw new Error('[cloudStorage.copyMoveFiles] destinationFolder cannot be null or empty');
+    }
+    if (!destinationProviderCode) {
+      throw new Error('[cloudStorage.copyMoveFiles] destinationProviderCode cannot be null or empty');
+    }
+    if (!callback) {
+      throw new Error('[cloudStorage.copyMoveFiles] callback cannot be null');
+    }
+    sendMessageToParent(
+      'cloudStorage.copyMoveFiles',
+      [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
+      callback,
+    );
   }
 }

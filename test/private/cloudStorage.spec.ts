@@ -1,12 +1,12 @@
 import {
   cloudStorage
-} from '../../src/private/cloudStorage';
-import { Utils } from '../utils';
-import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+} from "../../src/private/cloudStorage";
+import { Utils } from "../utils";
+import { _initialize, _uninitialize } from "../../src/public/publicAPIs";
 
-describe('cloudStorage', () => {
+describe("cloudStorage", () => {
   const utils = new Utils();
-  const emptyCallback = () => {};
+  const emptyCallback = () => { /** Nothing */ };
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -20,28 +20,27 @@ describe('cloudStorage', () => {
   });
 
   afterEach(() => {
-    // Reset the object since it's a singleton
+    // Reset the object since it"s a singleton
     if (_uninitialize) {
       _uninitialize();
     }
   });
 
-  describe('getExternalProviders', () => {
-
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+  describe("getExternalProviders", () => {
+    it("should trigger callback correctly", () => {
+      utils.initializeWithContext("content");
       const mockExternalProviders: cloudStorage.IExternalProvider[] = [
         {
-          name: 'google',
-          description: 'google storage',
+          name: "google",
+          description: "google storage",
           thumbnails: [{
             size: 32,
-            url: 'string'
+            url: "string"
           }],
           navigationType: cloudStorage.FilesNavigationServiceType.PersonalGoogle,
           providerType: cloudStorage.FilesProviderType.Google,
           providerCode: "GOOGLEDRIVE"
-        },
+        }
       ];
 
       const callback = jest.fn((err, providers) => {
@@ -51,50 +50,54 @@ describe('cloudStorage', () => {
 
       cloudStorage.getExternalProviders(callback);
 
-      const getExternalProviders = utils.findMessageByFunc('cloudStorage.getExternalProviders');
+      const getExternalProviders = utils.findMessageByFunc("cloudStorage.getExternalProviders");
       expect(getExternalProviders).not.toBeNull();
       utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
       expect(callback).toHaveBeenCalled();
     });
   });
 
-  describe('copyMoveFiles', () => {
+  describe("copyMoveFiles", () => {
     const mockSelectedFiles: cloudStorage.ICommonExternalDto[] = [
       {
-        id: '123',
-        lastModifiedTime: '2021-10-22T06:29:37.051Z',
+        id: "123",
+        lastModifiedTime: "2021-10-22T06:29:37.051Z",
         size: 32,
-        objectUrl: 'abc.com',
-        title: 'file',
+        objectUrl: "abc.com",
+        title: "file",
         isSubdirectory: false,
-        type: 'type'
+        type: "type"
       }
     ];
 
     const mockDestinationFolder: cloudStorage.ICommonExternalDto = {
-        id: '123',
-        lastModifiedTime: '2021-10-22T06:29:37.051Z',
+        id: "123",
+        lastModifiedTime: "2021-10-22T06:29:37.051Z",
         size: 32,
-        objectUrl: 'abc.com',
-        title: 'file',
+        objectUrl: "abc.com",
+        title: "file",
         isSubdirectory: false,
-        type: 'type'
+        type: "type"
     };
 
     const mockProviderCode = "DROPBOX";
+    const destinationProviderCode = "GOOGLEDRIVE";
 
-    it('should not allow calls before initialization', () => {
-      expect(() => cloudStorage.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, mockProviderCode, false, emptyCallback)).toThrowError('The library has not yet been initialized');
+    it("should not allow calls before initialization", () => {
+      expect(() => cloudStorage.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false, emptyCallback)).toThrowError("The library has not yet been initialized");
     });
 
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+    it("should trigger callback correctly", () => {
+      utils.initializeWithContext("content");
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
-      cloudStorage.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, mockProviderCode, false, callback);
+      cloudStorage.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false, callback);
+      const copyMoveFilesMessage = utils.findMessageByFunc("cloudStorage.copyMoveFiles");
+      expect(copyMoveFilesMessage).not.toBeNull();
+      utils.respondToMessage(copyMoveFilesMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
