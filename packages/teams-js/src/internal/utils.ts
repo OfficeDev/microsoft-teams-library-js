@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
 import { HostClientType, HostName } from '../public/constants';
-import { Context, ContextBridge } from '../public/interfaces';
+import { Context, ContextBridge, SdkError } from '../public/interfaces';
 import { validOrigins } from './constants';
 
 /**
@@ -138,6 +138,72 @@ export function deepFreeze<T extends object>(obj: T): T {
     }
   });
   return Object.freeze(obj);
+}
+
+/**
+ * @privateRemarks
+ * This following type definitions will be used in the
+ * utility functions below, which help in transforming the
+ * promises to support callbacks for backward compatibility
+ *
+ * @internal
+ */
+export type ErrorResultCallback<T> = (err?: SdkError, result?: T) => void;
+export type ErrorBooleanResultCallback = (err?: SdkError, result?: boolean) => void;
+export type InputFunction<T> = (...args: any[]) => Promise<T>;
+
+/**
+ * This utility function is used when the result of the promise is same as the result in the callback.
+ * @param funcHelper
+ * @param callback
+ * @param args
+ * @returns
+ *
+ * @internal
+ */
+export function callCallbackWithErrorOrResultFromPromiseAndReturnPromise<T>(
+  funcHelper: InputFunction<T>,
+  callback?: ErrorResultCallback<T>,
+  ...args: any[]
+): Promise<T> {
+  const p = funcHelper(...args);
+  p.then((result: T) => {
+    if (callback) {
+      callback(undefined, result);
+    }
+  }).catch((e: SdkError) => {
+    if (callback) {
+      callback(e);
+    }
+  });
+  return p;
+}
+
+/**
+ * This utility function is used when the return type of the promise is usually void and
+ * the result in the callback is a boolean type (true for success and false for error)
+ * @param funcHelper
+ * @param callback
+ * @param args
+ * @returns
+ * @internal
+ */
+export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
+  funcHelper: InputFunction<T>,
+  callback?: ErrorBooleanResultCallback,
+  ...args: any[]
+): Promise<T> {
+  const p = funcHelper(...args);
+  p.then((result: T) => {
+    if (callback) {
+      callback(undefined, true);
+    }
+  }).catch((e: SdkError) => {
+    if (callback) {
+      callback(e, false);
+    }
+  });
+  return p;
 }
 
 /**

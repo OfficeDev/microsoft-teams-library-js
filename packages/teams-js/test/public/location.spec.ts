@@ -1,10 +1,10 @@
+import { locationAPIsRequiredVersion } from '../../src/internal/constants';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { app } from '../../src/public/app';
+import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location } from '../../src/public/index';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { app } from '../../src/public/app';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { Utils } from '../utils';
-import { FrameContexts } from '../../src/public/constants';
-import { locationAPIsRequiredVersion } from '../../src/internal/constants';
 
 /**
  * Test cases for location APIs
@@ -31,37 +31,12 @@ describe('location', () => {
     }
   });
 
-  it('should not allow getLocation calls before initialization', () => {
-    return expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
-      'The library has not yet been initialized',
-    );
-  });
   it('getLocation call in default version of platform support fails', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     await expect(location.getLocation(defaultLocationProps)).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
   });
-  it('should not allow getLocation calls for authentication frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
-      "This call is not allowed in the 'authentication' context",
-    );
-  });
-  it('should not allow getLocation calls for remove frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
-      "This call is not allowed in the 'remove' context",
-    );
-  });
-  it('should not allow getLocation calls for settings frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(
-      "This call is not allowed in the 'settings' context",
-    );
-  });
+
   it('should not allow getLocation calls without props', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -135,37 +110,12 @@ describe('location', () => {
     await expect(promise).rejects.toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
   });
 
-  it('should not allow showLocation calls before initialization', () => {
-    return expect(location.showLocation(defaultLocation)).rejects.toThrowError(
-      'The library has not yet been initialized',
-    );
-  });
   it('showLocation call in default version of platform support fails', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
     await expect(location.showLocation(defaultLocation)).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
   });
-  it('should not allow showLocation calls for authentication frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
-      "This call is not allowed in the 'authentication' context",
-    );
-  });
-  it('should not allow showLocation calls for remove frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
-      "This call is not allowed in the 'remove' context",
-    );
-  });
-  it('should not allow showLocation calls for settings frame context', async () => {
-    await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
-    mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(
-      "This call is not allowed in the 'settings' context",
-    );
-  });
+
   it('should not allow showLocation calls without props', async () => {
     await desktopPlatformMock.initializeWithContext(FrameContexts.content);
     desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
