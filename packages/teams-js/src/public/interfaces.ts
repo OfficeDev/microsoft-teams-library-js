@@ -565,6 +565,11 @@ export interface DialogInfo {
 }
 
 /**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export type TaskInfo = DialogInfo;
+
+/**
  * @privateRemarks
  * Hide from docs.
  * ------

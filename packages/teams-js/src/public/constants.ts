@@ -64,6 +64,11 @@ export enum DialogDimension {
 }
 
 /**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export import TaskModuleDimension = DialogDimension;
+
+/**
  * The type of the channel with which the content is associated.
  */
 export enum ChannelType {
