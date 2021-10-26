@@ -76,15 +76,20 @@ export namespace cloudStorage {
    * @private
    * Allow 1st party apps to call this function to get the external
    * third party cloud storage accounts that the tenant supports
+   * @param excludeAddedProviders: return a list of support third party
+   * cloud storages that hasn't been added yet.
    */
-  export function getExternalProviders(callback: (error: SdkError, providers: IExternalProvider[]) => void): void {
+  export function getExternalProviders(
+    excludeAddedProviders = false,
+    callback: (error: SdkError, providers: IExternalProvider[]) => void,
+  ): void {
     ensureInitialized();
 
     if (!callback) {
       throw new Error('[cloudStorage.getExternalProviders] Callback cannot be null');
     }
 
-    sendMessageToParent('cloudStorage.getExternalProviders', [], callback);
+    sendMessageToParent('cloudStorage.getExternalProviders', [excludeAddedProviders], callback);
   }
 
   /**

@@ -48,7 +48,7 @@ describe("cloudStorage", () => {
         expect(providers).toEqual(mockExternalProviders);
       });
 
-      cloudStorage.getExternalProviders(callback);
+      cloudStorage.getExternalProviders(false, callback);
 
       const getExternalProviders = utils.findMessageByFunc("cloudStorage.getExternalProviders");
       expect(getExternalProviders).not.toBeNull();
