@@ -35,6 +35,7 @@ export namespace settings {
    * @remarks
    * See pages.SaveParameters
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import SaveParameters = pages.config.SaveParameters;
 
   /**

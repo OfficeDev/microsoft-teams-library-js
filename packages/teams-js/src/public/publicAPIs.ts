@@ -5,7 +5,6 @@ import {
   Context,
   DeepLinkParameters,
   FrameContext,
-  FrameInfo,
   LoadContext,
   TabInformation,
   TabInstanceParameters,

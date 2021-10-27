@@ -1,5 +1,4 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { TabInstance } from './interfaces';
 import { pages } from './pages';

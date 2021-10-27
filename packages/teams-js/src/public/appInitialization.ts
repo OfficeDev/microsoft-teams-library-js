@@ -7,14 +7,17 @@ export namespace appInitialization {
   /**
    * @deprecated with TeamsJS v2 upgrades
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import Messages = app.Messages;
   /**
    * @deprecated with TeamsJS v2 upgrades
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import FailedReason = app.FailedReason;
   /**
    * @deprecated with TeamsJS v2 upgrades
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import ExpectedFailureReason = app.ExpectedFailureReason;
   /**
    * @deprecated with TeamsJS v2 upgrades

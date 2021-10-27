@@ -1,5 +1,13 @@
 export { authentication } from './authentication';
-export { FrameContexts, HostClientType, DialogDimension, TeamType, UserTeamRole, ChannelType } from './constants';
+export {
+  FrameContexts,
+  HostClientType,
+  DialogDimension,
+  TaskModuleDimension,
+  TeamType,
+  UserTeamRole,
+  ChannelType,
+} from './constants';
 export {
   Context,
   DeepLinkParameters,
@@ -34,3 +42,28 @@ export { call } from './call';
  * @deprecated with TeamsJS v2 upgrades
  */
 export { appInitialization } from './appInitialization';
+/**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export {
+  enablePrintCapability,
+  executeDeepLink,
+  getContext,
+  getMruTabInstances,
+  getTabInstances,
+  initialize,
+  initializeWithFrameContext,
+  print,
+  registerBackButtonHandler,
+  registerBeforeUnloadHandler,
+  registerFocusEnterHandler,
+  registerEnterSettingsHandler,
+  registerFullScreenHandler,
+  registerOnLoadHandler,
+  registerOnThemeChangeHandler,
+  registerAppButtonClickHandler,
+  registerAppButtonHoverEnterHandler,
+  registerAppButtonHoverLeaveHandler,
+  setFrameContext,
+  shareDeepLink,
+} from './publicAPIs';

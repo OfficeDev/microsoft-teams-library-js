@@ -149,6 +149,7 @@ export function deepFreeze<T extends object>(obj: T): T {
  */
 export type ErrorResultCallback<T> = (err?: SdkError, result?: T) => void;
 export type ErrorBooleanResultCallback = (err?: SdkError, result?: boolean) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputFunction<T> = (...args: any[]) => Promise<T>;
 
 /**
@@ -163,6 +164,7 @@ export type InputFunction<T> = (...args: any[]) => Promise<T>;
 export function callCallbackWithErrorOrResultFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
   callback?: ErrorResultCallback<T>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ): Promise<T> {
   const p = funcHelper(...args);
@@ -190,10 +192,11 @@ export function callCallbackWithErrorOrResultFromPromiseAndReturnPromise<T>(
 export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
   callback?: ErrorBooleanResultCallback,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ): Promise<T> {
   const p = funcHelper(...args);
-  p.then((result: T) => {
+  p.then(() => {
     if (callback) {
       callback(undefined, true);
     }

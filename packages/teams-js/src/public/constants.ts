@@ -66,6 +66,7 @@ export enum DialogDimension {
 /**
  * @deprecated with TeamsJS v2 upgrades
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;
 
 /**
