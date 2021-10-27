@@ -12,15 +12,6 @@ export {
   DialogInfo,
   TeamInformation,
   FileOpenPreference,
-  AppInfo,
-  AppHostInfo,
-  PageInfo,
-  UserInfo,
-  ChannelInfo,
-  ChatInfo,
-  MeetingInfo,
-  TeamInfo,
-  TenantInfo,
   OpenConversationRequest,
 } from './interfaces';
 export { app, core } from './app';

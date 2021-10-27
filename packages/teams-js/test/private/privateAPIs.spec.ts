@@ -1,5 +1,5 @@
 import { app } from '../../src/public/app';
-import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Utils, MessageResponse, MessageRequest } from '../utils';
@@ -211,13 +211,13 @@ describe('AppSDK-privateAPIs', () => {
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let contextBridge1: ContextBridge = {
+    let contextBridge1: Context = {
       locale: 'someLocale1',
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
       userObjectId: 'someUserObjectId1',
     };
-    let expectedContext1: Context = {
+    let expectedContext1: app.Context = {
       app: {
         locale: 'someLocale1',
         sessionId: '',
@@ -240,13 +240,13 @@ describe('AppSDK-privateAPIs', () => {
       },
     };
 
-    let contextBridge2: ContextBridge = {
+    let contextBridge2: Context = {
       locale: 'someLocale2',
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
       userObjectId: 'someUserObjectId2',
     };
-    let expectedContext2: Context = {
+    let expectedContext2: app.Context = {
       app: {
         locale: 'someLocale2',
         sessionId: '',
@@ -269,13 +269,13 @@ describe('AppSDK-privateAPIs', () => {
       },
     };
 
-    let contextBridge3: ContextBridge = {
+    let contextBridge3: Context = {
       locale: 'someLocale3',
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
       userObjectId: 'someUserObjectId3',
     };
-    let expectedContext3: Context = {
+    let expectedContext3: app.Context = {
       app: {
         locale: 'someLocale3',
         sessionId: '',
@@ -322,7 +322,7 @@ describe('AppSDK-privateAPIs', () => {
     let getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: ContextBridge = {
+    let expectedContext: Context = {
       locale: 'someLocale',
       groupId: 'someGroupId',
       channelId: 'someChannelId',

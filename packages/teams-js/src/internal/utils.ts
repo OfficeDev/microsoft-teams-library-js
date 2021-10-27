@@ -2,8 +2,7 @@
 import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
-import { HostClientType, HostName } from '../public/constants';
-import { Context, ContextBridge, SdkError } from '../public/interfaces';
+import { SdkError } from '../public/interfaces';
 import { validOrigins } from './constants';
 
 /**
@@ -204,99 +203,4 @@ export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
     }
   });
   return p;
-}
-
-/**
- * @privateRemarks
- * Transforms the Context bridge object received from Messages to the structured Context object
- *
- * @internal
- */
-export function transformContext(contextBridge: ContextBridge): Context {
-  const context: Context = {
-    app: {
-      locale: contextBridge.locale,
-      sessionId: contextBridge.appSessionId ? contextBridge.appSessionId : '',
-      theme: contextBridge.theme ? contextBridge.theme : 'default',
-      iconPositionVertical: contextBridge.appIconPosition,
-      osLocaleInfo: contextBridge.osLocaleInfo,
-      parentMessageId: contextBridge.parentMessageId,
-      userClickTime: contextBridge.userClickTime,
-      userFileOpenPreference: contextBridge.userFileOpenPreference,
-      host: {
-        name: contextBridge.hostName ? contextBridge.hostName : HostName.teams,
-        clientType: contextBridge.hostClientType ? contextBridge.hostClientType : HostClientType.web,
-        sessionId: contextBridge.sessionId ? contextBridge.sessionId : '',
-        ringId: contextBridge.ringId,
-      },
-      appLaunchId: contextBridge.appLaunchId,
-    },
-    page: {
-      id: contextBridge.entityId,
-      frameContext: contextBridge.frameContext ? contextBridge.frameContext : GlobalVars.frameContext,
-      subPageId: contextBridge.subEntityId,
-      isFullScreen: contextBridge.isFullScreen,
-      isMultiWindow: contextBridge.isMultiWindow,
-      sourceOrigin: contextBridge.sourceOrigin,
-    },
-    user: {
-      id: contextBridge.userObjectId,
-      displayName: contextBridge.userDisplayName,
-      isCallingAllowed: contextBridge.isCallingAllowed,
-      isPSTNCallingAllowed: contextBridge.isPSTNCallingAllowed,
-      licenseType: contextBridge.userLicenseType,
-      loginHint: contextBridge.loginHint,
-      userPrincipalName: contextBridge.userPrincipalName,
-      tenant: contextBridge.tid
-        ? {
-            id: contextBridge.tid,
-            teamsSku: contextBridge.tenantSKU,
-          }
-        : undefined,
-    },
-    channel: contextBridge.channelId
-      ? {
-          id: contextBridge.channelId,
-          displayName: contextBridge.channelName,
-          relativeUrl: contextBridge.channelRelativeUrl,
-          membershipType: contextBridge.channelType,
-          defaultOneNoteSectionId: contextBridge.defaultOneNoteSectionId,
-          ownerGroupId: contextBridge.hostTeamGroupId,
-          ownerTenantId: contextBridge.hostTeamTenantId,
-        }
-      : undefined,
-    chat: contextBridge.chatId
-      ? {
-          id: contextBridge.chatId,
-        }
-      : undefined,
-    meeting: contextBridge.meetingId
-      ? {
-          id: contextBridge.meetingId,
-        }
-      : undefined,
-    sharepoint: contextBridge.sharepoint,
-    team: contextBridge.teamId
-      ? {
-          internalId: contextBridge.teamId,
-          displayName: contextBridge.teamName,
-          type: contextBridge.teamType,
-          groupId: contextBridge.groupId,
-          templateId: contextBridge.teamTemplateId,
-          isArchived: contextBridge.isTeamArchived,
-          userRole: contextBridge.userTeamRole,
-        }
-      : undefined,
-    sharePointSite:
-      contextBridge.teamSiteUrl || contextBridge.teamSiteDomain || contextBridge.teamSitePath
-        ? {
-            url: contextBridge.teamSiteUrl,
-            domain: contextBridge.teamSiteDomain,
-            path: contextBridge.teamSitePath,
-            id: contextBridge.teamSiteId,
-          }
-        : undefined,
-  };
-
-  return context;
 }

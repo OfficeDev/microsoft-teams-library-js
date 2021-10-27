@@ -1,4 +1,4 @@
-import { app, appEntity, Context, SdkError } from '@microsoft/teams-js';
+import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -22,7 +22,7 @@ const AppEntityAPIs = (): ReactElement => {
       }
     };
     setSelectAppEntityRes('appEntity.selectAppEntity()' + noHostSdkMsg);
-    app.getContext().then((res: Context) => {
+    app.getContext().then((res: app.Context) => {
       if (res.page.subPageId !== undefined) {
         appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, res.page.subPageId, callback);
       } else {

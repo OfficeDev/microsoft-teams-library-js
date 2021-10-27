@@ -1,4 +1,4 @@
-import { app, Context, core, DeepLinkParameters } from '@microsoft/teams-js';
+import { app, core, DeepLinkParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -12,7 +12,7 @@ const AppAPIs = (): ReactElement => {
 
   const getContextV2 = (): void => {
     setGetContextV2Res('app.getContext()' + noHostSdkMsg);
-    app.getContext().then((res: Context) => {
+    app.getContext().then((res: app.Context) => {
       setGetContextV2Res(JSON.stringify(res));
     });
   };

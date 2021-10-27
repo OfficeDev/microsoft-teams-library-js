@@ -1,12 +1,12 @@
-import { Context, ContextBridge, FileOpenPreference } from '../../src/public/interfaces';
-import { TeamType, UserTeamRole, HostClientType, ChannelType, HostName } from '../../src/public/constants';
-import { app, core } from '../../src/public/app';
-import { pages } from '../../src/public/pages';
-import { FrameContexts } from '../../src/public/constants';
-import { Utils } from '../utils';
 import { version } from '../../src/internal/constants';
-import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { app, core } from '../../src/public/app';
+import { ChannelType, HostClientType, HostName, TeamType, UserTeamRole } from '../../src/public/constants';
+import { FrameContexts } from '../../src/public/constants';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { pages } from '../../src/public/pages';
+import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {
   // Use to send a mock message from the app.
@@ -40,7 +40,7 @@ describe('AppSDK-app', () => {
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
 
-    let initMessage = utils.findMessageByFunc('initialize');
+    const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
@@ -231,7 +231,7 @@ describe('AppSDK-app', () => {
 
     utils.sendMessage('backButtonPress');
 
-    let navigateBackMessage = utils.findMessageByFunc('navigateBack');
+    const navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
   });
 
@@ -240,10 +240,10 @@ describe('AppSDK-app', () => {
 
     const contextPromise = app.getContext();
 
-    let getContextMessage = utils.findMessageByFunc('getContext');
+    const getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let contextBridge: ContextBridge = {
+    const contextBridge: Context = {
       groupId: 'someGroupId',
       teamId: 'someTeamId',
       teamName: 'someTeamName',
@@ -291,10 +291,10 @@ describe('AppSDK-app', () => {
       frameContext: FrameContexts.content,
       appLaunchId: 'appLaunchId',
       userDisplayName: 'someTestUser',
-      teamSiteId: 'someSiteId'
+      teamSiteId: 'someSiteId',
     };
 
-    const expectedContext: Context = {
+    const expectedContext: app.Context = {
       app: {
         iconPositionVertical: 5,
         locale: 'someLocale',
@@ -379,7 +379,7 @@ describe('AppSDK-app', () => {
 
     const contextPromise = app.getContext();
 
-    let getContextMessage = utils.findMessageByFunc('getContext');
+    const getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, {});
@@ -393,7 +393,7 @@ describe('AppSDK-app', () => {
 
     const contextPromise = app.getContext();
 
-    let getContextMessage = utils.findMessageByFunc('getContext');
+    const getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
@@ -407,7 +407,7 @@ describe('AppSDK-app', () => {
 
     const contextPromise = app.getContext();
 
-    let getContextMessage = utils.findMessageByFunc('getContext');
+    const getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
     utils.respondToMessage(getContextMessage, {});
@@ -438,15 +438,21 @@ describe('AppSDK-app', () => {
     });
 
     it('should not allow calls with an origin without base', () => {
-      return expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should not allow calls with an origin without suffix', () => {
-      return expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should not allow calls with an origin with invalid base', () => {
-      return expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should not allow calls with an empty origin', () => {
@@ -502,7 +508,7 @@ describe('AppSDK-app', () => {
 
       pages.navigateCrossDomain('https://valid.origin.com');
 
-      let navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
       expect(navigateCrossDomainMessage).not.toBeNull();
       expect(navigateCrossDomainMessage.args.length).toBe(1);
       expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
@@ -533,9 +539,6 @@ describe('AppSDK-app', () => {
       await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
-      let requestResponse: boolean;
-      let error: string;
-
       // send message request
       const promise = core.executeDeepLink(request);
 
@@ -559,9 +562,6 @@ describe('AppSDK-app', () => {
       await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
-      let requestResponse: boolean;
-      let error: string;
-
       // send message request
       const promise = core.executeDeepLink(request);
 
@@ -584,9 +584,6 @@ describe('AppSDK-app', () => {
     it('should successfully send a request', async () => {
       await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
-
-      let requestResponse: boolean;
-      let error: string;
 
       // send message request
       const promise = core.executeDeepLink(request);
@@ -615,10 +612,6 @@ describe('AppSDK-app', () => {
     it('should successfully send a request', async () => {
       await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
-
-      let requestResponse: boolean;
-      let error: string;
-
       // send message request
       const promise = core.executeDeepLink(request);
 
@@ -642,9 +635,6 @@ describe('AppSDK-app', () => {
       await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
-      let requestResponse: boolean;
-      let error: string;
-
       // send message request
       const promise = core.executeDeepLink(request);
 
@@ -667,9 +657,6 @@ describe('AppSDK-app', () => {
     it('should successfully send a request', async () => {
       await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
-
-      let requestResponse: boolean;
-      let error: string;
 
       // send message request
       const promise = core.executeDeepLink(request);
@@ -699,9 +686,6 @@ describe('AppSDK-app', () => {
       await utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
-      let requestResponse: boolean;
-      let error: string;
-
       // send message request
       const promise = core.executeDeepLink(request);
 
@@ -724,9 +708,6 @@ describe('AppSDK-app', () => {
     it('should invoke error callback', async () => {
       await utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
-
-      let requestResponse: boolean;
-      let error: string;
 
       // send message request
       const promise = core.executeDeepLink(request);
@@ -751,9 +732,6 @@ describe('AppSDK-app', () => {
     it('should successfully send a request', async () => {
       await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
-
-      let requestResponse: boolean;
-      let error: string;
 
       // send message request
       const promise = core.executeDeepLink(request);
@@ -781,7 +759,7 @@ describe('AppSDK-app', () => {
 
       pages.returnFocus(true);
 
-      let returnFocusMessage = utils.findMessageByFunc('returnFocus');
+      const returnFocusMessage = utils.findMessageByFunc('returnFocus');
       expect(returnFocusMessage).not.toBeNull();
       expect(returnFocusMessage.args.length).toBe(1);
       expect(returnFocusMessage.args[0]).toBe(true);
