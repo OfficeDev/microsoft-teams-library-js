@@ -11,9 +11,11 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    library: libraryName,
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
+    library: {
+      name: libraryName,
+      type: 'umd',
+      umdNamedDefine: true,
+    },
   },
   devtool: 'source-map',
   resolve: {
