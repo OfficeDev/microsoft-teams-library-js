@@ -2,8 +2,9 @@ import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communi
 import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
+import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { ErrorCode } from './interfaces';
+import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -18,10 +19,53 @@ export namespace people {
    * @param peoplePickerInputs - Input parameters to launch customized people picker
    * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
-    return new Promise<PeoplePickerResult[]>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
+  export function selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]>;
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   *
+   * Launches a people picker and allows the user to select one or more people from the list
+   * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
+   
+   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
+   * @param peoplePickerInputs - Input parameters to launch customized people picker
+   */
+  export function selectPeople(
+    callback: (error: SdkError, people: PeoplePickerResult[]) => void,
+    peoplePickerInputs?: PeoplePickerInputs,
+  ): void;
+  /**
+   * @privateRemarks
+   * This function is the overloaded implementation of selectPeople.
+   * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
+   * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
+   * @param param1
+   * @param param2
+   * @returns Promise of Array of PeoplePickerResult objects.
+   */
+  export function selectPeople(
+    param1: PeoplePickerInputs | ((error: SdkError, people: PeoplePickerResult[]) => void) | undefined,
+    param2?: PeoplePickerInputs,
+  ): Promise<PeoplePickerResult[]> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
+    let callback: (error: SdkError, people: PeoplePickerResult[]) => void;
+    let peoplePickerInputs: PeoplePickerInputs;
+
+    if (typeof param1 === 'function') {
+      [callback, peoplePickerInputs] = [param1, param2];
+    } else {
+      peoplePickerInputs = param1;
+    }
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<PeoplePickerResult[]>(
+      selectPeopleHelper,
+      callback,
+      peoplePickerInputs,
+    );
+  }
+
+  function selectPeopleHelper(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
+    return new Promise<PeoplePickerResult[]>(resolve => {
       if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
