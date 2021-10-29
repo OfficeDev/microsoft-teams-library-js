@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
@@ -141,16 +142,19 @@ export function deepFreeze<T extends object>(obj: T): T {
 
 /**
  * @privateRemarks
- * This following type definitions will be used in the
+ * The following type definitions will be used in the
  * utility functions below, which help in transforming the
  * promises to support callbacks for backward compatibility
  *
  * @internal
  */
 export type ErrorResultCallback<T> = (err?: SdkError, result?: T) => void;
+export type ErrorResultNullCallback<T> = (err: SdkError | null, result: T | null) => void;
 export type ErrorBooleanResultCallback = (err?: SdkError, result?: boolean) => void;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputFunction<T> = (...args: any[]) => Promise<T>;
+export type ResultCallback<T> = (result?: T) => void;
+export type SdkErrorCallback = ResultCallback<SdkError | null>;
 
 /**
  * This utility function is used when the result of the promise is same as the result in the callback.
@@ -203,6 +207,61 @@ export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
   }).catch((e: SdkError) => {
     if (callback) {
       callback(e, false);
+    }
+  });
+  return p;
+}
+
+/**
+ * This utility function is called when the callback has only Error/SdkError as the primary argument.
+ * @param funcHelper
+ * @param callback
+ * @param args
+ * @returns
+ * @internal
+ */
+export function callCallbackWithSdkErrorFromPromiseAndReturnPromise<T>(
+  funcHelper: InputFunction<T>,
+  callback?: SdkErrorCallback,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+): Promise<T> {
+  const p = funcHelper(...args);
+  p.then(() => {
+    if (callback) {
+      callback(null);
+    }
+  }).catch((e: SdkError) => {
+    if (callback) {
+      callback(e);
+    }
+  });
+  return p;
+}
+
+/**
+ * This utility function is used when the result of the promise is same as the result in the callback.
+ * @param funcHelper
+ * @param callback
+ * @param args
+ * @returns
+ *
+ * @internal
+ */
+export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T>(
+  funcHelper: InputFunction<T>,
+  callback?: ErrorResultNullCallback<T>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+): Promise<T> {
+  const p = funcHelper(...args);
+  p.then((result: T) => {
+    if (callback) {
+      callback(null, result);
+    }
+  }).catch((e: SdkError) => {
+    if (callback) {
+      callback(e, null);
     }
   });
   return p;

@@ -67,3 +67,15 @@ export {
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
+/**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
+/**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export { settings } from './settings';
+/**
+ * @deprecated with TeamsJS v2 upgrades
+ */
+export { tasks } from './tasks';
