@@ -20,7 +20,12 @@ import {
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../internal/mediaUtil';
-import { generateGUID } from '../internal/utils';
+import {
+  callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
+  callCallbackWithSdkErrorFromPromiseAndReturnPromise,
+  generateGUID,
+  InputFunction,
+} from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -74,24 +79,41 @@ export namespace media {
    *
    * @remarks
    * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
+   * Note: For desktop, this API is not supported. Promise will be rejected with ErrorCode.NotSupported.
+   *
+   * @returns A promise resolved with a collection of @see File objects or rejected with an @see SdkError
+   */
+  export function captureImage(): Promise<File[]>;
+  /**
+   * Launch camera, capture image or choose image from gallery and return the images as a File[] object
+   *
+   * @param callback - Callback to invoke when the image is captured.
+   *
+   * @deprecated with TeamsJS v2 upgrades
+   *
+   * @remarks
+   * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
    * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
-   * @returns A promise resolved with a collection of @see File objects or rejected with a @see SdkError
    */
-  export function captureImage(): Promise<File[]> {
-    return new Promise<File[]>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function captureImage(callback: (error?: SdkError, files?: File[]) => void): void;
+  export function captureImage(callback?: (error?: SdkError, files?: File[]) => void): Promise<File[]> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      if (!GlobalVars.isFramelessWindow) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      }
+    const wrappedFunction: InputFunction<File[]> = () =>
+      new Promise<File[]>(resolve => {
+        if (!GlobalVars.isFramelessWindow) {
+          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        }
 
-      if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
+        if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
 
-      resolve(sendAndHandleSdkError('captureImage'));
-    });
+        resolve(sendAndHandleSdkError('captureImage'));
+      });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<File[]>(wrappedFunction, callback);
   }
 
   /**
@@ -117,26 +139,39 @@ export namespace media {
     public preview: string;
 
     /**
-     * Gets the media in chunks irrespecitve of size, these chunks are assembled and sent back to the webapp as file/blob
+     * Gets the media in chunks irrespective of size, these chunks are assembled and sent back to the webapp as file/blob
+     *
+     * @returns A promise resolved with the @see Blob or rejected with a @see SdkError
+     */
+    public getMedia(): Promise<Blob>;
+    /**
+     * Gets the media in chunks irrespective of size, these chunks are assembled and sent back to the webapp as file/blob
+     *
+     * @deprecated with TeamsJS v2 upgrades
      *
      * @param callback - returns blob of media
      */
-    public getMedia(): Promise<Blob> {
-      return new Promise<Blob>(resolve => {
-        ensureInitialized(FrameContexts.content, FrameContexts.task);
-        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-        // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-        if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
-          resolve(this.getMediaViaCallback());
-        } else {
-          resolve(this.getMediaViaHandler());
-        }
-      });
+    public getMedia(callback: (error: SdkError, blob: Blob) => void): void;
+    public getMedia(callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+      const wrappedFunction: InputFunction<Blob> = () =>
+        new Promise<Blob>(resolve => {
+          if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+            throw { errorCode: ErrorCode.OLD_PLATFORM };
+          }
+          if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
+            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+          }
+          // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+          if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
+            resolve(this.getMediaViaCallback());
+          } else {
+            resolve(this.getMediaViaHandler());
+          }
+        });
+
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Blob>(wrappedFunction, callback);
     }
 
     private getMediaViaCallback(): Promise<Blob> {
@@ -150,7 +185,7 @@ export namespace media {
           if (mediaResult && mediaResult.error) {
             reject(mediaResult.error);
           } else if (!mediaResult || !mediaResult.mediaChunk) {
-            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' });
+            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
           } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
             const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
             resolve(file);
@@ -174,23 +209,28 @@ export namespace media {
         this.content && sendMessageToParent('getMedia', params);
 
         registerHandler('getMedia' + actionName, (response: string) => {
-          const mediaResult: MediaResult = JSON.parse(response);
-          if (mediaResult.error) {
-            reject(mediaResult.error);
-            removeHandler('getMedia' + actionName);
-          } else if (!mediaResult || !mediaResult.mediaChunk) {
-            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data receieved is null' });
-            removeHandler('getMedia' + actionName);
-          } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
-            // If the chunksequence number is less than equal to 0 implies EOF
-            // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
-            const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-            resolve(file);
-            removeHandler('getMedia' + actionName);
-          } else {
-            // Keep pushing chunks into assemble attachment
-            const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-            helper.assembleAttachment.push(assemble);
+          try {
+            const mediaResult: MediaResult = JSON.parse(response);
+            if (mediaResult.error) {
+              reject(mediaResult.error);
+              removeHandler('getMedia' + actionName);
+            } else if (!mediaResult || !mediaResult.mediaChunk) {
+              reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+              removeHandler('getMedia' + actionName);
+            } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+              // If the chunksequence number is less than equal to 0 implies EOF
+              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+              const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+              resolve(file);
+              removeHandler('getMedia' + actionName);
+            } else {
+              // Keep pushing chunks into assemble attachment
+              const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+              helper.assembleAttachment.push(assemble);
+            }
+          } catch (err) {
+            // catch JSON.parse() errors
+            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'Error parsing the response: ' + response });
           }
         });
       });
@@ -410,57 +450,87 @@ export namespace media {
    * @param mediaInputs - The input params to customize the media to be selected
    * @returns A promise resolved with the collection of @see Media objects selected or rejected with a @see SdkError
    */
-  export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]> {
-    return new Promise<[SdkError, Media[]]>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-      if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
-      if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-        if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-        } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
+  export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
+  /**
+   * Select an attachment using camera/gallery
+   *
+   * @deprecated with TeamsJS v2 upgrades
+   *
+   * @param mediaInputs - The input params to customize the media to be selected
+   * @param callback - The callback to invoke after fetching the media
+   */
+  export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError, attachments: Media[]) => void);
+  export function selectMedia(
+    mediaInputs: MediaInputs,
+    callback?: (error?: SdkError, attachments?: Media[]) => void,
+  ): Promise<Media[]> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    const wrappedFunction: InputFunction<Media[]> = () =>
+      new Promise<[SdkError, Media[]]>(resolve => {
+        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-      }
-      if (!validateSelectMediaInputs(mediaInputs)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
+        if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
+          if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
+            throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+          } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
+            throw { errorCode: ErrorCode.OLD_PLATFORM };
+          }
+        }
+        if (!validateSelectMediaInputs(mediaInputs)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
 
-      const params = [mediaInputs];
-      // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-      resolve(sendMessageToParentAsync<[SdkError, Media[]]>('selectMedia', params));
-    }).then(([err, localAttachments]: [SdkError, Media[]]) => {
-      if (!localAttachments) {
-        throw err;
-      }
-      const mediaArray: Media[] = [];
-      for (const attachment of localAttachments) {
-        mediaArray.push(new Media(attachment));
-      }
-      return mediaArray;
-    });
+        const params = [mediaInputs];
+        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+        resolve(sendMessageToParentAsync<[SdkError, Media[]]>('selectMedia', params));
+      }).then(([err, localAttachments]: [SdkError, Media[]]) => {
+        if (!localAttachments) {
+          throw err;
+        }
+        const mediaArray: Media[] = [];
+        for (const attachment of localAttachments) {
+          mediaArray.push(new Media(attachment));
+        }
+        return mediaArray;
+      });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Media[]>(wrappedFunction, callback);
   }
 
   /**
    * View images using native image viewer
    *
-   * @param uriList - urilist of images to be viewed - can be content uri or server url. Supports up to 10 Images in a single call
+   * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
    * @returns A promise resolved when the viewing action is completed or rejected with an @see SdkError
    */
-  export function viewImages(uriList: ImageUri[]): Promise<void> {
-    return new Promise<void>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function viewImages(uriList: ImageUri[]): Promise<void>;
+  /**
+   * View images using native image viewer
+   *
+   * @deprecated with TeamsJS v2 upgrades
+   *
+   * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
+   * @param callback - returns back error if encountered, returns null in case of success
+   */
+  export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void);
+  export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
-      if (!validateViewImagesInput(uriList)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
+    const wrappedFunction: InputFunction<void> = () =>
+      new Promise<void>(resolve => {
+        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
+        if (!validateViewImagesInput(uriList)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
 
-      resolve(sendAndHandleSdkError('viewImages', uriList));
-    });
+        resolve(sendAndHandleSdkError('viewImages', uriList));
+      });
+
+    return callCallbackWithSdkErrorFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
   }
 
   /**
@@ -482,34 +552,74 @@ export namespace media {
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
    * @param config - optional input configuration to customize the barcode scanning experience
-   * @returns A resolved promise with the barcode data or rejected with an @see SdkError
+   * @returns A promise resolved with the barcode data or rejected with an @see SdkError
    */
-  export function scanBarCode(config?: BarCodeConfig): Promise<string> {
-    return new Promise<string>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+  export function scanBarCode(config?: BarCodeConfig): Promise<string>;
+  /**
+   * Scan Barcode/QRcode using camera
+   *
+   * @remarks
+   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+   *
+   * @deprecated with TeamsJS v2 upgrades
+   *
+   * @param callback - callback to invoke after scanning the barcode
+   * @param config - optional input configuration to customize the barcode scanning experience
+   */
+  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig);
+  export function scanBarCode(
+    callbackOrConfig?: ((error: SdkError, decodedText: string) => void) | BarCodeConfig,
+    configMaybe?: BarCodeConfig,
+  ): Promise<string> {
+    let callback: (error: SdkError, decodedText: string) => void | undefined;
+    let config: BarCodeConfig | undefined;
 
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.web ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays
-      ) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    // Because the callback isn't the second parameter in the original v1 method we need to
+    // do a bit of trickery to see which of the two ways were used to call into
+    // the flow and if the first parameter is a callback (v1) or a config object (v2)
+
+    if (callbackOrConfig === undefined) {
+      // no first parameter - the second one might be a config, definitely no callback
+      config = configMaybe;
+    } else {
+      if (typeof callbackOrConfig === 'object') {
+        // the first parameter is an object - it's the config! No callback.
+        config = callbackOrConfig;
+      } else {
+        // otherwise, it's a function, so a callback. The second parameter might be a callback
+        callback = callbackOrConfig;
+        config = configMaybe;
       }
+    }
 
-      if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      if (!validateScanBarCodeInput(config)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
+    const wrappedFunction: InputFunction<string> = () =>
+      new Promise<string>(resolve => {
+        if (
+          GlobalVars.hostClientType === HostClientType.desktop ||
+          GlobalVars.hostClientType === HostClientType.web ||
+          GlobalVars.hostClientType === HostClientType.rigel ||
+          GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+          GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+          GlobalVars.hostClientType === HostClientType.teamsPhones ||
+          GlobalVars.hostClientType === HostClientType.teamsDisplays
+        ) {
+          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        }
 
-      resolve(sendAndHandleSdkError('media.scanBarCode', config));
-    });
+        if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
+
+        if (!validateScanBarCodeInput(config)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
+
+        resolve(sendAndHandleSdkError('media.scanBarCode', config));
+      });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
   }
 
   export function isSupported(): boolean {

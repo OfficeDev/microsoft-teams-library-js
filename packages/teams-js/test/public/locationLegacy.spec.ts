@@ -12,7 +12,7 @@ import { Utils } from '../utils';
 /**
  * Test cases for location APIs
  */
-describe('location', () => {
+describe('location_V1', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils();
   const minVersionForLocationAPIs = locationAPIsRequiredVersion;
@@ -42,13 +42,14 @@ describe('location', () => {
     );
   });
   it('getLocation call in default version of platform support fails', done => {
-    mobilePlatformMock.initializeWithContext(FrameContexts.task);
-    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task).then(() => {
+      mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
 
-    location.getLocation(defaultLocationProps, (err: SdkError, l: location.Location) => {
-      expect(err).not.toBeNull();
-      expect(err.errorCode).toBe(ErrorCode.OLD_PLATFORM);
-      done();
+      location.getLocation(defaultLocationProps, (err: SdkError, l: location.Location) => {
+        expect(err).not.toBeNull();
+        expect(err.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+        done();
+      });
     });
   });
   it('should not allow getLocation calls for authentication frame context', async () => {
@@ -73,13 +74,14 @@ describe('location', () => {
     );
   });
   it('should not allow getLocation calls without props', done => {
-    desktopPlatformMock.initializeWithContext(FrameContexts.content);
-    desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+    desktopPlatformMock.initializeWithContext(FrameContexts.content).then(() => {
+      desktopPlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
 
-    location.getLocation(undefined, (e: SdkError, l: location.Location) => {
-      expect(e).not.toBeNull();
-      expect(e.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
-      done();
+      location.getLocation(undefined, (e: SdkError, l: location.Location) => {
+        expect(e).not.toBeNull();
+        expect(e.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+        done();
+      });
     });
   });
   it('should allow getLocation calls in desktop', async () => {
@@ -168,13 +170,14 @@ describe('location', () => {
     );
   });
   it('showLocation call in default version of platform support fails', done => {
-    mobilePlatformMock.initializeWithContext(FrameContexts.task);
-    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+    mobilePlatformMock.initializeWithContext(FrameContexts.task).then(() => {
+      mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
 
-    location.showLocation(defaultLocation, (error: SdkError, v: boolean) => {
-      expect(error).not.toBeNull();
-      expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
-      done();
+      location.showLocation(defaultLocation, (error: SdkError, v: boolean) => {
+        expect(error).not.toBeNull();
+        expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+        done();
+      });
     });
   });
   it('should not allow showLocation calls for authentication frame context', async () => {
