@@ -14,10 +14,10 @@ coverage/
 .vs/
 .DS_Store
 
-# teamsjs Test App gitignore areas
+# Test App gitignore areas
 yarn-error.log
 
 # bundle analysis folders
-/examples/*/bundleAnalysis
-/utilities/*/bundleAnalysis
+/packages/*/bundleAnalysis
+/apps/*/bundleAnalysis
 /common/*

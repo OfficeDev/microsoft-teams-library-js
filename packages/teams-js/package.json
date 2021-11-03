@@ -1,0 +1,24 @@
+{
+  "name": "@microsoft/teams-js",
+  "author": "Microsoft Teams",
+  "version": "2.0.0-beta.0",
+  "description": "Microsoft Client SDK for building app for Microsoft hosts",
+  "main": "./dist/MicrosoftTeams.min.js",
+  "typings": "./dist/MicrosoftTeams.d.ts",
+
+  "scripts": {
+    "build": "yarn lint && webpack",
+    "clean": "rimraf ./dist",
+    "doctor": "yarn lint --fix",
+    "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
+    "lint": "eslint ./src/**/*.ts",
+    "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "test": "jest"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/**",
+    "dts/**",
+    "README.md"
+  ]
+}

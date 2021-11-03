@@ -1,13 +1,14 @@
-const fs = require("fs");
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+const fs = require('fs');
 
-let packageJsonPath = "../../teamsjs-app-sdk/package.json";
+let packageJsonPath = '../../packages/teams-js/package.json';
 const EXIT_CODE_FATAL_ERROR = 5;
 
 function getPackageJson() {
   if (fs.existsSync(packageJsonPath)) {
-    return JSON.parse(fs.readFileSync(packageJsonPath, { encoding: "utf8" }));
+    return JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
   }
-  console.log("FATAL ERROR: package.json path could not be found in the file system.");
+  console.log('FATAL ERROR: package.json path could not be found in the file system.');
   process.exitCode = EXIT_CODE_FATAL_ERROR;
   return;
 }
@@ -18,7 +19,7 @@ function savePackageJson(packageJson) {
 
 function getFileVersion(packageJson) {
   if (!packageJson.version) {
-    console.log("FATAL ERROR: a version was not found in the package.json.");
+    console.log('FATAL ERROR: a version was not found in the package.json.');
     process.exitCode = EXIT_CODE_FATAL_ERROR;
     return;
   } else {
@@ -29,25 +30,27 @@ function getFileVersion(packageJson) {
 let packageJson = getPackageJson();
 
 // SHA of the commit the package was generated from
-let hash = process.env["BUILD_SOURCEVERSION"];
+let hash = process.env['BUILD_SOURCEVERSION'];
 
 // pre-release version part, either from the hash or random if has not available
 let suffixLength = 10;
-let versionSuffix = hash.substr(0, suffixLength);
+let versionSuffix = 'dev.' + hash.substr(0, suffixLength);
 
-console.log("version suffix: " + versionSuffix);
+console.log('version suffix: ' + versionSuffix);
 
 // get package version from package.json
 let version = getFileVersion(packageJson);
 
-console.log("package.json version: " + version);
+console.log('package.json version: ' + version);
 
 // append the suffix to form a new version
-let nextVersion = version + "-" + versionSuffix;
-
-console.log("@next version: " + nextVersion);
+let nextVersion = version + '-' + versionSuffix;
+console.log('@next version: ' + nextVersion);
 
 // update package.json with the new version
 packageJson.version = nextVersion;
+
+// Sets result in Azure devops pipeline output variable 'NextVersion'
+console.log(`##vso[task.setvariable variable=NextVersion;isOutput=true]${nextVersion}`);
 
 savePackageJson(packageJson);

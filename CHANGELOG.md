@@ -1,162 +1,274 @@
 # Breaking Changes
 
-## v0.1.0
+## v2.0.0-beta.0 release
+
+### The Teams JavaScript client SDK repo is now a monorepo
+We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. The files specific to the Teams client SDK have been moved to an inner directory
+with the name `teams-js`. A new TeamsJS Test App for validating the Teams client SDK has been added in the <root>/apps/teams-test-app location.
+
+### Several API functions have been moved and renamed
+
+Organized top-level library functions under a core namespace. For example, `shareDeepLink` has been moved under `core` namespace.
+Using `import * as ... from ...` will now fail. Importing now follows the following convention:
+
+```typescript
+import { core } from "@microsoft/teams-js";
+```
+
+For more detailed API organization, please refer to the **Capabilities organization introduced** section below.
+
+### Support for `hostName` added to Context interface
+
+The name of the host the app is running in is now part of the application context in the `hostName` property.
+
+### Several meeting APIs changes
+
+meeting.requestStartLiveStreaming and meeting.requestStopLiveStreaming no longer take in the parameter liveStreamState.
 
 ### Context interface changes
-The Context interface has been updated to group similar properties for better scalability in a multi-hub environment.
+
+The Context interface has been updated to group similar properties for better scalability in a multi-host environment.
 
 ### FrameContext changes
+
 FrameContext's user.tenant.sku has been renamed to user.tenant.teamsSku to reflect that it is used by Teams for a different purpose than from the Graph API's user.tenant.sku's.
+The `FrameContext` interface has been renamed `FrameInfo`.
 
-### Promises introduced
-The following APIs that took in a callback function as a parameter now instead return a Promise. 
-  * ChildAppWindow.postMessage
-  * ParentAppWindow.postMessage
-  * authentication APIs
-  * core.executeDeepLink
-  * app.initialize
-  * app.getContext
-  * pages APIs
+### appEntity.selectAppEntity now takes in an additional parameter and the callback has reversed parameters with one one of them becoming optional.
 
-### Fixed: FrameContexts.dialog deleted for back compat 
-FrameContexts.dialog from public/constants.ts is deleted and all instances where it's used is replaced by FrameContexts.task to fix an internal back compat issue.
+```
+selectAppEntity(
+    threadId: string,
+    categories: string[],
+    callback: (appEntity: AppEntity, sdkError?: SdkError) => void,
+  ): void
+```
+is now:
+```
+selectAppEntity(
+    threadId: string,
+    categories: string[],
+    subEntityId: string,
+    callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
+  ): void
+```
 
-### Fixed: app.initialize() in Teams
-The App SDK can now assign a default runtime in case the Hub does not provide a runtime. The only case this is currently expected to happen is when the said Hub is Teams. 
+### threadId parameter removed from callback passed into teams.refreshSiteUrl()
 
-### MOS Test App dialog.submit changes
-In the MOS test app, dialog.submit() will now take in a JSON string with optional keys result and appIds rather than a string of just result.
+```
+refreshSiteUrl(threadId: string, callback: (threadId: string, error: SdkError) => void): void
+```
+is now:
+```
+refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void
+```
 
-### Moved APIs
-The following APIs have been moved from `teams.fullTrust` to `legacy.fullTrust`:
-* `getUserJoinedTeams`
-* `getConfig`
-* `isSupported`
+### Capabilities organization introduced
 
-The following APIs have been moved from `core` to `app`:
+#### Added App capability
+
+The following APIs have been moved from `publicAPIs` to new `app` namespace:
 * `initialize`
 * `getContext`
 * `registerOnThemeChangeHandler`
 
-The following APIs have been moved from `appInitialization` to `app`:
+The following APIs have been moved from `appInitialization` to `app` namespace:
 * `notifyAppLoaded`
 * `notifySuccess`
 * `notifyFailure`
 * `notifyExpectedFailure`
 
-### Breaking changes from Teams JS Client SDK repo
-meeting.requestStartLiveStreaming and meeting.requestStopLiveStreaming no longer take in the parameter liveStreamState.
+The following APIs have been added to `app` namespace:
+* `isInitialized`
+* `getFrameContext`
 
+#### Added Core capability
 
-## v0.0.11
-Corresponding microsoft-teams-library-js version: 1.9.0
+The following APIs have been moved from `publicAPIs` to new `core` namespace:
+* `shareDeepLink`
+* `executeDeepLink`
 
-### More Capabilities organized
-The following capabilities have been used to reorganize several existing APIs in the App SDK:
+#### Several APIs reorganized under new Pages capability
 
-#### `conversations` namespace has been renamed `chat`
-`openConversation` and `closeConversation` have been moved to `chat` capability
-`getChatMembers` has been moved to `chat` capability
-
-#### Several APIs reorganized under `pages`, `pages.config` and new `pages.backStack` capability
-The following APIs have been moved from `teamsCore` to `pages`:
+The following APIs have been moved to the new `pages` namespace:
 * `registerFullScreenHandler`
-* `registerAppButtonClickHandler`
-* `registerAppButtonHoverEnterHandler`
-* `regsiterAppButtonHoverLeaveHandler`
 * `initializeWithFrameContext`
-* `setFrameContext` has been renamed `setCurrentFrame`
-* `registerChangeSettingsHandler` has been renamed to `registerChangeConfigHandler` and moved to `pages.config` (in microsoft-teams-library-js v1.10.0, `registerChangeSettingsHandler` was changed to `registerEnterSettingsHandler`)
-* `registerBackButtonHandler` has moved to `pages.backStack.registerBackButtonHandler`
+* `navigateCrossDomain`
+* `returnFocus`
+* `setFrameContext` has been renamed `pages.setCurrentFrame`
 
-The `pages.navigateBack` API has moved to `pages.backStack.navigateBack`
+The following APIs have been been renamed and moved from `publicAPIs` to a new Pages.AppButton sub-capability in the new `pages.appButton` namespace:
+* `registerAppButtonClickHandler` has renamed and moved to `pages.appButton.onClick`
+* `registerAppButtonHoverEnterHandler` has renamed and moved to `pages.appButton.onHoverEnter`
+* `regsiterAppButtonHoverLeaveHandler` has renamed and moved to `pages.appButton.onHoverLeave`
 
-The `FrameContext` interface has been renamed `FrameInfo`
+The following APIs have been moved to a new Pages.BackStack sub-capability in the new `pages.backStack` namespace:
+* `registerBackButtonHandler`
+* `navigateBack`
 
-### Support for `hostName` added to context
-The name of the hub the app is running in is now part of the application context in the `hostName` property. For details on how to use this property correctly, please view the [Hub Name and Capabilities](https://office.visualstudio.com/ISS/_wiki/wikis/teamsjs%20Docs/31719/Hub-Name-And-Capabilities) page.
+The following APIs have been renamed and moved into the Pages.Config sub-capability in the `pages.config` namespace (formerly the `settings` namespace):
+* `registerEnterSettingsHandler` has renamed and moved to `pages.config.registerChangeConfigHandler`
+* `getSettings` has been renamed `pages.config.getConfig`
+* `setSettings` has been renamed `pages.config.setConfig`
 
+The following APIs have been been moved from `privateAPIs` to a new Pages.FullTrust sub-capability in the new `pages.fullTrust` namespace:
+* `enterFullscreen`
+* `exitFullscreen`
 
-## v0.0.10
-Corresponding microsoft-teams-library-js version: 1.9.0
+The following APIs have been been moved to a new Pages.Tabs sub-capability in the new `pages.tabs` namespace:
+* `getTabInstances`
+* `getMruTabInstances`
+* `navigateToTab`
 
-### New Capabilities organization introduced
+#### Added Dialog capability, renamed `tasks` namespace to `dialog`, and renamed APIs
 
-The following capabilities have been used to reorganize several existing APIs in the App SDK:
-
-#### `Tasks` namespace has been renamed `Dialog` and the following APIs have been renamed
-* `startTask` has been renamed `open`
-* `submitTasks` has been renamed `submit`
-* `updateTask` has been renamed `resize`
+The following APIs have been renamed:
+* `startTask` has been renamed `dialog.open`
+* `submitTasks` has been renamed `dialog.submit`
+* `updateTask` has been renamed `dialog.resize`
+* `TaskInfo` interface has been renamed `DialogInfo`
 * `TaskModuleDimension` enum has been renamed `DialogDimension`
 
-#### `Settings` namespace has been renamed `Pages.Config` and the following APIs have been renamed
-* `getSettings` has been renamed `getConfig`
-* `setSettings` has been renamed `setConfig`
+#### Added TeamsCore capability
 
-#### Several APIs have been moved from `teamsCore` namespace
-* `getTabInstances`, `getMruTabInstances`, `navigateToTab` APIs have moved to `pages.tabs` capability
-* `navigateCrossDomain`, `returnFocus`, `navigateBack` APIs have moved to `pages` capability
+The following APIs have been moved from `publicAPIs` to new `teamsCore` namespace:
+* `enablePrintCapability`
+* `print`
+* `registerOnLoadHandler`
+* `registerBeforeUnloadHandler`
+* `registerFocusEnterHandler`
+
+#### Added AppInstallDialog capability
+
+* `openAppInstallDialog` is added to new `appInstallDialog` namespace
+
+#### Added Calendar capability
+
+The following APIs have been added to new `calendar` namespace:
+* `openCalendarItem` is added
+* `composeMeeting` is added
+
+#### Added Call capability
+
+* `startCall` is added to new `call` namespace
+
+#### Added Mail capability
+The following APIs have been added to the new `mail` namespace:
+* `openMailItem` is added
+* `composeMail` is added
+
+#### Added Chat capability and renamed `conversations` namespace to `chat`
+
+* `openConversation` and `closeConversation` have been moved to `chat` namespace
+* `getChatMembers` has been moved to `chat` namespace
+
+#### Added Files capability
+* `openFilePreview` has moved from `privateAPIs` to `files` namespace
+
+#### Added Legacy capability
+
+The following APIs have been moved from `privateAPIs` to a new `legacy.fullTrust` namespace:
+* `getUserJoinedTeams`
+* `getConfigSetting`
 
 #### Added Notifications capability
-* `showNotification` has moved to `notifications` capability
 
-**We reserve the right to change the grouping based on teamsjs API Reviews, which are still in progress.**
+* `showNotification` has moved from `privateAPIs` to `notifications` namespace
 
-### `teamsCore` namespace now exported
-Fixed a bug where the `teamsCore` namespace wasn't exported.
+#### Added the following new capabilites from existing namespaces
+* Location
+* Media
+* Meeting
+* Monetization
+* People
+* Sharing
+* Video
+* Bot
+* Logs
+* MeetingRoom
+* Menus
+* RemoteCamera
 
-## v0.0.7
-Corresponding microsoft-teams-library-js version: 1.9.0
+#### Added Runtime capability
+* `applyRuntimeConfig` is added
 
-### Several core API functions have been moved to 'teamsCore' namespace
+### Promises introduced
 
-API functions that are not directly implemented by the teamsjs Hub SDK that were previously under the 'core' namespace have been moved to a new namespace called 'teamsCore' for now.
-This teamsCore namespace is temporary and APIs will move again when the work to organize them by capability is completed.
+The following APIs that took in a callback function as a parameter now instead return a Promise.
 
-Kept in 'core':
-* Initialize
-* getContext
-* registerOnThemeChangeHandler
-* shareDeepLink
-* executeDeepLink
+app APIs:
+* app.initialize
+* app.getContext
 
-Moved to 'teamsCore':
-* enablePrintCapability
-* print
-* registerFullScreenHandler
-* registerAppButtonClickHandler
-* registerAppButtonHoverEnterHandler
-* registerAppButtonHoverLeaveHandler
-* registerBackButtonHandler
-* registerOnLoadHandler
-* registerBeforeUnloadHandler
-* registerChangeSettingsHandler
-* getTabInstances
-* getMruTabInstances
-* setFrameContext
-* initializeWithFrameContext
+authentication APIs：
+* authentication.authenticate
+* authentication.getAuthToken
+* authentication.getUser
 
-### The teamsjs Test App is moved into the monorepo
+calendar APIs:
+* calendar.openCalendarItem
+* calendar.composeMeeting
 
-The teamsjs Test App contents are now moved into \<root\>/examples/teamsjs-test-app.
+chat APIs:
+* chat.getChatMembers
+* chat.openConversation
 
+files APIs:
+* files.addCloudStorageFolder
+* files.deleteCloudStorageFolder
+* files.getCloudStorageFolderContents
+* files.getCloudStorageFolders
 
-## v0.0.6
+legacy APIs:
+* legacy.fulltrust.getConfigSetting
+* legacy.fulltrust.getUserJoinedTeams
 
-### The JavaScript library "teams-js" has been renamed to "teamsjs-app-sdk"
+location APIs:
+* location.getLocation
+* location.showLocation
 
-Renamed "teams-js" to temporary code name "teamsjs-app-sdk".
+mail APIs:
+* mail.openMailItem
+* mail.composeMail
 
-### All the public API functions have been moved under 'core' namespace
+media APIs:
+* media.captureImage
+* media.selectMedia
+* media.viewImages
+* media.scanBarCode
 
-Using `import * as ... from ...` will now fail. Organized top-level library functions under a core namespace. Importing now follows the following convention:
+meeting APIs:
+* meeting.getAppContentStageSharingState
+* meeting.getAppContentStageSharingCapabilities
+* meeting.getAuthenticationTokenForAnonymousUser
+* meeting.getIncomingClientAudioState
+* meeting.getLiveStreamState
+* meeting.getMeetingDetails
+* meeting.requestStartLiveStreaming
+* meeting.requestStopLiveStreaming
+* meeting.shareAppContentToStage
+* meeting.stopSharingAppContentToStage
+* meeting.toggleIncomingClientAudio
 
-```typescript
-import { core } from "@microsoft/teamsjs-app-sdk";
-```
+meetingRoom APIs:
+* meetingRoom.getPairedMeetingRoomInfo
+* meetingRoom.sendCommandToPairedMeetingRoom
 
-### The teamsjs App SDK repo is now a monorepo
+pages APIs：
+* pages.navigateCrossDomain
+* pages.tabs.navigateToTab
+* pages.tabs.getTabInstances
+* pages.tabs.getMruTabInstances
+* pages.config.getConfig
+* pages.config.setConfig
+* pages.backStack.navigateBack
 
-We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. The files specific to the App SDK has been moved to an inner directory
-with the same name teamsjs-app-sdk. This prepares the repo for the addition of the teamsjs Test App which will be located under \<root\>/examples/teamsjs-test-app/.
+people APIs:
+* people.selectPeople
+
+others:
+* ChildAppWindow.postMessage
+* ParentAppWindow.postMessage
+* core.executeDeepLink
+* appInstallDialog.openAppInstallDialog
+* call.startCall

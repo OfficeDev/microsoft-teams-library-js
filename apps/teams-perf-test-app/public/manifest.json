@@ -1,0 +1,10 @@
+{
+  "short_name": "Teams Perf Test App",
+  "name": "Teams Perf Test App",
+  "icons": [
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

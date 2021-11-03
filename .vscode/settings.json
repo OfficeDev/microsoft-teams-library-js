@@ -9,7 +9,8 @@
   "typescript.preferences.quoteStyle": "single",
   "prettier.singleQuote": true,
   "cSpell.words": [
-    "teamsjs",
+    "adal",
     "uninitialize"
-  ]
+  ],
+  "jest.jestCommandLine": "yarn test -- --"
 }

@@ -1,0 +1,16 @@
+{
+  "name": "@microsoft/bundle-analysis-app",
+  "version": "0.0.1",
+  "description": "A test app to analyse the package bundles",
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "webpack",
+    "clean": "rimraf ./dist ./bundleAnalysis",
+    "eslint-fix-build": "yarn eslint ./src --fix && webpack",
+    "webpack:profile": "webpack"
+  },
+  "dependencies": {
+    "@microsoft/teams-js": "file:../../packages/teams-js"
+  }
+}
