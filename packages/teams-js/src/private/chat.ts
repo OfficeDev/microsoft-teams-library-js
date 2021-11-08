@@ -11,14 +11,14 @@ import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
- * @privateRemarks
+ * @hidden
  * Namespace to interact with the conversational subEntities inside the tab
  *
  * @alpha
  */
 export namespace chat {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------------
    * Allows the user to start or continue a conversation with each subentity inside the tab
@@ -64,7 +64,7 @@ export namespace chat {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------------
    * Allows the user to close the conversation in the right pane
@@ -77,7 +77,7 @@ export namespace chat {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Allows an app to retrieve information of all chat members

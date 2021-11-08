@@ -502,7 +502,7 @@ export namespace app {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------
    * Undocumented function used to set a mock window for unit tests
@@ -514,7 +514,7 @@ export namespace app {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------
    * Undocumented function used to clear state between unit tests
@@ -653,7 +653,7 @@ export namespace core {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Transforms the Legacy Context object received from Messages to the structured app.Context object
  *
  * @internal

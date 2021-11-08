@@ -5,7 +5,7 @@ import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
- * @privateRemarks
+ * @hidden
  * Namespace to interact with the `teams` specific part of the SDK.
  * ------
  * Hide from docs
@@ -28,7 +28,7 @@ export namespace teams {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Get a list of channels belong to a Team
@@ -50,7 +50,7 @@ export namespace teams {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Allow 1st party apps to call this function when they receive migrated errors to inform the Hub/Host to refresh the siteurl
    * when site admin renames siteurl.
    *

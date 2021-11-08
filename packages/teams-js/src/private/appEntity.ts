@@ -3,14 +3,14 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 import { runtime } from '../public/runtime';
 /**
- * @privateRemarks
+ * @hidden
  * Namespace to interact with the application entities specific part of the SDK.
  *
  * @alpha
  */
 export namespace appEntity {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------
    * Information on an app entity
@@ -19,38 +19,38 @@ export namespace appEntity {
    */
   export interface AppEntity {
     /**
-     * @privateRemarks
+     * @hidden
      * App ID of the application
      */
     appId: string;
 
     /**
-     * @privateRemarks
+     * @hidden
      * URL for the application's icon
      */
     appIconUrl: string;
 
     /**
-     * @privateRemarks
+     * @hidden
      * Content URL for the app entity
      */
     contentUrl: string;
 
     /**
-     * @privateRemarks
+     * @hidden
      * The display name for the app entity
      */
     displayName: string;
 
     /**
-     * @privateRemarks
+     * @hidden
      * Website URL for the app entity. It is meant to be opened by the user in a browser.
      */
     websiteUrl: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------
    * Open the Tab Gallery and retrieve the app entity

@@ -38,7 +38,7 @@ export namespace teamsCore {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler to be called when the page has been requested to load.
    *
    * @param handler - The handler to invoke when the page is loaded.
@@ -51,7 +51,7 @@ export namespace teamsCore {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler to be called before the page is unloaded.
    *
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
@@ -65,7 +65,7 @@ export namespace teamsCore {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
    *
    * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.

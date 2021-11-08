@@ -8,153 +8,153 @@ import { runtime } from '../public/runtime';
  */
 export namespace meetingRoom {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to represent a meeting room.
    */
   export interface MeetingRoomInfo {
     /**
-     * @privateRemarks
+     * @hidden
      * Endpoint id of the meeting room.
      */
     endpointId: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Device name of the meeting room.
      */
     deviceName: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Client type of the meeting room.
      */
     clientType: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Client version of the meeting room.
      */
     clientVersion: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Enum used to indicate meeting room capabilities.
    */
   export enum Capability {
     /**
-     * @privateRemarks
+     * @hidden
      * Media control capability: toggle mute.
      */
     toggleMute = 'toggleMute',
     /**
-     * @privateRemarks
+     * @hidden
      * Media control capability: toggle camera.
      */
     toggleCamera = 'toggleCamera',
     /**
-     * @privateRemarks
+     * @hidden
      * Media control capability: toggle captions.
      */
     toggleCaptions = 'toggleCaptions',
     /**
-     * @privateRemarks
+     * @hidden
      * Media control capability: volume ajustion.
      */
     volume = 'volume',
     /**
-     * @privateRemarks
+     * @hidden
      * Stage layout control capability: show gallery mode.
      */
     showVideoGallery = 'showVideoGallery',
     /**
-     * @privateRemarks
+     * @hidden
      * Stage layout control capability: show content mode.
      */
     showContent = 'showContent',
     /**
-     * @privateRemarks
+     * @hidden
      * Stage layout control capability: show content + gallery mode.
      */
     showVideoGalleryAndContent = 'showVideoGalleryAndContent',
     /**
-     * @privateRemarks
+     * @hidden
      * Stage layout control capability: show laryge gallery mode.
      */
     showLargeGallery = 'showLargeGallery',
     /**
-     * @privateRemarks
+     * @hidden
      * Stage layout control capability: show together mode.
      */
     showTogether = 'showTogether',
     /**
-     * @privateRemarks
+     * @hidden
      * Meeting control capability: leave meeting.
      */
     leaveMeeting = 'leaveMeeting',
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to represent capabilities of a meeting room.
    */
   export interface MeetingRoomCapability {
     /**
-     * @privateRemarks
+     * @hidden
      * Media control capabilities, value can be "toggleMute", "toggleCamera", "toggleCaptions", "volume".
      */
     mediaControls: string[];
     /**
-     * @privateRemarks
+     * @hidden
      * Main stage layout control capabilities, value can be "showVideoGallery", "showContent", "showVideoGalleryAndContent", "showLargeGallery", "showTogether".
      */
     stageLayoutControls: string[];
     /**
-     * @privateRemarks
+     * @hidden
      * Meeting control capabilities, value can be "leaveMeeting".
      */
     meetingControls: string[];
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to represent states of a meeting room.
    */
   export interface MeetingRoomState {
     /**
-     * @privateRemarks
+     * @hidden
      * Current mute state, true: mute, false: unmute.
      */
     toggleMute: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Current camera state, true: camera on, false: camera off.
      */
     toggleCamera: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Current captions state, true: captions on, false: captions off.
      */
     toggleCaptions: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Current main stage layout state, value can be one of "Gallery", "Content + gallery", "Content", "Large gallery" and "Together mode".
      */
     stageLayout: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Current leaveMeeting state, true: leave, false: no-op.
      */
     leaveMeeting: boolean;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Fetch the meeting room info that paired with current client.
@@ -169,7 +169,7 @@ export namespace meetingRoom {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Send a command to paired meeting room.
@@ -188,7 +188,7 @@ export namespace meetingRoom {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Registers a handler for meeting room capabilities update.
@@ -210,7 +210,7 @@ export namespace meetingRoom {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Registers a handler for meeting room states update.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.

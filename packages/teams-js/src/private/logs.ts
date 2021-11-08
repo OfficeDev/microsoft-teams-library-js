@@ -4,7 +4,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
 
 /**
- * @privateRemarks
+ * @hidden
  * Namespace to interact with the logging part of the SDK.
  * This object is used to send the app logs on demand to the host client
  *
@@ -14,7 +14,7 @@ import { runtime } from '../public/runtime';
  */
 export namespace logs {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Registers a handler for getting app log

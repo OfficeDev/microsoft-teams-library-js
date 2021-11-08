@@ -13,7 +13,7 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces
 export namespace legacy {
   export namespace fullTrust {
     /**
-     * @privateRemarks
+     * @hidden
      * Hide from docs
      * ------
      * Allows an app to retrieve information of all user joined teams
@@ -43,7 +43,7 @@ export namespace legacy {
     }
 
     /**
-     * @privateRemarks
+     * @hidden
      * Hide from docs
      * ------
      * Allows an app to get the configuration setting value

@@ -10,31 +10,31 @@ import { runtime } from '../public/runtime';
  */
 export namespace remoteCamera {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to represent patricipant details needed to request control of camera.
    */
   export interface Participant {
     /**
-     * @privateRemarks
+     * @hidden
      * Id of participant.
      */
     id: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Display name of participant.
      */
     displayName?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Active indicates whether the participant's device is actively being controlled.
      */
     active?: boolean;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Enum used to indicate possible camera control commands.
@@ -50,61 +50,61 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to indicate the current state of the device.
    */
   export interface DeviceState {
     /**
-     * @privateRemarks
+     * @hidden
      * All operation are available to apply.
      */
     available: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Either camera doesnt support to get state or It unable to apply command.
      */
     error: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Reset max out or already applied. Client Disable Reset.
      */
     reset: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * ZoomIn maxed out.
      */
     zoomIn: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * ZoomOut maxed out.
      */
     zoomOut: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * PanLeft reached max left.
      */
     panLeft: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * PanRight reached max right.
      */
     panRight: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * TiltUp reached top.
      */
     tiltUp: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * TiltDown reached bottom.
      */
     tiltDown: boolean;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Enum used to indicate the reason for the error.
@@ -121,26 +121,26 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Data structure to indicate the status of the current session.
    */
   export interface SessionStatus {
     /**
-     * @privateRemarks
+     * @hidden
      * Whether the far-end user is controlling a  device.
      */
     inControl: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * Reason the  control session was terminated.
      */
     terminatedReason?: SessionTerminatedReason;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Enum used to indicate the reason the session was terminated.
@@ -160,7 +160,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Fetch a list of the participants with controllable-cameras in a meeting.
@@ -181,7 +181,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Request control of a participant's camera.
@@ -207,7 +207,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Send control command to the participant's camera.
@@ -227,7 +227,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Terminate the remote  session
@@ -243,7 +243,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler for change in participants with controllable-cameras.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
@@ -260,7 +260,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler for error.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
@@ -275,7 +275,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler for device state change.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
@@ -290,7 +290,7 @@ export namespace remoteCamera {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Registers a handler for session status change.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *

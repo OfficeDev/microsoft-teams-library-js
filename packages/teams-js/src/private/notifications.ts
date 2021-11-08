@@ -6,7 +6,7 @@ import { ShowNotificationParameters } from './interfaces';
 
 export namespace notifications {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------
    * display notification API.

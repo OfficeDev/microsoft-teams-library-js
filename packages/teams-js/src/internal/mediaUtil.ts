@@ -2,7 +2,7 @@ import { media } from '../public/media';
 import { people } from '../public/people';
 
 /**
- * @privateRemarks
+ * @hidden
  * Helper function to create a blob from media chunks based on their sequence
  *
  * @internal
@@ -28,7 +28,7 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Helper function to convert Media chunks into another object type which can be later assemebled
  * Converts base 64 encoded string to byte array and then into an array of blobs
  *
@@ -53,7 +53,7 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the mediaInput params are valid and false otherwise
  *
  * @internal
@@ -66,7 +66,7 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the mediaInput params are called for mediatype VideoAndImage and false otherwise
  *
  * @internal
@@ -81,7 +81,7 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the get Media params are valid and false otherwise
  *
  * @internal
@@ -94,7 +94,7 @@ export function validateGetMediaInputs(mimeType: string, format: media.FileForma
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the view images param is valid and false otherwise
  *
  * @internal
@@ -107,7 +107,7 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the scan barcode param is valid and false otherwise
  *
  * @internal
@@ -126,7 +126,7 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Returns true if the people picker params are valid and false otherwise
  *
  * @internal
