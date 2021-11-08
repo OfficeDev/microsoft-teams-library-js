@@ -11,7 +11,6 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
-    "auth": "yarn global add vsts-npm-auth --registry https://registry.npmjs.com --always-auth false && vsts-npm-auth -config .npmrc",
     "build": "lerna run build --stream",
     "build:clean": "yarn clean && yarn build",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
