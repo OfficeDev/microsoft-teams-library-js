@@ -8,7 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/teamsjs-app-sdk"
+    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "scripts": {
     "auth": "yarn global add vsts-npm-auth --registry https://registry.npmjs.com --always-auth false && vsts-npm-auth -config .npmrc",
