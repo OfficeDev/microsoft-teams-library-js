@@ -358,7 +358,6 @@ describe('files', () => {
             size: 32,
             url: "string"
           }],
-          navigationType: files.FilesNavigationServiceType.PersonalGoogle,
           providerType: files.CloudStorageProviderType.Google,
           providerCode: files.CloudStorageProvider.GoogleDrive
         }

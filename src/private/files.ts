@@ -22,21 +22,6 @@ export namespace files {
     GoogleDrive = 'GOOGLEDRIVE',
     Egnyte = 'EGNYTE',
   }
-
-  export enum FilesNavigationServiceType {
-    Recent,
-    Aggregate,
-    Personal,
-    Teams,
-    Channels,
-    Downloads,
-    PersonalWopi,
-    PersonalGoogle,
-    CustomSpo,
-    SharedWithMe,
-    Chats,
-  }
-
   interface IWopiThumbnail {
     size: number;
     url: string;
@@ -49,7 +34,6 @@ export namespace files {
   }
 
   export interface IExternalProvider extends IWopiService {
-    navigationType: FilesNavigationServiceType;
     providerType: CloudStorageProviderType;
     providerCode: CloudStorageProvider;
   }
