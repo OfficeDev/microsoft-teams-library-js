@@ -23,16 +23,48 @@ export namespace files {
     Egnyte = 'EGNYTE',
   }
 
-  /**
-   * @private
-   * Hide from docs
-   *
-   * Cloud storage provider integration type
-   */
+  export enum FilesNavigationServiceType {
+    Recent,
+    Aggregate,
+    Personal,
+    Teams,
+    Channels,
+    Downloads,
+    PersonalWopi,
+    PersonalGoogle,
+    CustomSpo,
+    SharedWithMe,
+    Chats,
+  }
+
+  interface IWopiThumbnail {
+    size: number;
+    url: string;
+  }
+
+  interface IWopiService {
+    name: string;
+    description: string;
+    thumbnails: IWopiThumbnail[];
+  }
+
+  export interface IExternalProvider extends IWopiService {
+    navigationType: FilesNavigationServiceType;
+    providerType: CloudStorageProviderType;
+    providerCode: CloudStorageProvider;
+  }
+
   export enum CloudStorageProviderType {
     Sharepoint = 0,
-    WopiIntegration = 1,
-    Google = 2,
+    Wopi,
+    Google,
+    OneDrive,
+    Recent,
+    Aggregate,
+    FileSystem, // Used for Downloaded files on Desktop
+    Search, // Used by P2P files with OSearch
+    AllFiles, // Used by P2P files with AllFiles API
+    SharedWithMe,
   }
 
   /**
@@ -257,5 +289,64 @@ export namespace files {
     }
 
     sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
+  }
+
+  /**
+   * @private
+   * Allow 1st party apps to call this function to get the external
+   * third party cloud storage accounts that the tenant supports
+   * @param excludeAddedProviders: return a list of support third party
+   * cloud storages that hasn't been added yet.
+   */
+  export function getExternalProviders(
+    excludeAddedProviders = false,
+    callback: (error: SdkError, providers: IExternalProvider[]) => void,
+  ): void {
+    ensureInitialized();
+
+    if (!callback) {
+      throw new Error('[files.getExternalProviders] Callback cannot be null');
+    }
+
+    sendMessageToParent('files.getExternalProviders', [excludeAddedProviders], callback);
+  }
+
+  /**
+   * @private
+   * Allow 1st party apps to call this function to move files
+   * among SharePoint and third party cloud storages.
+   */
+  export function copyMoveFiles(
+    selectedFiles: CloudStorageFolderItem[],
+    providerCode: CloudStorageProvider,
+    destinationFolder: CloudStorageFolderItem,
+    destinationProviderCode: CloudStorageProvider,
+    isMove = false,
+    callback: (error: SdkError) => void,
+  ): void {
+    ensureInitialized();
+    if (isMove === undefined) {
+      throw new Error('[files.copyMoveFiles] isMove cannot be null or empty');
+    }
+    if (!selectedFiles || selectedFiles.length === 0) {
+      throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
+    }
+    if (!providerCode) {
+      throw new Error('[files.copyMoveFiles] providerCode cannot be null or empty');
+    }
+    if (!destinationFolder) {
+      throw new Error('[files.copyMoveFiles] destinationFolder cannot be null or empty');
+    }
+    if (!destinationProviderCode) {
+      throw new Error('[files.copyMoveFiles] destinationProviderCode cannot be null or empty');
+    }
+    if (!callback) {
+      throw new Error('[files.copyMoveFiles] callback cannot be null');
+    }
+    sendMessageToParent(
+      'files.copyMoveFiles',
+      [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
+      callback,
+    );
   }
 }
