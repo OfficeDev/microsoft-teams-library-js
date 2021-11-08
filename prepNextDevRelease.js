@@ -87,11 +87,11 @@ function getPrefix(version) {
 }
 
 /**
- * Uses the given current dev version and latest production version to generate and return
- * the number of the new dev version. The new dev version numbers are 0-index based.
- * @param {string} devVer The version currently tagged dev.
+ * Uses the given current next-dev version and latest production version to generate and return
+ * the number of the new next-dev version. The new next-dev version numbers are 0-index based.
+ * @param {string} devVer The version currently tagged next-dev.
  * @param {string} currVer The version taken from the package.json.
- * @returns Just the number of the suffix of the next dev version. i.e. 1.10.0-dev.<dev suffix number to be returned>
+ * @returns Just the number of the suffix of the next next-dev version. i.e. 1.10.0-dev.<next-dev suffix number to be returned>
  */
 function getDevSuffixNum(devVer, currVer) {
   if (devVer === undefined) {
@@ -112,13 +112,13 @@ function getDevSuffixNum(devVer, currVer) {
   const devIndex = devVer.indexOf('-dev.') + '-dev.'.length;
   if (devIndex === -1) {
     throw new Error(
-      `The dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`,
+      `The next-dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`,
     );
   }
   const devSuffixNum = parseInt(devVer.substring(devIndex));
   if (devSuffixNum === NaN) {
     throw new Error(
-      `The dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`,
+      `The next-dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`,
     );
   }
 
@@ -127,7 +127,7 @@ function getDevSuffixNum(devVer, currVer) {
 }
 
 /**
- * Generates the new package.json content with updated dev version number. The version number is
+ * Generates the new package.json content with updated next-dev version number. The version number is
  * the only thing that's changed.
  * @returns the new package.json content in JSON format.
  */
@@ -137,7 +137,7 @@ function getNewPkgJsonContent(devStdout) {
   // get package version from package.json
   let currVersion = getPkgJsonVersion(packageJson);
   console.log('package.json version: ' + currVersion);
-  console.log('current dev tagged version: ' + devStdout);
+  console.log('current next-dev tagged version: ' + devStdout);
 
   const [major, minor, patch] = currVersion.split('.');
   if (devStdout !== undefined) {
@@ -154,7 +154,7 @@ function getNewPkgJsonContent(devStdout) {
 
     if (devTooNew) {
       console.log(
-        'Currently, releasing a dev version that is older than or equal to the current dev tagged version is not supported. Will not make changes to the versions.',
+        'Currently, releasing a next-dev version that is older than or equal to the current next-dev tagged version is not supported. Will not make changes to the versions.',
       );
       process.exit();
     }
@@ -196,5 +196,5 @@ function prepNewDevRelease(devStdout) {
 }
 
 (() => {
-  exec(`npm view @microsoft/teams-js version --tag dev`).then(({ stdout, stderr }) => prepNewDevRelease(stdout.trim()));
+  exec(`npm view @microsoft/teams-js version --tag next-dev`).then(({ stdout, stderr }) => prepNewDevRelease(stdout.trim()));
 })();
