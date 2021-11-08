@@ -286,7 +286,7 @@ export namespace pages {
     }
 
     /**
-     * @private
+     * @hidden
      * Hide from docs, since this class is not directly used.
      */
     class SaveEventImpl implements SaveEvent {
@@ -323,7 +323,7 @@ export namespace pages {
     }
 
     /**
-     * @private
+     * @hidden
      * Hide from docs, since this class is not directly used.
      */
     class RemoveEventImpl implements RemoveEvent {
@@ -407,7 +407,7 @@ export namespace pages {
 
   export namespace fullTrust {
     /**
-     * @private
+     * @hidden
      * Hide from docs
      * ------
      * Place the tab into full-screen mode.
@@ -418,7 +418,7 @@ export namespace pages {
     }
 
     /**
-     * @private
+     * @hidden
      * Hide from docs
      * ------
      * Reverts the tab into normal-screen mode.
