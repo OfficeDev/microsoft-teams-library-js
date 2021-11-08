@@ -131,7 +131,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  *
  * @internal
@@ -154,7 +154,7 @@ function waitForResponse<T>(requestId: number): Promise<T> {
 export function sendMessageToParent(actionName: string, callback?: Function): void;
 
 /**
- * @privateRemarks
+ * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  *
  * @internal
@@ -225,7 +225,7 @@ export function processMessage(evt: DOMMessageEvent): void {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Validates the message source and origin, if it should be processed
  *
  * @internal
@@ -372,7 +372,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Send a response to child for a message request that was from child
  *
  * @internal
@@ -392,7 +392,7 @@ function sendMessageResponseToChild(
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Send a custom message object that can be sent to child window,
  * instead of a response message to a child
  *
@@ -438,7 +438,7 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Creates a message object without any id, used for custom actions being sent to child frame/window
  *
  * @internal

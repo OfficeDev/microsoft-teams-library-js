@@ -15,7 +15,7 @@ export function initializePrivateApis(): void {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Hide from docs.
  * ------
  * Upload a custom App manifest directly to both team and personal scopes.
@@ -30,7 +30,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Internal use only
  * Sends a custom action MessageRequest to Teams or parent window
  *
@@ -54,7 +54,7 @@ export function sendCustomMessage(
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Internal use only
  * Sends a custom action MessageEvent to a child iframe/window, only if you are not using auth popup.
  * Otherwise it will go to the auth popup (which becomes the child)
@@ -80,7 +80,7 @@ export function sendCustomEvent(
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Internal use only
  * Adds a handler for an action sent by a child window or parent window
  *
@@ -103,7 +103,7 @@ export function registerCustomHandler(
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * register a handler to be called when a user setting changes. The changed setting type & value is provided in the callback.
  *
  * @param settingTypes - List of user setting changes to subscribe

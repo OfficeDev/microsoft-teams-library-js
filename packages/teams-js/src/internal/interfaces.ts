@@ -1,5 +1,5 @@
 /**
- * @privateRemarks
+ * @hidden
  * Hide from docs
  * Shim in definitions used for browser-compat
  *
@@ -15,7 +15,7 @@ export interface DOMMessageEvent {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Hide from docs
  *
  * @internal
@@ -25,7 +25,7 @@ export interface TeamsNativeClient {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Hide from docs
  *
  * @internal
@@ -51,7 +51,7 @@ export interface MessageResponse {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Meant for Message objects that are sent to children without id
  *
  * @internal

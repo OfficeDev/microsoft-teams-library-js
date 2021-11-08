@@ -268,7 +268,7 @@ export namespace media {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
@@ -277,21 +277,21 @@ export namespace media {
    */
   interface MediaProps {
     /**
-     * @privateRemarks
+     * @hidden
      * Optional; Lets the developer specify the media source, more than one can be specified.
      * Default value is both camera and gallery
      */
     sources?: Source[];
 
     /**
-     * @privateRemarks
+     * @hidden
      * Optional; Specify in which mode the camera will be opened.
      * Default value is Photo
      */
     startMode?: CameraStartMode;
 
     /**
-     * @privateRemarks
+     * @hidden
      * Optional; indicate if user is allowed to move between front and back camera
      * Default value is true
      */
@@ -322,7 +322,7 @@ export namespace media {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * --------
    * All properties in VideoProps are optional and have default values in the platform
@@ -331,7 +331,7 @@ export namespace media {
    */
   interface VideoProps extends MediaProps {
     /**
-     * @privateRemarks
+     * @hidden
      * Optional; the maximum duration in minutes after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */

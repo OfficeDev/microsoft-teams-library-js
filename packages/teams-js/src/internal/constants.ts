@@ -1,6 +1,6 @@
 export const version = '2.0.0-beta.0';
 /**
- * @privateRemarks
+ * @hidden
  * The SDK version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
  * Modified to 2.0.1 which is hightest till now so that if any client doesn't pass version in initialize function, it will be set to highest.
  * Mobile clients are passing versions, hence will be applicable to web and desktop clients only.
@@ -10,7 +10,7 @@ export const version = '2.0.0-beta.0';
 export const defaultSDKVersionForCompatCheck = '2.0.1';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when selectMedia API - VideoAndImage is supported on mobile.
  *
  * @internal
@@ -18,7 +18,7 @@ export const defaultSDKVersionForCompatCheck = '2.0.1';
 export const videoAndImageMediaAPISupportVersion = '2.0.2';
 
 /**
- * @privateRemarks
+ * @hidden
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
  *
  * @internal
@@ -26,7 +26,7 @@ export const videoAndImageMediaAPISupportVersion = '2.0.2';
 export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when location APIs (getLocation and showLocation) are supported.
  *
  * @internal
@@ -34,7 +34,7 @@ export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
 export const locationAPIsRequiredVersion = '1.9.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when people picker API is supported on mobile.
  *
  * @internal
@@ -42,7 +42,7 @@ export const locationAPIsRequiredVersion = '1.9.0';
 export const peoplePickerRequiredVersion = '2.0.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when captureImage API is supported on mobile.
  *
  * @internal
@@ -50,7 +50,7 @@ export const peoplePickerRequiredVersion = '2.0.0';
 export const captureImageMobileSupportVersion = '1.7.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when media APIs are supported on all three platforms ios, android and web.
  *
  * @internal
@@ -58,7 +58,7 @@ export const captureImageMobileSupportVersion = '1.7.0';
 export const mediaAPISupportVersion = '1.8.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
  *
  * @internal
@@ -66,7 +66,7 @@ export const mediaAPISupportVersion = '1.8.0';
 export const getMediaCallbackSupportVersion = '2.0.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * This is the SDK version when scanBarCode API is supported on mobile.
  *
  * @internal
@@ -74,7 +74,7 @@ export const getMediaCallbackSupportVersion = '2.0.0';
 export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
 /**
- * @privateRemarks
+ * @hidden
  * List of supported Host origins
  *
  * @internal
@@ -108,7 +108,7 @@ export const validOrigins = [
 ];
 
 /**
- * @privateRemarks
+ * @hidden
  * USer specified message origins should satisfy this test
  *
  * @internal

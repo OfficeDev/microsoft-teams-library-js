@@ -34,7 +34,7 @@ export namespace people {
     peoplePickerInputs?: PeoplePickerInputs,
   ): void;
   /**
-   * @privateRemarks
+   * @hidden
    * This function is the overloaded implementation of selectPeople.
    * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
    * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.

@@ -65,7 +65,7 @@ export function getGenericOnCompleteHandler(errorMessage?: string): (success: bo
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Compares SDK versions.
  *
  * @param v1 - first version
@@ -122,7 +122,7 @@ export function compareSDKVersions(v1: string, v2: string): number {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Generates a GUID
  *
  * @internal
@@ -141,7 +141,7 @@ export function deepFreeze<T extends object>(obj: T): T {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * The following type definitions will be used in the
  * utility functions below, which help in transforming the
  * promises to support callbacks for backward compatibility

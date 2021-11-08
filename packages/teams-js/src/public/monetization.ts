@@ -9,7 +9,7 @@ import { runtime } from './runtime';
  */
 export namespace monetization {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent a subscription plan.
    *
@@ -17,19 +17,19 @@ export namespace monetization {
    */
   export interface PlanInfo {
     /**
-     * @privateRemarks
+     * @hidden
      * plan id
      */
     planId: string;
     /**
-     * @privateRemarks
+     * @hidden
      * term of the plan
      */
     term: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Open dialog to start user's purchase experience
    *

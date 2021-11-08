@@ -46,7 +46,7 @@ export namespace sharing {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Feature is under development
    * Opens a share dialog for web content
    *

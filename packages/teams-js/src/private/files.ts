@@ -9,7 +9,7 @@ import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
 
 /**
- * @privateRemarks
+ * @hidden
  * Hide from docs
  * ------
  * Namespace to interact with the files specific part of the SDK.
@@ -18,7 +18,7 @@ import { FilePreviewParameters } from './interfaces';
  */
 export namespace files {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Cloud storage providers registered with Microsoft Teams
@@ -32,7 +32,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Cloud storage provider integration type
@@ -44,114 +44,114 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Cloud storage folder interface
    */
   export interface CloudStorageFolder {
     /**
-     * @privateRemarks
+     * @hidden
      * ID of the cloud storage folder
      */
     id: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Display Name/Title of the cloud storage folder
      */
     title: string;
     /**
-     * @privateRemarks
+     * @hidden
      * ID of the cloud storage folder in the provider
      */
     folderId: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Type of the cloud storage folder provider integration
      */
     providerType: CloudStorageProviderType;
     /**
-     * @privateRemarks
+     * @hidden
      * Code of the supported cloud storage folder provider
      */
     providerCode: CloudStorageProvider;
     /**
-     * @privateRemarks
+     * @hidden
      * Display name of the owner of the cloud storage folder provider
      */
     ownerDisplayName: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Sharepoint specific siteURL of the folder
      */
     siteUrl?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Sharepoint specific serverRelativeUrl of the folder
      */
     serverRelativeUrl?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Sharepoint specific libraryType of the folder
      */
     libraryType?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Sharepoint specific accessType of the folder
      */
     accessType?: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Cloud storage item interface
    */
   export interface CloudStorageFolderItem {
     /**
-     * @privateRemarks
+     * @hidden
      * ID of the item in the provider
      */
     id: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Display name/title
      */
     title: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Key to differentiate files and subdirectory
      */
     isSubdirectory: boolean;
     /**
-     * @privateRemarks
+     * @hidden
      * File extension
      */
     type: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Last modifed time of the item
      */
     lastModifiedTime: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Display size of the items in bytes
      */
     size: number;
     /**
-     * @privateRemarks
+     * @hidden
      * URL of the file
      */
     objectUrl: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Temporary access token for the item
      */
     accessToken?: string;
   }
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Gets a list of cloud storage folders added to the channel
@@ -171,7 +171,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Initiates the add cloud storage folder flow
@@ -196,7 +196,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Deletes a cloud storage folder from channel
@@ -220,7 +220,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Fetches the contents of a Cloud storage folder (CloudStorageFolder) / sub directory
@@ -249,7 +249,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * ------
    * Open a cloud storage file in teams
@@ -277,7 +277,7 @@ export namespace files {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------
    * Opens a client-friendly preview of the specified file.

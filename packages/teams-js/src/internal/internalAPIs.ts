@@ -24,7 +24,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Checks whether the platform has knowledge of this API by doing a comparison
  * on API required version and platform supported version of the SDK
  *
@@ -41,7 +41,7 @@ export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVer
 }
 
 /**
- * @privateRemarks
+ * @hidden
  * Processes the valid origins specifuied by the user, de-duplicates and converts them into a regexp
  * which is used later for message source/origin validation
  *

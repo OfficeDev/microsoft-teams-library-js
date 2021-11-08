@@ -5,14 +5,14 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
 
 /**
- * @privateRemarks
+ * @hidden
  * Namespace to interact with bots using the SDK.
  *
  * @alpha
  */
 export namespace bot {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs until release.
    * ------
    * Sends query to bot in order to retrieve data.
@@ -38,7 +38,7 @@ export namespace bot {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs until release.
    * -----
    * Retrieves list of support commands from bot
@@ -62,7 +62,7 @@ export namespace bot {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs until release.
    * -----
    * Authenticates a user for json tab
@@ -89,7 +89,7 @@ export namespace bot {
 
   export interface QueryRequest {
     /**
-     * @privateRemarks
+     * @hidden
      * Query to search for
      */
     query: string;

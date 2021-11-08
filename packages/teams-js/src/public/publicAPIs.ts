@@ -32,7 +32,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 /**
  * @deprecated with Teams JS v2 upgrades
  *
- * @privateRemarks
+ * @hidden
  * Hide from docs.
  * ------
  * Undocumented function used to set a mock window for unit tests
@@ -47,7 +47,7 @@ export function _initialize(hostWindow: any): void {
 /**
  * @deprecated with Teams JS v2 upgrades
  *
- * @privateRemarks
+ * @hidden
  * Hide from docs.
  * ------
  * Undocumented function used to clear state between unit tests
@@ -169,7 +169,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 /**
  * @deprecated with Teams JS v2 upgrades
  *
- * @privateRemarks
+ * @hidden
  * Registers a handler to be called when the page has been requested to load.
  *
  * @param handler - The handler to invoke when the page is loaded.
@@ -181,7 +181,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
 /**
  * @deprecated with Teams JS v2 upgrades
  *
- * @privateRemarks
+ * @hidden
  * Registers a handler to be called before the page is unloaded.
  *
  * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
@@ -194,7 +194,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 /**
  * @deprecated with Teams JS v2 upgrades
  *
- * @privateRemarks
+ * @hidden
  * Registers a handler when focus needs to be passed from teams to the place of choice on app.
  *
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.

@@ -14,7 +14,7 @@ import { runtime } from './runtime';
  */
 export namespace meeting {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent a meeting details.
    *
@@ -22,23 +22,23 @@ export namespace meeting {
    */
   export interface IMeetingDetails {
     /**
-     * @privateRemarks
+     * @hidden
      * details object
      */
     details: IDetails;
     /**
-     * @privateRemarks
+     * @hidden
      * conversation object
      */
     conversation: IConversation;
     /**
-     * @privateRemarks
+     * @hidden
      * organizer object
      */
     organizer: IOrganizer;
   }
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent details.
    *
@@ -46,34 +46,34 @@ export namespace meeting {
    */
   export interface IDetails {
     /**
-     * @privateRemarks
+     * @hidden
      * Scheduled start time of the meeting
      */
     scheduledStartTime: string;
     /**
-     * @privateRemarks
+     * @hidden
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
     /**
-     * @privateRemarks
+     * @hidden
      * url to join the current meeting
      */
     joinUrl?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * meeting title name of the meeting
      */
     title?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * type of the meeting
      */
     type?: MeetingType;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent a conversation object.
    *
@@ -81,14 +81,14 @@ export namespace meeting {
    */
   export interface IConversation {
     /**
-     * @privateRemarks
+     * @hidden
      * conversation id of the meeting
      */
     id: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent an organizer object.
    *
@@ -96,12 +96,12 @@ export namespace meeting {
    */
   export interface IOrganizer {
     /**
-     * @privateRemarks
+     * @hidden
      * organizer id of the meeting
      */
     id?: string;
     /**
-     * @privateRemarks
+     * @hidden
      * tenant id of the meeting
      */
     tenantId?: string;
@@ -222,7 +222,7 @@ export namespace meeting {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    *
    * Allows an app to get the meeting details for the meeting
@@ -235,7 +235,7 @@ export namespace meeting {
   /**
    * @deprecated with TeamsJS v2 upgrades
    *
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    *
    * Allows an app to get the meeting details for the meeting
@@ -272,7 +272,7 @@ export namespace meeting {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
    *
    * @returns Promise containing the token or rejected promise containing SdkError details
@@ -283,7 +283,7 @@ export namespace meeting {
   /**
    * @deprecated with TeamsJS v2 upgrades
    *
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    *
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
@@ -381,7 +381,7 @@ export namespace meeting {
   ): Promise<void>;
 
   /**
-   * @privateRemarks
+   * @hidden
    * This function is the overloaded implementation of requestStartLiveStreaming.
    * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
    * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
@@ -489,7 +489,7 @@ export namespace meeting {
   ): void;
 
   /**
-   * @privateRemarks
+   * @hidden
    * This function is the overloaded implementation of shareAppContentToStage.
    * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
    * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
@@ -567,7 +567,7 @@ export namespace meeting {
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------------------------------------------
    * Terminates current stage sharing session in meeting
@@ -579,7 +579,7 @@ export namespace meeting {
   /**
    * @deprecated with TeamsJS v2 upgrades
    *
-   * @privateRemarks
+   * @hidden
    * Hide from docs.
    * ------------------------------------------
    * Terminates current stage sharing session in meeting
