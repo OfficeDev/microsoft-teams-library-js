@@ -56,7 +56,7 @@ export enum ViewerActionTypes {
 }
 
 /**
- * * @hidden
+ * @hidden
  * Hide from docs.
  * ------
  * User setting changes that can be subscribed to,
