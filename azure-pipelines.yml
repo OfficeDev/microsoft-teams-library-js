@@ -112,11 +112,20 @@ steps:
       debugMode: false
       suppressionsFile: '.sdl\CredScanSuppressions.json'
 
+  # - task: PublishSecurityAnalysisLogs@3
+  #   displayName: 'Publish Guardian Artifacts - All Tools'
+  #   inputs:
+  #     ArtifactType: M365
+  #   condition: succeededOrFailed()
+
   - task: PublishSecurityAnalysisLogs@3
-    displayName: 'Publish Guardian Artifacts - All Tools'
     inputs:
-      ArtifactType: M365
+      ArtifactName: 'CodeAnalysisLogs'
+      ArtifactType: 'M365'
+      AllTools: true
+      ToolLogsNotFoundAction: 'Standard'
     condition: succeededOrFailed()
+    displayName: 'Publish Guardian Artifacts 2'
 
   - task: CopyFiles@2
     condition: and(
