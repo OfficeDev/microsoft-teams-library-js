@@ -211,7 +211,7 @@ steps:
       Arguments: 'publish-sdk --tag next'
     displayName: 'yarn publish-sdk (release)'
 
-  - script: 'node prepDevRelease.js'
+  - script: 'node prepNextDevRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
@@ -219,7 +219,7 @@ steps:
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
       )
-    displayName: 'yarn node prepDevRelease.js'
+    displayName: 'yarn node prepNextDevRelease.js'
 
   - task: Yarn@3
     condition: and(
@@ -235,7 +235,7 @@ steps:
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")'\js
+      targetFolder: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")\js'
     displayName: 'Copy TeamsJS Content for CDN'
 
   - task: PublishBuildArtifacts@1
