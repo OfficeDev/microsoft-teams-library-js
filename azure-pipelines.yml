@@ -2,6 +2,8 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+variables:
+- group: InfoSec-SecurityResults
 
 trigger:
   branches:
@@ -39,15 +41,15 @@ steps:
       ErrorLevel: 'warn'
     displayName: 'Run ESLint'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'build'
-    displayName: 'yarn build'
+  # - task: Yarn@3
+  #   inputs:
+  #     Arguments: 'build'
+  #   displayName: 'yarn build'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'test'
-    displayName: 'yarn test'
+  # - task: Yarn@3
+  #   inputs:
+  #     Arguments: 'test'
+  #   displayName: 'yarn test'
 
   - task: Yarn@2
     inputs:
