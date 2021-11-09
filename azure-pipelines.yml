@@ -41,15 +41,15 @@ steps:
       ErrorLevel: 'warn'
     displayName: 'Run ESLint'
 
-  # - task: Yarn@3
-  #   inputs:
-  #     Arguments: 'build'
-  #   displayName: 'yarn build'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'build'
+    displayName: 'yarn build'
 
-  # - task: Yarn@3
-  #   inputs:
-  #     Arguments: 'test'
-  #   displayName: 'yarn test'
+  - task: Yarn@3
+    inputs:
+      Arguments: 'test'
+    displayName: 'yarn test'
 
   - task: Yarn@2
     inputs:
