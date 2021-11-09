@@ -187,7 +187,7 @@ steps:
       appType: 'webApp'
       WebAppName: 'musicalsink'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-    displayName: 'Deploy to musical sink'
+    displayName: 'Deploy to musicalsink'
 
   - task: AzureRmWebAppDeployment@4
     condition: and(
@@ -199,7 +199,7 @@ steps:
       appType: 'webApp'
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-    displayName: 'Deploy to cloud roll'
+    displayName: 'Deploy to cloudroll'
 
   - task: Yarn@3
     condition: and(
