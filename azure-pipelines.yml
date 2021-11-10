@@ -308,3 +308,24 @@ steps:
       M365CDN_APP_KEY: $(M365-APP-SECRET)
       M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
     displayName: 'Push TeamsJS to M365 1CDN(SDF) for (2.0-preview CI/CD)'
+    
+  # This task will push content to CDN-Prod for every prod release.
+  # Sample CDN URL: https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
+  - task: M365CdnAssetsUpload@1
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    inputs:
+      SourcePath: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)'
+      ConnectionType: 'EnvironmentVariables'
+      Environment: 'PublicCloud'
+      ContainerName: 'teams-js'
+      AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
+    env:
+      M365CDN_APP_ID: $(M365-CDN-CLIENT-ID-PROD)
+      M365CDN_APP_KEY: $(M365-CDN-CLIENT-SECRET-PROD)
+      M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
+    displayName: 'Push TeamsJS to M365 1CDN(Prod) for (Main)'
