@@ -126,9 +126,6 @@ steps:
     displayName: 'Publish Guardian Artifacts 2'
 
   - task: CopyFiles@2
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')))
     inputs:
       sourceFolder: 'apps/teams-test-app/build'
       contents: '**'
@@ -136,9 +133,6 @@ steps:
     displayName: 'Copy Test app to artifacts staging directory'
 
   - task: ArchiveFiles@2
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')))
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
       includeRootFolder: false
@@ -148,9 +142,6 @@ steps:
     displayName: 'Zip Test app artifacts'
 
   - task: PublishBuildArtifacts@1
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')))
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
       ArtifactName: 'teams-test-app'
@@ -208,25 +199,27 @@ steps:
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
 
-  - task: Yarn@3
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual'))
-    inputs:
-      Arguments: 'publish-sdk --tag next'
-    displayName: 'yarn publish-sdk (release)'
+  # TODO - delete after release pipeline creation
+  # - task: Yarn@3
+  #   condition: and(
+  #     startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     ne(variables['Build.Reason'], 'PullRequest'),
+  #     ne(variables['Build.Reason'], 'Manual'))
+  #   inputs:
+  #     Arguments: 'publish-sdk --tag next'
+  #   displayName: 'yarn publish-sdk (release)'
 
-  - script: 'node prepNextDevRelease.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'yarn node prepNextDevRelease.js'
+  # TODO - reenable after PP
+  # - script: 'node prepNextDevRelease.js'
+  #   workingDirectory: '$(System.DefaultWorkingDirectory)/tools/cli'
+  #   condition: and(
+  #     eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     ne(variables['Build.Reason'], 'PullRequest'),
+  #     ne(variables['Build.Reason'], 'Manual')
+  #     )
+  #   displayName: 'node prepNextDevRelease.js'
 
   - task: Yarn@3
     condition: and(
@@ -301,16 +294,3 @@ steps:
       M365CDN_APP_KEY: $(M365-APP-SECRET)
       M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
     displayName: 'Push TeamsJS to M365 1CDN(SDF) for (2.0-preview CI/CD)'
-
-  # IMPORTANT
-  # If you need to change $(secret.private-preview-ado-token), you need to base64 encode the string given to you when creating the Personal Access Token, even if it looks like its already base64 encoded.
-  # - script: 'node tools/cli/deployPrivatePreview.js'
-  #   condition: and(
-  #       startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-  #       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-  #       ne(variables['Build.Reason'], 'PullRequest'),
-  #       ne(variables['Build.Reason'], 'Manual')
-  #     )
-  #   env:
-  #     PRIVATE_PREVIEW_TOKEN: $(secret.private-preview-ado-token)
-  #   displayName: 'yarn publish-sdk (private preview)'
