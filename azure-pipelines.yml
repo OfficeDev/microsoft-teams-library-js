@@ -241,18 +241,24 @@ steps:
     inputs:
       Arguments: 'publish-sdk --tag next-dev'
     displayName: 'yarn publish-sdk (dev commit)'
+  
+  - script: |
+      npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
+      echo "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
+    displayName: 'set build number'
+    name: package
 
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")\js'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\$(package.Version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")'
-      ArtifactName: '$(node -p "require(''./packages/teams-js/package.json'').version")'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
+      ArtifactName: '$(package.Version)'
     displayName: 'Publish TeamsJS to build Artifacts'
 
   # This task will push content to CDN-sdf for every commit to 2.0-preview
@@ -265,7 +271,7 @@ steps:
       ne(variables['Build.Reason'], 'Manual')
       )
     inputs:
-     SourcePath: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")'
+     SourcePath: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
      ConnectionType: 'EnvironmentVariables'
      Environment: 'PublicCloudSDF'
      ContainerName: 'teams-js'
@@ -286,7 +292,7 @@ steps:
   #     ne(variables['Build.Reason'], 'Manual')
   #     )
   #   inputs:
-  #     SourcePath: '$(Build.ArtifactStagingDirectory)\$(node -p "require(''./packages/teams-js/package.json'').version")'
+  #     SourcePath: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
   #     ConnectionType: 'EnvironmentVariables'
   #     Environment: 'PublicCloud'
   #     ContainerName: 'teams-js'
