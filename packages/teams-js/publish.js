@@ -1,6 +1,7 @@
 const fs = require('fs-jetpack');
 const cp = require("child_process");
 const npmRegistry = 'https://registry.npmjs.org';
+const sdkPath = 'packages/teams-js';
 
 async function publishAsync(version) {
  
@@ -8,9 +9,9 @@ async function publishAsync(version) {
       npm_config_registry: npmRegistry,
     });
 
-    let cmd = 'npm publish --tag next';
+    let cmd = `npm publish ${sdkPath} --tag next`;
     if (version.includes('dev')) {
-      cmd = 'npm publish --tag next-dev';
+      cmd = `npm publish ${sdkPath} --tag next-dev`;
     }
 
     let result = await exec(cmd, {

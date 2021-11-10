@@ -200,15 +200,18 @@ steps:
     displayName: 'Deploy to cloudroll'
 
   # TODO - delete after release pipeline creation
-  # - task: Yarn@3
-  #   condition: and(
-  #     startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-  #     ne(variables['Build.Reason'], 'PullRequest'),
-  #     ne(variables['Build.Reason'], 'Manual'))
-  #   inputs:
-  #     Arguments: 'publish-sdk --tag next'
-  #   displayName: 'yarn publish-sdk (release)'
+  - task: CmdLine@1
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual'))
+    inputs:
+      filename: node
+      arguments: publish.js
+      workingFolder: '$(System.DefaultWorkingDirectory)'
+      failOnStandardError: true
+    displayName: 'Publish Npm Package (release)'
 
   # TODO - reenable after PP
   # - script: 'node prepNextDevRelease.js'
