@@ -224,20 +224,20 @@ steps:
   #     )
   #   displayName: 'node prepNextDevRelease.js'
 
-  - task: Yarn@3
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual'))
-    inputs:
-      Arguments: 'publish-sdk --tag next-dev'
-    displayName: 'yarn publish-sdk (dev commit)'
+  # - task: Yarn@3
+  #   condition: and(
+  #     eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     ne(variables['Build.Reason'], 'PullRequest'),
+  #     ne(variables['Build.Reason'], 'Manual'))
+  #   inputs:
+  #     Arguments: 'publish-sdk --tag next-dev'
+  #   displayName: 'yarn publish-sdk (dev commit)'
   
   - powershell: |
       $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
       Write-Host "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
-    displayName: 'set build number'
+    displayName: 'Set package.Version as Variable'
     name: package
 
   - task: CopyFiles@2
@@ -277,13 +277,13 @@ steps:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
       ArtifactName: 'CDNFeed'
-    displayName: 'CDN feed to build Artifacts'
+    displayName: 'Publish CDN feed to build Artifacts'
   
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
-    displayName: 'NPM feed to build Artifacts'
+    displayName: 'Publish NPM feed to build Artifacts'
   
   - task: PublishBuildArtifacts@1
     inputs:
@@ -331,4 +331,4 @@ steps:
       M365CDN_APP_ID: $(M365-CDN-CLIENT-ID-PROD)
       M365CDN_APP_KEY: $(M365-CDN-CLIENT-SECRET-PROD)
       M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
-    displayName: 'Push TeamsJS to M365 1CDN(Prod) for (Main)'
+    displayName: 'Push TeamsJS to M365 1CDN (Prod) for (2.0-preview release)'
