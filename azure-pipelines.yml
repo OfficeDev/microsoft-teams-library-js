@@ -242,9 +242,9 @@ steps:
       Arguments: 'publish-sdk --tag next-dev'
     displayName: 'yarn publish-sdk (dev commit)'
   
-  - script: |
+  - powershell: |
       $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
-      echo "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
+      Write-Host "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
     displayName: 'set build number'
     name: package
 
