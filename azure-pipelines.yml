@@ -259,11 +259,12 @@ steps:
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\dist
+        packages\teams-js\dist\**
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)'
+      flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
 
   - task: PublishBuildArtifacts@1
