@@ -3,8 +3,8 @@
 # And then running E2E tests and publishing them.
 
 trigger:
-  - main
-  - develop
+  - 2.0-preview
+  - 'release*'
 
 pool:
   vmImage: 'ubuntu-latest'
