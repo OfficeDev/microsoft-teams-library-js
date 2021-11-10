@@ -209,7 +209,7 @@ steps:
     inputs:
       filename: node
       arguments: publish.js
-      workingFolder: '$(System.DefaultWorkingDirectory)'
+      workingFolder: '$(System.DefaultWorkingDirectory)\packages\teams-js'
       failOnStandardError: true
     displayName: 'Publish Npm Package (release)'
 
