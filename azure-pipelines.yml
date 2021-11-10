@@ -4,6 +4,7 @@
 # https://aka.ms/yaml
 variables:
 - group: InfoSec-SecurityResults
+- group: 1CDN-SDF-Secrets
 
 trigger:
   branches:
@@ -114,12 +115,6 @@ steps:
     inputs:
       debugMode: false
       suppressionsFile: '.sdl\CredScanSuppressions.json'
-
-  # - task: PublishSecurityAnalysisLogs@3
-  #   displayName: 'Publish Guardian Artifacts - All Tools'
-  #   inputs:
-  #     ArtifactType: M365
-  #   condition: succeededOrFailed()
 
   - task: PublishSecurityAnalysisLogs@3
     inputs:
@@ -302,31 +297,11 @@ steps:
      ContainerName: 'teams-js'
      AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
     env:
-      M365CDN_APP_ID: $(M365CDNAppIdSdf)
-      M365CDN_APP_KEY: $(CDNAppKeySdf)
-      M365CDN_TENANT_ID: $(M365CDNTenantId)
+      M365CDN_APP_ID: $(M365-APP-CLIENT-ID)
+      M365CDN_APP_KEY: $(M365-APP-SECRET)
+      M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
     displayName: 'Push TeamsJS to M365 1CDN(SDF) for (2.0-preview CI/CD)'
 
-  # This task will push content to CDN-Prod for every prod release.
-  # Sample CDN URL: https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
-  # - task: M365CdnAssetsUpload@1
-  #   condition: and(
-  #     startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-  #     ne(variables['Build.Reason'], 'PullRequest'),
-  #     ne(variables['Build.Reason'], 'Manual')
-  #     )
-  #   inputs:
-  #     SourcePath: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
-  #     ConnectionType: 'EnvironmentVariables'
-  #     Environment: 'PublicCloud'
-  #     ContainerName: 'teams-js'
-  #     AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
-  #   env:
-  #     M365CDN_APP_ID: $(M365CDNAppIdProd)
-  #     M365CDN_APP_KEY: $(CDNAppKeyProd)
-  #     M365CDN_TENANT_ID: $(M365CDNTenantId)
-  #   displayName: 'Push TeamsJS to M365 1CDN(Prod) for (release)'
   # IMPORTANT
   # If you need to change $(secret.private-preview-ado-token), you need to base64 encode the string given to you when creating the Personal Access Token, even if it looks like its already base64 encoded.
   # - script: 'node tools/cli/deployPrivatePreview.js'
