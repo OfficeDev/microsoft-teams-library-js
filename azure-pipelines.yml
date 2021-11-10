@@ -253,14 +253,29 @@ steps:
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\$(package.Version)\js'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
+  
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        'packages\teams-js\dist'
+        'packages\teams-js\package.json'
+        'packages\teams-js\README.md'
+        'LICENSE'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
-      ArtifactName: '$(package.Version)'
-    displayName: 'Publish TeamsJS to build Artifacts'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
+      ArtifactName: 'CDNFeed'
+    displayName: 'Publish CDN feed to build Artifacts'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+      ArtifactName: 'NPMFeed'
+    displayName: 'Publish NPM feed to build Artifacts'
 
   # This task will push content to CDN-sdf for every commit to 2.0-preview
   # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
