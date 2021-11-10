@@ -262,6 +262,14 @@ steps:
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
 
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\publish.js
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\Scripts'
+      flattenFolders: true
+    displayName: 'Copy publish.js Script for NPM'
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
@@ -273,6 +281,12 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
     displayName: 'NPM feed to build Artifacts'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\Scripts'
+      ArtifactName: 'Scripts'
+    displayName: 'Scripts to build Artifacts'
 
   # This task will push content to CDN-sdf for every commit to 2.0-preview
   # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
