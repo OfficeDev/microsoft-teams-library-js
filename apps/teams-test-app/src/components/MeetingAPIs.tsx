@@ -1,7 +1,7 @@
 import { meeting, meetingRoom } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateRegistrationMsg, noHostSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const MeetingAPIs = (): ReactElement => {
@@ -85,8 +85,8 @@ const MeetingAPIs = (): ReactElement => {
     if (Object.prototype.hasOwnProperty.call(streamInput, STREAM_URL)) {
       setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHostSdkMsg);
       (Object.prototype.hasOwnProperty.call(streamInput, STREAM_KEY)
-        ? meeting.requestStartLiveStreaming(streamInput.streamUrl, streamInput.streamKey)
-        : meeting.requestStartLiveStreaming(streamInput.streamUrl)
+        ? meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
+        : meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL))
       )
         .then(() => setRequestStartLiveStreamingRes('Complete'))
         .catch(error => setRequestStartLiveStreamingRes(JSON.stringify(error)));
@@ -106,9 +106,9 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const registerLiveStreamChangedHandler = (): void => {
-    setRegisterLiveStreamChangedHandlerRes(generateRegistrationMsg('it is invoked when the live stream state changes'));
+    setRegisterLiveStreamChangedHandlerRes('meeting.registerLiveStreamChangedHandler' + noHostSdkMsg);
     const handler = (liveStreamState: meeting.LiveStreamState): void => {
-      setRegisterLiveStreamChangedHandlerRes('Live StreamState changed to ' + liveStreamState.isStreaming);
+      setRegisterLiveStreamChangedHandlerRes('Live StreamState changed to ' + liveStreamState.isStreaming.toString());
     };
     meeting.registerLiveStreamChangedHandler(handler);
   };
@@ -181,9 +181,11 @@ const MeetingAPIs = (): ReactElement => {
     setStopSharingAppContentToStageRes('stopSharingAppContentToStage' + noHostSdkMsg);
     meeting
       .stopSharingAppContentToStage()
-      .then(result => setStopSharingAppContentToStageRes('stopSharingAppContentToStage() succeeded: ' + result))
+      .then(result =>
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() succeeded: ' + result),
+      )
       .catch(error =>
-        setStopSharingAppContentToStageRes('stopSharingAppContentToStage() failed: ' + JSON.stringify(error)),
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() failed: ' + JSON.stringify(error)),
       );
   };
 
@@ -192,10 +194,10 @@ const MeetingAPIs = (): ReactElement => {
     meeting
       .getAppContentStageSharingState()
       .then(result =>
-        setGetAppContentStageSharingStateRes('getAppContentStageSharingState() succeeded: ' + JSON.stringify(result)),
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState succeeded: ' + JSON.stringify(result)),
       )
       .catch(error =>
-        setGetAppContentStageSharingStateRes('getAppContentStageSharingState() failed: ' + JSON.stringify(error)),
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState failed: ' + JSON.stringify(error)),
       );
   };
 
@@ -245,14 +247,14 @@ const MeetingAPIs = (): ReactElement => {
         name="requestStartLiveStreaming"
       />
       <BoxAndButton
-        handleClick={requestStopLiveStreaming}
+        handleClickWithInput={requestStopLiveStreaming}
         output={requestStopLiveStreamingRes}
         hasInput={false}
         title="Request Stop LiveStreaming"
         name="requestStopLiveStreaming"
       />
       <BoxAndButton
-        handleClick={registerLiveStreamChangedHandler}
+        handleClickWithInput={registerLiveStreamChangedHandler}
         output={registerLiveStreamChangedHandlerRes}
         hasInput={false}
         title="Register LiveStream Changed Handler"
