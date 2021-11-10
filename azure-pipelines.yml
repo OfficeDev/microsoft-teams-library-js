@@ -237,7 +237,7 @@ steps:
   - powershell: |
       $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
       Write-Host "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
-    displayName: 'Set package.Version as Variable'
+    displayName: 'Set package.Version Variable'
     name: package
 
   - task: CopyFiles@2
@@ -283,13 +283,13 @@ steps:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
-    displayName: 'Publish NPM feed to build Artifacts'
+    displayName: 'Publish NPM feed to Build Artifacts'
   
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\Scripts'
       ArtifactName: 'Scripts'
-    displayName: 'Scripts to build Artifacts'
+    displayName: 'Publish Scripts to Build Artifacts'
 
   # This task will push content to CDN-sdf for every commit to 2.0-preview
   # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
@@ -331,4 +331,4 @@ steps:
       M365CDN_APP_ID: $(M365-CDN-CLIENT-ID-PROD)
       M365CDN_APP_KEY: $(M365-CDN-CLIENT-SECRET-PROD)
       M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
-    displayName: 'Push TeamsJS to M365 1CDN (Prod) for (2.0-preview release)'
+    displayName: 'Push TeamsJS to M365 1CDN(Prod) for (2.0-preview release)'
