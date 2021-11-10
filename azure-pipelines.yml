@@ -284,14 +284,14 @@ steps:
   # This task will push content to CDN-sdf for every commit to 2.0-preview
   # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
   - task: M365CdnAssetsUpload@1
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
+    # condition: and(
+    #   eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+    #   in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+    #   ne(variables['Build.Reason'], 'PullRequest'),
+    #   ne(variables['Build.Reason'], 'Manual')
+    #   )
     inputs:
-     SourcePath: '$(Build.ArtifactStagingDirectory)\$(package.Version)'
+     SourcePath: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)'
      ConnectionType: 'EnvironmentVariables'
      Environment: 'PublicCloudSDF'
      ContainerName: 'teams-js'
