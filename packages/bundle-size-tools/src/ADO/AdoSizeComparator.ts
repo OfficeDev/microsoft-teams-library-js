@@ -33,7 +33,7 @@ export class ADOSizeComparator {
    * typically will when the pipeline only builds commits to main.
    */
   private static readonly defaultBuildsToSearch = 40;
-  private readonly baseBranch: string = 'develop';
+  
 
   constructor(
     /**
@@ -54,11 +54,17 @@ export class ADOSizeComparator {
      */
     private readonly adoBuildId: number | undefined,
     /**
+     * Destination branch name against which the comparison is done.
+     * It should be a branch from which the code was forked
+     */
+    private readonly baseBranch: string,
+    /**
      * Option to do fallback on commits when either there is no associated CI build or
      * it does not have the needed artifacts.  Fallback is not attempted for other
      * issues, such as for a failed (but still present) CI build.  This generator is
      * only used for fallback (it should not provide the first commit to check)
      */
+
     private readonly getFallbackCommit: ((startingCommit: string) => Generator<string>) | undefined = undefined,
   ) {}
 
