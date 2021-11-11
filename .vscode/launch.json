@@ -16,6 +16,13 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "(made) Run current file",
+      "program": "${file}",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Launch yarn command",
       "runtimeExecutable": "yarn",
       "cwd": "${workspaceFolder}",
