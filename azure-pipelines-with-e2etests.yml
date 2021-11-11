@@ -3,7 +3,7 @@
 # And then running E2E tests and publishing them.
 
 trigger:
-  - 2.0-preview
+  - '2.0-preview'
   - 'release*'
 
 pool:

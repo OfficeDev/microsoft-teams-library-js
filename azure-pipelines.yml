@@ -10,7 +10,7 @@ variables:
 trigger:
   branches:
     include:
-      - 2.0-preview
+      - '2.0-preview'
       - 'release*'
   tags:
     include:
