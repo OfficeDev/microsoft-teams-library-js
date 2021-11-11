@@ -163,7 +163,7 @@ export class ADOSizeComparator {
     // Unable to find a usable baseline
     if (baselineCommit === undefined || baselineZip === undefined) {
       const message = `Could not find a usable baseline build with search starting at CI ${getBaselineCommit(
-        this.baseBranch,
+        this.baseBranchName,
       )}`;
       console.log(message);
       return { message, comparison: undefined };
