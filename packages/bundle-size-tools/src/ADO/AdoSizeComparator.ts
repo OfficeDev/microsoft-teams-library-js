@@ -57,7 +57,7 @@ export class ADOSizeComparator {
      * Destination branch name against which the comparison is done.
      * It should be a branch from which the code was forked
      */
-    private readonly baseBranch: string,
+    private readonly baseBranchName: string,
     /**
      * Option to do fallback on commits when either there is no associated CI build or
      * it does not have the needed artifacts.  Fallback is not attempted for other
@@ -88,7 +88,7 @@ export class ADOSizeComparator {
    * of failure, the message contains the error message and the raw data will be undefined.
    */
   public async createSizeComparisonMessage(tagWaiting: boolean): Promise<BundleComparisonResult> {
-    let baselineCommit: string | undefined = getBaselineCommit(this.baseBranch);
+    let baselineCommit: string | undefined = getBaselineCommit(this.baseBranchName);
     console.log(`The baseline commit for this PR is ${baselineCommit}`);
 
     // Some circumstances may want us to try a fallback, such as when a commit does

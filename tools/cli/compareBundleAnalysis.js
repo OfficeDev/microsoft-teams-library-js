@@ -59,8 +59,8 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
     adoConnection,
     localReportPath,
     undefined,
+    baseBranchName,
     ADOSizeComparator.naiveFallbackCommitGenerator,
-    baseBranchName
   );
   const result = await sizeComparator.createSizeComparisonMessage(false);
 
