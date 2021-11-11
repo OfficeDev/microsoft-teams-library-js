@@ -1,7 +1,7 @@
-import { meeting, meetingRoom } from '@microsoft/teams-js';
+import { meeting } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { generateRegistrationMsg, noHostSdkMsg } from '../App';
+import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 
 const MeetingAPIs = (): ReactElement => {
@@ -14,10 +14,6 @@ const MeetingAPIs = (): ReactElement => {
   const [requestStopLiveStreamingRes, setRequestStopLiveStreamingRes] = React.useState('');
   const [registerLiveStreamChangedHandlerRes, setRegisterLiveStreamChangedHandlerRes] = React.useState('');
   const [shareAppContentToStageRes, setShareAppContentToStageRes] = React.useState('');
-  const [getPairedMeetingRoomInfoRes, setGetPairedMeetingRoomInfoRes] = React.useState('');
-  const [sendCommandToPairedMeetingRoomRes, setSendCommandToPairedMeetingRoomRes] = React.useState('');
-  const [registerMeetingRoomCapUpdateHandlerRes, setRegisterMeetingRoomCapUpdateHandlerRes] = React.useState('');
-  const [registerMeetingRoomStatesUpdateHandlerRes, setRegisterMeetingRoomStatesUpdateHandlerRes] = React.useState('');
   const [checkMeetingCapabilityRes, setCheckMeetingCapabilityRes] = React.useState('');
   const [getAppContentStageSharingCapabilitiesRes, setGetAppContentStageSharingCapabilitiesRes] = React.useState('');
   const [stopSharingAppContentToStageRes, setStopSharingAppContentToStageRes] = React.useState('');
@@ -85,8 +81,8 @@ const MeetingAPIs = (): ReactElement => {
     if (Object.prototype.hasOwnProperty.call(streamInput, STREAM_URL)) {
       setRequestStartLiveStreamingRes('meeting.requestStartLiveStreaming()' + noHostSdkMsg);
       (Object.prototype.hasOwnProperty.call(streamInput, STREAM_KEY)
-        ? meeting.requestStartLiveStreaming(streamInput.streamUrl, streamInput.streamKey)
-        : meeting.requestStartLiveStreaming(streamInput.streamUrl)
+        ? meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL), streamInput.get(STREAM_KEY))
+        : meeting.requestStartLiveStreaming(streamInput.get(STREAM_URL))
       )
         .then(() => setRequestStartLiveStreamingRes('Complete'))
         .catch(error => setRequestStartLiveStreamingRes(JSON.stringify(error)));
@@ -106,9 +102,9 @@ const MeetingAPIs = (): ReactElement => {
   };
 
   const registerLiveStreamChangedHandler = (): void => {
-    setRegisterLiveStreamChangedHandlerRes(generateRegistrationMsg('it is invoked when the live stream state changes'));
+    setRegisterLiveStreamChangedHandlerRes('meeting.registerLiveStreamChangedHandler' + noHostSdkMsg);
     const handler = (liveStreamState: meeting.LiveStreamState): void => {
-      setRegisterLiveStreamChangedHandlerRes('Live StreamState changed to ' + liveStreamState.isStreaming);
+      setRegisterLiveStreamChangedHandlerRes('Live StreamState changed to ' + liveStreamState.isStreaming.toString());
     };
     meeting.registerLiveStreamChangedHandler(handler);
   };
@@ -119,38 +115,6 @@ const MeetingAPIs = (): ReactElement => {
       .shareAppContentToStage(appContentUrl)
       .then(() => setShareAppContentToStageRes('shareAppContentToStage() succeeded'))
       .catch(error => setShareAppContentToStageRes(JSON.stringify(error)));
-  };
-
-  const getPairedMeetingRoomInfo = (): void => {
-    setGetPairedMeetingRoomInfoRes('getPairedMeetingRoomInfo' + noHostSdkMsg);
-    meetingRoom
-      .getPairedMeetingRoomInfo()
-      .then(meetingRoomInfo => setGetPairedMeetingRoomInfoRes(JSON.stringify(meetingRoomInfo)))
-      .catch(sdkError => setGetPairedMeetingRoomInfoRes(JSON.stringify(sdkError)));
-  };
-
-  const sendCommandToPairedMeetingRoom = (commandName: string): void => {
-    setSendCommandToPairedMeetingRoomRes('sendCommandToPairedMeetingRoom' + noHostSdkMsg);
-    meetingRoom
-      .sendCommandToPairedMeetingRoom(commandName)
-      .then(() => setSendCommandToPairedMeetingRoomRes('Success'))
-      .catch(sdkError => setSendCommandToPairedMeetingRoomRes(JSON.stringify(sdkError)));
-  };
-
-  const registerMeetingRoomCapabilitiesUpdateHandler = (): void => {
-    setRegisterMeetingRoomCapUpdateHandlerRes('registerMeetingRoomCapabilitiesUpdateHandler' + noHostSdkMsg);
-    const handler = (cap: meetingRoom.MeetingRoomCapability): void => {
-      setRegisterMeetingRoomCapUpdateHandlerRes('MeetingRoom Capabilities have been updated to ' + JSON.stringify(cap));
-    };
-    meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(handler);
-  };
-
-  const registerMeetingRoomStatesUpdateHandler = (): void => {
-    setRegisterMeetingRoomStatesUpdateHandlerRes('registerMeetingRoomStatesUpdateHandler' + noHostSdkMsg);
-    const handler = (states: meetingRoom.MeetingRoomState): void => {
-      setRegisterMeetingRoomStatesUpdateHandlerRes('MeetingRoom States have been updated to ' + JSON.stringify(states));
-    };
-    meetingRoom.registerMeetingRoomStatesUpdateHandler(handler);
   };
 
   const meetingCapabilityCheck = (): void => {
@@ -181,9 +145,11 @@ const MeetingAPIs = (): ReactElement => {
     setStopSharingAppContentToStageRes('stopSharingAppContentToStage' + noHostSdkMsg);
     meeting
       .stopSharingAppContentToStage()
-      .then(result => setStopSharingAppContentToStageRes('stopSharingAppContentToStage() succeeded: ' + result))
+      .then(result =>
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() succeeded: ' + result),
+      )
       .catch(error =>
-        setStopSharingAppContentToStageRes('stopSharingAppContentToStage() failed: ' + JSON.stringify(error)),
+        setStopSharingAppContentToStageRes('getAppContentStageSharingCapabilities() failed: ' + JSON.stringify(error)),
       );
   };
 
@@ -192,10 +158,10 @@ const MeetingAPIs = (): ReactElement => {
     meeting
       .getAppContentStageSharingState()
       .then(result =>
-        setGetAppContentStageSharingStateRes('getAppContentStageSharingState() succeeded: ' + JSON.stringify(result)),
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState succeeded: ' + JSON.stringify(result)),
       )
       .catch(error =>
-        setGetAppContentStageSharingStateRes('getAppContentStageSharingState() failed: ' + JSON.stringify(error)),
+        setGetAppContentStageSharingStateRes('getAppContentStageSharingState failed: ' + JSON.stringify(error)),
       );
   };
 
@@ -245,14 +211,14 @@ const MeetingAPIs = (): ReactElement => {
         name="requestStartLiveStreaming"
       />
       <BoxAndButton
-        handleClick={requestStopLiveStreaming}
+        handleClickWithInput={requestStopLiveStreaming}
         output={requestStopLiveStreamingRes}
         hasInput={false}
         title="Request Stop LiveStreaming"
         name="requestStopLiveStreaming"
       />
       <BoxAndButton
-        handleClick={registerLiveStreamChangedHandler}
+        handleClickWithInput={registerLiveStreamChangedHandler}
         output={registerLiveStreamChangedHandlerRes}
         hasInput={false}
         title="Register LiveStream Changed Handler"
@@ -264,34 +230,6 @@ const MeetingAPIs = (): ReactElement => {
         hasInput={true}
         title="Share App Content To Stage"
         name="shareAppContentToStage"
-      />
-      <BoxAndButton
-        handleClick={getPairedMeetingRoomInfo}
-        output={getPairedMeetingRoomInfoRes}
-        hasInput={false}
-        title="Get Paired MeetingRoom Info"
-        name="getPairedMeetingRoomInfo"
-      />
-      <BoxAndButton
-        handleClickWithInput={sendCommandToPairedMeetingRoom}
-        output={sendCommandToPairedMeetingRoomRes}
-        hasInput={true}
-        title="Send Command to Paired MeetingRoom"
-        name="sendCommandToPairedMeetingRoom"
-      />
-      <BoxAndButton
-        handleClick={registerMeetingRoomCapabilitiesUpdateHandler}
-        output={registerMeetingRoomCapUpdateHandlerRes}
-        hasInput={false}
-        title="Register MeetingRoom Capabilities Update Handler"
-        name="registerMeetingRoomCapUpdateHandler"
-      />
-      <BoxAndButton
-        handleClick={registerMeetingRoomStatesUpdateHandler}
-        output={registerMeetingRoomStatesUpdateHandlerRes}
-        hasInput={false}
-        title="Register MeetingRoom States Update Handler"
-        name="registerMeetingRoomStatesUpdateHandler"
       />
       <BoxAndButton
         handleClick={meetingCapabilityCheck}
