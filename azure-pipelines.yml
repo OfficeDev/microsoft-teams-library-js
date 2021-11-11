@@ -5,6 +5,7 @@
 variables:
 - group: InfoSec-SecurityResults
 - group: 1CDN-SDF-Secrets
+- group: 1CDN-Prod-Secrets
 
 trigger:
   branches:
