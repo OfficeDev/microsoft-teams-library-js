@@ -24,6 +24,11 @@ const { argv } = require('yargs')
     string: true,
     demandOption: true,
     description: 'Artifact name of the bundle',
+  })
+  .option('baseBranchName', {
+    string: true,
+    demandOption: true,
+    description: 'Destination branch against which current Pull request\'s bundle size is compared',
   });
 
 const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = require('bundle-size-tools');
@@ -38,6 +43,7 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
 
   const adoAccessToken = process.env.SYSTEM_ACCESSTOKEN;
   const currentCommitId = argv.commitId;
+  const baseBranchName = argv.baseBranchName;
   const adoConstants = {
     orgUrl: argv.orgUrl,
     projectName: argv.projectName,
@@ -53,6 +59,7 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
     adoConnection,
     localReportPath,
     undefined,
+    baseBranchName,
     ADOSizeComparator.naiveFallbackCommitGenerator,
   );
   const result = await sizeComparator.createSizeComparisonMessage(false);
