@@ -86,8 +86,7 @@ steps:
   - task: PublishBuildArtifacts@1
     condition: and(
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+      ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       PathtoPublish: './common/temp/bundleAnalysis'
       ArtifactName: '$(bundleArtifactName)'
