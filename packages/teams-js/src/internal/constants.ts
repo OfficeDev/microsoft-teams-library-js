@@ -1,4 +1,4 @@
-export const version = '2.0.0-beta.0';
+export const version = '2.0.0-beta.1';
 /**
  * @hidden
  * The SDK version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.

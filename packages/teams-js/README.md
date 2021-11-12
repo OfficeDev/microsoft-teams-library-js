@@ -30,7 +30,7 @@ To install the latest 2.0 preview version:
 
 ### Production
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.1/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -51,13 +51,13 @@ Reference the SDK inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script
-  src="https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js"
-  integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv"
+  src="https://res.cdn.office.net/teams-js/2.0.0-beta.1/js/MicrosoftTeams.min.js"
+  integrity="sha384-tQzNKNgoXVyO8/7UVmwwNjKy8Cai2COqlhP7/hL4Jz5flCpugVVTzNWo3SnGEpH4"
   crossorigin="anonymous"
 ></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@2.0.0-beta.0/dist/MicrosoftTeams.min.js"></script>
+<script src="node_modules/@microsoft/teams-js@2.0.0-beta.1/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>
