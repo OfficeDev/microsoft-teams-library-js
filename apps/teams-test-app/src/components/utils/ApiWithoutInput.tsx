@@ -3,7 +3,7 @@ import * as React from 'react';
 export interface ApiWithoutInputProps {
   title: string;
   name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
-  onClick: () => string;
+  onClick: (setResult: (result: string) => void) => string;
 }
 
 export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement => {
@@ -22,7 +22,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
       }}
       id={`box_${name}`}
     >
-      <input name={`button_${name}`} type="button" value={title} onClick={() => setResult(onClick())} />
+      <input name={`button_${name}`} type="button" value={title} onClick={() => setResult(onClick(setResult))} />
       <div
         className="box"
         style={{

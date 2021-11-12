@@ -3,12 +3,23 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput } from './utils/ApiWithoutInput';
+
+const RegisterOnThemeChangeHandler = (): ReactElement => (
+  <ApiWithoutInput
+    name="registerOnThemeChangeHandler"
+    title="Register On Theme Change Handler"
+    onClick={setResult => {
+      app.registerOnThemeChangeHandler(setResult);
+      return '';
+    }}
+  />
+);
 
 const AppAPIs = (): ReactElement => {
   const [getContextV2Res, setGetContextV2Res] = React.useState('');
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
   const [shareDeepLinkRes, setShareDeepLinkRes] = React.useState('');
-  const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
   const getContextV2 = (): void => {
     setGetContextV2Res('app.getContext()' + noHostSdkMsg);
@@ -29,12 +40,6 @@ const AppAPIs = (): ReactElement => {
     const deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
     core.shareDeepLink(deepLinkParams);
     setShareDeepLinkRes('called shareDeepLink.');
-  };
-
-  const registerOnThemeChangeHandler = (): void => {
-    app.registerOnThemeChangeHandler((theme: string) => {
-      setRegisterOnThemeChangeHandlerRes(theme);
-    });
   };
 
   return (
@@ -61,13 +66,7 @@ const AppAPIs = (): ReactElement => {
         title="core.shareDeepLink"
         name="core.shareDeepLink"
       />
-      <BoxAndButton
-        handleClick={registerOnThemeChangeHandler}
-        output={registerOnThemeChangeHandlerRes}
-        hasInput={false}
-        title="Register On Theme Change Handler"
-        name="registerOnThemeChangeHandler"
-      />
+      <RegisterOnThemeChangeHandler />
     </>
   );
 };
