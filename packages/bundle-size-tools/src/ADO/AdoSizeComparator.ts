@@ -33,7 +33,7 @@ export class ADOSizeComparator {
    * typically will when the pipeline only builds commits to main.
    */
   private static readonly defaultBuildsToSearch = 40;
-  private readonly baseBranch: string = 'develop';
+  
 
   constructor(
     /**
@@ -54,11 +54,17 @@ export class ADOSizeComparator {
      */
     private readonly adoBuildId: number | undefined,
     /**
+     * Destination branch name against which the comparison is done.
+     * It should be a branch from which the code was forked
+     */
+    private readonly baseBranchName: string,
+    /**
      * Option to do fallback on commits when either there is no associated CI build or
      * it does not have the needed artifacts.  Fallback is not attempted for other
      * issues, such as for a failed (but still present) CI build.  This generator is
      * only used for fallback (it should not provide the first commit to check)
      */
+
     private readonly getFallbackCommit: ((startingCommit: string) => Generator<string>) | undefined = undefined,
   ) {}
 
@@ -82,7 +88,7 @@ export class ADOSizeComparator {
    * of failure, the message contains the error message and the raw data will be undefined.
    */
   public async createSizeComparisonMessage(tagWaiting: boolean): Promise<BundleComparisonResult> {
-    let baselineCommit: string | undefined = getBaselineCommit(this.baseBranch);
+    let baselineCommit: string | undefined = getBaselineCommit(this.baseBranchName);
     console.log(`The baseline commit for this PR is ${baselineCommit}`);
 
     // Some circumstances may want us to try a fallback, such as when a commit does
@@ -157,7 +163,7 @@ export class ADOSizeComparator {
     // Unable to find a usable baseline
     if (baselineCommit === undefined || baselineZip === undefined) {
       const message = `Could not find a usable baseline build with search starting at CI ${getBaselineCommit(
-        this.baseBranch,
+        this.baseBranchName,
       )}`;
       console.log(message);
       return { message, comparison: undefined };
