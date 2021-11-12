@@ -35,6 +35,16 @@ steps:
       Arguments: 'install'
     displayName: 'yarn install'
 
+  - script: 'node prepNextDevRelease.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'node prepNextDevRelease.js'
+
   - task: ESLint@1
     inputs:
       Configuration: 'required'
@@ -198,16 +208,6 @@ steps:
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
-
-  - script: 'node prepNextDevRelease.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'node prepNextDevRelease.js'
     
   # TODO - delete after release pipeline creation
   - task: CmdLine@1
