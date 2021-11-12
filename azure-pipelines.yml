@@ -199,7 +199,6 @@ steps:
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
 
-  # TODO - delete after release pipeline creation
   - script: 'node prepNextDevRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
@@ -209,7 +208,8 @@ steps:
       ne(variables['Build.Reason'], 'Manual')
       )
     displayName: 'node prepNextDevRelease.js'
-
+    
+  # TODO - delete after release pipeline creation
   - task: CmdLine@1
     condition: and(
       or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview')),
