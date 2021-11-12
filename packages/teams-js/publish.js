@@ -8,11 +8,9 @@ async function publishAsync(version) {
       npm_config_registry: npmRegistry,
     });
 
-    let cmd = 'npm publish';
+    let cmd = `npm publish --tag next`;
     if (version.includes('dev')) {
-      cmd = 'npm publish --tag dev';
-    } else if (version.includes('beta')) {
-      cmd = 'npm publish --tag beta';
+      cmd = `npm publish --tag next-dev`;
     }
 
     let result = await exec(cmd, {
@@ -40,14 +38,6 @@ const exec = (cmd, opts) => {
 (async () => {
   const packageJson = fs.read('./package.json', 'json');
   const version = packageJson.version;
-
-  if (version.includes('dev')) {
-    console.log('Dev version of the package is in use. No need to upload to CDN.');
-  } else if (version.includes('beta')) {
-    console.log('Beta version of the package is in use. No need to upload to CDN.');
-  } else {
-    console.log('##vso[task.setvariable variable=uploadToCDN]true');
-  }
 
   await exec(`npm install -g npm-cli-adduser`);
   await exec(`npm-cli-adduser -r ${npmRegistry} -u ${process.env['NPM_USERNAME']} -p ${process.env['NPM_PASSWORD']} -e ${process.env['NPM_EMAIL']}`)

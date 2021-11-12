@@ -13,19 +13,19 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 2. `yarn build` from repo root
 3. to run Unit test `yarn test`
 
-  TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the teams-js directory.
+  TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
 ## Installation
 
-To install the stable version:
+To install the latest 2.0 preview version:
 
 ### npm
 
-`npm install --save @microsoft/teams-js`
+`npm install --save @microsoft/teams-js@next`
 
 ### yarn
 
-`yarn add @microsoft/teams-js`
+`yarn add @microsoft/teams-js@next`
 
 ### Production
 
@@ -40,7 +40,7 @@ Install either using npm or yarn.
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
-import { core } from "@microsoft/teams-js";
+import { app } from '@microsoft/teams-js';
 ```
 
 ### As a script tag
@@ -49,9 +49,8 @@ Reference the SDK inside of your `.html` page using:
 
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
-<!-- TODO: Update URL (as above) -->
 <script
-  src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"
+  src="https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js"
   integrity="sha384-SCVF3m7OvDKnfAilUzYn2yozEvBeP8n/Oq0yTH8VUI70J4AzrqR70jzjdQ6DI8s2"
   crossorigin="anonymous"
 ></script>
