@@ -69,7 +69,7 @@ steps:
       eq(variables['Build.Reason'], 'PullRequest'),
       eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
     name: bundleAnalysisTask
-    displayName: 'Analyze bundles against 2.0-preview and output result'
+    displayName: 'Analyze bundles  against 2.0-preview and output result'
 
   - task: GitHubComment@0
     condition: and(
