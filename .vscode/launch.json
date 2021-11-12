@@ -16,7 +16,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "(made) Run current file",
+      "name": "Run current file",
       "program": "${file}",
       "cwd": "${fileDirname}"
     },
