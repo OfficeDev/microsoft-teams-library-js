@@ -115,14 +115,18 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
 
   const betaSuffixNumInCurrNextDev = getSpecificVerSuffixNum('beta', currNextDevVer);
   const betaSuffixNumInPkgJsonVer = getSpecificVerSuffixNum('beta', currPkgJsonVer);
-  // The new next-dev suffix number will be 0 if the beta suffixes are equal.
+  // The new next-dev suffix number will be 0 if the beta suffixes of both the current next-dev version and package.json version are equal.
+  // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.1-dev.2 means the new next-dev version should be 2.0.0-beta.2-dev.0
+  // and the new next-dev version suffix number is 0.
   let newNextDevVerSuffixNum = 0;
 
   // If the beta suffix number in the current next-dev version is already bumped from the beta suffix number of the package.json version,
-  // increment the existing dev suffix number from the next-dev version.
+  // increment the existing dev suffix number from the next-dev version. e.g. package.json version: 2.0.0-beta.0 and current next-dev version: 2.0.0-beta.1-dev.3
+  // means the new next-dev version will be 2.0.0-beta.1-dev.4 and the new next-dev version suffix number is 4.
   if (betaSuffixNumInCurrNextDev === betaSuffixNumInPkgJsonVer + 1) {
     newNextDevVerSuffixNum = getSpecificVerSuffixNum('dev', currNextDevVer) + 1;
-    // If the next-dev beta suffix is not equal to or exactly 1 higher than the package.json beta suffix, throw an error since this should not happen.
+    // If the next-dev beta suffix is not equal to or exactly 1 higher than the package.json beta suffix, throw an error since this does not follow our versioning structure.
+    // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.0-dev.0 should throw an error.
   } else if (betaSuffixNumInCurrNextDev !== betaSuffixNumInPkgJsonVer) {
     throw new Error(`Invalid beta version suffix number ${betaSuffixNumInPkgJsonVer} in package.json version ${currPkgJsonVer}`);
   }
