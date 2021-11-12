@@ -77,7 +77,7 @@ steps:
       eq(variables['Build.Reason'], 'PullRequest'),
       eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
     inputs:
-      gitHubConnection: 'ISS (3)'
+      gitHubConnection: 'github.com_anmaur'
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
