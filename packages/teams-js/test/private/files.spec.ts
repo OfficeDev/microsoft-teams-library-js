@@ -35,7 +35,7 @@ describe('files', () => {
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
@@ -84,7 +84,7 @@ describe('files', () => {
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
@@ -142,7 +142,7 @@ describe('files', () => {
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 

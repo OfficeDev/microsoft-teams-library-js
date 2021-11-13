@@ -1232,7 +1232,7 @@ describe('media', () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.authentication).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
           expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
-            "This call is not allowed in the 'authentication' context",
+            'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
           );
         });
       });
