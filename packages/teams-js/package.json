@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "files": [
     "dist/**",
-    "dts/**",
+    "LICENSE",
     "README.md"
   ]
 }
