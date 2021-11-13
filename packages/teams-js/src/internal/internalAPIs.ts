@@ -18,7 +18,10 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
     }
 
     if (!found) {
-      throw new Error("This call is not allowed in the '" + GlobalVars.frameContext + "' context");
+      throw new Error(
+        `This call is only allowed in following contexts: ${JSON.stringify(expectedFrameContexts)}. ` +
+          `Current context: "${GlobalVars.frameContext}".`,
+      );
     }
   }
 }
