@@ -1,6 +1,8 @@
 import { app, core, DeepLinkParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../App';
+import BoxAndButton from './BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const GetContext = (): ReactElement =>
@@ -16,7 +18,7 @@ const GetContext = (): ReactElement =>
 const ExecuteDeepLink = (): ReactElement =>
   ApiWithTextInput<string>({
     title: 'Execute Deep Link',
-    name: 'executeDeepLink',
+    name: 'executeDeepLink2',
     onClick: {
       validateInput: input => {
         if (typeof input !== 'string') {
@@ -57,14 +59,36 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
-const AppAPIs = (): ReactElement => (
-  <>
-    <h1>app</h1>
-    <GetContext />
-    <ExecuteDeepLink />
-    <ShareDeepLink />
-    <RegisterOnThemeChangeHandler />
-  </>
-);
+const AppAPIs = (): ReactElement => {
+  // TODO: Remove once E2E scenario tests are updated to use the new version
+  const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
+
+  // TODO: Remove once E2E scenario tests are updated to use the new version
+  const executeDeepLink = (deepLink: string): void => {
+    setExecuteDeepLinkRes('core.executeDeepLink()' + noHostSdkMsg);
+    core
+      .executeDeepLink(deepLink)
+      .then(() => setExecuteDeepLinkRes('Completed'))
+      .catch(reason => setExecuteDeepLinkRes(reason));
+  };
+
+  return (
+    <>
+      <h1>app</h1>
+      <GetContext />
+      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
+      <BoxAndButton
+        handleClickWithInput={executeDeepLink}
+        output={executeDeepLinkRes}
+        hasInput={true}
+        title="Execute Deep Link"
+        name="executeDeepLink"
+      />
+      <ExecuteDeepLink />
+      <ShareDeepLink />
+      <RegisterOnThemeChangeHandler />
+    </>
+  );
+};
 
 export default AppAPIs;
