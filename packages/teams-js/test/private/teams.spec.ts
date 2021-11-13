@@ -35,7 +35,7 @@ describe('AppSDK-privateAPIs', () => {
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
@@ -82,8 +82,9 @@ describe('AppSDK-privateAPIs', () => {
 
   describe('refreshSiteUrl', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError('The library has not yet been initialized');
+      expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
   });
-
 });

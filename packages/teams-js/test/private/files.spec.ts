@@ -214,7 +214,9 @@ describe('files', () => {
       await utils.initializeWithContext('settings');
       return expect(
         files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
-      ).rejects.toThrowError("This call is not allowed in the 'settings' context");
+      ).rejects.toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls with null folder', async () => {
@@ -287,7 +289,7 @@ describe('files', () => {
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       expect(() => files.openCloudStorageFile(mockCloudStorageFolderItem, files.CloudStorageProvider.Box)).toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
