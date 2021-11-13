@@ -40,60 +40,42 @@ export namespace meetingRoom {
    * @hidden
    * Hide from docs
    * ------
-   * Enum used to indicate meeting room capabilities.
+   * Type of Media control capabilities of a meeting room.
    */
-  export enum Capability {
-    /**
-     * @hidden
-     * Media control capability: toggle mute.
-     */
-    toggleMute = 'toggleMute',
-    /**
-     * @hidden
-     * Media control capability: toggle camera.
-     */
-    toggleCamera = 'toggleCamera',
-    /**
-     * @hidden
-     * Media control capability: toggle captions.
-     */
-    toggleCaptions = 'toggleCaptions',
-    /**
-     * @hidden
-     * Media control capability: volume ajustion.
-     */
-    volume = 'volume',
-    /**
-     * @hidden
-     * Stage layout control capability: show gallery mode.
-     */
-    showVideoGallery = 'showVideoGallery',
-    /**
-     * @hidden
-     * Stage layout control capability: show content mode.
-     */
-    showContent = 'showContent',
-    /**
-     * @hidden
-     * Stage layout control capability: show content + gallery mode.
-     */
-    showVideoGalleryAndContent = 'showVideoGalleryAndContent',
-    /**
-     * @hidden
-     * Stage layout control capability: show laryge gallery mode.
-     */
-    showLargeGallery = 'showLargeGallery',
-    /**
-     * @hidden
-     * Stage layout control capability: show together mode.
-     */
-    showTogether = 'showTogether',
-    /**
-     * @hidden
-     * Meeting control capability: leave meeting.
-     */
-    leaveMeeting = 'leaveMeeting',
-  }
+  type MediaControls = 'toggleMute' | 'toggleCamera' | 'toggleCaptions' | 'volume';
+
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Types of Stage Layout control capabilities of a meeting room.
+   */
+
+  type StageLayoutControls =
+    | 'showVideoGallery'
+    | 'showContent'
+    | 'showContent'
+    | 'showVideoGalleryAndContent'
+    | 'showLargeGallery'
+    | 'showTogether';
+
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Types of Meeting Control capabilities of a meeting room.
+   */
+
+  type MeetingControls = 'leaveMeeting';
+
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Types of Stage Layout State of a meeting room.
+   */
+
+  type StageLayoutStates = 'Gallery' | 'Content + gallery' | 'Content' | 'Large gallery' | 'Together mode';
 
   /**
    * @hidden
@@ -106,17 +88,17 @@ export namespace meetingRoom {
      * @hidden
      * Media control capabilities, value can be "toggleMute", "toggleCamera", "toggleCaptions", "volume".
      */
-    mediaControls: string[];
+    mediaControls: MediaControls[];
     /**
      * @hidden
      * Main stage layout control capabilities, value can be "showVideoGallery", "showContent", "showVideoGalleryAndContent", "showLargeGallery", "showTogether".
      */
-    stageLayoutControls: string[];
+    stageLayoutControls: StageLayoutControls[];
     /**
      * @hidden
      * Meeting control capabilities, value can be "leaveMeeting".
      */
-    meetingControls: string[];
+    meetingControls: MeetingControls[];
   }
 
   /**
@@ -145,7 +127,7 @@ export namespace meetingRoom {
      * @hidden
      * Current main stage layout state, value can be one of "Gallery", "Content + gallery", "Content", "Large gallery" and "Together mode".
      */
-    stageLayout: string;
+    stageLayout: StageLayoutStates;
     /**
      * @hidden
      * Current leaveMeeting state, true: leave, false: no-op.
