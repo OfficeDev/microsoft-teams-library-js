@@ -1,14 +1,13 @@
 import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput } from './utils/ApiWithoutInput';
-import { ApiWithTextInput } from './utils/ApiWithTextInput';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckCalendarCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkCapabilityCalendar',
     title: 'Check Calendar Capability',
-    onClick: () => `Calendar module ${calendar.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `Calendar module ${calendar.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const ComposeMeeting = (): React.ReactElement =>

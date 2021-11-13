@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
+import { ApiContainer } from './ApiContainer';
 
 export interface ApiWithTextInputProps<T> {
   title: string;
@@ -42,32 +43,9 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
   }, [input, setResult, onClick]);
 
   return (
-    <div
-      className="boxAndButton"
-      style={{
-        display: 'inline-block',
-        height: 200,
-        width: 400,
-        border: '5px solid black',
-        textAlign: 'center',
-      }}
-      id={`box_${name}`}
-    >
+    <ApiContainer title={title} result={result} name={name}>
       <input type="text" name={`input_${name}`} value={input} onChange={e => setInput(e.target.value)} />
       <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
-      <div
-        className="box"
-        style={{
-          border: '2px solid red',
-          height: 150,
-          width: 400,
-          overflow: 'auto',
-        }}
-      >
-        <span id={`text_${name}`} style={{ wordWrap: 'break-word' }}>
-          {result}
-        </span>
-      </div>
-    </div>
+    </ApiContainer>
   );
 };

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
+import { ApiContainer } from './ApiContainer';
 
 export interface ApiWithCheckboxInputProps {
   title: string;
@@ -27,33 +28,10 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
   }, [value, setResult, onClick]);
 
   return (
-    <div
-      className="boxAndButton"
-      style={{
-        display: 'inline-block',
-        height: 200,
-        width: 400,
-        border: '5px solid black',
-        textAlign: 'center',
-      }}
-      id={`box_${name}`}
-    >
+    <ApiContainer title={title} result={result} name={name}>
       <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
       {label}
       <input type="checkbox" name={label} onChange={e => setValue(e.target.checked)} />
-      <div
-        className="box"
-        style={{
-          border: '2px solid red',
-          height: 150,
-          width: 400,
-          overflow: 'auto',
-        }}
-      >
-        <span id={`text_${name}`} style={{ wordWrap: 'break-word' }}>
-          {result}
-        </span>
-      </div>
-    </div>
+    </ApiContainer>
   );
 };
