@@ -283,6 +283,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       parentMessageId: 'someParentMessageId',
       ringId: 'someRingId',
       appSessionId: 'appSessionId',
+      appLaunchId: 'appLaunchId',
       meetingId: 'dummyMeetingId'
     };
     //insert expected time comparison here?

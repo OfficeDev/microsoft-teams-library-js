@@ -97,6 +97,20 @@ export namespace meeting {
     };
   }
 
+  export interface IAppContentStageSharingCapabilities {
+    /**
+     * indicates whether app has permission to share contents to meeting stage
+     */
+    doesAppHaveSharePermission: boolean;
+  }
+
+  export interface IAppContentStageSharingState {
+    /**
+     * indicates whether app is currently being shared to stage
+     */
+    isAppSharing: boolean;
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -237,5 +251,78 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel);
     registerHandler('meeting.liveStreamChanged', handler);
+  }
+
+  /**
+   * Allows an app to share contents in the meeting
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError, incase of an error, or null when share is successful
+   * result can either contain a true value, incase of a successful share or null when the share fails
+   * @param appContentUrl is the input URL which needs to be shared on to the stage
+   */
+  export function shareAppContentToStage(
+    callback: (error: SdkError | null, result: boolean | null) => void,
+    appContentUrl: string,
+  ): void {
+    if (!callback) {
+      throw new Error('[share app content to stage] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+  }
+
+  /**
+   * Provides information related app's in-meeting sharing capabilities
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * appContentStageSharingCapabilities can either contain an IAppContentStageSharingCapabilities object
+   * (indication of successful retrieval), or null (indication of failed retrieval)
+   */
+  export function getAppContentStageSharingCapabilities(
+    callback: (
+      error: SdkError | null,
+      appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
+    ) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * Terminates current stage sharing session in meeting
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   */
+  export function stopSharingAppContentToStage(
+    callback: (error: SdkError | null, result: boolean | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[stop sharing app content to stage] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
+  }
+
+  /**
+   * Provides information related to current stage sharing state for app
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * appContentStageSharingState can either contain an IAppContentStageSharingState object
+   * (indication of successful retrieval), or null (indication of failed retrieval)
+   */
+  export function getAppContentStageSharingState(
+    callback: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[get app content stage sharing state] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('meeting.getAppContentStageSharingState', callback);
   }
 }

@@ -8,7 +8,12 @@ async function publishAsync(version) {
       npm_config_registry: npmRegistry,
     });
 
-    let cmd = version.includes('beta') ? 'npm publish --tag beta' : 'npm publish';
+    let cmd = 'npm publish';
+    if (version.includes('dev')) {
+      cmd = 'npm publish --tag dev';
+    } else if (version.includes('beta')) {
+      cmd = 'npm publish --tag beta';
+    }
 
     let result = await exec(cmd, {
       cwd: __dirname,
@@ -36,7 +41,9 @@ const exec = (cmd, opts) => {
   const packageJson = fs.read('./package.json', 'json');
   const version = packageJson.version;
 
-  if (version.includes('beta')) {
+  if (version.includes('dev')) {
+    console.log('Dev version of the package is in use. No need to upload to CDN.');
+  } else if (version.includes('beta')) {
     console.log('Beta version of the package is in use. No need to upload to CDN.');
   } else {
     console.log('##vso[task.setvariable variable=uploadToCDN]true');
