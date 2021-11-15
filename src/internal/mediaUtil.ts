@@ -89,10 +89,8 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
  * Returns true if the mediaInput params are called for mediatype VideoAndImage and false otherwise
  */
 export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs): boolean {
-  if (mediaInputs) {
-    if (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps) {
-      return true;
-    }
+  if (mediaInputs && (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps)) {
+    return true;
   }
   return false;
 }
@@ -101,14 +99,13 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
  * Returns true if the mediaInput params are called for non-full screen video mode and false otherwise
  */
 export function isMediaCallForNonFullScreenVideoMode(mediaInputs: media.MediaInputs): boolean {
-  if (mediaInputs) {
-    if (
-      mediaInputs.mediaType == media.MediaType.Video &&
-      mediaInputs.videoProps &&
-      !mediaInputs.videoProps.isFullScreenMode
-    ) {
-      return true;
-    }
+  if (
+    mediaInputs &&
+    mediaInputs.mediaType == media.MediaType.Video &&
+    mediaInputs.videoProps &&
+    !mediaInputs.videoProps.isFullScreenMode
+  ) {
+    return true;
   }
   return false;
 }
