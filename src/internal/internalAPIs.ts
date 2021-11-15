@@ -41,10 +41,7 @@ export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVer
  * Helper function to identify if host client is either android or ios
  */
 export function isHostClientMobile(): boolean {
-  if (GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios) {
-    return true;
-  }
-  return false;
+  return GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios;
 }
 
 /**
