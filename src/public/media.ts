@@ -1,6 +1,6 @@
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform, isApiSupportedOnMobile } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
 import { generateGUID } from '../internal/utils';
 import {
@@ -12,9 +12,7 @@ import {
   validateScanBarCodeInput,
   isMediaCallSupportedOnMobile,
   isVideoControllerRegistered,
-  isApiSupportedOnMobile,
 } from '../internal/mediaUtil';
-import { MediaControllerEvent, MediaControllerParam } from '../private/interfaces';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import {
@@ -435,6 +433,35 @@ export namespace media {
           }
       }
     }
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Events which are used to communicate between the app and the host client during the media recording flow
+   */
+  enum MediaControllerEvent {
+    StartRecording = 2,
+    StopRecording = 5,
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * --------
+   * Interface with relevant info to send communication from the app to the host client
+   */
+  interface MediaControllerParam {
+    /**
+     * List of team information
+     */
+    mediaType: media.MediaType;
+
+    /**
+     * List of team information
+     */
+    mediaControllerEvent: MediaControllerEvent;
   }
 
   /**

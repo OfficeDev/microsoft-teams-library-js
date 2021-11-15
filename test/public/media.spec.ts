@@ -7,7 +7,6 @@ import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { SdkError, ErrorCode } from '../../src/public/interfaces';
-import { MediaControllerEvent } from '../../src/private/interfaces';
 import { Utils } from '../utils';
 import { media } from '../../src/public/media';
 
@@ -443,7 +442,7 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, undefined, MediaControllerEvent.StartRecording],
+        args: [undefined, undefined, 2],
       },
     } as DOMMessageEvent);
 
@@ -473,7 +472,7 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, undefined, MediaControllerEvent.StartRecording],
+        args: [undefined, undefined, 2],
       },
     } as DOMMessageEvent);
 

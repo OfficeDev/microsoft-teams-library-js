@@ -1,5 +1,4 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
-import { media } from '../public/media';
 
 /**
  * @private
@@ -165,36 +164,4 @@ export interface UserJoinedTeamsInformation {
    * List of team information
    */
   userJoinedTeams: TeamInformation[];
-}
-
-/**
- * @private
- * Hide from docs
- * --------
- * Events which are used to communicate between the app and the host client during the media recording flow
- */
-export enum MediaControllerEvent {
-  StartPreview = 1,
-  StartRecording = 2,
-  PauseRecording = 3,
-  ResumeRecording = 4,
-  StopRecording = 5,
-}
-
-/**
- * @private
- * Hide from docs
- * --------
- * Interface with relevant info to send communication from the app to the host client
- */
-export interface MediaControllerParam {
-  /**
-   * List of team information
-   */
-  mediaType: media.MediaType;
-
-  /**
-   * List of team information
-   */
-  mediaControllerEvent: MediaControllerEvent;
 }
