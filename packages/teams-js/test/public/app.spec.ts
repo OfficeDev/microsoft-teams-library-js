@@ -463,7 +463,7 @@ describe('AppSDK-app', () => {
       await utils.initializeWithContext('authentication');
 
       return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
       );
     });
 
