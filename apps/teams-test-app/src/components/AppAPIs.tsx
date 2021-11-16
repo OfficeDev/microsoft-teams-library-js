@@ -7,8 +7,8 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
-    title: 'Get Context',
     name: 'getContextV2',
+    title: 'Get Context',
     onClick: async () => {
       const context = await app.getContext();
       return JSON.stringify(context);
@@ -17,8 +17,8 @@ const GetContext = (): ReactElement =>
 
 const ExecuteDeepLink = (): ReactElement =>
   ApiWithTextInput<string>({
-    title: 'Execute Deep Link',
     name: 'executeDeepLink2',
+    title: 'Execute Deep Link',
     onClick: {
       validateInput: input => {
         if (typeof input !== 'string') {
@@ -34,8 +34,8 @@ const ExecuteDeepLink = (): ReactElement =>
 
 const ShareDeepLink = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters>({
-    title: 'core.shareDeepLink',
     name: 'core.shareDeepLink',
+    title: 'core.shareDeepLink',
     onClick: {
       validateInput: input => {
         if (!input.subEntityId || !input.subEntityLabel) {
