@@ -1,4 +1,4 @@
-import { dialog, DialogInfo } from '@microsoft/teams-js';
+import { dialog, DialogInfo, IAppWindow, ParentAppWindow } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, noHostSdkMsg } from '../App';
@@ -9,6 +9,10 @@ const DialogAPIs = (): ReactElement => {
   const [resizeRes, setResizeRes] = React.useState('');
   const [submitRes, setSubmitRes] = React.useState('');
   const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+  const [messageFromParent, setMessageFromParent] = React.useState<string>('');
+  const [sendMessageToChildRes, setSendMessageToChildRes] = React.useState<string>('');
+  const [sendMessageToParentRes, setSendMessageToParentRes] = React.useState<string>('');
+  const childWindowRef = React.useRef<IAppWindow | null>(null);
 
   const openDialog = (dialogInfoInput: string): void => {
     const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
@@ -16,13 +20,47 @@ const DialogAPIs = (): ReactElement => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
     setOpenRes('dialog.open' + noHostSdkMsg);
-    dialog.open(dialogInfo, onComplete);
+
+    // Store the reference of child window in React
+    const childWindow = dialog.open(dialogInfo, onComplete);
+    childWindow.addEventListener('message', (message: string) => {
+      // Message from parent
+      setOpenRes(message);
+    });
+    childWindowRef.current = childWindow;
   };
 
   const resizeDialog = (dialogInfoInput: string): void => {
     const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
     dialog.resize(dialogInfo);
     setResizeRes('Teams client SDK call dialog.resize was called');
+  };
+
+  const sendMessageToChild = async (message: string) => {
+    if (childWindowRef.current && childWindowRef.current !== null) {
+      const childWindow = childWindowRef.current as IAppWindow;
+      const response = await childWindow.postMessage(message);
+      setSendMessageToChildRes('Message sent to child');
+    } else {
+      setSendMessageToChildRes('childWindow doesnt exist');
+    }
+  };
+
+  const sendMessageToParent = async (message: string) => {
+    const parentWindow = ParentAppWindow.Instance;
+    if (parentWindow) {
+      const response = await parentWindow.postMessage(message);
+      setSendMessageToParentRes('Message sent to parent');
+    } else {
+      setSendMessageToParentRes('parentWindow doesnt exist');
+    }
+  };
+
+  const registerForParentMessage = (): void => {
+    const parentWindow = ParentAppWindow.Instance;
+    parentWindow.addEventListener('message', (message: string) => {
+      setMessageFromParent(message);
+    });
   };
 
   const submitDialogWithInput = (submitDialogInput: string): void => {
@@ -84,6 +122,27 @@ const DialogAPIs = (): ReactElement => {
         hasInput={true}
         title="Dialog Submit With Input"
         name="dialogSubmitWithInput"
+      />
+      <BoxAndButton
+        handleClickWithInput={sendMessageToChild}
+        output={sendMessageToChildRes}
+        hasInput={true}
+        title="sendMessageToChild"
+        name="sendMessageToChild"
+      />
+      <BoxAndButton
+        handleClickWithInput={sendMessageToParent}
+        output={sendMessageToParentRes}
+        hasInput={true}
+        title="sendMessageToParent"
+        name="sendMessageToParent"
+      />
+      <BoxAndButton
+        handleClick={registerForParentMessage}
+        output={messageFromParent}
+        hasInput={false}
+        title="registerForParentMessageInTaskModule"
+        name="registerForParentMessage"
       />
     </>
   );
