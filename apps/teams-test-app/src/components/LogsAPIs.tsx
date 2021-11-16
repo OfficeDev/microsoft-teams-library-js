@@ -2,33 +2,26 @@ import { logs } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput } from './utils';
 
-const LogsAPIs = (): ReactElement => {
-  const [registerGetLogHandlerRes, setRegisterGetLogHandlerRes] = React.useState('');
+const RegisterGetLogHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerGetLogHandler',
+    title: 'Register Get Log Handler',
+    onClick: async setResult => {
+      logs.registerGetLogHandler(() => {
+        setResult('Success');
+        return 'App log string';
+      });
+      return generateRegistrationMsg('it is invoked to get the app log');
+    },
+  });
 
-  const registerGetLogHandler = (): void => {
-    setRegisterGetLogHandlerRes(generateRegistrationMsg('it is invoked to get the app log'));
-    const log = 'App log string';
-    const handler = (): string => {
-      setRegisterGetLogHandlerRes('Success');
-      return log;
-    };
-    logs.registerGetLogHandler(handler);
-  };
-
-  return (
-    <>
-      <h1>logs</h1>
-      <BoxAndButton
-        handleClick={registerGetLogHandler}
-        output={registerGetLogHandlerRes}
-        hasInput={false}
-        title="Register Get Log Handler"
-        name="registerGetLogHandler"
-      />
-    </>
-  );
-};
+const LogsAPIs = (): ReactElement => (
+  <>
+    <h1>logs</h1>
+    <RegisterGetLogHandler />
+  </>
+);
 
 export default LogsAPIs;
