@@ -36,21 +36,23 @@ const DialogAPIs = (): ReactElement => {
     setResizeRes('Teams client SDK call dialog.resize was called');
   };
 
-  const sendMessageToChild = async (message: string) => {
+  const sendMessageToChild = (message: string): void => {
     if (childWindowRef.current && childWindowRef.current !== null) {
       const childWindow = childWindowRef.current as IAppWindow;
-      const response = await childWindow.postMessage(message);
-      setSendMessageToChildRes('Message sent to child');
+      childWindow.postMessage(message).then(() => {
+        setSendMessageToChildRes('Message sent to child');
+      });
     } else {
       setSendMessageToChildRes('childWindow doesnt exist');
     }
   };
 
-  const sendMessageToParent = async (message: string) => {
+  const sendMessageToParent = (message: string): void => {
     const parentWindow = ParentAppWindow.Instance;
     if (parentWindow) {
-      const response = await parentWindow.postMessage(message);
-      setSendMessageToParentRes('Message sent to parent');
+      parentWindow.postMessage(message).then(() => {
+        setSendMessageToParentRes('Message sent to parent');
+      });
     } else {
       setSendMessageToParentRes('parentWindow doesnt exist');
     }
