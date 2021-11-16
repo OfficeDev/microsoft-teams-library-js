@@ -45,7 +45,7 @@ describe('authentication', () => {
       };
 
       expect(() => authentication.authenticate(authenticationParams)).toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
       );
     });
   });
@@ -674,7 +674,7 @@ describe('authentication', () => {
       'The library has not yet been initialized',
     );
   });
-  
+
   it('should successfully return getAuthToken in case of success in legacy flow', done => {
     utils.initializeWithContext('content').then(() => {
       const authTokenRequest = {
