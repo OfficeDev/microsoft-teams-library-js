@@ -3,35 +3,35 @@ import { FrameContexts } from './constants';
 import { pages } from './pages';
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1. Please use 'pages.config' namespace instead.
  *
  * Namespace to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
  */
 export namespace settings {
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.Config' instead.
    * @remarks
    * Renamed to config in pages.Config
    */
   export import Settings = pages.config.Config;
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.SaveEvent' instead.
    * @remarks
    * See pages.SaveEvent
    */
   export import SaveEvent = pages.config.SaveEvent;
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.RemoveEvent' instead.
    * @remarks
    * See pages.RemoveEvent
    */
   export import RemoveEvent = pages.config.RemoveEvent;
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.SaveParameters' instead.
    * @remarks
    * See pages.SaveParameters
    */
@@ -39,7 +39,7 @@ export namespace settings {
   export import SaveParameters = pages.config.SaveParameters;
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.setValidityState(validityState: boolean): void' instead.
    *
    * Sets the validity state for the settings.
    * The initial value is false, so the user cannot save the settings until this is called with true.
@@ -51,7 +51,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.getConfig(): Promise<Config>' instead.
    *
    * Gets the settings for the current instance.
    *
@@ -65,7 +65,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.setConfig(instanceSettings: Config): Promise<void>' instead.
    *
    * Sets the settings for the current instance.
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
@@ -92,7 +92,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void' instead.
    *
    * Registers a handler for when the user attempts to save the settings. This handler should be used
    * to create or update the underlying resource powering the content.
@@ -106,7 +106,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated with Teams JS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void' instead.
    *
    * Registers a handler for user attempts to remove content. This handler should be used
    * to remove the underlying resource powering the content.

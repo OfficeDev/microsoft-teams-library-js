@@ -240,7 +240,7 @@ export interface Context {
 
   /**
    * @hidden
-   * @deprecated Use loginHint or userPrincipalName.
+   * @deprecated As of 2.0.0-beta.1. Please use 'loginHint' or 'userPrincipalName' instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -559,7 +559,7 @@ export interface DialogInfo {
 }
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1. Please use 'DialogInfo' instead.
  */
 export type TaskInfo = DialogInfo;
 
@@ -680,7 +680,7 @@ export interface FrameInfo {
 }
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1. Please use 'FrameInfo' instead.
  */
 export type FrameContext = FrameInfo;
 

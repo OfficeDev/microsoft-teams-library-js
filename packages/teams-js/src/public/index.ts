@@ -39,11 +39,11 @@ export { video } from './video';
 export { sharing } from './sharing';
 export { call } from './call';
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1.
  */
 export { appInitialization } from './appInitialization';
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1.
  */
 export {
   enablePrintCapability,
@@ -68,14 +68,14 @@ export {
   shareDeepLink,
 } from './publicAPIs';
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1.
  */
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1.
  */
 export { settings } from './settings';
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated As of 2.0.0-beta.1.
  */
 export { tasks } from './tasks';

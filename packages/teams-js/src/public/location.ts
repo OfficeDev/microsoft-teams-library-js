@@ -55,7 +55,7 @@ export namespace location {
    */
   export function getLocation(props: LocationProps): Promise<Location>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'location.getLocation(props: LocationProps): Promise<Location>' instead.
    * @param props {@link LocationProps} - Specifying how the location request is handled
    * @param callback - Callback to invoke when current user location is fetched
    */
@@ -88,7 +88,7 @@ export namespace location {
    */
   export function showLocation(location: Location): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated As of 2.0.0-beta.1. Please use 'location.showLocation(location: Location): Promise<void>' instead.
    * Shows the location on map corresponding to the given coordinates
    * @param location {@link Location} - which needs to be shown on map
    * @param callback - Callback to invoke when the location is opened on map
