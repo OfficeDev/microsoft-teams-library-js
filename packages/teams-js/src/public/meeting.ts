@@ -158,7 +158,7 @@ export namespace meeting {
    */
   export function getIncomingClientAudioState(): Promise<boolean>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getIncomingClientAudioState(): Promise<boolean>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getIncomingClientAudioState(): Promise<boolean>} instead.
    *
    * Allows an app to get the incoming audio speaker setting for the meeting user
    *
@@ -196,7 +196,7 @@ export namespace meeting {
    */
   export function toggleIncomingClientAudio(): Promise<boolean>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.toggleIncomingClientAudio(): Promise<boolean>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.toggleIncomingClientAudio(): Promise<boolean>} instead.
    *
    * @param callback - Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when toggle is successful
@@ -233,7 +233,7 @@ export namespace meeting {
    */
   export function getMeetingDetails(): Promise<IMeetingDetails>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getMeetingDetails(): Promise<IMeetingDetails>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getMeetingDetails(): Promise<IMeetingDetails>} instead.
    *
    * @hidden
    * Hide from docs
@@ -281,7 +281,7 @@ export namespace meeting {
    */
   export function getAuthenticationTokenForAnonymousUser(): Promise<string>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getAuthenticationTokenForAnonymousUser(): Promise<string>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getAuthenticationTokenForAnonymousUser(): Promise<string>} instead.
    *
    * @hidden
    * Hide from docs
@@ -324,7 +324,7 @@ export namespace meeting {
    */
   export function getLiveStreamState(): Promise<LiveStreamState>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getLiveStreamState(): Promise<LiveStreamState>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getLiveStreamState(): Promise<LiveStreamState>} instead.
    *
    * Allows an app to get the state of the live stream in the current meeting
    *
@@ -364,7 +364,7 @@ export namespace meeting {
    */
   export function requestStartLiveStreaming(streamUrl: string, streamKey?: string): Promise<void>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.requestStartLiveStreaming(streamUrl: string, streamKey?: string): Promise<void>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.requestStartLiveStreaming(streamUrl: string, streamKey?: string): Promise<void>} instead.
    *
    * Allows an app to request the live streaming be started at the given streaming url
    *
@@ -429,7 +429,7 @@ export namespace meeting {
    */
   export function requestStopLiveStreaming(): Promise<void>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.requestStopLiveStreaming(): Promise<void>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.requestStopLiveStreaming(): Promise<void>} instead.
    *
    * Allows an app to request the live streaming be stopped at the given streaming url
    * @param callback - Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
@@ -474,7 +474,7 @@ export namespace meeting {
    */
   export function shareAppContentToStage(appContentUrl: string): Promise<boolean>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.shareAppContentToStage(appContentUrl: string): Promise<boolean>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.shareAppContentToStage(appContentUrl: string): Promise<boolean>} instead.
    *
    * Allows an app to share contents in the meeting
    *
@@ -531,7 +531,7 @@ export namespace meeting {
    */
   export function getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>} instead.
    *
    * Provides information related to app's in-meeting sharing capabilities
    *
@@ -577,7 +577,7 @@ export namespace meeting {
    */
   export function stopSharingAppContentToStage(): Promise<boolean>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.stopSharingAppContentToStage(): Promise<boolean>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.stopSharingAppContentToStage(): Promise<boolean>} instead.
    *
    * @hidden
    * Hide from docs.
@@ -615,7 +615,7 @@ export namespace meeting {
    */
   export function getAppContentStageSharingState(): Promise<IAppContentStageSharingState>;
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'meeting.getAppContentStageSharingState(): Promise<IAppContentStageSharingState>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link meeting.getAppContentStageSharingState(): Promise<IAppContentStageSharingState>} instead.
    *
    * Provides information related to current stage sharing state for app
    * @param callback - Callback contains 2 parameters, error and result.

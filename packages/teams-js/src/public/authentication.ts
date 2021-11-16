@@ -39,7 +39,7 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>} instead.
    *
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
@@ -144,7 +144,7 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>} instead.
    *
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
@@ -213,7 +213,7 @@ export namespace authentication {
   export function getUser(): Promise<UserProfile>;
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'getUser(): Promise<UserProfile>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link getUser(): Promise<UserProfile>} instead.
    *
    * @hidden
    * Hide from docs.
@@ -493,7 +493,7 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use'AuthenticatePopUpParameters' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link AuthenticatePopUpParameters} instead.
    */
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
@@ -513,7 +513,7 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use 'AuthTokenRequestParameters' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link AuthTokenRequestParameters} instead.
    */
   export type AuthTokenRequest = AuthTokenRequestParameters & LegacyCallBacks;
 

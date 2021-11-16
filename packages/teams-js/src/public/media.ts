@@ -89,7 +89,7 @@ export namespace media {
    *
    * @param callback - Callback to invoke when the image is captured.
    *
-   * @deprecated As of 2.0.0-beta.1. Please use 'media.captureImage(): Promise<File[]>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link media.captureImage(): Promise<File[]>} instead.
    *
    * @remarks
    * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
@@ -147,7 +147,7 @@ export namespace media {
     /**
      * Gets the media in chunks irrespective of size, these chunks are assembled and sent back to the webapp as file/blob
      *
-     * @deprecated As of 2.0.0-beta.1. Please use 'media.Media.getMedia(): Promise<Blob>' instead.
+     * @deprecated As of 2.0.0-beta.1. Please use {@link media.Media.getMedia(): Promise<Blob>} instead.
      *
      * @param callback - returns blob of media
      */
@@ -454,7 +454,7 @@ export namespace media {
   /**
    * Select an attachment using camera/gallery
    *
-   * @deprecated As of 2.0.0-beta.1. Please use 'media.selectMedia(mediaInputs: MediaInputs): Promise<Media[]>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link media.selectMedia(mediaInputs: MediaInputs): Promise<Media[]>} instead.
    *
    * @param mediaInputs - The input params to customize the media to be selected
    * @param callback - The callback to invoke after fetching the media
@@ -509,7 +509,7 @@ export namespace media {
   /**
    * View images using native image viewer
    *
-   * @deprecated As of 2.0.0-beta.1. Please use 'media.viewImages(uriList: ImageUri[]): Promise<void>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link media.viewImages(uriList: ImageUri[]): Promise<void>} instead.
    *
    * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
    * @param callback - returns back error if encountered, returns null in case of success
@@ -561,7 +561,7 @@ export namespace media {
    * @remarks
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
-   * @deprecated As of 2.0.0-beta.1. Please use 'media.scanBarCode(config?: BarCodeConfig): Promise<string>' instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link media.scanBarCode(config?: BarCodeConfig): Promise<string>} instead.
    *
    * @param callback - callback to invoke after scanning the barcode
    * @param config - optional input configuration to customize the barcode scanning experience
