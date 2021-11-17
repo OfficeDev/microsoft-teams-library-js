@@ -21,6 +21,7 @@ export namespace files {
     Sharefile = 'SHAREFILE',
     GoogleDrive = 'GOOGLEDRIVE',
     Egnyte = 'EGNYTE',
+    SharePoint = 'SharePoint',
   }
   interface IWopiThumbnail {
     size: number;
@@ -140,6 +141,67 @@ export namespace files {
      */
     accessToken?: string;
   }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Files entity user interface
+   */
+  export interface IFilesEntityUser {
+    /**
+     * User name.
+     */
+    displayName: string;
+    /**
+     * User email.
+     */
+    email: string;
+
+    /**
+     * User MRI.
+     */
+    mri: string;
+  }
+
+  export enum SpecialDocumentLibraryType {
+    ClassMaterials = 'classMaterials',
+  }
+
+  export enum DocumentLibraryAccessType {
+    Readonly = 'readonly',
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * SharePoint file interface
+   */
+  export interface ISharePointFile {
+    siteId?: string;
+    siteUrl: string;
+    objectId: string;
+    objectUrl: string;
+    openInWindowFileUrl: string;
+    title: string;
+    isFolder: boolean;
+    serverRelativeUrl: string;
+    lastModifiedByUser: IFilesEntityUser;
+    lastModifiedTime: string;
+    sentByUser: IFilesEntityUser;
+    createdByUser: IFilesEntityUser;
+    createdTime: string;
+    size: number;
+    type: string;
+    spItemUrl?: string;
+    libraryType?: SpecialDocumentLibraryType;
+    accessType?: DocumentLibraryAccessType;
+    etag?: string;
+    remoteItem?: string;
+    listUrl?: string;
+  }
+
   /**
    * @private
    * Hide from docs
@@ -154,7 +216,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
+    if (!channelId || channelId.length === 0) {
       throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
     }
     if (!callback) {
@@ -178,7 +240,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
+    if (!channelId || channelId.length === 0) {
       throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
     }
     if (!callback) {
@@ -301,9 +363,9 @@ export namespace files {
    * among SharePoint and third party cloud storages.
    */
   export function copyMoveFiles(
-    selectedFiles: CloudStorageFolderItem[],
+    selectedFiles: CloudStorageFolderItem[] | ISharePointFile[],
     providerCode: CloudStorageProvider,
-    destinationFolder: CloudStorageFolderItem,
+    destinationFolder: CloudStorageFolderItem | ISharePointFile,
     destinationProviderCode: CloudStorageProvider,
     isMove = false,
     callback: (error: SdkError) => void,
