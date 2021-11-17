@@ -29,7 +29,7 @@ export namespace appInitialization {
   export import IExpectedFailureRequest = app.IExpectedFailureRequest;
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyAppLoaded(): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyAppLoaded app.notifyAppLoaded(): void} instead.
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
@@ -37,7 +37,7 @@ export namespace appInitialization {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifySuccess(): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifySuccess app.notifySuccess(): void} instead.
    * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
@@ -45,7 +45,7 @@ export namespace appInitialization {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyFailure(appInitializationFailedRequest: IFailedRequest): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyFailure app.notifyFailure(appInitializationFailedRequest: IFailedRequest): void} instead.
    * Notifies the frame that app initialization has failed and to show an error page in its place.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
@@ -53,7 +53,7 @@ export namespace appInitialization {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link app.notifyExpectedFailure app.notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void} instead.
    * Notifies the frame that app initialized with some expected errors.
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {

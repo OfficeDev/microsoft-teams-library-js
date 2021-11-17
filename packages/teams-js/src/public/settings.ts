@@ -39,7 +39,7 @@ export namespace settings {
   export import SaveParameters = pages.config.SaveParameters;
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.setValidityState(validityState: boolean): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.setValidityState pages.config.setValidityState(validityState: boolean): void} instead.
    *
    * Sets the validity state for the settings.
    * The initial value is false, so the user cannot save the settings until this is called with true.
@@ -51,7 +51,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.getConfig(): Promise<Config>} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.getConfig pages.config.getConfig(): Promise\<Config\>} instead.
    *
    * Gets the settings for the current instance.
    *
@@ -65,7 +65,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.setConfig(instanceSettings: Config): Promise<void>} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.setConfig pages.config.setConfig(instanceSettings: Config): Promise\<void\>} instead.
    *
    * Sets the settings for the current instance.
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
@@ -92,7 +92,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void} instead.
    *
    * Registers a handler for when the user attempts to save the settings. This handler should be used
    * to create or update the underlying resource powering the content.
@@ -106,7 +106,7 @@ export namespace settings {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void} instead.
    *
    * Registers a handler for user attempts to remove content. This handler should be used
    * to remove the underlying resource powering the content.

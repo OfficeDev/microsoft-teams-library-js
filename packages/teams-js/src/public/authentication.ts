@@ -39,16 +39,6 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>} instead.
-   *
-   * Initiates an authentication request, which opens a new window with the specified settings.
-   *
-   * @param authenticateParameters - The parameters for the authentication request.
-   *
-   */
-  export function authenticate(authenticateParameters?: AuthenticateParameters): void;
-
-  /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
    * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
@@ -59,6 +49,15 @@ export namespace authentication {
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
+  /**
+   * @deprecated As of 2.0.0-beta.1. Please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
+   *
+   * Initiates an authentication request, which opens a new window with the specified settings.
+   *
+   * @param authenticateParameters - The parameters for the authentication request.
+   *
+   */
+  export function authenticate(authenticateParameters?: AuthenticateParameters): void;
   export function authenticate(authenticateParameters?: AuthenticateParameters): Promise<string> {
     const isDifferentParamsInCall: boolean = authenticateParameters !== undefined;
     const authenticateParams: AuthenticateParameters = isDifferentParamsInCall ? authenticateParameters : authParams;
@@ -144,17 +143,6 @@ export namespace authentication {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>} instead.
-   *
-   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
-   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
-   *
-   * @param authTokenRequest - A set of values that configure the token request.
-   * It contains callbacks to call in case of success/failure
-   */
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): void;
-
-  /**
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    *
@@ -163,6 +151,16 @@ export namespace authentication {
    * @returns Promise that will be fulfilled with the token if successful.
    */
   export function getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>;
+  /**
+   * @deprecated As of 2.0.0-beta.1. Please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
+   *
+   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
+   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   *
+   * @param authTokenRequest - A set of values that configure the token request.
+   * It contains callbacks to call in case of success/failure
+   */
+  export function getAuthToken(authTokenRequest: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
     ensureInitialized();
     return getAuthTokenHelper(authTokenRequest)
@@ -211,9 +209,8 @@ export namespace authentication {
    * @internal
    */
   export function getUser(): Promise<UserProfile>;
-
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link getUser(): Promise<UserProfile>} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
    * Hide from docs.

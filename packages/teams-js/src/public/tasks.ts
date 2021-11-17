@@ -12,7 +12,7 @@ import { TaskInfo } from './interfaces';
  */
 export namespace tasks {
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.open dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
    *
    * Allows an app to open the task module.
    *
@@ -24,7 +24,7 @@ export namespace tasks {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.resize(dialogInfo: DialogInfo): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
    *
    * Update height/width task info properties.
    *
@@ -35,7 +35,7 @@ export namespace tasks {
   }
 
   /**
-   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
+   * @deprecated As of 2.0.0-beta.1. Please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
    *
    * Submit the task module.
    *
