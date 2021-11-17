@@ -176,10 +176,22 @@ export namespace files {
     mri: string;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Special Document Library enum
+   */
   export enum SpecialDocumentLibraryType {
     ClassMaterials = 'classMaterials',
   }
 
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Document Library Access enum
+   */
   export enum DocumentLibraryAccessType {
     Readonly = 'readonly',
   }
