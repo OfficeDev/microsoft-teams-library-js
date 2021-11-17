@@ -7,6 +7,7 @@ export {
   TeamType,
   UserTeamRole,
   ChannelType,
+  HostName,
 } from './constants';
 export {
   Context,
@@ -21,6 +22,8 @@ export {
   TeamInformation,
   FileOpenPreference,
   OpenConversationRequest,
+  LocaleInfo,
+  FrameInfo,
 } from './interfaces';
 export { app, core } from './app';
 export { appInstallDialog } from './appInstallDialog';

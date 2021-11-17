@@ -464,7 +464,7 @@ export namespace authentication {
   /**
    * @deprecated with TeamsJS v2 upgrades
    */
-  interface LegacyCallBacks {
+  export interface LegacyCallBacks {
     /**
      * @deprecated with TeamsJS v2 upgrades
      * A function that is called if the request succeeds.
