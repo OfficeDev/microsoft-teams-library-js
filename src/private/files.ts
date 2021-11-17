@@ -34,11 +34,23 @@ export namespace files {
     thumbnails: IWopiThumbnail[];
   }
 
+  /**
+   * @private
+   * Hide from docs
+   *
+   * External third-party cloud storages providers interface
+   */
   export interface IExternalProvider extends IWopiService {
     providerType: CloudStorageProviderType;
     providerCode: CloudStorageProvider;
   }
 
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Cloud storage provider type enums
+   */
   export enum CloudStorageProviderType {
     Sharepoint = 0,
     WopiIntegration,
@@ -371,9 +383,6 @@ export namespace files {
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
-    if (isMove === undefined) {
-      throw new Error('[files.copyMoveFiles] isMove cannot be null or empty');
-    }
     if (!selectedFiles || selectedFiles.length === 0) {
       throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
     }
