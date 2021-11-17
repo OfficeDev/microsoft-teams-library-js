@@ -24,7 +24,9 @@ describe('config', () => {
   it('should not allow calls from the wrong context', async () => {
     await utils.initializeWithContext('content');
 
-    expect(() => pages.config.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
+    expect(() => pages.config.setValidityState(true)).toThrowError(
+      'This call is only allowed in following contexts: ["settings","remove"]. Current context: "content".',
+    );
   });
 
   it('should successfully notify success on save when there is no registered handler', async () => {

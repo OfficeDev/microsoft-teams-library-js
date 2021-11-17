@@ -87,83 +87,78 @@ function getPrefix(version) {
 }
 
 /**
+ * Takes the given whole version number and gets the suffix number of the version type (e.g. 'beta').
+ * @param {string} versionType The type of the version number suffix to get. e.g. beta, dev
+ * @param {string} wholeVerNum The entire version number. e.g. 2.0.0-beta.0, 2.0.0-beta.1-dev.0
+ * @returns The suffix number of the version type in the whole version number.
+ */
+function getSpecificVerSuffixNum(versionType, wholeVerNum) {
+  const indexOfVerType = wholeVerNum.indexOf(versionType);
+  if (indexOfVerType === -1) {
+    return -1;
+  } else {
+    return parseInt(wholeVerNum.slice(indexOfVerType + versionType.length + '.'.length));
+  }
+}
+
+/**
  * Uses the given current next-dev version and latest production version to generate and return
  * the number of the new next-dev version. The new next-dev version numbers are 0-index based.
- * @param {string} devVer The version currently tagged next-dev.
- * @param {string} currVer The version taken from the package.json.
- * @returns Just the number of the suffix of the next next-dev version. i.e. 1.10.0-dev.<next-dev suffix number to be returned>
+ * @param {string} currNextDevVer The version currently tagged next-dev. (e.g. 2.0.0-beta.1-dev.1)
+ * @param {string} currPkgJsonVer The version taken from the package.json. (e.g. 2.0.0-beta.0)
+ * @returns Just the number of the suffix of the new next-dev version number. (e.g. return 2 if next next-dev version is 2.0.0-beta.1-dev.2)
  */
-function getDevSuffixNum(devVer, currVer) {
-  if (devVer === undefined) {
+function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
+  if (currNextDevVer === undefined || currNextDevVer === '') {
     return 0;
   }
 
-  const [major, minor, patch] = currVer.split('.');
-  const [devMajor, devMinor, devPatch] = getPrefix(devVer).split('.');
+  const betaSuffixNumInCurrNextDev = getSpecificVerSuffixNum('beta', currNextDevVer);
+  const betaSuffixNumInPkgJsonVer = getSpecificVerSuffixNum('beta', currPkgJsonVer);
+  // The new next-dev suffix number will be 0 if the beta suffixes of both the current next-dev version and package.json version are equal.
+  // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.1-dev.2 means the new next-dev version should be 2.0.0-beta.2-dev.0
+  // and the new next-dev version suffix number is 0.
+  let newNextDevVerSuffixNum = 0;
 
-  if (parseInt(devMajor) < parseInt(major)) {
-    return 0;
-  } else if (devMajor == major) {
-    if (parseInt(devMinor) <= parseInt(minor)) {
-      return 0;
-    }
+  // If the beta suffix number in the current next-dev version is already bumped from the beta suffix number of the package.json version,
+  // increment the existing dev suffix number from the next-dev version. e.g. package.json version: 2.0.0-beta.0 and current next-dev version: 2.0.0-beta.1-dev.3
+  // means the new next-dev version will be 2.0.0-beta.1-dev.4 and the new next-dev version suffix number is 4.
+  if (betaSuffixNumInCurrNextDev === betaSuffixNumInPkgJsonVer + 1) {
+    newNextDevVerSuffixNum = getSpecificVerSuffixNum('dev', currNextDevVer) + 1;
+    // If the next-dev beta suffix is not equal to or exactly 1 higher than the package.json beta suffix, throw an error since this does not follow our versioning structure.
+    // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.0-dev.0 should throw an error.
+  } else if (betaSuffixNumInCurrNextDev !== betaSuffixNumInPkgJsonVer) {
+    throw new Error(`Invalid beta version suffix number ${betaSuffixNumInPkgJsonVer} in package.json version ${currPkgJsonVer}`);
   }
-  
-  const devIndex = devVer.indexOf('-dev.') + '-dev.'.length;
-  if (devIndex === -1) {
-    throw new Error(
-      `The next-dev tagged release \'${devVer}\'in the feed is not named properly and does not contain \'-dev\'. Please resolve this first.`,
-    );
-  }
-  const devSuffixNum = parseInt(devVer.substring(devIndex));
-  if (devSuffixNum === NaN) {
-    throw new Error(
-      `The next-dev tagged release \'${devVer}\'in the feed is not named properly and contains a non-number character after \'-dev.\'. Please resolve this first.`,
-    );
-  }
-
-  const newDevSuffixNum = devSuffixNum + 1;
-  return newDevSuffixNum;
+  return newNextDevVerSuffixNum;
 }
 
 /**
  * Generates the new package.json content with updated next-dev version number. The version number is
  * the only thing that's changed.
+ * @param currNextDevVer The current next-dev version to bump the new next-dev version number from. (e.g. 2.0.0-beta.1-dev.0)
  * @returns the new package.json content in JSON format.
  */
-function getNewPkgJsonContent(devStdout) {
+function getNewPkgJsonContent(currNextDevVer) {
   const packageJson = getPackageJson();
 
   // get package version from package.json
-  let currVersion = getPkgJsonVersion(packageJson);
-  console.log('package.json version: ' + currVersion);
-  console.log('current next-dev tagged version: ' + devStdout);
+  let currPkgJsonVer = getPkgJsonVersion(packageJson);
 
-  const [major, minor, patch] = currVersion.split('.');
-  if (devStdout !== undefined) {
-    const [devMajor, devMinor, devPatch] = getPrefix(devStdout).split('.');
-    devTooNew = false;
+  console.log('package.json version: ' + currPkgJsonVer);
+  console.log('current next-dev tagged version: ' + currNextDevVer);
 
-    if (parseInt(devMajor) > parseInt(major)) {
-      devTooNew = true;
-    } else if (devMajor == major) {
-      if (parseInt(devMinor) > parseInt(minor) + 1 || (parseInt(devMinor) == parseInt(minor) + 1 && parseInt(devPatch) > parseInt(patch) + 1)) {
-        devTooNew = true;
-      }
-    }
-
-    if (devTooNew) {
-      console.log(
-        'Currently, releasing a next-dev version that is older than or equal to the current next-dev tagged version is not supported. Will not make changes to the versions.',
-      );
-      process.exit();
-    }
+  if (currPkgJsonVer.includes('dev')) {
+    throw new Error(`The given package.json\'s version ${currPkgJsonVer} contains the substring \'dev\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`);
   }
+  const betaVerNum = getSpecificVerSuffixNum('beta', currPkgJsonVer);
+  if (isNaN(betaVerNum)) {
+    throw new Error(`The given package.json\'s version ${currPkgJsonVer} has a non-integer beta version number. Please fix the package.json version first in order to allow for proper version incrementation.`)
+  }
+  const v2BetaPrefix = '2.0.0-beta.' + (betaVerNum + 1);
 
-  let newDevPrefix = `${major}.${parseInt(minor) + 1}.0`;
-
-  const newDevSuffix = getDevSuffixNum(devStdout, currVersion);
-  const newVersion = newDevPrefix + '-dev.' + newDevSuffix;
+  const newDevSuffix = getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer);
+  const newVersion = v2BetaPrefix + '-dev.' + newDevSuffix;
 
   console.log('new version: ' + newVersion);
 

@@ -35,11 +35,11 @@ describe('video', () => {
   it('should not allow calls from the wrong context', async () => {
     await utils.initializeWithContext('content');
     expect(() => video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig)).toThrowError(
-      "This call is not allowed in the 'content' context",
+      'This call is only allowed in following contexts: ["sidePanel"]. Current context: "content".',
     );
     expect(() =>
       video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'sample effect config'),
-    ).toThrowError("This call is not allowed in the 'content' context");
+    ).toThrowError('This call is only allowed in following contexts: ["sidePanel"]. Current context: "content".');
   });
 
   it('register for video frame event', async () => {

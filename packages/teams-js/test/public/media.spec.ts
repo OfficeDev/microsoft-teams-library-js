@@ -59,21 +59,21 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
         expect(() => media.captureImage(emptyCallback)).toThrowError(
-          "This call is not allowed in the 'authentication' context",
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
         );
       });
       it('should not allow captureImage calls for remove frame context', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
         expect(() => media.captureImage(emptyCallback)).toThrowError(
-          "This call is not allowed in the 'remove' context",
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
         );
       });
       it('should not allow captureImage calls for settings frame context', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
         expect(() => media.captureImage(emptyCallback)).toThrowError(
-          "This call is not allowed in the 'settings' context",
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
         );
       });
       it('should not allow captureImage calls in desktop', done => {
@@ -174,18 +174,22 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
         return expect(() => media.captureImage()).toThrowError(
-          "This call is not allowed in the 'authentication' context",
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
         );
       });
       it('should not allow captureImage calls for remove frame context', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-        return expect(() => media.captureImage()).toThrowError("This call is not allowed in the 'remove' context");
+        return expect(() => media.captureImage()).toThrowError(
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
+        );
       });
       it('should not allow captureImage calls for settings frame context', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
-        return expect(() => media.captureImage()).toThrowError("This call is not allowed in the 'settings' context");
+        return expect(() => media.captureImage()).toThrowError(
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
+        );
       });
       it('should not allow captureImage calls in desktop', async () => {
         await desktopPlatformMock.initializeWithContext(FrameContexts.content);
@@ -1228,7 +1232,7 @@ describe('media', () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.authentication).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
           expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
-            "This call is not allowed in the 'authentication' context",
+            'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
           );
         });
       });
@@ -1369,7 +1373,7 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
         mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
         return expect(() => media.scanBarCode()).toThrowError(
-          "This call is not allowed in the 'authentication' context",
+          'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
         );
       });
 
