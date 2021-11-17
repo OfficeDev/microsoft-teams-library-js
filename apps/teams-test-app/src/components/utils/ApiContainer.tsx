@@ -9,8 +9,8 @@ export interface ApiContainerProps {
 export const ApiContainer = (props: React.PropsWithChildren<ApiContainerProps>): React.ReactElement => {
   const { children, name, result } = props;
 
-  if (!name || !/^[a-zA-Z0-9.]+$/.test(name)) {
-    throw new Error('name has to be set and it can only contain alphanumeric characters and dots.');
+  if (!name || !/^[a-zA-Z0-9._]+$/.test(name)) {
+    throw new Error('name has to be set and it can only contain alphanumeric characters, dots and underscores.');
   }
 
   return (
