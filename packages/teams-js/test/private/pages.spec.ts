@@ -32,7 +32,7 @@ describe('AppSDK-TeamsAPIs', () => {
       await utils.initializeWithContext('settings');
 
       expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
@@ -40,20 +40,24 @@ describe('AppSDK-TeamsAPIs', () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
       );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => pages.fullTrust.enterFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "remove".',
+      );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
-      expect(() => pages.fullTrust.enterFullscreen()).toThrowError("This call is not allowed in the 'task' context");
+      expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "task".',
+      );
     });
 
     it('should successfully enter fullscreen', async () => {
@@ -74,27 +78,33 @@ describe('AppSDK-TeamsAPIs', () => {
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => pages.fullTrust.exitFullscreen()).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
       );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => pages.fullTrust.exitFullscreen()).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "remove".',
+      );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
-      expect(() => pages.fullTrust.exitFullscreen()).toThrowError("This call is not allowed in the 'task' context");
+      expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "task".',
+      );
     });
 
     it('should successfully exit fullscreen', async () => {
