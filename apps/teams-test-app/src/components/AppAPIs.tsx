@@ -3,20 +3,67 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const GetContext = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'getContextV2',
+    title: 'Get Context',
+    onClick: async () => {
+      const context = await app.getContext();
+      return JSON.stringify(context);
+    },
+  });
+
+const ExecuteDeepLink = (): ReactElement =>
+  ApiWithTextInput<string>({
+    name: 'executeDeepLink2',
+    title: 'Execute Deep Link',
+    onClick: {
+      validateInput: input => {
+        if (typeof input !== 'string') {
+          throw new Error('Input should be a string');
+        }
+      },
+      submit: async input => {
+        await core.executeDeepLink(input);
+        return 'Completed';
+      },
+    },
+  });
+
+const ShareDeepLink = (): ReactElement =>
+  ApiWithTextInput<DeepLinkParameters>({
+    name: 'core.shareDeepLink',
+    title: 'core.shareDeepLink',
+    onClick: {
+      validateInput: input => {
+        if (!input.subEntityId || !input.subEntityLabel) {
+          throw new Error('subEntityId and subEntityLabel are required.');
+        }
+      },
+      submit: async input => {
+        await core.shareDeepLink(input);
+        return 'called shareDeepLink';
+      },
+    },
+  });
+
+const RegisterOnThemeChangeHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnThemeChangeHandler',
+    title: 'Register On Theme Change Handler',
+    onClick: async setResult => {
+      app.registerOnThemeChangeHandler(setResult);
+      return '';
+    },
+  });
 
 const AppAPIs = (): ReactElement => {
-  const [getContextV2Res, setGetContextV2Res] = React.useState('');
+  // TODO: Remove once E2E scenario tests are updated to use the new version
   const [executeDeepLinkRes, setExecuteDeepLinkRes] = React.useState('');
-  const [shareDeepLinkRes, setShareDeepLinkRes] = React.useState('');
-  const [registerOnThemeChangeHandlerRes, setRegisterOnThemeChangeHandlerRes] = React.useState('');
 
-  const getContextV2 = (): void => {
-    setGetContextV2Res('app.getContext()' + noHostSdkMsg);
-    app.getContext().then((res: app.Context) => {
-      setGetContextV2Res(JSON.stringify(res));
-    });
-  };
-
+  // TODO: Remove once E2E scenario tests are updated to use the new version
   const executeDeepLink = (deepLink: string): void => {
     setExecuteDeepLinkRes('core.executeDeepLink()' + noHostSdkMsg);
     core
@@ -25,28 +72,11 @@ const AppAPIs = (): ReactElement => {
       .catch(reason => setExecuteDeepLinkRes(reason));
   };
 
-  const shareDeepLink = (deepLinkParamsInput: string): void => {
-    const deepLinkParams: DeepLinkParameters = JSON.parse(deepLinkParamsInput);
-    core.shareDeepLink(deepLinkParams);
-    setShareDeepLinkRes('called shareDeepLink.');
-  };
-
-  const registerOnThemeChangeHandler = (): void => {
-    app.registerOnThemeChangeHandler((theme: string) => {
-      setRegisterOnThemeChangeHandlerRes(theme);
-    });
-  };
-
   return (
     <>
       <h1>app</h1>
-      <BoxAndButton
-        handleClick={getContextV2}
-        output={getContextV2Res}
-        hasInput={false}
-        title="Get Context"
-        name="getContextV2"
-      />
+      <GetContext />
+      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
       <BoxAndButton
         handleClickWithInput={executeDeepLink}
         output={executeDeepLinkRes}
@@ -54,20 +84,9 @@ const AppAPIs = (): ReactElement => {
         title="Execute Deep Link"
         name="executeDeepLink"
       />
-      <BoxAndButton
-        handleClickWithInput={shareDeepLink}
-        output={shareDeepLinkRes}
-        hasInput={true}
-        title="core.shareDeepLink"
-        name="core.shareDeepLink"
-      />
-      <BoxAndButton
-        handleClick={registerOnThemeChangeHandler}
-        output={registerOnThemeChangeHandlerRes}
-        hasInput={false}
-        title="Register On Theme Change Handler"
-        name="registerOnThemeChangeHandler"
-      />
+      <ExecuteDeepLink />
+      <ShareDeepLink />
+      <RegisterOnThemeChangeHandler />
     </>
   );
 };
