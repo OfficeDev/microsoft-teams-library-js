@@ -10,7 +10,7 @@ export const ApiContainer = (props: React.PropsWithChildren<ApiContainerProps>):
   const { children, name, result } = props;
 
   if (!name || !/^[a-zA-Z0-9.]+$/.test(name)) {
-    throw new Error('name has to be set and it can only contain alphanumeric characters.');
+    throw new Error('name has to be set and it can only contain alphanumeric characters and dots.');
   }
 
   return (
