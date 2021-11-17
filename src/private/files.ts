@@ -41,7 +41,7 @@ export namespace files {
 
   export enum CloudStorageProviderType {
     Sharepoint = 0,
-    Wopi,
+    WopiIntegration,
     Google,
     OneDrive,
     Recent,
@@ -348,7 +348,7 @@ export namespace files {
     excludeAddedProviders = false,
     callback: (error: SdkError, providers: IExternalProvider[]) => void,
   ): void {
-    ensureInitialized();
+    ensureInitialized(FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.getExternalProviders] Callback cannot be null');
@@ -368,9 +368,9 @@ export namespace files {
     destinationFolder: CloudStorageFolderItem | ISharePointFile,
     destinationProviderCode: CloudStorageProvider,
     isMove = false,
-    callback: (error: SdkError) => void,
+    callback: (error?: SdkError) => void,
   ): void {
-    ensureInitialized();
+    ensureInitialized(FrameContexts.content);
     if (isMove === undefined) {
       throw new Error('[files.copyMoveFiles] isMove cannot be null or empty');
     }
