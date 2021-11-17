@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { ApiContainer } from './ApiContainer';
 
-import { ApiContainer } from './ApiContainer';
-
 export interface ApiWithoutInputProps {
   title: string;
   name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
