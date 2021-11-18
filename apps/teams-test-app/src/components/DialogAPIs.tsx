@@ -49,9 +49,9 @@ const DialogAPIs = (): ReactElement => {
         if (childWindowRef.current && childWindowRef.current !== null) {
           const childWindow = childWindowRef.current;
           await childWindow.postMessage(message);
-          return Promise.resolve('Message sent to child');
+          return 'Message sent to child';
         } else {
-          return Promise.resolve('childWindow doesnt exist');
+          return 'childWindow doesnt exist';
         }
       },
     });
@@ -64,9 +64,9 @@ const DialogAPIs = (): ReactElement => {
         const parentWindow = ParentAppWindow.Instance;
         if (parentWindow) {
           await parentWindow.postMessage(message);
-          return Promise.resolve('Message sent to parent');
+          return 'Message sent to parent';
         } else {
-          return Promise.resolve('parentWindow doesnt exist');
+          return 'parentWindow doesn\'t exist';
         }
       },
     });
@@ -80,20 +80,17 @@ const DialogAPIs = (): ReactElement => {
         parentWindow.addEventListener('message', (message: string) => {
           setResult(message);
         });
-        return Promise.resolve('Completed');
+        return 'Completed';
       },
     });
 
   const SubmitDialogWithInput = (): ReactElement =>
-    ApiWithTextInput<{ result?: string | object; appIds?: string | string[] }>({
+    ApiWithTextInput<{ result?: string; appIds?: string | string[] }>({
       name: 'dialogSubmitWithInput',
       title: 'Dialog Submit With Input',
-      onClick: {
-        validateInput: input => {},
-        submit: async submitInput => {
-          dialog.submit(submitInput.result, submitInput.appIds);
-          return '';
-        },
+      onClick: async submitInput => {
+        dialog.submit(submitInput.result, submitInput.appIds);
+        return '';
       },
     });
 
@@ -101,11 +98,11 @@ const DialogAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'checkCapabilityDialog',
       title: 'Check Capability Dialog',
-      onClick: async => {
+      onClick: async () => {
         if (dialog.isSupported()) {
-          return Promise.resolve('Dialog module is supported');
+          return 'Dialog module is supported';
         } else {
-          return Promise.resolve('Dialog module is not supported');
+          return 'Dialog module is not supported';
         }
       },
     });
