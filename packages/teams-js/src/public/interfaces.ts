@@ -240,7 +240,8 @@ export interface Context {
 
   /**
    * @hidden
-   * @deprecated As of 2.0.0-beta.1. Please use {@link loginHint} or {@link userPrincipalName} instead.
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link loginHint} or {@link userPrincipalName} instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -559,7 +560,8 @@ export interface DialogInfo {
 }
 
 /**
- * @deprecated As of 2.0.0-beta.1. Please use {@link DialogInfo} instead.
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link DialogInfo} instead.
  */
 export type TaskInfo = DialogInfo;
 
@@ -680,7 +682,8 @@ export interface FrameInfo {
 }
 
 /**
- * @deprecated As of 2.0.0-beta.1. Please use {@link FrameInfo} instead.
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link FrameInfo} instead.
  */
 export type FrameContext = FrameInfo;
 
