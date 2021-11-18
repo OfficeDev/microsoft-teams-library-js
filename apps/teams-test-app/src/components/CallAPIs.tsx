@@ -20,7 +20,7 @@ const StartCall = (): React.ReactElement =>
           throw new Error('targets is required');
         }
         const targets = input.targets;
-        if (!Array.isArray(targets) || targets.length === 0 || targets.some(x => typeof x !== x)) {
+        if (!Array.isArray(targets) || targets.length === 0 || targets.some(x => typeof x !== 'string')) {
           throw new Error('targets has to be a non-empty array of strings');
         }
       },
