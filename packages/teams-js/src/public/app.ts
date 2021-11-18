@@ -444,7 +444,7 @@ export namespace app {
     );
   }
 
-  export function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
+  function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>(resolve => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
