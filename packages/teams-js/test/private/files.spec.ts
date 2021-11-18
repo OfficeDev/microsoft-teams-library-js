@@ -1,3 +1,4 @@
+import { isVoidExpression } from 'typescript';
 import { files } from '../../src/private/files';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
@@ -376,8 +377,8 @@ describe('files', () => {
   });
 
   describe('getExternalProviders', () => {
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+    it('should resolve promise correctly for getExternalProviders', async () => {
+      await utils.initializeWithContext('content');
       const mockExternalProviders: files.IExternalProvider[] = [
         {
           name: 'google',
@@ -393,17 +394,12 @@ describe('files', () => {
         },
       ];
 
-      const callback = jest.fn((err, providers) => {
-        expect(err).toBeFalsy();
-        expect(providers).toEqual(mockExternalProviders);
-      });
-
-      files.getExternalProviders(false, callback);
+      const promise = files.getExternalProviders(false);
 
       const getExternalProviders = utils.findMessageByFunc('files.getExternalProviders');
       expect(getExternalProviders).not.toBeNull();
       utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toEqual(mockExternalProviders);
     });
   });
 
@@ -435,36 +431,25 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() =>
-        files.copyMoveFiles(
-          mockSelectedFiles,
-          mockProviderCode,
-          mockDestinationFolder,
-          destinationProviderCode,
-          false,
-          emptyCallback,
-        ),
-      ).toThrowError('The library has not yet been initialized');
+        files.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false),
+      ).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+    it('should resolve promise correctly for copyMoveFiles', async () => {
+      await utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
-        expect(err).toBeFalsy();
-      });
-
-      files.copyMoveFiles(
+      const promise = files.copyMoveFiles(
         mockSelectedFiles,
         mockProviderCode,
         mockDestinationFolder,
         destinationProviderCode,
         false,
-        callback,
       );
+
       const copyMoveFilesMessage = utils.findMessageByFunc('files.copyMoveFiles');
       expect(copyMoveFilesMessage).not.toBeNull();
       utils.respondToMessage(copyMoveFilesMessage, false);
-      expect(callback).toHaveBeenCalled();
+      return expect(promise).resolves.toEqual(undefined);
     });
   });
 });
