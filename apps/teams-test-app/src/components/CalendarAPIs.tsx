@@ -1,7 +1,6 @@
 import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import BoxAndButton from './BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckCalendarCapability = (): React.ReactElement =>
@@ -38,35 +37,13 @@ const OpenCalendarItem = (): React.ReactElement =>
     },
   });
 
-const CalendarAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const checkCalendarCapability = (): void => {
-    if (calendar.isSupported()) {
-      setCapabilityCheckRes('Calendar module is supported');
-    } else {
-      setCapabilityCheckRes('Calendar module is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>calendar</h1>
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClick={checkCalendarCapability}
-        output={capabilityCheckRes}
-        hasInput={false}
-        title="Check Capability Calendar"
-        name="checkCapabilityCalendar"
-      />
-      <CheckCalendarCapability />
-      <ComposeMeeting />
-      <OpenCalendarItem />
-    </>
-  );
-};
+const CalendarAPIs = (): ReactElement => (
+  <>
+    <h1>calendar</h1>
+    <CheckCalendarCapability />
+    <ComposeMeeting />
+    <OpenCalendarItem />
+  </>
+);
 
 export default CalendarAPIs;
