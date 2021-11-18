@@ -17,7 +17,7 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (dialogInfo, setResult) => {
-          const onComplete = (err: string, result: string): void => {
+          const onComplete = (err: string, result: string | object): void => {
             setResult('Error: ' + err + '\nResult: ' + result);
           };
           // Store the reference of child window in React
