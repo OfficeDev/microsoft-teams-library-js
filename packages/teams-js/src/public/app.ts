@@ -14,7 +14,7 @@ import { defaultSDKVersionForCompatCheck, version } from '../internal/constants'
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
-import { compareSDKVersions } from '../internal/utils';
+import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
 import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
@@ -421,6 +421,11 @@ export namespace app {
   }
 
   /**
+   * Number of milliseconds we'll give the initialization call to return before timing it out
+   */
+  const initializationTimeoutInMs = 5000;
+
+  /**
    * Initializes the library.
    *
    * @remarks
@@ -432,6 +437,14 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    return runWithTimeout(
+      () => initializeHelper(validMessageOrigins),
+      initializationTimeoutInMs,
+      new Error('SDK initialization timed out.'),
+    );
+  }
+
+  export function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>(resolve => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
