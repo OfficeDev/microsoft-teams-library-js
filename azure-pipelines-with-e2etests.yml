@@ -12,7 +12,6 @@ pool:
 steps:
   - checkout: self
   - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-
     persistCredentials: true
 
   - task: NodeTool@0
