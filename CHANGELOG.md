@@ -5,6 +5,8 @@ Update TSDoc @deprecated comments to include links to replaced APIs.
 
 Update webpack-dev-server types to match webpack 5 versions and stop generating module wrappers in MicrosoftTeams.d.ts.
 
+Fix warnings produced during documentation generation, including exporting additional existing interfaces.
+
 Update repository URLs to reference `2.0-preview` branch.
 
 # 2.0.0-beta.1
