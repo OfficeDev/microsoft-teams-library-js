@@ -35,6 +35,10 @@ export namespace video {
      * RGB stride, valid only when video frame format is RGB
      */
     stride?: number;
+    /**
+     * Per frame binary attachment
+     */
+    binaryAttachment?: Uint8Array;
   }
   /**
    * Video frame format enum, currently only support NV12
@@ -50,6 +54,12 @@ export namespace video {
      * video format
      */
     format: VideoFrameFormat;
+    /**
+     * This flag indicates the video app need camera steram or not.
+     * If video filter wants to synthesize a video frame without camera stream, it can set this flag to false.
+     * Default value is true.
+     */
+    requireCameraStream?: boolean;
   }
 
   /**
