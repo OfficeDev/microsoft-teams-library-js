@@ -42,7 +42,7 @@ describe('chat', () => {
         entityId: 'someEntityId',
       };
       return expect(chat.openConversation(conversationRequest)).rejects.toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
@@ -100,7 +100,9 @@ describe('chat', () => {
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => chat.closeConversation()).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => chat.closeConversation()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+      );
     });
   });
 

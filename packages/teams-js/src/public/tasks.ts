@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { IAppWindow } from './appWindow';
 import { TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
@@ -21,7 +23,10 @@ export namespace tasks {
    * @param taskInfo - An object containing the parameters of the task module
    * @param submitHandler - Handler to call when the task module is completed
    */
-  export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
+  export function startTask(
+    taskInfo: TaskInfo,
+    submitHandler?: (err: string, result: string | object) => void,
+  ): IAppWindow {
     return dialog.open(getDialogInfoFromTaskInfo(taskInfo), submitHandler);
   }
 
@@ -46,7 +51,6 @@ export namespace tasks {
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
-  // eslint-disable-next-line
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
     dialog.submit(result, appIds);
   }

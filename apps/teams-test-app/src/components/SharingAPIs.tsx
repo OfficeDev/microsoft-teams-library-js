@@ -6,11 +6,11 @@ import BoxAndButton from './BoxAndButton';
 
 const SharingAPIs = (): ReactElement => {
   const [shareWebContentRes, setShareWebContentRes] = React.useState('');
+  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
-  const shareWebContent = (): void => {
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [{ type: 'URL', url: 'https://bing.com' }],
-    };
+  const shareWebContent = (input: string): void => {
+    const shareRequest: sharing.IShareRequest<sharing.IShareRequestContentType> = JSON.parse(input);
+
     const callback = (err?: SdkError): void => {
       if (err) {
         setShareWebContentRes(JSON.stringify(err));
@@ -22,15 +22,30 @@ const SharingAPIs = (): ReactElement => {
     sharing.shareWebContent(shareRequest, callback);
   };
 
+  const checkSharingCapability = (): void => {
+    if (sharing.isSupported()) {
+      setCapabilityCheckRes('Sharing is supported');
+    } else {
+      setCapabilityCheckRes('Sharing is not supported');
+    }
+  };
+
   return (
     <>
       <h1>sharing</h1>
       <BoxAndButton
-        handleClick={shareWebContent}
+        handleClickWithInput={shareWebContent}
         output={shareWebContentRes}
-        hasInput={false}
+        hasInput={true}
         title="Share web content"
         name="share_shareWebContent"
+      />
+      <BoxAndButton
+        handleClick={checkSharingCapability}
+        output={capabilityCheckRes}
+        hasInput={false}
+        title="Check Sharing Capability"
+        name="checkSharingCapability"
       />
     </>
   );

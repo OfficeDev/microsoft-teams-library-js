@@ -1,63 +1,64 @@
 import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const CheckAppEntityCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkAppEntityCapability',
+    title: 'Check AppEntity Capability',
+    onClick: async () => `AppEntity ${appEntity.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
 interface AppEntityParams {
   threadId: string;
   categories: string[];
 }
-const AppEntityAPIs = (): ReactElement => {
-  const [selectAppEntityRes, setSelectAppEntityRes] = React.useState('');
-  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
 
-  const handleClickOnSelectAppEntity = (input: string): void => {
-    const appEntityParams: AppEntityParams = JSON.parse(input);
-    const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
-      if (entity) {
-        setSelectAppEntityRes(JSON.stringify(entity));
-      } else if (error) {
-        setSelectAppEntityRes(JSON.stringify(error));
-      }
-    };
-    setSelectAppEntityRes('appEntity.selectAppEntity()' + noHostSdkMsg);
-    app.getContext().then((res: app.Context) => {
-      if (res.page.subPageId !== undefined) {
-        appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, res.page.subPageId, callback);
-      } else {
-        appEntity.selectAppEntity(appEntityParams.threadId, appEntityParams.categories, '', callback);
-      }
-    });
-  };
+const SelectAppEntity = (): React.ReactElement =>
+  ApiWithTextInput<AppEntityParams>({
+    name: 'select_appEntity',
+    title: 'Select AppEntity',
+    onClick: {
+      validateInput: ({ threadId, categories }) => {
+        if (!threadId || !categories) {
+          throw new Error('threadId and categories are required');
+        }
+        if (typeof threadId !== 'string') {
+          throw new Error('threadId has to be a string');
+        }
+        if (!Array.isArray(categories) || categories.some(x => typeof x !== 'string')) {
+          throw new Error('categories has to be a string array');
+        }
+      },
+      submit: appEntityParams => {
+        return new Promise(resolve => {
+          const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
+            if (entity) {
+              resolve(JSON.stringify(entity));
+            } else {
+              resolve(JSON.stringify(error));
+            }
+          };
+          app.getContext().then(context => {
+            appEntity.selectAppEntity(
+              appEntityParams.threadId,
+              appEntityParams.categories,
+              context.page.subPageId ?? '',
+              callback,
+            );
+          });
+        });
+      },
+    },
+  });
 
-  const checkAppEntityCapability = (): void => {
-    if (appEntity.isSupported()) {
-      setCapabilityCheckRes('AppEntity is supported');
-    } else {
-      setCapabilityCheckRes('AppEntity is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>appEntity</h1>
-      <BoxAndButton
-        handleClickWithInput={handleClickOnSelectAppEntity}
-        output={selectAppEntityRes}
-        hasInput={true}
-        title="Select AppEntity"
-        name="select_appEntity"
-      />
-      <BoxAndButton
-        handleClick={checkAppEntityCapability}
-        output={capabilityCheckRes}
-        hasInput={false}
-        title="Check AppEntity Capability"
-        name="checkAppEntityCapability"
-      />
-    </>
-  );
-};
+const AppEntityAPIs = (): ReactElement => (
+  <>
+    <h1>appEntity</h1>
+    <SelectAppEntity />
+    <CheckAppEntityCapability />
+  </>
+);
 
 export default AppEntityAPIs;
