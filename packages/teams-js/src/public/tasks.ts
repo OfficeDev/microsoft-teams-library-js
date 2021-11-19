@@ -6,7 +6,8 @@ import { dialog } from './dialog';
 import { TaskInfo } from './interfaces';
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -14,7 +15,8 @@ import { TaskInfo } from './interfaces';
  */
 export namespace tasks {
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.open dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
    *
    * Allows an app to open the task module.
    *
@@ -29,7 +31,8 @@ export namespace tasks {
   }
 
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
    *
    * Update height/width task info properties.
    *
@@ -40,7 +43,8 @@ export namespace tasks {
   }
 
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
    *
    * Submit the task module.
    *
