@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { dialog, DialogInfo } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -12,7 +13,7 @@ const DialogAPIs = (): ReactElement => {
 
   const openDialog = (dialogInfoInput: string): void => {
     const dialogInfo: DialogInfo = JSON.parse(dialogInfoInput);
-    const onComplete = (err: string, result: string): void => {
+    const onComplete = (err: string, result: string | object): void => {
       setOpenRes('Error: ' + err + '\nResult: ' + result);
     };
     setOpenRes('dialog.open' + noHostSdkMsg);

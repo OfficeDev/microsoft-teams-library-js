@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { IAppWindow } from './appWindow';
 import { TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import { TaskInfo } from './interfaces';
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -12,19 +15,24 @@ import { TaskInfo } from './interfaces';
  */
 export namespace tasks {
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.open dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
    *
    * Allows an app to open the task module.
    *
    * @param taskInfo - An object containing the parameters of the task module
    * @param submitHandler - Handler to call when the task module is completed
    */
-  export function startTask(taskInfo: TaskInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
+  export function startTask(
+    taskInfo: TaskInfo,
+    submitHandler?: (err: string, result: string | object) => void,
+  ): IAppWindow {
     return dialog.open(getDialogInfoFromTaskInfo(taskInfo), submitHandler);
   }
 
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
    *
    * Update height/width task info properties.
    *
@@ -35,14 +43,14 @@ export namespace tasks {
   }
 
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
    *
    * Submit the task module.
    *
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
-  // eslint-disable-next-line
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
     dialog.submit(result, appIds);
   }
