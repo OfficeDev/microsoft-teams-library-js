@@ -5,8 +5,6 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
-
-
   const OpenDialog = (): ReactElement =>
     ApiWithTextInput<DialogInfo>({
       name: 'dialogOpen',
