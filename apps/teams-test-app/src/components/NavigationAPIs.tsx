@@ -1,17 +1,78 @@
-import { pages } from '@microsoft/teams-js';
+import { pages, TabInstance } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
 import CheckboxAndButton from './CheckboxAndButton';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const NavigateBack = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'navigateBack',
+    title: 'Navigate Back',
+    onClick: async () => {
+      await pages.backStack.navigateBack();
+      return 'Completed';
+    },
+  });
+
+const NavigateCrossDomain = (): React.ReactElement =>
+  ApiWithTextInput<string>({
+    name: 'navigateCrossDomain2',
+    title: 'Navigate Cross Domain',
+    onClick: {
+      validateInput: input => {
+        if (!input) {
+          throw new Error('Target URL is required.');
+        }
+      },
+      submit: async input => {
+        await pages.navigateCrossDomain(input);
+        return 'Completed';
+      },
+    },
+  });
+
+const NavigateToTab = (): React.ReactElement =>
+  ApiWithTextInput<TabInstance>({
+    name: 'navigateToTab',
+    title: 'Navigate To Tab',
+    onClick: {
+      validateInput: input => {
+        if (!input.tabName) {
+          throw new Error('tabName is required');
+        }
+      },
+      submit: async input => {
+        await pages.tabs.navigateToTab(input);
+        return 'Completed';
+      },
+    },
+  });
+
+const ReturnFocus = (): React.ReactElement =>
+  ApiWithCheckboxInput({
+    name: 'returnFocus',
+    title: 'Return Focus',
+    label: 'navigateForward',
+    onClick: async input => {
+      await pages.returnFocus(input);
+      return 'Current navigateForward state is ' + input;
+    },
+  });
+
+const CheckPageCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkPageCapability',
+    title: 'Check Page Call',
+    onClick: async () => `Pages module ${pages.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
 const NavigationAPIs = (): ReactElement => {
+  // TODO: Remove once E2E scenario tests are updated to use the new version
   const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
-  const [returnFocusRes, setReturnFocusRes] = React.useState('');
-  const [navigateToTabRes, setNavigateToTabRes] = React.useState('');
-  const [navigateBackRes, setNavigateBackRes] = React.useState('');
-  const [checkPagesCapabilityRes, setCheckPagesCapabilityRes] = React.useState('');
 
+  // TODO: Remove once E2E scenario tests are updated to use the new version
   const navigateCrossDomainFunc = (url: string): void => {
     setNavigateCrossDomainRes('navigateCrossDomain()' + noHostSdkMsg);
     pages
@@ -20,66 +81,10 @@ const NavigationAPIs = (): ReactElement => {
       .catch(reason => setNavigateCrossDomainRes(reason));
   };
 
-  const navigateToTabFunc = (inputParams: string): void => {
-    setNavigateToTabRes('navigateToTab()' + noHostSdkMsg);
-    pages.tabs
-      .navigateToTab(JSON.parse(inputParams))
-      .then(() => setNavigateToTabRes('Completed'))
-      .catch(reason => setNavigateToTabRes(reason));
-  };
-
-  const navigateBackFunc = (): void => {
-    setNavigateBackRes('navigateBack()' + noHostSdkMsg);
-    pages.backStack
-      .navigateBack()
-      .then(() => setNavigateBackRes('Completed'))
-      .catch(reason => setNavigateBackRes(reason));
-  };
-
-  const returnFocusFunc = (navigateForward: string): void => {
-    setReturnFocusRes('Current navigateForward state is ' + navigateForward);
-    if (navigateForward) {
-      pages.returnFocus(navigateForward === 'true');
-    } else {
-      pages.returnFocus();
-    }
-  };
-
-  const returnFocus = (inputParams: string): void => {
-    if (inputParams) {
-      try {
-        const param = JSON.parse(inputParams);
-        if (param.navigateForward) {
-          pages.returnFocus(param.navigateForward);
-          setReturnFocusRes('called with param: ' + param.navigateForward);
-          return;
-        } else {
-          pages.returnFocus();
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          setReturnFocusRes(error.message);
-        } else {
-          setReturnFocusRes(JSON.stringify(error));
-        }
-        return;
-      }
-    } else {
-      pages.returnFocus();
-    }
-    setReturnFocusRes('called with no param');
-  };
-
-  const pagesCapabilityCheck = (): void => {
-    if (pages.isSupported()) {
-      setCheckPagesCapabilityRes('Pages module is supported');
-    } else {
-      setCheckPagesCapabilityRes('Pages module is not supported');
-    }
-  };
   return (
     <>
       <h1>navigation</h1>
+      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
       <BoxAndButton
         handleClickWithInput={navigateCrossDomainFunc}
         output={navigateCrossDomainRes}
@@ -87,45 +92,11 @@ const NavigationAPIs = (): ReactElement => {
         title="Navigate Cross Domain"
         name="navigateCrossDomain"
       />
-      <BoxAndButton
-        handleClickWithInput={returnFocus}
-        output={returnFocusRes}
-        hasInput={true}
-        title="Return Focus (non-checkbox)"
-        // eslint-disable-next-line
-        defaultInput={'{\"navigateForward\": \"true\"}'}
-        name="returnFocusUncontrolled"
-      />
-      <CheckboxAndButton
-        handleClickWithInput={returnFocusFunc}
-        output={returnFocusRes}
-        hasInput={false}
-        title="Return Focus"
-        name="returnFocus"
-        hasTitle={true}
-        checkBoxTitle="navigateForward:"
-      />
-      <BoxAndButton
-        handleClickWithInput={navigateToTabFunc}
-        output={navigateToTabRes}
-        hasInput={true}
-        title="Navigate To Tab"
-        name="navigateToTab"
-      />
-      <BoxAndButton
-        handleClick={navigateBackFunc}
-        output={navigateBackRes}
-        hasInput={false}
-        title="Navigate Back"
-        name="navigateBack"
-      />
-      <BoxAndButton
-        handleClick={pagesCapabilityCheck}
-        output={checkPagesCapabilityRes}
-        hasInput={false}
-        title="Check Page Capability"
-        name="checkPageCapability"
-      />
+      <NavigateCrossDomain />
+      <ReturnFocus />
+      <NavigateToTab />
+      <NavigateBack />
+      <CheckPageCapability />
     </>
   );
 };
