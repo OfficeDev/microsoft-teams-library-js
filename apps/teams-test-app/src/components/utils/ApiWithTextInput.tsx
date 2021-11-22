@@ -10,7 +10,7 @@ export interface ApiWithTextInputProps<T> {
     | ((input: Partial<T>) => Promise<string>)
     | {
         validateInput: (input: Partial<T>) => void;
-        submit: (input: T) => Promise<string>;
+        submit: (input: T, setResult: (result: string) => void) => Promise<string>;
       };
   defaultInput?: string;
 }
@@ -34,7 +34,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
       } else {
         const { validateInput, submit } = onClick;
         validateInput(partialInput);
-        const result = await submit(partialInput as T);
+        const result = await submit(partialInput as T, setResult);
         setResult(result);
       }
     } catch (err) {
