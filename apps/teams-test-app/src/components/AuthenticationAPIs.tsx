@@ -1,8 +1,6 @@
 import { app, authentication } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const Initialize = (): React.ReactElement =>
@@ -72,69 +70,16 @@ const Authenticate = (): React.ReactElement =>
     },
   });
 
-const AuthenticationAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-
-  const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
-  const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
-  const [authenticateRes, setAuthenticateRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const authNotifyFailure = (reason: string): void => {
-    authentication.notifyFailure(reason);
-    setNotifyFailureRes('called');
-  };
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const authNotifySuccess = (result: string): void => {
-    authentication.notifySuccess(result);
-    setNotifySuccessRes('called');
-  };
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const authAuthenticate = (unformattedAuthParams: string): void => {
-    setAuthenticateRes('authentication.authenticate()' + noHostSdkMsg);
-    const authParams: authentication.AuthenticatePopUpParameters = JSON.parse(unformattedAuthParams);
-    authentication
-      .authenticate(authParams)
-      .then(token => setAuthenticateRes('Success: ' + token))
-      .catch((reason: Error) => setAuthenticateRes('Failure: ' + reason.message));
-  };
-  return (
-    <>
-      <h1>authentication</h1>
-      <Initialize />
-      <GetAuthToken />
-      <GetUser />
-      <NotifyFailure />
-      <NotifySuccess />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={authNotifyFailure}
-        output={notifyFailureRes}
-        hasInput={true}
-        title="authentication.notifyFailure"
-        name="authentication.notifyFailure"
-      />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={authNotifySuccess}
-        output={notifySuccessRes}
-        hasInput={true}
-        title="authentication.notifySuccess"
-        name="authentication.notifySuccess"
-      />
-      <Authenticate />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={authAuthenticate}
-        output={authenticateRes}
-        hasInput={true}
-        title="authentication.authenticate"
-        name="authentication.authenticate"
-      />
-    </>
-  );
-};
+const AuthenticationAPIs = (): ReactElement => (
+  <>
+    <h1>authentication</h1>
+    <Initialize />
+    <GetAuthToken />
+    <GetUser />
+    <NotifyFailure />
+    <NotifySuccess />
+    <Authenticate />
+  </>
+);
 
 export default AuthenticationAPIs;

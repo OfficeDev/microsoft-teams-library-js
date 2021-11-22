@@ -1,7 +1,6 @@
 import { app } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import BoxAndButton from './BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const NotifyLoaded = (): React.ReactElement =>
@@ -46,34 +45,13 @@ const NotifyFailure = (): React.ReactElement =>
     },
   });
 
-const AppInitializationAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const notifyFailure = (reason?: string): void => {
-    app.notifyFailure({
-      reason: (reason as app.FailedReason) || app.FailedReason.Other,
-    });
-    setNotifyFailureRes('called');
-  };
-
-  return (
-    <>
-      <h1>appInitialization</h1>
-      <NotifyLoaded />
-      <NotifySuccess />
-      <NotifyFailure />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={notifyFailure}
-        output={notifyFailureRes}
-        hasInput={true}
-        title="appInitialization.failure"
-        name="appInitializationFailure"
-      />
-    </>
-  );
-};
+const AppInitializationAPIs = (): ReactElement => (
+  <>
+    <h1>appInitialization</h1>
+    <NotifyLoaded />
+    <NotifySuccess />
+    <NotifyFailure />
+  </>
+);
 
 export default AppInitializationAPIs;

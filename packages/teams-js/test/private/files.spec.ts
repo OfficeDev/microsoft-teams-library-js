@@ -1,8 +1,9 @@
+import { isVoidExpression } from 'typescript';
 import { files } from '../../src/private/files';
-import { Utils } from '../utils';
+import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
 import { FileOpenPreference } from '../../src/public/interfaces';
-import { ViewerActionTypes } from '../../src/private/interfaces';
+import { Utils } from '../utils';
 
 describe('files', () => {
   const utils = new Utils();
@@ -372,6 +373,83 @@ describe('files', () => {
       expect(message.args[11]).toBe('view');
       expect(message.args[12]).toBe(FileOpenPreference.Web);
       expect(message.args[13]).toBe('someConversationId');
+    });
+  });
+
+  describe('getExternalProviders', () => {
+    it('should resolve promise correctly for getExternalProviders', async () => {
+      await utils.initializeWithContext('content');
+      const mockExternalProviders: files.IExternalProvider[] = [
+        {
+          name: 'google',
+          description: 'google storage',
+          thumbnails: [
+            {
+              size: 32,
+              url: 'string',
+            },
+          ],
+          providerType: files.CloudStorageProviderType.Google,
+          providerCode: files.CloudStorageProvider.GoogleDrive,
+        },
+      ];
+
+      const promise = files.getExternalProviders(false);
+
+      const getExternalProviders = utils.findMessageByFunc('files.getExternalProviders');
+      expect(getExternalProviders).not.toBeNull();
+      utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
+      return expect(promise).resolves.toEqual(mockExternalProviders);
+    });
+  });
+
+  describe('copyMoveFiles', () => {
+    const mockSelectedFiles: files.CloudStorageFolderItem[] = [
+      {
+        id: '123',
+        lastModifiedTime: '2021-04-14T15:08:35Z',
+        size: 32,
+        objectUrl: 'abc.com',
+        title: 'file',
+        isSubdirectory: false,
+        type: 'type',
+      },
+    ];
+
+    const mockDestinationFolder: files.CloudStorageFolderItem = {
+      id: '123',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'abc.com',
+      title: 'file',
+      isSubdirectory: false,
+      type: 'type',
+    };
+
+    const mockProviderCode = files.CloudStorageProvider.Dropbox;
+    const destinationProviderCode = files.CloudStorageProvider.GoogleDrive;
+
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        files.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false),
+      ).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should resolve promise correctly for copyMoveFiles', async () => {
+      await utils.initializeWithContext('content');
+
+      const promise = files.copyMoveFiles(
+        mockSelectedFiles,
+        mockProviderCode,
+        mockDestinationFolder,
+        destinationProviderCode,
+        false,
+      );
+
+      const copyMoveFilesMessage = utils.findMessageByFunc('files.copyMoveFiles');
+      expect(copyMoveFilesMessage).not.toBeNull();
+      utils.respondToMessage(copyMoveFilesMessage, false);
+      return expect(promise).resolves.toEqual(undefined);
     });
   });
 });
