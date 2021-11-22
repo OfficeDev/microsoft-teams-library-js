@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { generateJsonParseErrorMsg, noHostSdkMsg } from '../../App';
 import BoxAndButton from '../BoxAndButton';
+import { ApiWithCheckboxInput, ApiWithTextInput } from '../utils';
 
 interface DeleteCloudStorageParams {
   channelId: string;
@@ -92,6 +93,47 @@ const FilesAPIs = (): ReactElement => {
     }
   };
 
+  const GetExternalProviders = (): React.ReactElement =>
+    ApiWithCheckboxInput({
+      name: 'getExternalProviders',
+      title: 'Get External Providers',
+      label: 'excludeAddedProviders',
+      onClick: async (excludeAddedProviders: boolean) => {
+        const result = await files.getExternalProviders(excludeAddedProviders);
+        return JSON.stringify(result);
+      },
+    });
+
+  interface CopyMoveFilesParams {
+    selectedFiles: files.CloudStorageFolderItem[] | files.ISharePointFile[];
+    providerCode: files.CloudStorageProvider;
+    destinationFolder: files.CloudStorageFolderItem | files.ISharePointFile;
+    destinationProviderCode: files.CloudStorageProvider;
+  }
+  const CopyMoveFiles = (): ReactElement =>
+    ApiWithTextInput<CopyMoveFilesParams>({
+      name: 'copyMoveFiles',
+      title: 'Copy Move Files',
+      onClick: {
+        submit: async input => {
+          await files.copyMoveFiles(
+            input.selectedFiles,
+            input.providerCode,
+            input.destinationFolder,
+            input.destinationProviderCode,
+          );
+          return 'Completed';
+        },
+        validateInput: x => {
+          if (!x.selectedFiles || !x.providerCode || !x.destinationFolder || !x.destinationProviderCode) {
+            throw new Error(
+              'Please make sure you have all four required arugments selectedfiles, providerCode, destinationFolder, and destinationProviderCode.',
+            );
+          }
+        },
+      },
+    });
+
   return (
     <>
       <h1>files</h1>
@@ -144,6 +186,8 @@ const FilesAPIs = (): ReactElement => {
         title="Check Capability Files"
         name="checkCapabilityFiles"
       />
+      <GetExternalProviders />
+      <CopyMoveFiles />
     </>
   );
 };
