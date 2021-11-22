@@ -1,54 +1,52 @@
-import { SdkError, sharing } from '@microsoft/teams-js';
+import { sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const SharingAPIs = (): ReactElement => {
-  const [shareWebContentRes, setShareWebContentRes] = React.useState('');
-  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+const CheckSharingCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkSharingCapability',
+    title: 'Check Sharing Capability',
+    onClick: async () => `Sharing ${sharing.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const shareWebContent = (input: string): void => {
-    const shareRequest: sharing.IShareRequest<sharing.IShareRequestContentType> = JSON.parse(input);
+const ShareWebContent = (): React.ReactElement =>
+  ApiWithTextInput<sharing.IShareRequest<sharing.IURLContent>>({
+    name: 'share_shareWebContent',
+    title: 'Share web content',
+    onClick: {
+      validateInput: input => {
+        if (!input.content || input.content.length === 0) {
+          throw new Error('content is required');
+        }
+        for (const contentItem of input.content) {
+          if (contentItem.type !== 'URL') {
+            throw new Error("Each of the content items has to have type property with value 'URL'.");
+          }
+          if (!contentItem.url) {
+            throw new Error('Each of the content items has to have url property set.');
+          }
+        }
+      },
+      submit: async input => {
+        return new Promise<string>((res, rej) => {
+          sharing.shareWebContent(input, error => {
+            if (error) {
+              rej(JSON.stringify(error));
+            }
+            res('Success');
+          });
+        });
+      },
+    },
+  });
 
-    const callback = (err?: SdkError): void => {
-      if (err) {
-        setShareWebContentRes(JSON.stringify(err));
-      } else {
-        setShareWebContentRes('Success');
-      }
-    };
-    setShareWebContentRes('sharing.shareWebContent()' + noHostSdkMsg);
-    sharing.shareWebContent(shareRequest, callback);
-  };
-
-  const checkSharingCapability = (): void => {
-    if (sharing.isSupported()) {
-      setCapabilityCheckRes('Sharing is supported');
-    } else {
-      setCapabilityCheckRes('Sharing is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>sharing</h1>
-      <BoxAndButton
-        handleClickWithInput={shareWebContent}
-        output={shareWebContentRes}
-        hasInput={true}
-        title="Share web content"
-        name="share_shareWebContent"
-      />
-      <BoxAndButton
-        handleClick={checkSharingCapability}
-        output={capabilityCheckRes}
-        hasInput={false}
-        title="Check Sharing Capability"
-        name="checkSharingCapability"
-      />
-    </>
-  );
-};
+const SharingAPIs = (): ReactElement => (
+  <>
+    <h1>sharing</h1>
+    <ShareWebContent />
+    <CheckSharingCapability />
+  </>
+);
 
 export default SharingAPIs;

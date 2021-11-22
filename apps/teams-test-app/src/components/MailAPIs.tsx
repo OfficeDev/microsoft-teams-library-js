@@ -1,64 +1,65 @@
 import { mail } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const MailAPIs = (): ReactElement => {
-  const [composeMailRes, setComposeMailRes] = React.useState('');
-  const [openMailItemRes, setOpenMailItemRes] = React.useState('');
-  const [mailCapabilityCheckRes, setMailCapabilityCheckRes] = React.useState('');
+const CheckMailCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkCapabilityMail',
+    title: 'Check Mail Call',
+    onClick: async () => `Mail module ${mail.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const composeMail = (mailParams: string): void => {
-    setComposeMailRes('mail.composeMail()' + noHostSdkMsg);
-    mail
-      .composeMail(JSON.parse(mailParams))
-      .then(() => setComposeMailRes('Completed'))
-      .catch(reason => setComposeMailRes(reason));
-  };
+const ComposeMail = (): React.ReactElement =>
+  ApiWithTextInput<mail.ComposeMailParams>({
+    name: 'composeMail',
+    title: 'Compose Mail',
+    onClick: {
+      validateInput: input => {
+        const composeMailTypeValues = Object.values(mail.ComposeMailType);
+        if (!input.type || !composeMailTypeValues.includes(input.type)) {
+          throw new Error(`type is required and has to be one of ${JSON.stringify(composeMailTypeValues)}`);
+        }
+        if (
+          (input.type === mail.ComposeMailType.Forward ||
+            input.type === mail.ComposeMailType.Reply ||
+            input.type === mail.ComposeMailType.ReplyAll) &&
+          !input.itemid
+        ) {
+          throw new Error('itemId is required for Forward, Reply and ReplyAll');
+        }
+      },
+      submit: async input => {
+        await mail.composeMail(input);
+        return 'Completed';
+      },
+    },
+  });
 
-  const openMailItem = (mailParams: string): void => {
-    setOpenMailItemRes('mail.openMailItem()' + noHostSdkMsg);
-    mail
-      .openMailItem(JSON.parse(mailParams))
-      .then(() => setOpenMailItemRes('Completed'))
-      .catch(reason => setOpenMailItemRes(reason));
-  };
+const OpenMailItem = (): React.ReactElement =>
+  ApiWithTextInput<mail.OpenMailItemParams>({
+    name: 'openMailItem',
+    title: 'Open Mail Item',
+    onClick: {
+      validateInput: input => {
+        if (!input.itemId) {
+          throw new Error('itemId is required');
+        }
+      },
+      submit: async input => {
+        await mail.openMailItem(input);
+        return 'Completed';
+      },
+    },
+  });
 
-  const mailCapabilityCheck = (): void => {
-    if (mail.isSupported()) {
-      setMailCapabilityCheckRes('Mail module is supported');
-    } else {
-      setMailCapabilityCheckRes('Mail module is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>mail</h1>
-      <BoxAndButton
-        handleClickWithInput={composeMail}
-        output={composeMailRes}
-        hasInput={true}
-        title="Compose Mail"
-        name="composeMail"
-      />
-      <BoxAndButton
-        handleClickWithInput={openMailItem}
-        output={openMailItemRes}
-        hasInput={true}
-        title="Open Mail Item"
-        name="openMailItem"
-      />
-      <BoxAndButton
-        handleClick={mailCapabilityCheck}
-        output={mailCapabilityCheckRes}
-        hasInput={false}
-        title="Check Capability Mail"
-        name="checkCapabilityMail"
-      />
-    </>
-  );
-};
+const MailAPIs = (): ReactElement => (
+  <>
+    <h1>mail</h1>
+    <ComposeMail />
+    <OpenMailItem />
+    <CheckMailCapability />
+  </>
+);
 
 export default MailAPIs;
