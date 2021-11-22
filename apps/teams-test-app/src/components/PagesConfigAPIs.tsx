@@ -98,7 +98,7 @@ const CheckPageConfigCapability = (): React.ReactElement =>
     onClick: async () => `Pages.config module ${pages.config.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const ConfigAPIs = (): ReactElement => {
+const PagesConfigAPIs = (): ReactElement => {
   // TODO: Remove once E2E scenario tests are updated to use the new version
   const [setValidityStateRes, setSetValidityStateRes] = React.useState('');
 
@@ -131,4 +131,4 @@ const ConfigAPIs = (): ReactElement => {
   );
 };
 
-export default ConfigAPIs;
+export default PagesConfigAPIs;

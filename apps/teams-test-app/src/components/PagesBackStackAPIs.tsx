@@ -20,7 +20,7 @@ const CheckPageBackStackCapability = (): React.ReactElement =>
     onClick: async () => `Pages.backStack module ${pages.backStack.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const PagesAPIs = (): ReactElement => (
+const PagesBackStackAPIs = (): ReactElement => (
   <>
     <h1>pages.backStack</h1>
     <NavigateBack />
@@ -28,4 +28,4 @@ const PagesAPIs = (): ReactElement => (
   </>
 );
 
-export default PagesAPIs;
+export default PagesBackStackAPIs;
