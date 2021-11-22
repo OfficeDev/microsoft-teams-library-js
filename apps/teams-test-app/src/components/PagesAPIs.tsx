@@ -1,20 +1,9 @@
-import { pages, TabInstance } from '@microsoft/teams-js';
+import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import BoxAndButton from './BoxAndButton';
-import CheckboxAndButton from './CheckboxAndButton';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
-
-const NavigateBack = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'navigateBack',
-    title: 'Navigate Back',
-    onClick: async () => {
-      await pages.backStack.navigateBack();
-      return 'Completed';
-    },
-  });
 
 const NavigateCrossDomain = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -28,23 +17,6 @@ const NavigateCrossDomain = (): React.ReactElement =>
       },
       submit: async input => {
         await pages.navigateCrossDomain(input);
-        return 'Completed';
-      },
-    },
-  });
-
-const NavigateToTab = (): React.ReactElement =>
-  ApiWithTextInput<TabInstance>({
-    name: 'navigateToTab',
-    title: 'Navigate To Tab',
-    onClick: {
-      validateInput: input => {
-        if (!input.tabName) {
-          throw new Error('tabName is required');
-        }
-      },
-      submit: async input => {
-        await pages.tabs.navigateToTab(input);
         return 'Completed';
       },
     },
@@ -68,7 +40,7 @@ const CheckPageCapability = (): React.ReactElement =>
     onClick: async () => `Pages module ${pages.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const NavigationAPIs = (): ReactElement => {
+const PagesAPIs = (): ReactElement => {
   // TODO: Remove once E2E scenario tests are updated to use the new version
   const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
 
@@ -83,7 +55,7 @@ const NavigationAPIs = (): ReactElement => {
 
   return (
     <>
-      <h1>navigation</h1>
+      <h1>pages</h1>
       {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
       <BoxAndButton
         handleClickWithInput={navigateCrossDomainFunc}
@@ -94,11 +66,9 @@ const NavigationAPIs = (): ReactElement => {
       />
       <NavigateCrossDomain />
       <ReturnFocus />
-      <NavigateToTab />
-      <NavigateBack />
       <CheckPageCapability />
     </>
   );
 };
 
-export default NavigationAPIs;
+export default PagesAPIs;
