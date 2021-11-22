@@ -21,18 +21,47 @@ export namespace files {
     Sharefile = 'SHAREFILE',
     GoogleDrive = 'GOOGLEDRIVE',
     Egnyte = 'EGNYTE',
+    SharePoint = 'SharePoint',
+  }
+  interface IWopiThumbnail {
+    size: number;
+    url: string;
+  }
+
+  interface IWopiService {
+    name: string;
+    description: string;
+    thumbnails: IWopiThumbnail[];
   }
 
   /**
    * @private
    * Hide from docs
    *
-   * Cloud storage provider integration type
+   * External third-party cloud storages providers interface
+   */
+  export interface IExternalProvider extends IWopiService {
+    providerType: CloudStorageProviderType;
+    providerCode: CloudStorageProvider;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Cloud storage provider type enums
    */
   export enum CloudStorageProviderType {
     Sharepoint = 0,
-    WopiIntegration = 1,
-    Google = 2,
+    WopiIntegration,
+    Google,
+    OneDrive,
+    Recent,
+    Aggregate,
+    FileSystem, // Used for Downloaded files on Desktop
+    Search, // Used by P2P files with OSearch
+    AllFiles, // Used by P2P files with AllFiles API
+    SharedWithMe,
   }
 
   /**
@@ -124,6 +153,79 @@ export namespace files {
      */
     accessToken?: string;
   }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Files entity user interface
+   */
+  export interface IFilesEntityUser {
+    /**
+     * User name.
+     */
+    displayName: string;
+    /**
+     * User email.
+     */
+    email: string;
+
+    /**
+     * User MRI.
+     */
+    mri: string;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Special Document Library enum
+   */
+  export enum SpecialDocumentLibraryType {
+    ClassMaterials = 'classMaterials',
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Document Library Access enum
+   */
+  export enum DocumentLibraryAccessType {
+    Readonly = 'readonly',
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * SharePoint file interface
+   */
+  export interface ISharePointFile {
+    siteId?: string;
+    siteUrl: string;
+    objectId: string;
+    objectUrl: string;
+    openInWindowFileUrl: string;
+    title: string;
+    isFolder: boolean;
+    serverRelativeUrl: string;
+    lastModifiedByUser: IFilesEntityUser;
+    lastModifiedTime: string;
+    sentByUser: IFilesEntityUser;
+    createdByUser: IFilesEntityUser;
+    createdTime: string;
+    size: number;
+    type: string;
+    spItemUrl?: string;
+    libraryType?: SpecialDocumentLibraryType;
+    accessType?: DocumentLibraryAccessType;
+    etag?: string;
+    remoteItem?: string;
+    listUrl?: string;
+  }
+
   /**
    * @private
    * Hide from docs
@@ -138,7 +240,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
+    if (!channelId || channelId.length === 0) {
       throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
     }
     if (!callback) {
@@ -162,7 +264,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!channelId || channelId.length == 0) {
+    if (!channelId || channelId.length === 0) {
       throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
     }
     if (!callback) {
@@ -257,5 +359,61 @@ export namespace files {
     }
 
     sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
+  }
+
+  /**
+   * @private
+   * Allow 1st party apps to call this function to get the external
+   * third party cloud storage accounts that the tenant supports
+   * @param excludeAddedProviders: return a list of support third party
+   * cloud storages that hasn't been added yet.
+   */
+  export function getExternalProviders(
+    excludeAddedProviders = false,
+    callback: (error: SdkError, providers: IExternalProvider[]) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw new Error('[files.getExternalProviders] Callback cannot be null');
+    }
+
+    sendMessageToParent('files.getExternalProviders', [excludeAddedProviders], callback);
+  }
+
+  /**
+   * @private
+   * Allow 1st party apps to call this function to move files
+   * among SharePoint and third party cloud storages.
+   */
+  export function copyMoveFiles(
+    selectedFiles: CloudStorageFolderItem[] | ISharePointFile[],
+    providerCode: CloudStorageProvider,
+    destinationFolder: CloudStorageFolderItem | ISharePointFile,
+    destinationProviderCode: CloudStorageProvider,
+    isMove = false,
+    callback: (error?: SdkError) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+    if (!selectedFiles || selectedFiles.length === 0) {
+      throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
+    }
+    if (!providerCode) {
+      throw new Error('[files.copyMoveFiles] providerCode cannot be null or empty');
+    }
+    if (!destinationFolder) {
+      throw new Error('[files.copyMoveFiles] destinationFolder cannot be null or empty');
+    }
+    if (!destinationProviderCode) {
+      throw new Error('[files.copyMoveFiles] destinationProviderCode cannot be null or empty');
+    }
+    if (!callback) {
+      throw new Error('[files.copyMoveFiles] callback cannot be null');
+    }
+    sendMessageToParent(
+      'files.copyMoveFiles',
+      [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
+      callback,
+    );
   }
 }
