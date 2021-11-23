@@ -135,7 +135,7 @@ const ViewImagesWithUrls = (): React.ReactElement =>
         }
       },
       submit: async input => {
-        const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 }));
+        const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
         await media.viewImages(urlList);
         return 'media.viewImagesWithUrls() executed';
       },
