@@ -98,37 +98,18 @@ const CheckPageConfigCapability = (): React.ReactElement =>
     onClick: async () => `Pages.config module ${pages.config.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const PagesConfigAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [setValidityStateRes, setSetValidityStateRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const setValidityState = (validityState: string): void => {
-    pages.config.setValidityState(validityState === 'true');
-    setSetValidityStateRes('Set validity state to ' + (validityState === 'true'));
-  };
-
-  return (
-    <>
-      <h1>pages.config</h1>
-      <Initialize />
-      <GetConfig />
-      <RegisterOnSaveHandler />
-      <SetConfig />
-      <SetValidityState />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={setValidityState}
-        output={setValidityStateRes}
-        hasInput={true}
-        title="Set Validity State"
-        name="config_setValidityState"
-      />
-      <RegisterOnRemoveHandler />
-      <RegisterOChangeConfigHandler />
-      <CheckPageConfigCapability />
-    </>
-  );
-};
+const PagesConfigAPIs = (): ReactElement => (
+  <>
+    <h1>pages.config</h1>
+    <Initialize />
+    <GetConfig />
+    <RegisterOnSaveHandler />
+    <SetConfig />
+    <SetValidityState />
+    <RegisterOnRemoveHandler />
+    <RegisterOChangeConfigHandler />
+    <CheckPageConfigCapability />
+  </>
+);
 
 export default PagesConfigAPIs;
