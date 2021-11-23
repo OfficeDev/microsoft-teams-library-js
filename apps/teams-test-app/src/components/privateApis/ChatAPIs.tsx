@@ -36,7 +36,7 @@ const OpenConversation = (): React.ReactElement =>
         };
         input.onCloseConversation = conversationResponse => {
           setResult(
-            'Start Conversation Subentity Id ' +
+            'Close Conversation Subentity Id ' +
               conversationResponse.subEntityId +
               ' Conversation Id: ' +
               conversationResponse.conversationId +

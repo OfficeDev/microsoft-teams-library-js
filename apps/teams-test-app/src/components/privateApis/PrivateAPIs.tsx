@@ -33,7 +33,7 @@ const RegisterUserSettingsChangeHandler = (): React.ReactElement =>
         };
 
         registerUserSettingsChangeHandler(getUserSettingTypesFromInput(input), handler);
-        return 'registerUserSettingsChangeHandler()' + noHostSdkMsg;
+        return 'Called';
       },
     },
   });

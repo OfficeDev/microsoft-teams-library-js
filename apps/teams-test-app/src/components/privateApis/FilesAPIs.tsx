@@ -24,7 +24,7 @@ const OpenFilePreview = (): React.ReactElement =>
       },
       submit: async input => {
         files.openFilePreview(input);
-        return 'openFilePreview()' + noHostSdkMsg;
+        return 'Called';
       },
     },
   });

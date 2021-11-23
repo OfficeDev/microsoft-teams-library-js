@@ -48,7 +48,7 @@ const RegisterMeetingRoomCapabilitiesUpdateHandler = (): React.ReactElement =>
       };
       meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(handler);
 
-      return generateRegistrationMsg('it is invoked when the live stream state changes');
+      return generateRegistrationMsg('the meeting room capabilities update');
     },
   });
 
@@ -62,7 +62,7 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
       };
       meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(handler);
 
-      return generateRegistrationMsg('it is invoked when the live stream state changes');
+      return generateRegistrationMsg('the meeting room states update');
     },
   });
 
