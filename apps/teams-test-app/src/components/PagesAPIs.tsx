@@ -40,35 +40,13 @@ const CheckPageCapability = (): React.ReactElement =>
     onClick: async () => `Pages module ${pages.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const PagesAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [navigateCrossDomainRes, setNavigateCrossDomainRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const navigateCrossDomainFunc = (url: string): void => {
-    setNavigateCrossDomainRes('navigateCrossDomain()' + noHostSdkMsg);
-    pages
-      .navigateCrossDomain(url)
-      .then(() => setNavigateCrossDomainRes('Completed'))
-      .catch(reason => setNavigateCrossDomainRes(reason));
-  };
-
-  return (
-    <>
-      <h1>pages</h1>
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={navigateCrossDomainFunc}
-        output={navigateCrossDomainRes}
-        hasInput={true}
-        title="Navigate Cross Domain"
-        name="navigateCrossDomain"
-      />
-      <NavigateCrossDomain />
-      <ReturnFocus />
-      <CheckPageCapability />
-    </>
-  );
-};
+const PagesAPIs = (): ReactElement => (
+  <>
+    <h1>pages</h1>
+    <NavigateCrossDomain />
+    <ReturnFocus />
+    <CheckPageCapability />
+  </>
+);
 
 export default PagesAPIs;
