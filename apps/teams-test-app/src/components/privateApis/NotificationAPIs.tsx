@@ -1,46 +1,38 @@
 import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../../App';
-import BoxAndButton from '../BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 
-const NotificationAPIs = (): ReactElement => {
-  const [showNotification, setShowNotification] = React.useState('');
-  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+const CheckNotificationCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkCapabilityNotifications',
+    title: 'Check Capability Notifications',
+    onClick: async () => `Notifications module ${notifications.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const returnShowNotification = (showNotificationParamsInput: string): void => {
-    const showNotificationParams: ShowNotificationParameters = JSON.parse(showNotificationParamsInput);
-    setShowNotification('showNotification()' + noHostSdkMsg);
-    notifications.showNotification(showNotificationParams);
-  };
+const ShowNotification = (): React.ReactElement =>
+  ApiWithTextInput<ShowNotificationParameters>({
+    name: 'showNotification',
+    title: 'Show Notification',
+    onClick: {
+      validateInput: input => {
+        if (!input.message || !input.notificationType) {
+          throw new Error('message and notificationType are required.');
+        }
+      },
+      submit: async input => {
+        notifications.showNotification(input);
+        return 'Called';
+      },
+    },
+  });
 
-  const checkNotificationCapability = (): void => {
-    if (notifications.isSupported()) {
-      setCapabilityCheckRes('Notifications module is supported');
-    } else {
-      setCapabilityCheckRes('Notifications module is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>notifications</h1>
-      <BoxAndButton
-        handleClickWithInput={returnShowNotification}
-        output={showNotification}
-        hasInput={true}
-        title="Show Notification"
-        name="showNotification"
-      />
-      <BoxAndButton
-        handleClick={checkNotificationCapability}
-        output={capabilityCheckRes}
-        hasInput={false}
-        title="Check Capability Notifications"
-        name="checkCapabilityNotifications"
-      />
-    </>
-  );
-};
+const NotificationAPIs = (): ReactElement => (
+  <>
+    <h1>notifications</h1>
+    <ShowNotification />
+    <CheckNotificationCapability />
+  </>
+);
 
 export default NotificationAPIs;
