@@ -12,7 +12,14 @@ module.exports = merge(commonConfig, {
   },
   plugins: [
     new HtmlWebPackPlugin({ template: "./index.html", filename: "index.html", }),
-    new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
-    new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
+    //new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
+    //new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
+  ],
+  externals:[
+    {
+      ["@Microsoft/teams-js"]:{
+        root: "@Microsoft/teams-js"
+      }
+    }
   ]
 });
