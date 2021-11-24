@@ -17,6 +17,7 @@ import MailAPIs from './components/MailAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import PagesAPIs from './components/PagesAPIs';
+import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
@@ -109,6 +110,7 @@ const App = (): ReactElement => {
       <MonetizationAPIs />
       <NotificationAPIs />
       <PagesAPIs />
+      <PagesAppButtonAPIs />
       <PagesBackStackAPIs />
       <PagesConfigAPIs />
       <PagesTabsAPIs />

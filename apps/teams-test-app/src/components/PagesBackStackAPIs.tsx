@@ -2,6 +2,7 @@ import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
+import { ApiContainer } from './utils/ApiContainer';
 
 const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
@@ -20,12 +21,66 @@ const CheckPageBackStackCapability = (): React.ReactElement =>
     onClick: async () => `Pages.backStack module ${pages.backStack.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const PagesBackStackAPIs = (): ReactElement => (
-  <>
-    <h1>pages.backStack</h1>
-    <NavigateBack />
-    <CheckPageBackStackCapability />
-  </>
-);
+const PagesBackStackAPIs = (): ReactElement => {
+  const [totalStates, setTotalStates] = React.useState(0);
+
+  const [addStatesValue, setAddStatesValue] = React.useState('');
+  const [registerBackButtonHandlerValue, setRegisterBackButtonHandlerValue] = React.useState('');
+
+  const onAddStatesClick = React.useCallback(() => {
+    const newNumStates = totalStates + 1;
+    setTotalStates(newNumStates);
+    window.history.pushState({ some: 'state', id: newNumStates }, 'tab state' + newNumStates, '/testTab');
+
+    window.addEventListener(
+      'popstate',
+      (event): void => {
+        if (event.state && event.state.id) {
+          setAddStatesValue('onpopstate: back button clicked. total remaining state: ' + event.state.id);
+        }
+      },
+      false,
+    );
+
+    setAddStatesValue('total States: ' + newNumStates);
+  }, [totalStates, setTotalStates, setAddStatesValue]);
+
+  const onRegisterBackButtonHandler = React.useCallback(() => {
+    pages.backStack.registerBackButtonHandler((): boolean => {
+      if (totalStates > 0) {
+        const newNumStates = totalStates - 1;
+        setTotalStates(newNumStates);
+        setRegisterBackButtonHandlerValue('back button clicked. total remaining state: ' + newNumStates);
+        return true;
+      }
+      return false;
+    });
+
+    setRegisterBackButtonHandlerValue('total States: ' + totalStates);
+  }, [totalStates, setTotalStates, setRegisterBackButtonHandlerValue]);
+
+  return (
+    <>
+      <h1>pages.backStack</h1>
+      <NavigateBack />
+      <ApiContainer name="addStates" title="Add States" result={addStatesValue}>
+        <input name="button_addStates" type="button" value="Add States" onClick={onAddStatesClick} />
+      </ApiContainer>
+      <ApiContainer
+        name="registerBackButtonHandler"
+        title="Register Back Button Handler"
+        result={registerBackButtonHandlerValue}
+      >
+        <input
+          name="button_registerBackButtonHandler"
+          type="button"
+          value="Register Back Button Handler"
+          onClick={onRegisterBackButtonHandler}
+        />
+      </ApiContainer>
+      <CheckPageBackStackCapability />
+    </>
+  );
+};
 
 export default PagesBackStackAPIs;

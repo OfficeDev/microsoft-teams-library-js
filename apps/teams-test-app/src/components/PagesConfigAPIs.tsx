@@ -2,7 +2,6 @@ import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const Initialize = (): React.ReactElement =>
