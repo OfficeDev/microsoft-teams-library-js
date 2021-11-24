@@ -42,7 +42,7 @@ const GetMruTabInstances = (): React.ReactElement =>
 
 const CheckPagesTabsCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkPagesTabsCapability',
+    name: 'checkPageTabsCapability',
     title: 'Check Page Tabs Call',
     onClick: async () => `Pages.tabs module ${pages.tabs.isSupported() ? 'is' : 'is not'} supported`,
   });
