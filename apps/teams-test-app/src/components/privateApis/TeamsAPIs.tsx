@@ -1,55 +1,66 @@
 import { SdkError, teams } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHostSdkMsg } from '../../App';
-import BoxAndButton from '../BoxAndButton';
+import { ApiWithTextInput } from '../utils';
 
-const TeamsAPIs: React.FC = () => {
-  const [getTeamChannelsRes, setGetTeamChannelsRes] = React.useState('');
-  const [refreshSiteUrlRes, setRefreshSiteUrlRes] = React.useState('');
+const GetTeamsChannels = (): React.ReactElement =>
+  ApiWithTextInput<string>({
+    name: 'getTeamChannels2',
+    title: 'Get Team Channels',
+    onClick: {
+      validateInput: input => {
+        if (!input || typeof input !== 'string') {
+          throw new Error('input is required and it has to be a string.');
+        }
+      },
+      submit: async groupId => {
+        return new Promise((res, rej) => {
+          const onComplete = (error: SdkError, channels: teams.ChannelInfo[]): void => {
+            if (error) {
+              rej('getTeamChannels() error: ' + JSON.stringify(error));
+            } else {
+              res(JSON.stringify(channels));
+            }
+          };
 
-  const getTeamChannels = (groupId: string): void => {
-    setGetTeamChannelsRes('getTeamChannels()' + noHostSdkMsg);
-    const onComplete = (error: SdkError, channels: teams.ChannelInfo[]): void => {
-      if (error) {
-        setGetTeamChannelsRes('getTeamChannels() error: ' + JSON.stringify(error));
-      } else {
-        setGetTeamChannelsRes(JSON.stringify(channels));
-      }
-    };
-    teams.getTeamChannels(groupId, onComplete);
-  };
+          teams.getTeamChannels(groupId, onComplete);
+        });
+      },
+    },
+  });
 
-  const refreshSiteUrl = (threadId: string): void => {
-    const callback = (error: SdkError): void => {
-      if (error) {
-        setRefreshSiteUrlRes(JSON.stringify(error));
-      } else {
-        setRefreshSiteUrlRes('Success');
-      }
-    };
-    teams.refreshSiteUrl(threadId, callback);
-  };
+const RefreshSiteUrl = (): React.ReactElement =>
+  ApiWithTextInput<string>({
+    name: 'refreshSiteUrl2',
+    title: 'Refresh site url',
+    onClick: {
+      validateInput: input => {
+        if (!input || typeof input !== 'string') {
+          throw new Error('input is required and it has to be a string.');
+        }
+      },
+      submit: async input => {
+        return new Promise((res, rej) => {
+          const callback = (error: SdkError): void => {
+            if (error) {
+              rej(JSON.stringify(error));
+            } else {
+              res('Success');
+            }
+          };
 
-  return (
-    <>
-      <h1>TeamsAPIs</h1>
-      <BoxAndButton
-        handleClickWithInput={getTeamChannels}
-        output={getTeamChannelsRes}
-        hasInput={true}
-        title="Get Team Channels"
-        name="getTeamChannels"
-      />
-      <BoxAndButton
-        handleClickWithInput={refreshSiteUrl}
-        output={refreshSiteUrlRes}
-        hasInput={true}
-        title="Refresh site url"
-        name="refreshSiteUrl"
-      />
-    </>
-  );
-};
+          teams.refreshSiteUrl(input, callback);
+        });
+      },
+    },
+  });
+
+const TeamsAPIs: React.FC = () => (
+  <>
+    <h1>TeamsAPIs</h1>
+    <GetTeamsChannels />
+    <RefreshSiteUrl />
+  </>
+);
 
 export default TeamsAPIs;
