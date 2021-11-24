@@ -1,4 +1,4 @@
-import { pages, TabInstance } from '@microsoft/teams-js';
+import { pages, TabInstance, TabInstanceParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -20,6 +20,26 @@ const NavigateToTab = (): React.ReactElement =>
     },
   });
 
+const GetTabInstances = (): React.ReactElement =>
+  ApiWithTextInput<TabInstanceParameters>({
+    name: 'getTabInstance',
+    title: 'Get Tab Instance',
+    onClick: async input => {
+      const result = await pages.tabs.getTabInstances(input);
+      return JSON.stringify(result);
+    },
+  });
+
+const GetMruTabInstances = (): React.ReactElement =>
+  ApiWithTextInput<TabInstanceParameters>({
+    name: 'getMRUTabInstance',
+    title: 'Get MRU Tab Instance',
+    onClick: async input => {
+      const result = await pages.tabs.getMruTabInstances(input);
+      return JSON.stringify(result);
+    },
+  });
+
 const CheckPagesTabsCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkPagesTabsCapability',
@@ -31,6 +51,8 @@ const PagesTabsAPIs = (): ReactElement => (
   <>
     <h1>pages.tabs</h1>
     <NavigateToTab />
+    <GetTabInstances />
+    <GetMruTabInstances />
     <CheckPagesTabsCapability />
   </>
 );
