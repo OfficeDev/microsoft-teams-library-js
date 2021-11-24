@@ -2,6 +2,7 @@ import { chat, OpenConversationRequest } from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
+import BoxAndButton from '../BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 
 const CheckChatCapability = (): React.ReactElement =>
@@ -13,7 +14,7 @@ const CheckChatCapability = (): React.ReactElement =>
 
 const OpenConversation = (): React.ReactElement =>
   ApiWithTextInput<OpenConversationRequest>({
-    name: 'openConversation',
+    name: 'openConversation2',
     title: 'Open Conversation',
     onClick: {
       validateInput: input => {
@@ -73,14 +74,58 @@ const GetChatMembers = (): React.ReactElement =>
     },
   });
 
-const ConversationsAPIs = (): React.ReactElement => (
-  <>
-    <h1>chat</h1>
-    <OpenConversation />
-    <CloseConversation />
-    <GetChatMembers />
-    <CheckChatCapability />
-  </>
-);
+const ConversationsAPIs = (): React.ReactElement => {
+  // TODO: Remove once E2E scenario tests are updated to use the new version
+  const [openConversationRes, setOpenConversationRes] = React.useState('');
+
+  // TODO: Remove once E2E scenario tests are updated to use the new version
+  const openConversation = (openConversationRequestInput: string): void => {
+    setOpenConversationRes('conversations.openConversation()' + noHostSdkMsg);
+    const openConversationRequest: OpenConversationRequest = JSON.parse(openConversationRequestInput);
+    openConversationRequest.onStartConversation = conversationResponse => {
+      setOpenConversationRes(
+        'Start Conversation Subentity Id ' +
+          conversationResponse.subEntityId +
+          ' Conversation Id: ' +
+          conversationResponse.conversationId +
+          ' Entity Id: ' +
+          conversationResponse.entityId +
+          ' Channel Id: ' +
+          conversationResponse.channelId,
+      );
+    };
+    openConversationRequest.onCloseConversation = conversationResponse => {
+      setOpenConversationRes(
+        'Start Conversation Subentity Id ' +
+          conversationResponse.subEntityId +
+          ' Conversation Id: ' +
+          conversationResponse.conversationId +
+          ' Entity Id: ' +
+          conversationResponse.entityId +
+          ' Channel Id: ' +
+          conversationResponse.channelId,
+      );
+    };
+    chat.openConversation(openConversationRequest).catch(e => setOpenConversationRes('Error' + e));
+  };
+
+  return (
+    <>
+      <h1>chat</h1>
+      <OpenConversation />
+      <CloseConversation />
+      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
+      <BoxAndButton
+        handleClickWithInput={openConversation}
+        output={openConversationRes}
+        hasInput={true}
+        title="Open Conversation"
+        name="openConversation"
+      />
+      <GetChatMembers />
+      <CheckChatCapability />
+    </>
+  );
+};
 
 export default ConversationsAPIs;
