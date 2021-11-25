@@ -388,7 +388,7 @@ export namespace media {
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParent('mediaController', [params], (err?: SdkError) => {
+      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
         if (callback) {
           callback(err);
         }
@@ -442,8 +442,8 @@ export namespace media {
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   enum MediaControllerEvent {
-    StartRecording = 2,
-    StopRecording = 5,
+    StartRecording = 1,
+    StopRecording = 2,
   }
 
   /**

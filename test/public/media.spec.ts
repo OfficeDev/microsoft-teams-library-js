@@ -370,7 +370,7 @@ describe('media', () => {
       mediaError = e;
     });
 
-    let message = mobilePlatformMock.findMessageByFunc('mediaController');
+    let message = mobilePlatformMock.findMessageByFunc('media.controller');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
 
@@ -396,7 +396,7 @@ describe('media', () => {
     const err: SdkError = {
       errorCode: ErrorCode.INTERNAL_ERROR,
     };
-    let message = mobilePlatformMock.findMessageByFunc('mediaController');
+    let message = mobilePlatformMock.findMessageByFunc('media.controller');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);
 
@@ -442,7 +442,7 @@ describe('media', () => {
     mobilePlatformMock.respondToMessage({
       data: {
         id: callbackId,
-        args: [undefined, undefined, 2],
+        args: [undefined, undefined, 1],
       },
     } as DOMMessageEvent);
 
