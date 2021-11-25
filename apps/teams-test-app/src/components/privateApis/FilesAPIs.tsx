@@ -1,8 +1,6 @@
 import { FileOpenPreference, FilePreviewParameters, files } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../../App';
-import BoxAndButton from '../BoxAndButton';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
 
 const CheckFilesCapability = (): React.ReactElement =>
@@ -166,59 +164,19 @@ const CopyMoveFiles = (): ReactElement =>
     },
   });
 
-const FilesAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [getCloudStorageFoldersRes, setGetCloudStorageFoldersRes] = React.useState('');
-  const [addCloudStorageFolderRes, setAddCloudStorageFolderRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const returnGetCloudStorageFolders = (channelId: string): void => {
-    setGetCloudStorageFoldersRes('getCloudStorageFolders()' + noHostSdkMsg);
-    files
-      .getCloudStorageFolders(channelId)
-      .then(folders => setGetCloudStorageFoldersRes(JSON.stringify(folders)))
-      .catch(err => setGetCloudStorageFoldersRes(err.errorCode.toString + ' ' + err.message));
-  };
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const returnAddCloudStorageFolder = (channelId: string): void => {
-    setAddCloudStorageFolderRes('addCloudStorageFolder()' + noHostSdkMsg);
-    files
-      .addCloudStorageFolder(channelId)
-      .then(([isFolderAdded, folders]) => setAddCloudStorageFolderRes(JSON.stringify({ isFolderAdded, folders })))
-      .catch(err => setAddCloudStorageFolderRes(err.errorCode.toString + ' ' + err.message));
-  };
-
-  return (
-    <>
-      <h1>files</h1>
-      <OpenFilePreview />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={returnGetCloudStorageFolders}
-        output={getCloudStorageFoldersRes}
-        hasInput={true}
-        title="Get Cloud Storage Folders"
-        name="getCloudStorageFolders"
-      />
-      <GetCloudStorageFolders />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={returnAddCloudStorageFolder}
-        output={addCloudStorageFolderRes}
-        hasInput={true}
-        title="Add Cloud Storage Folder"
-        name="addCloudStorageFolder"
-      />
-      <AddCloudStorageFolder />
-      <DeleteCloudStorageFolder />
-      <GetCloudStorageFolderContents />
-      <OpenCloudStorageFile />
-      <CheckFilesCapability />
-      <GetExternalProviders />
-      <CopyMoveFiles />
-    </>
-  );
-};
+const FilesAPIs = (): ReactElement => (
+  <>
+    <h1>files</h1>
+    <OpenFilePreview />
+    <GetCloudStorageFolders />
+    <AddCloudStorageFolder />
+    <DeleteCloudStorageFolder />
+    <GetCloudStorageFolderContents />
+    <OpenCloudStorageFile />
+    <CheckFilesCapability />
+    <GetExternalProviders />
+    <CopyMoveFiles />
+  </>
+);
 
 export default FilesAPIs;

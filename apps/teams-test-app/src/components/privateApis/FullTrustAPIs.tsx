@@ -1,8 +1,6 @@
 import { legacy, pages, TeamInstanceParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../../App';
-import BoxAndButton from '../BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 
 const CheckLegacyFullTrustCapability = (): React.ReactElement =>
@@ -66,35 +64,16 @@ const GetConfigSetting = (): React.ReactElement =>
     },
   });
 
-const FullTrustAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [getConfigSettingRes, setGetConfigSettingRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const returnGetConfigSetting = (key: string): void => {
-    setGetConfigSettingRes('getConfigSetting()' + noHostSdkMsg);
-    legacy.fullTrust.getConfigSetting(key).then(value => setGetConfigSettingRes(value));
-  };
-
-  return (
-    <>
-      <h1>FullTrustAPIs</h1>
-      <GetUserJoinedTeams />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={returnGetConfigSetting}
-        output={getConfigSettingRes}
-        hasInput={true}
-        title="Get Config Setting"
-        name="getConfigSetting"
-      />
-      <GetConfigSetting />
-      <EnterFullScreen />
-      <ExitFullScreen />
-      <CheckLegacyFullTrustCapability />
-      <CheckPagesFullTrustCapability />
-    </>
-  );
-};
+const FullTrustAPIs = (): ReactElement => (
+  <>
+    <h1>FullTrustAPIs</h1>
+    <GetUserJoinedTeams />
+    <GetConfigSetting />
+    <EnterFullScreen />
+    <ExitFullScreen />
+    <CheckLegacyFullTrustCapability />
+    <CheckPagesFullTrustCapability />
+  </>
+);
 
 export default FullTrustAPIs;

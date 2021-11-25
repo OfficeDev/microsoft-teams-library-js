@@ -2,7 +2,6 @@ import { media } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CaptureImage = (): React.ReactElement =>
@@ -126,7 +125,7 @@ const ScanBarCode = (): ReactElement =>
 
 const ViewImagesWithUrls = (): React.ReactElement =>
   ApiWithTextInput<string[]>({
-    name: 'viewImagesWithUrls2',
+    name: 'viewImagesWithUrls',
     title: 'View Images With Urls',
     onClick: {
       validateInput: input => {
@@ -149,47 +148,17 @@ const CheckMediaCapability = (): React.ReactElement =>
     onClick: async () => `Media module ${media.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const MediaAPIs = (): ReactElement => {
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const [viewImagesWithUrlsRes, setViewImagesWithUrlsRes] = React.useState('');
-
-  // TODO: Remove once E2E scenario tests are updated to use the new version
-  const viewImagesWithUrls = (imageUrlsInput: string): void => {
-    setViewImagesWithUrlsRes('media.viewImagesWithUrls()' + noHostSdkMsg);
-    const imageUrls: string[] = imageUrlsInput.split(', ');
-    const urlList: media.ImageUri[] = [];
-    for (let i = 0; i < imageUrls.length; i++) {
-      const imageUrl = imageUrls[i];
-      urlList.push({
-        value: imageUrl,
-        type: 2, //ImageUriType.URL
-      } as media.ImageUri);
-    }
-    media
-      .viewImages(urlList)
-      .then(() => setViewImagesWithUrlsRes('media.viewImagesWithUrls() executed'))
-      .catch(err => setViewImagesWithUrlsRes(err.errorCode.toString + ' ' + err.message));
-  };
-  return (
-    <>
-      <h1>media</h1>
-      <CaptureImage />
-      <SelectMedia />
-      <GetMedia />
-      <ViewImagesWithId />
-      <ViewImagesWithUrls />
-      {/* TODO: Remove once E2E scenario tests are updated to use the new version */}
-      <BoxAndButton
-        handleClickWithInput={viewImagesWithUrls}
-        output={viewImagesWithUrlsRes}
-        hasInput={true}
-        title="View Images With Urls"
-        name="viewImagesWithUrls"
-      />
-      <ScanBarCode />
-      <CheckMediaCapability />
-    </>
-  );
-};
+const MediaAPIs = (): ReactElement => (
+  <>
+    <h1>media</h1>
+    <CaptureImage />
+    <SelectMedia />
+    <GetMedia />
+    <ViewImagesWithId />
+    <ViewImagesWithUrls />
+    <ScanBarCode />
+    <CheckMediaCapability />
+  </>
+);
 
 export default MediaAPIs;
