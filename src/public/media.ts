@@ -296,6 +296,12 @@ export namespace media {
      * Default value is false
      */
     enableFilter?: boolean;
+
+     /**
+     * Optional; Lets the developer specify the output file formats, more than one can be specified
+     * Default value is Image
+     */
+    outputFileFormats?: OutputFileFormats[]
   }
 
   /**
@@ -506,6 +512,14 @@ export namespace media {
   export enum ImageUriType {
     ID = 1,
     URL = 2,
+  }
+
+  /**
+   * Specifies the output file formats 
+   */
+  export enum OutputFileFormats {
+    IMAGE = 1,
+    PDF = 2,
   }
 
   /**
