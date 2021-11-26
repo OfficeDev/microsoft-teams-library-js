@@ -297,9 +297,9 @@ export namespace media {
      */
     enableFilter?: boolean;
 
-     /**
-     * Optional; Lets the developer specify the output file formats, more than one can be specified
-     * Default value is Image
+    /**
+     * Optional; Lets the developer specify the output file formats, more than one can be specified.
+     * Default value is Image.
      */
     outputFileFormats?: OutputFileFormats[];
   }
@@ -515,7 +515,7 @@ export namespace media {
   }
 
   /**
-   * Specifies the output file formats 
+   * Specifies the output file formats.
    */
   export enum OutputFileFormats {
     IMAGE = 1,
