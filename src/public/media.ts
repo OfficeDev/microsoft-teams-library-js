@@ -301,7 +301,7 @@ export namespace media {
      * Optional; Lets the developer specify the output file formats, more than one can be specified
      * Default value is Image
      */
-    outputFileFormats?: OutputFileFormats[]
+    outputFileFormats?: OutputFileFormats[];
   }
 
   /**
