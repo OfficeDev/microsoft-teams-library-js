@@ -21,6 +21,7 @@ describe('media', () => {
   const mediaAPISupportVersion = '1.8.0';
   const scanBarCodeAPISupportVersion = '1.9.0';
   const videoAndImageMediaAPISupportVersion = '2.0.2';
+  const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -348,6 +349,135 @@ describe('media', () => {
     expect(mediaAttachment.size).not.toBeNull();
     expect(typeof mediaAttachment.size === 'number').toBeTruthy();
     expect(mediaAttachment.getMedia).toBeDefined();
+  });
+
+  it('videoController notifyEventToHost should fail in default version of platform', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+    let error;
+    new media.VideoController().stop((e: SdkError) => {
+      error = e;
+    });
+    expect(error).not.toBeNull();
+    expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+  });
+
+  it('videoController notifyEventToHost is handled successfully', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+    let mediaError: SdkError;
+    new media.VideoController().stop((e: SdkError) => {
+      mediaError = e;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('media.controller');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBeFalsy();
+  });
+
+  it('videoController notifyEventToHost is not handled successfully', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+    let mediaError: SdkError;
+    new media.VideoController().stop((e: SdkError) => {
+      mediaError = e;
+    });
+
+    const err: SdkError = {
+      errorCode: ErrorCode.INTERNAL_ERROR,
+    };
+    let message = mobilePlatformMock.findMessageByFunc('media.controller');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [err],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBe(err);
+  });
+
+  it('should invoke correct video callback for MediaControllerEvent when registered', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
+    mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+    let mediaError: SdkError;
+    const mockCallback = jest.fn();
+    const videoControllerCallback: media.VideoControllerCallback = {
+      onRecordingStarted() {
+        mockCallback();
+      },
+    };
+    let videoProps: media.VideoProps = {
+      videoController: new media.VideoController(videoControllerCallback),
+    };
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      maxMediaCount: 10,
+      videoProps: videoProps,
+    };
+
+    media.selectMedia(mediaInputs, (e: SdkError, attachments: media.Media[]) => {
+      mediaError = e;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('selectMedia');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, undefined, 1],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBeFalsy();
+    expect(mockCallback).toHaveBeenCalled();
+  });
+
+  it('should not invoke video callback for MediaControllerEvent when not registered', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
+    mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+    let mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      maxMediaCount: 10,
+      videoProps: {},
+    };
+
+    media.selectMedia(mediaInputs, (e: SdkError, attachments: media.Media[]) => {
+      mediaError = e;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('selectMedia');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, undefined, 2],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBeFalsy();
+    expect(jest.fn()).not.toHaveBeenCalled();
   });
 
   it('selectMedia calls with error', () => {

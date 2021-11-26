@@ -1,4 +1,5 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
+
 /**
  * @private
  * Hide from docs
