@@ -70,6 +70,15 @@ export namespace pages {
     });
   }
 
+  /**
+   * Navigate to the given App ID and Page ID, with optional parameters for a WebURL (if the app cannot
+   * be navigated to, such as if it is not installed), Channel ID (for apps installed as a channel tab), and
+   * Sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
+   * a deep link with the above data, but does not require the app to build a URL or worry about different
+   * deep link formats for different hosts.
+   * @param params Parameters for the navigation
+   * @returns a promise that will resolve if the navigation was successful
+   */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(
@@ -105,11 +114,34 @@ export namespace pages {
     return runtime.supports.pages ? true : false;
   }
 
+  /**
+   * Parameters for the NavigateToApp API
+   */
   export interface NavigateToAppParams {
+    /**
+     * ID of the App to navigate to
+     */
     appId: string;
+
+    /**
+     * Developer-defined ID of the Page to navigate to within the app (Formerly EntityID)
+     */
     pageId: string;
+
+    /**
+     * Optional URL to open if the navigation cannot be completed within the host
+     */
     webUrl?: string;
+
+    /**
+     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
+     * back to the App via the Context object.
+     */
     subPageId?: string;
+
+    /**
+     * Optional ID of the Teams Channel where the app should be opened
+     */
     channelId?: string;
   }
 
