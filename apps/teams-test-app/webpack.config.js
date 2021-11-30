@@ -8,10 +8,10 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 module.exports = merge(commonConfig, {
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "index.js",
+    filename: "index_copy.js",
   },
   plugins: [
-    new HtmlWebPackPlugin({ template: "./index.html", filename: "index.html", }),
+    new HtmlWebPackPlugin({ template: "./index_copy.html", filename: "index_copy.html", }),
     //new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
     //new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
   ],
