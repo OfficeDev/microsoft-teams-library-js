@@ -5,6 +5,7 @@ const webpack = require('webpack')
 const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
+app.use('/static', express.static('public'))
 module.exports = merge(commonConfig, {
   output: {
     path: path.resolve(__dirname, "build"),
@@ -12,14 +13,14 @@ module.exports = merge(commonConfig, {
   },
   plugins: [
     new HtmlWebPackPlugin({ template: "./index_copy.html", filename: "index.html", }),
-    new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
-    new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
+    // new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
+    // new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
   ],
-  // externals:[
-  //   {
-  //     ["@Microsoft/teams-js"]:{
-  //       root: "@Microsoft/teams-js"
-  //     }
-  //   }
-  // ]
+  externals:[
+    {
+      ["@Microsoft/teams-js"]:{
+        root: "@Microsoft/teams-js"
+      }
+    }
+  ]
 });
