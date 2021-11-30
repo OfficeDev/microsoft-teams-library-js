@@ -9,6 +9,6 @@ module.exports = merge(commonConfig, {
     filename: "bundle.js",
   },
   plugins: [
-    new HtmlWebPackPlugin({ template: "./index.html", filename: "index.html", })
+    new HtmlWebPackPlugin({ template: "./index_bundle.html", filename: "index.html", })
   ]
 });

@@ -8,7 +8,7 @@
     "build":"yarn build:local",
     "build:bundle": "yarn eslint ./src/**/*.tsx && webpack --config webpack.bundle.config.js",
     "build:CDN": "yarn eslint ./src/**/*.tsx && webpack --config webpack.cdn.config.js",
-    "build:local": "yarn eslint ./src/**/*.tsx && webpack",
+    "build:local": "yarn eslint ./src/**/*.tsx && webpack --config webpack.dll.js && webpack",
     "clean": "rimraf ./build",
     "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
     "start": "yarn start:local",
