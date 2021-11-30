@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts } from './constants';
