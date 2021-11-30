@@ -6,6 +6,7 @@ import {
 } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
@@ -69,6 +70,24 @@ export namespace pages {
     });
   }
 
+  export function navigateToApp(params: NavigateToAppParams): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      );
+      if (runtime.isLegacyTeams) {
+        resolve(send('executeDeepLink', createTeamsAppLink(params)));
+      } else {
+        resolve(send('pages.navigateToApp', params));
+      }
+    });
+  }
+
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -84,6 +103,14 @@ export namespace pages {
    */
   export function isSupported(): boolean {
     return runtime.supports.pages ? true : false;
+  }
+
+  export interface NavigateToAppParams {
+    appId: string;
+    pageId: string;
+    webUrl?: string;
+    subPageId?: string;
+    channelId?: string;
   }
 
   /**
