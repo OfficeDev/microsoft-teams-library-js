@@ -69,6 +69,7 @@
     "path": "^0.12.7",
     "prettier": "^1.18.2",
     "rimraf": "^3.0.2",
+    "shx": "^0.3.3",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.5",
     "ts-loader": "^9.2.5",
