@@ -296,7 +296,8 @@ export function runWithTimeout<TResult, TError>(
         reject(error);
       });
   });
-  
+}
+
 export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
   const url = new URL(
     'https://teams.microsoft.com/l/entity/' +
