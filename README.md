@@ -11,8 +11,8 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 1. Clone the repo
 2. Run `yarn install` from repo root
-2. Run `yarn build` from repo root
-3. To run Unit tests, run `yarn test`
+3. Run `yarn build` from repo root
+4. To run Unit tests, run `yarn test`
 
   TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
