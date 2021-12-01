@@ -434,7 +434,7 @@ export namespace app {
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
-   * @returns Promise that will be fulfilled when initialization has completed
+   * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
     return runWithTimeout(

@@ -271,7 +271,7 @@ export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T
  * A helper function to add a timeout to an asynchronous operation.
  *
  * @param action Action to wrap the timeout around
- * @param timeoutInMs Timeout period
+ * @param timeoutInMs Timeout period in milliseconds
  * @param timeoutError Error to reject the promise with if timeout elapses before the action completed
  * @returns A promise which resolves to the result of provided action or rejects with a provided timeout error
  * if the initial action didn't complete within provided timeout.
@@ -284,14 +284,14 @@ export function runWithTimeout<TResult, TError>(
   timeoutError: TError,
 ): Promise<TResult> {
   return new Promise((resolve, reject) => {
-    const timeoutHandle = window.setTimeout(reject, timeoutInMs, timeoutError);
+    const timeoutHandle = setTimeout(reject, timeoutInMs, timeoutError);
     action()
       .then(result => {
-        window.clearTimeout(timeoutHandle);
+        clearTimeout(timeoutHandle);
         resolve(result);
       })
       .catch(error => {
-        window.clearTimeout(timeoutHandle);
+        clearTimeout(timeoutHandle);
         reject(error);
       });
   });
