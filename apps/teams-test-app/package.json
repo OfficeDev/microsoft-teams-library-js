@@ -20,5 +20,8 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@microsoft/teams-js": "file:../../packages/teams-js"
   }
 }
