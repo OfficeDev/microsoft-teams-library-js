@@ -269,23 +269,18 @@ export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T
 }
 
 export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
-  let url =
+  const url = new URL(
     'https://teams.microsoft.com/l/entity/' +
-    encodeURIComponent(params.appId) +
-    '/' +
-    encodeURIComponent(params.pageId);
+      encodeURIComponent(params.appId) +
+      '/' +
+      encodeURIComponent(params.pageId),
+  );
 
-  const queryParams = {};
   if (params.webUrl) {
-    queryParams['webUrl'] = params.webUrl;
+    url.searchParams.append('webUrl', params.webUrl);
   }
   if (params.channelId || params.subPageId) {
-    queryParams['context'] = JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId });
+    url.searchParams.append('context', JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId }));
   }
-  let addedParam = false;
-  for (const key in queryParams) {
-    url += (addedParam ? '&' : '?') + key + '=' + encodeURIComponent(queryParams[key]);
-    addedParam = true;
-  }
-  return url;
+  return url.toString();
 }
