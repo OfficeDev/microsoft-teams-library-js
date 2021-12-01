@@ -4,6 +4,7 @@ import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
 import { SdkError } from '../public/interfaces';
+import { pages } from '../public/pages';
 import { validOrigins } from './constants';
 
 /**
@@ -295,4 +296,20 @@ export function runWithTimeout<TResult, TError>(
         reject(error);
       });
   });
+  
+export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
+  const url = new URL(
+    'https://teams.microsoft.com/l/entity/' +
+      encodeURIComponent(params.appId) +
+      '/' +
+      encodeURIComponent(params.pageId),
+  );
+
+  if (params.webUrl) {
+    url.searchParams.append('webUrl', params.webUrl);
+  }
+  if (params.channelId || params.subPageId) {
+    url.searchParams.append('context', JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId }));
+  }
+  return url.toString();
 }
