@@ -268,6 +268,36 @@ export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T
   return p;
 }
 
+/**
+ * A helper function to add a timeout to an asynchronous operation.
+ *
+ * @param action Action to wrap the timeout around
+ * @param timeoutInMs Timeout period in milliseconds
+ * @param timeoutError Error to reject the promise with if timeout elapses before the action completed
+ * @returns A promise which resolves to the result of provided action or rejects with a provided timeout error
+ * if the initial action didn't complete within provided timeout.
+ *
+ * @internal
+ */
+export function runWithTimeout<TResult, TError>(
+  action: () => Promise<TResult>,
+  timeoutInMs: number,
+  timeoutError: TError,
+): Promise<TResult> {
+  return new Promise((resolve, reject) => {
+    const timeoutHandle = setTimeout(reject, timeoutInMs, timeoutError);
+    action()
+      .then(result => {
+        clearTimeout(timeoutHandle);
+        resolve(result);
+      })
+      .catch(error => {
+        clearTimeout(timeoutHandle);
+        reject(error);
+      });
+  });
+}
+
 export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
   const url = new URL(
     'https://teams.microsoft.com/l/entity/' +
