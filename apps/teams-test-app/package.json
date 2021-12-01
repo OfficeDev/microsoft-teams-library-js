@@ -10,7 +10,7 @@
     "build:CDN": "yarn eslint ./src/**/*.tsx && webpack --config webpack.cdn.config.js",
     "build:local": "yarn eslint ./src/**/*.tsx && webpack && yarn copy",
     "clean": "rimraf ./build",
-    "copy": "shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js ./build/",
+    "copy": "shx cp ../../packages/teams-js/dist/MicrosoftTeams.js ./build/ && shx cp ../../packages/teams-js/dist/MicrosoftTeams.js.map ./build/",
     "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
     "start": "yarn start:local",
     "start:bundle": "webpack serve --config webpack.bundle.config.js",
@@ -20,8 +20,5 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
-  },
-  "devDependencies": {
-    "@microsoft/teams-js": "file:../../packages/teams-js"
   }
 }
