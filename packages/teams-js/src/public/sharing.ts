@@ -1,5 +1,6 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -55,22 +56,15 @@ export namespace sharing {
    *
    * @internal
    */
+  export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,
-  ): void {
-    if (!validateNonEmptyContent(shareWebContentRequest, callback)) {
-      return;
-    }
-
-    if (!validateTypeConsistency(shareWebContentRequest, callback)) {
-      return;
-    }
-
-    if (!validateContentForSupportedTypes(shareWebContentRequest, callback)) {
-      return;
-    }
-
+  ): void;
+  export function shareWebContent(
+    shareWebContentRequest: IShareRequest<IShareRequestContentType>,
+    callback?: (err?: SdkError) => void,
+  ): Promise<void> {
     ensureInitialized(
       FrameContexts.content,
       FrameContexts.sidePanel,
@@ -79,79 +73,75 @@ export namespace sharing {
       FrameContexts.meetingStage,
     );
 
-    sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
+    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(shareWebContentHelper, callback, shareWebContentRequest);
+  }
+
+  function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      Promise.all([
+        validateNonEmptyContent(shareWebContentRequest),
+        validateTypeConsistency(shareWebContentRequest),
+        validateContentForSupportedTypes(shareWebContentRequest),
+      ])
+        .then(() => {
+          resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
   }
 
   /**
-   * Error checks
+   * Functions for validating the shareRequest input parameter
    */
-
-  function validateNonEmptyContent(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
-      if (callback) {
-        callback({
+  function validateNonEmptyContent(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
+        reject({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'Shared content is missing',
         });
       }
-      return false;
-    }
-    return true;
+      resolve();
+    });
   }
 
-  function validateTypeConsistency(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    if (shareRequest.content.some(item => !item.type)) {
-      if (callback) {
-        callback({
+  function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (shareRequest.content.some(item => !item.type)) {
+        reject({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'Shared content type cannot be undefined',
         });
       }
-      return false;
-    }
-
-    if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
-      if (callback) {
-        callback({
+      if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
+        reject({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'Shared content must be of the same type',
         });
       }
-      return false;
-    }
-    return true;
+      resolve();
+    });
   }
 
-  function validateContentForSupportedTypes(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    if (shareRequest.content[0].type === 'URL') {
-      if (shareRequest.content.some(item => !item.url)) {
-        if (callback) {
-          callback({
+  function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (shareRequest.content[0].type === 'URL') {
+        if (shareRequest.content.some(item => !item.url)) {
+          reject({
             errorCode: ErrorCode.INVALID_ARGUMENTS,
             message: 'URLs are required for URL content types',
           });
         }
-        return false;
-      }
-    } else {
-      if (callback) {
-        callback({
+        resolve();
+      } else {
+        reject({
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'Content type is unsupported',
         });
       }
-      return false;
-    }
-    return true;
+    });
   }
 
   export function isSupported(): boolean {

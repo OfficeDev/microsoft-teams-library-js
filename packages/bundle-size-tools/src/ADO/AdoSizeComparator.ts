@@ -33,7 +33,6 @@ export class ADOSizeComparator {
    * typically will when the pipeline only builds commits to main.
    */
   private static readonly defaultBuildsToSearch = 40;
-  
 
   constructor(
     /**
