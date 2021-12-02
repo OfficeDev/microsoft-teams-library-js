@@ -58,6 +58,8 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 /**
  * @hidden
  * Function returns null if the media call is supported on current mobile version, else SdkError.
+ *
+ * @internal
  */
 export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): SdkError {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
