@@ -12,12 +12,19 @@ module.exports = merge(commonConfig, {
   plugins: [
     new HtmlWebPackPlugin({ template: "./index_cdn.html", filename: "index.html", })
   ],
-  externalsPresets: { node: true }, 
-  externals: [nodeExternals({
-    // this WILL include `jquery` and `webpack/hot/dev-server` in the bundle, as well as `lodash/*`
-    allowlist: ['react', 'react-dom']
-  })],
+  // externalsPresets: { node: true }, 
+  // externals: [nodeExternals({
+  //   // this WILL include `jquery` and `webpack/hot/dev-server` in the bundle, as well as `lodash/*`
+  //   allowlist: ['react', 'react-dom']
+  // })],
   // externals:[
   //   //{"./build/MicrosoftTeams.js":"@Microsoft/teams-js"}
   // ]
+  externals:[
+    {
+      ["@microsoft/teams-js"]:{
+        root: "@microsoft/teams-js"
+      }
+    }
+  ]
 });

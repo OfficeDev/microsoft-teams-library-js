@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: "./src/index.tsx",
   devtool: 'inline-source-map',
   module: {
@@ -37,7 +37,7 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "build"),
     publicPath: "/",
-    compress: true,
+    compress: false,
     port: 4000,
     https: true,
     disableHostCheck: true,
