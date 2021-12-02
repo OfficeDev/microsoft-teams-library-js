@@ -8,6 +8,9 @@ module.exports = {
     MicrosoftTeams: './src/index.ts',
     'MicrosoftTeams.min': './src/index.ts',
   },
+  externals: {
+    'es6-promise': 'commonjs es6-promise',
+  },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
