@@ -93,8 +93,5 @@
     "underscore": "1.12.1",
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
-  },
-  "dependencies": {
-    "es6-promise": "^4.2.8"
   }
 }

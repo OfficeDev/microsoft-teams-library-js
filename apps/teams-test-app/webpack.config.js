@@ -4,7 +4,7 @@ const {merge} = require('webpack-merge')
 const webpack = require('webpack')
 const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const nodeExternals = require('webpack-node-externals');
+//const nodeExternals = require('webpack-node-externals');
 
 module.exports = merge(commonConfig, {
   output: {
@@ -22,7 +22,7 @@ module.exports = merge(commonConfig, {
   externals:[
     {
       ["@microsoft/teams-js"]:{
-        root: "@microsoft/teams-js"
+        root: "microsoftTeams"
       }
     }
   ]
@@ -37,6 +37,6 @@ module.exports = merge(commonConfig, {
   //   '@microsoft/teams-js': true
   // },
   // externals: {
-  //   '@microsoft/teams-js': '@microsoft/teams-js'
+  //   '@microsoft/teams-js': 'MicrosoftTeams'
   // }
 });
