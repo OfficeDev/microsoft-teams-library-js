@@ -83,7 +83,7 @@ export namespace monetization {
     };
 
     ensureInitialized(FrameContexts.content);
-    return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(wrappedFunction, callback, planInfo);
+    return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 
   export function isSupported(): boolean {
