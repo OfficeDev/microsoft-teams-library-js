@@ -2,6 +2,7 @@ const path = require('path')
 const commonConfig = require('./webpack.common.js')
 const {merge} = require('webpack-merge')
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = merge(commonConfig, {
   output: {
@@ -11,11 +12,12 @@ module.exports = merge(commonConfig, {
   plugins: [
     new HtmlWebPackPlugin({ template: "./index_cdn.html", filename: "index.html", })
   ],
-  externals:[
-    {
-      ["@Microsoft/teams-js"]:{
-        root: "@Microsoft/teams-js"
-      }
-    }
-  ]
+  externalsPresets: { node: true }, 
+  externals: [nodeExternals({
+    // this WILL include `jquery` and `webpack/hot/dev-server` in the bundle, as well as `lodash/*`
+    allowlist: ['react', 'react-dom']
+  })],
+  // externals:[
+  //   //{"./build/MicrosoftTeams.js":"@Microsoft/teams-js"}
+  // ]
 });
