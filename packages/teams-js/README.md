@@ -1,6 +1,6 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
@@ -11,8 +11,8 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 1.  Clone the repo
 2.  Navigate to the repo root and run `yarn install`
-3.  `yarn build` from repo root
-4.  to run Unit test `yarn test`
+3.  Run `yarn build` from repo root
+4.  To run Unit tests, run `yarn test`
 
   TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 

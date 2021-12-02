@@ -20,6 +20,23 @@ const NavigateCrossDomain = (): React.ReactElement =>
     },
   });
 
+const NavigateToApp = (): React.ReactElement =>
+  ApiWithTextInput<pages.NavigateToAppParams>({
+    name: 'navigateToApp',
+    title: 'Navigate To App',
+    onClick: {
+      validateInput: input => {
+        if (!input.appId || !input.pageId) {
+          throw new Error('AppID and PageID are required.');
+        }
+      },
+      submit: async input => {
+        await pages.navigateToApp(input);
+        return 'Completed';
+      },
+    },
+  });
+
 const ReturnFocus = (): React.ReactElement =>
   ApiWithCheckboxInput({
     name: 'returnFocus',
@@ -71,6 +88,7 @@ const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
     <NavigateCrossDomain />
+    <NavigateToApp />
     <ReturnFocus />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />

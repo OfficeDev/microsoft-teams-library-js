@@ -57,10 +57,10 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
     name: 'registerMeetingRoomStatesUpdateHandler',
     title: 'Register MeetingRoom States UpdateHandler',
     onClick: async setResult => {
-      const handler = (meetingRoomCapability: meetingRoom.MeetingRoomCapability): void => {
-        setResult(`Capabilities of meeting room update ${JSON.stringify(meetingRoomCapability)}`);
+      const handler = (meetingRoomState: meetingRoom.MeetingRoomState): void => {
+        setResult(`States of meeting room update ${JSON.stringify(meetingRoomState)}`);
       };
-      meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(handler);
+      meetingRoom.registerMeetingRoomStatesUpdateHandler(handler);
 
       return generateRegistrationMsg('the meeting room states update');
     },

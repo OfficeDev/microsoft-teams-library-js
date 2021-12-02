@@ -3,6 +3,7 @@
 import { deepFreeze } from '../internal/utils';
 export interface IRuntime {
   readonly apiVersion: number;
+  readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
@@ -77,6 +78,7 @@ export let runtime: IRuntime = {
 
 export const teamsRuntimeConfig: IRuntime = {
   apiVersion: 1,
+  isLegacyTeams: true,
   supports: {
     appInstallDialog: {},
     appEntity: {},
