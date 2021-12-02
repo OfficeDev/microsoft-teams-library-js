@@ -1,7 +1,15 @@
-const path = require('path');
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 const TerserPlugin = require('terser-webpack-plugin');
 const DtsBundleWebpack = require('dts-bundle-webpack');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const WebpackAssetsManifest = require('webpack-assets-manifest');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const libraryName = 'microsoftTeams';
+const expect = require('expect');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -10,6 +18,8 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
+    // the following setting is required for SRI to work
+    crossOriginLoading: 'anonymous',
     path: path.resolve(__dirname, 'dist'),
     library: {
       name: libraryName,
@@ -51,5 +61,19 @@ module.exports = {
       out: '~/dist/MicrosoftTeams.d.ts',
       removeSource: true,
     }),
+    new HtmlWebpackPlugin(),
+    new SubresourceIntegrityPlugin({
+      enabled: true,
+    }),
+    new WebpackAssetsManifest({ integrity: true }),
+    {
+      apply: compiler => {
+        compiler.hooks.done.tap('wsi-test', () => {
+          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/assets-manifest.json'), 'utf-8'));
+          expect(manifest['MicrosoftTeams.js'].integrity).toMatch(/sha256-.*/);
+          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha256-.*/);
+        });
+      },
+    },
   ],
 };
