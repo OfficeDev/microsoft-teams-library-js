@@ -10,33 +10,11 @@ module.exports = merge(commonConfig, {
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "indexLocal.js",
-    //libraryTarget: 'umd'
   },
   plugins: [
     new HtmlWebPackPlugin({ template: "./index_local.html", filename: "index.html", }),
-    //new webpack.DllReferencePlugin({ manifest: path.resolve(__dirname, 'dll/manifest.json')}),
-    // new AddAssetHtmlWebpackPlugin({ filepath: path.resolve(__dirname, 'dll/MicrosoftTeams.js'), publicPath: ''})
   ],
-  // externalsPresets: { node: true },
-  // externals: [nodeExternals()],
-  externals:[
-    {
-      ["@microsoft/teams-js"]:{
-        root: "microsoftTeams"
-      }
-    }
-  ]
-  // externals: {
-  //   //react: 'React',
-  //   // '@microsoft/teams-js': {
-  //   //   commonjs: '@microsoft/teams-js',
-  //   //   commonjs2: '@microsoft/teams-js',
-  //   //   amd: '@microsoft/teams-js',
-  //   //   root: '@microsoft/teams-js'
-  //   // }
-  //   '@microsoft/teams-js': true
-  // },
-  // externals: {
-  //   '@microsoft/teams-js': 'MicrosoftTeams'
-  // }
+  externals: {
+    '@microsoft/teams-js': 'microsoftTeams'
+  }
 });

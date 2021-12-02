@@ -11,14 +11,7 @@ module.exports = merge(commonConfig, {
   plugins: [
     new HtmlWebPackPlugin({ template: "./index_cdn.html", filename: "index.html", })
   ],
-  // externals:{
-  //   '@microsoft/teams-js': '@microsoft/teams-js',
-  // },
   externals: {
-    '@microsoft/teams-js': {
-      commonjs: '@microsoft/teams-js',
-      amd: '@microsoft/teams-js',
-      root: '@microsoft/teams-js',
-    },
-  },
+    '@microsoft/teams-js': 'microsoftTeams'
+  }
 });
