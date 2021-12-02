@@ -1,11 +1,11 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
+    "url": "https://github.com/OfficeDev/microsoft-teams-library-js/tree/2.0-preview"
   },
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",

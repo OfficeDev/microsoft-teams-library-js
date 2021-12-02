@@ -1,47 +1,42 @@
 import { call } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const CallAPIs: React.FC = () => {
-  const [startCallRes, setStartCallRes] = React.useState('');
-  const [capabilityCheckRes, setCapabilityCheckRes] = React.useState('');
+const CheckCallCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkCapabilityCall',
+    title: 'Check Capability Call',
+    onClick: async () => `Call module ${call.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const startCall = (callParams: string): void => {
-    setStartCallRes('call.startCall()' + noHostSdkMsg);
-    call
-      .startCall(JSON.parse(callParams))
-      .then(success => setStartCallRes('result: ' + success))
-      .catch(reason => setStartCallRes(reason));
-  };
+const StartCall = (): React.ReactElement =>
+  ApiWithTextInput<call.StartCallParams>({
+    name: 'startCall',
+    title: 'Start Call',
+    onClick: {
+      validateInput: input => {
+        if (!input.targets) {
+          throw new Error('targets is required');
+        }
+        const targets = input.targets;
+        if (!Array.isArray(targets) || targets.length === 0 || targets.some(x => typeof x !== 'string')) {
+          throw new Error('targets has to be a non-empty array of strings');
+        }
+      },
+      submit: async callParams => {
+        const result = await call.startCall(callParams);
+        return 'result: ' + result;
+      },
+    },
+  });
 
-  const checkCallCapability = (): void => {
-    if (call.isSupported()) {
-      setCapabilityCheckRes('Call module is supported');
-    } else {
-      setCapabilityCheckRes('Call module is not supported');
-    }
-  };
-  return (
-    <>
-      <h1>call</h1>
-      <BoxAndButton
-        handleClickWithInput={startCall}
-        output={startCallRes}
-        hasInput={true}
-        title="Start Call"
-        name="startCall"
-      />
-      <BoxAndButton
-        handleClick={checkCallCapability}
-        output={capabilityCheckRes}
-        hasInput={false}
-        title="Check Capability Call"
-        name="checkCapabilityCall"
-      />
-    </>
-  );
-};
+const CallAPIs: React.FC = () => (
+  <>
+    <h1>call</h1>
+    <StartCall />
+    <CheckCallCapability />
+  </>
+);
 
 export default CallAPIs;

@@ -33,28 +33,36 @@ describe('Dialog', () => {
       await utils.initializeWithContext('settings');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => dialog.open(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => dialog.open(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "authentication".',
+      );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => dialog.open(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "remove".',
+      );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.open(dialogInfo)).toThrowError("This call is not allowed in the 'task' context");
+      expect(() => dialog.open(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "task".',
+      );
     });
 
     it('should pass along entire DialogInfo parameter in sidePanel context', async () => {
@@ -146,21 +154,27 @@ describe('Dialog', () => {
       await utils.initializeWithContext('sidePanel');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'sidePanel' context");
+      expect(() => dialog.resize(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
+      );
     });
 
     it('should not allow calls from content context', async () => {
       await utils.initializeWithContext('content');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'content' context");
+      expect(() => dialog.resize(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
+      );
     });
-    
+
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
       const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError("This call is not allowed in the 'meetingStage' context");
+      expect(() => dialog.resize(dialogInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
+      );
     });
 
     it('should successfully pass DialogInfo in Task context', async () => {
@@ -192,37 +206,49 @@ describe('Dialog', () => {
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "authentication".',
+      );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "remove".',
+      );
     });
 
     it('should not allow calls from content context', async () => {
       await utils.initializeWithContext('content');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'content' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
+      );
     });
 
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'meetingStage' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
+      );
     });
 
     it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      expect(() => dialog.submit()).toThrowError("This call is not allowed in the 'sidePanel' context");
+      expect(() => dialog.submit()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
+      );
     });
 
     it('should successfully pass result and appIds parameters when called from Task context', async () => {

@@ -1,39 +1,52 @@
-import { SdkError, sharing } from '@microsoft/teams-js';
+import { sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const SharingAPIs = (): ReactElement => {
-  const [shareWebContentRes, setShareWebContentRes] = React.useState('');
+const CheckSharingCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkSharingCapability',
+    title: 'Check Sharing Capability',
+    onClick: async () => `Sharing ${sharing.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const shareWebContent = (): void => {
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [{ type: 'URL', url: 'https://bing.com' }],
-    };
-    const callback = (err?: SdkError): void => {
-      if (err) {
-        setShareWebContentRes(JSON.stringify(err));
-      } else {
-        setShareWebContentRes('Success');
-      }
-    };
-    setShareWebContentRes('sharing.shareWebContent()' + noHostSdkMsg);
-    sharing.shareWebContent(shareRequest, callback);
-  };
+const ShareWebContent = (): React.ReactElement =>
+  ApiWithTextInput<sharing.IShareRequest<sharing.IURLContent>>({
+    name: 'share_shareWebContent',
+    title: 'Share web content',
+    onClick: {
+      validateInput: input => {
+        if (!input.content || input.content.length === 0) {
+          throw new Error('content is required');
+        }
+        for (const contentItem of input.content) {
+          if (contentItem.type !== 'URL') {
+            throw new Error("Each of the content items has to have type property with value 'URL'.");
+          }
+          if (!contentItem.url) {
+            throw new Error('Each of the content items has to have url property set.');
+          }
+        }
+      },
+      submit: async input => {
+        return new Promise<string>((res, rej) => {
+          sharing.shareWebContent(input, error => {
+            if (error) {
+              rej(JSON.stringify(error));
+            }
+            res('Success');
+          });
+        });
+      },
+    },
+  });
 
-  return (
-    <>
-      <h1>sharing</h1>
-      <BoxAndButton
-        handleClick={shareWebContent}
-        output={shareWebContentRes}
-        hasInput={false}
-        title="Share web content"
-        name="share_shareWebContent"
-      />
-    </>
-  );
-};
+const SharingAPIs = (): ReactElement => (
+  <>
+    <h1>sharing</h1>
+    <ShareWebContent />
+    <CheckSharingCapability />
+  </>
+);
 
 export default SharingAPIs;

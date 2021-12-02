@@ -4,7 +4,8 @@ export enum HostClientType {
   android = 'android',
   ios = 'ios',
   /**
-   * @deprecated Use teamsRoomsWindows instead.
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link teamsRoomsWindows} instead.
    */
   rigel = 'rigel',
   surfaceHub = 'surfaceHub',
@@ -64,7 +65,8 @@ export enum DialogDimension {
 }
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;

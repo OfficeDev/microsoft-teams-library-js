@@ -60,6 +60,7 @@ module.exports = {
       main: 'dts/index.d.ts',
       out: '~/dist/MicrosoftTeams.d.ts',
       removeSource: true,
+      outputAsModuleFolder: true,
     }),
     new HtmlWebpackPlugin(),
     new SubresourceIntegrityPlugin({

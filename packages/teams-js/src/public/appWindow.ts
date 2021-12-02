@@ -17,7 +17,8 @@ export interface IAppWindow {
    */
   postMessage(message: any): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link IAppWindow.postMessage IAppWindow.postMessage(message: any): Promise\<void\>} instead.
    * @param message - The message to send
    * @param onComplete - The deprecated way of invoking a callback to know if the postMessage has been success/failed.
    */
@@ -40,7 +41,8 @@ export class ChildAppWindow implements IAppWindow {
    */
   public postMessage(message: any): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link ChildAppWindow.postMessage ChildAppWindow.postMessage(message: any): Promise\<void\>} instead.
    * @param message - The message to send
    * @param onComplete - The deprecated way of invoking a callback to know if the postMessage has been success/failed.
    */
@@ -88,7 +90,8 @@ export class ParentAppWindow implements IAppWindow {
    */
   public postMessage(message: any): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link ParentAppWindow.postMessage ParentAppWindow.postMessage(message: any): Promise\<void\>} instead.
    * @param message - The message to send
    * @param onComplete - The deprecated way of invoking a callback to know if the postMessage has been success/failed.
    */

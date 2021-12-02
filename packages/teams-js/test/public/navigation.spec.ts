@@ -43,7 +43,7 @@ describe('MicrosoftTeams-Navigation', () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
       );
     });
 

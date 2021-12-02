@@ -1,7 +1,22 @@
-# Breaking Changes
+# 2.0.0-beta.2
 
-## v2.0.0-beta.0 release
+## Bug Fixes
+Update TSDoc @deprecated comments to include links to replaced APIs.
 
+Update webpack-dev-server types to match webpack 5 versions and stop generating module wrappers in MicrosoftTeams.d.ts.
+
+Fix warnings produced during documentation generation, including exporting additional existing interfaces.
+
+Update repository URLs to reference `2.0-preview` branch.
+
+# 2.0.0-beta.1
+
+## Bug Fixes
+Update integrity hash to valid value in README file.
+
+# 2.0.0-beta.0
+
+## Breaking changes
 ### The Teams JavaScript client SDK repo is now a monorepo
 We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. The files specific to the Teams client SDK have been moved to an inner directory
 with the name `teams-js`. A new TeamsJS Test App for validating the Teams client SDK has been added in the <root>/apps/teams-test-app location.
