@@ -1,10 +1,9 @@
-import { sharing } from '../../src/public/sharing';
 import { app } from '../../src/public/app';
-import { Utils } from '../utils';
 import { ErrorCode } from '../../src/public/interfaces';
+import { sharing } from '../../src/public/sharing';
+import { Utils } from '../utils';
 
 describe('sharing_v1', () => {
-
   const utils = new Utils();
 
   beforeEach(() => {
@@ -24,237 +23,254 @@ describe('sharing_v1', () => {
     }
   });
 
-  it('should handle share web content in success scenario', () => {
-    utils.initializeWithContext('content');
-    const callback = jest.fn();
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test'
-        }
-      ]
-    };
-    
-    let response;
-    sharing.shareWebContent(shareRequest, callback);
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+  it('should successfully call the callback function when given the share web content in correct format - success scenario', done => {
+    utils.initializeWithContext('content').then(() => {
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      const callback = () => {
+        done();
+      };
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
+        content: [
+          {
+            type: 'URL',
+            url: 'https://www.microsoft.com',
+            preview: true,
+            message: 'Test',
+          },
+        ],
+      };
 
-    expect(shareMessage).not.toBeNull();
-    expect(shareMessage.args.length).toBe(1);
-    expect(shareMessage.args[0]).toEqual(shareRequest);
-    utils.respondToMessage(shareMessage);
-    expect(callback).toHaveBeenCalledWith(undefined);
+      sharing.shareWebContent(shareRequest, callback);
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+
+      expect(shareMessage).not.toBeNull();
+      expect(shareMessage.args.length).toBe(1);
+      expect(shareMessage.args[0]).toEqual(shareRequest);
+      utils.respondToMessage(shareMessage);
+    });
   });
 
-  it('should handle share web content when content is missing', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {content: undefined};
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing'
-    };
+  it('should throw a SdkError when the shared content is missing', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest = { content: undefined };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when content array is empty', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {content: []};
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing'
-    };
+  it('should throw a SdkError when content array is empty', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest = { content: [] };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when content type is missing', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test'
-        }
-      ]
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content type cannot be undefined'
-    };
+  it('should throw a SdkError when content type is missing', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+        content: [
+          {
+            url: 'https://www.microsoft.com',
+            preview: true,
+            message: 'Test',
+          },
+        ],
+      } as any) as sharing.IShareRequest<sharing.IURLContent>;
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content type cannot be undefined',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when content items are of mixed types', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test'
-        },
-        {
-          type: 'text',
-          message: 'Test'
-        }
-      ]
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content must be of the same type'
-    };
+  it('should throw a SdkError when content items are of mixed types', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest = {
+        content: [
+          {
+            type: 'URL',
+            url: 'https://www.microsoft.com',
+            preview: true,
+            message: 'Test',
+          },
+          {
+            type: 'text',
+            message: 'Test',
+          },
+        ],
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content must be of the same type',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest as any, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when url is missing in URL content type', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'URL',
-          message: 'test'
-        }
-      ]
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'URLs are required for URL content types'
-    };
+  it('should throw a SdkError when url is missing in URL content type', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest = {
+        content: [
+          {
+            type: 'URL',
+            message: 'test',
+          },
+        ],
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'URLs are required for URL content types',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest as any, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when content is an unsupported type', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'image',
-          src: 'Test'
-        }
-      ]
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Content type is unsupported'
-    };
-
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
+  it('should throw a SdkError when content is an unsupported type', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest = {
+        content: [
+          {
+            type: 'image',
+            src: 'Test',
+          },
+        ],
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Content type is unsupported',
+      };
+      sharing.shareWebContent(shareRequest as any, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when other errors occur', () => {
-    utils.initializeWithContext('content');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test'
-        }
-      ]
-    };
-    const error = {
-      errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-      message: 'Feature is not supported.'
-    };
+  it('should throw a SdkError when other errors occur', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
+        content: [
+          {
+            type: 'URL',
+            url: 'https://www.microsoft.com',
+            preview: true,
+            message: 'Test',
+          },
+        ],
+      };
+      const error = {
+        errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
+        message: 'Feature is not supported.',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).not.toBeNull();
+      expect(shareMessage.args[0]).toEqual(shareRequest);
+      utils.respondToMessage(shareMessage, error);
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).not.toBeNull();
-    expect(shareMessage.args[0]).toEqual(shareRequest);
-    utils.respondToMessage(shareMessage, error);
-    expect(response).toEqual(error);
   });
 
-  it('should handle share web content when request is null', () => {
-    utils.initializeWithContext('content');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = null;
+  it('should throw a SdkError when request is null', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = null;
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
   });
 
-  it('should handle share web content when request is undefined', () => {
-    utils.initializeWithContext('content');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = undefined;
+  it('should throw a SdkError when request is undefined', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = undefined;
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
   });
 
-  it('should handle share web content when request is invalid object', () => {
-    utils.initializeWithContext('content');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
-      first: 1,
-      second: 2,
-    } as any) as sharing.IShareRequest<sharing.IURLContent>;
+  it('should throw a SdkError when request is invalid object', done => {
+    utils.initializeWithContext('content').then(() => {
+      const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+        first: 1,
+        second: 2,
+      } as any) as sharing.IShareRequest<sharing.IURLContent>;
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
+
+      sharing.shareWebContent(shareRequest, response => {
+        expect(response).toEqual(error);
+        done();
+      });
+      const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+      expect(shareMessage).toBeNull();
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
   });
 });
-describe('sharing_v2', () => {
 
+describe('sharing_v2', () => {
   const utils = new Utils();
 
   beforeEach(() => {
@@ -274,232 +290,213 @@ describe('sharing_v2', () => {
     }
   });
 
-  it('should handle share web content in success scenario', () => {
-    utils.initializeWithContext('content');
-    const callback = jest.fn();
+  it('should successfully resolves when given the share web content in correct format - success scenario', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
       content: [
         {
           type: 'URL',
           url: 'https://www.microsoft.com',
           preview: true,
-          message: 'Test'
-        }
-      ]
+          message: 'Test',
+        },
+      ],
     };
-    
-    let response;
-    sharing.shareWebContent(shareRequest, callback);
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
 
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args.length).toBe(1);
     expect(shareMessage.args[0]).toEqual(shareRequest);
     utils.respondToMessage(shareMessage);
-    expect(callback).toHaveBeenCalledWith(undefined);
+    await expect(promise).resolves.not.toThrowError();
   });
 
-  it('should handle share web content when content is missing', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {content: undefined};
+  it('should throw a SdkError when content is missing', async () => {
+    await utils.initializeWithContext('content');
+    const shareRequest = { content: undefined };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing'
+      message: 'Shared content is missing',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when content array is empty', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {content: []};
+  it('should throw a SdkError when content array is empty', async () => {
+    await utils.initializeWithContext('content');
+    const shareRequest = { content: [] };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing'
+      message: 'Shared content is missing',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when content type is missing', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when content type is missing', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest = {
       content: [
         {
           url: 'https://www.microsoft.com',
           preview: true,
-          message: 'Test'
-        }
-      ]
+          message: 'Test',
+        },
+      ],
     };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content type cannot be undefined'
+      message: 'Shared content type cannot be undefined',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest as any);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when content items are of mixed types', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when content items are of mixed types', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest = {
       content: [
         {
           type: 'URL',
           url: 'https://www.microsoft.com',
           preview: true,
-          message: 'Test'
+          message: 'Test',
         },
         {
           type: 'text',
-          message: 'Test'
-        }
-      ]
+          message: 'Test',
+        },
+      ],
     };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content must be of the same type'
+      message: 'Shared content must be of the same type',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest as any);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when url is missing in URL content type', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when url is missing in URL content type', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest = {
       content: [
         {
           type: 'URL',
-          message: 'test'
-        }
-      ]
+          message: 'test',
+        },
+      ],
     };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'URLs are required for URL content types'
+      message: 'URLs are required for URL content types',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest as any);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when content is an unsupported type', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when content is an unsupported type', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest = {
       content: [
         {
           type: 'image',
-          src: 'Test'
-        }
-      ]
+          src: 'Test',
+        },
+      ],
     };
     const error = {
       errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Content type is unsupported'
+      message: 'Content type is unsupported',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest as any);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when other errors occur', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when other errors occur', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
       content: [
         {
           type: 'URL',
           url: 'https://www.microsoft.com',
           preview: true,
-          message: 'Test'
-        }
-      ]
+          message: 'Test',
+        },
+      ],
     };
     const error = {
       errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-      message: 'Feature is not supported.'
+      message: 'Feature is not supported.',
     };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).not.toBeNull();
     expect(shareMessage.args[0]).toEqual(shareRequest);
     utils.respondToMessage(shareMessage, error);
-    expect(response).toEqual(error);
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when request is null', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when request is null', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = null;
+    const error = {
+      errorCode: ErrorCode.INVALID_ARGUMENTS,
+      message: 'Shared content is missing',
+    };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when request is undefined', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when request is undefined', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = undefined;
+    const error = {
+      errorCode: ErrorCode.INVALID_ARGUMENTS,
+      message: 'Shared content is missing',
+    };
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
+    await expect(promise).rejects.toEqual(error);
   });
 
-  it('should handle share web content when request is invalid object', () => {
-    utils.initializeWithContext('content');
+  it('should throw a SdkError when request is invalid object', async () => {
+    await utils.initializeWithContext('content');
     const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
       first: 1,
       second: 2,
     } as any) as sharing.IShareRequest<sharing.IURLContent>;
-
-    let response: any;
-    sharing.shareWebContent(shareRequest, (res) => {
-      response = res;
-    });
+    const error = {
+      errorCode: ErrorCode.INVALID_ARGUMENTS,
+      message: 'Shared content is missing',
+    };
+    const promise = sharing.shareWebContent(shareRequest);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
     expect(shareMessage).toBeNull();
+    await expect(promise).rejects.toEqual(error);
   });
 });

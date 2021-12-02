@@ -1,6 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { callCallbackWithSdkErrorFromPromiseAndReturnPromise } from '../internal/utils';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -57,14 +57,35 @@ export namespace sharing {
    * @internal
    */
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
+  /**
+   * @deprecated with TeamsJS v2 upgrades
+   * @hidden
+   * Feature is under development
+   * Opens a share dialog for web content
+   *
+   * @param shareWebContentRequest - web content info
+   * @param callback - optional callback
+   *
+   * @internal
+   */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
+    callback: (err?: SdkError) => void,
   ): void;
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,
   ): Promise<void> {
+    // validate the given input (synchronous check)
+    try {
+      validateNonEmptyContent(shareWebContentRequest);
+      validateTypeConsistency(shareWebContentRequest);
+      validateContentForSupportedTypes(shareWebContentRequest);
+    } catch (err) {
+      //return the error via callback(v1) or rejected promise(v2)
+      const wrappedFunction: InputFunction<void> = () => new Promise((resolve, reject) => reject(err));
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
+    }
     ensureInitialized(
       FrameContexts.content,
       FrameContexts.sidePanel,
@@ -72,76 +93,63 @@ export namespace sharing {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-
     return callCallbackWithSdkErrorFromPromiseAndReturnPromise(shareWebContentHelper, callback, shareWebContentRequest);
   }
 
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      Promise.all([
-        validateNonEmptyContent(shareWebContentRequest),
-        validateTypeConsistency(shareWebContentRequest),
-        validateContentForSupportedTypes(shareWebContentRequest),
-      ])
-        .then(() => {
-          resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
-        })
-        .catch(error => {
-          reject(error);
-        });
+    return new Promise<void>(resolve => {
+      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
   }
 
   /**
    * Functions for validating the shareRequest input parameter
    */
-  function validateNonEmptyContent(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
-        reject({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content is missing',
-        });
-      }
-      resolve();
-    });
+  function validateNonEmptyContent(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
+      const err: SdkError = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
+      throw err;
+    }
   }
 
-  function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (shareRequest.content.some(item => !item.type)) {
-        reject({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content type cannot be undefined',
-        });
-      }
-      if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
-        reject({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content must be of the same type',
-        });
-      }
-      resolve();
-    });
+  function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    let err: SdkError;
+    if (shareRequest.content.some(item => !item.type)) {
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content type cannot be undefined',
+      };
+      throw err;
+    }
+    if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content must be of the same type',
+      };
+      throw err;
+    }
   }
 
-  function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (shareRequest.content[0].type === 'URL') {
-        if (shareRequest.content.some(item => !item.url)) {
-          reject({
-            errorCode: ErrorCode.INVALID_ARGUMENTS,
-            message: 'URLs are required for URL content types',
-          });
-        }
-        resolve();
-      } else {
-        reject({
+  function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    let err: SdkError;
+    if (shareRequest.content[0].type === 'URL') {
+      if (shareRequest.content.some(item => !item.url)) {
+        err = {
           errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Content type is unsupported',
-        });
+          message: 'URLs are required for URL content types',
+        };
+        throw err;
       }
-    });
+    } else {
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Content type is unsupported',
+      };
+      throw err;
+    }
   }
 
   export function isSupported(): boolean {
