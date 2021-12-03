@@ -232,7 +232,7 @@ steps:
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
-      contents: '**\*.js'
+      contents: '**\(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
   
@@ -249,7 +249,7 @@ steps:
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\dist\**\*.js
+        packages\teams-js\dist\**\(*.js|*.ts|*.map)
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)\dist'
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
