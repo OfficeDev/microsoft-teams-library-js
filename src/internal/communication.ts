@@ -70,6 +70,8 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
 }
 
+export function sendMessageToParent(actionName: string, args: any[], callback?: Function, transfer?: Transferable[]): void;
+
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
@@ -78,7 +80,7 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
 export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
-export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
+export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function, transfer?: Transferable[]): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
     callback = argsOrCallback;
@@ -98,7 +100,11 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      targetWindow.postMessage(request, targetOrigin);
+      if (transfer?.length > 0) {
+        targetWindow.postMessage(request, targetOrigin, transfer);
+      } else {
+        targetWindow.postMessage(request, targetOrigin);
+      }
     } else {
       getTargetMessageQueue(targetWindow).push(request);
     }

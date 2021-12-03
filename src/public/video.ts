@@ -50,6 +50,16 @@ export namespace video {
      * video format
      */
     format: VideoFrameFormat;
+    /**
+     * Feature selection
+     */
+    features?: Features[];
+    model?: ArrayBuffer;
+  }
+
+  export enum Features {
+    AudioInference = "AudioInference",
+    RawVideo = "RawVideo",
   }
 
   /**
@@ -90,7 +100,11 @@ export namespace video {
         frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
-    sendMessageToParent('video.registerForVideoFrame', [config]);
+    if (config.model) {
+      sendMessageToParent('video.registerForVideoFrame', [config], null, [config.model]);
+    } else {
+      sendMessageToParent('video.registerForVideoFrame', [config]);
+    }
   }
 
   /**
