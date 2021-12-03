@@ -52,13 +52,15 @@ export namespace sharing {
    * Opens a share dialog for web content
    *
    * @param shareWebContentRequest - web content info
-   * @param callback - optional callback
+   * @returns Promise that will be fulfilled when the operation has completed
    *
    * @internal
    */
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
+   *
    * @hidden
    * Feature is under development
    * Opens a share dialog for web content
