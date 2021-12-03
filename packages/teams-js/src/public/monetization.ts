@@ -10,7 +10,7 @@ import { runtime } from './runtime';
  */
 export namespace monetization {
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Data structure to represent a subscription plan.
    *
@@ -18,19 +18,19 @@ export namespace monetization {
    */
   export interface PlanInfo {
     /**
-     * @privateRemarks
+     * @hidden
      * plan id
      */
     planId: string;
     /**
-     * @privateRemarks
+     * @hidden
      * term of the plan
      */
     term: string;
   }
 
   /**
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Open dialog to start user's purchase experience
    *
@@ -42,9 +42,10 @@ export namespace monetization {
    */
   export function openPurchaseExperience(planInfo?: PlanInfo): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
    *
-   * @privateRemarks
+   * @hidden
    * Hide from docs
    * Open dialog to start user's purchase experience
    *
@@ -56,7 +57,7 @@ export namespace monetization {
    */
   export function openPurchaseExperience(callback: (error: SdkError | null) => void, planInfo?: PlanInfo): void;
   /**
-   * @privateRemarks
+   * @hidden
    * This function is the overloaded implementation of openPurchaseExperience.
    * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
    * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
