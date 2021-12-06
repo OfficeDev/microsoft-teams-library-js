@@ -85,7 +85,7 @@ export namespace sharing {
       validateContentForSupportedTypes(shareWebContentRequest);
     } catch (err) {
       //return the error via callback(v1) or rejected promise(v2)
-      const wrappedFunction: InputFunction<void> = () => new Promise((resolve, reject) => reject(err));
+      const wrappedFunction: InputFunction<void> = () => Promise.reject(err);
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
     ensureInitialized(
