@@ -2,7 +2,7 @@ import { monetization, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
-import { ApiWithoutInput } from '../utils';
+import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 
 const CheckMonetizationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -12,20 +12,25 @@ const CheckMonetizationCapability = (): React.ReactElement =>
   });
 
 const OpenPurchaseExperience = (): React.ReactElement =>
-  ApiWithoutInput({
+  ApiWithTextInput<monetization.PlanInfo | undefined>({
     name: 'monetization_openPurchaseExperience',
     title: 'Open Purchase Experience',
-    onClick: async setResult => {
-      const callback = (error: SdkError | null): void => {
-        if (error) {
-          setResult(JSON.stringify(error));
-        } else {
-          setResult('Success');
+    onClick: {
+      validateInput: planInfo => {
+        if (!planInfo) {
+          return; //This API allow for the input not to be provided
         }
-      };
-
-      monetization.openPurchaseExperience(callback);
-      return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
+        if (typeof planInfo.planId !== 'string') {
+          throw new Error('planId has to be a string');
+        }
+        if (typeof planInfo.term !== 'string') {
+          throw new Error('term has to be a string');
+        }
+      },
+      submit: async planInfo => {
+        await monetization.openPurchaseExperience(planInfo);
+        return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
+      },
     },
   });
 
