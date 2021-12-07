@@ -1,6 +1,10 @@
+import process from 'process';
+
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
+
+
 
 describe('MicrosoftTeams-Navigation', () => {
   // Use to send a mock message from the app.
@@ -110,6 +114,18 @@ describe('MicrosoftTeams-Navigation', () => {
         expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
 
         utils.respondToMessage(navigateCrossDomainMessage, false);
+      });
+    });
+    it('should throw on invalid cross-origin navigation request', () => {
+      utils.initializeWithContext('settings').then(async () => {
+        const p = navigateCrossDomain('https://invalid.origin.com');
+
+        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+        expect(navigateCrossDomainMessage).not.toBeNull();
+        expect(navigateCrossDomainMessage.args.length).toBe(1);
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+        utils.respondToMessage(navigateCrossDomainMessage, false);
+        await expect(p).rejects.toEqual('Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.');
       });
     });
     it('should register the navigateBack action', () => {

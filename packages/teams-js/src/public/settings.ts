@@ -1,4 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { pages } from './pages';
 
@@ -85,17 +86,14 @@ export namespace settings {
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+    onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
     pages.config
       .setConfig(instanceSettings)
       .then(() => {
-        if (onComplete) {
-          onComplete(true);
-        }
+        onComplete(true);
       })
       .catch((error: Error) => {
-        if (onComplete) {
-          onComplete(false, error.message);
-        }
+        onComplete(false, error.message);
       });
   }
 
