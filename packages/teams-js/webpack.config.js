@@ -54,6 +54,8 @@ module.exports = {
       }),
     ],
   },
+  // webpack.production.config.js
+  mode: 'production',
   plugins: [
     new DtsBundleWebpack({
       name: '@microsoft/teams-js',
@@ -63,16 +65,22 @@ module.exports = {
       outputAsModuleFolder: true,
     }),
     new HtmlWebpackPlugin(),
-    new SubresourceIntegrityPlugin({
-      enabled: true,
+
+    // https://www.npmjs.com/package/webpack-subresource-integrity
+    new SubresourceIntegrityPlugin({ enabled: true }),
+
+    // Webpackmanifest produces the json with asset and its corresponding hash values(Example: https://github.com/waysact/webpack-subresource-integrity/blob/main/examples/webpack-assets-manifest/webpack.config.js)
+    new WebpackAssetsManifest({
+      integrity: true,
+      integrityHashes: ['sha384'],
+      output: 'MicrosftTeams-manifest.json',
     }),
-    new WebpackAssetsManifest({ integrity: true }),
     {
       apply: compiler => {
         compiler.hooks.done.tap('wsi-test', () => {
-          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/assets-manifest.json'), 'utf-8'));
-          expect(manifest['MicrosoftTeams.js'].integrity).toMatch(/sha256-.*/);
-          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha256-.*/);
+          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosftTeams-manifest.json'), 'utf-8'));
+          // If for some reason hash was not generated for the assets, this test will fail in build.
+          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
         });
       },
     },
