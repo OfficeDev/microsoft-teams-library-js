@@ -35,6 +35,10 @@ export namespace video {
      * RGB stride, valid only when video frame format is RGB
      */
     stride?: number;
+    /**
+     * Raw binary data for app specific use
+     */
+    binaryAttachment?: Uint8Array;
   }
   /**
    * Video frame format enum, currently only support NV12
@@ -58,8 +62,7 @@ export namespace video {
   }
 
   export enum Features {
-    AudioInference = "AudioInference",
-    RawVideo = "RawVideo",
+    AudioInference = 'AudioInference',
   }
 
   /**

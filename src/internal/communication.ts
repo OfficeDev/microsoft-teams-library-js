@@ -70,7 +70,12 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
 }
 
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function, transfer?: Transferable[]): void;
+export function sendMessageToParent(
+  actionName: string,
+  args: any[],
+  callback?: Function,
+  transfer?: Transferable[],
+): void;
 
 /**
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
@@ -80,7 +85,12 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  */
 export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
-export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function, transfer?: Transferable[]): void {
+export function sendMessageToParent(
+  actionName: string,
+  argsOrCallback?: any[] | Function,
+  callback?: Function,
+  transfer?: Transferable[],
+): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
     callback = argsOrCallback;
