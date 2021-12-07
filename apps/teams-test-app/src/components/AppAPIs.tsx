@@ -15,7 +15,7 @@ const GetContext = (): ReactElement =>
 
 const ExecuteDeepLink = (): ReactElement =>
   ApiWithTextInput<string>({
-    name: 'openLink',
+    name: 'executeDeepLink2',
     title: 'Open Link',
     onClick: {
       validateInput: input => {

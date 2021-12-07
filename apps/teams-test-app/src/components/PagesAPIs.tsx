@@ -39,8 +39,8 @@ const NavigateToApp = (): React.ReactElement =>
 
 const ShareDeepLink = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters>({
-    name: 'pages.shareDeepLink',
-    title: 'pages.shareDeepLink',
+    name: 'core.shareDeepLink',
+    title: 'Share Deeplink',
     onClick: {
       validateInput: input => {
         if (!input.subEntityId || !input.subEntityLabel) {
