@@ -180,9 +180,7 @@ export namespace meeting {
   }
 
   function getIncomingClientAudioStateHelper(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('getIncomingClientAudioState'));
-    });
+    return sendAndHandleSdkError('getIncomingClientAudioState');
   }
 
   /**
@@ -216,9 +214,7 @@ export namespace meeting {
   }
 
   function toggleIncomingClientAudioHelper(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('toggleIncomingClientAudio'));
-    });
+    return sendAndHandleSdkError('toggleIncomingClientAudio');
   }
 
   /**
@@ -266,9 +262,7 @@ export namespace meeting {
   }
 
   function getMeetingDetailsHelper(): Promise<IMeetingDetails> {
-    return new Promise<IMeetingDetails>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.getMeetingDetails'));
-    });
+    return sendAndHandleSdkError('meeting.getMeetingDetails');
   }
 
   /**
@@ -308,9 +302,7 @@ export namespace meeting {
   }
 
   function getAuthenticationTokenForAnonymousUserHelper(): Promise<string> {
-    return new Promise<string>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.getAuthenticationTokenForAnonymousUser'));
-    });
+    return sendAndHandleSdkError('meeting.getAuthenticationTokenForAnonymousUser');
   }
 
   export function isSupported(): boolean {
@@ -347,9 +339,7 @@ export namespace meeting {
   }
 
   function getLiveStreamStateHelper(): Promise<LiveStreamState> {
-    return new Promise<LiveStreamState>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.getLiveStreamState'));
-    });
+    return sendAndHandleSdkError('meeting.getLiveStreamState');
   }
 
   /**
@@ -414,9 +404,7 @@ export namespace meeting {
   }
 
   function requestStartLiveStreamingHelper(streamUrl: string, streamKey?: string): Promise<void> {
-    return new Promise<void>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.requestStartLiveStreaming', streamUrl, streamKey));
-    });
+    return sendAndHandleSdkError('meeting.requestStartLiveStreaming', streamUrl, streamKey);
   }
 
   /**
@@ -444,9 +432,7 @@ export namespace meeting {
   }
 
   function requestStopLiveStreamingHelper(): Promise<void> {
-    return new Promise<void>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.requestStopLiveStreaming'));
-    });
+    return sendAndHandleSdkError('meeting.requestStopLiveStreaming');
   }
 
   /**
@@ -518,9 +504,7 @@ export namespace meeting {
   }
 
   function shareAppContentToStageHelper(appContentUrl: string): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.shareAppContentToStage', appContentUrl));
-    });
+    return sendAndHandleSdkError('meeting.shareAppContentToStage', appContentUrl);
   }
 
   /**
@@ -561,9 +545,7 @@ export namespace meeting {
   }
 
   function getAppContentStageSharingCapabilitiesHelper(): Promise<IAppContentStageSharingCapabilities> {
-    return new Promise<IAppContentStageSharingCapabilities>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingCapabilities'));
-    });
+    return sendAndHandleSdkError('meeting.getAppContentStageSharingCapabilities');
   }
 
   /**
@@ -603,9 +585,7 @@ export namespace meeting {
   }
 
   function stopSharingAppContentToStageHelper(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.stopSharingAppContentToStage'));
-    });
+    return sendAndHandleSdkError('meeting.stopSharingAppContentToStage');
   }
 
   /**
@@ -638,8 +618,6 @@ export namespace meeting {
   }
 
   function getAppContentStageSharingStateHelper(): Promise<IAppContentStageSharingState> {
-    return new Promise<IAppContentStageSharingState>(resolve => {
-      resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingState'));
-    });
+    return sendAndHandleSdkError('meeting.getAppContentStageSharingState');
   }
 }
