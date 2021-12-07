@@ -1,10 +1,6 @@
-import process from 'process';
-
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
-
-
 
 describe('MicrosoftTeams-Navigation', () => {
   // Use to send a mock message from the app.
