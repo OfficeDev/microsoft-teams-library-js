@@ -1,4 +1,4 @@
-import { FrameInfo, pages } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -33,6 +33,23 @@ const NavigateToApp = (): React.ReactElement =>
       submit: async input => {
         await pages.navigateToApp(input);
         return 'Completed';
+      },
+    },
+  });
+
+const ShareDeepLink = (): ReactElement =>
+  ApiWithTextInput<DeepLinkParameters>({
+    name: 'pages.shareDeepLink',
+    title: 'pages.shareDeepLink',
+    onClick: {
+      validateInput: input => {
+        if (!input.subEntityId || !input.subEntityLabel) {
+          throw new Error('subEntityId and subEntityLabel are required.');
+        }
+      },
+      submit: async input => {
+        await pages.shareDeepLink(input);
+        return 'called shareDeepLink';
       },
     },
   });
@@ -89,6 +106,7 @@ const PagesAPIs = (): ReactElement => (
     <h1>pages</h1>
     <NavigateCrossDomain />
     <NavigateToApp />
+    <ShareDeepLink />
     <ReturnFocus />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
