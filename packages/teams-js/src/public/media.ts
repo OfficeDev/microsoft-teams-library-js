@@ -408,33 +408,28 @@ export namespace media {
      * --------
      * Function to notify the host client to programatically control the experience
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
-     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      * @internal
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
-      if (err) {
-        if (callback) {
-          callback(err);
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized(FrameContexts.content, FrameContexts.task);
+        const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+        if (err) {
+          throw err;
         }
-        return;
-      }
 
-      const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
-        if (callback) {
-          callback(err);
-        }
+        const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
+        resolve(sendAndHandleSdkError('media.controller', [params]));
       });
     }
 
     /**
      * Function to programatically stop the ongoing media event
-     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback?: (err?: SdkError) => void): void {
-      this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
+    public stop(): Promise<void> {
+      return new Promise<void>(resolve => {
+        resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording));
+      });
     }
   }
 
