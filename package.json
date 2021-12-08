@@ -92,7 +92,5 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {
-    "replace": "^1.2.1"
-  }
+  "dependencies": {}
 }

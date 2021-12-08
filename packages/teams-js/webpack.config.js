@@ -6,7 +6,6 @@ const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
-var replace = require('replace');
 const libraryName = 'microsoftTeams';
 const expect = require('expect');
 const path = require('path');
@@ -80,16 +79,6 @@ module.exports = {
           const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosftTeams-manifest.json'), 'utf-8'));
           // If for some reason hash was not generated for the assets, this test will fail in build.
           expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
-
-          // Updating the old hash value with the new one in all places.
-          let currentHashValue = 'sha384-RhShpWwRxSnc+keX0WZxCsf8olaKOOw416Jky+StW6qhctsNR3GMwav/hMB1Snas';
-          replace({
-            regex: currentHashValue,
-            replacement: manifest['MicrosoftTeams.min.js'].integrity,
-            paths: ['.'],
-            recursive: true,
-            silent: true,
-          });
         });
       },
     },
