@@ -208,7 +208,7 @@ steps:
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
-    
+
   # TODO - delete after release pipeline creation
   - task: CmdLine@1
     condition: and(
@@ -232,8 +232,8 @@ steps:
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
-      contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)\js'
+      contents: '**\?(*.js|*.ts|*.map)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\js'
     displayName: 'Copy TeamsJS Content for CDN'
   
   - task: CopyFiles@2
@@ -242,15 +242,15 @@ steps:
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
   
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\dist\**
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)\dist'
+        packages\teams-js\dist\**\?(*.js|*.ts|*.map)
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
 
@@ -273,7 +273,7 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
     displayName: 'Publish NPM feed to Build Artifacts'
-  
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\Scripts'
@@ -300,7 +300,7 @@ steps:
       M365CDN_APP_KEY: $(M365-APP-SECRET)
       M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
     displayName: 'Push TeamsJS to M365 1CDN(SDF) for (2.0-preview CI/CD)'
-    
+
   # This task will push content to CDN-Prod for every prod release.
   # Sample CDN URL: https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
   - task: M365CdnAssetsUpload@1

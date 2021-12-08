@@ -77,10 +77,12 @@
     "ts-node": "^10.2.1",
     "typescript": "^4.1.2",
     "webpack": "^5.10.0",
+    "webpack-assets-manifest": "^5.0.6",
     "webpack-bundle-analyzer": "^4.3.0",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.1",
     "webpack-merge": "^5.8.0",
+    "webpack-subresource-integrity": "^5.0.0",
     "yargs": "^8.0.1"
   },
   "resolutions": {
@@ -93,5 +95,6 @@
     "underscore": "1.12.1",
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
-  }
+  },
+  "dependencies": {}
 }
