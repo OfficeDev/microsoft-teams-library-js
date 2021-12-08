@@ -9,6 +9,6 @@ coverage/**
 CONTRIBUTING.md
 gulpfile.js
 karma.conf.js
+prepNewReadme.js
 tsconfig.json
 tslint.json
-prepNewReadme.js
