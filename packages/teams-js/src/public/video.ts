@@ -75,7 +75,7 @@ export namespace video {
   /**
    *  Video frame call back function definition
    */
-  type VideoFrameCallback = (
+  export type VideoFrameCallback = (
     frame: VideoFrame,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
@@ -84,7 +84,7 @@ export namespace video {
   /**
    *  Video effect change call back function definition
    */
-  type VideoEffectCallBack = (effectId: string | undefined) => void;
+  export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
    * register to read the video frames in Permissions section.

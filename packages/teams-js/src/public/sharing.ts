@@ -1,5 +1,6 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -51,26 +52,42 @@ export namespace sharing {
    * Opens a share dialog for web content
    *
    * @param shareWebContentRequest - web content info
+   * @returns Promise that will be fulfilled when the operation has completed
+   *
+   * @internal
+   */
+  export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
+  /**
+   * @deprecated
+   * As of 2.0.0-beta.3, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
+   *
+   * @hidden
+   * Feature is under development
+   * Opens a share dialog for web content
+   *
+   * @param shareWebContentRequest - web content info
    * @param callback - optional callback
    *
    * @internal
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
+    callback: (err?: SdkError) => void,
+  ): void;
+  export function shareWebContent(
+    shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: (err?: SdkError) => void,
-  ): void {
-    if (!validateNonEmptyContent(shareWebContentRequest, callback)) {
-      return;
+  ): Promise<void> {
+    // validate the given input (synchronous check)
+    try {
+      validateNonEmptyContent(shareWebContentRequest);
+      validateTypeConsistency(shareWebContentRequest);
+      validateContentForSupportedTypes(shareWebContentRequest);
+    } catch (err) {
+      //return the error via callback(v1) or rejected promise(v2)
+      const wrappedFunction: InputFunction<void> = () => Promise.reject(err);
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
-
-    if (!validateTypeConsistency(shareWebContentRequest, callback)) {
-      return;
-    }
-
-    if (!validateContentForSupportedTypes(shareWebContentRequest, callback)) {
-      return;
-    }
-
     ensureInitialized(
       FrameContexts.content,
       FrameContexts.sidePanel,
@@ -78,80 +95,63 @@ export namespace sharing {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
+    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(shareWebContentHelper, callback, shareWebContentRequest);
+  }
 
-    sendMessageToParent(SharingAPIMessages.shareWebContent, [shareWebContentRequest], callback);
+  function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+    return new Promise<void>(resolve => {
+      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
+    });
   }
 
   /**
-   * Error checks
+   * Functions for validating the shareRequest input parameter
    */
-
-  function validateNonEmptyContent(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
+  function validateNonEmptyContent(shareRequest: IShareRequest<IShareRequestContentType>): void {
     if (!(shareRequest && shareRequest.content && shareRequest.content.length)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content is missing',
-        });
-      }
-      return false;
+      const err: SdkError = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content is missing',
+      };
+      throw err;
     }
-    return true;
   }
 
-  function validateTypeConsistency(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
+  function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    let err: SdkError;
     if (shareRequest.content.some(item => !item.type)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content type cannot be undefined',
-        });
-      }
-      return false;
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content type cannot be undefined',
+      };
+      throw err;
     }
-
     if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Shared content must be of the same type',
-        });
-      }
-      return false;
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Shared content must be of the same type',
+      };
+      throw err;
     }
-    return true;
   }
 
-  function validateContentForSupportedTypes(
-    shareRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
+  function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    let err: SdkError;
     if (shareRequest.content[0].type === 'URL') {
       if (shareRequest.content.some(item => !item.url)) {
-        if (callback) {
-          callback({
-            errorCode: ErrorCode.INVALID_ARGUMENTS,
-            message: 'URLs are required for URL content types',
-          });
-        }
-        return false;
+        err = {
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'URLs are required for URL content types',
+        };
+        throw err;
       }
     } else {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: 'Content type is unsupported',
-        });
-      }
-      return false;
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Content type is unsupported',
+      };
+      throw err;
     }
-    return true;
   }
 
   export function isSupported(): boolean {

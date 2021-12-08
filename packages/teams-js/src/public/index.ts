@@ -7,6 +7,7 @@ export {
   TeamType,
   UserTeamRole,
   ChannelType,
+  HostName,
 } from './constants';
 export {
   Context,
@@ -21,6 +22,8 @@ export {
   TeamInformation,
   FileOpenPreference,
   OpenConversationRequest,
+  LocaleInfo,
+  FrameInfo,
 } from './interfaces';
 export { app, core } from './app';
 export { appInstallDialog } from './appInstallDialog';
@@ -38,13 +41,7 @@ export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
 export { call } from './call';
-/**
- * @deprecated with TeamsJS v2 upgrades
- */
 export { appInitialization } from './appInitialization';
-/**
- * @deprecated with TeamsJS v2 upgrades
- */
 export {
   enablePrintCapability,
   executeDeepLink,
@@ -67,15 +64,6 @@ export {
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
-/**
- * @deprecated with TeamsJS v2 upgrades
- */
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
-/**
- * @deprecated with TeamsJS v2 upgrades
- */
 export { settings } from './settings';
-/**
- * @deprecated with TeamsJS v2 upgrades
- */
 export { tasks } from './tasks';

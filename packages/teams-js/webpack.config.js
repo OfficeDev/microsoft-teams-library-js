@@ -50,6 +50,7 @@ module.exports = {
       main: 'dts/index.d.ts',
       out: '~/dist/MicrosoftTeams.d.ts',
       removeSource: true,
+      outputAsModuleFolder: true,
     }),
   ],
 };

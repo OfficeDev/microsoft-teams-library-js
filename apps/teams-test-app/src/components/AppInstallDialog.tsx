@@ -1,48 +1,38 @@
 import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const AppInstallDialogAPIs: React.FC = () => {
-  const [openAppInstallDialogRes, setOpenAppInstallDialogRes] = React.useState('');
-  const [checkAppInstallDialogCapabilityRes, setCheckAppInstallDialogCapabilityRes] = React.useState('');
+const CheckAppInstallDialogCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkCapabilityAppInstallDialog',
+    title: 'Check Capability App Install Dialog',
+    onClick: async () => `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const openAppInstallDialog = (openAppInstallDialogParams: string): void => {
-    setOpenAppInstallDialogRes('appInstallDialog.openAppInstallDialog()' + noHostSdkMsg);
-    appInstallDialog
-      .openAppInstallDialog(JSON.parse(openAppInstallDialogParams))
-      .then(() => setOpenAppInstallDialogRes('called'))
-      .catch(reason => setOpenAppInstallDialogRes(JSON.stringify(reason)));
-  };
+const OpenAppInstallDialog = (): React.ReactElement =>
+  ApiWithTextInput<appInstallDialog.OpenAppInstallDialogParams>({
+    name: 'openAppInstallDialog',
+    title: 'Open App Install Dialog',
+    onClick: {
+      validateInput: input => {
+        if (!input.appId) {
+          throw new Error('appId is required');
+        }
+      },
+      submit: async input => {
+        await appInstallDialog.openAppInstallDialog(input);
+        return 'called';
+      },
+    },
+  });
 
-  const checkAppInstallDialogCapability = (): void => {
-    if (appInstallDialog.isSupported()) {
-      setCheckAppInstallDialogCapabilityRes('AppInstallDialog module is supported');
-    } else {
-      setCheckAppInstallDialogCapabilityRes('AppInstallDialog module is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>appInstallDialog</h1>
-      <BoxAndButton
-        handleClickWithInput={openAppInstallDialog}
-        output={openAppInstallDialogRes}
-        hasInput={true}
-        title="Open App Install Dialog"
-        name="openAppInstallDialog"
-      />
-      <BoxAndButton
-        handleClick={checkAppInstallDialogCapability}
-        output={checkAppInstallDialogCapabilityRes}
-        hasInput={false}
-        title="Check Capability App Install Dialog"
-        name="checkCapabilityAppInstallDialog"
-      />
-    </>
-  );
-};
+const AppInstallDialogAPIs: React.FC = () => (
+  <>
+    <h1>appInstallDialog</h1>
+    <OpenAppInstallDialog />
+    <CheckAppInstallDialogCapability />
+  </>
+);
 
 export default AppInstallDialogAPIs;

@@ -33,28 +33,36 @@ describe('tasks', () => {
       await utils.initializeWithContext('settings');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "authentication".',
+      );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "remove".',
+      );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError("This call is not allowed in the 'task' context");
+      expect(() => tasks.startTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "task".',
+      );
     });
 
     it('should pass along entire TaskInfo parameter in sidePanel context', async () => {
@@ -146,23 +154,29 @@ describe('tasks', () => {
       await utils.initializeWithContext('content');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'content' context");
+      expect(() => tasks.updateTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
+      );
     });
 
     it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'sidePanel' context");
+      expect(() => tasks.updateTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
+      );
     });
 
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'meetingStage' context");
+      expect(() => tasks.updateTask(taskInfo)).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
+      );
     });
-    
+
     it('should successfully pass taskInfo in task context', async () => {
       await utils.initializeWithContext('task');
       const taskInfo = { width: 10, height: 10 };
@@ -192,37 +206,49 @@ describe('tasks', () => {
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'settings' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "settings".',
+      );
     });
 
     it('should not allow calls from content context', async () => {
       await utils.initializeWithContext('content');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'content' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
+      );
     });
 
     it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'sidePanel' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
+      );
     });
 
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'meetingStage' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
+      );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'authentication' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "authentication".',
+      );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'remove' context");
+      expect(() => tasks.submitTask()).toThrowError(
+        'This call is only allowed in following contexts: ["task"]. Current context: "remove".',
+      );
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {

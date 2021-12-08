@@ -1,66 +1,56 @@
 import { location } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const LocationAPIs = (): ReactElement => {
-  const [getLocationRes, setGetLocationRes] = React.useState('');
-  const [showLocationRes, setShowLocationRes] = React.useState('');
-  const [checkLocationCapabilityRes, setCheckLocationCapabilityRes] = React.useState('');
+const CheckLocationCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkLocationCapability',
+    title: 'Check Location Capability',
+    onClick: async () => `Location module ${location.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const getLocation = (locationPropsInput: string): void => {
-    const locationProps: location.LocationProps = JSON.parse(locationPropsInput);
-    setGetLocationRes('location.getLocation()' + noHostSdkMsg);
-    location
-      .getLocation(locationProps)
-      .then(location => setGetLocationRes(JSON.stringify(location)))
-      .catch(err => setGetLocationRes(err.errorCode.toString + ' ' + err.message));
-  };
+const GetLocation = (): React.ReactElement =>
+  ApiWithTextInput<location.LocationProps>({
+    name: 'getLocation',
+    title: 'Get Location',
+    onClick: {
+      validateInput: input => {
+        if (input.allowChooseLocation === undefined) {
+          throw new Error('allowChooseLocation is required');
+        }
+      },
+      submit: async locationProps => {
+        const result = await location.getLocation(locationProps);
+        return JSON.stringify(result);
+      },
+    },
+  });
 
-  const showLocation = (locationInput: string): void => {
-    const locationParam: location.Location = JSON.parse(locationInput);
-    setShowLocationRes('location.showLocation()' + noHostSdkMsg);
-    location
-      .showLocation(locationParam)
-      .then(() => setShowLocationRes('Completed'))
-      .catch(err => setShowLocationRes(err.errorCode.toString + ' ' + err.message));
-  };
+const ShowLocation = (): React.ReactElement =>
+  ApiWithTextInput<location.Location>({
+    name: 'showLocation',
+    title: 'Show Location',
+    onClick: {
+      validateInput: input => {
+        if (!input.latitude || !input.longitude) {
+          throw new Error('latitude and longitude are required');
+        }
+      },
+      submit: async locationProps => {
+        await location.showLocation(locationProps);
+        return 'Completed';
+      },
+    },
+  });
 
-  const locationCapabilityCheck = (): void => {
-    if (location.isSupported()) {
-      setCheckLocationCapabilityRes('Location module is supported');
-    } else {
-      setCheckLocationCapabilityRes('Location module is not supported');
-    }
-  };
-
-  return (
-    <>
-      <h1>location</h1>
-      <BoxAndButton
-        handleClickWithInput={getLocation}
-        output={getLocationRes}
-        hasInput={true}
-        title="Get Location"
-        name="getLocation"
-      />
-      <BoxAndButton
-        handleClickWithInput={showLocation}
-        output={showLocationRes}
-        hasInput={true}
-        title="Show Location"
-        name="showLocation"
-      />
-      <BoxAndButton
-        handleClick={locationCapabilityCheck}
-        output={checkLocationCapabilityRes}
-        hasInput={false}
-        title="Check Location Capability"
-        name="checkLocationCapability"
-      />
-    </>
-  );
-};
+const LocationAPIs = (): ReactElement => (
+  <>
+    <h1>location</h1>
+    <GetLocation />
+    <ShowLocation />
+    <CheckLocationCapability />
+  </>
+);
 
 export default LocationAPIs;
