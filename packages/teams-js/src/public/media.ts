@@ -280,8 +280,6 @@ export namespace media {
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
-   *
-   * @internal
    */
   interface MediaProps {
     /**
@@ -380,7 +378,6 @@ export namespace media {
    * Hide from docs
    * --------
    * Base class which holds the callback and notifies events to the host client
-   * @internal
    */
   abstract class MediaController<T> {
     protected controllerCallback: T;
@@ -398,7 +395,6 @@ export namespace media {
      * This function will be implemented by the respective media class which holds the logic
      * of specific events that needs to be notified to the app.
      * @param mediaEvent indicates the event signed by the host client to the app
-     * @internal
      */
     protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
 
@@ -408,7 +404,6 @@ export namespace media {
      * --------
      * Function to notify the host client to programatically control the experience
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
-     * @internal
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void> {
       return new Promise<void>(resolve => {
@@ -427,9 +422,7 @@ export namespace media {
      * Function to programatically stop the ongoing media event
      */
     public stop(): Promise<void> {
-      return new Promise<void>(resolve => {
-        resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording));
-      });
+      return this.notifyEventToHost(MediaControllerEvent.StopRecording);
     }
   }
 
@@ -469,7 +462,6 @@ export namespace media {
    * Hide from docs
    * --------
    * Events which are used to communicate between the app and the host client during the media recording flow
-   * @internal
    */
   enum MediaControllerEvent {
     StartRecording = 1,
@@ -481,7 +473,6 @@ export namespace media {
    * Hide from docs
    * --------
    * Interface with relevant info to send communication from the app to the host client
-   * @internal
    */
   interface MediaControllerParam {
     /**

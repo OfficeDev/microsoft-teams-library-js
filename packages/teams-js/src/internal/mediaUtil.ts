@@ -114,7 +114,10 @@ export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs
 }
 
 /**
+ * @hidden
  * Returns true if the mediaInput params are called for non-full screen video mode and false otherwise
+ *
+ * @internal
  */
 export function isMediaCallForNonFullScreenVideoMode(mediaInputs: media.MediaInputs): boolean {
   if (

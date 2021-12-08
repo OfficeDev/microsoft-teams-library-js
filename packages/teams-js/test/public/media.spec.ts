@@ -441,25 +441,22 @@ describe('media', () => {
         });
       });
 
-      it('videoController notifyEventToHost should fail in default version of platform', () => {
+      it('videoController notifyEventToHost should fail in default version of platform', async () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-          let error;
-          new media.VideoController().stop((e: SdkError) => {
-            error = e;
+          const stopRes = new media.VideoController().stop();
+          stopRes.catch(error => {
+            expect(error).not.toBeNull();
+            expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
           });
-          expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
         });
       });
 
-      it('videoController notifyEventToHost is handled successfully', () => {
+      it('videoController notifyEventToHost is handled successfully', async () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           let mediaError: SdkError;
-          new media.VideoController().stop((e: SdkError) => {
-            mediaError = e;
-          });
+          new media.VideoController().stop();
 
           const message = mobilePlatformMock.findMessageByFunc('media.controller');
           expect(message).not.toBeNull();
@@ -481,10 +478,10 @@ describe('media', () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           let mediaError: SdkError;
-          new media.VideoController().stop((e: SdkError) => {
-            mediaError = e;
+          const stopRes = new media.VideoController().stop();
+          stopRes.catch(error => {
+            mediaError = error;
           });
-
           const err: SdkError = {
             errorCode: ErrorCode.INTERNAL_ERROR,
           };
@@ -838,16 +835,17 @@ describe('media', () => {
       });
 
       it('getMedia call in task frameContext works', async () => {
-        await mobilePlatformMock.initializeWithContext(FrameContexts.task);
-        mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-        const mediaOutput: media.Media = new media.Media();
-        mediaOutput.content = '1234567';
-        mediaOutput.mimeType = 'image/jpeg';
-        mediaOutput.format = media.FileFormat.ID;
-        mediaOutput.getMedia(emptyCallback);
-        const message = mobilePlatformMock.findMessageByFunc('getMedia');
-        expect(message).not.toBeNull();
-        expect(message.args.length).toBe(2);
+        mobilePlatformMock.initializeWithContext(FrameContexts.task).then(() => {
+          mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+          const mediaOutput: media.Media = new media.Media();
+          mediaOutput.content = '1234567';
+          mediaOutput.mimeType = 'image/jpeg';
+          mediaOutput.format = media.FileFormat.ID;
+          mediaOutput.getMedia(emptyCallback);
+          const message = mobilePlatformMock.findMessageByFunc('getMedia');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(2);
+        });
       });
 
       async function getStringContainedInBlob(blob: Blob): Promise<string> {
@@ -871,7 +869,7 @@ describe('media', () => {
         return blobReadingPromise;
       }
 
-      it('getMedia calls with successful result via the handler', done => {
+      it('getMedia calls with successful result via the handler', async () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           //mediaAPISupport version(1.8.0) is less than the MediaCallbackSupportVersion(2.0.0)
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
@@ -882,7 +880,6 @@ describe('media', () => {
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
-              done();
             });
           });
 
@@ -916,7 +913,7 @@ describe('media', () => {
         });
       });
 
-      it('getMedia calls with successful result via the callback', done => {
+      it('getMedia calls with successful result via the callback', async () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           // here we give the same version as the supported version
           mobilePlatformMock.setClientSupportedSDKVersion(getMediaCallbackSupportVersion);
@@ -927,7 +924,6 @@ describe('media', () => {
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
-              done();
             });
           });
 
