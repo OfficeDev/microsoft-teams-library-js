@@ -254,6 +254,8 @@ export namespace meeting {
   }
 
   /**
+   * @private
+   * Hide from docs
    * Allows an app to share contents in the meeting
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when share is successful
@@ -272,6 +274,8 @@ export namespace meeting {
   }
 
   /**
+   * @private
+   * Hide from docs
    * Provides information related app's in-meeting sharing capabilities
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
@@ -310,6 +314,8 @@ export namespace meeting {
   }
 
   /**
+   * @private
+   * Hide from docs
    * Provides information related to current stage sharing state for app
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
