@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Unit Test Results (Jest ${{ matrix.python-version }})
-          path: packages/*/test-results/unit-tests-resport.xml
+          path: packages/*/test-results/unit/unit-tests-report.xml
 
   publish-test-results:
     name: 'Publish Unit Tests Results'
