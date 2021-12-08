@@ -63,6 +63,12 @@ steps:
       Arguments: 'test'
     displayName: 'yarn test'
 
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/unit-tests-report*.xml"
+    condition: succeededOrFailed()
+
   - task: Yarn@2
     inputs:
       Arguments: 'bundleAnalyze:collect'
