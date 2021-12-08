@@ -74,6 +74,16 @@ steps:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'
 
+  - script: 'node prepNewReadme.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    condition: and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'node prepNewReadme.js'
+
   # Bundle analysis comparison : should trigger only by PR against 2.0-preview
   # Adding comment for a commit that should queue the pipeline with a PR trigger
 

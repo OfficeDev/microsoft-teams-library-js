@@ -71,7 +71,7 @@ module.exports = {
     new WebpackAssetsManifest({
       integrity: true,
       integrityHashes: ['sha384'],
-      output: 'MicrosftTeams-manifest.json',
+      output: 'MicrosoftTeams-manifest.json',
     }),
     {
       apply: compiler => {
