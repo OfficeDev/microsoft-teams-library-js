@@ -6,9 +6,12 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 module.exports = merge(commonConfig, {
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "indexBundle.js",
+    filename: "indexCDN.js",
   },
   plugins: [
-    new HtmlWebPackPlugin({ template: "./index_bundle.html", filename: "index.html", })
-  ]
+    new HtmlWebPackPlugin({ template: "./index_cdn.html", filename: "index.html", })
+  ],
+  externals: {
+    '@microsoft/teams-js': 'microsoftTeams'
+  }
 });
