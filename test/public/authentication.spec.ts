@@ -263,15 +263,17 @@ describe('authentication', () => {
         url: 'https://someUrl',
         width: 100,
         height: 200,
+        isExternal: true,
       };
       authentication.authenticate(authenticationParams);
 
       let message = utils.findMessageByFunc('authentication.authenticate');
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(3);
+      expect(message.args.length).toBe(4);
       expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
       expect(message.args[1]).toBe(authenticationParams.width);
       expect(message.args[2]).toBe(authenticationParams.height);
+      expect(message.args[3]).toBe(authenticationParams.isExternal);
     });
 
     it(`should successfully handle auth success in the ${hostClientType} client`, () => {
