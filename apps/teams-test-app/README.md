@@ -13,9 +13,8 @@ cd {monorepo root}
 
 // Ensuring you have installed and built the Teams JavaScript client SDK
 yarn install
-yarn build-sdk
+yarn build
 
-yarn build-test-app
 yarn start-test-app
 ```
 
