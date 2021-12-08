@@ -1,7 +1,14 @@
-const path = require('path');
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 const TerserPlugin = require('terser-webpack-plugin');
 const DtsBundleWebpack = require('dts-bundle-webpack');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const WebpackAssetsManifest = require('webpack-assets-manifest');
 const libraryName = 'microsoftTeams';
+const expect = require('expect');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -10,6 +17,8 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
+    // the following setting is required for SRI to work
+    crossOriginLoading: 'anonymous',
     path: path.resolve(__dirname, 'dist'),
     library: {
       name: libraryName,
@@ -44,6 +53,8 @@ module.exports = {
       }),
     ],
   },
+  // webpack.production.config.js
+  mode: 'production',
   plugins: [
     new DtsBundleWebpack({
       name: '@microsoft/teams-js',
@@ -52,5 +63,24 @@ module.exports = {
       removeSource: true,
       outputAsModuleFolder: true,
     }),
+
+    // https://www.npmjs.com/package/webpack-subresource-integrity
+    new SubresourceIntegrityPlugin({ enabled: true }),
+
+    // Webpackmanifest produces the json file containing asset(JS file) and its corresponding hash values(Example: https://github.com/waysact/webpack-subresource-integrity/blob/main/examples/webpack-assets-manifest/webpack.config.js)
+    new WebpackAssetsManifest({
+      integrity: true,
+      integrityHashes: ['sha384'],
+      output: 'MicrosftTeams-manifest.json',
+    }),
+    {
+      apply: compiler => {
+        compiler.hooks.done.tap('wsi-test', () => {
+          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosftTeams-manifest.json'), 'utf-8'));
+          // If for some reason hash was not generated for the assets, this test will fail in build.
+          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
+        });
+      },
+    },
   ],
 };
