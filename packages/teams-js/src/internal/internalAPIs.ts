@@ -1,3 +1,5 @@
+import { HostClientType } from '../public/constants';
+import { ErrorCode, SdkError } from '../public/interfaces';
 import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
 import { compareSDKVersions } from './utils';
@@ -41,6 +43,35 @@ export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVer
     return false;
   }
   return value >= 0;
+}
+
+/**
+ * @hidden
+ * Helper function to identify if host client is either android or ios
+ *
+ * @internal
+ */
+export function isHostClientMobile(): boolean {
+  return GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios;
+}
+
+/**
+ * @hidden
+ * Helper function which indicates if current API is supported on mobile or not.
+ * @returns SdkError if host client is not android/ios or if the requiredVersion is not
+ *          supported by platform or not. Null is returned in case of success.
+ *
+ * @internal
+ */
+export function isApiSupportedOnMobile(requiredVersion: string = defaultSDKVersionForCompatCheck): SdkError {
+  if (!isHostClientMobile()) {
+    const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    return notSupportedError;
+  } else if (!isAPISupportedByPlatform(requiredVersion)) {
+    const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+    return oldPlatformError;
+  }
+  return null;
 }
 
 /**
