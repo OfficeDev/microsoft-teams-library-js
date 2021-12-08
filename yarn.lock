@@ -7048,6 +7048,16 @@ jest-jasmine2@^27.2.1:
     pretty-format "^27.2.0"
     throat "^6.0.1"
 
+jest-junit@^12.0.0:
+  version "12.3.0"
+  resolved "https://registry.yarnpkg.com/jest-junit/-/jest-junit-12.3.0.tgz#ee41a74e439eecdc8965f163f83035cce5998d6d"
+  integrity sha512-+NmE5ogsEjFppEl90GChrk7xgz8xzvF0f+ZT5AnhW6suJC93gvQtmQjfyjDnE0Z2nXJqEkxF0WXlvjG/J+wn/g==
+  dependencies:
+    mkdirp "^1.0.4"
+    strip-ansi "^5.2.0"
+    uuid "^8.3.2"
+    xml "^1.0.1"
+
 jest-leak-detector@^27.2.0:
   version "27.2.0"
   resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-27.2.0.tgz#9a7ca2dad1a21c4e49ad2a8ad7f1214ffdb86a28"
@@ -8136,7 +8146,7 @@ mkdirp-promise@^5.0.1:
   dependencies:
     mkdirp "*"
 
-mkdirp@*:
+mkdirp@*, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
@@ -11356,6 +11366,11 @@ uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0, uuid@^3.2.1, uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
@@ -11873,6 +11888,11 @@ xml2js@0.2.8:
   integrity sha1-m4FpCTFjH/CdGVdUn69U9PmAs8I=
   dependencies:
     sax "0.5.x"
+
+xml@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
+  integrity sha1-eLpyAgApxbyHuKgaPPzXS0ovweU=
 
 xmlbuilder@^9.0.7:
   version "9.0.7"
