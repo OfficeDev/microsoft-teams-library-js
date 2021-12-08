@@ -36,7 +36,7 @@ describe('config', () => {
 
     let message = utils.findMessageByFunc('settings.save.success');
     expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
+    expect(message.args.length).toBe(0);
   });
 
   it('should successfully register a remove handler', async () => {
