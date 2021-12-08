@@ -60,10 +60,14 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
   }
 
   if (!Communication.parentWindow) {
-    GlobalVars.isFramelessWindow = true;
-    /* eslint-disable  @typescript-eslint/ban-ts-comment */
-    // @ts-ignore: window as ExtendedWindow
-    (window as ExtendedWindow).onNativeMessage = handleParentMessage;
+    const extendedWindow = (Communication.currentWindow as unknown) as ExtendedWindow;
+    if (extendedWindow.nativeInterface) {
+      GlobalVars.isFramelessWindow = true;
+      extendedWindow.onNativeMessage = handleParentMessage;
+    } else {
+      // at this point we weren't able to find a parent to talk to, no way initialization will succeed
+      return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
+    }
   }
 
   try {
