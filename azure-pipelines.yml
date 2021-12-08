@@ -4,8 +4,6 @@
 # https://aka.ms/yaml
 variables:
 - group: InfoSec-SecurityResults
-- group: 1CDN-SDF-Secrets
-- group: 1CDN-Prod-Secrets
 
 trigger:
   branches:
@@ -208,12 +206,6 @@ steps:
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
-
-  - powershell: |
-      $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
-      Write-Host "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
-    displayName: 'Set package.Version Variable'
-    name: package
 
   - task: CopyFiles@2
     inputs:
