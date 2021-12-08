@@ -36,7 +36,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: Unit Test Results (Jest ${{ matrix.python-version }})
+          name: Unit Test Results (Jest ${{ matrix.node-version }})
           path: packages/*/test-results/unit/unit-tests-report.xml
 
   publish-test-results:
