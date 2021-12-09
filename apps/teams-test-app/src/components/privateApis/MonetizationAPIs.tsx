@@ -20,11 +20,8 @@ const OpenPurchaseExperience = (): React.ReactElement =>
         if (!planInfo) {
           return; //This API allow for the input not to be provided
         }
-        if (typeof planInfo.planId !== 'string') {
-          throw new Error('planId has to be a string');
-        }
-        if (typeof planInfo.term !== 'string') {
-          throw new Error('term has to be a string');
+        if (!planInfo.planId || !planInfo.term) {
+          throw new Error('planId and term are required on input, if provided');
         }
       },
       submit: async planInfo => {
