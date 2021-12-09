@@ -327,7 +327,7 @@ export namespace authentication {
      */
     height?: number;
     /**
-     * The flag which indicates whether the auth page should be opened in an external browser.
+     * The flag which indicates whether the auth page should be opened in an external browser. This flag has no effect on the web client.
      */
     isExternal?: boolean;
     /**
