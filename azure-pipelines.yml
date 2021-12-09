@@ -77,7 +77,7 @@ steps:
   - script: 'node prepNewReadme.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
