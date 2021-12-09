@@ -36,7 +36,7 @@ export namespace video {
      */
     stride?: number;
     /**
-     * Raw binary data for app specific use
+     * Raw binary data for app-specific uses
      */
     binaryAttachment?: Uint8Array;
   }
@@ -55,14 +55,13 @@ export namespace video {
      */
     format: VideoFrameFormat;
     /**
-     * Feature selection
+     * require video frame
      */
-    features?: Features[];
-    model?: ArrayBuffer;
-  }
-
-  export enum Features {
-    AudioInference = 'AudioInference',
+    videoEnabled?: boolean;
+    /**
+     * onnx model for audio inference
+     */
+    audioInferenceModel?: ArrayBuffer;
   }
 
   /**
@@ -103,11 +102,8 @@ export namespace video {
         frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
-    if (config.model) {
-      sendMessageToParent('video.registerForVideoFrame', [config], null, [config.model]);
-    } else {
-      sendMessageToParent('video.registerForVideoFrame', [config]);
-    }
+
+    sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
   /**
