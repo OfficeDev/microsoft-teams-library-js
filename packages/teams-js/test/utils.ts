@@ -154,9 +154,7 @@ export class Utils {
   };
 
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
-    /* eslint-disable  @typescript-eslint/ban-ts-comment */
-    // @ts-ignore: window as ExtendedWindow
-    (window as ExtendedWindow).onNativeMessage({
+    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
         args: args,
@@ -189,11 +187,11 @@ export class Utils {
    */
   public setRuntimeConfig = (runtime: IRuntime) => {
     applyRuntimeConfig(runtime);
-  }
+  };
 
   /**
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-     public flushPromises = () => new Promise(resolve => setTimeout(resolve));
+  public flushPromises = () => new Promise(resolve => setTimeout(resolve));
 }

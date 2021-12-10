@@ -5,10 +5,17 @@
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
   "version": "2.0.0-beta.2",
   "scripts": {
-    "build": "yarn eslint ./src/**/*.tsx && webpack",
+    "build":"yarn build:bundle",
+    "build:bundle": "yarn eslint ./src/**/*.tsx && webpack",
+    "build:CDN": "yarn eslint ./src/**/*.tsx && webpack --config webpack.cdn.config.js",
+    "build:local": "yarn eslint ./src/**/*.tsx && webpack --config webpack.local.config.js && yarn copy",
     "clean": "rimraf ./build",
+    "copy": "shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js ./build/ && shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js.map ./build/",
     "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
-    "start": "webpack serve"
+    "start": "yarn start:bundle",
+    "start:bundle": "webpack serve",
+    "start:CDN": "webpack serve --config webpack.cdn.config.js",
+    "start:local": "webpack serve --config webpack.local.config.js"
   },
   "dependencies": {
     "react": "^17.0.1",

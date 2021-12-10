@@ -63,10 +63,26 @@ steps:
       Arguments: 'test'
     displayName: 'yarn test'
 
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/unit-tests-report*.xml"
+    condition: succeededOrFailed()
+
   - task: Yarn@2
     inputs:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'
+
+  - script: 'node prepNewReadme.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'node prepNewReadme.js'
 
   # Bundle analysis comparison : should trigger only by PR against 2.0-preview
   # Adding comment for a commit that should queue the pipeline with a PR trigger
@@ -208,20 +224,6 @@ steps:
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
-
-  # TODO - delete after release pipeline creation
-  - task: CmdLine@1
-    condition: and(
-      or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview')),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual'))
-    inputs:
-      filename: node
-      arguments: publish.js
-      workingFolder: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-      failOnStandardError: true
-    displayName: 'Publish Npm Package'
 
   - powershell: |
       $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
