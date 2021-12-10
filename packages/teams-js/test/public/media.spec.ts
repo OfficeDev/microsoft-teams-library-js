@@ -396,7 +396,7 @@ describe('media', () => {
           } as DOMMessageEvent);
         });
       });
-      it('selectMedia calls with successful result for mediaType = 3', async () => {
+      it('selectMedia calls with successful result for mediaType = 3', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(videoAndImageMediaAPISupportVersion);
           const mediaInputs: media.MediaInputs = {
@@ -414,6 +414,7 @@ describe('media', () => {
             expect(mediaAttachment.size).not.toBeNull();
             expect(typeof mediaAttachment.size === 'number').toBeTruthy();
             expect(mediaAttachment.getMedia).toBeDefined();
+            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('selectMedia');
@@ -572,7 +573,7 @@ describe('media', () => {
         });
       });
 
-      it('selectMedia calls with error', async () => {
+      it('selectMedia calls with error', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
           const mediaInputs: media.MediaInputs = {
@@ -582,6 +583,7 @@ describe('media', () => {
           media.selectMedia(mediaInputs, (mediaError: SdkError, mediaAttachments: media.Media[]) => {
             expect(mediaAttachments).toBeFalsy();
             expect(mediaError.errorCode).toBe(ErrorCode.SIZE_EXCEEDED);
+            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('selectMedia');
@@ -868,7 +870,7 @@ describe('media', () => {
         return blobReadingPromise;
       }
 
-      it('getMedia calls with successful result via the handler', async () => {
+      it('getMedia calls with successful result via the handler', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           //mediaAPISupport version(1.8.0) is less than the MediaCallbackSupportVersion(2.0.0)
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
@@ -880,6 +882,7 @@ describe('media', () => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
             });
+            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('getMedia');
@@ -912,7 +915,7 @@ describe('media', () => {
         });
       });
 
-      it('getMedia calls with successful result via the callback', async () => {
+      it('getMedia calls with successful result via the callback', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           // here we give the same version as the supported version
           mobilePlatformMock.setClientSupportedSDKVersion(getMediaCallbackSupportVersion);
@@ -924,6 +927,7 @@ describe('media', () => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
             });
+            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('getMedia');
