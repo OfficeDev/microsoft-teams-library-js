@@ -3,6 +3,10 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as utils from '../../src/internal/utils';
 
 describe('communication', () => {
+  it('initializeCommunication should reject if no parent window and no native interface found', () => {
+    const initPromise = communication.initializeCommunication(undefined);
+    return expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
+  });
   it('processMessage fail if message has a missing data property', () => {
     const event = ({ badData: '' } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);

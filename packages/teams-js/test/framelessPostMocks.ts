@@ -1,7 +1,7 @@
-import { app } from '../src/public/app';
-import { ExtendedWindow, MessageRequest, MessageResponse, DOMMessageEvent } from '../src/internal/interfaces';
-import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
+import { GlobalVars } from '../src/internal/globalVars';
+import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from '../src/internal/interfaces';
+import { app } from '../src/public/app';
 
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
@@ -79,14 +79,10 @@ export class FramelessPostMocks {
         args: args,
       } as MessageResponse,
     } as DOMMessageEvent;
-    /* eslint-disable  @typescript-eslint/ban-ts-comment */
-    // @ts-ignore: window as ExtendedWindow
-    (window as ExtendedWindow).onNativeMessage(domEvent);
+    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(domEvent);
   };
 
   public respondToMessage = (event: DOMMessageEvent): void => {
-    /* eslint-disable  @typescript-eslint/ban-ts-comment */
-    // @ts-ignore: window as ExtendedWindow
-    (window as ExtendedWindow).onNativeMessage(event);
+    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(event);
   };
 }
