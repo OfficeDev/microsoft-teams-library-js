@@ -13,7 +13,7 @@ const GetContext = (): ReactElement =>
     },
   });
 
-const ExecuteDeepLink = (): ReactElement =>
+const OpenLink = (): ReactElement =>
   ApiWithTextInput<string>({
     name: 'executeDeepLink2',
     title: 'Open Link',
@@ -44,7 +44,7 @@ const AppAPIs = (): ReactElement => (
   <>
     <h1>app</h1>
     <GetContext />
-    <ExecuteDeepLink />
+    <OpenLink />
     <RegisterOnThemeChangeHandler />
   </>
 );
