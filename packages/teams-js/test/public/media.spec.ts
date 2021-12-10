@@ -354,7 +354,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
       });
 
-      it('selectMedia calls with successful result for mediaType = 1', async () => {
+      it('selectMedia calls with successful result for mediaType = 1', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
           const mediaInputs: media.MediaInputs = {
@@ -372,6 +372,7 @@ describe('media', () => {
             expect(mediaAttachment.size).not.toBeNull();
             expect(typeof mediaAttachment.size === 'number').toBeTruthy();
             expect(mediaAttachment.getMedia).toBeDefined();
+            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('selectMedia');
@@ -881,8 +882,8 @@ describe('media', () => {
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
+              done();
             });
-            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('getMedia');
@@ -926,8 +927,8 @@ describe('media', () => {
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
+              done();
             });
-            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('getMedia');
