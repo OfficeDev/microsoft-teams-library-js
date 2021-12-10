@@ -271,7 +271,7 @@ export function getMruTabInstances(
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.shareDeepLink pages.shareDeepLink(deepLinkParameters: DeepLinkParameters): void} instead.
+ * As of 2.0.0-beta.3, please use {@link pages.shareDeepLink pages.shareDeepLink(deepLinkParameters: DeepLinkParameters): void} instead.
  *
  * Shares a deep link that a user can use to navigate back to a specific state in this page.
  *
@@ -283,7 +283,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link app.openLink core.openLink(deepLink: string): Promise\<void\>} instead.
+ * As of 2.0.0-beta.3, please use {@link app.openLink core.openLink(deepLink: string): Promise\<void\>} instead.
  *
  * Execute deep link API.
  *
