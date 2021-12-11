@@ -499,8 +499,8 @@ describe('media', () => {
         });
       });
 
-      it('should invoke correct video callback for MediaControllerEvent when registered', async () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
+      it('should invoke correct video callback for MediaControllerEvent when registered', () => {
+        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(async () => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           let mediaError: SdkError;
           const mockCallback = jest.fn();
@@ -518,9 +518,12 @@ describe('media', () => {
             videoProps: videoProps,
           };
 
-          media.selectMedia(mediaInputs, (e: SdkError, attachments: media.Media[]) => {
-            mediaError = e;
-          });
+          media
+            .selectMedia(mediaInputs)
+            .then(() => {})
+            .catch(error => {
+              mediaError = error;
+            });
 
           const message = mobilePlatformMock.findMessageByFunc('selectMedia');
           expect(message).not.toBeNull();
