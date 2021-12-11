@@ -479,11 +479,7 @@ describe('media', () => {
       it('videoController notifyEventToHost is not handled successfully', async () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(async () => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-          let mediaError: SdkError;
           const stopRes = new media.VideoController().stop();
-          stopRes.catch(error => {
-            mediaError = error;
-          });
           const err: SdkError = {
             errorCode: ErrorCode.INTERNAL_ERROR,
           };
@@ -499,7 +495,7 @@ describe('media', () => {
             },
           } as DOMMessageEvent);
 
-          expect(mediaError).toBe(err);
+          expect(stopRes).rejects.toBe(err);
         });
       });
 
