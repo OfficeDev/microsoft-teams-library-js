@@ -72,6 +72,16 @@ steps:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'
 
+  - script: 'node prepNewReadme.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'node prepNewReadme.js'
+
   # Bundle analysis comparison : should trigger only by PR against 2.0-preview
   # Adding comment for a commit that should queue the pipeline with a PR trigger
 
@@ -159,7 +169,35 @@ steps:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
       ArtifactName: 'teams-test-app'
-    displayName: 'Publish Test app artifacts'  
+    displayName: 'Publish Test app artifacts'
+
+  # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
+  - task: AssetRetention@3
+    inputs:
+      ArrowServiceConnection: '$(ArrowConnection)'
+      AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+      AssetNumber: '$(Build.BuildId)'
+      IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
+      DropsToRetain: 'CodeAnalysisLogs'
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'Artifact Retention(Arrow)'
+
+  - task: PostAnalysis@2
+    condition: succeededOrFailed()
+    displayName: 'Guardian Break'
+    inputs:
+      GdnBreakPolicyMinSev: Warning
+      GdnBreakAllTools: true
+      GdnBreakGdnToolCredScan: true
+      GdnBreakGdnToolCredScanSeverity: Warning
+      GdnBreakGdnToolESLint: true
+      GdnBreakGdnToolESLintSeverity: Warning
+      GdnBreakPolicy: M365  
 
   - task: AzureRmWebAppDeployment@4
     condition: and(

@@ -1,4 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app, core } from './app';
 import { FrameContexts } from './constants';
 import {
@@ -298,17 +299,14 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   core
     .executeDeepLink(deepLink)
     .then(() => {
-      if (onComplete) {
-        onComplete(true);
-      }
+      onComplete(true);
     })
     .catch((err: Error) => {
-      if (onComplete) {
-        onComplete(false, err.message);
-      }
+      onComplete(false, err.message);
     });
 }
 
