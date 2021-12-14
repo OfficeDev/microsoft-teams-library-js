@@ -576,12 +576,6 @@ export namespace media {
     assembleAttachment: AssembleAttachment[];
   }
 
-  /**
-   * Select an attachment using camera/gallery
-   *
-   * @param mediaInputs - The input params to customize the media to be selected
-   * @returns A promise resolved with the collection of @see Media objects selected or rejected with a @see SdkError
-   */
   export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
   /**
    * Select an attachment using camera/gallery
@@ -616,27 +610,25 @@ export namespace media {
         const params = [mediaInputs];
         // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
         resolve(sendMessageToParentAsync<[SdkError, Media[], MediaControllerEvent]>('selectMedia', params));
-      }).then(
-        ([err, localAttachments, mediaEvent]: [SdkError, Media[] | undefined, MediaControllerEvent | undefined]) => {
-          // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
-          if (mediaEvent) {
-            if (isVideoControllerRegistered(mediaInputs)) {
-              mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
-            }
-            return [];
+      }).then(([err, localAttachments, mediaEvent]: [SdkError, Media[], MediaControllerEvent]) => {
+        // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
+        if (mediaEvent) {
+          if (isVideoControllerRegistered(mediaInputs)) {
+            mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
           }
+          return [];
+        }
 
-          // Media Attachments are final response to selectMedia
-          if (!localAttachments) {
-            throw err;
-          }
-          const mediaArray: Media[] = [];
-          for (const attachment of localAttachments) {
-            mediaArray.push(new Media(attachment));
-          }
-          return mediaArray;
-        },
-      );
+        // Media Attachments are final response to selectMedia
+        if (!localAttachments) {
+          throw err;
+        }
+        const mediaArray: Media[] = [];
+        for (const attachment of localAttachments) {
+          mediaArray.push(new Media(attachment));
+        }
+        return mediaArray;
+      });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Media[]>(wrappedFunction, callback);
   }

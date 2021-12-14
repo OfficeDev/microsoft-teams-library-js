@@ -500,9 +500,8 @@ describe('media', () => {
       });
 
       it('should invoke correct video callback for MediaControllerEvent when registered', () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(async () => {
+        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-          let mediaError: SdkError;
           const mockCallback = jest.fn();
           const videoControllerCallback: media.VideoControllerCallback = {
             onRecordingStarted() {
@@ -518,27 +517,22 @@ describe('media', () => {
             videoProps: videoProps,
           };
 
-          media
-            .selectMedia(mediaInputs)
-            .then(() => {})
-            .catch(error => {
-              mediaError = error;
-            });
+          media.selectMedia(mediaInputs).then(result => {
+            const message = mobilePlatformMock.findMessageByFunc('selectMedia');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
 
-          const message = mobilePlatformMock.findMessageByFunc('selectMedia');
-          expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
+            const callbackId = message.id;
+            mobilePlatformMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [undefined, undefined, 1],
+              },
+            } as DOMMessageEvent);
 
-          const callbackId = message.id;
-          mobilePlatformMock.respondToMessage({
-            data: {
-              id: callbackId,
-              args: [undefined, undefined, 1],
-            },
-          } as DOMMessageEvent);
-
-          expect(mediaError).toBeFalsy();
-          expect(mockCallback).toHaveBeenCalled();
+            expect(result).toBeDefined;
+            expect(mockCallback).toHaveBeenCalled();
+          });
         });
       });
 
