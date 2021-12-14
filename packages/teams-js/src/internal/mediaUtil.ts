@@ -1,5 +1,8 @@
+import { SdkError } from '../public/interfaces';
 import { media } from '../public/media';
 import { people } from '../public/people';
+import { nonFullScreenVideoModeAPISupportVersion, videoAndImageMediaAPISupportVersion } from './constants';
+import { isApiSupportedOnMobile } from './internalAPIs';
 
 /**
  * @hidden
@@ -54,6 +57,38 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 
 /**
  * @hidden
+ * Function returns null if the media call is supported on current mobile version, else SdkError.
+ *
+ * @internal
+ */
+export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): SdkError {
+  if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
+    return isApiSupportedOnMobile(videoAndImageMediaAPISupportVersion);
+  } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
+    return isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+  }
+  return null;
+}
+
+/**
+ * @hidden
+ * Function returns true if the app has registered to listen to video controller events, else false.
+ *
+ * @internal
+ */
+export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
+  if (
+    mediaInputs.mediaType == media.MediaType.Video &&
+    mediaInputs.videoProps &&
+    mediaInputs.videoProps.videoController
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * @hidden
  * Returns true if the mediaInput params are valid and false otherwise
  *
  * @internal
@@ -72,10 +107,26 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
  * @internal
  */
 export function isMediaCallForVideoAndImageInputs(mediaInputs: media.MediaInputs): boolean {
-  if (mediaInputs) {
-    if (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps) {
-      return true;
-    }
+  if (mediaInputs && (mediaInputs.mediaType == media.MediaType.VideoAndImage || mediaInputs.videoAndImageProps)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * @hidden
+ * Returns true if the mediaInput params are called for non-full screen video mode and false otherwise
+ *
+ * @internal
+ */
+export function isMediaCallForNonFullScreenVideoMode(mediaInputs: media.MediaInputs): boolean {
+  if (
+    mediaInputs &&
+    mediaInputs.mediaType == media.MediaType.Video &&
+    mediaInputs.videoProps &&
+    !mediaInputs.videoProps.isFullScreenMode
+  ) {
+    return true;
   }
   return false;
 }
