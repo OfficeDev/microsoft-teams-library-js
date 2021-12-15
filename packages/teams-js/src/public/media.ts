@@ -398,31 +398,43 @@ export namespace media {
      */
     protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
 
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
     /**
      * @hidden
      * Hide from docs
      * --------
+     * @deprecated
+     * As of 2.0.0-beta.2, please use {@link media.notifyEventToHost media.notifyEventToHost(mediaEvent: MediaCallerEvent): Promise\<void\>} instead.
+     *
      * Function to notify the host client to programatically control the experience
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void> {
-      return new Promise<void>(resolve => {
-        ensureInitialized(FrameContexts.content, FrameContexts.task);
-        const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
-        if (err) {
-          throw err;
-        }
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void);
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-        const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-        resolve(sendAndHandleSdkError('media.controller', [params]));
-      });
+      const wrappedFunction: InputFunction<void> = () =>
+        new Promise<void>(resolve => {
+          const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+          if (err) {
+            throw err;
+          }
+
+          const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
+          resolve(sendAndHandleSdkError('media.controller', [params]));
+        });
+
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
     }
 
+    public stop(): Promise<void>;
     /**
      * Function to programatically stop the ongoing media event
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(): Promise<void> {
-      return this.notifyEventToHost(MediaControllerEvent.StopRecording);
+    public stop(callback?: (err?: SdkError) => void): void;
+    public stop(callback?: (err?: SdkError) => void): Promise<void> {
+      return this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
   }
 
