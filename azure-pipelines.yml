@@ -61,6 +61,11 @@ steps:
       Arguments: 'test'
     displayName: 'yarn test'
 
+  - task: Yarn@3
+    inputs:
+      Arguments: 'docs'
+    displayName: 'yarn docs - generate documentation'
+
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: "JUnit"

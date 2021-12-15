@@ -12,6 +12,7 @@
   "scripts": {
     "build": "yarn lint && webpack",
     "clean": "rimraf ./dist",
+    "docs": "yarn typedoc --out docs src/index.ts",
     "doctor": "yarn lint --fix",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
     "lint": "eslint ./src/**/*.ts",
