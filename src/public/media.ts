@@ -301,7 +301,7 @@ export namespace media {
      * Optional; Lets the developer specify the output file formats, more than one can be specified.
      * Default value is Image.
      */
-    outputFileFormats?: OutputFileFormats[];
+    imageOutputFormats?: ImageOutputFormats[];
   }
 
   /**
@@ -517,7 +517,7 @@ export namespace media {
   /**
    * Specifies the output file formats.
    */
-  export enum OutputFileFormats {
+  export enum ImageOutputFormats {
     IMAGE = 1,
     PDF = 2,
   }
