@@ -88,13 +88,6 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 };
 
 const App = (): ReactElement => {
-  const teamsJSV1 = urlParams.get('teamsJSV1');
-  let teamsJSVersion = 2;
-  if (teamsJSV1) {
-    teamsJSVersion = 1;
-  }
-
-  console.log(teamsJSVersion);
   return (
     <>
       <AppAPIs />
