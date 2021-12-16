@@ -47,7 +47,7 @@ const NotifyFailure = (): React.ReactElement =>
 
 const NotifyExpectedFailure = (): React.ReactElement =>
   ApiWithTextInput<app.ExpectedFailureReason>({
-    name: 'appInitializationExpectedFailure2',
+    name: 'appInitializationExpectedFailure',
     title: 'appInitialization.expectedFailure',
     onClick: {
       validateInput: input => {
