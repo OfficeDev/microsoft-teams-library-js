@@ -46,11 +46,13 @@ const NotifyFailure = (): React.ReactElement =>
   });
 
 const NotifyExpectedFailure = (): React.ReactElement =>
-  ApiWithTextInput<app.ExpectedFailureReason>({
+  ApiWithTextInput<app.IExpectedFailureRequest>({
     name: 'appInitializationExpectedFailure',
     title: 'appInitialization.expectedFailure',
     onClick: {
       validateInput: input => {
+        console.log('%c input: ', 'color: turquoise', input);
+
         if (!input) {
           // this API actually allow for the input not to be provided
           return;
