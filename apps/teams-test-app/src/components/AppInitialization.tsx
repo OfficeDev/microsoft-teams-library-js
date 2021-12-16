@@ -51,8 +51,6 @@ const NotifyExpectedFailure = (): React.ReactElement =>
     title: 'appInitialization.expectedFailure',
     onClick: {
       validateInput: input => {
-        console.log('%c input: ', 'color: turquoise', input);
-
         if (!input) {
           // this API actually allow for the input not to be provided
           return;
