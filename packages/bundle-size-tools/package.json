@@ -8,6 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn tsc",
+    "build:dev": "yarn clean && yarn tsc",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build"
   },

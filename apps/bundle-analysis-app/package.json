@@ -6,6 +6,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "webpack",
+    "build:dev": "webpack",
     "clean": "rimraf ./dist ./bundleAnalysis",
     "eslint-fix-build": "yarn eslint ./src --fix && webpack",
     "webpack:profile": "webpack"

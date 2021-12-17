@@ -6,6 +6,7 @@
   "version": "2.0.0-beta.2",
   "scripts": {
     "build":"yarn build:bundle",
+    "build:dev":"yarn build:bundle",
     "build:bundle": "yarn eslint ./src/**/*.tsx && webpack",
     "build:CDN": "yarn eslint ./src/**/*.tsx && webpack --config webpack.cdn.config.js",
     "build:local": "yarn eslint ./src/**/*.tsx && webpack --config webpack.local.config.js && yarn copy",

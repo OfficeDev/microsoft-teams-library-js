@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "lerna run build --stream",
+    "build:dev": "lerna run build:dev --stream",
     "build:clean": "yarn clean && yarn build",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",

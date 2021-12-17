@@ -6,6 +6,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "yarn eslint ./src/**/*.tsx && webpack",
+    "build:dev": "yarn eslint ./src/**/*.tsx && webpack",
     "clean": "rimraf ./build",
     "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
     "start": "webpack serve"

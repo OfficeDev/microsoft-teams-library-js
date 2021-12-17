@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { __DEV__ } from '../env';
 import {
   Communication,
   initializeCommunication,
@@ -493,6 +494,14 @@ export namespace app {
               } else {
                 // If it's any error that's not a JSON parsing error, we want the program to fail.
                 throw e;
+              }
+            }
+            if (__DEV__) {
+              const urlParams = new URLSearchParams(window.location.search);
+              console.info('Running DEV build');
+              if (urlParams.has('legacyTeams') && urlParams.get('legacyTeams')) {
+                console.info('Applying legacy Teams runtime config');
+                applyRuntimeConfig(teamsRuntimeConfig);
               }
             }
 

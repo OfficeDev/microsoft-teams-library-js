@@ -11,6 +11,7 @@
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
     "build": "yarn lint && webpack",
+    "build:dev": "yarn lint && webpack --env dev",
     "clean": "rimraf ./dist",
     "doctor": "yarn lint --fix",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
