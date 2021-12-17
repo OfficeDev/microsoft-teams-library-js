@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { __DEV__ } from '../env';
 import {
   Communication,
   initializeCommunication,
@@ -496,7 +495,8 @@ export namespace app {
                 throw e;
               }
             }
-            if (__DEV__) {
+            const is_dev = typeof __DEV__ !== 'undefined' ? __DEV__ : undefined;
+            if (is_dev) {
               const urlParams = new URLSearchParams(window.location.search);
               console.info('Running DEV build');
               if (urlParams.has('legacyTeams') && urlParams.get('legacyTeams')) {
