@@ -5,11 +5,9 @@
     "moduleResolution": "node",
     "noResolve": false,
     "noImplicitAny": false,
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "noImplicitReturns": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

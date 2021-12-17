@@ -45,12 +45,30 @@ const NotifyFailure = (): React.ReactElement =>
     },
   });
 
+const NotifyExpectedFailure = (): React.ReactElement =>
+  ApiWithTextInput<app.IExpectedFailureRequest>({
+    name: 'appInitializationExpectedFailure',
+    title: 'appInitialization.expectedFailure',
+    onClick: {
+      validateInput: input => {
+        if (!input.reason) {
+          input.reason = app.ExpectedFailureReason.Other;
+        }
+      },
+      submit: async input => {
+        app.notifyExpectedFailure(input);
+        return 'called';
+      },
+    },
+  });
+
 const AppInitializationAPIs = (): ReactElement => (
   <>
     <h1>appInitialization</h1>
     <NotifyLoaded />
     <NotifySuccess />
     <NotifyFailure />
+    <NotifyExpectedFailure />
   </>
 );
 
