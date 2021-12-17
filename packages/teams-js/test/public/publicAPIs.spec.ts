@@ -1,4 +1,5 @@
 import { version } from '../../src/internal/constants';
+import * as utilFunc from '../../src/internal/utils';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { Context, FrameContext, TabInstanceParameters } from '../../src/public/interfaces';
@@ -405,6 +406,37 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
         // send message request
         executeDeepLink(request, onComplete);
+
+        // find message request in jest
+        const message = utils.findMessageByFunc('executeDeepLink');
+
+        // check message is sending correct data
+        expect(message).not.toBeUndefined();
+        expect(message.args).toContain(request);
+
+        // simulate response
+        const data = {
+          success: false,
+          error: 'Something went wrong...',
+        };
+        utils.respondToMessage(message, data.success, data.error);
+      });
+    });
+
+    it('should invoke getGenericOnCompleteHandler when no callback is provided.', done => {
+      utils.initializeWithContext('content').then(() => {
+        const request = 'dummyDeepLink';
+        jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+          return (success: boolean, reason: string): void => {
+            if (!success) {
+              expect(reason).toBe('Something went wrong...');
+              done();
+            }
+          };
+        });
+
+        // send message request
+        executeDeepLink(request);
 
         // find message request in jest
         const message = utils.findMessageByFunc('executeDeepLink');

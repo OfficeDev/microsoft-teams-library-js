@@ -1,5 +1,3 @@
-import { resolve } from 'url';
-
 import {
   sendAndHandleSdkError as sendAndHandleError,
   sendMessageToParent,

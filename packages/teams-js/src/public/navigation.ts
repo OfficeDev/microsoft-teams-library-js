@@ -1,4 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { TabInstance } from './interfaces';
 import { pages } from './pages';
@@ -29,17 +30,14 @@ export function returnFocus(navigateForward?: boolean): void {
  */
 export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages.tabs
     .navigateToTab(tabInstance)
     .then(() => {
-      if (onComplete) {
-        onComplete(true);
-      }
+      onComplete(true);
     })
     .catch((error: Error) => {
-      if (onComplete) {
-        onComplete(false, error.message);
-      }
+      onComplete(false, error.message);
     });
 }
 
@@ -66,17 +64,14 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages
     .navigateCrossDomain(url)
     .then(() => {
-      if (onComplete) {
-        onComplete(true);
-      }
+      onComplete(true);
     })
     .catch((error: Error) => {
-      if (onComplete) {
-        onComplete(false, error.message);
-      }
+      onComplete(false, error.message);
     });
 }
 
@@ -91,16 +86,13 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
  */
 export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages.backStack
     .navigateBack()
     .then(() => {
-      if (onComplete) {
-        onComplete(true);
-      }
+      onComplete(true);
     })
     .catch((error: Error) => {
-      if (onComplete) {
-        onComplete(false, error.message);
-      }
+      onComplete(false, error.message);
     });
 }

@@ -45,12 +45,35 @@ const NotifyFailure = (): React.ReactElement =>
     },
   });
 
+const NotifyExpectedFailure = (): React.ReactElement =>
+  ApiWithTextInput<app.IExpectedFailureRequest>({
+    name: 'appInitializationExpectedFailure',
+    title: 'appInitialization.expectedFailure',
+    onClick: {
+      validateInput: input => {
+        if (!input.reason) {
+          // this API actually allow for the input not to be provided
+          return;
+        }
+        const acceptableValues = Object.values(app.ExpectedFailureReason);
+        if (!input.reason && !acceptableValues.includes(input.reason)) {
+          throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
+        }
+      },
+      submit: async input => {
+        app.notifyExpectedFailure(input);
+        return 'called';
+      },
+    },
+  });
+
 const AppInitializationAPIs = (): ReactElement => (
   <>
     <h1>appInitialization</h1>
     <NotifyLoaded />
     <NotifySuccess />
     <NotifyFailure />
+    <NotifyExpectedFailure />
   </>
 );
 
