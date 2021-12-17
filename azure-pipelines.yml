@@ -82,15 +82,6 @@ steps:
       )
     displayName: 'node prepNewReadme.js'
 
-  - script: 'node copyReadme.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'node copyReadme.js'
   # Bundle analysis comparison : should trigger only by PR against 2.0-preview
   # Adding comment for a commit that should queue the pipeline with a PR trigger
 
