@@ -44,7 +44,7 @@ steps:
   - task: Yarn@2
     displayName: 'Build client sdk'
     inputs:
-      Arguments: 'build'
+      Arguments: 'build:dev'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: CmdLine@2
