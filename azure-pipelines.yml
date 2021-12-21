@@ -177,13 +177,12 @@ steps:
       ArtifactName: 'teams-test-app'
     displayName: 'Publish Test app artifacts'
 
-  # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
   - task: AssetRetention@3
     inputs:
       ArrowServiceConnection: '$(ArrowConnection)'
       AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
       AssetNumber: '$(Build.BuildId)'
-      IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
+      IsShipped: false
       DropsToRetain: 'CodeAnalysisLogs'
     condition: and(
       startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
