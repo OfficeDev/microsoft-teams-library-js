@@ -6,6 +6,7 @@ import {
 } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
 import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
@@ -70,6 +71,33 @@ export namespace pages {
   }
 
   /**
+   * Navigate to the given App ID and Page ID, with optional parameters for a WebURL (if the app cannot
+   * be navigated to, such as if it is not installed), Channel ID (for apps installed as a channel tab), and
+   * Sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
+   * a deep link with the above data, but does not require the app to build a URL or worry about different
+   * deep link formats for different hosts.
+   * @param params Parameters for the navigation
+   * @returns a promise that will resolve if the navigation was successful
+   */
+  export function navigateToApp(params: NavigateToAppParams): Promise<void> {
+    return new Promise<void>(resolve => {
+      ensureInitialized(
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      );
+      if (runtime.isLegacyTeams) {
+        resolve(send('executeDeepLink', createTeamsAppLink(params)));
+      } else {
+        resolve(send('pages.navigateToApp', params));
+      }
+    });
+  }
+
+  /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
@@ -84,6 +112,37 @@ export namespace pages {
    */
   export function isSupported(): boolean {
     return runtime.supports.pages ? true : false;
+  }
+
+  /**
+   * Parameters for the NavigateToApp API
+   */
+  export interface NavigateToAppParams {
+    /**
+     * ID of the App to navigate to
+     */
+    appId: string;
+
+    /**
+     * Developer-defined ID of the Page to navigate to within the app (Formerly EntityID)
+     */
+    pageId: string;
+
+    /**
+     * Optional URL to open if the navigation cannot be completed within the host
+     */
+    webUrl?: string;
+
+    /**
+     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
+     * back to the App via the Context object.
+     */
+    subPageId?: string;
+
+    /**
+     * Optional ID of the Teams Channel where the app should be opened
+     */
+    channelId?: string;
   }
 
   /**

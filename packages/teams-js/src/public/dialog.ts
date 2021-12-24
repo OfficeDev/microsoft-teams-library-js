@@ -23,7 +23,10 @@ export namespace dialog {
    * @param dialogInfo - An object containing the parameters of the dialog module
    * @param submitHandler - Handler to call when the task module is completed
    */
-  export function open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow {
+  export function open(
+    dialogInfo: DialogInfo,
+    submitHandler?: (err: string, result: string | object) => void,
+  ): IAppWindow {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
     sendMessageToParent('tasks.startTask', [dialogInfo], submitHandler);

@@ -10,18 +10,22 @@ import AppInstallDialogAPIs from './components/AppInstallDialog';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
-import ConfigAPIs from './components/ConfigAPIs';
 import DialogAPIs from './components/DialogAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
-import NavigationAPIs from './components/NavigationAPIs';
+import PagesAPIs from './components/PagesAPIs';
+import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
+import PagesBackStackAPIs from './components/PagesBackStackAPIs';
+import PagesConfigAPIs from './components/PagesConfigAPIs';
+import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
+import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
 import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
@@ -94,7 +98,6 @@ const App = (): ReactElement => {
       <CalendarAPIs />
       <CallAPIs />
       <ChatAPIs />
-      <ConfigAPIs />
       <DialogAPIs />
       <FilesAPIs />
       <FullTrustAPIs />
@@ -103,9 +106,14 @@ const App = (): ReactElement => {
       <MailAPIs />
       <MediaAPIs />
       <MeetingAPIs />
+      <MeetingRoomAPIs />
       <MonetizationAPIs />
-      <NavigationAPIs />
       <NotificationAPIs />
+      <PagesAPIs />
+      <PagesAppButtonAPIs />
+      <PagesBackStackAPIs />
+      <PagesConfigAPIs />
+      <PagesTabsAPIs />
       <PeopleAPIs />
       <PrivateAPIs />
       <RemoteCameraAPIs />

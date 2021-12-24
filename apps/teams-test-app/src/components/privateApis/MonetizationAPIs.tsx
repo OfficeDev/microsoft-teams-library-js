@@ -2,35 +2,41 @@ import { monetization, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
-import BoxAndButton from '../BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 
-const MonetizationAPIs = (): ReactElement => {
-  const [openPurchaseExperienceRes, setOpenPurchaseExperienceRes] = React.useState('');
+const CheckMonetizationCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkCapabilityMonetization',
+    title: 'Check Monetization Capability',
+    onClick: async () => `Monetization module ${monetization.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const openPurchaseExperience = (): void => {
-    const callback = (error: SdkError | null): void => {
-      if (error) {
-        setOpenPurchaseExperienceRes(JSON.stringify(error));
-      } else {
-        setOpenPurchaseExperienceRes('Success');
-      }
-    };
-    setOpenPurchaseExperienceRes('monetization.openPurchaseExperience()' + noHostSdkMsg);
-    monetization.openPurchaseExperience(callback);
-  };
+const OpenPurchaseExperience = (): React.ReactElement =>
+  ApiWithTextInput<monetization.PlanInfo | undefined>({
+    name: 'monetization_openPurchaseExperience',
+    title: 'Open Purchase Experience',
+    onClick: {
+      validateInput: planInfo => {
+        if (!planInfo) {
+          return; //This API allow for the input not to be provided
+        }
+        if (!planInfo.planId || !planInfo.term) {
+          throw new Error('planId and term are required on input, if provided');
+        }
+      },
+      submit: async planInfo => {
+        await monetization.openPurchaseExperience(planInfo);
+        return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
+      },
+    },
+  });
 
-  return (
-    <>
-      <h1>monetization</h1>
-      <BoxAndButton
-        handleClick={openPurchaseExperience}
-        output={openPurchaseExperienceRes}
-        hasInput={false}
-        title="Open purchase experience"
-        name="monetization_openPurchaseExperience"
-      />
-    </>
-  );
-};
+const MonetizationAPIs = (): ReactElement => (
+  <>
+    <h1>monetization</h1>
+    <OpenPurchaseExperience />
+    <CheckMonetizationCapability />
+  </>
+);
 
 export default MonetizationAPIs;

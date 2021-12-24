@@ -7,28 +7,52 @@ name: Microsoft Teams Library JS CI v2.0-preview
 on:
   # Triggers the workflow on push or pull request events but only for the 2.0-preview branch
   push:
-    branches: [ 2.0-preview ]
+    branches: [2.0-preview]
   pull_request:
-    branches: [ 2.0-preview ]
+    branches: [2.0-preview]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
-    
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn build
-    - run: yarn test
-    - run: yarn lint
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
+      - run: yarn lint
+
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Test Results (Jest ${{ matrix.node-version }})
+          path: packages/*/test-results/unit/unit-tests-report.xml
+
+  publish-test-results:
+    name: 'Publish Unit Tests Results'
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: artifacts/**/*.xml
+          comment_mode: off

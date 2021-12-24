@@ -1,56 +1,80 @@
 import { app } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import BoxAndButton from './BoxAndButton';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const AppInitializationAPIs = (): ReactElement => {
-  const [notifyLoadedRes, setNotifyLoadedRes] = React.useState('');
-  const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
-  const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
+const NotifyLoaded = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'appInitializationAppLoaded',
+    title: 'appInitialization.appLoaded',
+    onClick: async () => {
+      app.notifyAppLoaded();
+      return 'called';
+    },
+  });
 
-  const notifyLoaded = (): void => {
-    app.notifyAppLoaded();
-    setNotifyLoadedRes('called');
-  };
+const NotifySuccess = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'appInitializationSuccess',
+    title: 'appInitialization.success',
+    onClick: async () => {
+      app.notifySuccess();
+      return 'called';
+    },
+  });
 
-  const notifySuccess = (): void => {
-    app.notifySuccess();
-    setNotifySuccessRes('called');
-  };
+const NotifyFailure = (): React.ReactElement =>
+  ApiWithTextInput<app.FailedReason>({
+    name: 'appInitializationFailure2',
+    title: 'appInitialization.failure',
+    onClick: {
+      validateInput: input => {
+        if (!input) {
+          // this API actually allow for the input not to be provided
+          return;
+        }
+        const acceptableValues = Object.values(app.FailedReason);
+        if (!acceptableValues.includes(input)) {
+          throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
+        }
+      },
+      submit: async input => {
+        app.notifyFailure({ reason: input || app.FailedReason.Other });
+        return 'called';
+      },
+    },
+  });
 
-  const notifyFailure = (reason?: string): void => {
-    app.notifyFailure({
-      reason: (reason as app.FailedReason) || app.FailedReason.Other,
-    });
-    setNotifyFailureRes('called');
-  };
+const NotifyExpectedFailure = (): React.ReactElement =>
+  ApiWithTextInput<app.IExpectedFailureRequest>({
+    name: 'appInitializationExpectedFailure',
+    title: 'appInitialization.expectedFailure',
+    onClick: {
+      validateInput: input => {
+        if (!input.reason) {
+          // this API actually allow for the input not to be provided
+          return;
+        }
+        const acceptableValues = Object.values(app.ExpectedFailureReason);
+        if (!input.reason && !acceptableValues.includes(input.reason)) {
+          throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
+        }
+      },
+      submit: async input => {
+        app.notifyExpectedFailure(input);
+        return 'called';
+      },
+    },
+  });
 
-  return (
-    <>
-      <h1>appInitialization</h1>
-      <BoxAndButton
-        handleClick={notifyLoaded}
-        output={notifyLoadedRes}
-        hasInput={false}
-        title="appInitialization.appLoaded"
-        name="appInitializationAppLoaded"
-      />
-      <BoxAndButton
-        handleClick={notifySuccess}
-        output={notifySuccessRes}
-        hasInput={false}
-        title="appInitialization.success"
-        name="appInitializationSuccess"
-      />
-      <BoxAndButton
-        handleClickWithInput={notifyFailure}
-        output={notifyFailureRes}
-        hasInput={true}
-        title="appInitialization.failure"
-        name="appInitializationFailure"
-      />
-    </>
-  );
-};
+const AppInitializationAPIs = (): ReactElement => (
+  <>
+    <h1>appInitialization</h1>
+    <NotifyLoaded />
+    <NotifySuccess />
+    <NotifyFailure />
+    <NotifyExpectedFailure />
+  </>
+);
 
 export default AppInitializationAPIs;

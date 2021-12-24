@@ -56,21 +56,21 @@ describe('location_V1', () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'authentication' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
     );
   });
   it('should not allow getLocation calls for remove frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'remove' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
     );
   });
   it('should not allow getLocation calls for settings frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'settings' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
     );
   });
   it('should not allow getLocation calls without props', done => {
@@ -184,21 +184,21 @@ describe('location_V1', () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'authentication' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
     );
   });
   it('should not allow showLocation calls for remove frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.remove);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'remove' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
     );
   });
   it('should not allow showLocation calls for settings frame context', async () => {
     await mobilePlatformMock.initializeWithContext(FrameContexts.settings);
     mobilePlatformMock.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
-      "This call is not allowed in the 'settings' context",
+      'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
     );
   });
   it('should not allow showLocation calls without props', done => {

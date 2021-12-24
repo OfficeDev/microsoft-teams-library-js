@@ -23,7 +23,9 @@ describe('settings', () => {
 
   it('should not allow calls from the wrong context', () => {
     utils.initializeWithContext('content').then(() => {
-      expect(() => settings.setValidityState(true)).toThrowError("This call is not allowed in the 'content' context");
+      expect(() => settings.setValidityState(true)).toThrowError(
+        'This call is only allowed in following contexts: ["settings","remove"]. Current context: "content".',
+      );
     });
   });
 

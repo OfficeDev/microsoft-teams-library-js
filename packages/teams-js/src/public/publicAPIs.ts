@@ -1,4 +1,5 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app, core } from './app';
 import { FrameContexts } from './constants';
 import {
@@ -13,7 +14,8 @@ import { pages } from './pages';
 import { teamsCore } from './teamsAPIs';
 
 /**
- * @deprecated with TeamsJS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app.initialize app.initialize(validMessageOrigins?: string[]): Promise\<void\>} instead.
  *
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
@@ -30,7 +32,8 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app._initialize app._initialize(hostWindow: any): void} instead.
  *
  * @hidden
  * Hide from docs.
@@ -45,7 +48,8 @@ export function _initialize(hostWindow: any): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app._uninitialize app._uninitialize(): void} instead.
  *
  * @hidden
  * Hide from docs.
@@ -59,7 +63,8 @@ export function _uninitialize(): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link teamsCore.enablePrintCapability teamsCore.enablePrintCapability(): void} instead.
  *
  * Enable print capability to support printing page using Ctrl+P and cmd+P
  */
@@ -68,7 +73,8 @@ export function enablePrintCapability(): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link teamsCore.print teamsCore.print(): void} instead.
  *
  * Default print handler
  */
@@ -77,7 +83,8 @@ export function print(): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app.getContext app.getContext(): Promise\<app.Context\>} instead.
  *
  * Retrieves the current context the frame is running in.
  *
@@ -93,7 +100,8 @@ export function getContext(callback: (context: Context) => void): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app.registerOnThemeChangeHandler app.registerOnThemeChangeHandler(handler: (theme: string) => void): void} instead.
  *
  * Registers a handler for theme changes.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -105,7 +113,8 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.registerFullScreenHandler pages.registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void} instead.
  *
  * Registers a handler for changes from or to full-screen view for a tab.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -117,7 +126,8 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.appButton.onClick pages.appButton.onClick(handler: () => void): void} instead.
  *
  * Registers a handler for clicking the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -129,7 +139,8 @@ export function registerAppButtonClickHandler(handler: () => void): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.appButton.onHoverEnter pages.appButton.onHoverEnter(handler: () => void): void} instead.
  *
  * Registers a handler for entering hover of the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -141,7 +152,8 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.appButton.onHoverLeave pages.appButton.onHoverLeave(handler: () => void): void} instead.
  *
  * Registers a handler for exiting hover of the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
@@ -153,7 +165,8 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.backStack.registerBackButtonHandler pages.backStack.registerBackButtonHandler(handler: () => boolean): void} instead.
  *
  * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
  * navigation stack should use this handler to navigate the user back within their frame. If an app finds
@@ -167,7 +180,8 @@ export function registerBackButtonHandler(handler: () => boolean): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} instead.
  *
  * @hidden
  * Registers a handler to be called when the page has been requested to load.
@@ -179,7 +193,8 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link teamsCore.registerBeforeUnloadHandler teamsCore.registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void} instead.
  *
  * @hidden
  * Registers a handler to be called before the page is unloaded.
@@ -192,7 +207,8 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link teamsCore.registerFocusEnterHandler teamsCore.registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void} instead.
  *
  * @hidden
  * Registers a handler when focus needs to be passed from teams to the place of choice on app.
@@ -204,7 +220,8 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.config.registerChangeConfigHandler pages.config.registerChangeConfigHandler(handler: () => void): void} instead.
  *
  * Registers a handler for when the user reconfigurated tab.
  *
@@ -215,7 +232,8 @@ export function registerEnterSettingsHandler(handler: () => void): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.tabs.getTabInstances pages.tabs.getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise\<TabInformation\>} instead.
  *
  * Allows an app to retrieve for this user tabs that are owned by this app.
  * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
@@ -234,7 +252,8 @@ export function getTabInstances(
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.tabs.getMruTabInstances pages.tabs.getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise\<TabInformation\>} instead.
  *
  * Allows an app to retrieve the most recently used tabs for this user.
  *
@@ -252,7 +271,8 @@ export function getMruTabInstances(
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link core.shareDeepLink core.shareDeepLink(deepLinkParameters: DeepLinkParameters): void} instead.
  *
  * Shares a deep link that a user can use to navigate back to a specific state in this page.
  *
@@ -263,7 +283,8 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link core.executeDeepLink core.executeDeepLink(deepLink: string): Promise\<void\>} instead.
  *
  * Execute deep link API.
  *
@@ -278,22 +299,20 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   core
     .executeDeepLink(deepLink)
     .then(() => {
-      if (onComplete) {
-        onComplete(true);
-      }
+      onComplete(true);
     })
     .catch((err: Error) => {
-      if (onComplete) {
-        onComplete(false, err.message);
-      }
+      onComplete(false, err.message);
     });
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.setCurrentFrame pages.setCurrentFrame(frameInfo: FrameInfo): void} instead.
  *
  * Set the current Frame Context
  *
@@ -304,7 +323,8 @@ export function setFrameContext(frameContext: FrameContext): void {
 }
 
 /**
- * @deprecated with Teams JS v2 upgrades
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link pages.initializeWithFrameContext pages.initializeWithFrameContext(frameInfo: FrameInfo, callback?: () => void, validMessageOrigins?: string[],): void} instead.
  *
  * Initilize with FrameContext
  *

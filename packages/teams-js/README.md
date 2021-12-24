@@ -1,6 +1,6 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
@@ -11,8 +11,8 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 1.  Clone the repo
 2.  Navigate to the repo root and run `yarn install`
-3.  `yarn build` from repo root
-4.  to run Unit test `yarn test`
+3.  Run `yarn build` from repo root
+4.  To run Unit tests, run `yarn test`
 
   TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
@@ -30,7 +30,7 @@ To install the latest 2.0 preview version:
 
 ### Production
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.2/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
 
 ## Usage
 
@@ -51,13 +51,13 @@ Reference the SDK inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script
-  src="https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js"
-  integrity="sha384-6oUzHUqESdbT3hNPDDZUa/OunUj5SoxuMXNek1Dwe6AmChzqc6EJhjVrJ93DY/Bv"
+  src="https://res.cdn.office.net/teams-js/2.0.0-beta.2/js/MicrosoftTeams.min.js"
+  integrity="sha384-RhShpWwRxSnc+keX0WZxCsf8olaKOOw416Jky+StW6qhctsNR3GMwav/hMB1Snas"
   crossorigin="anonymous"
 ></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@2.0.0-beta.0/dist/MicrosoftTeams.min.js"></script>
+<script src="node_modules/@microsoft/teams-js@2.0.0-beta.2/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>
@@ -73,7 +73,7 @@ Stay tuned for examples coming soon.
 
 ## Testing
 
-The [Teams Test App](/apps/teams-test-app/README.md) is used to validate the Teams client SDK APIs.
+The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
 
 ## Contributing
 

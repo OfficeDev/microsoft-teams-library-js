@@ -158,7 +158,8 @@ export namespace meeting {
    */
   export function getIncomingClientAudioState(): Promise<boolean>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getIncomingClientAudioState meeting.getIncomingClientAudioState(): Promise\<boolean\>} instead.
    *
    * Allows an app to get the incoming audio speaker setting for the meeting user
    *
@@ -168,7 +169,6 @@ export namespace meeting {
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
   export function getIncomingClientAudioState(callback: (error: SdkError | null, result: boolean | null) => void): void;
-
   export function getIncomingClientAudioState(
     callback?: (error: SdkError | null, result: boolean | null) => void,
   ): Promise<boolean> {
@@ -196,7 +196,8 @@ export namespace meeting {
    */
   export function toggleIncomingClientAudio(): Promise<boolean>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.toggleIncomingClientAudio meeting.toggleIncomingClientAudio(): Promise\<boolean\>} instead.
    *
    * @param callback - Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when toggle is successful
@@ -204,7 +205,6 @@ export namespace meeting {
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
   export function toggleIncomingClientAudio(callback: (error: SdkError | null, result: boolean | null) => void): void;
-
   export function toggleIncomingClientAudio(
     callback?: (error: SdkError | null, result: boolean | null) => void,
   ): Promise<boolean> {
@@ -233,7 +233,8 @@ export namespace meeting {
    */
   export function getMeetingDetails(): Promise<IMeetingDetails>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getMeetingDetails meeting.getMeetingDetails(): Promise\<IMeetingDetails\>} instead.
    *
    * @hidden
    * Hide from docs
@@ -249,7 +250,6 @@ export namespace meeting {
   export function getMeetingDetails(
     callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
   ): void;
-
   export function getMeetingDetails(
     callback?: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
   ): Promise<IMeetingDetails> {
@@ -281,7 +281,8 @@ export namespace meeting {
    */
   export function getAuthenticationTokenForAnonymousUser(): Promise<string>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getAuthenticationTokenForAnonymousUser meeting.getAuthenticationTokenForAnonymousUser(): Promise\<string\>} instead.
    *
    * @hidden
    * Hide from docs
@@ -296,7 +297,6 @@ export namespace meeting {
   export function getAuthenticationTokenForAnonymousUser(
     callback: (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null) => void,
   ): void;
-
   export function getAuthenticationTokenForAnonymousUser(
     callback?: (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null) => void,
   ): Promise<string> {
@@ -324,7 +324,8 @@ export namespace meeting {
    */
   export function getLiveStreamState(): Promise<LiveStreamState>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getLiveStreamState meeting.getLiveStreamState(): Promise\<LiveStreamState\>} instead.
    *
    * Allows an app to get the state of the live stream in the current meeting
    *
@@ -335,7 +336,6 @@ export namespace meeting {
   export function getLiveStreamState(
     callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
   ): void;
-
   export function getLiveStreamState(
     callback?: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
   ): Promise<LiveStreamState> {
@@ -364,7 +364,8 @@ export namespace meeting {
    */
   export function requestStartLiveStreaming(streamUrl: string, streamKey?: string): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.requestStartLiveStreaming meeting.requestStartLiveStreaming(streamUrl: string, streamKey?: string): Promise\<void\>} instead.
    *
    * Allows an app to request the live streaming be started at the given streaming url
    *
@@ -379,7 +380,6 @@ export namespace meeting {
     streamUrl: string,
     streamKey?: string,
   ): Promise<void>;
-
   /**
    * @hidden
    * This function is the overloaded implementation of requestStartLiveStreaming.
@@ -429,7 +429,8 @@ export namespace meeting {
    */
   export function requestStopLiveStreaming(): Promise<void>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.requestStopLiveStreaming meeting.requestStopLiveStreaming(): Promise\<void\>} instead.
    *
    * Allows an app to request the live streaming be stopped at the given streaming url
    * @param callback - Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
@@ -437,7 +438,6 @@ export namespace meeting {
    * Use getLiveStreamState or registerLiveStreamChangedHandler to get updates on the live stream state
    */
   export function requestStopLiveStreaming(callback: (error: SdkError | null) => void): void;
-
   export function requestStopLiveStreaming(callback?: (error: SdkError | null) => void): Promise<void> {
     ensureInitialized(FrameContexts.sidePanel);
     return callCallbackWithSdkErrorFromPromiseAndReturnPromise(requestStopLiveStreamingHelper, callback);
@@ -474,7 +474,8 @@ export namespace meeting {
    */
   export function shareAppContentToStage(appContentUrl: string): Promise<boolean>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.shareAppContentToStage meeting.shareAppContentToStage(appContentUrl: string): Promise\<boolean\>} instead.
    *
    * Allows an app to share contents in the meeting
    *
@@ -487,7 +488,6 @@ export namespace meeting {
     callback: (error: SdkError | null, result: boolean | null) => void,
     appContentUrl: string,
   ): void;
-
   /**
    * @hidden
    * This function is the overloaded implementation of shareAppContentToStage.
@@ -531,7 +531,8 @@ export namespace meeting {
    */
   export function getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getAppContentStageSharingCapabilities meeting.getAppContentStageSharingCapabilities(): Promise\<IAppContentStageSharingCapabilities\>} instead.
    *
    * Provides information related to app's in-meeting sharing capabilities
    *
@@ -546,7 +547,6 @@ export namespace meeting {
       appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
     ) => void,
   ): void;
-
   export function getAppContentStageSharingCapabilities(
     callback?: (
       error: SdkError | null,
@@ -577,7 +577,8 @@ export namespace meeting {
    */
   export function stopSharingAppContentToStage(): Promise<boolean>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.stopSharingAppContentToStage meeting.stopSharingAppContentToStage(): Promise\<boolean\>} instead.
    *
    * @hidden
    * Hide from docs.
@@ -591,7 +592,6 @@ export namespace meeting {
   export function stopSharingAppContentToStage(
     callback: (error: SdkError | null, result: boolean | null) => void,
   ): void;
-
   export function stopSharingAppContentToStage(
     callback?: (error: SdkError | null, result: boolean | null) => void,
   ): Promise<boolean> {
@@ -615,7 +615,8 @@ export namespace meeting {
    */
   export function getAppContentStageSharingState(): Promise<IAppContentStageSharingState>;
   /**
-   * @deprecated with TeamsJS v2 upgrades
+   * @deprecated
+   * As of 2.0.0-beta.1, please use {@link meeting.getAppContentStageSharingState meeting.getAppContentStageSharingState(): Promise\<IAppContentStageSharingState\>} instead.
    *
    * Provides information related to current stage sharing state for app
    * @param callback - Callback contains 2 parameters, error and result.
@@ -626,7 +627,6 @@ export namespace meeting {
   export function getAppContentStageSharingState(
     callback: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
   ): void;
-
   export function getAppContentStageSharingState(
     callback?: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
   ): Promise<IAppContentStageSharingState> {

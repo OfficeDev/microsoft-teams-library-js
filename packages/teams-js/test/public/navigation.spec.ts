@@ -1,3 +1,4 @@
+import * as utilFunc from '../../src/internal/utils';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
@@ -43,7 +44,7 @@ describe('MicrosoftTeams-Navigation', () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
-        "This call is not allowed in the 'authentication' context",
+        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
       );
     });
 
@@ -112,12 +113,37 @@ describe('MicrosoftTeams-Navigation', () => {
         utils.respondToMessage(navigateCrossDomainMessage, false);
       });
     });
+
+    it('should call getGenericOnCompleteHandler when no callback is provided.', done => {
+      utils.initializeWithContext('settings').then(() => {
+        jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+          return (success: boolean, reason: string): void => {
+            if (!success) {
+              expect(reason).toBe(
+                'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+              );
+              done();
+            }
+          };
+        });
+        navigateCrossDomain('https://invalid.origin.com');
+
+        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+        expect(navigateCrossDomainMessage).not.toBeNull();
+        expect(navigateCrossDomainMessage.args.length).toBe(1);
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+
+        utils.respondToMessage(navigateCrossDomainMessage, false);
+      });
+    });
+
     it('should register the navigateBack action', () => {
       utils.initializeWithContext('content');
       navigateBack();
       const navigateBackMessage = utils.findMessageByFunc('navigateBack');
       expect(navigateBackMessage).not.toBeNull();
     });
+
     it('should register the navigateToTab action', () => {
       utils.initializeWithContext('content');
       navigateToTab(null);

@@ -1,204 +1,177 @@
 import { remoteCamera, SdkError } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import React from 'react';
 
-import { generateJsonParseErrorMsg, generateRegistrationMsg, noHostSdkMsg } from '../App';
-import BoxAndButton from './BoxAndButton';
+import { generateRegistrationMsg } from '../App';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const RemoteCameraAPIs = (): ReactElement => {
-  const [getCapableParticipantsRes, setGetCapableParticipantsRes] = React.useState('');
-  const [requestControlRes, setRequestControlRes] = React.useState('');
-  const [sendControlCommandRes, setSendControlCommandRes] = React.useState('');
-  const [terminateSessionRes, setTerminateSessionRes] = React.useState('');
-  const [
-    registerOnCapableParticipantsChangeHandlerRes,
-    setRegisterOnCapableParticipantsChangeHandlerRes,
-  ] = React.useState('');
-  const [registerOnErrorHandlerRes, setRegisterOnErrorHandlerRes] = React.useState('');
-  const [registerOnDeviceStateChangeHandlerRes, setRegisterOnDeviceStateChangeHandlerRes] = React.useState('');
-  const [registerOnSessionStatusChangeHandlerRes, setRegisterOnSessionStatusChangeHandlerRes] = React.useState('');
+const RemoteCameraCapabilityCheck = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkRemoteCameraCapability',
+    title: 'Check Remote Camera Capability',
+    onClick: async () => `Remote Camera module ${remoteCamera.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
-  const getControlCommandFromInput = (input: string): remoteCamera.ControlCommand | null => {
-    switch (input) {
-      case 'Reset':
-        return remoteCamera.ControlCommand.Reset;
-      case 'ZoomIn':
-        return remoteCamera.ControlCommand.ZoomIn;
-      case 'ZoomOut':
-        return remoteCamera.ControlCommand.ZoomOut;
-      case 'PanLeft':
-        return remoteCamera.ControlCommand.PanLeft;
-      case 'PanRight':
-        return remoteCamera.ControlCommand.PanRight;
-      case 'TiltUp':
-        return remoteCamera.ControlCommand.TiltUp;
-      case 'TiltDown':
-        return remoteCamera.ControlCommand.TiltDown;
-    }
-    return null;
-  };
+const GetCapableParticipants = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'getCapableParticipants',
+    title: 'Get Capable Participants',
+    onClick: () => {
+      return new Promise<string>((res, rej) => {
+        const callback = (error: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
+          if (error) {
+            rej('Error: ' + JSON.stringify(error));
+          } else {
+            res(JSON.stringify(participants));
+          }
+        };
 
-  const getCapableParticipants = (): void => {
-    setGetCapableParticipantsRes('remoteCamera.getCapableParticipants' + noHostSdkMsg);
-    const callback = (error: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
-      if (error) {
-        setGetCapableParticipantsRes('Error: ' + JSON.stringify(error));
-      } else {
-        setGetCapableParticipantsRes(JSON.stringify(participants));
-      }
-    };
-    remoteCamera.getCapableParticipants(callback);
-  };
+        remoteCamera.getCapableParticipants(callback);
+      });
+    },
+  });
 
-  const requestControl = (participantInput: string): void => {
-    setRequestControlRes('remoteCamera.requestControl' + noHostSdkMsg);
-    try {
-      const participant: remoteCamera.Participant = JSON.parse(participantInput);
-      const callback = (error: SdkError | null, requestResponse: boolean | null): void => {
-        if (error) {
-          setGetCapableParticipantsRes('Error: ' + JSON.stringify(error));
-        } else {
-          setGetCapableParticipantsRes(JSON.stringify(requestResponse));
+const RequestControl = (): React.ReactElement =>
+  ApiWithTextInput<remoteCamera.Participant>({
+    name: 'requestControl',
+    title: 'Request Control',
+    onClick: {
+      validateInput: input => {
+        if (!input.id) {
+          throw new Error('id is required.');
         }
+      },
+      submit: input => {
+        return new Promise<string>((res, rej) => {
+          const callback = (error: SdkError | null, requestResponse: boolean | null): void => {
+            if (error) {
+              rej('Error: ' + JSON.stringify(error));
+            } else {
+              res(JSON.stringify(requestResponse));
+            }
+          };
+
+          remoteCamera.requestControl(input, callback);
+        });
+      },
+    },
+  });
+
+const SendControlCommand = (): React.ReactElement =>
+  ApiWithTextInput<remoteCamera.ControlCommand>({
+    name: 'sendControlCommand',
+    title: 'Send Control Command',
+    onClick: {
+      validateInput: input => {
+        const controlCommandValues = Object.values(remoteCamera.ControlCommand);
+        if (!input || typeof input !== 'string' || !controlCommandValues.includes(input)) {
+          throw new Error(
+            'input has to be a string with one of following values: ' + JSON.stringify(controlCommandValues),
+          );
+        }
+      },
+      submit: input => {
+        return new Promise<string>((res, rej) => {
+          const callback = (error: SdkError | null): void => {
+            if (error) {
+              rej('Error: ' + JSON.stringify(error));
+            } else {
+              res('Success');
+            }
+          };
+
+          remoteCamera.sendControlCommand(input, callback);
+        });
+      },
+    },
+  });
+
+const TerminateSession = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'terminateSession',
+    title: 'Terminate Session',
+    onClick: () => {
+      return new Promise<string>((res, rej) => {
+        const callback = (error: SdkError | null): void => {
+          if (error) {
+            rej('Error: ' + JSON.stringify(error));
+          } else {
+            res('Success');
+          }
+        };
+        remoteCamera.terminateSession(callback);
+      });
+    },
+  });
+
+const RegisterOnCapableParticipantsChangeHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnCapableParticipantsChangeHandler',
+    title: 'Register On Capable Participants Change Handler',
+    onClick: async setResult => {
+      const handler = (participantChange: remoteCamera.Participant[]): void => {
+        setResult('participantChange: ' + JSON.stringify(participantChange));
       };
-      remoteCamera.requestControl(participant, callback);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        const exampleInput: remoteCamera.Participant = { id: 'idStr' };
-        setRequestControlRes(generateJsonParseErrorMsg(exampleInput));
-      } else if (error instanceof Error) {
-        setRequestControlRes(error.message);
-      } else {
-        setRequestControlRes(JSON.stringify(error));
-      }
-    }
-  };
 
-  const sendControlCommand = (controlCommandInput: string): void => {
-    setSendControlCommandRes('remoteCamera.sendControl' + noHostSdkMsg);
-    const controlCommand: remoteCamera.ControlCommand | null = getControlCommandFromInput(controlCommandInput);
-    if (!controlCommand) {
-      setSendControlCommandRes(
-        "Could not find such a ControlCommand. Please ensure to give us a ControlCommand. For example, you can put in 'Reset', without the quotes.",
-      );
-      return;
-    }
-    const callback = (error: SdkError | null): void => {
-      if (error) {
-        setSendControlCommandRes('Error: ' + JSON.stringify(error));
-      } else {
-        setSendControlCommandRes('Success');
-      }
-    };
-    remoteCamera.sendControlCommand(controlCommand, callback);
-  };
+      remoteCamera.registerOnCapableParticipantsChangeHandler(handler);
+      return generateRegistrationMsg('a change in participants with constrollable-cameras occurs');
+    },
+  });
 
-  const terminateSession = (): void => {
-    setTerminateSessionRes('remoteCamera.terminateSession' + noHostSdkMsg);
-    const callback = (error: SdkError | null): void => {
-      if (error) {
-        setTerminateSessionRes('Error: ' + JSON.stringify(error));
-      } else {
-        setTerminateSessionRes('Success');
-      }
-    };
-    remoteCamera.terminateSession(callback);
-  };
+const RegisterOnErrorHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnErrorHandler',
+    title: 'Register On Error Handler',
+    onClick: async setResult => {
+      const handler = (error: remoteCamera.ErrorReason): void => {
+        setResult(JSON.stringify(error));
+      };
 
-  const registerOnCapableParticipantsChangeHandler = (): void => {
-    setRegisterOnCapableParticipantsChangeHandlerRes(
-      generateRegistrationMsg('a change in participants with constrollable-cameras occurs'),
-    );
-    const handler = (participantChange: remoteCamera.Participant[]): void => {
-      setRegisterOnCapableParticipantsChangeHandlerRes('participantChange: ' + JSON.stringify(participantChange));
-    };
-    remoteCamera.registerOnCapableParticipantsChangeHandler(handler);
-  };
+      remoteCamera.registerOnErrorHandler(handler);
+      return generateRegistrationMsg('an error from the camera handler occurs');
+    },
+  });
 
-  const registerOnErrorHandler = (): void => {
-    setRegisterOnErrorHandlerRes(generateRegistrationMsg('an error from the camera handler occurs'));
-    const handler = (error: remoteCamera.ErrorReason): void => {
-      setRegisterOnErrorHandlerRes(JSON.stringify(error));
-    };
-    remoteCamera.registerOnErrorHandler(handler);
-  };
+const RegisterOnDeviceStateChangeHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnDeviceStateChangeHandler',
+    title: 'Register On Device State Change Handler',
+    onClick: async setResult => {
+      const handler = (deviceStateChange: remoteCamera.DeviceState): void => {
+        setResult(JSON.stringify(deviceStateChange));
+      };
 
-  const registerOnDeviceStateChangeHandler = (): void => {
-    setRegisterOnDeviceStateChangeHandlerRes(generateRegistrationMsg('the controlled device changes state'));
-    const handler = (deviceStateChange: remoteCamera.DeviceState): void => {
-      setRegisterOnDeviceStateChangeHandlerRes(JSON.stringify(deviceStateChange));
-    };
-    remoteCamera.registerOnDeviceStateChangeHandler(handler);
-  };
+      remoteCamera.registerOnDeviceStateChangeHandler(handler);
+      return generateRegistrationMsg('the controlled device changes state');
+    },
+  });
 
-  const registerOnSessionStatusChangeHandler = (): void => {
-    setRegisterOnSessionStatusChangeHandlerRes(generateRegistrationMsg('the current status changes'));
-    const handler = (sessionStatusChange: remoteCamera.SessionStatus): void => {
-      setRegisterOnDeviceStateChangeHandlerRes(JSON.stringify(sessionStatusChange));
-    };
-    remoteCamera.registerOnSessionStatusChangeHandler(handler);
-  };
+const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnSessionStatusChangeHandler',
+    title: 'Register On Session Status Change Handler',
+    onClick: async setResult => {
+      const handler = (sessionStatusChange: remoteCamera.SessionStatus): void => {
+        setResult(JSON.stringify(sessionStatusChange));
+      };
 
-  return (
-    <>
-      <h1>remoteCamera</h1>
-      <BoxAndButton
-        handleClick={getCapableParticipants}
-        output={getCapableParticipantsRes}
-        hasInput={false}
-        title="Get Capable Participants"
-        name="getCapableParticipants"
-      />
-      <BoxAndButton
-        handleClickWithInput={requestControl}
-        output={requestControlRes}
-        hasInput={true}
-        title="Request Control"
-        name="requestControl"
-      />
-      <BoxAndButton
-        handleClickWithInput={sendControlCommand}
-        output={sendControlCommandRes}
-        hasInput={true}
-        title="Send Control Command"
-        name="sendControlCommand"
-      />
-      <BoxAndButton
-        handleClick={terminateSession}
-        output={terminateSessionRes}
-        hasInput={false}
-        title="Terminate Session"
-        name="terminateSession"
-      />
-      <BoxAndButton
-        handleClick={registerOnCapableParticipantsChangeHandler}
-        output={registerOnCapableParticipantsChangeHandlerRes}
-        hasInput={false}
-        title="Register On Capable Participants Change Handler"
-        name="registerOnCapableParticipantsChangeHandler"
-      />
-      <BoxAndButton
-        handleClick={registerOnErrorHandler}
-        output={registerOnErrorHandlerRes}
-        hasInput={false}
-        title="Register On Error Handler"
-        name="registerOnErrorHandler"
-      />
-      <BoxAndButton
-        handleClick={registerOnDeviceStateChangeHandler}
-        output={registerOnDeviceStateChangeHandlerRes}
-        hasInput={false}
-        title="Register On Device State Change Handler"
-        name="registerOnDeviceStateChangeHandler"
-      />
-      <BoxAndButton
-        handleClick={registerOnSessionStatusChangeHandler}
-        output={registerOnSessionStatusChangeHandlerRes}
-        hasInput={false}
-        title="Register On Session Status Change Handler"
-        name="registerOnSessionStatusChangeHandler"
-      />
-    </>
-  );
-};
+      remoteCamera.registerOnSessionStatusChangeHandler(handler);
+      return generateRegistrationMsg('the current status changes');
+    },
+  });
+
+const RemoteCameraAPIs = (): React.ReactElement => (
+  <>
+    <h1>remoteCamera</h1>
+    <RemoteCameraCapabilityCheck />
+    <GetCapableParticipants />
+    <RequestControl />
+    <SendControlCommand />
+    <TerminateSession />
+    <RegisterOnCapableParticipantsChangeHandler />
+    <RegisterOnErrorHandler />
+    <RegisterOnDeviceStateChangeHandler />
+    <RegisterOnSessionStatusChangeHandler />
+  </>
+);
 
 export default RemoteCameraAPIs;
