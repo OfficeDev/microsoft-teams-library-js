@@ -35,5 +35,5 @@ steps:
       gitHubConnection: 'ISS (3)'
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
-      comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
+      comment: 'Test message'
     displayName: 'Post bundle analysis result as PR comment in github'
