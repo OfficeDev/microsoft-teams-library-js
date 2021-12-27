@@ -3,9 +3,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 variables:
-- group: InfoSec-SecurityResults
-- group: 1CDN-SDF-Secrets
-- group: 1CDN-Prod-Secrets
+  - group: InfoSec-SecurityResults
 
 trigger:
   branches:
@@ -63,10 +61,26 @@ steps:
       Arguments: 'test'
     displayName: 'yarn test'
 
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/unit-tests-report*.xml'
+    condition: succeededOrFailed()
+
   - task: Yarn@2
     inputs:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'
+
+  - script: 'node prepNewReadme.js'
+    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    condition: and(
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      ne(variables['Build.Reason'], 'Manual')
+      )
+    displayName: 'node prepNewReadme.js'
 
   # Bundle analysis comparison : should trigger only by PR against 2.0-preview
   # Adding comment for a commit that should queue the pipeline with a PR trigger
@@ -101,6 +115,12 @@ steps:
       PathtoPublish: './common/temp/bundleAnalysis'
       ArtifactName: '$(bundleArtifactName)'
     displayName: 'Publish bundle analysis'
+
+  - powershell: |
+      $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
+      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+    name: package
+    displayName: 'Set package.version Variable'
 
   - task: ComponentGovernanceComponentDetection@0
     condition: and(
@@ -183,7 +203,7 @@ steps:
       GdnBreakGdnToolCredScanSeverity: Warning
       GdnBreakGdnToolESLint: true
       GdnBreakGdnToolESLintSeverity: Warning
-      GdnBreakPolicy: M365  
+      GdnBreakPolicy: M365
 
   - task: AzureRmWebAppDeployment@4
     condition: and(
@@ -208,116 +228,40 @@ steps:
       WebAppName: 'cloudroll'
       package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
     displayName: 'Deploy to cloudroll'
-    
-  # TODO - delete after release pipeline creation
-  - task: CmdLine@1
-    condition: and(
-      or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview')),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual'))
-    inputs:
-      filename: node
-      arguments: publish.js
-      workingFolder: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-      failOnStandardError: true
-    displayName: 'Publish Npm Package'
-
-  - powershell: |
-      $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
-      Write-Host "##vso[task.setvariable variable=Version;isOutput=true]$npmVer"
-    displayName: 'Set package.Version Variable'
-    name: package
 
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
-      contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)\js'
+      contents: '**\?(*.js|*.ts|*.map)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
-  
-  - task: CopyFiles@2
-    inputs:
-      Contents: |
-        packages\teams-js\dist\**
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\$(package.Version)\dist'
-      flattenFolders: true
-    displayName: 'Copy JS Content for NPM'
 
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\publish.js
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\Scripts'
+        packages\teams-js\dist\**\?(*.js|*.ts|*.map)
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
       flattenFolders: true
-    displayName: 'Copy publish.js Script for NPM'
+    displayName: 'Copy JS Content for NPM'
 
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
       ArtifactName: 'CDNFeed'
     displayName: 'Publish CDN feed to build Artifacts'
-  
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
     displayName: 'Publish NPM feed to Build Artifacts'
-  
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\Scripts'
-      ArtifactName: 'Scripts'
-    displayName: 'Publish Scripts to Build Artifacts'
-
-  # This task will push content to CDN-sdf for every commit to 2.0-preview
-  # Sample CDN-sdf URL: https://res-1-sdf.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
-  - task: M365CdnAssetsUpload@1
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    inputs:
-     SourcePath: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)'
-     ConnectionType: 'EnvironmentVariables'
-     Environment: 'PublicCloudSDF'
-     ContainerName: 'teams-js'
-     AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
-    env:
-      M365CDN_APP_ID: $(M365-APP-CLIENT-ID)
-      M365CDN_APP_KEY: $(M365-APP-SECRET)
-      M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
-    displayName: 'Push TeamsJS to M365 1CDN(SDF) for (2.0-preview CI/CD)'
-    
-  # This task will push content to CDN-Prod for every prod release.
-  # Sample CDN URL: https://res.cdn.office.net/teams-js/2.0.0-beta.0/js/MicrosoftTeams.min.js
-  - task: M365CdnAssetsUpload@1
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    inputs:
-      SourcePath: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.Version)'
-      ConnectionType: 'EnvironmentVariables'
-      Environment: 'PublicCloud'
-      ContainerName: 'teams-js'
-      AdditionalArgumentsForBlobCopy: '--overwrite=false --log-level=INFO --recursive'
-    env:
-      M365CDN_APP_ID: $(M365-CDN-CLIENT-ID-PROD)
-      M365CDN_APP_KEY: $(M365-CDN-CLIENT-SECRET-PROD)
-      M365CDN_TENANT_ID: $(M365-APP-TENNANT-ID)
-    displayName: 'Push TeamsJS to M365 1CDN(Prod) for (2.0-preview release)'

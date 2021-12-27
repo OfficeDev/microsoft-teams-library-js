@@ -4,6 +4,13 @@ import React from 'react';
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
+const RemoteCameraCapabilityCheck = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkRemoteCameraCapability',
+    title: 'Check Remote Camera Capability',
+    onClick: async () => `Remote Camera module ${remoteCamera.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const GetCapableParticipants = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getCapableParticipants',
@@ -155,6 +162,7 @@ const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
 const RemoteCameraAPIs = (): React.ReactElement => (
   <>
     <h1>remoteCamera</h1>
+    <RemoteCameraCapabilityCheck />
     <GetCapableParticipants />
     <RequestControl />
     <SendControlCommand />
