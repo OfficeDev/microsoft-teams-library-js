@@ -33,6 +33,7 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import { getTestBackCompat } from './components/utils/getTestBackCompat';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -88,6 +89,14 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 };
 
 const App = (): ReactElement => {
+  if (getTestBackCompat()) {
+    return (
+      <>
+        <AppAPIs />
+        <PeopleAPIs />
+      </>
+    );
+  }
   return (
     <>
       <AppAPIs />

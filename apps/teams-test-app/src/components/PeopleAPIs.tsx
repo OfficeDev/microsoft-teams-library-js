@@ -1,7 +1,8 @@
-import { people } from '@microsoft/teams-js';
+import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { getTestBackCompat } from './utils/getTestBackCompat';
 
 const CheckPeopleCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,8 +16,20 @@ const SelectPeople = (): React.ReactElement =>
     name: 'selectPeople',
     title: 'Select People',
     onClick: async input => {
-      const result = input ? await people.selectPeople(input) : people.selectPeople();
-      return JSON.stringify(result);
+      if (getTestBackCompat()) {
+        let result = '';
+        const displayResults = (error: SdkError, people: people.PeoplePickerResult[]): void => {
+          if (error) {
+            result = 'error';
+          }
+          result = JSON.stringify(people);
+        };
+        input ? people.selectPeople(displayResults, input) : people.selectPeople(displayResults);
+        return result;
+      } else {
+        const result = input ? await people.selectPeople(input) : people.selectPeople();
+        return JSON.stringify(result);
+      }
     },
   });
 
