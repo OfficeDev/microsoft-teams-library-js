@@ -20,11 +20,15 @@ const SelectPeople = (): React.ReactElement =>
         let result = '';
         const displayResults = (error: SdkError, people: people.PeoplePickerResult[]): void => {
           if (error) {
-            result = 'error';
+            result = JSON.stringify(error.errorCode) + ' ' + error.message;
           }
           result = JSON.stringify(people);
         };
-        input ? people.selectPeople(displayResults, input) : people.selectPeople(displayResults);
+        if (input) {
+          people.selectPeople(displayResults, input);
+        } else {
+          people.selectPeople(displayResults);
+        }
         return result;
       } else {
         const result = input ? await people.selectPeople(input) : people.selectPeople();
