@@ -7,7 +7,10 @@ import { version } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
+import { getLogger } from './telemetry';
 import { validateOrigin } from './utils';
+
+const communicationLogger = getLogger('communication');
 
 /**@internal */
 export class Communication {
@@ -180,12 +183,20 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 }
 
+const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
+
 /**@internal */
 function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
+  const logger = sendMessageToParentHelperLogger;
+
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
+
+  logger('Message %i information: %o', request.id, { actionName, args });
+
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+      logger('Sending message %i to parent via framelessPostMessage interface', request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -194,8 +205,10 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
+      logger('Sending message %i to parent via postMessage', request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
+      logger('Adding message %i to parent message queue', request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
@@ -286,29 +299,42 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   flushMessageQueue(Communication.childWindow);
 }
 
+const handleParentMessageLogger = communicationLogger.extend('handleParentMessage');
+
 /**@internal */
 function handleParentMessage(evt: DOMMessageEvent): void {
+  const logger = handleParentMessageLogger;
+
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
     const callback = CommunicationPrivate.callbacks[message.id];
+    logger('Received a response from parent for message %i', message.id);
     if (callback) {
+      logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
       callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
+        logger('Removing registered callback for message %i', message.id);
         delete CommunicationPrivate.callbacks[message.id];
       }
     }
     const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
     if (promiseCallback) {
+      logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
       promiseCallback(message.args);
+
+      logger('Removing registered promise callback for message %i', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
+    logger('Received an action message %s from parent', message.func);
     callHandler(message.func, message.args);
+  } else {
+    logger('Received an unknown message: %O', evt);
   }
 }
 
@@ -356,12 +382,16 @@ function getTargetOrigin(targetWindow: Window): string {
     : null;
 }
 
+const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
 /**@internal */
 function flushMessageQueue(targetWindow: Window | any): void {
   const targetOrigin = getTargetOrigin(targetWindow);
   const targetMessageQueue = getTargetMessageQueue(targetWindow);
+  const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    targetWindow.postMessage(targetMessageQueue.shift(), targetOrigin);
+    const request = targetMessageQueue.shift();
+    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
+    targetWindow.postMessage(request, targetOrigin);
   }
 }
 
