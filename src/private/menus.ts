@@ -26,6 +26,23 @@ export namespace menus {
      */
     contentDescription?: string;
   }
+
+  /**
+   * Defines how a menu item should appear in the NavBar.
+   */
+  export enum DisplayMode {
+    /**
+     * Only place this item in the NavBar if there's room for it.
+     * If there's no room, item is shown in the overflow menu.
+     */
+    ifRoom = 0,
+    /**
+     * Never place this item in the NavBar.
+     * The item would always be shown in NavBar's overflow menu.
+     */
+    never = 1,
+  }
+
   /**
    * Represents information about menu item for Action Menu and Navigation Bar Menu.
    */
@@ -62,6 +79,12 @@ export namespace menus {
      * Whether the menu item is selected or not
      */
     public selected = false;
+    /**
+     * The Display Mode of the menu item.
+     * Default Behaviour would be DisplayMode.ifRoom if null.
+     * Refer {@link DisplayMode}
+     */
+    public displayMode?: DisplayMode;
   }
   /**
    * Represents information about view to show on Navigation Bar Menu item selection
