@@ -43,6 +43,41 @@ export namespace pages {
     setCurrentFrame(frameInfo);
   }
 
+  export interface Config {
+    /**
+     * A suggested display name for the new content.
+     * In the settings for an existing instance being updated, this call has no effect.
+     */
+    suggestedDisplayName?: string;
+    /**
+     * Sets the URL to use for the content of this instance.
+     */
+    contentUrl: string;
+    /**
+     * Sets the URL for the removal configuration experience.
+     */
+    removeUrl?: string;
+    /**
+     * Sets the URL to use for the external link to view the underlying resource in a browser.
+     */
+    websiteUrl?: string;
+    /**
+     * The developer-defined unique ID for the entity to which this content points.
+     */
+    entityId?: string;
+  }
+
+  /**
+   * Gets the config for the current instance.
+   * @returns Promise that resolves with the {@link Config} object.
+   */
+  export function getConfig(): Promise<Config> {
+    return new Promise<Config>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+      resolve(sendAndUnwrap('settings.getSettings'));
+    });
+  }
+
   /**
    * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
    * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
@@ -217,17 +252,6 @@ export namespace pages {
     }
 
     /**
-     * Gets the config for the current instance.
-     * @returns Promise that resolves with the {@link Config} object.
-     */
-    export function getConfig(): Promise<Config> {
-      return new Promise<Config>(resolve => {
-        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
-        resolve(sendAndUnwrap('settings.getSettings'));
-      });
-    }
-
-    /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
      * @param Config The desired config for this instance.
@@ -283,30 +307,6 @@ export namespace pages {
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
       registerHandler('changeSettings', handler);
-    }
-
-    export interface Config {
-      /**
-       * A suggested display name for the new content.
-       * In the settings for an existing instance being updated, this call has no effect.
-       */
-      suggestedDisplayName?: string;
-      /**
-       * Sets the URL to use for the content of this instance.
-       */
-      contentUrl: string;
-      /**
-       * Sets the URL for the removal configuration experience.
-       */
-      removeUrl?: string;
-      /**
-       * Sets the URL to use for the external link to view the underlying resource in a browser.
-       */
-      websiteUrl?: string;
-      /**
-       * The developer-defined unique ID for the entity to which this content points.
-       */
-      entityId?: string;
     }
 
     export interface SaveEvent {

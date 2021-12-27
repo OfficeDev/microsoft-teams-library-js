@@ -3,6 +3,16 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 
+const GetConfig = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_getConfig',
+    title: 'Get Config',
+    onClick: async () => {
+      const result = await pages.config.getConfig();
+      return JSON.stringify(result);
+    },
+  });
+
 const NavigateCrossDomain = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'navigateCrossDomain2',
@@ -87,6 +97,7 @@ const CheckPageCapability = (): React.ReactElement =>
 const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
+    <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
     <ReturnFocus />
