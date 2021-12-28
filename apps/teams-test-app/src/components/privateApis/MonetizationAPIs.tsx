@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { getTestBackCompat } from '../utils/getTestBackCompat';
 
 const CheckMonetizationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -24,8 +25,19 @@ const OpenPurchaseExperience = (): React.ReactElement =>
           throw new Error('planId and term are required on input, if provided');
         }
       },
-      submit: async planInfo => {
-        await monetization.openPurchaseExperience(planInfo);
+      submit: async (planInfo, setResult?) => {
+        if (getTestBackCompat()) {
+          const callback = (error: SdkError | null): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('Success');
+            }
+          };
+          monetization.openPurchaseExperience(callback);
+        } else {
+          await monetization.openPurchaseExperience(planInfo);
+        }
         return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
       },
     },
