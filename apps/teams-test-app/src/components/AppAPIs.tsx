@@ -1,4 +1,12 @@
-import { app, Context, core, DeepLinkParameters, getContext } from '@microsoft/teams-js';
+import {
+  app,
+  Context,
+  core,
+  DeepLinkParameters,
+  executeDeepLink,
+  getContext,
+  shareDeepLink,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -33,7 +41,11 @@ const ExecuteDeepLink = (): ReactElement =>
         }
       },
       submit: async input => {
-        await core.executeDeepLink(input);
+        if (getTestBackCompat()) {
+          executeDeepLink(input);
+        } else {
+          await core.executeDeepLink(input);
+        }
         return 'Completed';
       },
     },
@@ -50,7 +62,11 @@ const ShareDeepLink = (): ReactElement =>
         }
       },
       submit: async input => {
-        await core.shareDeepLink(input);
+        if (getTestBackCompat()) {
+          shareDeepLink(input);
+        } else {
+          await core.shareDeepLink(input);
+        }
         return 'called shareDeepLink';
       },
     },
