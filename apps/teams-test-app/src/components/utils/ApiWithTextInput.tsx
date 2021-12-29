@@ -45,7 +45,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
           setResult(result);
         } else {
           if (getTestBackCompat()) {
-            const result = await submit.withCallback(partialInput as T, setResult);
+            const result = submit.withCallback(partialInput as T, setResult);
             setResult(result);
           } else {
             const result = await submit.withPromise(partialInput as T, setResult);
