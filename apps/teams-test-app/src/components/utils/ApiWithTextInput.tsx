@@ -40,15 +40,16 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
       } else {
         const { validateInput, submit } = onClick;
         validateInput(partialInput);
+        const input = partialInput as T;
         if (typeof submit === 'function') {
-          const result = await submit(partialInput as T, setResult);
+          const result = await submit(input, setResult);
           setResult(result);
         } else {
           if (getTestBackCompat()) {
-            const result = submit.withCallback(partialInput as T, setResult);
+            const result = submit.withCallback(input, setResult);
             setResult(result);
           } else {
-            const result = await submit.withPromise(partialInput as T, setResult);
+            const result = await submit.withPromise(input, setResult);
             setResult(result);
           }
         }
