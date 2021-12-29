@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
+import { getTestBackCompat } from './getTestBackCompat';
 
 export interface ApiWithTextInputProps<T> {
   title: string;
@@ -10,7 +11,12 @@ export interface ApiWithTextInputProps<T> {
     | ((input: Partial<T>) => Promise<string>)
     | {
         validateInput: (input: Partial<T>) => void;
-        submit: (input: T, setResult: (result: string) => void) => Promise<string>;
+        submit:
+          | ((input: T, setResult: (result: string) => void) => Promise<string>)
+          | {
+              withPromise: (input: T, setResult: (result: string) => void) => Promise<string>;
+              withCallback: (input: T, setResult: (result: string) => void) => string;
+            };
       };
   defaultInput?: string;
 }
@@ -34,8 +40,18 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
       } else {
         const { validateInput, submit } = onClick;
         validateInput(partialInput);
-        const result = await submit(partialInput as T, setResult);
-        setResult(result);
+        if (typeof submit === 'function') {
+          const result = await submit(partialInput as T, setResult);
+          setResult(result);
+        } else {
+          if (getTestBackCompat()) {
+            const result = await submit.withCallback(partialInput as T, setResult);
+            setResult(result);
+          } else {
+            const result = await submit.withPromise(partialInput as T, setResult);
+            setResult(result);
+          }
+        }
       }
     } catch (err) {
       setResult('Error: ' + err);
