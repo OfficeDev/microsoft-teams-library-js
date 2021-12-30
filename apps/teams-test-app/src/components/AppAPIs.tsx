@@ -11,7 +11,6 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
-import { getTestBackCompat } from './utils/getTestBackCompat';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
@@ -42,13 +41,15 @@ const ExecuteDeepLink = (): ReactElement =>
           throw new Error('Input should be a string');
         }
       },
-      submit: async input => {
-        if (getTestBackCompat()) {
-          executeDeepLink(input);
-        } else {
+      submit: {
+        withPromise: async input => {
           await core.executeDeepLink(input);
-        }
-        return 'Completed';
+          return 'Completed';
+        },
+        withCallback: input => {
+          executeDeepLink(input);
+          return 'Completed';
+        },
       },
     },
   });
@@ -63,13 +64,15 @@ const ShareDeepLink = (): ReactElement =>
           throw new Error('subEntityId and subEntityLabel are required.');
         }
       },
-      submit: async input => {
-        if (getTestBackCompat()) {
-          shareDeepLink(input);
-        } else {
+      submit: {
+        withPromise: async input => {
           await core.shareDeepLink(input);
-        }
-        return 'called shareDeepLink';
+          return 'called shareDeepLink';
+        },
+        withCallback: input => {
+          shareDeepLink(input);
+          return 'called shareDeepLink';
+        },
       },
     },
   });
