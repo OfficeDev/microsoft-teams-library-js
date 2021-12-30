@@ -1,6 +1,7 @@
-import { app, authentication } from '@microsoft/teams-js';
+import { app, authentication, call } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const Initialize = (): React.ReactElement =>
@@ -17,9 +18,29 @@ const GetAuthToken = (): React.ReactElement =>
   ApiWithTextInput<authentication.AuthTokenRequestParameters>({
     name: 'getAuthToken',
     title: 'Get Auth Token',
-    onClick: async authParams => {
-      const result = await authentication.getAuthToken(authParams);
-      return 'Success: ' + JSON.stringify(result);
+    onClick: {
+      validateInput: () => {
+        return; //This API can have no input
+      },
+      submit: {
+        withPromise: async authParams => {
+          const params = authParams;
+          const result = await authentication.getAuthToken(params);
+          return 'Success: ' + JSON.stringify(result);
+        },
+        withCallback: (authParams, setResult) => {
+          const callback = (result: string): void => {
+            setResult(result);
+          };
+          const authRequest: authentication.AuthTokenRequest = {
+            successCallback: callback,
+            failureCallback: callback,
+            ...authParams,
+          };
+          authentication.getAuthToken(authRequest);
+          return 'getAuthToken()' + noHostSdkMsg;
+        },
+      },
     },
   });
 
@@ -63,9 +84,15 @@ const Authenticate = (): React.ReactElement =>
           throw new Error('url is required');
         }
       },
-      submit: async authParams => {
-        const token = await authentication.authenticate(authParams);
-        return 'Success: ' + token;
+      submit: {
+        withPromise: async authParams => {
+          const token = await authentication.authenticate(authParams);
+          return 'Success: ' + token;
+        },
+        withCallback: authParams => {
+          authentication.authenticate(authParams);
+          return 'autheticate()' + noHostSdkMsg;
+        },
       },
     },
   });
