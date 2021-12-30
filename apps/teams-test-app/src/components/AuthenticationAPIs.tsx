@@ -48,9 +48,25 @@ const GetUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getUser',
     title: 'Get User',
-    onClick: async () => {
-      const user = await authentication.getUser();
-      return 'Success: ' + JSON.stringify(user);
+    onClick: {
+      withPromise: async () => {
+        const user = await authentication.getUser();
+        return 'Success: ' + JSON.stringify(user);
+      },
+      withCallback: setResult => {
+        const successCallback = (user: authentication.UserProfile): void => {
+          setResult(JSON.stringify(user));
+        };
+        const failureCallback = (reason: string): void => {
+          setResult(reason);
+        };
+        const userRequest: authentication.UserRequest = {
+          successCallback: successCallback,
+          failureCallback: failureCallback,
+        };
+        authentication.getUser(userRequest);
+        return 'getUser()' + noHostSdkMsg;
+      },
     },
   });
 
