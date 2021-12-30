@@ -33,7 +33,6 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
-import { getTestBackCompat } from './components/utils/getTestBackCompat';
 
 const urlParams = new URLSearchParams(window.location.search);
 
