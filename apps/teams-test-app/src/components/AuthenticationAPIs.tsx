@@ -1,4 +1,4 @@
-import { app, authentication, call } from '@microsoft/teams-js';
+import { app, authentication } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
