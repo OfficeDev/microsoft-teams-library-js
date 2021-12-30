@@ -1,4 +1,4 @@
-import { app, core, DeepLinkParameters } from '@microsoft/teams-js';
+import { app, Context, core, DeepLinkParameters, getContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,18 @@ const GetContext = (): ReactElement =>
   ApiWithoutInput({
     name: 'getContextV2',
     title: 'Get Context',
-    onClick: async () => {
-      const context = await app.getContext();
-      return JSON.stringify(context);
+    onClick: {
+      withPromise: async () => {
+        const context = await app.getContext();
+        return JSON.stringify(context);
+      },
+      withCallback: setResult => {
+        const callback = (context: Context): void => {
+          setResult(JSON.stringify(context));
+        };
+        const context = getContext(callback);
+        return JSON.stringify(context);
+      },
     },
   });
 
