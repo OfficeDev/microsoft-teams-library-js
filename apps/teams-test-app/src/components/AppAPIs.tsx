@@ -9,6 +9,7 @@ import {
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { getTestBackCompat } from './utils/getTestBackCompat';
 
@@ -16,17 +17,18 @@ const GetContext = (): ReactElement =>
   ApiWithoutInput({
     name: 'getContextV2',
     title: 'Get Context',
-    onClick: async () => {
-      if (getTestBackCompat()) {
-        let result = '';
-        const displayResults = (context: Context): void => {
-          result = JSON.stringify(context);
+    onClick: {
+      withPromise: async () => {
+        const context = await app.getContext();
+        return JSON.stringify(context);
+      },
+      withCallback: setResult => {
+        const callback = (context: Context): void => {
+          setResult(JSON.stringify(context));
         };
-        getContext(displayResults);
-        return result;
-      }
-      const context = await app.getContext();
-      return JSON.stringify(context);
+        getContext(callback);
+        return 'getContext()' + noHostSdkMsg;
+      },
     },
   });
 
