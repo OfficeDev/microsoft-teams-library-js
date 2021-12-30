@@ -25,7 +25,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
         type="button"
         value={title}
         onClick={async () => {
-          if (typeof onClick == 'function') {
+          if (typeof onClick === 'function') {
             setResult(await onClick(setResult));
           } else {
             if (getTestBackCompat()) {
