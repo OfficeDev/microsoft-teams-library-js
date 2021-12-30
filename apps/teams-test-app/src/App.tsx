@@ -89,14 +89,6 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 };
 
 const App = (): ReactElement => {
-  if (getTestBackCompat()) {
-    return (
-      <>
-        <AppAPIs />
-        <PeopleAPIs />
-      </>
-    );
-  }
   return (
     <>
       <AppAPIs />
