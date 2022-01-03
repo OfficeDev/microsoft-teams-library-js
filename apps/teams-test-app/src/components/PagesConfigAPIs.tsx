@@ -15,7 +15,7 @@ const Initialize = (): React.ReactElement =>
   });
 
 const SetConfig = (): React.ReactElement =>
-  ApiWithTextInput<pages.config.Config>({
+  ApiWithTextInput<pages.InstanceConfig>({
     name: 'config_setConfig',
     title: 'Set Config',
     onClick: {

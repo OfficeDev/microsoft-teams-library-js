@@ -8,7 +8,7 @@ const GetConfig = (): React.ReactElement =>
     name: 'config_getConfig',
     title: 'Get Config',
     onClick: async () => {
-      const result = await pages.config.getConfig();
+      const result = await pages.getConfig();
       return JSON.stringify(result);
     },
   });
