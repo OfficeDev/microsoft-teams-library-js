@@ -1,4 +1,4 @@
-import { app, core, DeepLinkParameters } from '@microsoft/teams-js';
+import { app } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -13,10 +13,10 @@ const GetContext = (): ReactElement =>
     },
   });
 
-const ExecuteDeepLink = (): ReactElement =>
+const OpenLink = (): ReactElement =>
   ApiWithTextInput<string>({
     name: 'executeDeepLink2',
-    title: 'Execute Deep Link',
+    title: 'Open Link',
     onClick: {
       validateInput: input => {
         if (typeof input !== 'string') {
@@ -24,25 +24,8 @@ const ExecuteDeepLink = (): ReactElement =>
         }
       },
       submit: async input => {
-        await core.executeDeepLink(input);
+        await app.openLink(input);
         return 'Completed';
-      },
-    },
-  });
-
-const ShareDeepLink = (): ReactElement =>
-  ApiWithTextInput<DeepLinkParameters>({
-    name: 'core.shareDeepLink',
-    title: 'core.shareDeepLink',
-    onClick: {
-      validateInput: input => {
-        if (!input.subEntityId || !input.subEntityLabel) {
-          throw new Error('subEntityId and subEntityLabel are required.');
-        }
-      },
-      submit: async input => {
-        await core.shareDeepLink(input);
-        return 'called shareDeepLink';
       },
     },
   });
@@ -61,8 +44,7 @@ const AppAPIs = (): ReactElement => (
   <>
     <h1>app</h1>
     <GetContext />
-    <ExecuteDeepLink />
-    <ShareDeepLink />
+    <OpenLink />
     <RegisterOnThemeChangeHandler />
   </>
 );
