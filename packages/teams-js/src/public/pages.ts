@@ -43,7 +43,7 @@ export namespace pages {
     setCurrentFrame(frameInfo);
   }
 
-  export interface Config {
+  export interface InstanceConfig {
     /**
      * A suggested display name for the new content.
      * In the settings for an existing instance being updated, this call has no effect.
@@ -71,8 +71,8 @@ export namespace pages {
    * Gets the config for the current instance.
    * @returns Promise that resolves with the {@link Config} object.
    */
-  export function getConfig(): Promise<Config> {
-    return new Promise<Config>(resolve => {
+  export function getConfig(): Promise<InstanceConfig> {
+    return new Promise<InstanceConfig>(resolve => {
       ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
       resolve(sendAndUnwrap('settings.getSettings'));
     });
@@ -254,13 +254,13 @@ export namespace pages {
     /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
-     * @param Config The desired config for this instance.
+     * @param instanceConfig The desired config for this instance.
      * @returns Promise that resolves when the operation has completed.
      */
-    export function setConfig(instanceSettings: Config): Promise<void> {
+    export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
-        resolve(send('settings.setSettings', instanceSettings));
+        resolve(send('settings.setSettings', instanceConfig));
       });
     }
 
