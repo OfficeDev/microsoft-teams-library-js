@@ -1,4 +1,4 @@
-import { app, Context, core, DeepLinkParameters, getContext } from '@microsoft/teams-js';
+import { app, Context, getContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
