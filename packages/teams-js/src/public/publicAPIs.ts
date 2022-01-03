@@ -1,6 +1,6 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { app, core } from './app';
+import { app } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,
@@ -272,19 +272,19 @@ export function getMruTabInstances(
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link core.shareDeepLink core.shareDeepLink(deepLinkParameters: DeepLinkParameters): void} instead.
+ * As of 2.0.0-beta.3, please use {@link pages.shareDeepLink pages.shareDeepLink(deepLinkParameters: DeepLinkParameters): void} instead.
  *
  * Shares a deep link that a user can use to navigate back to a specific state in this page.
  *
  * @param deepLinkParameters - ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  core.shareDeepLink(deepLinkParameters);
+  pages.shareDeepLink(deepLinkParameters);
 }
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link core.executeDeepLink core.executeDeepLink(deepLink: string): Promise\<void\>} instead.
+ * As of 2.0.0-beta.3, please use {@link app.openLink core.openLink(deepLink: string): Promise\<void\>} instead.
  *
  * Execute deep link API.
  *
@@ -300,8 +300,8 @@ export function executeDeepLink(deepLink: string, onComplete?: (status: boolean,
     FrameContexts.meetingStage,
   );
   onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
-  core
-    .executeDeepLink(deepLink)
+  app
+    .openLink(deepLink)
     .then(() => {
       onComplete(true);
     })

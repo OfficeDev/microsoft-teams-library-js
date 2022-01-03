@@ -1,5 +1,5 @@
 import { TabInstanceParameters, FrameInfo } from '../../src/public/interfaces';
-import { app, core } from '../../src/public/app';
+import { app } from '../../src/public/app';
 import { teamsCore } from '../../src/public/teamsAPIs';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
@@ -265,7 +265,7 @@ describe('AppSDK-TeamsAPIs', () => {
     it('should successfully share a deep link in content context', async () => {
       await utils.initializeWithContext('content');
 
-      core.shareDeepLink({
+      pages.shareDeepLink({
         subEntityId: 'someSubEntityId',
         subEntityLabel: 'someSubEntityLabel',
         subEntityWebUrl: 'someSubEntityWebUrl',
@@ -282,7 +282,7 @@ describe('AppSDK-TeamsAPIs', () => {
     it('should successfully share a deep link in sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      core.shareDeepLink({
+      pages.shareDeepLink({
         subEntityId: 'someSubEntityId',
         subEntityLabel: 'someSubEntityLabel',
         subEntityWebUrl: 'someSubEntityWebUrl',
