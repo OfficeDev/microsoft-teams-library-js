@@ -69,7 +69,7 @@ export namespace pages {
 
   /**
    * Gets the config for the current instance.
-   * @returns Promise that resolves with the {@link Config} object.
+   * @returns Promise that resolves with the {@link InstanceConfig} object.
    */
   export function getConfig(): Promise<InstanceConfig> {
     return new Promise<InstanceConfig>(resolve => {
