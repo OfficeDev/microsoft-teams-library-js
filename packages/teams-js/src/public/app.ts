@@ -19,7 +19,7 @@ import { logs } from '../private/logs';
 import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
-import { Context as LegacyContext, DeepLinkParameters, FileOpenPreference, LocaleInfo } from './interfaces';
+import { Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { pages } from './pages';
 import { applyRuntimeConfig, IRuntime, teamsRuntimeConfig } from './runtime';
 import { teamsCore } from './teamsAPIs';
@@ -635,31 +635,14 @@ export namespace app {
     ensureInitialized();
     Handlers.registerOnThemeChangeHandler(handler);
   }
-}
-
-export namespace core {
-  /**
-   * Shares a deep link that a user can use to navigate back to a specific state in this page.
-   *
-   * @param deepLinkParameters - ID and label for the link and fallback URL.
-   */
-  export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-
-    sendMessageToParent('shareDeepLink', [
-      deepLinkParameters.subEntityId,
-      deepLinkParameters.subEntityLabel,
-      deepLinkParameters.subEntityWebUrl,
-    ]);
-  }
 
   /**
-   * execute deep link API.
+   * open link API.
    *
    * @param deepLink - deep link.
    * @returns Promise that will be fulfilled when the operation has completed
    */
-  export function executeDeepLink(deepLink: string): Promise<void> {
+  export function openLink(deepLink: string): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(
         FrameContexts.content,

@@ -1,6 +1,6 @@
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { app, core } from '../../src/public/app';
+import { app } from '../../src/public/app';
 import { ChannelType, HostClientType, HostName, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
@@ -530,9 +530,9 @@ describe('AppSDK-app', () => {
     });
   });
 
-  describe('executeDeepLink in content context ', () => {
+  describe('openLink in content context ', () => {
     it('should not allow calls before initialization', () => {
-      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully send a request', async () => {
@@ -540,7 +540,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -563,7 +563,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -586,7 +586,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -604,16 +604,16 @@ describe('AppSDK-app', () => {
     });
   });
 
-  describe('executeDeepLink in sidePanel context ', () => {
+  describe('openLink in sidePanel context ', () => {
     it('should not allow calls before initialization', () => {
-      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully send a request', async () => {
       await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -636,7 +636,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -659,7 +659,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -677,9 +677,9 @@ describe('AppSDK-app', () => {
     });
   });
 
-  describe('executeDeepLink in task module context ', () => {
+  describe('openLink in task module context ', () => {
     it('should not allow calls before initialization', () => {
-      return expect(core.executeDeepLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully send a request', async () => {
@@ -687,7 +687,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -710,7 +710,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
@@ -734,7 +734,7 @@ describe('AppSDK-app', () => {
       const request = 'dummyDeepLink';
 
       // send message request
-      const promise = core.executeDeepLink(request);
+      const promise = app.openLink(request);
 
       // find message request in jest
       const message = utils.findMessageByFunc('executeDeepLink');
