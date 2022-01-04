@@ -25,7 +25,7 @@ export {
   LocaleInfo,
   FrameInfo,
 } from './interfaces';
-export { app, core } from './app';
+export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
 export { dialog } from './dialog';
 export { pages } from './pages';
