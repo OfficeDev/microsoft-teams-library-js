@@ -1,6 +1,7 @@
-import { location } from '@microsoft/teams-js';
+import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckLocationCapability = (): React.ReactElement =>
@@ -20,9 +21,22 @@ const GetLocation = (): React.ReactElement =>
           throw new Error('allowChooseLocation is required');
         }
       },
-      submit: async locationProps => {
-        const result = await location.getLocation(locationProps);
-        return JSON.stringify(result);
+      submit: {
+        withPromise: async locationProps => {
+          const result = await location.getLocation(locationProps);
+          return JSON.stringify(result);
+        },
+        withCallback: (locationProps, setResult) => {
+          const callback = (error: SdkError, location: location.Location): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult(JSON.stringify(location));
+            }
+          };
+          location.getLocation(locationProps, callback);
+          return 'location.getLocation()' + noHostSdkMsg;
+        },
       },
     },
   });
@@ -37,9 +51,22 @@ const ShowLocation = (): React.ReactElement =>
           throw new Error('latitude and longitude are required');
         }
       },
-      submit: async locationProps => {
-        await location.showLocation(locationProps);
-        return 'Completed';
+      submit: {
+        withPromise: async locationProps => {
+          await location.showLocation(locationProps);
+          return 'Completed';
+        },
+        withCallback: (locationProps, setResult) => {
+          const callback = (error: SdkError, status: boolean): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('Completed');
+            }
+          };
+          location.showLocation(locationProps, callback);
+          return 'location.showLocation()' + noHostSdkMsg;
+        },
       },
     },
   });
