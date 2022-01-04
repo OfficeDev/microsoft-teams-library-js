@@ -9,7 +9,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
-import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import { DeepLinkParameters, FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -95,6 +95,21 @@ export namespace pages {
         resolve(send('pages.navigateToApp', params));
       }
     });
+  }
+
+  /**
+   * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   *
+   * @param deepLinkParameters - ID and label for the link and fallback URL.
+   */
+  export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+    sendMessageToParent('shareDeepLink', [
+      deepLinkParameters.subEntityId,
+      deepLinkParameters.subEntityLabel,
+      deepLinkParameters.subEntityWebUrl,
+    ]);
   }
 
   /**
