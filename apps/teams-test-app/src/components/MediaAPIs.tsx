@@ -65,31 +65,34 @@ const SelectMedia = (): React.ReactElement =>
           throw new Error('mediaType and maxMediaCount are required');
         }
       },
-      submit: async input => {
-        const medias = await media.selectMedia(input);
-        let message = '';
-        for (let i = 0; i < medias.length; i++) {
-          const media: media.Media = medias[i];
-          let preview = '';
-          let len = 20;
-          if (media.preview) {
-            len = Math.min(len, media.preview.length);
-            preview = media.preview.substr(0, len);
+      submit: {
+        withPromise: async input => {
+          const medias = await media.selectMedia(input);
+          let message = '';
+          for (let i = 0; i < medias.length; i++) {
+            const media: media.Media = medias[i];
+            let preview = '';
+            let len = 20;
+            if (media.preview) {
+              len = Math.min(len, media.preview.length);
+              preview = media.preview.substr(0, len);
+            }
+            message +=
+              '[format: ' +
+              media.format +
+              ', size: ' +
+              media.size +
+              ', mimeType: ' +
+              media.mimeType +
+              ', content: ' +
+              media.content +
+              ', preview: ' +
+              preview +
+              '],';
           }
-          message +=
-            '[format: ' +
-            media.format +
-            ', size: ' +
-            media.size +
-            ', mimeType: ' +
-            media.mimeType +
-            ', content: ' +
-            media.content +
-            ', preview: ' +
-            preview +
-            '],';
-        }
-        return message;
+          return message;
+        },
+        withCallback: input => {},
       },
     },
   });
