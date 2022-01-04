@@ -1,4 +1,4 @@
-import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -75,9 +75,15 @@ const ReturnFocus = (): React.ReactElement =>
     name: 'returnFocus',
     title: 'Return Focus',
     label: 'navigateForward',
-    onClick: async input => {
-      await pages.returnFocus(input);
-      return 'Current navigateForward state is ' + input;
+    onClick: {
+      withTeamsV2: async input => {
+        await pages.returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
+      withTeamsV1: input => {
+        returnFocus(input);
+        return 'Test Current navigateForward state is ' + input;
+      },
     },
   });
 
