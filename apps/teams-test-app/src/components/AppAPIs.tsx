@@ -1,15 +1,25 @@
-import { app } from '@microsoft/teams-js';
+import { app, Context, getContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
     name: 'getContextV2',
     title: 'Get Context',
-    onClick: async () => {
-      const context = await app.getContext();
-      return JSON.stringify(context);
+    onClick: {
+      withPromise: async () => {
+        const context = await app.getContext();
+        return JSON.stringify(context);
+      },
+      withCallback: setResult => {
+        const callback = (context: Context): void => {
+          setResult(JSON.stringify(context));
+        };
+        getContext(callback);
+        return 'getContext()' + noHostSdkMsg;
+      },
     },
   });
 
