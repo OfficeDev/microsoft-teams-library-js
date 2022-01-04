@@ -11,8 +11,8 @@ export interface ApiWithCheckboxInputProps {
   onClick:
     | ((input: boolean) => Promise<string>)
     | {
-        withTeamsV2: (input: boolean) => Promise<string>;
-        withTeamsV1: (input: boolean) => string;
+        withPromise: (input: boolean) => Promise<string>;
+        withCallback: (input: boolean) => string;
       };
   defaultCheckboxState?: boolean;
 }
@@ -31,10 +31,10 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
         setResult(result);
       } else {
         if (getTestBackCompat()) {
-          const result = onClick.withTeamsV1(value);
+          const result = onClick.withCallback(value);
           setResult(result);
         } else {
-          const result = await onClick.withTeamsV2(value);
+          const result = await onClick.withPromise(value);
           setResult(result);
         }
       }

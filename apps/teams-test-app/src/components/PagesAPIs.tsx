@@ -60,11 +60,11 @@ const ReturnFocus = (): React.ReactElement =>
     title: 'Return Focus',
     label: 'navigateForward',
     onClick: {
-      withTeamsV2: async input => {
+      withPromise: async input => {
         await pages.returnFocus(input);
         return 'Current navigateForward state is ' + input;
       },
-      withTeamsV1: input => {
+      withCallback: input => {
         returnFocus(input);
         return 'Current navigateForward state is ' + input;
       },
