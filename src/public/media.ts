@@ -22,7 +22,6 @@ import {
   scanBarCodeAPIMobileSupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
 } from '../internal/constants';
-import { userOriginUrlValidationRegExp } from '@microsoft/teams-js';
 
 export namespace media {
   /**
