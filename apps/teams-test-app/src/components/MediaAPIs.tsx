@@ -1,4 +1,4 @@
-import { media } from '@microsoft/teams-js';
+import { media, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -8,18 +8,50 @@ const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
     title: 'Capture Image',
-    onClick: async () => {
-      const result = await media.captureImage();
-      const file: media.File = result[0];
-      let content = '';
-      let len = 20;
-      if (file.content) {
-        len = Math.min(len, file.content.length);
-        content = file.content.substr(0, len);
-      }
-      const output =
-        'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
-      return output;
+    onClick: {
+      withPromise: async () => {
+        const result = await media.captureImage();
+        const file: media.File = result[0];
+        let content = '';
+        let len = 20;
+        if (file.content) {
+          len = Math.min(len, file.content.length);
+          content = file.content.substr(0, len);
+        }
+        const output =
+          'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
+        return output;
+      },
+      withCallback: setResult => {
+        const callback = (error?: SdkError, files?: media.File[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else if (files) {
+            const file: media.File = files[0];
+            let content = '';
+            let len = 20;
+            if (file.content) {
+              len = Math.min(len, file.content.length);
+              content = file.content.substr(0, len);
+            }
+            const output =
+              'format: ' +
+              file.format +
+              ', size: ' +
+              file.size +
+              ', mimeType: ' +
+              file.mimeType +
+              ', content: ' +
+              content;
+
+            setResult(output);
+          } else {
+            setResult('Unsuccessful capture');
+          }
+        };
+        media.captureImage(callback);
+        return 'media.captureImage()' + noHostSdkMsg;
+      },
     },
   });
 
