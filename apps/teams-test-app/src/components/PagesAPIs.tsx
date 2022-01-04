@@ -66,7 +66,7 @@ const ReturnFocus = (): React.ReactElement =>
       },
       withTeamsV1: input => {
         returnFocus(input);
-        return 'Test Current navigateForward state is ' + input;
+        return 'Current navigateForward state is ' + input;
       },
     },
   });
