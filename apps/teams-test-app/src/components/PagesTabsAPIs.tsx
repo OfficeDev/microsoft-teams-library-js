@@ -1,7 +1,6 @@
-import { navigateToTab, pages, TabInstance, TabInstanceParameters } from '@microsoft/teams-js';
+import { pages, TabInstance, TabInstanceParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const NavigateToTab = (): React.ReactElement =>
@@ -14,24 +13,9 @@ const NavigateToTab = (): React.ReactElement =>
           throw new Error('tabName is required');
         }
       },
-      submit: {
-        withPromise: async input => {
-          await pages.tabs.navigateToTab(input);
-          return 'Completed';
-        },
-        withCallback: (input, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              }
-            } else {
-              setResult('Completed');
-            }
-          };
-          navigateToTab(input, onComplete);
-          return 'navigateToTab()' + noHostSdkMsg;
-        },
+      submit: async input => {
+        await pages.tabs.navigateToTab(input);
+        return 'Completed';
       },
     },
   });

@@ -1,7 +1,6 @@
-import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, pages, returnFocus } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const NavigateCrossDomain = (): React.ReactElement =>
@@ -14,24 +13,9 @@ const NavigateCrossDomain = (): React.ReactElement =>
           throw new Error('Target URL is required.');
         }
       },
-      submit: {
-        withPromise: async input => {
-          await pages.navigateCrossDomain(input);
-          return 'Completed';
-        },
-        withCallback: (input, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              }
-            } else {
-              setResult('Completed');
-            }
-          };
-          navigateCrossDomain(input, onComplete);
-          return 'navigateCrossDomain()' + noHostSdkMsg;
-        },
+      submit: async input => {
+        await pages.navigateCrossDomain(input);
+        return 'Completed';
       },
     },
   });
