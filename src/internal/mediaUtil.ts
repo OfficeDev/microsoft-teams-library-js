@@ -1,7 +1,11 @@
 import { people } from '../public/people';
 import { media } from '../public/media';
 import { SdkError } from '../public/interfaces';
-import { videoAndImageMediaAPISupportVersion, nonFullScreenVideoModeAPISupportVersion, imageOutputFormatsAPISupportVersion } from './constants';
+import {
+  videoAndImageMediaAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
+  imageOutputFormatsAPISupportVersion,
+} from './constants';
 import { isApiSupportedOnMobile } from './internalAPIs';
 
 /**
@@ -88,10 +92,10 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
- * Returns true if the mediaInput params are called for mediatype Image and contains Image props false otherwise
+ * Returns true if the mediaInput params are called for mediatype Image and contains Image outputs false otherwise
  */
- export function isMediaCallForImageOutputFormats(mediaInputs: media.MediaInputs): boolean {
-  if (mediaInputs && (mediaInputs.mediaType == media.MediaType.Image && mediaInputs.imageProps)) {
+export function isMediaCallForImageOutputFormats(mediaInputs: media.MediaInputs): boolean {
+  if (mediaInputs && mediaInputs.mediaType == media.MediaType.Image && mediaInputs?.imageProps?.imageOutputFormats) {
     return true;
   }
   return false;
