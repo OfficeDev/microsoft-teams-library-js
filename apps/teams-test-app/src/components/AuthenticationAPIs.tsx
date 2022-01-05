@@ -24,9 +24,8 @@ const GetAuthToken = (): React.ReactElement =>
       },
       submit: {
         withPromise: async authParams => {
-          const params = authParams;
-          const result = await authentication.getAuthToken(params);
-          return 'Success: ' + JSON.stringify(result);
+          const result = await authentication.getAuthToken(authParams);
+          return JSON.stringify(result);
         },
         withCallback: (authParams, setResult) => {
           const callback = (result: string): void => {
@@ -51,7 +50,7 @@ const GetUser = (): React.ReactElement =>
     onClick: {
       withPromise: async () => {
         const user = await authentication.getUser();
-        return 'Success: ' + JSON.stringify(user);
+        return JSON.stringify(user);
       },
       withCallback: setResult => {
         const successCallback = (user: authentication.UserProfile): void => {
@@ -105,8 +104,16 @@ const Authenticate = (): React.ReactElement =>
           const token = await authentication.authenticate(authParams);
           return 'Success: ' + token;
         },
-        withCallback: authParams => {
-          authentication.authenticate(authParams);
+        withCallback: (authParams, setResult) => {
+          const callback = (result: string): void => {
+            setResult(JSON.stringify(result));
+          };
+          const authRequest: authentication.AuthenticateParameters = {
+            successCallback: callback,
+            failureCallback: callback,
+            ...authParams,
+          };
+          authentication.authenticate(authRequest);
           return 'autheticate()' + noHostSdkMsg;
         },
       },
