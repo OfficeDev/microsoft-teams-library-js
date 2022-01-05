@@ -1,4 +1,4 @@
-import { DeepLinkParameters, FrameInfo, pages } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, pages, returnFocus } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -59,9 +59,15 @@ const ReturnFocus = (): React.ReactElement =>
     name: 'returnFocus',
     title: 'Return Focus',
     label: 'navigateForward',
-    onClick: async input => {
-      await pages.returnFocus(input);
-      return 'Current navigateForward state is ' + input;
+    onClick: {
+      withPromise: async input => {
+        await pages.returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
+      withCallback: input => {
+        returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
     },
   });
 
