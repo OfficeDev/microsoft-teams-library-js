@@ -24,6 +24,8 @@ const NavigateCrossDomain = (): React.ReactElement =>
             if (!status) {
               if (reason) {
                 setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's not reason?! This shouldn't happen.");
               }
             } else {
               setResult('Completed');
