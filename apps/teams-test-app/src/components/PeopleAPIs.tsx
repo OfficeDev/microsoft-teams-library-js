@@ -31,8 +31,9 @@ const SelectPeople = (): React.ReactElement =>
           const callback = (error: SdkError, people: people.PeoplePickerResult[]): void => {
             if (error) {
               setResult(JSON.stringify(error));
+            } else {
+              setResult(JSON.stringify(people));
             }
-            setResult(JSON.stringify(people));
           };
           if (input) {
             people.selectPeople(callback, input);
