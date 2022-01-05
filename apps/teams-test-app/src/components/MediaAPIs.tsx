@@ -83,7 +83,8 @@ const SelectMedia = (): React.ReactElement =>
       submit: {
         withPromise: async input => {
           const medias = await media.selectMedia(input);
-          return selectMediaHelper(medias);
+          const output = selectMediaHelper(medias);
+          return output;
         },
         withCallback: (input, setResult) => {
           const callback = (error: SdkError, medias: media.Media[]): void => {
