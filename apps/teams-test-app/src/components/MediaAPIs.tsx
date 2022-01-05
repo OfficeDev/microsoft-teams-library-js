@@ -4,6 +4,45 @@ import React, { ReactElement } from 'react';
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
+const captureImageHelper = (file: media.File): string => {
+  let content = '';
+  let len = 20;
+  if (file.content) {
+    len = Math.min(len, file.content.length);
+    content = file.content.substr(0, len);
+  }
+  const output =
+    'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
+
+  return output;
+};
+
+const selectMediaHelper = (medias: media.Media[]): string => {
+  let message = '';
+  for (let i = 0; i < medias.length; i++) {
+    const media: media.Media = medias[i];
+    let preview = '';
+    let len = 20;
+    if (media.preview) {
+      len = Math.min(len, media.preview.length);
+      preview = media.preview.substr(0, len);
+    }
+    message +=
+      '[format: ' +
+      media.format +
+      ', size: ' +
+      media.size +
+      ', mimeType: ' +
+      media.mimeType +
+      ', content: ' +
+      media.content +
+      ', preview: ' +
+      preview +
+      '],';
+  }
+  return message;
+};
+
 const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
@@ -11,15 +50,7 @@ const CaptureImage = (): React.ReactElement =>
     onClick: {
       withPromise: async () => {
         const result = await media.captureImage();
-        const file: media.File = result[0];
-        let content = '';
-        let len = 20;
-        if (file.content) {
-          len = Math.min(len, file.content.length);
-          content = file.content.substr(0, len);
-        }
-        const output =
-          'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
+        const output = captureImageHelper(result[0]);
         return output;
       },
       withCallback: setResult => {
@@ -27,23 +58,7 @@ const CaptureImage = (): React.ReactElement =>
           if (error) {
             setResult(JSON.stringify(error));
           } else if (files) {
-            const file: media.File = files[0];
-            let content = '';
-            let len = 20;
-            if (file.content) {
-              len = Math.min(len, file.content.length);
-              content = file.content.substr(0, len);
-            }
-            const output =
-              'format: ' +
-              file.format +
-              ', size: ' +
-              file.size +
-              ', mimeType: ' +
-              file.mimeType +
-              ', content: ' +
-              content;
-
+            const output = captureImageHelper(files[0]);
             setResult(output);
           } else {
             setResult('Unsuccessful capture');
@@ -68,31 +83,20 @@ const SelectMedia = (): React.ReactElement =>
       submit: {
         withPromise: async input => {
           const medias = await media.selectMedia(input);
-          let message = '';
-          for (let i = 0; i < medias.length; i++) {
-            const media: media.Media = medias[i];
-            let preview = '';
-            let len = 20;
-            if (media.preview) {
-              len = Math.min(len, media.preview.length);
-              preview = media.preview.substr(0, len);
-            }
-            message +=
-              '[format: ' +
-              media.format +
-              ', size: ' +
-              media.size +
-              ', mimeType: ' +
-              media.mimeType +
-              ', content: ' +
-              media.content +
-              ', preview: ' +
-              preview +
-              '],';
-          }
-          return message;
+          return selectMediaHelper(medias);
         },
-        withCallback: input => {},
+        withCallback: (input, setResult) => {
+          const callback = (error: SdkError, medias: media.Media[]): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              const output = selectMediaHelper(medias);
+              setResult(output);
+            }
+          };
+          media.selectMedia(input, callback);
+          return 'media.selectMedia()' + noHostSdkMsg;
+        },
       },
     },
   });
