@@ -4,13 +4,18 @@ import React, { ReactElement } from 'react';
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
-const captureImageHelper = (file: media.File): string => {
-  let content = '';
+const mediaHelper = (item: string): string => {
+  let output = '';
   let len = 20;
-  if (file.content) {
-    len = Math.min(len, file.content.length);
-    content = file.content.substr(0, len);
+  if (item) {
+    len = Math.min(len, item.length);
+    output = item.substr(0, len);
   }
+  return output;
+};
+
+const captureImageHelper = (file: media.File): string => {
+  const content = mediaHelper(file.content);
   const output =
     'format: ' + file.format + ', size: ' + file.size + ', mimeType: ' + file.mimeType + ', content: ' + content;
 
@@ -21,12 +26,7 @@ const selectMediaHelper = (medias: media.Media[]): string => {
   let message = '';
   for (let i = 0; i < medias.length; i++) {
     const media: media.Media = medias[i];
-    let preview = '';
-    let len = 20;
-    if (media.preview) {
-      len = Math.min(len, media.preview.length);
-      preview = media.preview.substr(0, len);
-    }
+    const preview = mediaHelper(media.preview);
     message +=
       '[format: ' +
       media.format +
