@@ -157,9 +157,26 @@ const ScanBarCode = (): ReactElement =>
   ApiWithTextInput<media.BarCodeConfig>({
     name: 'mediaScanBarCode',
     title: 'Media Scan Bar Code',
-    onClick: async input => {
-      const result = await media.scanBarCode(input);
-      return 'result: ' + result;
+    onClick: {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      validateInput: () => {},
+      submit: {
+        withPromise: async input => {
+          const result = await media.scanBarCode(input);
+          return 'result: ' + result;
+        },
+        withCallback: (input, setResult) => {
+          const callback = (error: SdkError, result: string): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('result: ' + result);
+            }
+          };
+          media.scanBarCode(callback, input);
+          return 'media.scanBarCode()' + noHostSdkMsg;
+        },
+      },
     },
   });
 
