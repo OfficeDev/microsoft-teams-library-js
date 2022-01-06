@@ -55,9 +55,9 @@ export namespace video {
      */
     format: VideoFrameFormat;
     /**
-     * require video frame
+     * Synthesizing video frame based on raw frame or not
      */
-    videoEnabled?: boolean;
+    requireCameraStream?: boolean;
     /**
      * onnx model for audio inference
      */
@@ -76,6 +76,21 @@ export namespace video {
      * disable the video effect
      */
     EffectDisabled,
+  }
+
+  export interface PersonalizedEffect {
+    /**
+     * personalized effect id
+     */
+    id: string;
+    /**
+     * effect type defined by app
+     */
+    type: string;
+    /**
+     * URL of the thumbnail image
+     */
+    thumbnail: string;
   }
 
   /**
@@ -127,6 +142,14 @@ export namespace video {
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
     registerHandler('video.effectParameterChange', callback);
+  }
+
+  /**
+   * Send personalized effects to Teams client
+   */
+  export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
+    ensureInitialized(FrameContexts.sidePanel);
+    sendMessageToParent('video.personalizedEffectsChanged', [effects]);
   }
 
   /**
