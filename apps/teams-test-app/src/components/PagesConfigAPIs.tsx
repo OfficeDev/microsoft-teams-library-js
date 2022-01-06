@@ -1,4 +1,4 @@
-import { pages } from '@microsoft/teams-js';
+import { pages, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -18,10 +18,18 @@ const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_getConfig',
     title: 'Get Config',
-    onClick: async () => {
-      const result = await pages.config.getConfig();
-      return JSON.stringify(result);
-    },
+    onClick: {
+      withPromise: async () => {
+        const result = await pages.config.getConfig();
+        return JSON.stringify(result);
+      },
+      withCallback: (setResult) => {
+        const callback = (instanceSettings: settings.Settings): void => {
+          setResult(JSON.stringify(instanceSettings));
+        }
+        settings.getSettings(callback);
+      }
+    }
   });
 
 const SetConfig = (): React.ReactElement =>
@@ -34,10 +42,26 @@ const SetConfig = (): React.ReactElement =>
           throw new Error('contentUrl is required');
         }
       },
-      submit: async input => {
-        await pages.config.setConfig(input);
-        return 'Completed';
-      },
+      submit: {
+        withPromise: async input => {
+          await pages.config.setConfig(input);
+          return 'Completed';
+        },
+        withCallback: (input, SetResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                SetResult(JSON.stringify(reason));
+              } else {
+                SetResult("Status is false but there's not reason?! This shouldn't happen.");
+              }
+            } else {
+              SetResult('Completed');
+            }
+          }
+          settings.setSettings(input, onComplete);
+        }
+      }
     },
   });
 
@@ -45,13 +69,21 @@ const RegisterOnSaveHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerOnSaveHandler',
     title: 'Set RegisterOnSaveHandler',
-    onClick: async setResult => {
-      pages.config.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
-        setResult('Save event received.');
-        saveEvent.notifySuccess();
-      });
-      return 'config.registerOnSaveHandler()' + noHostSdkMsg;
-    },
+    onClick: {
+      withPromise: async setResult => {
+        pages.config.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
+          setResult('Save event received.');
+          saveEvent.notifySuccess();
+        });
+        return 'config.registerOnSaveHandler()' + noHostSdkMsg;
+      },
+      withCallback: setResult => {
+        settings.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
+          setResult('Save event received.');
+          saveEvent.notifySuccess();
+        });
+      }
+    }
   });
 
 const SetValidityState = (): React.ReactElement =>
@@ -59,23 +91,37 @@ const SetValidityState = (): React.ReactElement =>
     name: 'config_setValidityState2',
     title: 'Set Validity State',
     label: 'setValidityState',
-    onClick: async isValid => {
-      pages.config.setValidityState(isValid);
-      return `Set validity state to ${isValid}`;
-    },
+    onClick: {
+      withPromise: async isValid => {
+        pages.config.setValidityState(isValid);
+        return `Set validity state to ${isValid}`;
+      },
+      withCallback: isValid => {
+        settings.setValidityState(isValid);
+        return `Set validity state to ${isValid}`;
+      }
+    }
   });
 
 const RegisterOnRemoveHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerOnRemoveHandler',
     title: 'Register On Remove Handler',
-    onClick: async setResult => {
-      pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
-        setResult('Remove event received.');
-        removeEvent.notifySuccess();
-      });
-      return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
-    },
+    onClick: {
+      withPromise: async setResult => {
+        pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
+          setResult('Remove event received.');
+          removeEvent.notifySuccess();
+        });
+        return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
+      },
+      withCallback: setResult => {
+        settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
+          setResult('Remove event received.');
+          removeEvent.notifySuccess();
+        });
+      },
+    }
   });
 
 const RegisterOChangeConfigHandler = (): React.ReactElement =>
