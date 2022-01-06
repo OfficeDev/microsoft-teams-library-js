@@ -61,7 +61,7 @@ const ShowLocation = (): React.ReactElement =>
             if (error) {
               setResult(JSON.stringify(error));
             } else {
-              setResult('Completed');
+              setResult(`Completed: ${status}`);
             }
           };
           location.showLocation(locationProps, callback);
