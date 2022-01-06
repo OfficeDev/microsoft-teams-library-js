@@ -92,7 +92,7 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
- * Returns true if the mediaInput params are called for mediatype Image and contains Image outputs formats false otherwise
+ * Returns true if the mediaInput params are called for mediatype Image and contains Image outputs formats, false otherwise
  */
 export function isMediaCallForImageOutputFormats(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs?.mediaType == media.MediaType.Image && mediaInputs?.imageProps?.imageOutputFormats) {

@@ -309,7 +309,7 @@ export namespace media {
    */
   export interface VideoProps extends MediaProps {
     /**
-     * Optional; the maximum duration in minutes after which the recording should terminate automatically.
+     * Optional; the maximum duration in seconds after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
