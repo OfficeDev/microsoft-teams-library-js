@@ -1,7 +1,6 @@
 import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckLocationCapability = (): React.ReactElement =>
@@ -35,7 +34,6 @@ const GetLocation = (): React.ReactElement =>
             }
           };
           location.getLocation(locationProps, callback);
-          return 'location.getLocation()' + noHostSdkMsg;
         },
       },
     },
@@ -65,7 +63,6 @@ const ShowLocation = (): React.ReactElement =>
             }
           };
           location.showLocation(locationProps, callback);
-          return 'location.showLocation()' + noHostSdkMsg;
         },
       },
     },

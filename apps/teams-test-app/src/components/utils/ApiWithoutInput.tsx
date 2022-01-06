@@ -10,7 +10,7 @@ export interface ApiWithoutInputProps {
     | ((setResult: (result: string) => void) => Promise<string>)
     | {
         withPromise: (setResult: (result: string) => void) => Promise<string>;
-        withCallback: (setResult: (result: string) => void) => string;
+        withCallback: (setResult: (result: string) => void) => void;
       };
 }
 
@@ -29,7 +29,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
             setResult(await onClick(setResult));
           } else {
             if (getTestBackCompat()) {
-              setResult(onClick.withCallback(setResult));
+              onClick.withCallback(setResult);
             } else {
               setResult(await onClick.withPromise(setResult));
             }
