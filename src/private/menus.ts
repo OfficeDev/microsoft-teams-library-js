@@ -40,7 +40,7 @@ export namespace menus {
      * Never place this item in the NavBar.
      * The item would always be shown in NavBar's overflow menu.
      */
-    never = 1,
+    overflowOnly = 1,
   }
 
   /**
