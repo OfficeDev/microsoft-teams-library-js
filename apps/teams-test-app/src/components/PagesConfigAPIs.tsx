@@ -23,13 +23,13 @@ const GetConfig = (): React.ReactElement =>
         const result = await pages.config.getConfig();
         return JSON.stringify(result);
       },
-      withCallback: (setResult) => {
+      withCallback: setResult => {
         const callback = (instanceSettings: settings.Settings): void => {
           setResult(JSON.stringify(instanceSettings));
-        }
+        };
         settings.getSettings(callback);
-      }
-    }
+      },
+    },
   });
 
 const SetConfig = (): React.ReactElement =>
@@ -58,10 +58,10 @@ const SetConfig = (): React.ReactElement =>
             } else {
               SetResult('Completed');
             }
-          }
+          };
           settings.setSettings(input, onComplete);
-        }
-      }
+        },
+      },
     },
   });
 
@@ -82,8 +82,8 @@ const RegisterOnSaveHandler = (): React.ReactElement =>
           setResult('Save event received.');
           saveEvent.notifySuccess();
         });
-      }
-    }
+      },
+    },
   });
 
 const SetValidityState = (): React.ReactElement =>
@@ -99,8 +99,8 @@ const SetValidityState = (): React.ReactElement =>
       withCallback: isValid => {
         settings.setValidityState(isValid);
         return `Set validity state to ${isValid}`;
-      }
-    }
+      },
+    },
   });
 
 const RegisterOnRemoveHandler = (): React.ReactElement =>
@@ -121,7 +121,7 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
           removeEvent.notifySuccess();
         });
       },
-    }
+    },
   });
 
 const RegisterOChangeConfigHandler = (): React.ReactElement =>
