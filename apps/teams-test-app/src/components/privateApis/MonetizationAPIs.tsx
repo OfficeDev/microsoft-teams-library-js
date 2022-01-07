@@ -24,9 +24,21 @@ const OpenPurchaseExperience = (): React.ReactElement =>
           throw new Error('planId and term are required on input, if provided');
         }
       },
-      submit: async planInfo => {
-        await monetization.openPurchaseExperience(planInfo);
-        return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
+      submit: {
+        withPromise: async planInfo => {
+          await monetization.openPurchaseExperience(planInfo);
+          return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
+        },
+        withCallback: (planInfo, setResult) => {
+          const callback = (error: SdkError | null): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('Success');
+            }
+          };
+          monetization.openPurchaseExperience(callback, planInfo);
+        },
       },
     },
   });
