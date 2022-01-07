@@ -32,7 +32,6 @@ const NavigateCrossDomain = (): React.ReactElement =>
             }
           };
           navigateCrossDomain(input, onComplete);
-          return 'navigateCrossDomain()' + noHostSdkMsg;
         },
       },
     },

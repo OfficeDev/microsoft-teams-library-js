@@ -32,7 +32,6 @@ const NavigateToTab = (): React.ReactElement =>
             }
           };
           navigateToTab(input, onComplete);
-          return 'navigateToTab()' + noHostSdkMsg;
         },
       },
     },

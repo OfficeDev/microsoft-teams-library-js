@@ -27,7 +27,6 @@ const NavigateBack = (): React.ReactElement =>
           }
         };
         navigateBack(onComplete);
-        return 'navigateBack()' + noHostSdkMsg;
       },
     },
   });
