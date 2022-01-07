@@ -47,16 +47,16 @@ const SetConfig = (): React.ReactElement =>
           await pages.config.setConfig(input);
           return 'Completed';
         },
-        withCallback: (input, SetResult) => {
+        withCallback: (input, setResult) => {
           const onComplete = (status: boolean, reason?: string): void => {
             if (!status) {
               if (reason) {
-                SetResult(JSON.stringify(reason));
+                setResult(JSON.stringify(reason));
               } else {
-                SetResult("Status is false but there's not reason?! This shouldn't happen.");
+                setResult("Status is false but there's not reason?! This shouldn't happen.");
               }
             } else {
-              SetResult('Completed');
+              setResult('Completed');
             }
           };
           settings.setSettings(input, onComplete);
