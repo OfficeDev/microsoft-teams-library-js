@@ -110,6 +110,11 @@ const checkoutAndPushReleaseBranch = async () => {
 };
 
 (async () => {
+  const newVersion = getNewPackageVersion();
+  process.stdout.write(`Are you sure you want to create a new release for ${newVersion}? (y/n) `);
+  if (!(await boolPrompt())) {
+    console.log('Aborting!');
+  }
   try {
     await checkoutAndPullMainBranch();
     await updatePackageVersion();
