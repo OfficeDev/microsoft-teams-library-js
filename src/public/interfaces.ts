@@ -434,6 +434,12 @@ export interface Context {
    * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
+
+  /**
+   * Indication whether the screen is touchable or not.
+   * The implementation is available on mobile(iOS/Android) for now.
+   */
+  isTouchEnabled?: boolean;
 }
 
 export interface DeepLinkParameters {
