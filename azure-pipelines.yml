@@ -105,7 +105,7 @@ steps:
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-    displayName: 'Post bundle analysis result as PR comment in github'
+    displayName: 'Post bundle analysis result as PR comment on GitHub'
 
   - task: PublishBuildArtifacts@1
     condition: and(
