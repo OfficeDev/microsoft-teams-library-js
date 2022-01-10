@@ -3,7 +3,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 variables:
-- group: InfoSec-SecurityResults
+  - group: InfoSec-SecurityResults
 
 trigger:
   branches:
@@ -63,8 +63,8 @@ steps:
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFormat: "JUnit"
-      testResultsFiles: "**/unit-tests-report*.xml"
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/unit-tests-report*.xml'
     condition: succeededOrFailed()
 
   - task: Yarn@2
@@ -105,7 +105,7 @@ steps:
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-    displayName: 'Post bundle analysis result as PR comment in github'
+    displayName: 'Post bundle analysis result as PR comment on GitHub'
 
   - task: PublishBuildArtifacts@1
     condition: and(
@@ -115,6 +115,12 @@ steps:
       PathtoPublish: './common/temp/bundleAnalysis'
       ArtifactName: '$(bundleArtifactName)'
     displayName: 'Publish bundle analysis'
+
+  - powershell: |
+      $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
+      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+    name: package
+    displayName: 'Set package.version Variable'
 
   - task: ComponentGovernanceComponentDetection@0
     condition: and(
@@ -197,7 +203,7 @@ steps:
       GdnBreakGdnToolCredScanSeverity: Warning
       GdnBreakGdnToolESLint: true
       GdnBreakGdnToolESLintSeverity: Warning
-      GdnBreakPolicy: M365  
+      GdnBreakPolicy: M365
 
   - task: AzureRmWebAppDeployment@4
     condition: and(
@@ -227,9 +233,9 @@ steps:
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**\?(*.js|*.ts|*.map)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\js'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -239,7 +245,7 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -253,7 +259,7 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
       ArtifactName: 'CDNFeed'
     displayName: 'Publish CDN feed to build Artifacts'
-  
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'

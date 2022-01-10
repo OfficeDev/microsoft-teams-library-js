@@ -53,26 +53,34 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
 
   const localReportPath = path.resolve(process.cwd(), './common/temp/bundleAnalysis');
 
-  const adoConnection = getAzureDevopsApi(adoAccessToken, adoConstants.orgUrl);
-  const sizeComparator = new ADOSizeComparator(
-    adoConstants,
-    adoConnection,
-    localReportPath,
-    undefined,
-    baseBranchName,
-    ADOSizeComparator.naiveFallbackCommitGenerator,
-  );
-  const result = await sizeComparator.createSizeComparisonMessage(false);
+  let prCommentMsg = '';
+  try {
+    const adoConnection = getAzureDevopsApi(adoAccessToken, adoConstants.orgUrl);
+    const sizeComparator = new ADOSizeComparator(
+      adoConstants,
+      adoConnection,
+      localReportPath,
+      undefined,
+      baseBranchName,
+      ADOSizeComparator.naiveFallbackCommitGenerator,
+    );
+    const result = await sizeComparator.createSizeComparisonMessage(false);
 
-  if (result === undefined || result.comparison === undefined) {
-    throw new Error('An Error occurred : ' + result.message);
-  } else if (bundlesContainNoChanges(result.comparison)) {
-    console.log('No size change detected');
+    if (result === undefined || result.comparison === undefined) {
+      prCommentMsg = 'Failed to compute bundle size changes with error: ' + result.message;
+    } else if (bundlesContainNoChanges(result.comparison)) {
+      prCommentMsg = 'No size change detected';
+    } else {
+      prCommentMsg = `<p>Analyzed commit id : ${currentCommitId}</p><hr>${result.message}`;
+    }
+
+    console.log(prCommentMsg);
+  } catch (err) {
+    // Printing error in pipeline
+    console.log(err);
+    prCommentMsg = 'Unknown error occurred. Pls see logs in the pipeline for more info';
   }
-
-  const prCommentMsg = `<p>Analyzed commit id : ${currentCommitId}</p><hr>${result.message}`;
-  console.log(prCommentMsg);
-
   // Sets result in Azure devops pipeline output variable 'bundleAnalysisComment'
   console.log(`##vso[task.setvariable variable=bundleAnalysisComment;isOutput=true]${prCommentMsg}`);
+ 
 })();
