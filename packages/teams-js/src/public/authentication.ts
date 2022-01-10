@@ -148,11 +148,11 @@ export namespace authentication {
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    *
-   * @param authTokenRequest - A set of values that configure the token request.
+   * @param authTokenRequest - An optional set of values that configure the token request.
    *
    * @returns Promise that will be fulfilled with the token if successful.
    */
-  export function getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise<string>;
+  export function getAuthToken(authTokenRequest?: AuthTokenRequestParameters): Promise<string>;
   /**
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
@@ -160,11 +160,11 @@ export namespace authentication {
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
    *
-   * @param authTokenRequest - A set of values that configure the token request.
+   * @param authTokenRequest - An optional set of values that configure the token request.
    * It contains callbacks to call in case of success/failure
    */
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): void;
-  export function getAuthToken(authTokenRequest: AuthTokenRequest): Promise<string> {
+  export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
+  export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
     ensureInitialized();
     return getAuthTokenHelper(authTokenRequest)
       .then((value: string) => {
@@ -183,13 +183,13 @@ export namespace authentication {
       });
   }
 
-  function getAuthTokenHelper(authTokenRequest: AuthTokenRequest): Promise<string> {
+  function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>(resolve => {
       resolve(
         sendMessageToParentAsync('authentication.getAuthToken', [
-          authTokenRequest.resources,
-          authTokenRequest.claims,
-          authTokenRequest.silent,
+          authTokenRequest?.resources,
+          authTokenRequest?.claims,
+          authTokenRequest?.silent,
         ]),
       );
     }).then(([success, result]: [boolean, string]) => {
