@@ -42,7 +42,7 @@ describe('AppSDK-TeamsAPIs', () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","settings","task","stage","meetingStage"]. Current context: "authenticationWRONG".',
+        'This call is only allowed in following contexts: ["content","sidePanel","settings","task","stage","meetingStage"]. Current context: "authentication".',
       );
     });
 

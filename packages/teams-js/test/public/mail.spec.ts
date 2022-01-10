@@ -40,74 +40,74 @@ describe('mail', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'The library has not yet been initialized',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('The library has not yet been initialized'),
       );
     });
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "settings".'),
       );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "authentication".'),
       );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "remove".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "remove".'),
       );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "task".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "task".'),
       );
     });
 
     it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".'),
       );
     });
 
     it('should not allow calls from stage context', async () => {
       await utils.initializeWithContext('stage');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "stage".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
       );
     });
 
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".',
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".'),
       );
     });
 
-    // it('should not allow calls if runtime does not support mail', async () => {
-    //   await utils.initializeWithContext('stage');
+    it('should not allow calls if runtime does not support mail', async () => {
+      await utils.initializeWithContext('stage');
 
-    //   expect(async () => await mail.openMailItem(openMailItemParams)).rejects.toThrowError(
-    //     'This call is only allowed in following contexts: ["content"]. Current context: "stage".',
-    //   );
-    // });
+      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
+        new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
+      );
+    });
 
     it('should successfully send the navigateToApp message', async () => {
       await utils.initializeWithContext('content');
