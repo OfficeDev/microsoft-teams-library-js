@@ -397,6 +397,7 @@ describe('media', () => {
           } as DOMMessageEvent);
         });
       });
+
       it('selectMedia calls with successful result for mediaType = 3', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(videoAndImageMediaAPISupportVersion);
@@ -441,43 +442,45 @@ describe('media', () => {
         });
       });
 
-      it('videoController notifyEventToHost should fail in default version of platform', async () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
-          mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-          const stopRes = new media.VideoController().stop();
-          stopRes.catch(error => {
+      it('videoController notifyEventToHost should fail in default version of platform', () => {
+        return mobilePlatformMock
+          .initializeWithContext(FrameContexts.content, HostClientType.android)
+          .then(() => {
+            mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+            return new media.VideoController().stop();
+          })
+          .catch(error => {
             expect(error).not.toBeNull();
             expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
           });
-        });
       });
 
-      it('videoController notifyEventToHost is handled successfully', async () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(async () => {
-          mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-          let mediaError: SdkError;
-          const stopRes = new media.VideoController().stop();
-          stopRes.catch(error => {
-            mediaError = error;
+      it('videoController notifyEventToHost is handled successfully', () => {
+        return mobilePlatformMock
+          .initializeWithContext(FrameContexts.content, HostClientType.android)
+          .then(() => {
+            mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+            return new media.VideoController().stop();
+          })
+          .catch(error => {
+            const message = mobilePlatformMock.findMessageByFunc('media.controller');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+
+            const callbackId = message.id;
+            mobilePlatformMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [undefined],
+              },
+            } as DOMMessageEvent);
+
+            expect(error).toBeFalsy();
           });
-          const message = mobilePlatformMock.findMessageByFunc('media.controller');
-          expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
-
-          const callbackId = message.id;
-          mobilePlatformMock.respondToMessage({
-            data: {
-              id: callbackId,
-              args: [undefined],
-            },
-          } as DOMMessageEvent);
-
-          expect(mediaError).toBeFalsy();
-        });
       });
 
-      it('videoController notifyEventToHost is not handled successfully', async () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(async () => {
+      it('videoController notifyEventToHost is not handled successfully', () => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           const stopRes = new media.VideoController().stop();
           const err: SdkError = {
