@@ -97,7 +97,11 @@ const RegisterLiveStreamChangedHandler = (): React.ReactElement =>
     title: 'Register LiveStream Changed Handler',
     onClick: async setResult => {
       const handler = (liveStreamState: meeting.LiveStreamState): void => {
-        setResult('Live StreamState changed to ' + liveStreamState.isStreaming);
+        let res = `Live StreamState changed to ${liveStreamState.isStreaming}`;
+        if (liveStreamState.error) {
+          res += ` with error ${JSON.stringify(liveStreamState.error)}`;
+        }
+        setResult(res);
       };
       meeting.registerLiveStreamChangedHandler(handler);
 
