@@ -14,18 +14,8 @@ const Initialize = (): React.ReactElement =>
     },
   });
 
-const GetConfig = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'config_getConfig',
-    title: 'Get Config',
-    onClick: async () => {
-      const result = await pages.config.getConfig();
-      return JSON.stringify(result);
-    },
-  });
-
 const SetConfig = (): React.ReactElement =>
-  ApiWithTextInput<pages.config.Config>({
+  ApiWithTextInput<pages.InstanceConfig>({
     name: 'config_setConfig',
     title: 'Set Config',
     onClick: {
@@ -101,7 +91,6 @@ const PagesConfigAPIs = (): ReactElement => (
   <>
     <h1>pages.config</h1>
     <Initialize />
-    <GetConfig />
     <RegisterOnSaveHandler />
     <SetConfig />
     <SetValidityState />

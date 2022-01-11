@@ -15,7 +15,7 @@ export interface ApiWithTextInputProps<T> {
           | ((input: T, setResult: (result: string) => void) => Promise<string>)
           | {
               withPromise: (input: T, setResult: (result: string) => void) => Promise<string>;
-              withCallback: (input: T, setResult: (result: string) => void) => string;
+              withCallback: (input: T, setResult: (result: string) => void) => void;
             };
       };
   defaultInput?: string;
@@ -46,8 +46,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
           setResult(result);
         } else {
           if (getTestBackCompat()) {
-            const result = submit.withCallback(input, setResult);
-            setResult(result);
+            submit.withCallback(input, setResult);
           } else {
             const result = await submit.withPromise(input, setResult);
             setResult(result);

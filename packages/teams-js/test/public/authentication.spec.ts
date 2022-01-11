@@ -752,6 +752,22 @@ describe('authentication', () => {
     return expect(promise).resolves.toEqual('token');
   });
 
+  it('should successfully return getAuthToken in case of success when using no authTokenRequest', async () => {
+    await utils.initializeWithContext('content');
+
+    const promise = authentication.getAuthToken();
+
+    const message = utils.findMessageByFunc('authentication.getAuthToken');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(3);
+    expect(message.args[0]).toEqual(undefined);
+    expect(message.args[1]).toEqual(undefined);
+    expect(message.args[2]).toEqual(undefined);
+
+    utils.respondToMessage(message, true, 'token');
+    return expect(promise).resolves.toEqual('token');
+  });
+
   it('should successfully return error from getAuthToken in case of failure', async () => {
     await utils.initializeWithContext('content');
 
@@ -765,6 +781,22 @@ describe('authentication', () => {
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(3);
     expect(message.args[0]).toEqual(['https://someresource/']);
+    expect(message.args[1]).toEqual(undefined);
+    expect(message.args[2]).toEqual(undefined);
+
+    utils.respondToMessage(message, false, 'error');
+    return expect(promise).rejects.toThrowError('error');
+  });
+
+  it('should successfully return error from getAuthToken in case of failure when using no authTokenRequest', async () => {
+    await utils.initializeWithContext('content');
+
+    const promise = authentication.getAuthToken();
+
+    const message = utils.findMessageByFunc('authentication.getAuthToken');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(3);
+    expect(message.args[0]).toEqual(undefined);
     expect(message.args[1]).toEqual(undefined);
     expect(message.args[2]).toEqual(undefined);
 
