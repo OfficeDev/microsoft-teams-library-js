@@ -26,6 +26,7 @@ import ChatAPIs from './components/privateApis/ChatAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
+import MenusAPIs from './components/privateApis/MenusAPIs';
 import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
@@ -108,6 +109,7 @@ const App = (): ReactElement => {
       <MeetingAPIs />
       <MeetingRoomAPIs />
       <MonetizationAPIs />
+      <MenusAPIs />
       <NotificationAPIs />
       <PagesAPIs />
       <PagesAppButtonAPIs />
