@@ -23,7 +23,7 @@ module.exports = {
     ],
     curly: 'error',
     'simple-import-sort/imports': 'error',
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', { avoidEscape: true }],
   },
   env: {
     node: true,
