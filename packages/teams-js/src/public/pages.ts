@@ -9,7 +9,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
-import { FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import { DeepLinkParameters, FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -41,6 +41,41 @@ export namespace pages {
   ): void {
     app.initialize(validMessageOrigins).then(() => callback && callback());
     setCurrentFrame(frameInfo);
+  }
+
+  export interface InstanceConfig {
+    /**
+     * A suggested display name for the new content.
+     * In the settings for an existing instance being updated, this call has no effect.
+     */
+    suggestedDisplayName?: string;
+    /**
+     * Sets the URL to use for the content of this instance.
+     */
+    contentUrl: string;
+    /**
+     * Sets the URL for the removal configuration experience.
+     */
+    removeUrl?: string;
+    /**
+     * Sets the URL to use for the external link to view the underlying resource in a browser.
+     */
+    websiteUrl?: string;
+    /**
+     * The developer-defined unique ID for the entity to which this content points.
+     */
+    entityId?: string;
+  }
+
+  /**
+   * Gets the config for the current instance.
+   * @returns Promise that resolves with the {@link InstanceConfig} object.
+   */
+  export function getConfig(): Promise<InstanceConfig> {
+    return new Promise<InstanceConfig>(resolve => {
+      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+      resolve(sendAndUnwrap('settings.getSettings'));
+    });
   }
 
   /**
@@ -95,6 +130,21 @@ export namespace pages {
         resolve(send('pages.navigateToApp', params));
       }
     });
+  }
+
+  /**
+   * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   *
+   * @param deepLinkParameters - ID and label for the link and fallback URL.
+   */
+  export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+    sendMessageToParent('shareDeepLink', [
+      deepLinkParameters.subEntityId,
+      deepLinkParameters.subEntityLabel,
+      deepLinkParameters.subEntityWebUrl,
+    ]);
   }
 
   /**
@@ -217,26 +267,15 @@ export namespace pages {
     }
 
     /**
-     * Gets the config for the current instance.
-     * @returns Promise that resolves with the {@link Config} object.
-     */
-    export function getConfig(): Promise<Config> {
-      return new Promise<Config>(resolve => {
-        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
-        resolve(sendAndUnwrap('settings.getSettings'));
-      });
-    }
-
-    /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
-     * @param Config The desired config for this instance.
+     * @param instanceConfig The desired config for this instance.
      * @returns Promise that resolves when the operation has completed.
      */
-    export function setConfig(instanceSettings: Config): Promise<void> {
+    export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
-        resolve(send('settings.setSettings', instanceSettings));
+        resolve(send('settings.setSettings', instanceConfig));
       });
     }
 
@@ -283,30 +322,6 @@ export namespace pages {
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
       registerHandler('changeSettings', handler);
-    }
-
-    export interface Config {
-      /**
-       * A suggested display name for the new content.
-       * In the settings for an existing instance being updated, this call has no effect.
-       */
-      suggestedDisplayName?: string;
-      /**
-       * Sets the URL to use for the content of this instance.
-       */
-      contentUrl: string;
-      /**
-       * Sets the URL for the removal configuration experience.
-       */
-      removeUrl?: string;
-      /**
-       * Sets the URL to use for the external link to view the underlying resource in a browser.
-       */
-      websiteUrl?: string;
-      /**
-       * The developer-defined unique ID for the entity to which this content points.
-       */
-      entityId?: string;
     }
 
     export interface SaveEvent {

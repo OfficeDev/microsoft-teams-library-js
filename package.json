@@ -18,7 +18,7 @@
     "build-test-app-local": "yarn workspace teams-test-app build:local",
     "clean": "lerna run clean --stream",
     "clean:full": "yarn clean && yarn clean:modules",
-    "clean:modules": "lerna clean -y && if exist node_modules (rd /s /q node_modules)",
+    "clean:modules": "lerna clean -y && rimraf node_modules",
     "efb": "lerna run eslint-fix-build",
     "publish-sdk": "yarn publish packages/teams-js",
     "start-perf-app": "yarn workspace teams-perf-test-app start",

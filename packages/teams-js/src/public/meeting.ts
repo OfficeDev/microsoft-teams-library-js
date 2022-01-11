@@ -469,7 +469,6 @@ export namespace meeting {
    * @hidden
    * Allows an app to share contents in the meeting
    *
-   * @param callback - Callback contains 2 parameters, error and result.
    * @param appContentUrl - appContentUrl is the input URL which needs to be shared on to the stage
    * @returns Promise resolved indicating whether or not the share was successful or rejected with SdkError value
    */
@@ -535,7 +534,6 @@ export namespace meeting {
    * @hidden
    * Provides information related to app's in-meeting sharing capabilities
    *
-   * @param callback - Callback contains 2 parameters, error and result.
    * @returns Promise resolved with sharing capability details or rejected with SdkError value
    */
   export function getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>;
@@ -586,7 +584,6 @@ export namespace meeting {
    * ------------------------------------------
    * Terminates current stage sharing session in meeting
    *
-   * @param callback - Callback contains 2 parameters, error and result.
    * @returns Promise resolved indicating whether or not sharing successfully stopped or rejected with SdkError value
    */
   export function stopSharingAppContentToStage(): Promise<boolean>;

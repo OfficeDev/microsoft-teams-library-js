@@ -17,7 +17,7 @@ export namespace settings {
    * @remarks
    * Renamed to config in pages.Config
    */
-  export import Settings = pages.config.Config;
+  export import Settings = pages.InstanceConfig;
 
   /**
    * @deprecated
@@ -67,7 +67,7 @@ export namespace settings {
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
     ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
-    pages.config.getConfig().then((config: pages.config.Config) => {
+    pages.getConfig().then((config: pages.InstanceConfig) => {
       callback(config);
     });
   }
