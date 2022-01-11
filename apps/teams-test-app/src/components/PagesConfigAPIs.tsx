@@ -14,24 +14,6 @@ const Initialize = (): React.ReactElement =>
     },
   });
 
-const GetConfig = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'config_getConfig',
-    title: 'Get Config',
-    onClick: {
-      withPromise: async () => {
-        const result = await pages.config.getConfig();
-        return JSON.stringify(result);
-      },
-      withCallback: setResult => {
-        const callback = (instanceSettings: settings.Settings): void => {
-          setResult(JSON.stringify(instanceSettings));
-        };
-        settings.getSettings(callback);
-      },
-    },
-  });
-
 const SetConfig = (): React.ReactElement =>
   ApiWithTextInput<pages.InstanceConfig>({
     name: 'config_setConfig',
