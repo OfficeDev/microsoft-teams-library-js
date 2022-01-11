@@ -21,7 +21,11 @@ module.exports = {
         allowExpressions: true,
       },
     ],
-    'curly': 'error',
-    'simple-import-sort/imports': 'error'
+    curly: 'error',
+    'simple-import-sort/imports': 'error',
+    quotes: ['error', 'single'],
+  },
+  env: {
+    node: true,
   },
 };
