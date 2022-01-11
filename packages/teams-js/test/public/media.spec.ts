@@ -498,7 +498,7 @@ describe('media', () => {
       });
 
       it('should invoke correct video callback for MediaControllerEvent when registered', () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           const mockCallback = jest.fn();
           const videoControllerCallback: media.VideoControllerCallback = {
