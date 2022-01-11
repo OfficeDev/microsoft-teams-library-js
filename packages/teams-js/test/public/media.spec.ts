@@ -443,40 +443,35 @@ describe('media', () => {
       });
 
       it('videoController notifyEventToHost should fail in default version of platform', () => {
-        return mobilePlatformMock
-          .initializeWithContext(FrameContexts.content, HostClientType.android)
-          .then(() => {
-            mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-            return new media.VideoController().stop();
-          })
-          .catch(error => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
+          mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+          const stopRes = new media.VideoController().stop();
+          stopRes.catch(error => {
             expect(error).not.toBeNull();
             expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
           });
+        });
       });
 
       it('videoController notifyEventToHost is handled successfully', () => {
-        return mobilePlatformMock
-          .initializeWithContext(FrameContexts.content, HostClientType.android)
-          .then(() => {
-            mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-            return new media.VideoController().stop();
-          })
-          .catch(error => {
-            const message = mobilePlatformMock.findMessageByFunc('media.controller');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
+          mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+          const stopRes = new media.VideoController().stop();
 
-            const callbackId = message.id;
-            mobilePlatformMock.respondToMessage({
-              data: {
-                id: callbackId,
-                args: [undefined],
-              },
-            } as DOMMessageEvent);
+          const message = mobilePlatformMock.findMessageByFunc('media.controller');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
 
-            expect(error).toBeFalsy();
-          });
+          const callbackId = message.id;
+          mobilePlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [undefined],
+            },
+          } as DOMMessageEvent);
+
+          expect(stopRes).resolves.toBeTruthy;
+        });
       });
 
       it('videoController notifyEventToHost is not handled successfully', () => {
@@ -539,8 +534,8 @@ describe('media', () => {
         });
       });
 
-      it('should not invoke video callback for MediaControllerEvent when not registered', async () => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
+      it('should not invoke video callback for MediaControllerEvent when not registered', () => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
           let mediaError: SdkError;
           const mediaInputs: media.MediaInputs = {
@@ -570,8 +565,8 @@ describe('media', () => {
         });
       });
 
-      it('selectMedia calls with error', done => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
+      it('selectMedia calls with error', () => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
           const mediaInputs: media.MediaInputs = {
             mediaType: media.MediaType.Image,
@@ -580,7 +575,6 @@ describe('media', () => {
           media.selectMedia(mediaInputs, (mediaError: SdkError, mediaAttachments: media.Media[]) => {
             expect(mediaAttachments).toBeFalsy();
             expect(mediaError.errorCode).toBe(ErrorCode.SIZE_EXCEEDED);
-            done();
           });
 
           const message = mobilePlatformMock.findMessageByFunc('selectMedia');
