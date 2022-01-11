@@ -1,7 +1,6 @@
 import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const NavigateCrossDomain = (): React.ReactElement =>

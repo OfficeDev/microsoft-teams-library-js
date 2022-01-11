@@ -1,7 +1,6 @@
 import { navigateBack, pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput } from './utils';
 import { ApiContainer } from './utils/ApiContainer';
 
