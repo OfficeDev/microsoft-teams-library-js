@@ -28,7 +28,7 @@ describe('files', () => {
 
   describe('getCloudStorageFolders', () => {
     it('should not allow calls before initialization', () => {
-      expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
+      return expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
         'The library has not yet been initialized THIS SHOULD FAIL',
       );
     });
