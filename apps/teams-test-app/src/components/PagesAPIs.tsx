@@ -1,4 +1,4 @@
-import { DeepLinkParameters, FrameInfo, pages, returnFocus } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,17 @@ const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_getConfig',
     title: 'Get Config',
-    onClick: async () => {
-      const result = await pages.getConfig();
-      return JSON.stringify(result);
+    onClick: {
+      withPromise: async () => {
+        const result = await pages.getConfig();
+        return JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (instanceSettings: settings.Settings): void => {
+          setResult(JSON.stringify(instanceSettings));
+        };
+        settings.getSettings(callback);
+      },
     },
   });
 
@@ -23,9 +31,25 @@ const NavigateCrossDomain = (): React.ReactElement =>
           throw new Error('Target URL is required.');
         }
       },
-      submit: async input => {
-        await pages.navigateCrossDomain(input);
-        return 'Completed';
+      submit: {
+        withPromise: async input => {
+          await pages.navigateCrossDomain(input);
+          return 'Completed';
+        },
+        withCallback: (input, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's not reason?! This shouldn't happen.");
+              }
+            } else {
+              setResult('Completed');
+            }
+          };
+          navigateCrossDomain(input, onComplete);
+        },
       },
     },
   });
