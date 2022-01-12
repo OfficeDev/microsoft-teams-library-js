@@ -167,26 +167,10 @@ function getNewPkgJsonContent(currNextDevVer) {
   return packageJson;
 }
 
-/**
- * Replaces the version declared in internal/constants.ts with the given version.
- * @param {string} newVersion the new version to replace the version in the constants.ts file with.
- */
-function saveNewConstantsContent(newVersion) {
-  let constantsFileContent = getFileContent(internalConstantsFilePath);
-  const pattern = 'const version = ';
-  const verDeclarationIndex = constantsFileContent.indexOf(pattern);
-  const endVerDeclarationIndex = constantsFileContent.indexOf(';', verDeclarationIndex);
-  // whole substring consisting of the declaration to be replaced.
-  const verDeclaration = constantsFileContent.substring(verDeclarationIndex, endVerDeclarationIndex);
-  const newConstantsFileContent = constantsFileContent.replace(verDeclaration, `${pattern}'${newVersion}'`);
-  saveFile(internalConstantsFilePath, newConstantsFileContent);
-}
-
 function prepNewDevRelease(devStdout) {
   const newPackageJson = getNewPkgJsonContent(devStdout);
   const newVersion = newPackageJson.version;
   saveJsonFile(newPackageJson);
-  saveNewConstantsContent(newVersion);
   return newVersion;
 }
 

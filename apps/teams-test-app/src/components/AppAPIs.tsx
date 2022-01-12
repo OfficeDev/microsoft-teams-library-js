@@ -1,7 +1,6 @@
 import { app, Context, executeDeepLink, getContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const GetContext = (): ReactElement =>
@@ -18,7 +17,6 @@ const GetContext = (): ReactElement =>
           setResult(JSON.stringify(context));
         };
         getContext(callback);
-        return 'getContext()' + noHostSdkMsg;
       },
     },
   });

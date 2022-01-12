@@ -1,7 +1,17 @@
-import { DeepLinkParameters, FrameInfo, pages } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, pages, returnFocus } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const GetConfig = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_getConfig',
+    title: 'Get Config',
+    onClick: async () => {
+      const result = await pages.getConfig();
+      return JSON.stringify(result);
+    },
+  });
 
 const NavigateCrossDomain = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -59,9 +69,15 @@ const ReturnFocus = (): React.ReactElement =>
     name: 'returnFocus',
     title: 'Return Focus',
     label: 'navigateForward',
-    onClick: async input => {
-      await pages.returnFocus(input);
-      return 'Current navigateForward state is ' + input;
+    onClick: {
+      withPromise: async input => {
+        await pages.returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
+      withCallback: input => {
+        returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
     },
   });
 
@@ -104,6 +120,7 @@ const CheckPageCapability = (): React.ReactElement =>
 const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
+    <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
     <ShareDeepLink />

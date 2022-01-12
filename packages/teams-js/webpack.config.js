@@ -9,6 +9,8 @@ const WebpackAssetsManifest = require('webpack-assets-manifest');
 const libraryName = 'microsoftTeams';
 const expect = require('expect');
 const path = require('path');
+const { DefinePlugin } = require('webpack');
+const packageVersion = require('./package.json').version;
 
 module.exports = {
   entry: {
@@ -56,6 +58,10 @@ module.exports = {
   // webpack.production.config.js
   mode: 'production',
   plugins: [
+    new DefinePlugin({
+      PACKAGE_VERSION: JSON.stringify(packageVersion),
+    }),
+
     new DtsBundleWebpack({
       name: '@microsoft/teams-js',
       main: 'dts/index.d.ts',
