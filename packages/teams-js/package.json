@@ -18,6 +18,12 @@
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },
+  "dependencies": {
+    "debug": "4.3.3"
+  },
+  "devDependencies": {
+    "@types/debug": "4.1.7"
+  },
   "license": "MIT",
   "files": [
     "dist/**",
