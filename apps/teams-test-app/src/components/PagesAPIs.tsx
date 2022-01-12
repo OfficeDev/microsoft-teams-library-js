@@ -1,4 +1,4 @@
-import { DeepLinkParameters, FrameInfo, pages, returnFocus } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, pages, returnFocus, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,17 @@ const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_getConfig',
     title: 'Get Config',
-    onClick: async () => {
-      const result = await pages.getConfig();
-      return JSON.stringify(result);
+    onClick: {
+      withPromise: async () => {
+        const result = await pages.getConfig();
+        return JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (instanceSettings: settings.Settings): void => {
+          setResult(JSON.stringify(instanceSettings));
+        };
+        settings.getSettings(callback);
+      },
     },
   });
 
