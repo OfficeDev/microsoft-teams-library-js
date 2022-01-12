@@ -12,7 +12,6 @@ const path = require('path');
 const { DefinePlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
 
-
 module.exports = {
   entry: {
     MicrosoftTeams: './src/index.ts',

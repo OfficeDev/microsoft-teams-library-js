@@ -1,7 +1,25 @@
-import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, setting } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const GetConfig = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_getConfig',
+    title: 'Get Config',
+    onClick: {
+      withPromise: async () => {
+        const result = await pages.getConfig();
+        return JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (instanceSettings: settings.Settings): void => {
+          setResult(JSON.stringify(instanceSettings));
+        };
+        settings.getSettings(callback);
+      },
+    },
+  });
 
 const NavigateCrossDomain = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -126,6 +144,7 @@ const CheckPageCapability = (): React.ReactElement =>
 const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
+    <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
     <ShareDeepLink />
