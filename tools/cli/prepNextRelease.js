@@ -64,8 +64,7 @@ const checkoutAndPullMainBranch = async () => {
   const gitBranch = await execShellCommand('git branch');
   const branches = gitBranch.split('\n');
   const currentBranch = branches.find(branch => branch.startsWith('*'));
-  console.log(currentBranch);
-  if (currentBranch !== '2.0-preview') {
+  if (currentBranch !== '* 2.0-preview') {
     process.stdout.write('You are not on 2.0-preview branch. Do you want to checkout? (y/n) ');
     if (!(await boolPrompt())) {
       throw 'User aborted!';
