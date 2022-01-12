@@ -445,18 +445,22 @@ describe('media', () => {
       it('videoController notifyEventToHost should fail in default version of platform', () => {
         return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-          const stopRes = new media.VideoController().stop();
-          stopRes.catch(error => {
-            expect(error).not.toBeNull();
-            expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          let error;
+          new media.VideoController().stop((e: SdkError) => {
+            error = e;
           });
+          expect(error).not.toBeNull();
+          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
         });
       });
 
       it('videoController notifyEventToHost is handled successfully', () => {
         return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-          const stopRes = new media.VideoController().stop();
+          let mediaError: SdkError;
+          new media.VideoController().stop((e: SdkError) => {
+            mediaError = e;
+          });
 
           const message = mobilePlatformMock.findMessageByFunc('media.controller');
           expect(message).not.toBeNull();
@@ -470,14 +474,18 @@ describe('media', () => {
             },
           } as DOMMessageEvent);
 
-          expect(stopRes).resolves.toBeTruthy;
+          expect(mediaError).toBeFalsy();
         });
       });
 
       it('videoController notifyEventToHost is not handled successfully', () => {
         return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-          const stopRes = new media.VideoController().stop();
+          let mediaError: SdkError;
+          new media.VideoController().stop((e: SdkError) => {
+            mediaError = e;
+          });
+
           const err: SdkError = {
             errorCode: ErrorCode.INTERNAL_ERROR,
           };
@@ -493,13 +501,14 @@ describe('media', () => {
             },
           } as DOMMessageEvent);
 
-          expect(stopRes).rejects.toBe(err);
+          expect(mediaError).toBe(err);
         });
       });
 
       it('should invoke correct video callback for MediaControllerEvent when registered', () => {
         return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+          let mediaError: SdkError;
           const mockCallback = jest.fn();
           const videoControllerCallback: media.VideoControllerCallback = {
             onRecordingStarted() {
@@ -515,22 +524,26 @@ describe('media', () => {
             videoProps: videoProps,
           };
 
-          media.selectMedia(mediaInputs).then(result => {
-            const message = mobilePlatformMock.findMessageByFunc('selectMedia');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
+          media
+            .selectMedia(mediaInputs, (e: SdkError, attachments: media.Media[]) => {
+              mediaError = e;
+            })
+            .then(() => {
+              const message = mobilePlatformMock.findMessageByFunc('selectMedia');
+              expect(message).not.toBeNull();
+              expect(message.args.length).toBe(1);
 
-            const callbackId = message.id;
-            mobilePlatformMock.respondToMessage({
-              data: {
-                id: callbackId,
-                args: [undefined, undefined, 1],
-              },
-            } as DOMMessageEvent);
+              const callbackId = message.id;
+              mobilePlatformMock.respondToMessage({
+                data: {
+                  id: callbackId,
+                  args: [undefined, undefined, 1],
+                },
+              } as DOMMessageEvent);
 
-            expect(result).toBeDefined;
-            expect(mockCallback).toHaveBeenCalled();
-          });
+              expect(mediaError).toBeFalsy();
+              expect(mockCallback).toHaveBeenCalled();
+            });
         });
       });
 
