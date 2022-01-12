@@ -108,8 +108,8 @@ const App = (): ReactElement => {
       <MediaAPIs />
       <MeetingAPIs />
       <MeetingRoomAPIs />
-      <MonetizationAPIs />
       <MenusAPIs />
+      <MonetizationAPIs />
       <NotificationAPIs />
       <PagesAPIs />
       <PagesAppButtonAPIs />
