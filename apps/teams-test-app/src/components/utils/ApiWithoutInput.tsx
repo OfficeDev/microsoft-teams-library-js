@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
 import { getTestBackCompat } from './getTestBackCompat';
 
@@ -25,6 +26,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
         type="button"
         value={title}
         onClick={async () => {
+          setResult(noHostSdkMsg);
           if (typeof onClick === 'function') {
             setResult(await onClick(setResult));
           } else {
