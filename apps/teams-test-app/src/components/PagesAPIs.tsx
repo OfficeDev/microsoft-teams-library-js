@@ -1,4 +1,4 @@
-import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, setting } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
