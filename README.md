@@ -1,42 +1,52 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch. This repository contains the core teams-client-sdk as well as tools and applications for use analyzing and testing.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
+## Getting Started
+
+1. Clone the repo
+2. Run `yarn install` from repo root
+3. Run `yarn build` from repo root
+4. To run Unit tests, run `yarn test`
+
+TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
+
+This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
 
 [![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=2.0-preview)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
-
 [![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
+
+# Packages
+
+Contain the core exports for the repository.
+
+### [teams-js](./packages/teams-js)
+
+Used to integrate custom services and applications with Teams, Outlook, and Office.
+
+### [Bundle Size Tools](./packages/bundle-size-tools/README.md)
+
+Package used to measure the difference in size between two recent commits.
+
+---
 
 # Apps
 
-The apps folder contains applications used to test various aspects of the sdk.
+The apps folder contains applications used to test various aspects of the SDK.
 
 ### [Bundle Analysis App](./apps/bundle/analysis-app/README.md)
 
-This application is responsible for testing the size of the final sdk bundle.
+Application responsible for testing the size of the final SDK bundle.
 
 ### [Teams Perf Test App](./apps/teams-perf-test-app/README.md)
 
-React application used to locally test the loading times of the sdk.
+React application used to locally test the loading times of the SDK.
 
 ### [Teams Test App](./apps/teams-test-app/README.md)
 
 Application used to test the functionality of the various SDK APIs.
 
 ---
-
-# Packages
-
-Contain the core exports for the repository.
-
-### [Bundle Size Tools](./packages/bundle-size-tools/README.md)
-
-Package used to measure the difference in size between two recent commits.
-
-### [Teams-Js](./packages/teams-js)
-
-Used to integrate custom services and applications with Teams
 
 ## Contributing
 

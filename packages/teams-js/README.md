@@ -1,6 +1,12 @@
 # Microsoft Teams JavaScript client SDK
 
+Welcome to the Teams JavaScript client SDK ! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
+
+This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
+
 ## Getting Started
+
+See [instructions](../../README.md#Getting-Started) in the monorepo root for how to clone and build the repository.
 
 Whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
@@ -38,7 +44,6 @@ Reference the SDK inside of your `.html` page using:
 
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
-
 <script
   src="https://res.cdn.office.net/teams-js/2.0.0-beta.2/js/MicrosoftTeams.min.js"
   integrity="sha384-RhShpWwRxSnc+keX0WZxCsf8olaKOOw416Jky+StW6qhctsNR3GMwav/hMB1Snas"
@@ -46,11 +51,9 @@ Reference the SDK inside of your `.html` page using:
 ></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-
 <script src="node_modules/@microsoft/teams-js@2.0.0-beta.2/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
-
 <script src="MicrosoftTeams.min.js"></script>
 ```
 
