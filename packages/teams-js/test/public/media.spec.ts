@@ -968,7 +968,7 @@ describe('media', () => {
             },
           };
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            getStringContainedInBlob(blob).then(res => {
+            return getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
             });
           });
@@ -1012,7 +1012,7 @@ describe('media', () => {
             },
           };
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            getStringContainedInBlob(blob).then(res => {
+            return getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
             });
           });
