@@ -2,12 +2,18 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
+import { getTestBackCompat } from './getTestBackCompat';
 
 export interface ApiWithCheckboxInputProps {
   title: string;
   name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
   label: string;
-  onClick: (input: boolean) => Promise<string>;
+  onClick:
+    | ((input: boolean) => Promise<string>)
+    | {
+        withPromise: (input: boolean) => Promise<string>;
+        withCallback: (input: boolean) => string;
+      };
   defaultCheckboxState?: boolean;
 }
 
@@ -20,8 +26,18 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
     setResult(noHostSdkMsg);
 
     try {
-      const result = await onClick(value);
-      setResult(result);
+      if (typeof onClick === 'function') {
+        const result = await onClick(value);
+        setResult(result);
+      } else {
+        if (getTestBackCompat()) {
+          const result = onClick.withCallback(value);
+          setResult(result);
+        } else {
+          const result = await onClick.withPromise(value);
+          setResult(result);
+        }
+      }
     } catch (err) {
       setResult('Error: ' + err);
     }
