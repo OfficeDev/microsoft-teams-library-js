@@ -1,79 +1,42 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch. This repository contains the core teams-client-sdk as well as tools and applications for use analyzing and testing.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
 
-[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=master)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=master)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=master)
+[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=2.0-preview)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
 
-## Getting Started
+[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
 
-1. Clone the repo
-2. Run `yarn install` from repo root
-3. Run `yarn build` from repo root
-4. To run Unit tests, run `yarn test`
+# Apps
 
-  TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
+The apps folder contains applications used to test various aspects of the sdk.
 
-## Installation
+### [Bundle Analysis App](./apps/bundle/analysis-app/README.md)
 
-To install the latest 2.0 preview version:
+This application is responsible for testing the size of the final sdk bundle.
 
-### npm
+### [Teams Perf Test App](./apps/teams-perf-test-app/README.md)
 
-`npm install --save @microsoft/teams-js@next`
+React application used to locally test the loading times of the sdk.
 
-### yarn
+### [Teams Test App](./apps/teams-test-app/README.md)
 
-`yarn add @microsoft/teams-js@next`
+Application used to test the functionality of the various SDK APIs.
 
-### Production
+---
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.2/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+# Packages
 
-## Usage
+Contain the core exports for the repository.
 
-### As a package
+### [Bundle Size Tools](./packages/bundle-size-tools/README.md)
 
-Install either using npm or yarn.
+Package used to measure the difference in size between two recent commits.
 
-**If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
+### [Teams-Js](./packages/teams-js)
 
-```typescript
-import { app } from '@microsoft/teams-js';
-```
-
-### As a script tag
-
-Reference the SDK inside of your `.html` page using:
-
-```html
-<!-- Microsoft Teams JavaScript API (via CDN) -->
-<script
-  src="https://res.cdn.office.net/teams-js/2.0.0-beta.2/js/MicrosoftTeams.min.js"
-  integrity="sha384-Q2Z9S56exI6Oz/ThvYaV0SUn8j4HwS8BveGPmuwLXe4CvCUEGlL80qSzHMnvGqee"
-  crossorigin="anonymous"
-></script>
-
-<!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@2.0.0-beta.2/dist/MicrosoftTeams.min.js"></script>
-
-<!-- Microsoft Teams JavaScript API (via local) -->
-<script src="MicrosoftTeams.min.js"></script>
-```
-
-### Dependencies
-
-Teams client SDK depends on [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) type. If you support older browsers and devices which may not yet provide it natively (e.g. IE 11), you need to provide a global polyfill, such as [es6-promise](https://www.npmjs.com/package/es6-promise), in your bundled application. If you're using a script tag to reference the Teams client SDK, you need to make sure the polyfill is included and initialized before the Teams client SDK is.
-
-## Examples
-
-Stay tuned for examples coming soon.
-
-## Testing
-
-The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
+Used to integrate custom services and applications with Teams
 
 ## Contributing
 
