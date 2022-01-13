@@ -69,9 +69,9 @@ const checkoutAndPullMainBranch = async () => {
     if (!(await boolPrompt())) {
       throw 'User aborted!';
     }
-    await execShellCommand('git checkout 2.0-preview');
+    await execShellCommand('git checkout 2.0-preview --quiet');
   }
-  await execShellCommand('git pull');
+  await execShellCommand('git pull --quiet');
 };
 
 const updatePackageVersion = async () => {
@@ -102,7 +102,7 @@ const checkoutAndPushReleaseBranch = async () => {
   }
   const newVersion = getNewPackageVersion();
   const branchName = `release/${newVersion}`;
-  await execShellCommand(`git checkout -b ${branchName}`);
+  await execShellCommand(`git checkout -b ${branchName} --quiet`);
   await execShellCommand('git add -A');
   await execShellCommand(`git commit -m "Releasing ${newVersion}"`);
   await execShellCommand(`git push --set-upstream origin ${branchName}`);
@@ -122,6 +122,7 @@ const checkoutAndPushReleaseBranch = async () => {
     await checkoutAndPushReleaseBranch();
     // TODO: Add code to create the PR automatically using github api
   } catch (e) {
+    console.log('Something went wrong!');
     console.log(e);
   }
 })();
