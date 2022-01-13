@@ -330,7 +330,6 @@ export namespace files {
    *
    * @param folder - Cloud storage folder (CloudStorageFolder) / sub directory (CloudStorageFolderItem)
    * @param providerCode - Code of the cloud storage folder provider
-   * @param callback - Callback that will be triggered post contents are loaded
    */
   export function getCloudStorageFolderContents(
     folder: CloudStorageFolder | CloudStorageFolderItem,
