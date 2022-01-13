@@ -42,7 +42,7 @@ const DialogAPIs = (): ReactElement => {
             });
             childWindowRef.current = childWindow;
           },
-        }
+        },
       },
     });
 
