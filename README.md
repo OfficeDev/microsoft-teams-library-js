@@ -48,6 +48,10 @@ Application used to test the functionality of the various SDK APIs.
 
 ---
 
+### Locally generating reference documentation
+
+If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `yarn docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
+
 ## Contributing
 
 We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md).
