@@ -36,19 +36,24 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
       const partialInput = JSON.parse(input) as Partial<T>;
       if (typeof onClick === 'function') {
         const result = await onClick(partialInput);
+        console.log('test before')
         setResult(result);
       } else {
         const { validateInput, submit } = onClick;
         validateInput(partialInput);
+        console.log('test validateInput')
         const input = partialInput as T;
         if (typeof submit === 'function') {
           const result = await submit(input, setResult);
+          console.log('test function');
           setResult(result);
         } else {
           if (getTestBackCompat()) {
             submit.withCallback(input, setResult);
+            console.log('test callback');
           } else {
             const result = await submit.withPromise(input, setResult);
+            console.log('test promise');
             setResult(result);
           }
         }
