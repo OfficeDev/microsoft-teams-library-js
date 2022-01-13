@@ -61,8 +61,9 @@ const DialogAPIs = (): ReactElement => {
             dialog.resize(dialogInfo);
             return 'Teams client SDK call dialog.resize was called';
           },
-          withCallback: taskInfo => {
+          withCallback: (taskInfo, setResult) => {
             tasks.updateTask(taskInfo);
+            setResult('Teams client SDK call tasks.updateTask was called');
           },
         },
       },
