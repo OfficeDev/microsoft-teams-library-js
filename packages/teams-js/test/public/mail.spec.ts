@@ -1,7 +1,6 @@
 import { GlobalVars } from '../../src/internal/globalVars';
 import { app } from '../../src/public/app';
 import { mail } from '../../src/public/mail';
-import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 
 describe('mail', () => {
@@ -27,115 +26,145 @@ describe('mail', () => {
   });
 
   describe('openMailItem', () => {
-    const navigateToAppParams: pages.NavigateToAppParams = {
-      appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
-      pageId: 'tasklist123',
-      webUrl: 'https://tasklist.example.com/123',
-      channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
-      subPageId: 'task456',
-    };
-
     const openMailItemParams: mail.OpenMailItemParams = {
       itemId: '',
     };
 
-    it('should not allow calls before initialization', () => {
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('The library has not yet been initialized'),
-      );
+    it('should not allow calls before initialization', async () => {
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "settings".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "settings".'),
+          ),
+        );
     });
 
     it('should not allow calls from authentication context', async () => {
       await utils.initializeWithContext('authentication');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "authentication".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error(
+              'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
+            ),
+          ),
+        );
     });
 
     it('should not allow calls from remove context', async () => {
       await utils.initializeWithContext('remove');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "remove".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "remove".'),
+          ),
+        );
     });
 
     it('should not allow calls from task context', async () => {
       await utils.initializeWithContext('task');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "task".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "task".'),
+          ),
+        );
     });
 
     it('should not allow calls from sidePanel context', async () => {
       await utils.initializeWithContext('sidePanel');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".'),
+          ),
+        );
     });
 
     it('should not allow calls from stage context', async () => {
       await utils.initializeWithContext('stage');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
+          ),
+        );
     });
 
     it('should not allow calls from meetingStage context', async () => {
       await utils.initializeWithContext('meetingStage');
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".'),
-      );
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error('This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".'),
+          ),
+        );
     });
 
     it('should not allow calls if runtime does not support mail', async () => {
-      await utils.initializeWithContext('stage');
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      expect(() => mail.openMailItem(openMailItemParams)).rejects.toMatchObject(
-        new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
-      );
+      await mail.openMailItem(openMailItemParams).catch(e => expect(e).toBe('Not Supported'));
     });
 
-    it('should successfully send the navigateToApp message', async () => {
+    it('should successfully throw if the openMailItem message sends and fails', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
-      const promise = pages.navigateToApp(navigateToAppParams);
+      const openMailItemPromise = mail.openMailItem(openMailItemParams);
 
-      const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
-      utils.respondToMessage(navigateToAppMessage, true);
-      await promise;
+      const openMailItemMessage = utils.findMessageByFunc('mail.openMailItem');
 
-      expect(navigateToAppMessage).not.toBeNull();
-      expect(navigateToAppMessage.args[0]).toStrictEqual(navigateToAppParams);
+      const data = {
+        success: false,
+        error: 'Something went wrong...',
+      };
+
+      utils.respondToMessage(openMailItemMessage, data);
+      await openMailItemPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
-    it('should successfully send an executeDeepLink message for legacy teams clients', async () => {
+    it('should successfully send the openMailItem message', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
-      const promise = pages.navigateToApp(navigateToAppParams);
+      const promise = mail.openMailItem(openMailItemParams);
 
-      const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
-      utils.respondToMessage(executeDeepLinkMessage, true);
+      const openMailItemMessage = utils.findMessageByFunc('mail.openMailItem');
+
+      const data = {
+        success: true,
+        error: 'Something went wrong...',
+      };
+
+      utils.respondToMessage(openMailItemMessage, data);
       await promise;
 
-      expect(executeDeepLinkMessage).not.toBeNull();
-      expect(executeDeepLinkMessage.args[0]).toBe(
-        'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
-      );
+      expect(openMailItemMessage).not.toBeNull();
+      expect(openMailItemMessage.args.length).toEqual(1);
+      expect(openMailItemMessage.args[0]).toStrictEqual(openMailItemParams);
     });
   });
 });
