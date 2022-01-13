@@ -167,4 +167,16 @@ describe('mail', () => {
       expect(openMailItemMessage.args[0]).toStrictEqual(openMailItemParams);
     });
   });
+
+  describe('isSupported', () => {
+    it('should return false if the runtime says mail is not supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(mail.isSupported()).not.toBeTruthy();
+    });
+
+    it('should return true if the runtime says mail is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+      expect(mail.isSupported()).toBeTruthy();
+    });
+  });
 });
