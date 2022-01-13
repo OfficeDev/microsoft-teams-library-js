@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="93" failures="0" errors="0" time="6.092">
+  <testsuite name="media" errors="0" failures="0" skipped="92" timestamp="2022-01-13T22:13:44" time="4.979" tests="93">
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 should not allow captureImage calls before initialization" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 captureImage call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 should not allow captureImage calls for authentication frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 should not allow captureImage calls for remove frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 should not allow captureImage calls for settings frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 should not allow captureImage calls in desktop" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 captureImage call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 captureImage call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 captureImage calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v1 captureImage calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 should not allow captureImage calls before initialization" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 captureImage call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 should not allow captureImage calls for authentication frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 should not allow captureImage calls for remove frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 should not allow captureImage calls for settings frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 should not allow captureImage calls in desktop" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 captureImage call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 captureImage call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 captureImage calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media captureImage v2 captureImage calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 should not allow selectMedia calls with null mediaInputs" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 should not allow selectMedia calls with invalid mediaInputs" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia call for mediaType = 3 in mediaAPISupportVersion of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia calls with successful result for mediaType = 1" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia calls with successful result for mediaType = 3" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia calls with successful result for mediaType = 1 with imageOutputFormats" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 videoController notifyEventToHost should fail in default version of platform" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 videoController notifyEventToHost is handled successfully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 videoController notifyEventToHost is not handled successfully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 should invoke correct video callback for MediaControllerEvent when registered" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 should not invoke video callback for MediaControllerEvent when not registered" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v1 selectMedia calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 should not allow selectMedia calls with null mediaInputs" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 should not allow selectMedia calls with invalid mediaInputs" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia call for mediaType = 3 in mediaAPISupportVersion of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia calls with successful result for mediaType = 1" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia calls with successful result for mediaType = 3" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media selectMedia v2 selectMedia calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 should not allow getMedia calls with invalid media mimetype" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 should not allow getMedia calls with invalid media content" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 should not allow getMedia calls with invalid media file format" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia calls with successful result via the handler" time="0.008">
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia calls with successful result via the callback" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia calls with error with MediaCallback" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v1 getMedia calls with error with Handler" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 should not allow getMedia calls with invalid media mimetype" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 should not allow getMedia calls with invalid media content" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 should not allow getMedia calls with invalid media file format" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 getMedia call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 getMedia call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 getMedia using callback method returns successful result with expected data" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media getMedia v2 getMedia using register handler method returns successful result with expected data" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 should not allow viewImages calls with null imageuris" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 should not allow viewImages calls with invalid imageuris" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 viewImages call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 viewImages call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 viewImages call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v1 viewImages calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 should not allow viewImages calls with null imageuris" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 should not allow viewImages calls with invalid imageuris" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 viewImages call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 viewImages call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 viewImages call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media viewImages v2 viewImages calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 should not allow scanBarCode calls for authentication frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode with optional barcode config calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 scanBarCode calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 should not allow scanBarCode calls with invalid timeOutIntervalInSec" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v1 should not allow scanBarCode calls in desktop" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 should not allow scanBarCode calls before initialization" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode call in default version of platform support fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 should not allow scanBarCode calls for authentication frame context" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode call in task frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode call in content frameContext works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode with optional barcode config calls with successful result" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 scanBarCode calls with error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 should not allow scanBarCode calls with invalid timeOutIntervalInSec" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 should allow scanBarCode calls when timeOutIntervalInSec is not passed in config params" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="packages\teams-js\test\public\media.spec.ts" name="media scanBarCode _v2 should not allow scanBarCode calls in desktop" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -944,25 +944,14 @@ describe('media', () => {
         return blobReadingPromise;
       }
 
-      it('getMedia calls with successful result via the handler', done => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
+      it('getMedia calls with successful result via the handler', () => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           //mediaAPISupport version(1.8.0) is less than the MediaCallbackSupportVersion(2.0.0)
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
           const mediaOutput: media.Media = new media.Media();
           mediaOutput.content = '1234567';
           mediaOutput.mimeType = 'image/jpeg';
           mediaOutput.format = media.FileFormat.ID;
-          mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            getStringContainedInBlob(blob).then(res => {
-              expect(res).toEqual(stringMediaData);
-              done();
-            });
-          });
-
-          const message = mobilePlatformMock.findMessageByFunc('getMedia');
-          expect(message).not.toBeNull();
-          expect(message.args.length).toBe(2);
-
           const stringMediaData = 'the media data';
           const firstMediaResult: media.MediaResult = {
             error: undefined,
@@ -978,6 +967,16 @@ describe('media', () => {
               chunkSequence: 0,
             },
           };
+          mediaOutput.getMedia((error: SdkError, blob: Blob) => {
+            getStringContainedInBlob(blob).then(res => {
+              expect(res).toEqual(stringMediaData);
+            });
+          });
+
+          const message = mobilePlatformMock.findMessageByFunc('getMedia');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(2);
+
           const handlerRegistrationMessage = mobilePlatformMock.findMessageByFunc('registerHandler');
           const getMediaHandlerName = handlerRegistrationMessage.args[0];
 
@@ -989,25 +988,14 @@ describe('media', () => {
         });
       });
 
-      it('getMedia calls with successful result via the callback', done => {
-        mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
+      it('getMedia calls with successful result via the callback', () => {
+        return mobilePlatformMock.initializeWithContext(FrameContexts.content).then(() => {
           // here we give the same version as the supported version
           mobilePlatformMock.setClientSupportedSDKVersion(getMediaCallbackSupportVersion);
           const mediaOutput: media.Media = new media.Media();
           mediaOutput.content = '1234567';
           mediaOutput.mimeType = 'image/jpeg';
           mediaOutput.format = media.FileFormat.ID;
-          mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            getStringContainedInBlob(blob).then(res => {
-              expect(res).toEqual(stringMediaData);
-              done();
-            });
-          });
-
-          const message = mobilePlatformMock.findMessageByFunc('getMedia');
-          expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1); // args will be of length 1 for the supported version
-
           const stringMediaData = 'the media data';
           const firstMediaResult: media.MediaResult = {
             error: undefined,
@@ -1023,6 +1011,16 @@ describe('media', () => {
               chunkSequence: 0,
             },
           };
+          mediaOutput.getMedia((error: SdkError, blob: Blob) => {
+            getStringContainedInBlob(blob).then(res => {
+              expect(res).toEqual(stringMediaData);
+            });
+          });
+
+          const message = mobilePlatformMock.findMessageByFunc('getMedia');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1); // args will be of length 1 for the supported version
+
           const mediaResults = Array.of(firstMediaResult, secondMediaResult);
 
           for (let i = 0; i < mediaResults.length; ++i) {
