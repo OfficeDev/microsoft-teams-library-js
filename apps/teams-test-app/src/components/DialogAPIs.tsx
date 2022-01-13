@@ -6,6 +6,17 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
+
+  const openDialogHelper = (childWindow: IAppWindow): string => {
+    let result = '';
+    childWindow.addEventListener('message', (message: string) => {
+      // Message from parent
+      result = message;
+    });
+    childWindowRef.current = childWindow;
+    return result;
+  };
+
   const OpenDialog = (): ReactElement =>
     ApiWithTextInput<DialogInfo | TaskInfo>({
       name: 'dialogOpen',
@@ -22,12 +33,7 @@ const DialogAPIs = (): ReactElement => {
               setResult('Error: ' + err + '\nResult: ' + result);
             };
             // Store the reference of child window in React
-            const childWindow = dialog.open(dialogInfo, onComplete);
-            childWindow.addEventListener('message', (message: string) => {
-              // Message from parent
-              setResult(message);
-            });
-            childWindowRef.current = childWindow;
+            setResult(openDialogHelper(dialog.open(dialogInfo, onComplete)));
             return '';
           },
           withCallback: (taskInfo, setResult) => {
@@ -35,12 +41,7 @@ const DialogAPIs = (): ReactElement => {
               setResult('Error: ' + err + '\nResult: ' + result);
             };
             // Store the reference of child window in React
-            const childWindow = tasks.startTask(taskInfo, onComplete);
-            childWindow.addEventListener('message', (message: string) => {
-              // Message from parent
-              setResult(message);
-            });
-            childWindowRef.current = childWindow;
+            setResult(openDialogHelper(tasks.startTask(taskInfo, onComplete)));
           },
         },
       },
