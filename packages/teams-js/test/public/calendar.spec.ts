@@ -1,4 +1,5 @@
 import { GlobalVars } from '../../src/internal/globalVars';
+import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
 import { Utils } from '../utils';
@@ -27,7 +28,7 @@ describe('calendar', () => {
 
   describe('openCalendarItem', () => {
     const openCalendarItemParams: calendar.OpenCalendarItemParams = {
-      itemId: '',
+      itemId: '1',
     };
 
     it('should not allow calls before initialization', async () => {
@@ -36,91 +37,27 @@ describe('calendar', () => {
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          if (frameContext === FrameContexts.content) {
+            return;
+          }
 
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "settings".'),
-          ),
-        );
-    });
+          await utils.initializeWithContext(frameContext);
 
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error(
-              'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
-            ),
-          ),
-        );
-    });
-
-    it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "remove".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from task context', async () => {
-      await utils.initializeWithContext('task');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "task".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from stage context', async () => {
-      await utils.initializeWithContext('stage');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
-
-      await calendar
-        .openCalendarItem(openCalendarItemParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".'),
-          ),
-        );
-    });
+          await calendar
+            .openCalendarItem(openCalendarItemParams)
+            .catch(e =>
+              expect(e).toMatchObject(
+                new Error(
+                  `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+                ),
+              ),
+            );
+        });
+      });
 
     it('should not allow calls if runtime does not support calendar', async () => {
       await utils.initializeWithContext('content');
@@ -129,7 +66,40 @@ describe('calendar', () => {
       await calendar.openCalendarItem(openCalendarItemParams).catch(e => expect(e).toBe('Not Supported'));
     });
 
-    it('should successfully throw if the openMailItem message sends and fails', async () => {
+    it('should throw if a null itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+
+      let error;
+
+      await calendar.openCalendarItem({ itemId: null }).catch(e => (error = e));
+
+      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+    });
+
+    it('should throw if an undefined itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+
+      let error;
+
+      await calendar.openCalendarItem({ itemId: undefined }).catch(e => (error = e));
+
+      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+    });
+
+    it('should throw if an empty itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+
+      let error;
+
+      await calendar.openCalendarItem({ itemId: '' }).catch(e => (error = e));
+
+      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+    });
+
+    it('should throw if the openCalendarItem message sends and fails', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
@@ -142,11 +112,19 @@ describe('calendar', () => {
         error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(openCalendarItemMessage, data);
-      await openCalendarItemPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
+
+      let error;
+      try {
+        await openCalendarItemPromise;
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toMatchObject(new Error('Something went wrong...'));
     });
 
-    it('should successfully send the openMailItem message', async () => {
+    it('should successfully send the openCalendarItem message', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
@@ -156,15 +134,30 @@ describe('calendar', () => {
 
       const data = {
         success: true,
-        error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(openCalendarItemMessage, data);
+      utils.respondToMessage(openCalendarItemMessage, data.success);
       await openCalendarItemPromise;
 
       expect(openCalendarItemMessage).not.toBeNull();
       expect(openCalendarItemMessage.args.length).toEqual(1);
       expect(openCalendarItemMessage.args[0]).toStrictEqual(openCalendarItemParams);
+    });
+
+    it('should resolve promise after successfully sending the openCalendarItem message', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+
+      const openCalendarItemPromise = calendar.openCalendarItem(openCalendarItemParams);
+
+      const openCalendarItemMessage = utils.findMessageByFunc('calendar.openCalendarItem');
+
+      const data = {
+        success: true,
+      };
+
+      utils.respondToMessage(openCalendarItemMessage, data.success);
+      expect(openCalendarItemPromise).resolves;
     });
   });
 
@@ -177,91 +170,27 @@ describe('calendar', () => {
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          if (frameContext === FrameContexts.content) {
+            return;
+          }
 
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "settings".'),
-          ),
-        );
-    });
+          await utils.initializeWithContext(frameContext);
 
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error(
-              'This call is only allowed in following contexts: ["content"]. Current context: "authentication".',
-            ),
-          ),
-        );
-    });
-
-    it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "remove".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from task context', async () => {
-      await utils.initializeWithContext('task');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "task".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "sidePanel".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from stage context', async () => {
-      await utils.initializeWithContext('stage');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "stage".'),
-          ),
-        );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
-
-      await calendar
-        .composeMeeting(composeMeetingParams)
-        .catch(e =>
-          expect(e).toMatchObject(
-            new Error('This call is only allowed in following contexts: ["content"]. Current context: "meetingStage".'),
-          ),
-        );
-    });
+          await calendar
+            .composeMeeting(composeMeetingParams)
+            .catch(e =>
+              expect(e).toMatchObject(
+                new Error(
+                  `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+                ),
+              ),
+            );
+        });
+      });
 
     it('should not allow calls if runtime does not support mail', async () => {
       await utils.initializeWithContext('content');
@@ -283,11 +212,19 @@ describe('calendar', () => {
         error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(composeMeeting, data);
-      await composeMeetingPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      utils.respondToMessage(composeMeeting, data.success, data.error);
+
+      let error;
+      try {
+        await composeMeetingPromise;
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toMatchObject(new Error('Something went wrong...'));
     });
 
-    it('should successfully send the openMailItem message', async () => {
+    it('should successfully send the composeMeeting message', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
@@ -297,15 +234,30 @@ describe('calendar', () => {
 
       const data = {
         success: true,
-        error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(composeMeetingMessage, data);
+      utils.respondToMessage(composeMeetingMessage, data.success);
       await composeMeetingPromise;
 
       expect(composeMeetingMessage).not.toBeNull();
       expect(composeMeetingMessage.args.length).toEqual(1);
       expect(composeMeetingMessage.args[0]).toStrictEqual(composeMeetingParams);
+    });
+
+    it('should resolve promise after successfully sending the composeMeeting message', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+
+      const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
+
+      const composeMeetingMessage = utils.findMessageByFunc('calendar.composeMeeting');
+
+      const data = {
+        success: true,
+      };
+
+      utils.respondToMessage(composeMeetingMessage, data.success);
+      expect(composeMeetingPromise).resolves;
     });
   });
 
