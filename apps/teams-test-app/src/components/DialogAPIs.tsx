@@ -7,14 +7,12 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
 
-  const openDialogHelper = (childWindow: IAppWindow): string => {
-    let result = '';
+  const openDialogHelper = (childWindow: IAppWindow, setResult: (result: string) => void): void => {
     childWindow.addEventListener('message', (message: string) => {
       // Message from parent
-      result = message;
+      setResult(message);
     });
     childWindowRef.current = childWindow;
-    return result;
   };
 
   const OpenDialog = (): ReactElement =>
@@ -33,12 +31,14 @@ const DialogAPIs = (): ReactElement => {
               setResult('Error: ' + err + '\nResult: ' + result);
             };
             // Store the reference of child window in React
-            const childWindow = dialog.open(dialogInfo, onComplete);
-            childWindow.addEventListener('message', (message: string) => {
-              // Message from parent
-              setResult(message);
-            });
-            childWindowRef.current = childWindow;
+            // const childWindow = dialog.open(dialogInfo, onComplete);
+            // childWindow.addEventListener('message', (message: string) => {
+            //   // Message from parent
+            //   setResult(message);
+            //   console.log('test: ' + JSON.stringify(message));
+            // });
+            // childWindowRef.current = childWindow;
+            openDialogHelper(dialog.open(dialogInfo, onComplete), setResult);
             return '';
           },
           withCallback: (taskInfo, setResult) => {
@@ -46,7 +46,7 @@ const DialogAPIs = (): ReactElement => {
               setResult('Error: ' + err + '\nResult: ' + result);
             };
             // Store the reference of child window in React
-            setResult(openDialogHelper(tasks.startTask(taskInfo, onComplete)));
+            openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
           },
         },
       },
