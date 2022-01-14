@@ -5,16 +5,17 @@ import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
   scanBarCodeAPIMobileSupportVersion,
-  videoAndImageMediaAPISupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform, isApiSupportedOnMobile } from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
-  isMediaCallForVideoAndImageInputs,
+  isMediaCallSupportedOnMobile,
+  isVideoControllerRegistered,
   validateGetMediaInputs,
   validateScanBarCodeInput,
   validateSelectMediaInputs,
@@ -259,6 +260,11 @@ export namespace media {
     imageProps?: ImageProps;
 
     /**
+     * Additional properties for customization of select media - Video in mobile devices
+     */
+    videoProps?: VideoProps;
+
+    /**
      * Additional properties for customization of select media - VideoAndImage in mobile devices
      */
     videoAndImageProps?: VideoAndImageProps;
@@ -274,8 +280,6 @@ export namespace media {
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
-   *
-   * @internal
    */
   interface MediaProps {
     /**
@@ -324,20 +328,33 @@ export namespace media {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
    * All properties in VideoProps are optional and have default values in the platform
-   *
-   * @internal
    */
-  interface VideoProps extends MediaProps {
+  export interface VideoProps extends MediaProps {
     /**
-     * @hidden
      * Optional; the maximum duration in minutes after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
+
+    /**
+     * Optional; to determine if the video capturing flow needs to be launched
+     * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
+     * Default value is true, indicating video will always launch in Full Screen Mode via lens.
+     */
+    isFullScreenMode?: boolean;
+
+    /**
+     * Optional; controls the visibility of stop button in PictureInPicture Mode.
+     * Default value is true, indicating the user will be able to stop the video.
+     */
+    isStopButtonVisible?: boolean;
+
+    /**
+     * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
+     * Your app can also dynamically control the experience while capturing the video by notifying the host client.
+     */
+    videoController?: VideoController;
   }
 
   /**
@@ -350,10 +367,130 @@ export namespace media {
    */
   export interface AudioProps {
     /**
-     * Optional; the maximum duration in minutes after which the recording should terminate automatically.
+     * Optional; the maximum duration in minutes after which the recording should terminate automatically
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Base class which holds the callback and notifies events to the host client
+   */
+  abstract class MediaController<T> {
+    protected controllerCallback: T;
+
+    public constructor(controllerCallback?: T) {
+      this.controllerCallback = controllerCallback;
+    }
+
+    protected abstract getMediaType(): MediaType;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     * This function will be implemented by the respective media class which holds the logic
+     * of specific events that needs to be notified to the app.
+     * @param mediaEvent indicates the event signed by the host client to the app
+     */
+    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      if (err) {
+        if (callback) {
+          callback(err);
+        }
+        return;
+      }
+
+      const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
+      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
+        if (callback) {
+          callback(err);
+        }
+      });
+    }
+
+    /**
+     * Function to programatically stop the ongoing media event
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
+     */
+    public stop(callback?: (err?: SdkError) => void): void {
+      this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
+    }
+  }
+
+  /**
+   * Callback which will register your app to listen to lifecycle events during the video capture flow
+   */
+  export interface VideoControllerCallback {
+    onRecordingStarted?(): void;
+  }
+
+  /**
+   * VideoController class is used to communicate between the app and the host client during the video capture flow
+   */
+  export class VideoController extends MediaController<VideoControllerCallback> {
+    protected getMediaType(): MediaType {
+      return MediaType.Video;
+    }
+
+    public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
+      if (!this.controllerCallback) {
+        // Early return as app has not registered with the callback
+        return;
+      }
+
+      switch (mediaEvent) {
+        case MediaControllerEvent.StartRecording:
+          if (this.controllerCallback.onRecordingStarted) {
+            this.controllerCallback.onRecordingStarted();
+            break;
+          }
+      }
+    }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Events which are used to communicate between the app and the host client during the media recording flow
+   */
+  enum MediaControllerEvent {
+    StartRecording = 1,
+    StopRecording = 2,
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Interface with relevant info to send communication from the app to the host client
+   */
+  interface MediaControllerParam {
+    /**
+     * List of team information
+     */
+    mediaType: media.MediaType;
+
+    /**
+     * List of team information
+     */
+    mediaControllerEvent: MediaControllerEvent;
   }
 
   /**
@@ -379,7 +516,7 @@ export namespace media {
    */
   export enum MediaType {
     Image = 1,
-    // Video = 2, // Not implemented yet
+    Video = 2,
     VideoAndImage = 3,
     Audio = 4,
   }
@@ -446,12 +583,6 @@ export namespace media {
     assembleAttachment: AssembleAttachment[];
   }
 
-  /**
-   * Select an attachment using camera/gallery
-   *
-   * @param mediaInputs - The input params to customize the media to be selected
-   * @returns A promise resolved with the collection of @see Media objects selected or rejected with a @see SdkError
-   */
   export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
   /**
    * Select an attachment using camera/gallery
@@ -470,25 +601,32 @@ export namespace media {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     const wrappedFunction: InputFunction<Media[]> = () =>
-      new Promise<[SdkError, Media[]]>(resolve => {
+      new Promise<[SdkError, Media[], MediaControllerEvent]>(resolve => {
         if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-        if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-          if (GlobalVars.hostClientType != HostClientType.android && GlobalVars.hostClientType != HostClientType.ios) {
-            throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-          } else if (!isAPISupportedByPlatform(videoAndImageMediaAPISupportVersion)) {
-            throw { errorCode: ErrorCode.OLD_PLATFORM };
-          }
+        const err = isMediaCallSupportedOnMobile(mediaInputs);
+        if (err) {
+          throw err;
         }
+
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
         }
 
         const params = [mediaInputs];
         // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, Media[]]>('selectMedia', params));
-      }).then(([err, localAttachments]: [SdkError, Media[]]) => {
+        resolve(sendMessageToParentAsync<[SdkError, Media[], MediaControllerEvent]>('selectMedia', params));
+      }).then(([err, localAttachments, mediaEvent]: [SdkError, Media[], MediaControllerEvent]) => {
+        // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
+        if (mediaEvent) {
+          if (isVideoControllerRegistered(mediaInputs)) {
+            mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
+          }
+          return [];
+        }
+
+        // Media Attachments are final response to selectMedia
         if (!localAttachments) {
           throw err;
         }

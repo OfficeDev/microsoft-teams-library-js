@@ -3,7 +3,7 @@ export const version = PACKAGE_VERSION;
 
 /**
  * @hidden
- * The SDK version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
+ * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
  * Modified to 2.0.1 which is hightest till now so that if any client doesn't pass version in initialize function, it will be set to highest.
  * Mobile clients are passing versions, hence will be applicable to web and desktop clients only.
  *
@@ -13,11 +13,16 @@ export const defaultSDKVersionForCompatCheck = '2.0.1';
 
 /**
  * @hidden
- * This is the SDK version when selectMedia API - VideoAndImage is supported on mobile.
+ * This is the client version when selectMedia API - VideoAndImage is supported on mobile.
  *
  * @internal
  */
 export const videoAndImageMediaAPISupportVersion = '2.0.2';
+
+/**
+ * This is the client version when selectMedia API - Video with non-full screen mode is supported on mobile.
+ */
+export const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
 
 /**
  * @hidden
@@ -29,7 +34,7 @@ export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
 
 /**
  * @hidden
- * This is the SDK version when location APIs (getLocation and showLocation) are supported.
+ * This is the client version when location APIs (getLocation and showLocation) are supported.
  *
  * @internal
  */
@@ -37,7 +42,7 @@ export const locationAPIsRequiredVersion = '1.9.0';
 
 /**
  * @hidden
- * This is the SDK version when people picker API is supported on mobile.
+ * This is the client version when people picker API is supported on mobile.
  *
  * @internal
  */
@@ -45,7 +50,7 @@ export const peoplePickerRequiredVersion = '2.0.0';
 
 /**
  * @hidden
- * This is the SDK version when captureImage API is supported on mobile.
+ * This is the client version when captureImage API is supported on mobile.
  *
  * @internal
  */
@@ -53,7 +58,7 @@ export const captureImageMobileSupportVersion = '1.7.0';
 
 /**
  * @hidden
- * This is the SDK version when media APIs are supported on all three platforms ios, android and web.
+ * This is the client version when media APIs are supported on all three platforms ios, android and web.
  *
  * @internal
  */
@@ -61,7 +66,7 @@ export const mediaAPISupportVersion = '1.8.0';
 
 /**
  * @hidden
- * This is the SDK version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
+ * This is the client version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
  *
  * @internal
  */
@@ -69,7 +74,7 @@ export const getMediaCallbackSupportVersion = '2.0.0';
 
 /**
  * @hidden
- * This is the SDK version when scanBarCode API is supported on mobile.
+ * This is the client version when scanBarCode API is supported on mobile.
  *
  * @internal
  */
