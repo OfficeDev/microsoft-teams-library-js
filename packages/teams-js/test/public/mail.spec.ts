@@ -108,8 +108,16 @@ describe('mail', () => {
         error: dataError,
       };
 
-      utils.respondToMessage(openMailItemMessage, data);
-      await openMailItemPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
+      utils.respondToMessage(openMailItemMessage, data.success, data.error);
+
+      let error;
+      try {
+        await openMailItemPromise;
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toMatchObject(new Error(dataError));
     });
 
     it('should successfully send the openMailItem message', async () => {
@@ -122,10 +130,9 @@ describe('mail', () => {
 
       const data = {
         success: true,
-        error: dataError,
       };
 
-      utils.respondToMessage(openMailItemMessage, data);
+      utils.respondToMessage(openMailItemMessage, data.success);
       await promise;
 
       expect(openMailItemMessage).not.toBeNull();
@@ -143,10 +150,9 @@ describe('mail', () => {
 
       const data = {
         success: true,
-        error: dataError,
       };
 
-      utils.respondToMessage(openMailItemMessage, data);
+      utils.respondToMessage(openMailItemMessage, data.success);
 
       expect(promise).resolves;
     });
@@ -205,8 +211,16 @@ describe('mail', () => {
         error: dataError,
       };
 
-      utils.respondToMessage(composeMail, data);
-      await composeMailPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
+      utils.respondToMessage(composeMail, data.success, data.error);
+
+      let error;
+      try {
+        await composeMailPromise;
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toMatchObject(new Error(dataError));
     });
 
     it('should successfully send the composeMail message', async () => {
@@ -219,10 +233,9 @@ describe('mail', () => {
 
       const data = {
         success: true,
-        error: dataError,
       };
 
-      utils.respondToMessage(composeMailMessage, data);
+      utils.respondToMessage(composeMailMessage, data.success);
       await promise;
 
       expect(composeMailMessage).not.toBeNull();
@@ -240,10 +253,9 @@ describe('mail', () => {
 
       const data = {
         success: true,
-        error: dataError,
       };
 
-      utils.respondToMessage(composeMailMessage, data);
+      utils.respondToMessage(composeMailMessage, data.success);
       expect(promise).resolves;
     });
   });
