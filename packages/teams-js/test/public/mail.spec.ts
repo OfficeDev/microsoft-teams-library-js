@@ -34,6 +34,7 @@ describe('mail', () => {
     };
 
     it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
       await mail
         .openMailItem(openMailItemParams)
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
@@ -47,6 +48,7 @@ describe('mail', () => {
             return;
           }
 
+          expect.assertions(1);
           await utils.initializeWithContext(frameContext);
 
           await mail
@@ -62,6 +64,7 @@ describe('mail', () => {
       });
 
     it('should not allow calls if runtime does not support mail', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -69,6 +72,7 @@ describe('mail', () => {
     });
 
     it('should throw if a null itemId is supplied', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
@@ -78,6 +82,7 @@ describe('mail', () => {
     });
 
     it('should throw if an undefined itemId is supplied', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
@@ -87,6 +92,7 @@ describe('mail', () => {
     });
 
     it('should throw if an empty itemId is supplied', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
@@ -96,6 +102,7 @@ describe('mail', () => {
     });
 
     it('should successfully throw if the openMailItem message sends and fails', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
@@ -109,15 +116,7 @@ describe('mail', () => {
       };
 
       utils.respondToMessage(openMailItemMessage, data.success, data.error);
-
-      let error;
-      try {
-        await openMailItemPromise;
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toMatchObject(new Error(dataError));
+      await openMailItemPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
     });
 
     it('should successfully send the openMailItem message', async () => {
@@ -164,6 +163,7 @@ describe('mail', () => {
     };
 
     it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
       await mail
         .composeMail(composeMailParams)
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
@@ -176,6 +176,8 @@ describe('mail', () => {
           if (frameContext === FrameContexts.content) {
             return;
           }
+
+          expect.assertions(1);
 
           await utils.initializeWithContext(frameContext);
 
@@ -192,6 +194,8 @@ describe('mail', () => {
       });
 
     it('should not allow calls if runtime does not support mail', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -199,6 +203,8 @@ describe('mail', () => {
     });
 
     it('should successfully throw if the composeMail message sends and fails', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 
@@ -212,15 +218,7 @@ describe('mail', () => {
       };
 
       utils.respondToMessage(composeMail, data.success, data.error);
-
-      let error;
-      try {
-        await composeMailPromise;
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toMatchObject(new Error(dataError));
+      await composeMailPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
     });
 
     it('should successfully send the composeMail message', async () => {
