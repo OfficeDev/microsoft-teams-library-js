@@ -955,8 +955,9 @@ describe('media', () => {
           mediaOutput.mimeType = 'image/jpeg';
           mediaOutput.format = media.FileFormat.ID;
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            return getStringContainedInBlob(blob).then(res => {
+            getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
+              done();
             });
           });
 
@@ -1000,8 +1001,9 @@ describe('media', () => {
           mediaOutput.mimeType = 'image/jpeg';
           mediaOutput.format = media.FileFormat.ID;
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-            return getStringContainedInBlob(blob).then(res => {
+            getStringContainedInBlob(blob).then(res => {
               expect(res).toEqual(stringMediaData);
+              done();
             });
           });
 
