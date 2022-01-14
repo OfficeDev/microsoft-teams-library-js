@@ -88,7 +88,7 @@ const updatePackageVersion = async () => {
 };
 
 const buildAndUpdateIntegrityHash = async () => {
-  console.log('Updating integrity hash');
+  console.log('Updating readme with new script src');
   await execShellCommand('cd packages/teams-js & yarn build & node prepNewReadme.js');
 };
 
