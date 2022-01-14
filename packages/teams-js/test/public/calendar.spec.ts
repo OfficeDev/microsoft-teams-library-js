@@ -32,6 +32,8 @@ describe('calendar', () => {
     };
 
     it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+
       await calendar
         .openCalendarItem(openCalendarItemParams)
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
@@ -44,6 +46,8 @@ describe('calendar', () => {
           if (frameContext === FrameContexts.content) {
             return;
           }
+
+          expect.assertions(1);
 
           await utils.initializeWithContext(frameContext);
 
@@ -60,6 +64,8 @@ describe('calendar', () => {
       });
 
     it('should not allow calls if runtime does not support calendar', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -67,39 +73,41 @@ describe('calendar', () => {
     });
 
     it('should throw if a null itemId is supplied', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
-      let error;
-
-      await calendar.openCalendarItem({ itemId: null }).catch(e => (error = e));
-
-      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+      await calendar
+        .openCalendarItem({ itemId: null })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an undefined itemId is supplied', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
-      let error;
-
-      await calendar.openCalendarItem({ itemId: undefined }).catch(e => (error = e));
-
-      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+      await calendar
+        .openCalendarItem({ itemId: undefined })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an empty itemId is supplied', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
-      let error;
-
-      await calendar.openCalendarItem({ itemId: '' }).catch(e => (error = e));
-
-      expect(error).toMatchObject(new Error('Must supply an itemId to openCalendarItem'));
+      await calendar
+        .openCalendarItem({ itemId: '' })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if the openCalendarItem message sends and fails', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
@@ -114,14 +122,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
 
-      let error;
-      try {
-        await openCalendarItemPromise;
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toMatchObject(new Error('Something went wrong...'));
+      await openCalendarItemPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the openCalendarItem message', async () => {
@@ -165,6 +166,8 @@ describe('calendar', () => {
     const composeMeetingParams: calendar.ComposeMeetingParams = {};
 
     it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+
       await calendar
         .composeMeeting(composeMeetingParams)
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
@@ -177,6 +180,8 @@ describe('calendar', () => {
           if (frameContext === FrameContexts.content) {
             return;
           }
+
+          expect.assertions(1);
 
           await utils.initializeWithContext(frameContext);
 
@@ -193,6 +198,8 @@ describe('calendar', () => {
       });
 
     it('should not allow calls if runtime does not support mail', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -200,11 +207,12 @@ describe('calendar', () => {
     });
 
     it('should successfully throw if the openMailItem message sends and fails', async () => {
+      expect.assertions(1);
+
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
       const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
-
       const composeMeeting = utils.findMessageByFunc('calendar.composeMeeting');
 
       const data = {
@@ -214,14 +222,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(composeMeeting, data.success, data.error);
 
-      let error;
-      try {
-        await composeMeetingPromise;
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toMatchObject(new Error('Something went wrong...'));
+      await composeMeetingPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the composeMeeting message', async () => {
@@ -229,7 +230,6 @@ describe('calendar', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
 
       const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
-
       const composeMeetingMessage = utils.findMessageByFunc('calendar.composeMeeting');
 
       const data = {
