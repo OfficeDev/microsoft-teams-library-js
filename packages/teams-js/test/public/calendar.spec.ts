@@ -197,7 +197,7 @@ describe('calendar', () => {
         });
       });
 
-    it('should not allow calls if runtime does not support mail', async () => {
+    it('should not allow calls if runtime does not support calendar', async () => {
       expect.assertions(1);
 
       await utils.initializeWithContext('content');
@@ -206,7 +206,7 @@ describe('calendar', () => {
       await calendar.composeMeeting(composeMeetingParams).catch(e => expect(e).toBe('Not Supported'));
     });
 
-    it('should successfully throw if the openMailItem message sends and fails', async () => {
+    it('should successfully throw if the composeMeeting message sends and fails', async () => {
       expect.assertions(1);
 
       await utils.initializeWithContext('content');
@@ -267,7 +267,7 @@ describe('calendar', () => {
       expect(calendar.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says mail is supported', () => {
+    it('should return true if the runtime says calendar is supported', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
       expect(calendar.isSupported()).toBeTruthy();
     });
