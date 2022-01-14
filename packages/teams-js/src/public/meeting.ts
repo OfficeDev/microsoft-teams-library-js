@@ -466,6 +466,7 @@ export namespace meeting {
   }
 
   /**
+   * @hidden
    * Allows an app to share contents in the meeting
    *
    * @param appContentUrl - appContentUrl is the input URL which needs to be shared on to the stage
@@ -473,6 +474,7 @@ export namespace meeting {
    */
   export function shareAppContentToStage(appContentUrl: string): Promise<boolean>;
   /**
+   * @hidden
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link meeting.shareAppContentToStage meeting.shareAppContentToStage(appContentUrl: string): Promise\<boolean\>} instead.
    *
@@ -516,6 +518,12 @@ export namespace meeting {
     );
   }
 
+  /**
+   * @hidden
+   * Helper method to generate and return a promise for shareAppContentToStage
+   * @param appContentUrl
+   * @returns
+   */
   function shareAppContentToStageHelper(appContentUrl: string): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       resolve(sendAndHandleSdkError('meeting.shareAppContentToStage', appContentUrl));
@@ -523,12 +531,14 @@ export namespace meeting {
   }
 
   /**
+   * @hidden
    * Provides information related to app's in-meeting sharing capabilities
    *
    * @returns Promise resolved with sharing capability details or rejected with SdkError value
    */
   export function getAppContentStageSharingCapabilities(): Promise<IAppContentStageSharingCapabilities>;
   /**
+   * @hidden
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link meeting.getAppContentStageSharingCapabilities meeting.getAppContentStageSharingCapabilities(): Promise\<IAppContentStageSharingCapabilities\>} instead.
    *
@@ -558,6 +568,10 @@ export namespace meeting {
     );
   }
 
+  /**
+   * @hidden
+   * @returns
+   */
   function getAppContentStageSharingCapabilitiesHelper(): Promise<IAppContentStageSharingCapabilities> {
     return new Promise<IAppContentStageSharingCapabilities>(resolve => {
       resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingCapabilities'));
@@ -599,6 +613,10 @@ export namespace meeting {
     );
   }
 
+  /**
+   * @hidden
+   * @returns
+   */
   function stopSharingAppContentToStageHelper(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       resolve(sendAndHandleSdkError('meeting.stopSharingAppContentToStage'));
