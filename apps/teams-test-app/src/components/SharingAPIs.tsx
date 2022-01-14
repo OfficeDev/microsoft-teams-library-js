@@ -29,13 +29,9 @@ const ShareWebContent = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async (input, setResult) => {
-          return new Promise<string>((res, rej) => {
-            sharing
-              .shareWebContent(input)
-              .then(val => res('Success'))
-              .catch(error => rej(JSON.stringify(error)));
-          });
+        withPromise: async input => {
+          await sharing.shareWebContent(input);
+          return 'Success';
         },
         withCallback: (input, setResult) => {
           const callback = (err?: SdkError): void => {
