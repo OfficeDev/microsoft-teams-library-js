@@ -51,7 +51,6 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
           setTimeout(() => {
             readyToUnload();
           }, delay);
-          alert(`beforeUnload received; calling readyToUnload in ${delay / 1000} seconds`);
           setResult('Success');
           return true;
         });
@@ -67,11 +66,18 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     title: 'Register On Focus Enter Handler',
     onClick: async setResult => {
       teamsCore.registerFocusEnterHandler(navigateForward => {
-        setResult('successfully called with nativateForward:' + navigateForward);
+        setResult('successfully called with navigateForward: ' + navigateForward);
         return true;
       });
       return 'registered';
     },
+  });
+
+const CheckTeamsCoreCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkTeamsCoreCapability',
+    title: 'Check TeamsCore Capability',
+    onClick: async () => `TeamsCore ${teamsCore.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
@@ -82,6 +88,7 @@ const TeamsCoreAPIs = (): ReactElement => (
     <RegisterOnLoadHandler />
     <RegisterBeforeUnloadHandler />
     <RegisterFocusEnterHandler />
+    <CheckTeamsCoreCapability />
   </>
 );
 
