@@ -24,3 +24,6 @@ yarn-error.log
 
 # UT results
 /packages/*/test-results
+
+# locally generated docs
+/packages/teams-js/docs
