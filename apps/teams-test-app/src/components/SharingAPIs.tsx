@@ -1,4 +1,4 @@
-import { sharing } from '@microsoft/teams-js';
+import { SdkError, sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -28,15 +28,21 @@ const ShareWebContent = (): React.ReactElement =>
           }
         }
       },
-      submit: async input => {
-        return new Promise<string>((res, rej) => {
-          sharing.shareWebContent(input, error => {
-            if (error) {
-              rej(JSON.stringify(error));
+      submit: {
+        withPromise: async input => {
+          await sharing.shareWebContent(input);
+          return 'Success';
+        },
+        withCallback: (input, setResult) => {
+          const callback = (err?: SdkError): void => {
+            if (err) {
+              setResult(JSON.stringify(err));
+            } else {
+              setResult('Success');
             }
-            res('Success');
-          });
-        });
+          };
+          sharing.shareWebContent(input, callback);
+        },
       },
     },
   });

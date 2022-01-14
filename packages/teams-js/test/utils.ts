@@ -39,10 +39,10 @@ export class Utils {
 
     this.parentWindow = {
       postMessage: function(message: MessageRequest, targetOrigin: string): void {
-        if (message.func === 'initialize') {
-          expect(targetOrigin).toEqual('*');
-        } else {
-          expect(targetOrigin).toEqual(that.validOrigin);
+        if (message.func === 'initialize' && targetOrigin !== '*') {
+          throw new Error('initialize messages to parent window must have a targetOrigin of *');
+        } else if (message.func !== 'initialize' && targetOrigin !== that.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${that.validOrigin}`);
         }
         that.messages.push(message);
       },
@@ -109,11 +109,17 @@ export class Utils {
     const promise = app.initialize(validMessageOrigins);
 
     const initMessage = this.findMessageByFunc('initialize');
-    expect(initMessage).not.toBeNull();
+    if (initMessage === null) {
+      throw new Error('initMessage must not be null');
+    }
 
     this.respondToMessage(initMessage, frameContext, hostClientType);
     await promise;
-    expect(GlobalVars.clientSupportedSDKVersion).toEqual(defaultSDKVersionForCompatCheck);
+    if (GlobalVars.clientSupportedSDKVersion !== defaultSDKVersionForCompatCheck) {
+      throw new Error(
+        `clientSupportedSDKVersion(${GlobalVars.clientSupportedSDKVersion}) and defaultSDKVersionForCompatCheck (${defaultSDKVersionForCompatCheck}) do not match`,
+      );
+    }
   };
 
   public initializeAsFrameless = (validMessageOrigins?: string[]): Promise<void> => {
