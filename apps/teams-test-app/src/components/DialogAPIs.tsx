@@ -30,14 +30,6 @@ const DialogAPIs = (): ReactElement => {
             const onComplete = (err: string, result: string | object): void => {
               setResult('Error: ' + err + '\nResult: ' + result);
             };
-            // Store the reference of child window in React
-            // const childWindow = dialog.open(dialogInfo, onComplete);
-            // childWindow.addEventListener('message', (message: string) => {
-            //   // Message from parent
-            //   setResult(message);
-            //   console.log('test: ' + JSON.stringify(message));
-            // });
-            // childWindowRef.current = childWindow;
             openDialogHelper(dialog.open(dialogInfo, onComplete), setResult);
             return '';
           },
