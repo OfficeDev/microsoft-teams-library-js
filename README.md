@@ -1,5 +1,9 @@
 # Microsoft Teams JavaScript client SDK
 
+[![Microsoft Teams Library JS CI v2.0-preview](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?branch=2.0-preview&event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
+[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js?branchName=2.0-preview)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483&branchName=2.0-preview)
+[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
+
 Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
 ## Getting Started
@@ -12,9 +16,6 @@ Welcome to the Teams client SDK monorepo! For breaking changes, please refer to 
 TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
-
-[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=2.0-preview)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
 
 # Packages
 
