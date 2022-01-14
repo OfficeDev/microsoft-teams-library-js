@@ -30,7 +30,7 @@ describe('mail', () => {
 
   describe('openMailItem', () => {
     const openMailItemParams: mail.OpenMailItemParams = {
-      itemId: '',
+      itemId: '1',
     };
 
     it('should not allow calls before initialization', async () => {
@@ -66,6 +66,33 @@ describe('mail', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
       await mail.openMailItem(openMailItemParams).catch(e => expect(e).toBe('Not Supported'));
+    });
+
+    it('should throw if a null itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      await mail
+        .openMailItem({ itemId: null })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
+    });
+
+    it('should throw if an undefined itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      await mail
+        .openMailItem({ itemId: undefined })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
+    });
+
+    it('should throw if an empty itemId is supplied', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      await mail
+        .openMailItem({ itemId: '' })
+        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
     });
 
     it('should successfully throw if the openMailItem message sends and fails', async () => {
@@ -165,7 +192,7 @@ describe('mail', () => {
       await mail.composeMail(composeMailParams).catch(e => expect(e).toBe('Not Supported'));
     });
 
-    it('should successfully throw if the openMailItem message sends and fails', async () => {
+    it('should successfully throw if the composeMail message sends and fails', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
 

@@ -14,6 +14,10 @@ export namespace mail {
         throw 'Not Supported';
       }
 
+      if (!openMailItemParams.itemId || !openMailItemParams.itemId.trim()) {
+        throw new Error('Must supply an item id to openMailItem');
+      }
+
       resolve(sendAndHandleError('mail.openMailItem', openMailItemParams));
     });
   }
