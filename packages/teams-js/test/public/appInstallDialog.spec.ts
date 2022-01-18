@@ -32,7 +32,7 @@ describe('appInstallDialog', () => {
   });
 
   it('openAppInstallDialog should be called if supported', async () => {
-    expect.assertions(7); // 4 assertions are made in Utils.initializeWithContext
+    expect.assertions(3);
     await utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,
