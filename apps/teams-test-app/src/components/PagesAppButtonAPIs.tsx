@@ -41,7 +41,7 @@ const RegisterAppButtonHoverLeaveHandler = (): React.ReactElement =>
 
 const PagesAppButtonAPIs = (): ReactElement => (
   <>
-    <h1>pages.tabs</h1>
+    <h1>pages.appButton</h1>
     <RegisterAppButtonClickHandler />
     <RegisterAppButtonHoverEnterHandler />
     <RegisterAppButtonHoverLeaveHandler />

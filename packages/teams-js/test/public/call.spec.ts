@@ -32,7 +32,7 @@ describe('call', () => {
   });
 
   it('startCall should be called if supported', async () => {
-    expect.assertions(7); // 4 assertions are made in Utils.initializeWithContext
+    expect.assertions(3);
     utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,

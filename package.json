@@ -19,13 +19,15 @@
     "clean": "lerna run clean --stream",
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
+    "docs": "yarn workspace @microsoft/teams-js docs",
     "efb": "lerna run eslint-fix-build",
-    "publish-sdk": "yarn publish packages/teams-js",
+    "lint": "lerna run lint",
+    "release": "node tools/cli/prepNextRelease.js",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
-    "test": "lerna run test --stream",
-    "lint": "lerna run lint"
+    "test": "lerna run test --stream"
+    
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -76,6 +78,7 @@
     "ts-jest": "^27.0.5",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.2.1",
+    "typedoc": "^0.22.10",
     "typescript": "^4.1.2",
     "webpack": "^5.10.0",
     "webpack-assets-manifest": "^5.0.6",
