@@ -37,7 +37,6 @@ const GetAuthToken = (): React.ReactElement =>
             ...authParams,
           };
           authentication.getAuthToken(authRequest);
-          return 'getAuthToken()' + noHostSdkMsg;
         },
       },
     },
@@ -64,7 +63,6 @@ const GetUser = (): React.ReactElement =>
           failureCallback: failureCallback,
         };
         authentication.getUser(userRequest);
-        return 'getUser()' + noHostSdkMsg;
       },
     },
   });
@@ -114,7 +112,6 @@ const Authenticate = (): React.ReactElement =>
             ...authParams,
           };
           authentication.authenticate(authRequest);
-          return 'autheticate()' + noHostSdkMsg;
         },
       },
     },
