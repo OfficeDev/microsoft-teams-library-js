@@ -125,6 +125,7 @@ export namespace authentication {
             link.href,
             authenticateParameters.width,
             authenticateParameters.height,
+            authenticateParameters.isExternal,
           ]).then(([success, response]: [boolean, string]) => {
             if (success) {
               return response;
@@ -281,7 +282,7 @@ export namespace authentication {
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
-    link.href = authenticateParameters.url;
+    link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
@@ -494,6 +495,10 @@ export namespace authentication {
      * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
      */
     height?: number;
+    /**
+     * The flag which indicates whether the auth page should be opened in an external browser. This flag has no effect on the web client.
+     */
+    isExternal?: boolean;
   }
 
   /**
