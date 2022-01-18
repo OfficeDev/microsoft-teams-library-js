@@ -43,6 +43,17 @@ const selectMediaHelper = (medias: media.Media[]): string => {
   return message;
 };
 
+const getMediaHelper = (blob: Blob, setResult: (result: string) => void): void => {
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = () => {
+    if (reader.result) {
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      setResult('Received Blob (length: ' + (reader.result as any).length + ')');
+    }
+  };
+};
+
 const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
@@ -112,14 +123,7 @@ const GetMedia = (): React.ReactElement =>
           const medias = await media.selectMedia(input);
           const mediaItem: media.Media = medias[0] as media.Media;
           const blob = await mediaItem.getMedia();
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            if (reader.result) {
-              // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-              setResult('Received Blob (length: ' + (reader.result as any).length + ')');
-            }
-          };
+          getMediaHelper(blob, setResult);
           return 'media.getMedia()' + noHostSdkMsg;
         },
         withCallback: (input, setResult) => {
@@ -127,14 +131,7 @@ const GetMedia = (): React.ReactElement =>
             if (error) {
               setResult(JSON.stringify(error));
             } else {
-              const reader = new FileReader();
-              reader.readAsDataURL(blob);
-              reader.onloadend = () => {
-                if (reader.result) {
-                  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-                  setResult('Received Blob (length: ' + (reader.result as any).length + ')');
-                }
-              };
+              getMediaHelper(blob, setResult);
             }
           };
           const selectMediaCallback = (error: SdkError, medias: media.Media[]): void => {
