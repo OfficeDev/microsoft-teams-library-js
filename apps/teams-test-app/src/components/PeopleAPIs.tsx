@@ -40,7 +40,6 @@ const SelectPeople = (): React.ReactElement =>
           } else {
             people.selectPeople(callback);
           }
-          return 'selectPeople()' + noHostSdkMsg;
         },
       },
     },
