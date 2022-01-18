@@ -65,7 +65,6 @@ const CaptureImage = (): React.ReactElement =>
           }
         };
         media.captureImage(callback);
-        return 'media.captureImage()' + noHostSdkMsg;
       },
     },
   });
@@ -96,7 +95,6 @@ const SelectMedia = (): React.ReactElement =>
             }
           };
           media.selectMedia(input, callback);
-          return 'media.selectMedia()' + noHostSdkMsg;
         },
       },
     },
@@ -109,19 +107,47 @@ const GetMedia = (): React.ReactElement =>
     onClick: {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
-      submit: async (input, setResult) => {
-        const medias = await media.selectMedia(input);
-        const mediaItem: media.Media = medias[0] as media.Media;
-        const blob = await mediaItem.getMedia();
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          if (reader.result) {
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-            setResult('Received Blob (length: ' + (reader.result as any).length + ')');
-          }
-        };
-        return 'media.getMedia()' + noHostSdkMsg;
+      submit: {
+        withPromise: async (input, setResult) => {
+          const medias = await media.selectMedia(input);
+          const mediaItem: media.Media = medias[0] as media.Media;
+          const blob = await mediaItem.getMedia();
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            if (reader.result) {
+              // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+              setResult('Received Blob (length: ' + (reader.result as any).length + ')');
+            }
+          };
+          return 'media.getMedia()' + noHostSdkMsg;
+        },
+        withCallback: (input, setResult) => {
+          const getMediaCallback = (error: SdkError, blob: Blob): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              const reader = new FileReader();
+              reader.readAsDataURL(blob);
+              reader.onloadend = () => {
+                if (reader.result) {
+                  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+                  setResult('Received Blob (length: ' + (reader.result as any).length + ')');
+                }
+              };
+            }
+          };
+          const selectMediaCallback = (error: SdkError, medias: media.Media[]): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              const mediaItem: media.Media = medias[0] as media.Media;
+              mediaItem.getMedia(getMediaCallback);
+            }
+          };
+          media.selectMedia(input, selectMediaCallback);
+          return 'media.getMedia()' + noHostSdkMsg;
+        },
       },
     },
   });
@@ -174,7 +200,6 @@ const ScanBarCode = (): ReactElement =>
             }
           };
           media.scanBarCode(callback, input);
-          return 'media.scanBarCode()' + noHostSdkMsg;
         },
       },
     },
