@@ -54,6 +54,19 @@ const getMediaHelper = (blob: Blob, setResult: (result: string) => void): void =
   };
 };
 
+const getUrlListFromId = (medias: media.Media[]): media.ImageUri[] => {
+  const urlList: media.ImageUri[] = [];
+  for (let i = 0; i < medias.length; i++) {
+    const media = medias[i];
+    urlList.push({
+      value: media.content,
+      type: 1, //ImageUriType.ID
+    } as media.ImageUri);
+  }
+
+  return urlList;
+};
+
 const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
@@ -159,19 +172,31 @@ const ViewImagesWithId = (): React.ReactElement =>
           throw new Error('mediaType and maxMediaCount are required');
         }
       },
-      submit: async input => {
-        const medias = await media.selectMedia(input);
-
-        const urlList: media.ImageUri[] = [];
-        for (let i = 0; i < medias.length; i++) {
-          const media = medias[i];
-          urlList.push({
-            value: media.content,
-            type: 1, //ImageUriType.ID
-          } as media.ImageUri);
-        }
-        await media.viewImages(urlList);
-        return 'Success';
+      submit: {
+        withPromise: async input => {
+          const medias = await media.selectMedia(input);
+          const urlList: media.ImageUri[] = getUrlListFromId(medias);
+          await media.viewImages(urlList);
+          return 'Success';
+        },
+        withCallback: (input, setResult) => {
+          const viewImageCallback = (error?: SdkError): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('Success');
+            }
+          };
+          const selectMediaCallback = (error: SdkError, medias: media.Media[]): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              const urlList: media.ImageUri[] = getUrlListFromId(medias);
+              media.viewImages(urlList, viewImageCallback);
+            }
+          };
+          media.selectMedia(input, selectMediaCallback);
+        },
       },
     },
   });
@@ -212,10 +237,23 @@ const ViewImagesWithUrls = (): React.ReactElement =>
           throw new Error('input has to be an array of strings with at least one element');
         }
       },
-      submit: async input => {
-        const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
-        await media.viewImages(urlList);
-        return 'media.viewImagesWithUrls() executed';
+      submit: {
+        withPromise: async input => {
+          const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
+          await media.viewImages(urlList);
+          return 'media.viewImagesWithUrls() executed';
+        },
+        withCallback: (input, setResult) => {
+          const callback = (error?: SdkError): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('media.viewImagesWithUrls() executed');
+            }
+          };
+          const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
+          media.viewImages(urlList, callback);
+        },
       },
     },
   });
