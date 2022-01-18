@@ -46,14 +46,35 @@ const DialogAPIs = (): ReactElement => {
     ApiWithTextInput<string>({
       name: 'sendMessageToChild',
       title: 'sendMessageToChild',
-      onClick: async message => {
-        if (childWindowRef.current && childWindowRef.current !== null) {
-          const childWindow = childWindowRef.current;
-          await childWindow.postMessage(message);
-          return 'Message sent to child';
-        } else {
-          return 'childWindow doesnt exist';
-        }
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: {
+          withPromise: async message => {
+            if (childWindowRef.current && childWindowRef.current !== null) {
+              const childWindow = childWindowRef.current;
+              await childWindow.postMessage(message);
+              return 'Message sent to child';
+            } else {
+              return 'childWindow doesn\'t exist';
+            }
+          },
+          withCallback: (message, setResult) => {
+            if (childWindowRef.current && childWindowRef.current !== null) {
+              const childWindow = childWindowRef.current;
+              const onComplete = (status: boolean, reason?: string): void => {
+                if (reason && !status) {
+                  setResult(JSON.stringify(reason));
+                } else {
+                  setResult('Message sent to child');
+                }
+              };
+              childWindow.postMessage(message, onComplete);
+            } else {
+              setResult("childWindow doesn't exist");
+            }
+          },
+        },
       },
     });
 
@@ -61,14 +82,35 @@ const DialogAPIs = (): ReactElement => {
     ApiWithTextInput<string>({
       name: 'sendMessageToParent',
       title: 'sendMessageToParent',
-      onClick: async message => {
-        const parentWindow = ParentAppWindow.Instance;
-        if (parentWindow) {
-          await parentWindow.postMessage(message);
-          return 'Message sent to parent';
-        } else {
-          return 'parentWindow doesn\'t exist';
-        }
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: {
+          withPromise: async message => {
+            const parentWindow = ParentAppWindow.Instance;
+            if (parentWindow) {
+              await parentWindow.postMessage(message);
+              return 'Message sent to parent';
+            } else {
+              return 'parentWindow doesn\'t exist';
+            }
+          },
+          withCallback: (message, setResult) => {
+            const parentWindow = ParentAppWindow.Instance;
+            if (parentWindow) {
+              const onComplete = (status: boolean, reason?: string): void => {
+                if (reason && !status) {
+                  setResult(JSON.stringify(reason));
+                } else {
+                  setResult('Message sent to parent');
+                }
+              };
+              parentWindow.postMessage(message, onComplete);
+            } else {
+              setResult("parentWindow doesn't exist");
+            }
+          },
+        },
       },
     });
 
