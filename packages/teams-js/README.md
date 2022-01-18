@@ -1,24 +1,18 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
+Welcome to the Teams JavaScript client SDK ! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch.
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams/). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
-
-[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=master)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=master)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=master)
+This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
 
 ## Getting Started
 
-1.  Clone the repo
-2.  Navigate to the repo root and run `yarn install`
-3.  Run `yarn build` from repo root
-4.  To run Unit tests, run `yarn test`
+See [instructions](../../README.md#Getting-Started) in the monorepo root for how to clone and build the repository.
 
-  TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
+Whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
 ## Installation
 
-To install the latest 2.0 preview version:
+To install the latest [2.0 preview version](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta):
 
 ### npm
 
@@ -74,11 +68,3 @@ Stay tuned for examples coming soon.
 ## Testing
 
 The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
-
-## Contributing
-
-We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md).
-
----
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

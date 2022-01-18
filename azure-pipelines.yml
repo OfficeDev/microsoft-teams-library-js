@@ -14,254 +14,237 @@ trigger:
     include:
       - 'v*'
 
-pool:
-  vmImage: 'windows-latest'
+jobs:
+  - job: Security
+    displayName: 'Security Tasks'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - task: ESLint@1
+        displayName: 'Run ESLint'
+        inputs:
+          Configuration: 'required'
+          TargetType: 'eslint'
+          TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+          ErrorLevel: 'warn'
 
-steps:
-  - task: YarnInstaller@3
-    inputs:
-      versionSpec: '1.x'
-    displayName: 'Yarn 1.x'
+      - task: CredScan@3
+        displayName: 'Run Credential Scanner'
+        condition: succeededOrFailed()
+        inputs:
+          debugMode: false
+          suppressionsFile: '.sdl\CredScanSuppressions.json'
 
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '14.x'
-    displayName: 'Install Node.js'
+      - task: PublishSecurityAnalysisLogs@3
+        inputs:
+          ArtifactName: 'CodeAnalysisLogs'
+          ArtifactType: 'M365'
+          AllTools: true
+          ToolLogsNotFoundAction: 'Standard'
+        condition: succeededOrFailed()
+        displayName: 'Publish Guardian Artifacts 2'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'install'
-    displayName: 'yarn install'
+        # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
+      - task: AssetRetention@3
+        inputs:
+          ArrowServiceConnection: '$(ArrowConnection)'
+          AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+          AssetNumber: '$(Build.BuildId)'
+          IsShipped: false
+          DropsToRetain: 'CodeAnalysisLogs'
+        condition: and(
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          ne(variables['Build.Reason'], 'PullRequest'),
+          ne(variables['Build.Reason'], 'Manual')
+          )
+        displayName: 'Artifact Retention(Arrow)'
 
-  - script: 'node prepNextDevRelease.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'node prepNextDevRelease.js'
+      - task: PostAnalysis@2
+        condition: succeededOrFailed()
+        displayName: 'Guardian Break'
+        inputs:
+          GdnBreakPolicyMinSev: Warning
+          GdnBreakAllTools: true
+          GdnBreakGdnToolCredScan: true
+          GdnBreakGdnToolCredScanSeverity: Warning
+          GdnBreakGdnToolESLint: true
+          GdnBreakGdnToolESLintSeverity: Warning
+          GdnBreakPolicy: M365
 
-  - task: ESLint@1
-    inputs:
-      Configuration: 'required'
-      TargetType: 'eslint'
-      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
-      ErrorLevel: 'warn'
-    displayName: 'Run ESLint'
+  - job: Build
+    displayName: 'Build, Test, and Publish Artifacts'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - task: YarnInstaller@3
+        displayName: 'Yarn 1.x'
+        inputs:
+          versionSpec: '1.x'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'build'
-    displayName: 'yarn build'
+      - task: NodeTool@0
+        displayName: 'Install Node.js'
+        inputs:
+          versionSpec: '14.x'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'test'
-    displayName: 'yarn test'
+      - task: Yarn@3
+        displayName: 'yarn install'
+        inputs:
+          Arguments: 'install'
 
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '**/unit-tests-report*.xml'
-    condition: succeededOrFailed()
+      - script: 'node prepNextDevRelease.js'
+        displayName: 'node prepNextDevRelease.js'
+        workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+        condition: and(
+          eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          ne(variables['Build.Reason'], 'PullRequest'),
+          ne(variables['Build.Reason'], 'Manual')
+          )
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'bundleAnalyze:collect'
-    displayName: 'Run bundle analysis and collect'
+      - task: Yarn@3
+        inputs:
+          Arguments: 'build'
+        displayName: 'yarn build'
 
-  - script: 'node prepNewReadme.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'node prepNewReadme.js'
+      - script: 'node prepNewReadme.js'
+        workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+        condition: and(
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          ne(variables['Build.Reason'], 'PullRequest'),
+          ne(variables['Build.Reason'], 'Manual')
+          )
+        displayName: 'node prepNewReadme.js'
 
-  # Bundle analysis comparison : should trigger only by PR against 2.0-preview
-  # Adding comment for a commit that should queue the pipeline with a PR trigger
+      - task: Yarn@3
+        inputs:
+          Arguments: 'test'
+        displayName: 'yarn test'
 
-  - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-    name: bundleAnalysisTask
-    displayName: 'Analyze bundles against 2.0-preview and output result'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/unit-tests-report*.xml'
+        condition: succeededOrFailed()
 
-  - task: GitHubComment@0
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-    inputs:
-      gitHubConnection: '$(RepoGitHubConnection)'
-      repositoryName: '$(Build.Repository.Name)'
-      id: '$(System.PullRequest.PullRequestNumber)'
-      comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-    displayName: 'Post bundle analysis result as PR comment in github'
+      - task: Yarn@2
+        inputs:
+          Arguments: 'bundleAnalyze:collect'
+        displayName: 'Run bundle analysis and collect'
 
-  - task: PublishBuildArtifacts@1
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'))
-    inputs:
-      PathtoPublish: './common/temp/bundleAnalysis'
-      ArtifactName: '$(bundleArtifactName)'
-    displayName: 'Publish bundle analysis'
+      # Bundle analysis comparison : should trigger only by PR against 2.0-preview
+      # Adding comment for a commit that should queue the pipeline with a PR trigger
 
-  - powershell: |
-      $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
-      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
-    name: package
-    displayName: 'Set package.version Variable'
+      - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        condition: and(
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          eq(variables['Build.Reason'], 'PullRequest'),
+          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+        name: bundleAnalysisTask
+        displayName: 'Analyze bundles against 2.0-preview and output result'
 
-  - task: ComponentGovernanceComponentDetection@0
-    condition: and(
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-    inputs:
-      scanType: 'LogOnly'
-      verbosity: 'Verbose'
-      alertWarningLevel: 'High'
-      failOnAlert: true
-    displayName: 'Security check - Component Governance (Pull Request)'
+      - task: GitHubComment@0
+        condition: and(
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          eq(variables['Build.Reason'], 'PullRequest'),
+          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+        inputs:
+          gitHubConnection: '$(RepoGitHubConnection)'
+          repositoryName: '$(Build.Repository.Name)'
+          id: '$(System.PullRequest.PullRequestNumber)'
+          comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
+        displayName: 'Post bundle analysis result as PR comment on GitHub'
 
-  - task: ComponentGovernanceComponentDetection@0
-    condition: and(
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
-      ne(variables['Build.Reason'], 'PullRequest'))
-    displayName: 'Security check - Component Governance (2.0-preview, release)'
+      - task: PublishBuildArtifacts@1
+        condition: and(
+          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+          ne(variables['Build.Reason'], 'PullRequest'))
+        inputs:
+          PathtoPublish: './common/temp/bundleAnalysis'
+          ArtifactName: '$(bundleArtifactName)'
+        displayName: 'Publish bundle analysis'
 
-  - task: CredScan@3
-    condition: succeededOrFailed()
-    displayName: 'Run Credential Scanner'
-    inputs:
-      debugMode: false
-      suppressionsFile: '.sdl\CredScanSuppressions.json'
+      - powershell: |
+          $npmVer=$(node -p "require('./packages/teams-js/package.json').version") 
+          Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+        name: package
+        displayName: 'Set package.version Variable'
 
-  - task: PublishSecurityAnalysisLogs@3
-    inputs:
-      ArtifactName: 'CodeAnalysisLogs'
-      ArtifactType: 'M365'
-      AllTools: true
-      ToolLogsNotFoundAction: 'Standard'
-    condition: succeededOrFailed()
-    displayName: 'Publish Guardian Artifacts 2'
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: 'apps/teams-test-app/build'
+          contents: '**'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+        displayName: 'Copy Test app to artifacts staging directory'
 
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: 'apps/teams-test-app/build'
-      contents: '**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
-    displayName: 'Copy Test app to artifacts staging directory'
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+          replaceExistingArchive: true
+        displayName: 'Zip Test app artifacts'
 
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-      replaceExistingArchive: true
-    displayName: 'Zip Test app artifacts'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+          ArtifactName: 'teams-test-app'
+        displayName: 'Publish Test app artifacts'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-      ArtifactName: 'teams-test-app'
-    displayName: 'Publish Test app artifacts'
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: 'packages\teams-js\dist'
+          contents: '**\?(*.js|*.ts|*.map)'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
+        displayName: 'Copy TeamsJS Content for CDN'
 
-  # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
-  - task: AssetRetention@3
-    inputs:
-      ArrowServiceConnection: '$(ArrowConnection)'
-      AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
-      AssetNumber: '$(Build.BuildId)'
-      IsShipped: true # This setting will ensure the artifacts are retained more than 548 days as per compliance, more details https://microsoft.sharepoint.com/teams/M365Security/EngSec/SitePages/How-to-make-sure-your-SDL-results-are-retained.aspx
-      DropsToRetain: 'CodeAnalysisLogs'
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'Artifact Retention(Arrow)'
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            packages\teams-js\package.json
+            packages\teams-js\README.md
+            LICENSE
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+          flattenFolders: true
+        displayName: 'Copy TeamsJS Content for NPM'
 
-  - task: PostAnalysis@2
-    condition: succeededOrFailed()
-    displayName: 'Guardian Break'
-    inputs:
-      GdnBreakPolicyMinSev: Warning
-      GdnBreakAllTools: true
-      GdnBreakGdnToolCredScan: true
-      GdnBreakGdnToolCredScanSeverity: Warning
-      GdnBreakGdnToolESLint: true
-      GdnBreakGdnToolESLintSeverity: Warning
-      GdnBreakPolicy: M365
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            packages\teams-js\dist\**\?(*.js|*.ts|*.map)
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
+          flattenFolders: true
+        displayName: 'Copy JS Content for NPM'
 
-  - task: AzureRmWebAppDeployment@4
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-    inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: '$(AzureSubscription)'
-      appType: 'webApp'
-      WebAppName: 'musicalsink'
-      package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-    displayName: 'Deploy to musicalsink'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
+          ArtifactName: 'CDNFeed'
+        displayName: 'Publish CDN feed to build Artifacts'
 
-  - task: AzureRmWebAppDeployment@4
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'))
-    inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: '$(AzureSubscription)'
-      appType: 'webApp'
-      WebAppName: 'cloudroll'
-      package: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-    displayName: 'Deploy to cloudroll'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+          ArtifactName: 'NPMFeed'
+        displayName: 'Publish NPM feed to Build Artifacts'
 
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: 'packages\teams-js\dist'
-      contents: '**\?(*.js|*.ts|*.map)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
-    displayName: 'Copy TeamsJS Content for CDN'
+      - task: ComponentGovernanceComponentDetection@0
+        condition: and(
+          eq(variables['Build.Reason'], 'PullRequest'),
+          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+        inputs:
+          scanType: 'LogOnly'
+          verbosity: 'Verbose'
+          alertWarningLevel: 'High'
+          failOnAlert: true
+        displayName: 'Component Governance (Pull Request)'
 
-  - task: CopyFiles@2
-    inputs:
-      Contents: |
-        packages\teams-js\package.json
-        packages\teams-js\README.md
-        LICENSE
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-      flattenFolders: true
-    displayName: 'Copy TeamsJS Content for NPM'
-
-  - task: CopyFiles@2
-    inputs:
-      Contents: |
-        packages\teams-js\dist\**\?(*.js|*.ts|*.map)
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
-      flattenFolders: true
-    displayName: 'Copy JS Content for NPM'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
-      ArtifactName: 'CDNFeed'
-    displayName: 'Publish CDN feed to build Artifacts'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-      ArtifactName: 'NPMFeed'
-    displayName: 'Publish NPM feed to Build Artifacts'
+      - task: ComponentGovernanceComponentDetection@0
+        condition: and(
+          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+          ne(variables['Build.Reason'], 'PullRequest'))
+        displayName: 'Component Governance (2.0-preview, release)'

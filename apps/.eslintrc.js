@@ -1,7 +1,5 @@
 module.exports = {
-  extends: [
-    'plugin:react/recommended',
-  ],
+  extends: ['plugin:react/recommended'],
   plugins: ['react-hooks'],
   rules: {
     'react-hooks/rules-of-hooks': 'error',
@@ -10,8 +8,8 @@ module.exports = {
   },
   settings: {
     react: {
-      'pragma': 'React',
-      'version': 'detect',
-    }
+      pragma: 'React',
+      version: 'detect',
+    },
   },
 };

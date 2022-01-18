@@ -77,12 +77,12 @@ describe('config', () => {
   it('should successfully get settings', async () => {
     await utils.initializeWithContext('settings');
 
-    const promise = pages.config.getConfig();
+    const promise = pages.getConfig();
 
     let message = utils.findMessageByFunc('settings.getSettings');
     expect(message).not.toBeNull();
 
-    let expectedSettings: pages.config.Config = {
+    let expectedSettings: pages.InstanceConfig = {
       suggestedDisplayName: 'someSuggestedDisplayName',
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
@@ -97,7 +97,7 @@ describe('config', () => {
   it('should successfully set settings', async () => {
     await utils.initializeWithContext('settings');
 
-    let settingsObj: pages.config.Config = {
+    let settingsObj: pages.InstanceConfig = {
       suggestedDisplayName: 'someSuggestedDisplayName',
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',

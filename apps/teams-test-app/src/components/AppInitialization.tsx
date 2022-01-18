@@ -52,12 +52,7 @@ const NotifyExpectedFailure = (): React.ReactElement =>
     onClick: {
       validateInput: input => {
         if (!input.reason) {
-          // this API actually allow for the input not to be provided
-          return;
-        }
-        const acceptableValues = Object.values(app.ExpectedFailureReason);
-        if (!input.reason && !acceptableValues.includes(input.reason)) {
-          throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
+          input.reason = app.ExpectedFailureReason.Other;
         }
       },
       submit: async input => {
