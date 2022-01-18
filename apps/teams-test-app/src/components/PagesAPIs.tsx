@@ -1,7 +1,25 @@
-import { DeepLinkParameters, FrameInfo, pages } from '@microsoft/teams-js';
+import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const GetConfig = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_getConfig',
+    title: 'Get Config',
+    onClick: {
+      withPromise: async () => {
+        const result = await pages.getConfig();
+        return JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (instanceSettings: settings.Settings): void => {
+          setResult(JSON.stringify(instanceSettings));
+        };
+        settings.getSettings(callback);
+      },
+    },
+  });
 
 const NavigateCrossDomain = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -13,9 +31,25 @@ const NavigateCrossDomain = (): React.ReactElement =>
           throw new Error('Target URL is required.');
         }
       },
-      submit: async input => {
-        await pages.navigateCrossDomain(input);
-        return 'Completed';
+      submit: {
+        withPromise: async input => {
+          await pages.navigateCrossDomain(input);
+          return 'Completed';
+        },
+        withCallback: (input, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's not reason?! This shouldn't happen.");
+              }
+            } else {
+              setResult('Completed');
+            }
+          };
+          navigateCrossDomain(input, onComplete);
+        },
       },
     },
   });
@@ -59,9 +93,15 @@ const ReturnFocus = (): React.ReactElement =>
     name: 'returnFocus',
     title: 'Return Focus',
     label: 'navigateForward',
-    onClick: async input => {
-      await pages.returnFocus(input);
-      return 'Current navigateForward state is ' + input;
+    onClick: {
+      withPromise: async input => {
+        await pages.returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
+      withCallback: input => {
+        returnFocus(input);
+        return 'Current navigateForward state is ' + input;
+      },
     },
   });
 
@@ -104,6 +144,7 @@ const CheckPageCapability = (): React.ReactElement =>
 const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
+    <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
     <ShareDeepLink />

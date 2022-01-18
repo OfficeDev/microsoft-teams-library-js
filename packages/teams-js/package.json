@@ -12,11 +12,18 @@
   "scripts": {
     "build": "yarn lint && webpack",
     "clean": "rimraf ./dist",
+    "docs": "yarn typedoc --out docs src/index.ts",
     "doctor": "yarn lint --fix",
     "eslint-fix-build": "yarn eslint ./src --fix && yarn build",
     "lint": "eslint ./src/**/*.ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
+  },
+  "dependencies": {
+    "debug": "4.3.3"
+  },
+  "devDependencies": {
+    "@types/debug": "4.1.7"
   },
   "license": "MIT",
   "files": [

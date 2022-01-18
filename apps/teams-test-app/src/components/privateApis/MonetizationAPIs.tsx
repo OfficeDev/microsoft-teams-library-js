@@ -38,7 +38,6 @@ const OpenPurchaseExperience = (): React.ReactElement =>
             }
           };
           monetization.openPurchaseExperience(callback, planInfo);
-          return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
         },
       },
     },

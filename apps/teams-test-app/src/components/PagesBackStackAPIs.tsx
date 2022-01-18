@@ -1,4 +1,4 @@
-import { pages } from '@microsoft/teams-js';
+import { navigateBack, pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
@@ -8,9 +8,25 @@ const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'navigateBack',
     title: 'Navigate Back',
-    onClick: async () => {
-      await pages.backStack.navigateBack();
-      return 'Completed';
+    onClick: {
+      withPromise: async () => {
+        await pages.backStack.navigateBack();
+        return 'Completed';
+      },
+      withCallback: setResult => {
+        const onComplete = (status: boolean, reason?: string): void => {
+          if (!status) {
+            if (reason) {
+              setResult(JSON.stringify(reason));
+            } else {
+              setResult("Status is false but there's not reason?! This shouldn't happen.");
+            }
+          } else {
+            setResult('Completed');
+          }
+        };
+        navigateBack(onComplete);
+      },
     },
   });
 

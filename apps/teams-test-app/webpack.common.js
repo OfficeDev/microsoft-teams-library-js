@@ -1,8 +1,10 @@
+/* eslint @typescript-eslint/no-var-requires: off*/
+
 const path = require('path');
 
 module.exports = {
   mode: 'production',
-  entry: "./src/index.tsx",
+  entry: './src/index.tsx',
   devtool: 'inline-source-map',
   module: {
     rules: [
@@ -10,13 +12,9 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: [
-              "@babel/preset-env",
-              "@babel/preset-react",
-              "@babel/preset-typescript",
-            ],
+            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
           },
         },
       },
@@ -27,19 +25,19 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: ['.tsx', '.ts', '.js'],
   },
   devServer: {
-    contentBase: path.join(__dirname, "build"),
-    publicPath: "/",
+    contentBase: path.join(__dirname, 'build'),
+    publicPath: '/',
     compress: true,
     port: 4000,
     https: true,
     disableHostCheck: true,
-  }
+  },
 };

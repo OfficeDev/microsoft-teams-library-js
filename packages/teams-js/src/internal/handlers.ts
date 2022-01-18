@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { LoadContext } from '../public';
 import { pages } from '../public/pages';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { getLogger } from './telemetry';
+
+const handlersLogger = getLogger('handlers');
 
 /** @internal */
 class HandlersPrivate {
@@ -24,19 +26,22 @@ export function initializeHandlers(): void {
   pages.backStack._initialize();
 }
 
+const callHandlerLogger = handlersLogger.extend('callHandler');
 /** @internal */
-export function callHandler(name: string, args?: any[]): [true, any] | [false, undefined] {
+export function callHandler(name: string, args?: unknown[]): [true, unknown] | [false, undefined] {
   const handler = HandlersPrivate.handlers[name];
   if (handler) {
+    callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
   } else {
+    callHandlerLogger('Handler for action message %s not found.', name);
     return [false, undefined];
   }
 }
 
 /** @internal */
-export function registerHandler(name: string, handler: Function, sendMessage = true, args: any[] = []): void {
+export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
     sendMessage && sendMessageToParent('registerHandler', [name, ...args]);

@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
 import { getTestBackCompat } from './getTestBackCompat';
 
@@ -10,7 +11,7 @@ export interface ApiWithoutInputProps {
     | ((setResult: (result: string) => void) => Promise<string>)
     | {
         withPromise: (setResult: (result: string) => void) => Promise<string>;
-        withCallback: (setResult: (result: string) => void) => string;
+        withCallback: (setResult: (result: string) => void) => void;
       };
 }
 
@@ -25,11 +26,12 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
         type="button"
         value={title}
         onClick={async () => {
+          setResult(noHostSdkMsg);
           if (typeof onClick === 'function') {
             setResult(await onClick(setResult));
           } else {
             if (getTestBackCompat()) {
-              setResult(onClick.withCallback(setResult));
+              onClick.withCallback(setResult);
             } else {
               setResult(await onClick.withPromise(setResult));
             }
