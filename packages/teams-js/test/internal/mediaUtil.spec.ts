@@ -1,4 +1,4 @@
-import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile, validatePeoplePickerInput } from '../../src/internal/mediaUtil';
+import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile, validatePeoplePickerInput, isMediaCallForImageOutputFormats } from '../../src/internal/mediaUtil';
 import { people } from '../../src/public/people';
 import { media } from '../../src/public/media';
 
@@ -163,5 +163,28 @@ describe('mediaUtil', () => {
     }
     const result = validatePeoplePickerInput(peoplePickerInputs);
     expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForImageOutputFormats success with valid params', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]}, maxMediaCount: 10 };
+    const result = isMediaCallForImageOutputFormats(mediaInput);
+    expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForImageOutputFormats with null imageOutputParams', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image , maxMediaCount: 10 };
+    const result = isMediaCallForImageOutputFormats(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForImageOutputFormats with null params', () => {
+    const result = isMediaCallForImageOutputFormats(null);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForImageOutputFormats invalid params', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Video , imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]}, maxMediaCount: 10 };
+    const result = isMediaCallForImageOutputFormats(mediaInput);
+    expect(result).toBeFalsy();
   });
 });
