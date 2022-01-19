@@ -1,7 +1,11 @@
 import { SdkError } from '../public/interfaces';
 import { media } from '../public/media';
 import { people } from '../public/people';
-import { nonFullScreenVideoModeAPISupportVersion, videoAndImageMediaAPISupportVersion } from './constants';
+import {
+  imageOutputFormatsAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
+  videoAndImageMediaAPISupportVersion,
+} from './constants';
 import { isApiSupportedOnMobile } from './internalAPIs';
 
 /**
@@ -66,6 +70,8 @@ export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): Sd
     return isApiSupportedOnMobile(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
     return isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+  } else if (isMediaCallForImageOutputFormats(mediaInputs)) {
+    return isApiSupportedOnMobile(imageOutputFormatsAPISupportVersion);
   }
   return null;
 }
@@ -98,6 +104,16 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
     return false;
   }
   return true;
+}
+
+/**
+ * Returns true if the mediaInput params are called for mediatype Image and contains Image outputs formats, false otherwise
+ */
+export function isMediaCallForImageOutputFormats(mediaInputs: media.MediaInputs): boolean {
+  if (mediaInputs?.mediaType == media.MediaType.Image && mediaInputs?.imageProps?.imageOutputFormats) {
+    return true;
+  }
+  return false;
 }
 
 /**
