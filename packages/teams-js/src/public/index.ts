@@ -13,6 +13,7 @@ export {
   Context,
   DeepLinkParameters,
   ErrorCode,
+  FrameContext,
   LoadContext,
   SdkError,
   TabInformation,
