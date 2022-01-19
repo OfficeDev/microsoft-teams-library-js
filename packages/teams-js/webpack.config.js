@@ -14,8 +14,13 @@ const packageVersion = require('./package.json').version;
 
 module.exports = {
   entry: {
-    MicrosoftTeams: './src/index.ts',
-    'MicrosoftTeams.min': './src/index.ts',
+    MicrosoftTeams: {
+      import: './src/index.ts',
+    },
+    'MicrosoftTeams.min': {
+      import: './src/index.ts',
+      dependOn: 'MicrosoftTeams',
+    },
   },
   output: {
     filename: '[name].js',
@@ -54,9 +59,14 @@ module.exports = {
         include: /\.min\.js$/,
       }),
     ],
+    nodeEnv: 'production',
   },
   // webpack.production.config.js
   mode: 'production',
+  performance: {
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
+  },
   plugins: [
     new DefinePlugin({
       PACKAGE_VERSION: JSON.stringify(packageVersion),
