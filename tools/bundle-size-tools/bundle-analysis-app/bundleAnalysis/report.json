@@ -1,0 +1,732 @@
+{
+  "hash": "6cceb24c3b63e0ef2b75",
+  "version": "5.53.0",
+  "time": 2662,
+  "builtAt": 1642637249125,
+  "publicPath": "auto",
+  "outputPath": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\dist",
+  "assetsByChunkName": {
+    "main": [
+      "bundle.js"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "bundle.js",
+      "size": 330,
+      "emitted": false,
+      "comparedForEmit": true,
+      "cached": false,
+      "info": {
+        "javascriptModule": false,
+        "minimized": true,
+        "size": 330
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "related": {},
+      "chunks": [
+        179
+      ],
+      "auxiliaryChunks": [],
+      "isOverSizeLimit": false
+    },
+    {
+      "type": "asset",
+      "name": "index.html",
+      "size": 142,
+      "emitted": false,
+      "comparedForEmit": true,
+      "cached": false,
+      "info": {
+        "size": 142
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "related": {},
+      "chunks": [],
+      "auxiliaryChunks": [],
+      "isOverSizeLimit": false
+    }
+  ],
+  "chunks": [
+    {
+      "rendered": true,
+      "initial": true,
+      "entry": true,
+      "recorded": false,
+      "size": 614,
+      "sizes": {
+        "javascript": 614
+      },
+      "names": [
+        "main"
+      ],
+      "idHints": [],
+      "runtime": [
+        "main"
+      ],
+      "files": [
+        "bundle.js"
+      ],
+      "auxiliaryFiles": [],
+      "hash": "f37db0c0f777368f88e8",
+      "childrenByOrder": {},
+      "id": 179,
+      "siblings": [],
+      "parents": [],
+      "children": [],
+      "modules": [
+        {
+          "type": "module",
+          "moduleType": "javascript/auto",
+          "layer": null,
+          "size": 420,
+          "sizes": {
+            "javascript": 420
+          },
+          "built": true,
+          "codeGenerated": true,
+          "buildTimeExecuted": false,
+          "cached": false,
+          "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+          "name": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+          "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+          "index": 1,
+          "preOrderIndex": 1,
+          "index2": 0,
+          "postOrderIndex": 0,
+          "cacheable": true,
+          "optional": false,
+          "orphan": false,
+          "dependent": true,
+          "issuer": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "issuerName": "./src/index.ts",
+          "issuerPath": [
+            {
+              "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+              "name": "./src/index.ts",
+              "id": 414
+            }
+          ],
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "id": 303,
+          "issuerId": 414,
+          "chunks": [
+            179
+          ],
+          "assets": [],
+          "reasons": [
+            {
+              "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+              "module": "./src/index.ts",
+              "moduleName": "./src/index.ts",
+              "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+              "resolvedModule": "./src/index.ts",
+              "type": "cjs require",
+              "active": true,
+              "explanation": "",
+              "userRequest": "@microsoft/teams-js",
+              "loc": "3:17-47",
+              "moduleId": 414,
+              "resolvedModuleId": 414
+            },
+            {
+              "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+              "module": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+              "moduleName": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+              "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+              "resolvedModule": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+              "type": "cjs self exports reference",
+              "active": true,
+              "explanation": "",
+              "userRequest": null,
+              "loc": "1:78-92",
+              "moduleId": 303,
+              "resolvedModuleId": 303
+            }
+          ],
+          "usedExports": null,
+          "providedExports": null,
+          "optimizationBailout": [
+            "CommonJS bailout: module.exports is used directly at 1:78-92",
+            "Statement (ExpressionStatement) with side effects in source code at 1:13-373",
+            "ModuleConcatenation bailout: Module is not an ECMAScript module"
+          ],
+          "depth": 1
+        },
+        {
+          "type": "module",
+          "moduleType": "javascript/auto",
+          "layer": null,
+          "size": 194,
+          "sizes": {
+            "javascript": 194
+          },
+          "built": true,
+          "codeGenerated": true,
+          "buildTimeExecuted": false,
+          "cached": false,
+          "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "name": "./src/index.ts",
+          "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "index": 0,
+          "preOrderIndex": 0,
+          "index2": 1,
+          "postOrderIndex": 1,
+          "cacheable": true,
+          "optional": false,
+          "orphan": false,
+          "dependent": false,
+          "issuer": null,
+          "issuerName": null,
+          "issuerPath": null,
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "id": 414,
+          "issuerId": null,
+          "chunks": [
+            179
+          ],
+          "assets": [],
+          "reasons": [
+            {
+              "moduleIdentifier": null,
+              "module": null,
+              "moduleName": null,
+              "resolvedModuleIdentifier": null,
+              "resolvedModule": null,
+              "type": "entry",
+              "active": true,
+              "explanation": "",
+              "userRequest": "./src/index.ts",
+              "loc": "main",
+              "moduleId": null,
+              "resolvedModuleId": null
+            }
+          ],
+          "usedExports": [],
+          "providedExports": [
+            "__esModule"
+          ],
+          "optimizationBailout": [
+            "Statement (ExpressionStatement) with side effects in source code at 2:0-62",
+            "ModuleConcatenation bailout: Module is not an ECMAScript module"
+          ],
+          "depth": 0
+        }
+      ],
+      "origins": [
+        {
+          "module": "",
+          "moduleIdentifier": "",
+          "moduleName": "",
+          "loc": "main",
+          "request": "./src/index.ts"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "type": "module",
+      "moduleType": "javascript/auto",
+      "layer": null,
+      "size": 194,
+      "sizes": {
+        "javascript": 194
+      },
+      "built": true,
+      "codeGenerated": true,
+      "buildTimeExecuted": false,
+      "cached": false,
+      "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+      "name": "./src/index.ts",
+      "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+      "index": 0,
+      "preOrderIndex": 0,
+      "index2": 1,
+      "postOrderIndex": 1,
+      "cacheable": true,
+      "optional": false,
+      "orphan": false,
+      "issuer": null,
+      "issuerName": null,
+      "issuerPath": null,
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "id": 414,
+      "issuerId": null,
+      "chunks": [
+        179
+      ],
+      "assets": [],
+      "reasons": [
+        {
+          "moduleIdentifier": null,
+          "module": null,
+          "moduleName": null,
+          "resolvedModuleIdentifier": null,
+          "resolvedModule": null,
+          "type": "entry",
+          "active": true,
+          "explanation": "",
+          "userRequest": "./src/index.ts",
+          "loc": "main",
+          "moduleId": null,
+          "resolvedModuleId": null
+        }
+      ],
+      "usedExports": [],
+      "providedExports": [
+        "__esModule"
+      ],
+      "optimizationBailout": [
+        "Statement (ExpressionStatement) with side effects in source code at 2:0-62",
+        "ModuleConcatenation bailout: Module is not an ECMAScript module"
+      ],
+      "depth": 0
+    },
+    {
+      "type": "module",
+      "moduleType": "javascript/auto",
+      "layer": null,
+      "size": 420,
+      "sizes": {
+        "javascript": 420
+      },
+      "built": true,
+      "codeGenerated": true,
+      "buildTimeExecuted": false,
+      "cached": false,
+      "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+      "name": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+      "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+      "index": 1,
+      "preOrderIndex": 1,
+      "index2": 0,
+      "postOrderIndex": 0,
+      "cacheable": true,
+      "optional": false,
+      "orphan": false,
+      "issuer": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+      "issuerName": "./src/index.ts",
+      "issuerPath": [
+        {
+          "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "name": "./src/index.ts",
+          "id": 414
+        }
+      ],
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "id": 303,
+      "issuerId": 414,
+      "chunks": [
+        179
+      ],
+      "assets": [],
+      "reasons": [
+        {
+          "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "module": "./src/index.ts",
+          "moduleName": "./src/index.ts",
+          "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\ts-loader\\index.js??ruleSet[1].rules[0]!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\src\\index.ts",
+          "resolvedModule": "./src/index.ts",
+          "type": "cjs require",
+          "active": true,
+          "explanation": "",
+          "userRequest": "@microsoft/teams-js",
+          "loc": "3:17-47",
+          "moduleId": 414,
+          "resolvedModuleId": 414
+        },
+        {
+          "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+          "module": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+          "moduleName": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+          "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.min.js",
+          "resolvedModule": "./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.min.js",
+          "type": "cjs self exports reference",
+          "active": true,
+          "explanation": "",
+          "userRequest": null,
+          "loc": "1:78-92",
+          "moduleId": 303,
+          "resolvedModuleId": 303
+        }
+      ],
+      "usedExports": null,
+      "providedExports": null,
+      "optimizationBailout": [
+        "CommonJS bailout: module.exports is used directly at 1:78-92",
+        "Statement (ExpressionStatement) with side effects in source code at 1:13-373",
+        "ModuleConcatenation bailout: Module is not an ECMAScript module"
+      ],
+      "depth": 1
+    }
+  ],
+  "entrypoints": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        179
+      ],
+      "assets": [
+        {
+          "name": "bundle.js",
+          "size": 330
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": 330,
+      "auxiliaryAssets": [],
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {},
+      "isOverSizeLimit": false
+    }
+  },
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        179
+      ],
+      "assets": [
+        {
+          "name": "bundle.js",
+          "size": 330
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": 330,
+      "auxiliaryAssets": [],
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {},
+      "isOverSizeLimit": false
+    }
+  },
+  "errors": [],
+  "errorsCount": 0,
+  "warnings": [],
+  "warningsCount": 0,
+  "children": [
+    {
+      "name": "HtmlWebpackCompiler",
+      "hash": "7548fddd1cdbcafd341a",
+      "version": "5.53.0",
+      "time": 81,
+      "builtAt": 1642637246570,
+      "publicPath": "auto",
+      "outputPath": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\dist",
+      "assetsByChunkName": {
+        "HtmlWebpackPlugin_0": [
+          "__child-HtmlWebpackPlugin_0"
+        ]
+      },
+      "assets": [
+        {
+          "type": "asset",
+          "name": "__child-HtmlWebpackPlugin_0",
+          "size": 1912,
+          "emitted": false,
+          "comparedForEmit": false,
+          "cached": true,
+          "info": {
+            "javascriptModule": false
+          },
+          "chunkNames": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "chunkIdHints": [],
+          "auxiliaryChunkNames": [],
+          "auxiliaryChunkIdHints": [],
+          "related": {},
+          "chunks": [
+            443
+          ],
+          "auxiliaryChunks": [],
+          "isOverSizeLimit": false
+        }
+      ],
+      "chunks": [
+        {
+          "rendered": true,
+          "initial": true,
+          "entry": true,
+          "recorded": false,
+          "size": 424,
+          "sizes": {
+            "javascript": 424
+          },
+          "names": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "idHints": [],
+          "runtime": [
+            "HtmlWebpackPlugin_0"
+          ],
+          "files": [
+            "__child-HtmlWebpackPlugin_0"
+          ],
+          "auxiliaryFiles": [],
+          "hash": "bb3f4f377933400ec504",
+          "childrenByOrder": {},
+          "id": 443,
+          "siblings": [],
+          "parents": [],
+          "children": [],
+          "modules": [
+            {
+              "type": "module",
+              "moduleType": "javascript/auto",
+              "layer": null,
+              "size": 424,
+              "sizes": {
+                "javascript": 424
+              },
+              "built": true,
+              "codeGenerated": true,
+              "buildTimeExecuted": false,
+              "cached": false,
+              "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+              "name": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+              "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+              "index": 0,
+              "preOrderIndex": 0,
+              "index2": 0,
+              "postOrderIndex": 0,
+              "cacheable": true,
+              "optional": false,
+              "orphan": false,
+              "dependent": false,
+              "issuer": null,
+              "issuerName": null,
+              "issuerPath": null,
+              "failed": false,
+              "errors": 0,
+              "warnings": 0,
+              "id": 777,
+              "issuerId": null,
+              "chunks": [
+                443
+              ],
+              "assets": [],
+              "reasons": [
+                {
+                  "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+                  "module": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+                  "moduleName": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+                  "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+                  "resolvedModule": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+                  "type": "cjs self exports reference",
+                  "active": true,
+                  "explanation": "",
+                  "userRequest": null,
+                  "loc": "1:127-141",
+                  "moduleId": 777,
+                  "resolvedModuleId": 777
+                },
+                {
+                  "moduleIdentifier": null,
+                  "module": null,
+                  "moduleName": null,
+                  "resolvedModuleIdentifier": null,
+                  "resolvedModule": null,
+                  "type": "entry",
+                  "active": true,
+                  "explanation": "",
+                  "userRequest": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+                  "loc": "HtmlWebpackPlugin_0",
+                  "moduleId": null,
+                  "resolvedModuleId": null
+                },
+                {
+                  "moduleIdentifier": null,
+                  "module": null,
+                  "moduleName": null,
+                  "resolvedModuleIdentifier": null,
+                  "resolvedModule": null,
+                  "type": null,
+                  "active": true,
+                  "explanation": "used as library export",
+                  "userRequest": null,
+                  "moduleId": null,
+                  "resolvedModuleId": null
+                }
+              ],
+              "usedExports": null,
+              "providedExports": null,
+              "optimizationBailout": [
+                "CommonJS bailout: module.exports is used directly at 1:127-141",
+                "Statement (VariableDeclaration) with side effects in source code at 1:0-127",
+                "ModuleConcatenation bailout: Module is not an ECMAScript module"
+              ],
+              "depth": 0
+            }
+          ],
+          "origins": [
+            {
+              "module": "",
+              "moduleIdentifier": "",
+              "moduleName": "",
+              "loc": "HtmlWebpackPlugin_0",
+              "request": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html"
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "type": "module",
+          "moduleType": "javascript/auto",
+          "layer": null,
+          "size": 424,
+          "sizes": {
+            "javascript": 424
+          },
+          "built": true,
+          "codeGenerated": true,
+          "buildTimeExecuted": false,
+          "cached": false,
+          "identifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+          "name": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+          "nameForCondition": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+          "index": 0,
+          "preOrderIndex": 0,
+          "index2": 0,
+          "postOrderIndex": 0,
+          "cacheable": true,
+          "optional": false,
+          "orphan": false,
+          "issuer": null,
+          "issuerName": null,
+          "issuerPath": null,
+          "failed": false,
+          "errors": 0,
+          "warnings": 0,
+          "id": 777,
+          "issuerId": null,
+          "chunks": [
+            443
+          ],
+          "assets": [],
+          "reasons": [
+            {
+              "moduleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+              "module": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+              "moduleName": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+              "resolvedModuleIdentifier": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+              "resolvedModule": "../../../node_modules/html-webpack-plugin/lib/loader.js!./index.html",
+              "type": "cjs self exports reference",
+              "active": true,
+              "explanation": "",
+              "userRequest": null,
+              "loc": "1:127-141",
+              "moduleId": 777,
+              "resolvedModuleId": 777
+            },
+            {
+              "moduleIdentifier": null,
+              "module": null,
+              "moduleName": null,
+              "resolvedModuleIdentifier": null,
+              "resolvedModule": null,
+              "type": "entry",
+              "active": true,
+              "explanation": "",
+              "userRequest": "C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\node_modules\\html-webpack-plugin\\lib\\loader.js!C:\\Users\\aeun\\source\\repos\\microsoft-teams-library-js\\tools\\bundle-size-tools\\bundle-analysis-app\\index.html",
+              "loc": "HtmlWebpackPlugin_0",
+              "moduleId": null,
+              "resolvedModuleId": null
+            },
+            {
+              "moduleIdentifier": null,
+              "module": null,
+              "moduleName": null,
+              "resolvedModuleIdentifier": null,
+              "resolvedModule": null,
+              "type": null,
+              "active": true,
+              "explanation": "used as library export",
+              "userRequest": null,
+              "moduleId": null,
+              "resolvedModuleId": null
+            }
+          ],
+          "usedExports": null,
+          "providedExports": null,
+          "optimizationBailout": [
+            "CommonJS bailout: module.exports is used directly at 1:127-141",
+            "Statement (VariableDeclaration) with side effects in source code at 1:0-127",
+            "ModuleConcatenation bailout: Module is not an ECMAScript module"
+          ],
+          "depth": 0
+        }
+      ],
+      "entrypoints": {
+        "HtmlWebpackPlugin_0": {
+          "name": "HtmlWebpackPlugin_0",
+          "chunks": [
+            443
+          ],
+          "assets": [
+            {
+              "name": "__child-HtmlWebpackPlugin_0"
+            }
+          ],
+          "filteredAssets": 0,
+          "assetsSize": null,
+          "auxiliaryAssets": [],
+          "filteredAuxiliaryAssets": 0,
+          "auxiliaryAssetsSize": 0,
+          "children": {},
+          "childAssets": {},
+          "isOverSizeLimit": false
+        }
+      },
+      "namedChunkGroups": {
+        "HtmlWebpackPlugin_0": {
+          "name": "HtmlWebpackPlugin_0",
+          "chunks": [
+            443
+          ],
+          "assets": [
+            {
+              "name": "__child-HtmlWebpackPlugin_0"
+            }
+          ],
+          "filteredAssets": 0,
+          "assetsSize": null,
+          "auxiliaryAssets": [],
+          "filteredAuxiliaryAssets": 0,
+          "auxiliaryAssetsSize": 0,
+          "children": {},
+          "childAssets": {},
+          "isOverSizeLimit": false
+        }
+      },
+      "errors": [],
+      "errorsCount": 0,
+      "warnings": [],
+      "warningsCount": 0,
+      "children": []
+    }
+  ]
+}
