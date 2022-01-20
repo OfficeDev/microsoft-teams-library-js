@@ -21,6 +21,7 @@ yarn-error.log
 /packages/*/bundleAnalysis
 /apps/*/bundleAnalysis
 /common/*
+/tools/bundle-size-tools/bundle-analysis-app/bundleAnalysis
 
 # UT results
 /packages/*/test-results
