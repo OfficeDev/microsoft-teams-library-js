@@ -336,15 +336,17 @@ describe('authentication', () => {
           url: 'https://someUrl',
           width: 100,
           height: 200,
+          isExternal: true,
         };
         authentication.authenticate(authenticationParams);
 
         const message = utils.findMessageByFunc('authentication.authenticate');
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
+        expect(message.args.length).toBe(4);
         expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
         expect(message.args[1]).toBe(authenticationParams.width);
         expect(message.args[2]).toBe(authenticationParams.height);
+        expect(message.args[3]).toBe(authenticationParams.isExternal);
       });
     });
 
@@ -393,62 +395,6 @@ describe('authentication', () => {
 
         utils.respondToMessage(message, false, 'someReason');
       });
-    });
-  });
-
-  ['android', 'ios', 'desktop'].forEach(hostClientType => {
-    it(`should successfully pop up the auth window in the ${hostClientType} client`, async () => {
-      await utils.initializeWithContext('content', hostClientType);
-
-      const authenticationParams = {
-        url: 'https://someUrl',
-        width: 100,
-        height: 200,
-      };
-      authentication.authenticate(authenticationParams);
-
-      const message = utils.findMessageByFunc('authentication.authenticate');
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(3);
-      expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-      expect(message.args[1]).toBe(authenticationParams.width);
-      expect(message.args[2]).toBe(authenticationParams.height);
-    });
-
-    it(`should successfully handle auth success in the ${hostClientType} client`, async () => {
-      await utils.initializeWithContext('content', hostClientType);
-
-      const authenticationParams = {
-        url: 'https://someUrl',
-        width: 100,
-        height: 200,
-      };
-      const promise = authentication.authenticate(authenticationParams);
-
-      const message = utils.findMessageByFunc('authentication.authenticate');
-      expect(message).not.toBeNull();
-
-      utils.respondToMessage(message, true, 'someResult');
-
-      expect(promise).resolves.toEqual('someResult');
-    });
-
-    it(`should successfully handle auth failure in the ${hostClientType} client`, async () => {
-      await utils.initializeWithContext('content', hostClientType);
-
-      const authenticationParams = {
-        url: 'https://someUrl',
-        width: 100,
-        height: 200,
-      };
-      const promise = authentication.authenticate(authenticationParams);
-
-      const message = utils.findMessageByFunc('authentication.authenticate');
-      expect(message).not.toBeNull();
-
-      utils.respondToMessage(message, false, 'someReason');
-
-      return expect(promise).rejects.toThrowError('someReason');
     });
   });
 

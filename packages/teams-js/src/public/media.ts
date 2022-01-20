@@ -325,6 +325,12 @@ export namespace media {
      * Default value is false
      */
     enableFilter?: boolean;
+
+    /**
+     * Optional; Lets the developer specify the image output formats, more than one can be specified.
+     * Default value is Image.
+     */
+    imageOutputFormats?: ImageOutputFormats[];
   }
 
   /**
@@ -332,7 +338,7 @@ export namespace media {
    */
   export interface VideoProps extends MediaProps {
     /**
-     * Optional; the maximum duration in minutes after which the recording should terminate automatically.
+     * Optional; the maximum duration in seconds after which the recording should terminate automatically.
      * Default value is defined by the platform serving the API.
      */
     maxDuration?: number;
@@ -535,6 +541,14 @@ export namespace media {
   export enum ImageUriType {
     ID = 1,
     URL = 2,
+  }
+
+  /**
+   * Specifies the image output formats.
+   */
+  export enum ImageOutputFormats {
+    IMAGE = 1,
+    PDF = 2,
   }
 
   /**

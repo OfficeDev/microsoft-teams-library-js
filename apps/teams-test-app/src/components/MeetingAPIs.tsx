@@ -1,4 +1,4 @@
-import { meeting } from '@microsoft/teams-js';
+import { meeting, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
@@ -8,9 +8,21 @@ const GetIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getIncomingClientAudioState',
     title: 'Get Incoming Client Audio State',
-    onClick: async () => {
-      const result = await meeting.getIncomingClientAudioState();
-      return result.toString();
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getIncomingClientAudioState();
+        return result.toString();
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, result: boolean | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(result));
+          }
+        };
+        meeting.getIncomingClientAudioState(callback);
+      },
     },
   });
 
@@ -18,9 +30,21 @@ const ToggleIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'toggleIncomingClientAudio',
     title: 'Toggle Incoming Client Audio',
-    onClick: async () => {
-      const result = await meeting.toggleIncomingClientAudio();
-      return result.toString();
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.toggleIncomingClientAudio();
+        return result.toString();
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, result: boolean | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(result));
+          }
+        };
+        meeting.toggleIncomingClientAudio(callback);
+      },
     },
   });
 
@@ -28,9 +52,21 @@ const GetMeetingDetails = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getMeetingDetails',
     title: 'Get Meeting Details',
-    onClick: async () => {
-      const result = await meeting.getMeetingDetails();
-      return JSON.stringify(result);
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getMeetingDetails();
+        return JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, meetingDetails: meeting.IMeetingDetails | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(meetingDetails));
+          }
+        };
+        meeting.getMeetingDetails(callback);
+      },
     },
   });
 
@@ -38,9 +74,21 @@ const GetAuthenticationTokenForAnonymousUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAuthTokenForAnonymousUser',
     title: 'Get Auth Token For Anonymous User',
-    onClick: async () => {
-      const result = await meeting.getAuthenticationTokenForAnonymousUser();
-      return result;
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getAuthenticationTokenForAnonymousUser();
+        return result;
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(authenticationTokenOfAnonymousUser));
+          }
+        };
+        meeting.getAuthenticationTokenForAnonymousUser(callback);
+      },
     },
   });
 
@@ -48,9 +96,21 @@ const GetLiveStreamState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getLiveStreamState',
     title: 'Get LiveStream State',
-    onClick: async () => {
-      const result = await meeting.getLiveStreamState();
-      return result ? result.isStreaming.toString() : 'null';
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getLiveStreamState();
+        return result ? result.isStreaming.toString() : 'null';
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, liveStreamState: meeting.LiveStreamState | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(liveStreamState?.isStreaming));
+          }
+        };
+        meeting.getLiveStreamState(callback);
+      },
     },
   });
 
@@ -69,14 +129,30 @@ const RequestStartLiveStreaming = (): React.ReactElement =>
           throw new Error('streamUrl is required.');
         }
       },
-      submit: async input => {
-        if (input.streamKey) {
-          await meeting.requestStartLiveStreaming(input.streamUrl, input.streamKey);
-        } else {
-          await meeting.requestStartLiveStreaming(input.streamUrl);
-        }
+      submit: {
+        withPromise: async input => {
+          if (input.streamKey) {
+            await meeting.requestStartLiveStreaming(input.streamUrl, input.streamKey);
+          } else {
+            await meeting.requestStartLiveStreaming(input.streamUrl);
+          }
 
-        return 'Complete';
+          return 'Complete';
+        },
+        withCallback: (input, setResult) => {
+          const callback = (error: SdkError | null): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('Complete');
+            }
+          };
+          if (input.streamKey) {
+            meeting.requestStartLiveStreaming(callback, input.streamUrl, input.streamKey);
+          } else {
+            meeting.requestStartLiveStreaming(callback, input.streamUrl);
+          }
+        },
       },
     },
   });
@@ -85,9 +161,21 @@ const RequestStopLiveStreaming = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'requestStopLiveStreaming',
     title: 'Request Stop LiveStreaming',
-    onClick: async () => {
-      await meeting.requestStopLiveStreaming();
-      return 'Complete';
+    onClick: {
+      withPromise: async () => {
+        await meeting.requestStopLiveStreaming();
+        return 'Complete';
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('Complete');
+          }
+        };
+        meeting.requestStopLiveStreaming(callback);
+      },
     },
   });
 
@@ -117,9 +205,21 @@ const ShareAppContentToStage = (): React.ReactElement =>
       validateInput: () => {
         // TODO: update the validation once the E2E scenario test is updated.
       },
-      submit: async input => {
-        await meeting.shareAppContentToStage(input);
-        return 'shareAppContentToStage() succeeded';
+      submit: {
+        withPromise: async input => {
+          await meeting.shareAppContentToStage(input);
+          return 'shareAppContentToStage() succeeded';
+        },
+        withCallback: (input, setResult) => {
+          const callback = (error: SdkError | null, result: boolean | null): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult('shareAppContentToStage() succeeded');
+            }
+          };
+          meeting.shareAppContentToStage(callback, input);
+        },
       },
     },
   });
@@ -135,9 +235,27 @@ const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAppContentStageSharingCapabilities',
     title: 'Get App Content Stage Sharing Capabilities',
-    onClick: async () => {
-      const result = await meeting.getAppContentStageSharingCapabilities();
-      return 'getAppContentStageSharingCapabilities() succeeded: ' + JSON.stringify(result);
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getAppContentStageSharingCapabilities();
+        return 'getAppContentStageSharingCapabilities() succeeded: ' + JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (
+          error: SdkError | null,
+          appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities | null,
+        ): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(
+              'getAppContentStageSharingCapabilities() succeeded: ' +
+                JSON.stringify(appContentStageSharingCapabilities),
+            );
+          }
+        };
+        meeting.getAppContentStageSharingCapabilities(callback);
+      },
     },
   });
 
@@ -145,9 +263,21 @@ const StopSharingAppContentToStage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'stopSharingAppContentToStage',
     title: 'Stop Sharing App Content To Stage',
-    onClick: async () => {
-      const result = await meeting.stopSharingAppContentToStage();
-      return 'stopSharingAppContentToStage() succeeded: ' + result;
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.stopSharingAppContentToStage();
+        return 'stopSharingAppContentToStage() succeeded: ' + result;
+      },
+      withCallback: setResult => {
+        const callback = (error: SdkError | null, result: boolean | null): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('stopSharingAppContentToStage() succeeded: ' + JSON.stringify(result));
+          }
+        };
+        meeting.stopSharingAppContentToStage(callback);
+      },
     },
   });
 
@@ -155,9 +285,24 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAppContentStageSharingState',
     title: 'Get App Content Stage Sharing State',
-    onClick: async () => {
-      const result = await meeting.getAppContentStageSharingState();
-      return 'getAppContentStageSharingState() succeeded: ' + JSON.stringify(result);
+    onClick: {
+      withPromise: async () => {
+        const result = await meeting.getAppContentStageSharingState();
+        return 'getAppContentStageSharingState() succeeded: ' + JSON.stringify(result);
+      },
+      withCallback: setResult => {
+        const callback = (
+          error: SdkError | null,
+          appContentStageSharingState: meeting.IAppContentStageSharingState | null,
+        ): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('getAppContentStageSharingState() succeeded: ' + JSON.stringify(appContentStageSharingState));
+          }
+        };
+        meeting.getAppContentStageSharingState(callback);
+      },
     },
   });
 
