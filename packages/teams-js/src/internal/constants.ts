@@ -25,6 +25,11 @@ export const videoAndImageMediaAPISupportVersion = '2.0.2';
 export const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
 
 /**
+ * This is the client version when selectMedia API - ImageOutputFormats is supported on mobile.
+ */
+export const imageOutputFormatsAPISupportVersion = '2.0.4';
+
+/**
  * @hidden
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
  *
