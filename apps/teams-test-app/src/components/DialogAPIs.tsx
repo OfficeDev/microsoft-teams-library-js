@@ -1,13 +1,22 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, IAppWindow, ParentAppWindow } from '@microsoft/teams-js';
+import { dialog, DialogInfo, IAppWindow, ParentAppWindow, TaskInfo, tasks } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
+
+  const openDialogHelper = (childWindow: IAppWindow, setResult: (result: string) => void): void => {
+    childWindow.addEventListener('message', (message: string) => {
+      // Message from parent
+      setResult(message);
+    });
+    childWindowRef.current = childWindow;
+  };
+
   const OpenDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo>({
+    ApiWithTextInput<DialogInfo | TaskInfo>({
       name: 'dialogOpen',
       title: 'Dialog Open',
       onClick: {
@@ -16,29 +25,45 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('Url undefined');
           }
         },
-        submit: async (dialogInfo, setResult) => {
-          const onComplete = (err: string, result: string | object): void => {
-            setResult('Error: ' + err + '\nResult: ' + result);
-          };
-          // Store the reference of child window in React
-          const childWindow = dialog.open(dialogInfo, onComplete);
-          childWindow.addEventListener('message', (message: string) => {
-            // Message from parent
-            setResult(message);
-          });
-          childWindowRef.current = childWindow;
-          return '';
+        submit: {
+          withPromise: async (dialogInfo, setResult) => {
+            const onComplete = (err: string, result: string | object): void => {
+              setResult('Error: ' + err + '\nResult: ' + result);
+            };
+            openDialogHelper(dialog.open(dialogInfo, onComplete), setResult);
+            return '';
+          },
+          withCallback: (taskInfo, setResult) => {
+            const onComplete = (err: string, result: string | object): void => {
+              setResult('Error: ' + err + '\nResult: ' + result);
+            };
+            // Store the reference of child window in React
+            openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
+          },
         },
       },
     });
 
   const ResizeDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo>({
+    ApiWithTextInput<DialogInfo | TaskInfo>({
       name: 'dialogResize',
       title: 'Dialog Resize',
-      onClick: async dialogInfo => {
-        dialog.resize(dialogInfo);
-        return 'Teams client SDK call dialog.resize was called';
+      onClick: {
+        validateInput: input => {
+          if (input.height === undefined && input.width === undefined) {
+            throw new Error('Height and width undefined');
+          }
+        },
+        submit: {
+          withPromise: async dialogInfo => {
+            dialog.resize(dialogInfo);
+            return 'Teams client SDK call dialog.resize was called';
+          },
+          withCallback: (taskInfo, setResult) => {
+            tasks.updateTask(taskInfo);
+            setResult('Teams client SDK call tasks.updateTask was called');
+          },
+        },
       },
     });
 
@@ -139,9 +164,21 @@ const DialogAPIs = (): ReactElement => {
     ApiWithTextInput<{ result?: string; appIds?: string | string[] }>({
       name: 'dialogSubmitWithInput',
       title: 'Dialog Submit With Input',
-      onClick: async submitInput => {
-        dialog.submit(submitInput.result, submitInput.appIds);
-        return '';
+      onClick: {
+        validateInput: input => {
+          if (input.result === undefined && input.appIds === undefined) {
+            throw new Error('Result and appIds undefined');
+          }
+        },
+        submit: {
+          withPromise: async submitInput => {
+            dialog.submit(submitInput.result, submitInput.appIds);
+            return '';
+          },
+          withCallback: submitInput => {
+            tasks.submitTask(submitInput.result, submitInput.appIds);
+          },
+        },
       },
     });
 
