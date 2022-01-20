@@ -36,9 +36,9 @@ export namespace video {
      */
     stride?: number;
     /**
-     * Raw binary data for app-specific uses
+     * Audio inference result
      */
-    binaryAttachment?: Uint8Array;
+    audioInferenceResult?: Uint8Array;
   }
   /**
    * Video frame format enum, currently only support NV12
@@ -105,7 +105,7 @@ export namespace video {
   /**
    *  Video effect change call back function definition
    */
-  type VideoEffectCallBack = (effect: string | undefined | PersonalizedEffect) => void;
+  type VideoEffectCallBack = (effect: string | undefined, variant?: string) => void;
 
   /**
    * register to read the video frames in Permissions section.
