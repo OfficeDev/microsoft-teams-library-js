@@ -56,15 +56,19 @@ const DialogAPIs = (): ReactElement => {
               await childWindow.postMessage(message);
               return 'Message sent to child';
             } else {
-              return 'childWindow doesn\'t exist';
+              return "childWindow doesn't exist";
             }
           },
           withCallback: (message, setResult) => {
             if (childWindowRef.current && childWindowRef.current !== null) {
               const childWindow = childWindowRef.current;
               const onComplete = (status: boolean, reason?: string): void => {
-                if (reason && !status) {
-                  setResult(JSON.stringify(reason));
+                if (!status) {
+                  if (reason) {
+                    setResult(JSON.stringify(reason));
+                  } else {
+                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  }
                 } else {
                   setResult('Message sent to child');
                 }
@@ -92,15 +96,19 @@ const DialogAPIs = (): ReactElement => {
               await parentWindow.postMessage(message);
               return 'Message sent to parent';
             } else {
-              return 'parentWindow doesn\'t exist';
+              return "parentWindow doesn't exist";
             }
           },
           withCallback: (message, setResult) => {
             const parentWindow = ParentAppWindow.Instance;
             if (parentWindow) {
               const onComplete = (status: boolean, reason?: string): void => {
-                if (reason && !status) {
-                  setResult(JSON.stringify(reason));
+                if (!status) {
+                  if (reason) {
+                    setResult(JSON.stringify(reason));
+                  } else {
+                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  }
                 } else {
                   setResult('Message sent to parent');
                 }
