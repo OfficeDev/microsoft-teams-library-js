@@ -1,7 +1,6 @@
 import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckPeopleCapability = (): React.ReactElement =>

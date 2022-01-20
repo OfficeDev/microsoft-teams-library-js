@@ -36,9 +36,19 @@ const OpenLink = (): ReactElement =>
           await app.openLink(input);
           return 'Completed';
         },
-        withCallback: input => {
-          executeDeepLink(input);
-          return 'Completed';
+        withCallback: (input, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's no reason?! This shouldn't happen.");
+              }
+            } else {
+              setResult('Completed');
+            }
+          };
+          executeDeepLink(input, onComplete);
         },
       },
     },
