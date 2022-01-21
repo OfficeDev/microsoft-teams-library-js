@@ -1,4 +1,4 @@
-import { app, authentication } from '@microsoft/teams-js';
+import { app, authentication, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,18 @@ const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'initialize',
     title: 'Initialize',
-    onClick: async () => {
-      await app.initialize();
-      return 'called';
+    onClick: {
+      withPromise: async () => {
+        await app.initialize();
+        return 'called';
+      },
+      withCallback: setResult => {
+        const callback = (): void => {
+          return;
+        };
+        initialize(callback);
+        setResult('called');
+      },
     },
   });
 
