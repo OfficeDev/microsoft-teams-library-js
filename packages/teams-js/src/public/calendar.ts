@@ -14,6 +14,10 @@ export namespace calendar {
         throw 'Not Supported';
       }
 
+      if (!openCalendarItemParams.itemId || !openCalendarItemParams.itemId.trim()) {
+        throw new Error('Must supply an itemId to openCalendarItem');
+      }
+
       resolve(sendAndHandleError('calendar.openCalendarItem', openCalendarItemParams));
     });
   }

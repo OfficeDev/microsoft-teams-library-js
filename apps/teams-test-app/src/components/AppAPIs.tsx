@@ -1,4 +1,4 @@
-import { app, Context, executeDeepLink, getContext } from '@microsoft/teams-js';
+import { app, Context, executeDeepLink, getContext, registerOnThemeChangeHandler } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -42,7 +42,7 @@ const OpenLink = (): ReactElement =>
               if (reason) {
                 setResult(JSON.stringify(reason));
               } else {
-                setResult("Status is false but there's no reason?! This shouldn't happen.");
+                setResult("Status is false but there's not reason?! This shouldn't happen.");
               }
             } else {
               setResult('Completed');
@@ -58,9 +58,15 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
   ApiWithoutInput({
     name: 'registerOnThemeChangeHandler',
     title: 'Register On Theme Change Handler',
-    onClick: async setResult => {
-      app.registerOnThemeChangeHandler(setResult);
-      return '';
+    onClick: {
+      withPromise: async setResult => {
+        app.registerOnThemeChangeHandler(setResult);
+        return '';
+      },
+      withCallback: setResult => {
+        registerOnThemeChangeHandler(setResult);
+        setResult('');
+      },
     },
   });
 
