@@ -6,20 +6,18 @@ npm-error
 
 # build output
 build/
+coverage/
 dist/
 dts/
-coverage/
 
 # Visual Studio cache/options directory
-.vs/
 .DS_Store
+.vs/
 
 # Test App gitignore areas
 yarn-error.log
 
 # bundle analysis folders
-/packages/*/bundleAnalysis
-/apps/*/bundleAnalysis
 /common/*
 /tools/bundle-size-tools/bundle-analysis-app/bundleAnalysis
 
