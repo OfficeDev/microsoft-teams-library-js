@@ -4,7 +4,8 @@
   "author": "Microsoft Teams",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "tools/**/*"
   ],
   "repository": {
     "type": "git",
@@ -27,7 +28,6 @@
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
     "test": "lerna run test --stream"
-    
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
