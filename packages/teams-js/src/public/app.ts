@@ -471,11 +471,7 @@ export namespace app {
             try {
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
-              try {
-                if (!givenRuntimeConfig.apiVersion) {
-                  throw new Error();
-                }
-              } catch {
+              if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
               }
               runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
