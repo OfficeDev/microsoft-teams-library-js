@@ -1,8 +1,9 @@
-import { navigateBack, pages } from '@microsoft/teams-js';
+import { navigateBack, pages, registerBackButtonHandler } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
 import { ApiContainer } from './utils/ApiContainer';
+import { getTestBackCompat } from './utils/getTestBackCompat';
 
 const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
@@ -61,16 +62,26 @@ const PagesBackStackAPIs = (): ReactElement => {
     setAddStatesValue('total States: ' + newNumStates);
   }, [totalStates, setTotalStates, setAddStatesValue]);
 
+  const registerBackButtonHandlerHelper = (): boolean => {
+    if (totalStates > 0) {
+      const newNumStates = totalStates - 1;
+      setTotalStates(newNumStates);
+      setRegisterBackButtonHandlerValue('back button clicked. total remaining state: ' + newNumStates);
+      return true;
+    }
+    return false;
+  };
+
   const onRegisterBackButtonHandler = React.useCallback(() => {
-    pages.backStack.registerBackButtonHandler((): boolean => {
-      if (totalStates > 0) {
-        const newNumStates = totalStates - 1;
-        setTotalStates(newNumStates);
-        setRegisterBackButtonHandlerValue('back button clicked. total remaining state: ' + newNumStates);
-        return true;
-      }
-      return false;
-    });
+    if (getTestBackCompat()) {
+      registerBackButtonHandler((): boolean => {
+        return registerBackButtonHandlerHelper();
+      });
+    } else {
+      pages.backStack.registerBackButtonHandler((): boolean => {
+        return registerBackButtonHandlerHelper();
+      });
+    }
 
     setRegisterBackButtonHandlerValue('total States: ' + totalStates);
   }, [totalStates, setTotalStates, setRegisterBackButtonHandlerValue]);

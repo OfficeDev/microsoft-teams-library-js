@@ -25,19 +25,11 @@ Contain the core exports for the repository.
 
 Used to integrate custom services and applications with Teams, Outlook, and Office.
 
-### [Bundle Size Tools](./packages/bundle-size-tools/README.md)
-
-Package used to measure the difference in size between two recent commits.
-
 ---
 
 # Apps
 
 The apps folder contains applications used to test various aspects of the SDK.
-
-### [Bundle Analysis App](./apps/bundle/analysis-app/README.md)
-
-Application responsible for testing the size of the final SDK bundle.
 
 ### [Teams Perf Test App](./apps/teams-perf-test-app/README.md)
 
