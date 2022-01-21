@@ -22,6 +22,7 @@ describe('media', () => {
   const scanBarCodeAPISupportVersion = '1.9.0';
   const videoAndImageMediaAPISupportVersion = '2.0.2';
   const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
+  const imageOutputFormatsAPISupportVersion = '2.0.4';
 
   beforeEach(() => {
     mobilePlatformMock.messages = [];
@@ -233,6 +234,22 @@ describe('media', () => {
     expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
   });
 
+  it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+    let mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
+      imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]},
+      maxMediaCount: 6,
+    };
+    media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
+      mediaError = error;
+    });
+    expect(mediaError).not.toBeNull();
+    expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+  });
+
   it('selectMedia call in task frameContext works', () => {
     mobilePlatformMock.initializeWithContext(FrameContexts.task);
     mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
@@ -345,6 +362,54 @@ describe('media', () => {
     expect(mediaAttachment).not.toBeNull();
     expect(mediaAttachment.format).toBe(media.FileFormat.ID);
     expect(mediaAttachment.mimeType).toBe('video/mp4');
+    expect(mediaAttachment.content).not.toBeNull();
+    expect(mediaAttachment.size).not.toBeNull();
+    expect(typeof mediaAttachment.size === 'number').toBeTruthy();
+    expect(mediaAttachment.getMedia).toBeDefined();
+  });
+
+
+  it('selectMedia calls with successful result for mediaType = 1 with imageOutputFormats', () => {
+    mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+    mobilePlatformMock.setClientSupportedSDKVersion(imageOutputFormatsAPISupportVersion);
+    let mediaAttachments: media.Media[], mediaError: SdkError;
+    let mediaInputs: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
+      imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]},
+      maxMediaCount: 6,
+    };
+    media.selectMedia(mediaInputs, (e: SdkError, m: media.Media[]) => {
+      mediaError = e;
+      mediaAttachments = m;
+    });
+
+    let message = mobilePlatformMock.findMessageByFunc('selectMedia');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+
+    let callbackId = message.id;
+    let filesArray = [
+      {
+        content: 'base64encodedPdf',
+        preview: null,
+        format: media.FileFormat.ID,
+        mimeType: 'application/pdf',
+        size: 300,
+      } as media.Media,
+    ];
+    mobilePlatformMock.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [undefined, filesArray],
+      },
+    } as DOMMessageEvent);
+
+    expect(mediaError).toBeFalsy();
+    expect(mediaAttachments.length).toBe(1);
+    let mediaAttachment = mediaAttachments[0];
+    expect(mediaAttachment).not.toBeNull();
+    expect(mediaAttachment.format).toBe(media.FileFormat.ID);
+    expect(mediaAttachment.mimeType).toBe('application/pdf');
     expect(mediaAttachment.content).not.toBeNull();
     expect(mediaAttachment.size).not.toBeNull();
     expect(typeof mediaAttachment.size === 'number').toBeTruthy();
