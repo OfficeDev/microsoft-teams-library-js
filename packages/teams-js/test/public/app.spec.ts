@@ -149,11 +149,14 @@ describe('AppSDK-app', () => {
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
-  it('should throw an error if the given runtime config causes a non parsing related error', () => {
-    app.initialize();
+  it('should throw an error if the given runtime config causes a non parsing related error', async () => {
+    expect.assertions(1);
+    const promise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
-    expect(utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null)).toThrowError;
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
+
+    await promise.catch(e => expect(e).toMatchObject(new TypeError("Cannot read property 'apiVersion' of null")));
   });
 
   it('should not use the teams config as a default if another proper config is given', async () => {
