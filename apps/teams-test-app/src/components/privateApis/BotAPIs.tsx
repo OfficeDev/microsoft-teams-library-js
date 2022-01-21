@@ -21,14 +21,11 @@ const SendQuery = (): React.ReactElement =>
         }
       },
       submit: input => {
-        return new Promise<string>((res, rej) => {
-          const onSuccess = (data: bot.QueryResponse): void => {
-            res(JSON.stringify(data));
+        return new Promise<string>(res => {
+          const callback = (result: unknown): void => {
+            res(JSON.stringify(result));
           };
-          const onError = (error: string): void => {
-            rej(JSON.stringify(error));
-          };
-          bot.sendQuery(input, onSuccess, onError);
+          bot.sendQuery(input, callback, callback);
         });
       },
     },
@@ -39,14 +36,11 @@ const GetSupportedCommands = (): React.ReactElement =>
     name: 'getSupportedCommands',
     title: 'getSupportedCommands',
     onClick: () => {
-      return new Promise<string>((res, rej) => {
-        const onSuccess = (data: bot.Command[]): void => {
-          res(JSON.stringify(data));
+      return new Promise<string>(res => {
+        const callback = (result: unknown): void => {
+          res(JSON.stringify(result));
         };
-        const onError = (error: string): void => {
-          rej(JSON.stringify(error));
-        };
-        bot.getSupportedCommands(onSuccess, onError);
+        bot.getSupportedCommands(callback, callback);
       });
     },
   });
@@ -58,18 +52,15 @@ const Authenticate = (): React.ReactElement =>
     onClick: {
       validateInput: input => {
         if (!input) {
-          throw new Error('botRequest is required.');
+          throw new Error('authRequest is required.');
         }
       },
       submit: input => {
-        return new Promise<string>((res, rej) => {
-          const onSuccess = (data: bot.Results): void => {
-            res(JSON.stringify(data));
+        return new Promise<string>(res => {
+          const callback = (result: unknown): void => {
+            res(JSON.stringify(result));
           };
-          const onError = (error: string): void => {
-            rej(JSON.stringify(error));
-          };
-          bot.authenticate(input, onSuccess, onError);
+          bot.authenticate(input, callback, callback);
         });
       },
     },
