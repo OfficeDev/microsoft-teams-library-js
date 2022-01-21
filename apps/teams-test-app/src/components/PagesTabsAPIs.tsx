@@ -1,4 +1,12 @@
-import { navigateToTab, pages, TabInstance, TabInstanceParameters } from '@microsoft/teams-js';
+import {
+  getMruTabInstances,
+  getTabInstances,
+  navigateToTab,
+  pages,
+  TabInformation,
+  TabInstance,
+  TabInstanceParameters,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -40,9 +48,21 @@ const GetTabInstances = (): React.ReactElement =>
   ApiWithTextInput<TabInstanceParameters>({
     name: 'getTabInstance',
     title: 'Get Tab Instance',
-    onClick: async input => {
-      const result = await pages.tabs.getTabInstances(input);
-      return JSON.stringify(result);
+    onClick: {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      validateInput: () => {},
+      submit: {
+        withPromise: async input => {
+          const result = await pages.tabs.getTabInstances(input);
+          return JSON.stringify(result);
+        },
+        withCallback: (input, setResult) => {
+          const callback = (tabInfo: TabInformation): void => {
+            setResult(JSON.stringify(tabInfo));
+          };
+          getTabInstances(callback, input);
+        },
+      },
     },
   });
 
@@ -50,9 +70,21 @@ const GetMruTabInstances = (): React.ReactElement =>
   ApiWithTextInput<TabInstanceParameters>({
     name: 'getMRUTabInstance',
     title: 'Get MRU Tab Instance',
-    onClick: async input => {
-      const result = await pages.tabs.getMruTabInstances(input);
-      return JSON.stringify(result);
+    onClick: {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      validateInput: () => {},
+      submit: {
+        withPromise: async input => {
+          const result = await pages.tabs.getMruTabInstances(input);
+          return JSON.stringify(result);
+        },
+        withCallback: (input, setResult) => {
+          const callback = (tabInfo: TabInformation): void => {
+            setResult(JSON.stringify(tabInfo));
+          };
+          getMruTabInstances(callback, input);
+        },
+      },
     },
   });
 
