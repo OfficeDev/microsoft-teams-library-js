@@ -473,7 +473,7 @@ export namespace app {
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               try {
                 if (!givenRuntimeConfig.apiVersion) {
-                  throw new Error('Received runtime config is invalid');
+                  throw new Error();
                 }
               } catch {
                 throw new Error('Received runtime config is invalid');
