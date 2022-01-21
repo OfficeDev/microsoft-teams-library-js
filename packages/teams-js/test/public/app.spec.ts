@@ -708,8 +708,11 @@ describe('AppSDK-app', () => {
   });
 
   describe('openLink in task module context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await app
+        .openLink('dummyLink')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should successfully send a request', async () => {
