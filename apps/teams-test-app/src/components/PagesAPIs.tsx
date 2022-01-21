@@ -8,6 +8,7 @@ import {
   setFrameContext,
   settings,
   shareDeepLink,
+  teamsCore,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -121,6 +122,28 @@ const ReturnFocus = (): React.ReactElement =>
     },
   });
 
+const RegisterFocusEnterHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerFocusEnterHandler',
+    title: 'Register On Focus Enter Handler',
+    onClick: {
+      withPromise: async setResult => {
+        teamsCore.registerFocusEnterHandler(navigateForward => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        return 'registered';
+      },
+      withCallback: setResult => {
+        teamsCore.registerFocusEnterHandler(navigateForward => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        setResult('registered');
+      },
+    },
+  });
+
 const SetCurrentFrame = (): React.ReactElement =>
   ApiWithTextInput<FrameInfo>({
     name: 'setCurrentFrame',
@@ -179,6 +202,7 @@ const PagesAPIs = (): ReactElement => (
     <NavigateToApp />
     <ShareDeepLink />
     <ReturnFocus />
+    <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
     <CheckPageCapability />
