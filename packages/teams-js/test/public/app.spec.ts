@@ -156,7 +156,7 @@ describe('AppSDK-app', () => {
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
 
-    await promise.catch(e => expect(e).toMatchObject(new TypeError("Cannot read property 'apiVersion' of null")));
+    await promise.catch(e => expect(e).toMatchObject(new Error('Received runtime config is invalid')));
   });
 
   it('should not use the teams config as a default if another proper config is given', async () => {
