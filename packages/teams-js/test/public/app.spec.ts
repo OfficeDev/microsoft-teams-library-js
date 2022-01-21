@@ -30,8 +30,9 @@ describe('AppSDK-app', () => {
     }
   });
 
-  it('should not allow calls before initialization', () => {
-    return expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+  it('should not allow calls before initialization', async () => {
+    expect.assertions(1);
+    await app.getContext().catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
   });
 
   it('should successfully initialize', () => {
@@ -417,10 +418,11 @@ describe('AppSDK-app', () => {
   });
 
   describe('navigateCrossDomain', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://valid.origin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should not allow calls with a bad origin', () => {
@@ -455,16 +457,19 @@ describe('AppSDK-app', () => {
       );
     });
 
-    it('should not allow calls with an empty origin', () => {
-      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
     it('should not allow calls from authentication context', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('authentication');
 
-      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
-      );
+      await pages
+        .navigateCrossDomain('https://valid.origin.com')
+        .catch(e =>
+          expect(e).toMatchObject(
+            new Error(
+              'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
+            ),
+          ),
+        );
     });
 
     it('should allow calls from content context', async () => {
@@ -515,6 +520,7 @@ describe('AppSDK-app', () => {
     });
 
     it('should throw on invalid cross-origin navigation request', async () => {
+      expect.assertions(4);
       await utils.initializeWithContext('settings');
 
       const promise = pages.navigateCrossDomain('https://invalid.origin.com');
@@ -526,13 +532,22 @@ describe('AppSDK-app', () => {
 
       utils.respondToMessage(navigateCrossDomainMessage, false);
 
-      return expect(promise).rejects.toThrowError();
+      await promise.catch(e =>
+        expect(e).toMatchObject(
+          new Error(
+            'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+          ),
+        ),
+      );
     });
   });
 
   describe('openLink in content context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await app
+        .openLink('dummyLink')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should successfully send a request', async () => {
@@ -559,6 +574,7 @@ describe('AppSDK-app', () => {
     });
 
     it('should invoke error callback', async () => {
+      expect.assertions(3);
       await utils.initializeWithContext('content');
       const request = 'dummyDeepLink';
 
@@ -578,7 +594,7 @@ describe('AppSDK-app', () => {
         error: 'Something went wrong...',
       };
       utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
+      await promise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send a request', async () => {
@@ -605,8 +621,11 @@ describe('AppSDK-app', () => {
   });
 
   describe('openLink in sidePanel context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await app
+        .openLink('dummyLink')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should successfully send a request', async () => {
@@ -632,6 +651,7 @@ describe('AppSDK-app', () => {
     });
 
     it('should invoke error callback', async () => {
+      expect.assertions(3);
       await utils.initializeWithContext('sidePanel');
       const request = 'dummyDeepLink';
 
@@ -651,7 +671,7 @@ describe('AppSDK-app', () => {
         error: 'Something went wrong...',
       };
       utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
+      await promise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send a request', async () => {
@@ -706,6 +726,7 @@ describe('AppSDK-app', () => {
     });
 
     it('should invoke error callback', async () => {
+      expect.assertions(3);
       await utils.initializeWithContext(FrameContexts.task);
       const request = 'dummyDeepLink';
 
@@ -726,7 +747,7 @@ describe('AppSDK-app', () => {
       };
 
       utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
+      await promise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send a request', async () => {
