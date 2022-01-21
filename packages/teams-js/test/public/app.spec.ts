@@ -425,36 +425,46 @@ describe('AppSDK-app', () => {
         .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with a bad origin', () => {
-      return expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls with a bad origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://badorigin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with an empty origin', () => {
-      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls with an empty origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with a blank origin', () => {
-      return expect(pages.navigateCrossDomain(' ')).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls with a blank origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain(' ')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with an origin without base', () => {
-      return expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls with an origin without base', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('blahblah')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with an origin without suffix', () => {
-      return expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls with an origin without suffix', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://blahblah')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls with an origin with invalid base', () => {
-      return expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls with an origin with invalid base', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('blah://valid.origin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     it('should not allow calls from authentication context', async () => {
