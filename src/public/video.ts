@@ -88,7 +88,7 @@ export namespace video {
      */
     type: string;
     /**
-     * data URI of the thumbnail content
+     * URL of the thumbnail
      */
     thumbnail: string;
   }
@@ -105,7 +105,7 @@ export namespace video {
   /**
    *  Video effect change call back function definition
    */
-  type VideoEffectCallBack = (effect: string | undefined, variant?: string) => void;
+  type VideoEffectCallBack = (effect: string | undefined, effectParam?: string) => void;
 
   /**
    * register to read the video frames in Permissions section.
