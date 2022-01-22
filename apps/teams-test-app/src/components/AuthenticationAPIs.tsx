@@ -1,4 +1,4 @@
-import { app, authentication } from '@microsoft/teams-js';
+import { app, authentication, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,18 @@ const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'initialize',
     title: 'Initialize',
-    onClick: async () => {
-      await app.initialize();
-      return 'called';
+    onClick: {
+      withPromise: async () => {
+        await app.initialize();
+        return 'called';
+      },
+      withCallback: setResult => {
+        const callback = (): void => {
+          return;
+        };
+        initialize(callback);
+        setResult('called');
+      },
     },
   });
 
@@ -17,9 +26,27 @@ const GetAuthToken = (): React.ReactElement =>
   ApiWithTextInput<authentication.AuthTokenRequestParameters>({
     name: 'getAuthToken',
     title: 'Get Auth Token',
-    onClick: async authParams => {
-      const result = await authentication.getAuthToken(authParams);
-      return 'Success: ' + JSON.stringify(result);
+    onClick: {
+      validateInput: () => {
+        return; //This API can have no input
+      },
+      submit: {
+        withPromise: async authParams => {
+          const result = await authentication.getAuthToken(authParams);
+          return JSON.stringify(result);
+        },
+        withCallback: (authParams, setResult) => {
+          const callback = (result: string): void => {
+            setResult(result);
+          };
+          const authRequest: authentication.AuthTokenRequest = {
+            successCallback: callback,
+            failureCallback: callback,
+            ...authParams,
+          };
+          authentication.getAuthToken(authRequest);
+        },
+      },
     },
   });
 
@@ -27,9 +54,24 @@ const GetUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getUser',
     title: 'Get User',
-    onClick: async () => {
-      const user = await authentication.getUser();
-      return 'Success: ' + JSON.stringify(user);
+    onClick: {
+      withPromise: async () => {
+        const user = await authentication.getUser();
+        return JSON.stringify(user);
+      },
+      withCallback: setResult => {
+        const successCallback = (user: authentication.UserProfile): void => {
+          setResult(JSON.stringify(user));
+        };
+        const failureCallback = (reason: string): void => {
+          setResult(reason);
+        };
+        const userRequest: authentication.UserRequest = {
+          successCallback: successCallback,
+          failureCallback: failureCallback,
+        };
+        authentication.getUser(userRequest);
+      },
     },
   });
 
@@ -63,9 +105,22 @@ const Authenticate = (): React.ReactElement =>
           throw new Error('url is required');
         }
       },
-      submit: async authParams => {
-        const token = await authentication.authenticate(authParams);
-        return 'Success: ' + token;
+      submit: {
+        withPromise: async authParams => {
+          const token = await authentication.authenticate(authParams);
+          return 'Success: ' + token;
+        },
+        withCallback: (authParams, setResult) => {
+          const callback = (result: string): void => {
+            setResult(JSON.stringify(result));
+          };
+          const authRequest: authentication.AuthenticateParameters = {
+            successCallback: callback,
+            failureCallback: callback,
+            ...authParams,
+          };
+          authentication.authenticate(authRequest);
+        },
       },
     },
   });
