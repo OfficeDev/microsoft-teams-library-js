@@ -249,7 +249,7 @@ jobs:
           ArtifactName: 'NPMFeed'
         displayName: 'Publish NPM feed to Build Artifacts'
 
-  - job: E2e Test
+  - job: E2e_Test
     displayName: 'E2e Testing'
     dependsOn: Build
     condition: succeeded()
