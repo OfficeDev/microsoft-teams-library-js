@@ -254,7 +254,7 @@ jobs:
     dependsOn: Build
     condition: succeeded()
     pool:
-      vmImage: 'windows-latest'
+      vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
