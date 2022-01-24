@@ -1,4 +1,4 @@
-import { app } from '@microsoft/teams-js';
+import { app, appInitialization } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -7,9 +7,15 @@ const NotifyLoaded = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'appInitializationAppLoaded',
     title: 'appInitialization.appLoaded',
-    onClick: async () => {
-      app.notifyAppLoaded();
-      return 'called';
+    onClick: {
+      withPromise: async () => {
+        app.notifyAppLoaded();
+        return 'called';
+      },
+      withCallback: setResult => {
+        appInitialization.notifyAppLoaded();
+        setResult('called');
+      },
     },
   });
 
@@ -17,9 +23,15 @@ const NotifySuccess = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'appInitializationSuccess',
     title: 'appInitialization.success',
-    onClick: async () => {
-      app.notifySuccess();
-      return 'called';
+    onClick: {
+      withPromise: async () => {
+        app.notifySuccess();
+        return 'called';
+      },
+      withCallback: setResult => {
+        appInitialization.notifySuccess();
+        setResult('called');
+      },
     },
   });
 
@@ -38,9 +50,15 @@ const NotifyFailure = (): React.ReactElement =>
           throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
         }
       },
-      submit: async input => {
-        app.notifyFailure({ reason: input || app.FailedReason.Other });
-        return 'called';
+      submit: {
+        withPromise: async input => {
+          app.notifyFailure({ reason: input || app.FailedReason.Other });
+          return 'called';
+        },
+        withCallback: (input, setResult) => {
+          appInitialization.notifyFailure({ reason: input || app.FailedReason.Other });
+          setResult('called');
+        },
       },
     },
   });
@@ -55,9 +73,15 @@ const NotifyExpectedFailure = (): React.ReactElement =>
           input.reason = app.ExpectedFailureReason.Other;
         }
       },
-      submit: async input => {
-        app.notifyExpectedFailure(input);
-        return 'called';
+      submit: {
+        withPromise: async input => {
+          app.notifyExpectedFailure(input);
+          return 'called';
+        },
+        withCallback: (input, setResult) => {
+          appInitialization.notifyExpectedFailure(input);
+          setResult('called');
+        },
       },
     },
   });
