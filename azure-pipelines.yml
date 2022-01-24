@@ -291,13 +291,14 @@ jobs:
         inputs:
           Arguments: 'build'
           ProjectDirectory: 'microsoft-teams-library-js'
-          - task: CmdLine@2
-            displayName: 'Configure host machine'
-            inputs:
-              script: |
-                sudo chmod -R 755 ./ 
-                sudo yarn setup
-              workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: CmdLine@2
+        displayName: 'Configure host machine'
+        inputs:
+          script: |
+            sudo chmod -R 755 ./ 
+            sudo yarn setup
+          workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
