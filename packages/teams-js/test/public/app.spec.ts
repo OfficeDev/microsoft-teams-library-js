@@ -1,10 +1,15 @@
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { app } from '../../src/public/app';
-import { ChannelType, HostClientType, HostName, TeamType, UserTeamRole } from '../../src/public/constants';
-import { FrameContexts } from '../../src/public/constants';
+import {
+  ChannelType,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  TeamType,
+  UserTeamRole,
+} from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { pages } from '../../src/public/pages';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -422,132 +427,6 @@ describe('AppSDK-app', () => {
     expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
-  describe('navigateCrossDomain', () => {
-    const unallowedContexts = [FrameContexts.authentication];
-
-    const allowedContexts = [
-      FrameContexts.content,
-      FrameContexts.meetingStage,
-      FrameContexts.remove,
-      FrameContexts.settings,
-      FrameContexts.sidePanel,
-      FrameContexts.stage,
-      FrameContexts.task,
-    ];
-
-    it('should not allow calls before initialization', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('https://valid.origin.com')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with a bad origin', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('https://badorigin.com')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with an empty origin', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with a blank origin', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain(' ')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with an origin without base', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('blahblah')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with an origin without suffix', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('https://blahblah')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    it('should not allow calls with an origin with invalid base', async () => {
-      expect.assertions(1);
-      await pages
-        .navigateCrossDomain('blah://valid.origin.com')
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
-    });
-
-    for (const context in unallowedContexts) {
-      it(`should not allow calls from ${unallowedContexts[context]} context`, async () => {
-        expect.assertions(1);
-        await utils.initializeWithContext(unallowedContexts[context]);
-
-        await pages
-          .navigateCrossDomain('https://valid.origin.com')
-          .catch(e =>
-            expect(e).toMatchObject(
-              new Error(
-                `This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "${unallowedContexts[context]}".`,
-              ),
-            ),
-          );
-      });
-    }
-
-    for (const context in allowedContexts) {
-      it(`should allow calls from ${allowedContexts[context]} context`, async () => {
-        expect.assertions(1);
-        await utils.initializeWithContext(allowedContexts[context]);
-
-        const promise = pages.navigateCrossDomain('https://valid.origin.com');
-        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-        utils.respondToMessage(navigateCrossDomainMessage, true);
-
-        await expect(promise).resolves.not.toThrow();
-      });
-    }
-
-    it('should successfully navigate cross-origin', async () => {
-      await utils.initializeWithContext('content');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-
-      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-      expect(navigateCrossDomainMessage).not.toBeNull();
-      expect(navigateCrossDomainMessage.args.length).toBe(1);
-      expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
-    });
-
-    it('should throw on invalid cross-origin navigation request', async () => {
-      expect.assertions(4);
-      await utils.initializeWithContext('settings');
-
-      const promise = pages.navigateCrossDomain('https://invalid.origin.com');
-
-      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-      expect(navigateCrossDomainMessage).not.toBeNull();
-      expect(navigateCrossDomainMessage.args.length).toBe(1);
-      expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
-
-      utils.respondToMessage(navigateCrossDomainMessage, false);
-
-      await promise.catch(e =>
-        expect(e).toMatchObject(
-          new Error(
-            'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
-          ),
-        ),
-      );
-    });
-  });
-
   describe('openLink', () => {
     const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
     for (const context in contexts) {
@@ -608,18 +487,5 @@ describe('AppSDK-app', () => {
         });
       });
     }
-  });
-
-  describe('returnFocus', () => {
-    it('should successfully returnFocus', async () => {
-      await utils.initializeWithContext('content');
-
-      pages.returnFocus(true);
-
-      const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-      expect(returnFocusMessage).not.toBeNull();
-      expect(returnFocusMessage.args.length).toBe(1);
-      expect(returnFocusMessage.args[0]).toBe(true);
-    });
   });
 });
