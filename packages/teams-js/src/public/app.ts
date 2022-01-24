@@ -742,10 +742,12 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
     sharePointSite:
       legacyContext.teamSiteUrl || legacyContext.teamSiteDomain || legacyContext.teamSitePath
         ? {
-            url: legacyContext.teamSiteUrl,
-            domain: legacyContext.teamSiteDomain,
-            path: legacyContext.teamSitePath,
-            id: legacyContext.teamSiteId,
+            teamSiteUrl: legacyContext.teamSiteUrl,
+            teamSiteDomain: legacyContext.teamSiteDomain,
+            teamSitePath: legacyContext.teamSitePath,
+            teamSiteId: legacyContext.teamSiteId,
+            mySitePath: legacyContext.mySitePath,
+            mySiteDomain: legacyContext.mySiteDomain,
           }
         : undefined,
   };
