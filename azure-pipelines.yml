@@ -72,6 +72,23 @@ jobs:
           GdnBreakGdnToolESLintSeverity: Warning
           GdnBreakPolicy: M365
 
+      - task: ComponentGovernanceComponentDetection@0
+        condition: and(
+          eq(variables['Build.Reason'], 'PullRequest'),
+          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+        inputs:
+          scanType: 'LogOnly'
+          verbosity: 'Verbose'
+          alertWarningLevel: 'High'
+          failOnAlert: true
+        displayName: 'Component Governance (Pull Request)'
+
+      - task: ComponentGovernanceComponentDetection@0
+        condition: and(
+          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+          ne(variables['Build.Reason'], 'PullRequest'))
+        displayName: 'Component Governance (2.0-preview, release)'
+
   - job: Build
     displayName: 'Build, Test, and Publish Artifacts'
     pool:
@@ -232,19 +249,48 @@ jobs:
           ArtifactName: 'NPMFeed'
         displayName: 'Publish NPM feed to Build Artifacts'
 
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          eq(variables['Build.Reason'], 'PullRequest'),
-          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+  - job: E2e Test
+    displayName: 'E2e Testing'
+    dependsOn: Build
+    condition: succeeded()
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - checkout: self
+      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+        persistCredentials: true
+      - task: Yarn@2
+        displayName: 'Run yarn on app hosting sdk'
         inputs:
-          scanType: 'LogOnly'
-          verbosity: 'Verbose'
-          alertWarningLevel: 'High'
-          failOnAlert: true
-        displayName: 'Component Governance (Pull Request)'
+          Arguments:
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
-          ne(variables['Build.Reason'], 'PullRequest'))
-        displayName: 'Component Governance (2.0-preview, release)'
+      - task: Yarn@2
+        displayName: 'Build app hosting sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: CmdLine@2
+        displayName: 'Configure host machine'
+        inputs:
+          script: |
+            sudo chmod -R 755 ./ 
+            sudo yarn setup
+          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js'
+        displayName: 'Run E2E integration tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+        displayName: 'Run E2E Perf tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
