@@ -297,16 +297,23 @@ jobs:
             sudo yarn setup
           workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
+      - bash: 'node tools/cli/runAppsWithE2ETests.js'
+        displayName: 'Run E2E integration tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
+
   - job: E2e_Test
     displayName: 'E2e test'
     dependsOn: E2e_Test_Setup
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
