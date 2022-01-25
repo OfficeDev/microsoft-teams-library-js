@@ -304,6 +304,7 @@ jobs:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
         persistCredentials: true
+
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
@@ -322,6 +323,7 @@ jobs:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
         persistCredentials: true
+
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
@@ -334,6 +336,7 @@ jobs:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
         persistCredentials: true
+
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
