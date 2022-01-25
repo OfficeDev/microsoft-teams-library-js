@@ -503,7 +503,6 @@ describe('media', () => {
         });
       });
 
-      // TODO: fix bug and include
       it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
 
