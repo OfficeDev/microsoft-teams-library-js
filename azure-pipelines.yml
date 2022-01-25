@@ -249,8 +249,6 @@ jobs:
 
   - job: E2e_Test
     displayName: 'E2e Testing'
-    dependsOn: Build
-    condition: succeeded()
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -313,4 +311,15 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=localScriptTag'
+        displayName: 'Run E2E integration tests with local script tag'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report-local-script-tag*.xml'
         condition: succeededOrFailed()
