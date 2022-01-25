@@ -300,11 +300,9 @@ jobs:
   - job: E2e_Test
     displayName: 'E2e test'
     dependsOn: E2e_Test_Setup
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
@@ -319,11 +317,9 @@ jobs:
   - job: E2e_Performance_Test
     displayName: 'E2e performance test'
     dependsOn: E2e_Test_Setup
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
@@ -332,11 +328,9 @@ jobs:
   - job: E2e_Test_Local_Script_Tag
     displayName: 'E2e test with local script tag'
     dependsOn: E2e_Test_Setup
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
