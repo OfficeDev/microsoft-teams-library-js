@@ -740,7 +740,11 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
         }
       : undefined,
     sharePointSite:
-      legacyContext.teamSiteUrl || legacyContext.teamSiteDomain || legacyContext.teamSitePath
+      legacyContext.teamSiteUrl ||
+      legacyContext.teamSiteDomain ||
+      legacyContext.teamSitePath ||
+      legacyContext.mySitePath ||
+      legacyContext.mySiteDomain
         ? {
             teamSiteUrl: legacyContext.teamSiteUrl,
             teamSiteDomain: legacyContext.teamSiteDomain,
