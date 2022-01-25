@@ -100,11 +100,6 @@ export namespace bot {
     };
   }
 
-  export interface QueryResponse {
-    data: Results | Auth;
-    type: ResponseType;
-  }
-
   export interface Results {
     attachments: Attachment[];
     layout: any;
@@ -115,6 +110,18 @@ export namespace bot {
     url: string;
     title: string;
   }
+
+  export type ResponseType = 'Results' | 'Auth';
+  interface Response<T extends ResponseType> {
+    type: T;
+  }
+  export interface ResultResponse extends Response<'Results'> {
+    data: Results;
+  }
+  export interface AuthResponse extends Response<'Auth'> {
+    data: Auth;
+  }
+  export type QueryResponse = ResultResponse | AuthResponse;
 
   export interface AuthQueryRequest extends QueryRequest {
     url: string;
@@ -131,11 +138,6 @@ export namespace bot {
     title: string;
     id: string;
     initialRun: boolean;
-  }
-
-  export enum ResponseType {
-    Results = 'Results',
-    Auth = 'Auth',
   }
 
   export function isSupported(): boolean {
