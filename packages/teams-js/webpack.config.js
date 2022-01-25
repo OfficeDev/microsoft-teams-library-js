@@ -14,13 +14,8 @@ const packageVersion = require('./package.json').version;
 
 module.exports = {
   entry: {
-    MicrosoftTeams: {
-      import: './src/index.ts',
-    },
-    'MicrosoftTeams.min': {
-      import: './src/index.ts',
-      dependOn: 'MicrosoftTeams',
-    },
+    MicrosoftTeams: './src/index.ts',
+    'MicrosoftTeams.min': './src/index.ts',
   },
   output: {
     filename: '[name].js',
@@ -64,8 +59,7 @@ module.exports = {
   // webpack.production.config.js
   mode: 'production',
   performance: {
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000,
+    hints: false,
   },
   plugins: [
     new DefinePlugin({
