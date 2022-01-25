@@ -22,6 +22,7 @@ import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
+import BotAPIs from './components/privateApis/BotAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
@@ -105,6 +106,7 @@ const App = (): ReactElement => {
       <AppInstallDialogAPIs />
       <AuthenticationAPIs />
       <AppEntityAPIs />
+      <BotAPIs />
       <CalendarAPIs />
       <CallAPIs />
       <ChatAPIs />
