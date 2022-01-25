@@ -22,13 +22,17 @@ describe('call', () => {
     }
   });
 
-  it('should not allow calls before initialization', () => {
-    return expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
+  it('should not allow calls before initialization', async () => {
+    expect.assertions(1);
+    await call
+      .startCall(mockStartCallParams)
+      .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
   });
 
-  it('shoud not allow calls if not supported', () => {
+  it('shoud not allow calls if not supported', async () => {
+    expect.assertions(1);
     utils.initializeWithContext(FrameContexts.content);
-    return expect(call.startCall(mockStartCallParams)).rejects.toEqual('Not supported');
+    await call.startCall(mockStartCallParams).catch(e => expect(e).toEqual('Not supported'));
   });
 
   it('startCall should be called if supported', async () => {
