@@ -247,8 +247,8 @@ jobs:
           ArtifactName: 'NPMFeed'
         displayName: 'Publish NPM feed to Build Artifacts'
 
-  - job: E2e_Test
-    displayName: 'E2e Testing'
+  - job: E2e_Test_Setup
+    displayName: 'E2e Testing Setup'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -297,13 +297,11 @@ jobs:
             sudo yarn setup
           workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
+  - job: E2e_Test
+    displayName: 'E2e test'
+    dependsOn: E2e_Test_Setup
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-        displayName: 'Run E2E Perf tests'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
@@ -313,6 +311,17 @@ jobs:
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
 
+  - job: E2e_Performance_Test
+    displayName: 'E2e performance test'
+    dependsOn: E2e_Test_Setup
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+        displayName: 'Run E2E Perf tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - job: E2e_Test_Local_Script_Tag
+    displayName: 'E2e test with local script tag'
+    dependsOn: E2e_Test_Setup
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
@@ -321,5 +330,5 @@ jobs:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report-local-script-tag*.xml'
+          testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
