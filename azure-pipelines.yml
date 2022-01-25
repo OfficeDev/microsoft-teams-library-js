@@ -324,12 +324,12 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - task: CmdLine@2
-      displayName: 'Configure host machine'
-      inputs:
-        script: |
-          sudo chmod -R 755 ./ 
-          sudo yarn setup
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+        displayName: 'Configure host machine'
+        inputs:
+          script: |
+            sudo chmod -R 755 ./ 
+            sudo yarn setup
+          workingDirectory: '$(AppHostingSdkProjectDirectory)'
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
