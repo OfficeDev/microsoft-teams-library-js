@@ -48,7 +48,7 @@ describe('media', () => {
         expect(() => media.captureImage(emptyCallback)).toThrowError('The library has not yet been initialized');
       });
 
-      it('captureImage call in default version of platform support fails break', done => {
+      it('captureImage call in default version of platform support fails', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.task).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
           media.captureImage((error: SdkError, f: media.File[]) => {
@@ -57,20 +57,6 @@ describe('media', () => {
             done();
           });
         });
-      });
-
-      it('captureImage call in default version of platform support fails', async () => {
-        try {
-          await mobilePlatformMock.initializeWithContext(FrameContexts.task);
-          await mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-        } catch (err) {
-          debugger;
-          console.log('err------------------------------->', err);
-          await media.captureImage((error: SdkError, f: media.File[]) => {
-            expect(err).not.toBeNull();
-            expect(err.errorCode).toBe(ErrorCode.OLD_PLATFORM);
-          });
-        }
       });
 
       it('should not allow captureImage calls for authentication frame context', async () => {
