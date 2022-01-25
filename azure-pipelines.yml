@@ -303,9 +303,6 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
