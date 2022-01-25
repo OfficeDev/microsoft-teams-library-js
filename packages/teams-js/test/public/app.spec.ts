@@ -260,6 +260,8 @@ describe('AppSDK-app', () => {
       teamSiteUrl: 'someSiteUrl',
       teamSiteDomain: 'someTeamSiteDomain',
       teamSitePath: 'someTeamSitePath',
+      mySiteDomain: 'myDomain',
+      mySitePath: 'mySitePath',
       channelRelativeUrl: 'someChannelRelativeUrl',
       sessionId: 'someSessionId',
       userTeamRole: UserTeamRole.Admin,
@@ -358,10 +360,12 @@ describe('AppSDK-app', () => {
         userRole: UserTeamRole.Admin,
       },
       sharePointSite: {
-        url: 'someSiteUrl',
-        domain: 'someTeamSiteDomain',
-        path: 'someTeamSitePath',
-        id: 'someSiteId',
+        teamSiteUrl: 'someSiteUrl',
+        teamSiteDomain: 'someTeamSiteDomain',
+        teamSitePath: 'someTeamSitePath',
+        teamSiteId: 'someSiteId',
+        mySitePath: 'mySitePath',
+        mySiteDomain: 'myDomain',
       },
     };
 

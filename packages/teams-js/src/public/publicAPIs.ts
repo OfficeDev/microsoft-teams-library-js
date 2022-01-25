@@ -420,10 +420,12 @@ function transformAppContextToLegacyContext(appContext: app.Context): Context {
     userTeamRole: appContext.team !== undefined ? appContext.team.userRole : undefined,
 
     // sharepointSite
-    teamSiteUrl: appContext.sharePointSite !== undefined ? appContext.sharePointSite.url : undefined,
-    teamSiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.domain : undefined,
-    teamSitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.path : undefined,
-    teamSiteId: appContext.sharePointSite !== undefined ? appContext.sharePointSite.id : undefined,
+    teamSiteUrl: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteUrl : undefined,
+    teamSiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteDomain : undefined,
+    teamSitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSitePath : undefined,
+    teamSiteId: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteId : undefined,
+    mySitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySitePath : undefined,
+    mySiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySiteDomain : undefined,
   };
 
   return context;
