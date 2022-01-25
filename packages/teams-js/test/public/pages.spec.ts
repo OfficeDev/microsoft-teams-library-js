@@ -1,4 +1,5 @@
 import { app } from '../../src/public/app';
+import { FrameContexts } from '../../src/public/constants';
 import { pages } from '../../src/public/pages';
 import { Utils } from '../utils';
 
@@ -73,6 +74,144 @@ describe('AppSDK-TeamsAPIs', () => {
       expect(executeDeepLinkMessage.args[0]).toBe(
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
       );
+    });
+  });
+
+  describe('navigateCrossDomain', () => {
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.meetingStage,
+      FrameContexts.remove,
+      FrameContexts.settings,
+      FrameContexts.sidePanel,
+      FrameContexts.stage,
+      FrameContexts.task,
+    ];
+
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://valid.origin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with a bad origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://badorigin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with an empty origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with a blank origin', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain(' ')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with an origin without base', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('blahblah')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with an origin without suffix', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('https://blahblah')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    it('should not allow calls with an origin with invalid base', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateCrossDomain('blah://valid.origin.com')
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    });
+
+    Object.keys(FrameContexts).forEach(k => {
+      const context = FrameContexts[k];
+      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+        it(`should allow calls from ${context} context`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(context);
+
+          const promise = pages.navigateCrossDomain('https://valid.origin.com');
+          const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+          utils.respondToMessage(navigateCrossDomainMessage, true);
+
+          await expect(promise).resolves.not.toThrow();
+        });
+      } else {
+        it(`should not allow calls from ${context} context`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(context);
+
+          await pages
+            .navigateCrossDomain('https://valid.origin.com')
+            .catch(e =>
+              expect(e).toMatchObject(
+                new Error(
+                  `This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "${context}".`,
+                ),
+              ),
+            );
+        });
+      }
+    });
+
+    it('should successfully navigate cross-origin', async () => {
+      await utils.initializeWithContext('content');
+
+      pages.navigateCrossDomain('https://valid.origin.com');
+
+      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+      expect(navigateCrossDomainMessage).not.toBeNull();
+      expect(navigateCrossDomainMessage.args.length).toBe(1);
+      expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
+    });
+
+    it('should throw on invalid cross-origin navigation request', async () => {
+      expect.assertions(4);
+      await utils.initializeWithContext('settings');
+
+      const promise = pages.navigateCrossDomain('https://invalid.origin.com');
+
+      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+      expect(navigateCrossDomainMessage).not.toBeNull();
+      expect(navigateCrossDomainMessage.args.length).toBe(1);
+      expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+
+      utils.respondToMessage(navigateCrossDomainMessage, false);
+
+      await promise.catch(e =>
+        expect(e).toMatchObject(
+          new Error(
+            'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+          ),
+        ),
+      );
+    });
+  });
+
+  describe('returnFocus', () => {
+    it('should successfully returnFocus', async () => {
+      await utils.initializeWithContext('content');
+
+      pages.returnFocus(true);
+
+      const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+      expect(returnFocusMessage).not.toBeNull();
+      expect(returnFocusMessage.args.length).toBe(1);
+      expect(returnFocusMessage.args[0]).toBe(true);
     });
   });
 });

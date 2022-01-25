@@ -480,6 +480,10 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
+              // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
+              if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
+                throw new Error('Received runtime config is invalid');
+              }
               runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
             } catch (e) {
               if (e instanceof SyntaxError) {
