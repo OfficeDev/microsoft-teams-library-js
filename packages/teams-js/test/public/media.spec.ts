@@ -503,6 +503,28 @@ describe('media', () => {
         });
       });
 
+      // TODO: fix bug and include
+      it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
+
+        await mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+        let mediaError: SdkError;
+        const mediaInputs: media.MediaInputs = {
+          mediaType: media.MediaType.Image,
+          imageProps: { imageOutputFormats: [media.ImageOutputFormats.PDF] },
+          maxMediaCount: 6,
+        };
+        try {
+          await media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
+            mediaError = error;
+          });
+        } catch (err) {
+          expect(err).not.toBeNull();
+
+          expect(err.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+        }
+      });
+
       it('videoController notifyEventToHost should fail in default version of platform', () => {
         return mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
@@ -702,26 +724,6 @@ describe('media', () => {
         return expect(media.selectMedia(mediaInputs)).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
       });
 
-      // TODO: fix bug and include
-      it.skip('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', () => {
-        return mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android).then(() => {
-          mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
-          let mediaError: SdkError;
-          const mediaInputs: media.MediaInputs = {
-            mediaType: media.MediaType.Image,
-            imageProps: { imageOutputFormats: [media.ImageOutputFormats.PDF] },
-            maxMediaCount: 6,
-          };
-          media
-            .selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
-              mediaError = error;
-            })
-            .then(() => {
-              expect(mediaError).not.toBeNull();
-              expect(mediaError.errorCode).toBe(ErrorCode.OLD_PLATFORM);
-            });
-        });
-      });
       it('selectMedia call in task frameContext works', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task);
         mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
