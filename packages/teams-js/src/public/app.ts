@@ -336,22 +336,32 @@ export namespace app {
     /**
      * The root SharePoint site associated with the team.
      */
-    url?: string;
+    teamSiteUrl?: string;
 
     /**
      * The domain of the root SharePoint site associated with the team.
      */
-    domain?: string;
+    teamSiteDomain?: string;
 
     /**
      * The relative path to the SharePoint site associated with the team.
      */
-    path?: string;
+    teamSitePath?: string;
 
     /**
      * Teamsite ID, aka sharepoint site id.
      */
-    id?: string;
+    teamSiteId?: string;
+
+    /**
+     * The SharePoint my site domain associated with the user.
+     */
+    mySiteDomain?: string;
+
+    /**
+     * The SharePoint relative path to the current users mysite
+     */
+    mySitePath?: string;
   }
 
   /**
@@ -734,12 +744,18 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
         }
       : undefined,
     sharePointSite:
-      legacyContext.teamSiteUrl || legacyContext.teamSiteDomain || legacyContext.teamSitePath
+      legacyContext.teamSiteUrl ||
+      legacyContext.teamSiteDomain ||
+      legacyContext.teamSitePath ||
+      legacyContext.mySitePath ||
+      legacyContext.mySiteDomain
         ? {
-            url: legacyContext.teamSiteUrl,
-            domain: legacyContext.teamSiteDomain,
-            path: legacyContext.teamSitePath,
-            id: legacyContext.teamSiteId,
+            teamSiteUrl: legacyContext.teamSiteUrl,
+            teamSiteDomain: legacyContext.teamSiteDomain,
+            teamSitePath: legacyContext.teamSitePath,
+            teamSiteId: legacyContext.teamSiteId,
+            mySitePath: legacyContext.mySitePath,
+            mySiteDomain: legacyContext.mySiteDomain,
           }
         : undefined,
   };

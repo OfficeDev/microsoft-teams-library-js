@@ -499,6 +499,18 @@ export interface Context {
    * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
+
+  /**
+   * @hidden
+   * The SharePoint my site domain associated with the user.
+   */
+  mySiteDomain?: string;
+
+  /**
+   * @hidden
+   * The SharePoint relative path to the current users mysite
+   */
+  mySitePath?: string;
 }
 
 export interface DeepLinkParameters {
