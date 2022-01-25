@@ -92,7 +92,7 @@ jobs:
   - job: Build
     displayName: 'Build, Test, and Publish Artifacts'
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'windows-latest'
     steps:
       - task: YarnInstaller@3
         displayName: 'Yarn 1.x'
@@ -160,6 +160,7 @@ jobs:
           eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
         name: bundleAnalysisTask
         displayName: 'Analyze bundles against 2.0-preview and output result'
+
       - task: GitHubComment@0
         condition: and(
           in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
@@ -171,6 +172,7 @@ jobs:
           id: '$(System.PullRequest.PullRequestNumber)'
           comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
         displayName: 'Post bundle analysis result as PR comment on GitHub'
+
       - task: PublishBuildArtifacts@1
         condition: and(
           in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
@@ -179,17 +181,20 @@ jobs:
           PathtoPublish: './common/temp/bundleAnalysis'
           ArtifactName: '$(bundleArtifactName)'
         displayName: 'Publish bundle analysis'
+
       - powershell: |
           $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
           Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
         name: package
         displayName: 'Set package.version Variable'
+
       - task: CopyFiles@2
         inputs:
           sourceFolder: 'apps/teams-test-app/build'
           contents: '**'
           targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
         displayName: 'Copy Test app to artifacts staging directory'
+
       - task: ArchiveFiles@2
         inputs:
           rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
@@ -198,17 +203,20 @@ jobs:
           archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
           replaceExistingArchive: true
         displayName: 'Zip Test app artifacts'
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
           ArtifactName: 'teams-test-app'
         displayName: 'Publish Test app artifacts'
+
       - task: CopyFiles@2
         inputs:
           sourceFolder: 'packages\teams-js\dist'
           contents: '**\?(*.js|*.ts|*.map)'
           targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
         displayName: 'Copy TeamsJS Content for CDN'
+
       - task: CopyFiles@2
         inputs:
           Contents: |
@@ -218,6 +226,7 @@ jobs:
           TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
           flattenFolders: true
         displayName: 'Copy TeamsJS Content for NPM'
+
       - task: CopyFiles@2
         inputs:
           Contents: |
@@ -225,11 +234,13 @@ jobs:
           TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
           flattenFolders: true
         displayName: 'Copy JS Content for NPM'
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
           ArtifactName: 'CDNFeed'
         displayName: 'Publish CDN feed to build Artifacts'
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
@@ -268,17 +279,17 @@ jobs:
           Arguments: 'build'
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      # - task: Yarn@2
-      #   displayName: 'Run yarn on client sdk'
-      #   inputs:
-      #     Arguments:
-      #     ProjectDirectory: 'microsoft-teams-library-js'
+      - task: Yarn@2
+        displayName: 'Run yarn on client sdk'
+        inputs:
+          Arguments:
+          ProjectDirectory: 'microsoft-teams-library-js'
 
-      # - task: Yarn@2
-      #   displayName: 'Build client sdk'
-      #   inputs:
-      #     Arguments: 'build'
-      #     ProjectDirectory: 'microsoft-teams-library-js'
+      - task: Yarn@2
+        displayName: 'Build client sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: 'microsoft-teams-library-js'
 
       - task: CmdLine@2
         displayName: 'Configure host machine'
