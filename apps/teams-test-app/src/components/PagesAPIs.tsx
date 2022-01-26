@@ -1,4 +1,15 @@
-import { DeepLinkParameters, FrameInfo, navigateCrossDomain, pages, returnFocus, settings } from '@microsoft/teams-js';
+import {
+  DeepLinkParameters,
+  FrameInfo,
+  navigateCrossDomain,
+  pages,
+  registerFullScreenHandler,
+  returnFocus,
+  setFrameContext,
+  settings,
+  shareDeepLink,
+  teamsCore,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -81,9 +92,15 @@ const ShareDeepLink = (): ReactElement =>
           throw new Error('subEntityId and subEntityLabel are required.');
         }
       },
-      submit: async input => {
-        await pages.shareDeepLink(input);
-        return 'called shareDeepLink';
+      submit: {
+        withPromise: async input => {
+          await pages.shareDeepLink(input);
+          return 'called shareDeepLink';
+        },
+        withCallback: (input, setResult) => {
+          shareDeepLink(input);
+          setResult('called shareDeepLink');
+        },
       },
     },
   });
@@ -105,6 +122,19 @@ const ReturnFocus = (): React.ReactElement =>
     },
   });
 
+const RegisterFocusEnterHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerFocusEnterHandler',
+    title: 'Register On Focus Enter Handler',
+    onClick: async setResult => {
+      teamsCore.registerFocusEnterHandler(navigateForward => {
+        setResult('successfully called with navigateForward:' + navigateForward);
+        return true;
+      });
+      return 'registered';
+    },
+  });
+
 const SetCurrentFrame = (): React.ReactElement =>
   ApiWithTextInput<FrameInfo>({
     name: 'setCurrentFrame',
@@ -115,9 +145,15 @@ const SetCurrentFrame = (): React.ReactElement =>
           throw new Error('websiteUrl and contentUrl are required.');
         }
       },
-      submit: async input => {
-        pages.setCurrentFrame(input);
-        return 'called';
+      submit: {
+        withPromise: async input => {
+          pages.setCurrentFrame(input);
+          return 'called';
+        },
+        withCallback: (input, setResult) => {
+          setFrameContext(input);
+          setResult('called');
+        },
       },
     },
   });
@@ -126,11 +162,19 @@ const RegisterFullScreenChangeHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerFullScreenChangeHandler',
     title: 'Register Full Screen Change Handler',
-    onClick: async setResult => {
-      pages.registerFullScreenHandler((isFullScreen: boolean): void => {
-        setResult('successfully called with isFullScreen:' + isFullScreen);
-      });
-      return 'registered';
+    onClick: {
+      withPromise: async setResult => {
+        pages.registerFullScreenHandler((isFullScreen: boolean): void => {
+          setResult('successfully called with isFullScreen:' + isFullScreen);
+        });
+        return 'registered';
+      },
+      withCallback: setResult => {
+        registerFullScreenHandler((isFullScreen: boolean): void => {
+          setResult('successfully called with isFullScreen:' + isFullScreen);
+        });
+        setResult('registered');
+      },
     },
   });
 
@@ -149,6 +193,7 @@ const PagesAPIs = (): ReactElement => (
     <NavigateToApp />
     <ShareDeepLink />
     <ReturnFocus />
+    <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
     <CheckPageCapability />

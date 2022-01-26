@@ -1,6 +1,6 @@
 import './App.css';
 
-import { app } from '@microsoft/teams-js';
+import { app, appInitialization, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import AppAPIs from './components/AppAPIs';
@@ -22,6 +22,7 @@ import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
+import BotAPIs from './components/privateApis/BotAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
@@ -33,12 +34,17 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import { getTestBackCompat } from './components/utils/getTestBackCompat';
 
 const urlParams = new URLSearchParams(window.location.search);
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
-  app.initialize();
+  if (getTestBackCompat()) {
+    initialize();
+  } else {
+    app.initialize();
+  }
 }
 
 // for AppInitialization tests we need a way to stop the Test App from sending these
@@ -49,8 +55,13 @@ if (
 ) {
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
-  app.notifyAppLoaded();
-  app.notifySuccess();
+  if (getTestBackCompat()) {
+    appInitialization.notifyAppLoaded();
+    appInitialization.notifySuccess();
+  } else {
+    app.notifyAppLoaded();
+    app.notifySuccess();
+  }
 }
 
 export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
@@ -95,6 +106,7 @@ const App = (): ReactElement => {
       <AppInstallDialogAPIs />
       <AuthenticationAPIs />
       <AppEntityAPIs />
+      <BotAPIs />
       <CalendarAPIs />
       <CallAPIs />
       <ChatAPIs />

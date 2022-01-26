@@ -4,7 +4,8 @@
   "author": "Microsoft Teams",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "tools/**/*"
   ],
   "repository": {
     "type": "git",
