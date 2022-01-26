@@ -9,7 +9,7 @@ on:
   push:
     branches: [2.0-preview]
   pull_request:
-    branches: [2.0-preview]
+    branches: [2.0-preview, release/2.*]
 
 jobs:
   build:

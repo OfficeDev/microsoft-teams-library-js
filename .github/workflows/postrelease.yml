@@ -1,0 +1,55 @@
+name: Post Release
+on:
+  pull_request:
+    branches: [release/2.*]
+    types: [closed]
+
+jobs:
+  PostMerge:
+    # this job will only run if the PR has been merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          version=$(echo ${{ steps.extract_branch.outputs.branch }} | cut --complement -d "/" -f 1)
+          echo "::set-output name=version::$version"
+
+      - name: Extract changelog for version
+        id: extract_changelog
+        run: |
+          changelog=$(node tools/cli/readChangelog.js ${{steps.extract_version.outputs.version}})
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A'}"
+          changelog="${changelog//$'\r'/'%0D'}"
+          echo -e "::set-output name=changelog::$changelog"
+
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          commit: '${{steps.extract_branch.outputs.branch}}'
+          tag: 'v${{steps.extract_version.outputs.version}}'
+          name: 'v${{steps.extract_version.outputs.version}}'
+          prerelease: true
+          body: '${{steps.extract_changelog.outputs.changelog}}'
+
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        with:
+          pr_title: Merge ${{steps.extract_branch.outputs.branch}} into 2.0-preview
+          source_branch: ${{steps.extract_branch.outputs.branch}}
+          destination_branch: 2.0-preview
+          github_token: ${{ secrets.GITHUB_TOKEN }}

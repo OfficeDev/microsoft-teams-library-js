@@ -9,10 +9,9 @@ trigger:
   branches:
     include:
       - '2.0-preview'
-      - 'release*'
   tags:
     include:
-      - 'v*'
+      - v2.*
 
 jobs:
   - job: Security
@@ -53,7 +52,7 @@ jobs:
           IsShipped: false
           DropsToRetain: 'CodeAnalysisLogs'
         condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.'),
           in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
           ne(variables['Build.Reason'], 'PullRequest'),
           ne(variables['Build.Reason'], 'Manual')
@@ -106,16 +105,6 @@ jobs:
         inputs:
           Arguments: 'build'
         displayName: 'yarn build'
-
-      - script: 'node prepNewReadme.js'
-        workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-        condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'),
-          ne(variables['Build.Reason'], 'Manual')
-          )
-        displayName: 'node prepNewReadme.js'
 
       - task: Yarn@3
         inputs:
@@ -245,6 +234,6 @@ jobs:
 
       - task: ComponentGovernanceComponentDetection@0
         condition: and(
-          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.')),
           ne(variables['Build.Reason'], 'PullRequest'))
         displayName: 'Component Governance (2.0-preview, release)'
