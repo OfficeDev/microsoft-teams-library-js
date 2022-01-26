@@ -18,26 +18,25 @@ export interface ApiWithoutInputProps {
 export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement => {
   const { name, onClick, title } = props;
   const [result, setResult] = React.useState('');
-
+  const onClickCallback = React.useCallback(async () => {
+    setResult(noHostSdkMsg);
+    try {
+      if (typeof onClick === 'function') {
+        setResult(await onClick(setResult));
+      } else {
+        if (getTestBackCompat()) {
+          onClick.withCallback(setResult);
+        } else {
+          setResult(await onClick.withPromise(setResult));
+        }
+      }
+    } catch (err) {
+      setResult('Error: ' + err);
+    }
+  }, [setResult, onClick]);
   return (
     <ApiContainer title={title} result={result} name={name}>
-      <input
-        name={`button_${name}`}
-        type="button"
-        value={title}
-        onClick={async () => {
-          setResult(noHostSdkMsg);
-          if (typeof onClick === 'function') {
-            setResult(await onClick(setResult));
-          } else {
-            if (getTestBackCompat()) {
-              onClick.withCallback(setResult);
-            } else {
-              setResult(await onClick.withPromise(setResult));
-            }
-          }
-        }}
-      />
+      <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
     </ApiContainer>
   );
 };
