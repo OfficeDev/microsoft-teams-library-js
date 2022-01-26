@@ -448,7 +448,7 @@ describe('media', () => {
         mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(imageOutputFormatsAPISupportVersion);
           const mediaInputs: media.MediaInputs = {
-            mediaType: media.MediaType.VideoAndImage,
+            mediaType: media.MediaType.Image,
             imageProps: { imageOutputFormats: [media.ImageOutputFormats.PDF] },
             maxMediaCount: 6,
           };
@@ -491,7 +491,6 @@ describe('media', () => {
 
       it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
-
         await mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
         let mediaError: SdkError;
         const mediaInputs: media.MediaInputs = {
@@ -505,7 +504,6 @@ describe('media', () => {
           });
         } catch (err) {
           expect(err).not.toBeNull();
-
           expect(err.errorCode).toBe(ErrorCode.OLD_PLATFORM);
         }
       });
