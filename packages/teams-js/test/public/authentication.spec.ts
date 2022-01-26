@@ -59,6 +59,7 @@ describe('authentication', () => {
     .forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it(`should allow authentication.authenticate calls from ${context} context`, async () => {
+          expect.assertions(1);
           await utils.initializeWithContext(context);
 
           const authenticationParams: authentication.AuthenticatePopUpParameters = {
@@ -82,6 +83,7 @@ describe('authentication', () => {
         });
       } else {
         it(`should not allow authentication.authenticate calls from ${context} context`, async () => {
+          expect.assertions(1);
           await utils.initializeWithContext(context);
           const authenticationParams: authentication.AuthenticatePopUpParameters = {
             url: 'https://someurl/',
@@ -596,6 +598,7 @@ describe('authentication', () => {
   });
 
   it('should not allow getAuthToken calls before initialization', () => {
+    expect.assertions(1);
     const authTokenRequest = {
       resources: [mockResource],
       claims: [mockClaim],
@@ -608,6 +611,7 @@ describe('authentication', () => {
   });
 
   it('should successfully return getAuthToken in case of success in legacy flow', done => {
+    expect.assertions(6);
     utils.initializeWithContext('content').then(() => {
       const authTokenRequest = {
         resources: [mockResource],
@@ -664,6 +668,7 @@ describe('authentication', () => {
   });
 
   it('should successfully return getAuthToken in case of success', async () => {
+    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const authTokenRequest = {
@@ -686,6 +691,7 @@ describe('authentication', () => {
   });
 
   it('should successfully return getAuthToken in case of success when using no authTokenRequest', async () => {
+    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const promise = authentication.getAuthToken();
