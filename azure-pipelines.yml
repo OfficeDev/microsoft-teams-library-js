@@ -14,6 +14,11 @@ trigger:
     include:
       - 'v*'
 
+steps:
+  - checkout: self
+  - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+    persistCredentials: true
+
 jobs:
   - job: Security
     displayName: 'Security Tasks'
@@ -252,10 +257,6 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
