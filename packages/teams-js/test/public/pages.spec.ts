@@ -33,18 +33,53 @@ describe('AppSDK-TeamsAPIs', () => {
       subPageId: 'task456',
     };
 
-    it('should not allow calls before initialization', () => {
-      expect(() => pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+      await pages
+        .navigateToApp(navigateToAppParams)
+        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    ];
 
-      expect(() => pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","settings","task","stage","meetingStage"]. Current context: "authentication".',
-      );
+    Object.keys(FrameContexts).forEach(k => {
+      const context = FrameContexts[k];
+      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+        it(`should allow calls from ${context} context`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+          const promise = pages.navigateToApp(navigateToAppParams);
+
+          const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
+          utils.respondToMessage(navigateToAppMessage, true);
+
+          return expect(promise).resolves.toBe(undefined);
+        });
+      } else {
+        it(`should not allow calls from ${context} context`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(context);
+
+          await pages
+            .navigateToApp(navigateToAppParams)
+            .catch(e =>
+              expect(e).toMatchObject(
+                new Error(
+                  `This call is only allowed in following contexts: ["content","sidePanel","settings","task","stage","meetingStage"]. Current context: "${context}".`,
+                ),
+              ),
+            );
+        });
+      }
     });
 
     it('should successfully send the navigateToApp message', async () => {
@@ -169,7 +204,7 @@ describe('AppSDK-TeamsAPIs', () => {
     });
 
     it('should successfully navigate cross-origin', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       pages.navigateCrossDomain('https://valid.origin.com');
 
@@ -181,7 +216,7 @@ describe('AppSDK-TeamsAPIs', () => {
 
     it('should throw on invalid cross-origin navigation request', async () => {
       expect.assertions(4);
-      await utils.initializeWithContext('settings');
+      await utils.initializeWithContext(FrameContexts.settings);
 
       const promise = pages.navigateCrossDomain('https://invalid.origin.com');
 
@@ -204,7 +239,7 @@ describe('AppSDK-TeamsAPIs', () => {
 
   describe('returnFocus', () => {
     it('should successfully returnFocus', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       pages.returnFocus(true);
 
