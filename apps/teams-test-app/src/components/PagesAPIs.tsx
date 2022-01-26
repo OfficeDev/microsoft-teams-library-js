@@ -126,21 +126,12 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerFocusEnterHandler',
     title: 'Register On Focus Enter Handler',
-    onClick: {
-      withPromise: async setResult => {
-        teamsCore.registerFocusEnterHandler(navigateForward => {
-          setResult('successfully called with navigateForward:' + navigateForward);
-          return true;
-        });
-        return 'registered';
-      },
-      withCallback: setResult => {
-        teamsCore.registerFocusEnterHandler(navigateForward => {
-          setResult('successfully called with navigateForward:' + navigateForward);
-          return true;
-        });
-        setResult('registered');
-      },
+    onClick: async setResult => {
+      teamsCore.registerFocusEnterHandler(navigateForward => {
+        setResult('successfully called with navigateForward:' + navigateForward);
+        return true;
+      });
+      return 'registered';
     },
   });
 
