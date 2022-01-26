@@ -9,6 +9,10 @@ APIs previously under the `core` namespace, `executeDeepLink` and `shareDeepLink
 * `core.executeDeepLink` has renamed and moved to `app.openLink`
 * `core.shareDeepLink` has moved to `pages.shareDeepLink`
 
+## Bug fixes
+
+`null` runtimeConfig is no longer allowed during initialization. This will now throw a "Received runtime config is invalid" error.
+
 # 2.0.0-beta.2
 
 ## Bug Fixes
