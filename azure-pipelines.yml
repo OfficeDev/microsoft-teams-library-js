@@ -289,6 +289,14 @@ jobs:
           Arguments: 'build'
           ProjectDirectory: 'microsoft-teams-library-js'
 
+  - job: E2e_Test
+    displayName: 'E2e test'
+    dependsOn: E2e_Test_Setup
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+
       - task: CmdLine@2
         displayName: 'Configure host machine'
         inputs:
@@ -296,15 +304,6 @@ jobs:
             sudo chmod -R 755 ./ 
             sudo yarn setup
           workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-  - job: E2e_Test
-    displayName: 'E2e test'
-    dependsOn: E2e_Test_Setup
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
