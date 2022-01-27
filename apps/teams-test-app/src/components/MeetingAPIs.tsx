@@ -83,8 +83,10 @@ const GetAuthenticationTokenForAnonymousUser = (): React.ReactElement =>
         const callback = (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null): void => {
           if (error) {
             setResult(JSON.stringify(error));
+          } else if (authenticationTokenOfAnonymousUser) {
+            setResult(authenticationTokenOfAnonymousUser);
           } else {
-            setResult(JSON.stringify(authenticationTokenOfAnonymousUser));
+            setResult('getAuthTokenForAnonymousUser was called but nothing was returned');
           }
         };
         meeting.getAuthenticationTokenForAnonymousUser(callback);
