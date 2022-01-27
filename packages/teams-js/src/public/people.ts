@@ -1,6 +1,6 @@
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FrameContexts } from './constants';
@@ -67,7 +67,7 @@ export namespace people {
 
   function selectPeopleHelper(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
     return new Promise<PeoplePickerResult[]>(resolve => {
-      if (!isAPISupportedByPlatform(peoplePickerRequiredVersion)) {
+      if (!isCurrentSDKVersionAtLeast(peoplePickerRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
 

@@ -37,7 +37,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  *
  * @internal
  */
-export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
+export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
   if (isNaN(value)) {
     return false;
@@ -63,11 +63,11 @@ export function isHostClientMobile(): boolean {
  *
  * @internal
  */
-export function isApiSupportedOnMobile(requiredVersion: string = defaultSDKVersionForCompatCheck): never | null {
+export function isMobileApiSupported(requiredVersion: string = defaultSDKVersionForCompatCheck): never | null {
   if (!isHostClientMobile()) {
     const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
     throw notSupportedError;
-  } else if (!isAPISupportedByPlatform(requiredVersion)) {
+  } else if (!isCurrentSDKVersionAtLeast(requiredVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     throw oldPlatformError;
   }
