@@ -24,13 +24,14 @@ export interface ApiWithTextInputProps<T> {
 export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps<T>): React.ReactElement => {
   const { name, defaultInput, onClick, title } = props;
   const [result, setResult] = React.useState('');
-  const [input, setInput] = React.useState(defaultInput);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const onClickCallback = React.useCallback(async () => {
-    if (!input) {
+    if (!inputRef || !inputRef.current || !inputRef.current.value) {
       return;
     }
 
+    const input = inputRef.current.value;
     setResult(noHostSdkMsg);
     try {
       const partialInput = JSON.parse(input) as Partial<T>;
@@ -56,11 +57,11 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
     } catch (err) {
       setResult('Error: ' + err);
     }
-  }, [input, setResult, onClick]);
+  }, [inputRef, setResult, onClick]);
 
   return (
     <ApiContainer title={title} result={result} name={name}>
-      <input type="text" name={`input_${name}`} value={input} onChange={e => setInput(e.target.value)} />
+      <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} />
       <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
     </ApiContainer>
   );
