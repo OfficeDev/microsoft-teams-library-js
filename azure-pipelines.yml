@@ -253,7 +253,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+      - checkout: git://$(AppHostingSdkGitPath)@refs/heads/main
         persistCredentials: false
 
       - task: NodeTool@0
@@ -314,7 +314,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+      - checkout: git://$(AppHostingSdkGitPath)@$refs/heads/main
         persistCredentials: false
 
       - task: NodeTool@0
@@ -375,7 +375,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+      - checkout: git://$(AppHostingSdkGitPath)@refs/heads/main
         persistCredentials: false
 
       - task: NodeTool@0
