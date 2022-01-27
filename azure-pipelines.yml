@@ -8,7 +8,7 @@ variables:
 resources:
   repositories:
     - repository: appHostSdkRepo
-      type: AzureRepos
+      type: Git
       source: $(AppHostingSdkGitPath)
 
 trigger:
