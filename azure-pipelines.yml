@@ -253,8 +253,8 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
-      - script: mkdir appHostSdk && cd appHostSdk && git clone $(AppHostingSdkGitCloneAddr) --branch main
-        workingDirectory: $(Agent.BuildDirectory)
+      - checkout: git://$(AppHostingSdkGitPath)@$refs/heads/main
+        persistCredentials: false
 
       - task: NodeTool@0
         inputs:
