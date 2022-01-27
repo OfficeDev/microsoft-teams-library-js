@@ -9,8 +9,7 @@ resources:
   repositories:
     - repository: appHostSdkRepo
       type: git
-      name: $(AppHostingSdkProjectDirectory)
-      source: $(AppHostingSdkGitPath)
+      name: $(AppHostingSdkGitPath)
 
 trigger:
   branches:
