@@ -412,14 +412,17 @@ export namespace media {
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
+    protected notifyEventToHost(
+      mediaEvent: MediaControllerEvent,
+      callback?: (err?: SdkError) => void,
+    ): void | SdkError {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
-      if (err) {
-        if (callback) {
-          callback(err);
-        }
-        return;
+      let err;
+      try {
+        isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      } catch (e) {
+        err = e;
+        return callback(err);
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
@@ -434,7 +437,7 @@ export namespace media {
      * Function to programatically stop the ongoing media event
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback?: (err?: SdkError) => void): void {
+    public stop(callback?: (err?: SdkError) => void): void | SdkError {
       this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
   }
