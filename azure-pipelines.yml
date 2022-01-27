@@ -254,8 +254,8 @@ jobs:
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
+      persistCredentials: false
+      
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
@@ -315,8 +315,8 @@ jobs:
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
+      persistCredentials: false
+      
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
@@ -376,7 +376,7 @@ jobs:
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
+        persistCredentials: false
 
       - task: NodeTool@0
         inputs:
