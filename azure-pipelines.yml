@@ -5,6 +5,12 @@
 variables:
   - group: InfoSec-SecurityResults
 
+resources:
+  repositories:
+    - repository: appHostSdkRepo
+      type: AzureRepos
+      source: $(AppHostingSdkGitPath)
+
 trigger:
   branches:
     include:
@@ -252,10 +258,6 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$refs/heads/main
-        persistCredentials: false
-
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
