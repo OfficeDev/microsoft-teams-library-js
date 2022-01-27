@@ -304,6 +304,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
+      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
