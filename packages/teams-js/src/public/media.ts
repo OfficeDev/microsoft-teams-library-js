@@ -433,10 +433,15 @@ export namespace media {
       });
     }
 
+    /**
+     * Function to programatically stop the ongoing media event
+     *
+     * @returns A resolved promise
+     * */
     public stop(): Promise<void>;
     /**
      * @deprecated
-     * As of 2.0.0-beta.1, please use {@link MediaController.stop MediaController.stop(): Promise\<void\>} instead.
+     * As of 2.0.0-beta.3, please use {@link MediaController.stop MediaController.stop(): Promise\<void\>} instead.
      
      * Function to programatically stop the ongoing media event
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
