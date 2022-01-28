@@ -58,7 +58,7 @@ export function isHostClientMobile(): boolean {
 /**
  * @hidden
  * Helper function which indicates if current API is supported on mobile or not.
- * @returns SdkError if host client is not android/ios or if the requiredVersion is not
+ * @throws SdkError if host client is not android/ios or if the requiredVersion is not
  *          supported by platform or not. Null is returned in case of success.
  *
  * @internal

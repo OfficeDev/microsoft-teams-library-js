@@ -16,8 +16,8 @@ import {
 import {
   createFile,
   decodeAttachment,
-  throwExceptionIfMediaCallIsNotSupportedOnMobile,
   isVideoControllerRegistered,
+  throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
   validateScanBarCodeInput,
   validateSelectMediaInputs,
