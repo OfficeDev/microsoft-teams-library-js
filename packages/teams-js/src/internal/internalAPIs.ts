@@ -63,7 +63,7 @@ export function isHostClientMobile(): boolean {
  *
  * @internal
  */
-export function isMobileApiSupported(requiredVersion: string = defaultSDKVersionForCompatCheck): never | null {
+export function isMobileApiSupported(requiredVersion: string = defaultSDKVersionForCompatCheck): never | boolean {
   if (!isHostClientMobile()) {
     const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
     throw notSupportedError;

@@ -1,4 +1,3 @@
-import { SdkError } from '../public/interfaces';
 import { media } from '../public/media';
 import { people } from '../public/people';
 import {
@@ -65,7 +64,7 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
  *
  * @internal
  */
-export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): SdkError {
+export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): boolean {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
     return isMobileApiSupported(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
