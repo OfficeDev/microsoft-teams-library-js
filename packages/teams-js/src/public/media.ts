@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
-import { clearConfigCache } from 'prettier';
 import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
