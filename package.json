@@ -54,6 +54,7 @@
     "@typescript-eslint/parser": "^4.29.0",
     "azure-keyvault": "^3.0.4",
     "babel-loader": "^8.2.2",
+    "beachball": "^2.21.0",
     "cross-env": "*",
     "css-loader": "^5.0.1",
     "del": "2.2.2",
