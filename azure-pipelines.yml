@@ -434,7 +434,7 @@ jobs:
     displayName: 'E2e test TeamsJS V1'
     pool:
       vmImage: 'ubuntu-latest'
-    
+
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
@@ -474,10 +474,10 @@ jobs:
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
       - task: Yarn@2
-      displayName: 'Build Teams Test App V1'
-      inputs:
-        Arguments: 'build-test-app-V1'
-        ProjectDirectory: '$(ClientSdkProjectDirectory)'
+        displayName: 'Build Teams Test App V1'
+        inputs:
+          Arguments: 'build-test-app-V1'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
       - task: CmdLine@2
         displayName: 'Configure host machine'
