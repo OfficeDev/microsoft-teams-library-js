@@ -597,12 +597,17 @@ export namespace media {
     assembleAttachment: AssembleAttachment[];
   }
 
+  /**
+   * Select an attachment using camera/gallery
+   *
+   * @returns  A promise resolved with an array of media data or rejected with an @see SdkError
+   */
   export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
   /**
    * Select an attachment using camera/gallery
    *
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link media.selectMedia media.selectMedia(mediaInputs: MediaInputs): Promise\<Media[]\>} instead.
+   * As of 2.0.0-beta.3, please use {@link media.selectMedia media.selectMedia(mediaInputs: MediaInputs): Promise\<Media[]\>} instead.
    *
    * @param mediaInputs - The input params to customize the media to be selected
    * @param callback - The callback to invoke after fetching the media
