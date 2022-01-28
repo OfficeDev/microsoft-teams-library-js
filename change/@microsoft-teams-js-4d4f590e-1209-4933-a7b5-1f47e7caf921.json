@@ -1,0 +1,7 @@
+{
+  "type": "prerelease",
+  "comment": "Introduce beachball",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}

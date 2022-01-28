@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Introduce beachball",
+  "packageName": "bundle-size-tools",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
