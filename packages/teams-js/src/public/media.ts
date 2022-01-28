@@ -8,7 +8,11 @@ import {
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized, isCurrentSDKVersionAtLeast, isMobileApiSupported } from '../internal/internalAPIs';
+import {
+  ensureInitialized,
+  isCurrentSDKVersionAtLeast,
+  throwExceptionIfApiIsNotSupported,
+} from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
@@ -410,19 +414,19 @@ export namespace media {
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: boolean) => void): void {
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      const isSupported = isMobileApiSupported(nonFullScreenVideoModeAPISupportVersion);
-      if (isSupported) {
+      try {
+        throwExceptionIfApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+      } catch (err) {
         if (callback) {
-          return callback(isSupported);
+          return callback(err);
         }
-        return;
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
 
-      sendMessageToParent('media.controller', [params], (err?: boolean) => {
+      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
         if (callback) {
           callback(err);
         }
@@ -437,11 +441,19 @@ export namespace media {
      * Function to programatically stop the ongoing media event
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback?: (err?: boolean) => void): void;
-    public stop(callback?: (err?: boolean) => void): Promise<void> {
-      return new Promise<void>(resolve =>
-        resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback)),
-      );
+    public stop(callback: (err?: SdkError) => void): void;
+    public stop(callback?: (err?: SdkError) => void): Promise<void> {
+      if (callback) {
+        // if there is a callback we want to pass the callback to the notifyevent to host fn - if an exception is caught, it gets passed to the callback
+        const inputFn = (): Promise<void> =>
+          new Promise<void>(resolve => {
+            resolve(this.notifyEventToHost(MediaControllerEvent.StartRecording, callback));
+          });
+        return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(inputFn, callback);
+      } else {
+        // if there is no callback we call the notifyEventToHost
+        return new Promise<void>(resolve => resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording)));
+      }
     }
   }
 
@@ -625,10 +637,7 @@ export namespace media {
         if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-        const err = isMediaCallSupportedOnMobile(mediaInputs);
-        if (err) {
-          throw err;
-        }
+        isMediaCallSupportedOnMobile(mediaInputs);
 
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };

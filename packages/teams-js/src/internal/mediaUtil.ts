@@ -5,7 +5,7 @@ import {
   nonFullScreenVideoModeAPISupportVersion,
   videoAndImageMediaAPISupportVersion,
 } from './constants';
-import { isMobileApiSupported } from './internalAPIs';
+import { throwExceptionIfApiIsNotSupported } from './internalAPIs';
 
 /**
  * @hidden
@@ -64,16 +64,16 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
  *
  * @internal
  */
-export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): boolean {
+export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-    return isMobileApiSupported(videoAndImageMediaAPISupportVersion);
+    return throwExceptionIfApiIsNotSupported(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
-    return isMobileApiSupported(nonFullScreenVideoModeAPISupportVersion);
+    return throwExceptionIfApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
   } else if (isMediaCallForImageOutputFormats(mediaInputs)) {
-    return isMobileApiSupported(imageOutputFormatsAPISupportVersion);
+    return throwExceptionIfApiIsNotSupported(imageOutputFormatsAPISupportVersion);
   }
 
-  return null;
+  return;
 }
 
 /**

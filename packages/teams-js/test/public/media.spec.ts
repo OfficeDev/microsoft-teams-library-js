@@ -511,15 +511,15 @@ describe('media', () => {
       it('videoController notifyEventToHost should fail in default version of platform', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-
-        const promise = new media.VideoController().stop(emptyCallback);
-        await expect(promise).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+        let mediaError: SdkError;
+        new media.VideoController().stop(e => (mediaError = e));
+        await expect(mediaError).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
       });
 
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-        let mediaError: boolean;
+        let mediaError: SdkError;
         new media.VideoController().stop(err => (mediaError = err));
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
@@ -538,8 +538,8 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
-        let mediaError: boolean;
-        new media.VideoController().stop((e: boolean) => {
+        let mediaError: SdkError;
+        new media.VideoController().stop((e: SdkError) => {
           mediaError = e;
         });
         const err = jest.fn().mockImplementation(() =>
@@ -557,7 +557,7 @@ describe('media', () => {
             args: [err],
           },
         } as DOMMessageEvent);
-        await expect(mediaError).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+        const promise = await expect(mediaError).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
       });
 
       it('should invoke correct video callback for MediaControllerEvent when registered', () => {
