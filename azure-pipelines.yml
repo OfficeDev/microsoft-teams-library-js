@@ -412,6 +412,12 @@ jobs:
           Arguments: 'build'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
+      - task: Yarn@2
+        displayName: 'Build Test App Local'
+        inputs:
+          Arguments: 'build-test-app-local'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
       - task: CmdLine@2
         displayName: 'Configure host machine'
         inputs:
