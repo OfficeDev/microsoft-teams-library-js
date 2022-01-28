@@ -149,6 +149,7 @@ jobs:
         inputs:
           Arguments: 'bundleAnalyze:collect'
         displayName: 'Run bundle analysis and collect'
+
       # Bundle analysis comparison : should trigger only by PR against 2.0-preview
       # Adding comment for a commit that should queue the pipeline with a PR trigger
       - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
