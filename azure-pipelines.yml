@@ -5,12 +5,6 @@
 variables:
   - group: InfoSec-SecurityResults
 
-# resources:
-#   repositories:
-#     - repository: appHostSdkRepo
-#       type: git
-#       name: '$(AppHostingSdkProjectDirectory)'
-
 trigger:
   branches:
     include:
@@ -321,34 +315,41 @@ jobs:
     steps:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath2)
-        persistCredentials: false
+        persistCredentials: true
+
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
         displayName: 'Install Node.js'
+
       - task: YarnInstaller@3
         inputs:
           versionSpec: '1.x'
+
       - task: Yarn@2
         displayName: 'Run yarn on app hosting sdk'
         inputs:
           Arguments:
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Build app hosting sdk'
         inputs:
           Arguments: 'build'
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Run yarn on client sdk'
         inputs:
           Arguments:
           ProjectDirectory: 'microsoft-teams-library-js'
+
       - task: Yarn@2
         displayName: 'Build client sdk'
         inputs:
           Arguments: 'build'
           ProjectDirectory: 'microsoft-teams-library-js'
+
       - task: CmdLine@2
         displayName: 'Configure host machine'
         inputs:
@@ -356,50 +357,59 @@ jobs:
             sudo chmod -R 755 ./
             sudo yarn setup
           workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
-      # - job: E2e_Test_Local_Script_Tag
-      #   displayName: 'E2e test with local script tag'
-      #   pool:
-      #     vmImage: 'ubuntu-latest'
-      #   steps:
-      #     - checkout: self
-      #     - checkout: git://$(AppHostingSdkGitPath)@refs/heads/main
-      #       persistCredentials: false
-      #     - task: NodeTool@0
-      #       inputs:
-      #         versionSpec: '14.x'
-      #       displayName: 'Install Node.js'
-      #     - task: YarnInstaller@3
-      #       inputs:
-      #         versionSpec: '1.x'
-      #     - task: Yarn@2
-      #       displayName: 'Run yarn on app hosting sdk'
-      #       inputs:
-      #         Arguments:
-      #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-      #     - task: Yarn@2
-      #       displayName: 'Build app hosting sdk'
-      #       inputs:
-      #         Arguments: 'build'
-      #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-      #     - task: Yarn@2
-      #       displayName: 'Run yarn on client sdk'
-      #       inputs:
-      #         Arguments:
-      #         ProjectDirectory: 'microsoft-teams-library-js'
-      #     - task: Yarn@2
-      #       displayName: 'Build client sdk'
-      #       inputs:
-      #         Arguments: 'build'
-      #         ProjectDirectory: 'microsoft-teams-library-js'
+
+  - job: E2e_Test_Local_Script_Tag
+    displayName: 'E2e test with local script tag'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - checkout: self
+      - checkout: git://$(AppHostingSdkGitPath3)
+        persistCredentials: false
+
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '14.x'
+        displayName: 'Install Node.js'
+
+      - task: YarnInstaller@3
+        inputs:
+          versionSpec: '1.x'
+
+      - task: Yarn@2
+        displayName: 'Run yarn on app hosting sdk'
+        inputs:
+          Arguments:
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: Yarn@2
+        displayName: 'Build app hosting sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: Yarn@2
+        displayName: 'Run yarn on client sdk'
+        inputs:
+          Arguments:
+          ProjectDirectory: 'microsoft-teams-library-js'
+
+      - task: Yarn@2
+        displayName: 'Build client sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: 'microsoft-teams-library-js'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
