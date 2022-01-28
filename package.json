@@ -17,6 +17,7 @@
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "build-test-app-local": "yarn workspace teams-test-app build:local",
+    "build-test-app-V1": "yarn workspace teams-test-app build:CDNV1",
     "clean": "lerna run clean --stream",
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
@@ -27,6 +28,7 @@
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
+    "start-test-app-V1": "yarn workspace teams-test-app start:CDNV1",
     "test": "lerna run test --stream"
   },
   "devDependencies": {
