@@ -630,8 +630,6 @@ export namespace media {
         }
         const err = isMediaCallSupportedOnMobile(mediaInputs);
         if (err) {
-          debugger;
-          console.log(err);
           throw err;
         }
 
