@@ -16,7 +16,7 @@ import {
 import {
   createFile,
   decodeAttachment,
-  isMediaCallSupportedOnMobile,
+  throwExceptionIfMediaCallIsNotSupportedOnMobile,
   isVideoControllerRegistered,
   validateGetMediaInputs,
   validateScanBarCodeInput,
@@ -642,7 +642,7 @@ export namespace media {
         if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-        isMediaCallSupportedOnMobile(mediaInputs);
+        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
 
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };

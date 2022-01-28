@@ -64,7 +64,7 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
  *
  * @internal
  */
-export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): void {
+export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
     return throwExceptionIfApiIsNotSupported(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
