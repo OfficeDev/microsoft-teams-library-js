@@ -3,7 +3,6 @@ import {
   LoadContext,
   print,
   registerBeforeUnloadHandler,
-  registerFocusEnterHandler,
   registerOnLoadHandler,
   teamsCore,
 } from '@microsoft/teams-js';
@@ -104,26 +103,11 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
     },
   });
 
-const RegisterFocusEnterHandler = (): React.ReactElement =>
+const CheckTeamsCoreCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'registerFocusEnterHandler',
-    title: 'Register On Focus Enter Handler',
-    onClick: {
-      withPromise: async setResult => {
-        teamsCore.registerFocusEnterHandler(navigateForward => {
-          setResult('successfully called with nativateForward:' + navigateForward);
-          return true;
-        });
-        return 'registered';
-      },
-      withCallback: setResult => {
-        registerFocusEnterHandler(navigateForward => {
-          setResult('successfully called with nativateForward:' + navigateForward);
-          return true;
-        });
-        setResult('registered');
-      },
-    },
+    name: 'checkTeamsCoreCapability',
+    title: 'Check TeamsCore Capability',
+    onClick: async () => `TeamsCore ${teamsCore.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
@@ -133,7 +117,7 @@ const TeamsCoreAPIs = (): ReactElement => (
     <Print />
     <RegisterOnLoadHandler />
     <RegisterBeforeUnloadHandler />
-    <RegisterFocusEnterHandler />
+    <CheckTeamsCoreCapability />
   </>
 );
 

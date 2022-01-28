@@ -1,4 +1,4 @@
-import { people } from '@microsoft/teams-js';
+import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -14,9 +14,33 @@ const SelectPeople = (): React.ReactElement =>
   ApiWithTextInput<people.PeoplePickerInputs | undefined>({
     name: 'selectPeople',
     title: 'Select People',
-    onClick: async input => {
-      const result = input ? await people.selectPeople(input) : people.selectPeople();
-      return JSON.stringify(result);
+    onClick: {
+      validateInput: input => {
+        if (!input) {
+          return; //API allows for no input to be provided
+        }
+        return;
+      },
+      submit: {
+        withPromise: async input => {
+          const result = input ? await people.selectPeople(input) : people.selectPeople();
+          return JSON.stringify(result);
+        },
+        withCallback: (input, setResult) => {
+          const callback = (error: SdkError, people: people.PeoplePickerResult[]): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult(JSON.stringify(people));
+            }
+          };
+          if (input) {
+            people.selectPeople(callback, input);
+          } else {
+            people.selectPeople(callback);
+          }
+        },
+      },
     },
   });
 
