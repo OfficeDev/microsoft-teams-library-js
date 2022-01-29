@@ -60,7 +60,7 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 
 /**
  * @hidden
- * Function returns null if the media call is supported on current mobile version, else SdkError.
+ * Function throws an SdkError if the media call is not supported on current mobile version, else undefined.
  * @throws an SdkError if the media call is not supported
  * @internal
  */
@@ -72,8 +72,6 @@ export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: med
   } else if (isMediaCallForImageOutputFormats(mediaInputs)) {
     return throwExceptionIfMobileApiIsNotSupported(imageOutputFormatsAPISupportVersion);
   }
-
-  return;
 }
 
 /**

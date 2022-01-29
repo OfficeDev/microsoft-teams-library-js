@@ -73,7 +73,6 @@ export function throwExceptionIfMobileApiIsNotSupported(
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
     throw oldPlatformError;
   }
-  return undefined;
 }
 
 /**
