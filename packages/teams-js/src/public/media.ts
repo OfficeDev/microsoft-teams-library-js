@@ -448,17 +448,11 @@ export namespace media {
      */
     public stop(callback: (err?: SdkError) => void): void;
     public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      if (callback) {
-        // if there is a callback we want to pass the callback to the notifyevent to host fn - if an exception is caught, it gets passed to the callback
-        const inputFn = (): Promise<void> =>
-          new Promise<void>(resolve => {
-            resolve(this.notifyEventToHost(MediaControllerEvent.StartRecording, callback));
-          });
-        return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(inputFn, callback);
-      } else {
-        // if there is no callback we call the notifyEventToHost
-        return new Promise<void>(resolve => resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording)));
-      }
+      const inputFn = (): Promise<void> =>
+        new Promise<void>(resolve => {
+          resolve(this.notifyEventToHost(MediaControllerEvent.StartRecording, callback));
+        });
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(inputFn, callback);
     }
   }
 
