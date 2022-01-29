@@ -416,12 +416,15 @@ export namespace media {
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      try {
-        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
-      } catch (err) {
-        if (callback) {
+
+      if (callback) {
+        try {
+          throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+        } catch (err) {
           return callback(err);
         }
+      } else {
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
