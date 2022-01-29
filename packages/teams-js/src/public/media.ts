@@ -11,7 +11,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import {
   ensureInitialized,
   isCurrentSDKVersionAtLeast,
-  throwExceptionIfApiIsNotSupported,
+  throwExceptionIfMobileApiIsNotSupported,
 } from '../internal/internalAPIs';
 import {
   createFile,
@@ -417,7 +417,7 @@ export namespace media {
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       try {
-        throwExceptionIfApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
       } catch (err) {
         if (callback) {
           return callback(err);
