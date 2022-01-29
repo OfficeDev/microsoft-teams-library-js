@@ -600,6 +600,7 @@ export namespace media {
   /**
    * Select an attachment using camera/gallery
    *
+   * @param mediaInputs - The input params to customize the media to be selected
    * @returns  A promise resolved with an array of media data or rejected with an @see SdkError
    */
   export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
