@@ -5,9 +5,9 @@
   "description": "Teams Perf Test App utilizing Teams JavaScript client SDK to test Teams Host Perf",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn eslint ./src/**/*.tsx && webpack",
+    "build": "yarn lint && webpack",
     "clean": "rimraf ./build",
-    "eslint-fix-build": "yarn eslint --fix --ext .tsx ./src && webpack",
+    "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .tsx",
     "start": "webpack serve"
   },
   "dependencies": {
