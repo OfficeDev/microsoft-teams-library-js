@@ -414,26 +414,23 @@ export namespace media {
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      if (callback) {
-        try {
-          throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
-        } catch (err) {
-          return callback(err);
-        }
-      } else {
-        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
-      }
+      const promise = Promise.resolve().then(() =>
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion),
+      );
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
 
       sendMessageToParent('media.controller', [params], (err?: SdkError) => {
         if (callback) {
-          callback(err);
+          return callback(err);
+        } else if (err) {
+          return err;
         }
       });
+      return promise;
     }
 
     /**
@@ -451,10 +448,7 @@ export namespace media {
      */
     public stop(callback: (err?: SdkError) => void): void;
     public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      const inputFn = (): Promise<void> =>
-        new Promise<void>(resolve => {
-          resolve(this.notifyEventToHost(MediaControllerEvent.StartRecording, callback));
-        });
+      const inputFn = (): Promise<void> => this.notifyEventToHost(MediaControllerEvent.StartRecording, callback);
       return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(inputFn, callback);
     }
   }
