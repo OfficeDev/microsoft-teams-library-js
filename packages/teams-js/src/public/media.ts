@@ -416,7 +416,7 @@ export namespace media {
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-
+      let mediaError;
       const promise = Promise.resolve().then(() =>
         throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion),
       );
@@ -427,10 +427,19 @@ export namespace media {
         if (callback) {
           return callback(err);
         } else if (err) {
-          return err;
+          mediaError = err;
         }
       });
-      return promise;
+
+      return promise
+        .then(() => {
+          if (mediaError) {
+            throw mediaError;
+          }
+        })
+        .catch(err => {
+          throw err;
+        });
     }
 
     /**
