@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
@@ -8,16 +10,12 @@ import {
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import {
-  ensureInitialized,
-  isCurrentSDKVersionAtLeast,
-  throwExceptionIfMobileApiIsNotSupported,
-} from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform, isApiSupportedOnMobile } from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
+  isMediaCallSupportedOnMobile,
   isVideoControllerRegistered,
-  throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
   validateScanBarCodeInput,
   validateSelectMediaInputs,
@@ -110,7 +108,7 @@ export namespace media {
           throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         }
 
-        if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
+        if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
 
@@ -162,14 +160,14 @@ export namespace media {
 
       const wrappedFunction: InputFunction<Blob> = () =>
         new Promise<Blob>(resolve => {
-          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+          if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
             throw { errorCode: ErrorCode.OLD_PLATFORM };
           }
           if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
             throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
           }
           // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-          if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
+          if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
             resolve(this.getMediaViaCallback());
           } else {
             resolve(this.getMediaViaHandler());
@@ -414,51 +412,30 @@ export namespace media {
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      let mediaError;
-      const promise = Promise.resolve().then(() =>
-        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion),
-      );
+      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      if (err) {
+        if (callback) {
+          callback(err);
+        }
+        return;
+      }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-
       sendMessageToParent('media.controller', [params], (err?: SdkError) => {
         if (callback) {
-          return callback(err);
-        } else if (err) {
-          mediaError = err;
+          callback(err);
         }
       });
-
-      return promise
-        .then(() => {
-          if (mediaError) {
-            throw mediaError;
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
     }
 
     /**
      * Function to programatically stop the ongoing media event
-     *
-     * @returns A resolved promise
-     * */
-    public stop(): Promise<void>;
-    /**
-     * @deprecated
-     * As of 2.0.0-beta.3, please use {@link MediaController.stop MediaController.stop(): Promise\<void\>} instead.
-     
-     * Function to programatically stop the ongoing media event
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback: (err?: SdkError) => void): void;
-    public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      const wrappedFunction = (): Promise<void> => this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
-      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
+    public stop(callback?: (err?: SdkError) => void): void {
+      this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
   }
 
@@ -645,10 +622,13 @@ export namespace media {
 
     const wrappedFunction: InputFunction<Media[]> = () =>
       new Promise<[SdkError, Media[], MediaControllerEvent]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
+        const err = isMediaCallSupportedOnMobile(mediaInputs);
+        if (err) {
+          throw err;
+        }
 
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
@@ -702,7 +682,7 @@ export namespace media {
 
     const wrappedFunction: InputFunction<void> = () =>
       new Promise<void>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
         if (!validateViewImagesInput(uriList)) {
@@ -791,7 +771,7 @@ export namespace media {
           throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         }
 
-        if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
+        if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
 
