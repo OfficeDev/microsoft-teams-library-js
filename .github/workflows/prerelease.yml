@@ -1,0 +1,17 @@
+# This needs to be added in the master branch to show the workflow fir all branches on GitHub
+# Running this on master will not do anything
+name: Initiate Release Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        default: '2.0.0-beta.x'
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo Hello
