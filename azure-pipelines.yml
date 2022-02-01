@@ -14,131 +14,16 @@ trigger:
       - v2.0.0-beta.*
 
 jobs:
-  - job: Security
-    displayName: 'Security Tasks'
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-      - task: ESLint@1
-        displayName: 'Run ESLint'
-        inputs:
-          Configuration: 'required'
-          TargetType: 'eslint'
-          TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
-          ErrorLevel: 'warn'
+  - template: tools/yaml/security.yml
 
-      - task: CredScan@3
-        displayName: 'Run Credential Scanner'
-        condition: succeededOrFailed()
-        inputs:
-          debugMode: false
-          suppressionsFile: '.sdl\CredScanSuppressions.json'
+  - template: tools/yaml/build-test-publish.yml
 
-      - task: PublishSecurityAnalysisLogs@3
-        inputs:
-          ArtifactName: 'CodeAnalysisLogs'
-          ArtifactType: 'M365'
-          AllTools: true
-          ToolLogsNotFoundAction: 'Standard'
-        condition: succeededOrFailed()
-        displayName: 'Publish Guardian Artifacts 2'
-
-        # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
-      - task: AssetRetention@3
-        inputs:
-          ArrowServiceConnection: '$(ArrowConnection)'
-          AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
-          AssetNumber: '$(Build.BuildId)'
-          IsShipped: false
-          DropsToRetain: 'CodeAnalysisLogs'
-        condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta'),
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'),
-          ne(variables['Build.Reason'], 'Manual')
-          )
-        displayName: 'Artifact Retention(Arrow)'
-
-      - task: PostAnalysis@2
-        condition: succeededOrFailed()
-        displayName: 'Guardian Break'
-        inputs:
-          GdnBreakPolicyMinSev: Warning
-          GdnBreakAllTools: true
-          GdnBreakGdnToolCredScan: true
-          GdnBreakGdnToolCredScanSeverity: Warning
-          GdnBreakGdnToolESLint: true
-          GdnBreakGdnToolESLintSeverity: Warning
-          GdnBreakPolicy: M365
-
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          eq(variables['Build.Reason'], 'PullRequest'),
-          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-        inputs:
-          scanType: 'LogOnly'
-          verbosity: 'Verbose'
-          alertWarningLevel: 'High'
-          failOnAlert: true
-        displayName: 'Component Governance (Pull Request)'
-
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta')),
-          ne(variables['Build.Reason'], 'PullRequest'))
-        displayName: 'Component Governance (2.0-preview, release)'
-
-  - template: tools/yaml/build.yml
-
-  - job: E2e_Test
-    displayName: 'E2e test'
+  - job: E2ETest
+    displayName: 'E2E Test'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./ 
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - template: tools/yaml/build-app-host.yml
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
