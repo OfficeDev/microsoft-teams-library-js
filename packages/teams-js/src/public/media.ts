@@ -453,8 +453,8 @@ export namespace media {
      */
     public stop(callback: (err?: SdkError) => void): void;
     public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
-      // return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
+      const wrappedFunction = (): Promise<void> => this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
   }
 
