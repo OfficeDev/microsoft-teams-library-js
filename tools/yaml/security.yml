@@ -34,7 +34,7 @@ steps:
       IsShipped: false
       DropsToRetain: 'CodeAnalysisLogs'
     condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest'),
       ne(variables['Build.Reason'], 'Manual')
@@ -66,6 +66,6 @@ steps:
 
   - task: ComponentGovernanceComponentDetection@0
     condition: and(
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta')),
       ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Component Governance (2.0-preview, release)'

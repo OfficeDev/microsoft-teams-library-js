@@ -31,16 +31,6 @@ steps:
       Arguments: 'build'
     displayName: 'yarn build'
 
-  - script: 'node prepNewReadme.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
-      )
-    displayName: 'node prepNewReadme.js'
-
   - task: Yarn@3
     inputs:
       Arguments: 'test'
