@@ -13,48 +13,51 @@ export namespace stageView {
   export interface StageViewParams {
     /**
      * The application ID of the Teams application to be opened.
+     * Required
      */
     appId: string;
 
     /**
-     * The context passed into the stage view.
+     * The URL of the content to display.
+     * Required
      */
-    context: {
-      /**
-       * The URL of the content to display.
-       */
-      contentUrl?: string;
+    contentUrl: string;
 
-      /**
-       * The Teams app website URL.
-       */
-      websiteUrl?: string;
+    /**
+     * The Teams app website URL.
+     * Not required but still used to populate an open website button in stage view.
+     */
+    websiteUrl?: string;
 
-      /**
-       * The name of the stage view.
-       */
-      name?: string;
+    /**
+     * The name of the stage view.
+     * Delete seems unused
+     */
+    name?: string;
 
-      /**
-       * The entity ID.
-       */
-      entityId?: string;
+    /**
+     * The entity ID.
+     * Not sure
+     */
+    entityId?: string;
 
-      /**
-       * The thread that initiated the request.
-       */
-      threadId?: string;
+    /**
+     * The chat or channel ID.
+     * Not sure
+     */
+    threadId?: string;
 
-      /**
-       * The initatiator of the stage view request.
-       */
-      source?: string;
+    /**
+     * The initatiator of the stage view request.
+     * Delete seems unused
+     */
+    source?: string;
 
-      /**
-       * The title to give the stage view.
-       */
-      title?: string;
-    };
+    /**
+     * The title to give the stage view.
+     * Used by the error dialog.  Should this be required?
+     */
+    title?: string;
   }
 
   /**
@@ -62,8 +65,7 @@ export namespace stageView {
    * Feature is under development
    *
    * Opens a stage view to display a Teams app
-   * @param applicationId The ID of the Teams app
-   * @param context The context required to launch the Teams app
+   * @param stageViewParams The parameters to pass into the stage view.
    * @param callback Callback that will be triggered once the stage view is closed.
    *                 The callback takes as an argument an SdkError in case something happened (i.e.
    *                 no permissions to execute the API)
