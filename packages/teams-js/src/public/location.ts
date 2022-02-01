@@ -1,6 +1,6 @@
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import {
   callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise,
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
@@ -71,7 +71,7 @@ export namespace location {
 
   function getLocationHelper(props: LocationProps): Promise<Location> {
     return new Promise<Location>(resolve => {
-      if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
+      if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
       if (!props) {
@@ -106,7 +106,7 @@ export namespace location {
 
   export function showLocationHelper(location: Location): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
+      if (!isAPISupportedByPlatform(locationAPIsRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
       if (!location) {
