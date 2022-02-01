@@ -431,15 +431,11 @@ export namespace media {
         }
       });
 
-      return promise
-        .then(() => {
-          if (mediaError) {
-            throw mediaError;
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
+      return promise.then(() => {
+        if (mediaError) {
+          throw mediaError;
+        }
+      });
     }
 
     /**
