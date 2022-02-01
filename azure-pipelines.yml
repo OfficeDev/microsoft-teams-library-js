@@ -4,6 +4,8 @@
 # https://aka.ms/yaml
 variables:
   - group: InfoSec-SecurityResults
+  - name: AppHostDirectory
+    value: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 
 trigger:
   branches:

@@ -1,6 +1,6 @@
 steps:
   - checkout: self
-  - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+  - checkout: $(AppHostDirectory)
     persistCredentials: true
 
   - task: NodeTool@0
