@@ -68,21 +68,13 @@ export namespace stageView {
    *                 The callback takes as an argument an SdkError in case something happened (i.e.
    *                 no permissions to execute the API)
    */
-  export function openStageView(
-    applicationId: string,
-    context: string,
-    callback?: (sdkError?: SdkError) => void,
-  ): void {
+  export function openStageView(stageViewParams: StageViewParams, callback?: (sdkError?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content, FrameContexts.stage);
 
-    if (!applicationId) {
-      throw new Error('[openStageView] Application ID cannot be null');
+    if (!stageViewParams) {
+      throw new Error('[openStageView] Stage view params cannot be null');
     }
 
-    if (!context) {
-      throw new Error('[openStageView] Context cannot be null');
-    }
-
-    sendMessageToParent('openStageView', [applicationId, context], callback);
+    sendMessageToParent('openStageView', [stageViewParams], callback);
   }
 }
