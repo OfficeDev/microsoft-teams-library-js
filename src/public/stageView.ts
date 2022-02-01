@@ -8,6 +8,56 @@ import { FrameContexts } from './constants';
  */
 export namespace stageView {
   /**
+   * Parameters to open a stage view.
+   */
+  export interface StageViewParams {
+    /**
+     * The application ID of the Teams application to be opened.
+     */
+    appId: string;
+
+    /**
+     * The context passed into the stage view.
+     */
+    context: {
+      /**
+       * The URL of the content to display.
+       */
+      contentUrl?: string;
+
+      /**
+       * The Teams app website URL.
+       */
+      websiteUrl?: string;
+
+      /**
+       * The name of the stage view.
+       */
+      name?: string;
+
+      /**
+       * The entity ID.
+       */
+      entityId?: string;
+
+      /**
+       * The thread that initiated the request.
+       */
+      threadId?: string;
+
+      /**
+       * The initatiator of the stage view request.
+       */
+      source?: string;
+
+      /**
+       * The title to give the stage view.
+       */
+      title?: string;
+    };
+  }
+
+  /**
    * @private
    * Feature is under development
    *
