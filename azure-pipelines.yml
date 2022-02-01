@@ -18,8 +18,26 @@ jobs:
 
   - template: tools/yaml/build-test-publish.yml
 
-  - job: E2ETest
-    displayName: 'E2E Test'
+  - job: E2ETest1
+    displayName: 'E2E Test (Perf)'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: tools/yaml/build-app-host.yml
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+        displayName: 'Run E2E Perf tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
+
+  - job: E2ETest2
+    displayName: 'E2E Test (Default)'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -36,122 +54,12 @@ jobs:
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
 
-  - job: E2e_Performance_Test
-    displayName: 'E2e performance test'
+  - job: E2ETest3
+    displayName: 'E2E Test (Local Tag)'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath2)
-        persistCredentials: true
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-        displayName: 'Run E2E Perf tests'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report*.xml'
-        condition: succeededOrFailed()
-
-  - job: E2e_Test_Local_Script_Tag
-    displayName: 'E2e test with local script tag'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath3)
-        persistCredentials: false
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build Test App Local'
-        inputs:
-          Arguments: 'build-test-app-local'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./ 
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - template: tools/yaml/build-app-host.yml
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=--envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
@@ -163,53 +71,12 @@ jobs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
-  # - job: E2e_Test_TeamsV1
-  #   displayName: 'E2e test TeamsJS V1'
+  # - job: E2ETest4
+  #   displayName: 'E2E Test (TeamsJS V1)'
   #   pool:
   #     vmImage: 'ubuntu-latest'
   #   steps:
-  #     - checkout: self
-  #     - checkout: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
-  #       persistCredentials: true
-  #     - task: NodeTool@0
-  #       inputs:
-  #         versionSpec: '14.x'
-  #       displayName: 'Install Node.js'
-  #     - task: YarnInstaller@3
-  #       inputs:
-  #         versionSpec: '1.x'
-  #     - task: Yarn@2
-  #       displayName: 'Run yarn on app hosting sdk'
-  #       inputs:
-  #         Arguments:
-  #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build app hosting sdk'
-  #       inputs:
-  #         Arguments: 'build'
-  #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Run yarn on client sdk'
-  #       inputs:
-  #         Arguments:
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build client sdk'
-  #       inputs:
-  #         Arguments: 'build'
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build Teams Test App V1'
-  #       inputs:
-  #         Arguments: 'build-test-app-V1'
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: CmdLine@2
-  #       displayName: 'Configure host machine'
-  #       inputs:
-  #         script: |
-  #           sudo chmod -R 755 ./
-  #           sudo yarn setup
-  #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
+  #     - template: tools/yaml/build-app-host.yml
   #     - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-V1 --envType=--envType=teamsV1'
   #       displayName: 'Run E2E integration tests on Teams Test App V1'
   #       condition: succeeded()
