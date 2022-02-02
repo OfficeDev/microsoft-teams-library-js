@@ -7,7 +7,7 @@ steps:
   - checkout: self
     persistCredentials: true
 
-  - bash: git checkout ${{ parameters.appHostGitPath }}
+  - bash: git clone ${{ parameters.appHostGitPath }}
 
   - task: NodeTool@0
     inputs:
