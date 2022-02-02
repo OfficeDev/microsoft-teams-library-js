@@ -27,7 +27,7 @@ jobs:
     steps:
       - template: tools/yaml/build-app-host.yml
         parameters:
-          appHostGitPath: $(appHostGitPath)
+          appHostGitPath: ${{variables.appHostGitPath}}
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
@@ -49,7 +49,7 @@ jobs:
     steps:
       - template: tools/yaml/build-app-host.yml
         parameters:
-          appHostGitPath: $(appHostGitPath)
+          appHostGitPath: ${{variables.appHostGitPath}}
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
@@ -71,7 +71,7 @@ jobs:
     steps:
       - template: tools/yaml/build-app-host.yml
         parameters:
-          appHostGitPath: $(appHostGitPath)
+          appHostGitPath: ${{variables.appHostGitPath}}
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=--envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
