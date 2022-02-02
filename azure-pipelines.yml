@@ -5,7 +5,7 @@ resources:
   repositories:
     - repository: AppHostingRepo # The name used to reference this repository in the checkout step
       type: git
-      endpoint: git://$(AppHostingSdkGitPath)
+      endpoint: $(AppHostingSdkGitPath)
       ref: $(AppHostingSdkGitRef)
 
 trigger:
