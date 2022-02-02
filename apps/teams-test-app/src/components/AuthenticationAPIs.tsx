@@ -111,12 +111,15 @@ const Authenticate = (): React.ReactElement =>
           return 'Success: ' + token;
         },
         withCallback: (authParams, setResult) => {
-          const callback = (result: string): void => {
-            setResult(JSON.stringify(result));
+          const successCallback = (result: string): void => {
+            setResult('Success: ' + result);
+          };
+          const failureCallback = (result: string): void => {
+            setResult('Error: Error: ' + result);
           };
           const authRequest: authentication.AuthenticateParameters = {
-            successCallback: callback,
-            failureCallback: callback,
+            successCallback: successCallback,
+            failureCallback: failureCallback,
             ...authParams,
           };
           authentication.authenticate(authRequest);
