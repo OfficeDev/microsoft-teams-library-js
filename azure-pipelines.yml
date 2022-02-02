@@ -1,13 +1,6 @@
 variables:
   - group: InfoSec-SecurityResults
 
-resources:
-  repositories:
-    - repository: AppHostingRepo # The name used to reference this repository in the checkout step
-      type: git
-      endpoint: $(AppHostingSdkGitPath)
-      ref: $(AppHostingSdkGitRef)
-
 trigger:
   branches:
     include:
