@@ -5,7 +5,7 @@ parameters:
 
 steps:
   - checkout: self
-  - checkout: ${{ parameters.AppHostGitPath }}
+  - checkout: AppHostingRepo
     persistCredentials: true
 
   - task: NodeTool@0
