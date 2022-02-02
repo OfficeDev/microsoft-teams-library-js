@@ -49,7 +49,7 @@ jobs:
     steps:
       - template: tools/yaml/build-app-host.yml
         parameters:
-          appHostGitPath2: ${{variables.appHostGitPath2}}
+          appHostGitPath: ${{variables.appHostGitPath2}}
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
