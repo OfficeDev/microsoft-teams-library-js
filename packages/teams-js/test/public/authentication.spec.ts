@@ -39,7 +39,7 @@ describe('authentication', () => {
       height: 200,
     };
 
-    return expect(() => authentication.authenticate(authenticationParams)).toThrowError(
+    expect(() => authentication.authenticate(authenticationParams)).toThrowError(
       'The library has not yet been initialized',
     );
   });
@@ -91,7 +91,7 @@ describe('authentication', () => {
             height: 200,
           };
 
-          return expect(() => authentication.authenticate(authenticationParams)).toThrowError(
+          expect(() => authentication.authenticate(authenticationParams)).toThrowError(
             `This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "${context}".`,
           );
         });
@@ -605,7 +605,7 @@ describe('authentication', () => {
       silent: false,
     };
 
-    return expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
+    expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
       'The library has not yet been initialized',
     );
   });
