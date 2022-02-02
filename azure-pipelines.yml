@@ -14,9 +14,19 @@ trigger:
       - v2.0.0-beta.*
 
 jobs:
-  - template: tools/yaml/security.yml
+  - job:
+    displayName: 'Security Tasks'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - template: tools/yaml/security.yml
 
-  - template: tools/yaml/build-test-publish.yml
+  - job:
+    displayName: 'Build Test Publish'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - template: tools/yaml/build-test-publish.yml
 
   - job: E2ETest1
     displayName: 'E2E Test (Perf)'
@@ -42,8 +52,6 @@ jobs:
 
   - job: E2ETest2
     displayName: 'E2E Test (Default)'
-    variables:
-      appHostGitPath2: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -65,7 +73,7 @@ jobs:
   - job: E2ETest3
     displayName: 'E2E Test (Local Tag)'
     variables:
-      appHostGitPath3: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
+      appHostGitPath3: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
