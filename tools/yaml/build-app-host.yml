@@ -1,9 +1,11 @@
- variables:
-    appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef) 
+parameters:
+  - name: 'appHostGitPath'
+    default: none
+    type: string
 
 steps:
   - checkout: self
-  - checkout: ${{variables.appHostGitPath}}
+  - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
 
   - task: NodeTool@0
