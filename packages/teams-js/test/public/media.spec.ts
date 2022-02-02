@@ -474,7 +474,7 @@ describe('media', () => {
           } as DOMMessageEvent);
         });
       });
-      it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', async () => {
+      it('selectMedia call for mediaType = 1 and imageOutputFormats in mediaAPISupportVersion of platform support fails', async done => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
         const mediaInputs: media.MediaInputs = {
@@ -485,15 +485,17 @@ describe('media', () => {
         media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
           expect(error).not.toBeNull();
           expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          done();
         });
       });
-      it('videoController notifyEventToHost should fail in default version of platform', async () => {
+      it('videoController notifyEventToHost should fail in default version of platform', async done => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
         let mediaError: SdkError;
         new media.VideoController().stop(e => {
           mediaError = e;
           expect(mediaError).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+          done();
         });
       });
       it('videoController notifyEventToHost is handled successfully', async () => {
