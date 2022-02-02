@@ -19,21 +19,21 @@ jobs:
     pool:
       vmImage: 'windows-latest'
     steps:
-      - template: tools/yaml/security.yml
+      - template: tools/yaml-templates/security.yml
 
   - job:
     displayName: 'Build Test Publish'
     pool:
       vmImage: 'windows-latest'
     steps:
-      - template: tools/yaml/build-test-publish.yml
+      - template: tools/yaml-templates/build-test-publish.yml
 
   - job: E2ETest1
     displayName: 'E2E Test (Perf)'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - template: tools/yaml/build-app-host.yml
+      - template: tools/yaml-templates/build-app-host.yml
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 
@@ -53,7 +53,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - template: tools/yaml/build-app-host.yml
+      - template: tools/yaml-templates/build-app-host.yml
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
 
@@ -73,7 +73,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - template: tools/yaml/build-app-host.yml
+      - template: tools/yaml-templates/build-app-host.yml
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
 
@@ -92,7 +92,9 @@ jobs:
   #   pool:
   #     vmImage: 'ubuntu-latest'
   #   steps:
-  #     - template: tools/yaml/build-app-host.yml
+  #     - template: tools/yaml-templates/build-app-host.yml
+  #       parameters:
+  #         appHostGitPath: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
   #     - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-V1 --envType=--envType=teamsV1'
   #       displayName: 'Run E2E integration tests on Teams Test App V1'
   #       condition: succeeded()
