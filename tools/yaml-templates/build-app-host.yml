@@ -1,0 +1,50 @@
+parameters:
+  - name: 'appHostGitPath'
+    default: none
+    type: string
+
+steps:
+  - checkout: self
+  - checkout: ${{ parameters.appHostGitPath }}
+    persistCredentials: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x'
+    displayName: 'Install Node.js'
+
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+
+  - task: Yarn@2
+    displayName: 'Run yarn on app hosting sdk'
+    inputs:
+      Arguments:
+      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: Yarn@2
+    displayName: 'Build app hosting sdk'
+    inputs:
+      Arguments: 'build'
+      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: Yarn@2
+    displayName: 'Run yarn on client sdk'
+    inputs:
+      Arguments:
+      ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: Yarn@2
+    displayName: 'Build client sdk'
+    inputs:
+      Arguments: 'build'
+      ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: CmdLine@2
+    displayName: 'Configure host machine'
+    inputs:
+      script: |
+        sudo chmod -R 755 ./ 
+        sudo yarn setup
+      workingDirectory: '$(AppHostingSdkProjectDirectory)'
