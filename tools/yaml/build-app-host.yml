@@ -1,6 +1,11 @@
+parameters:
+  - name: 'AppHostGitPath'
+    default: none
+    type: string
+
 steps:
   - checkout: self
-  - checkout: $(AppHostDirectory)
+  - checkout: ${{ parameters.AppHostGitPath }}
     persistCredentials: true
 
   - task: NodeTool@0
