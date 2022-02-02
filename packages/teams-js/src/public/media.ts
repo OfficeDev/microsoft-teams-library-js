@@ -10,12 +10,16 @@ import {
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized, isAPISupportedByPlatform, isApiSupportedOnMobile } from '../internal/internalAPIs';
+import {
+  ensureInitialized,
+  isCurrentSDKVersionAtLeast,
+  throwExceptionIfMobileApiIsNotSupported,
+} from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
-  isMediaCallSupportedOnMobile,
   isVideoControllerRegistered,
+  throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
   validateScanBarCodeInput,
   validateSelectMediaInputs,
@@ -108,7 +112,7 @@ export namespace media {
           throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         }
 
-        if (!isAPISupportedByPlatform(captureImageMobileSupportVersion)) {
+        if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
 
@@ -160,14 +164,14 @@ export namespace media {
 
       const wrappedFunction: InputFunction<Blob> = () =>
         new Promise<Blob>(resolve => {
-          if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
             throw { errorCode: ErrorCode.OLD_PLATFORM };
           }
           if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
             throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
           }
           // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-          if (isAPISupportedByPlatform(getMediaCallbackSupportVersion)) {
+          if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
             resolve(this.getMediaViaCallback());
           } else {
             resolve(this.getMediaViaHandler());
@@ -414,7 +418,7 @@ export namespace media {
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      const err = isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+      const err = throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
       if (err) {
         if (callback) {
           callback(err);
@@ -622,13 +626,10 @@ export namespace media {
 
     const wrappedFunction: InputFunction<Media[]> = () =>
       new Promise<[SdkError, Media[], MediaControllerEvent]>(resolve => {
-        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
-        const err = isMediaCallSupportedOnMobile(mediaInputs);
-        if (err) {
-          throw err;
-        }
+        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
 
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
@@ -682,7 +683,7 @@ export namespace media {
 
     const wrappedFunction: InputFunction<void> = () =>
       new Promise<void>(resolve => {
-        if (!isAPISupportedByPlatform(mediaAPISupportVersion)) {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
         if (!validateViewImagesInput(uriList)) {
@@ -771,7 +772,7 @@ export namespace media {
           throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         }
 
-        if (!isAPISupportedByPlatform(scanBarCodeAPIMobileSupportVersion)) {
+        if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
           throw { errorCode: ErrorCode.OLD_PLATFORM };
         }
 

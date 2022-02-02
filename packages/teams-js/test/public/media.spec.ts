@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-empty-function */
+import * as communication from '../../src/internal/communication';
 import { captureImageMobileSupportVersion, getMediaCallbackSupportVersion } from '../../src/internal/constants';
 import { callHandler } from '../../src/internal/handlers';
 import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
@@ -825,13 +826,13 @@ describe('media', () => {
           expect(stopPromise).resolves;
         });
 
-        it('videoController notifyEventToHost is not handled successfully but stop', async () => {
+        it('videoController notifyEventToHost is not handled successfully and sendMessageToParent does not run', async () => {
           await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
           mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
           const err = { errorCode: ErrorCode.INTERNAL_ERROR };
           const stopPromise = new media.VideoController().stop();
-
+          const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
           const message = mobilePlatformMock.findMessageByFunc('media.controller');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
@@ -842,7 +843,7 @@ describe('media', () => {
               args: [err],
             },
           } as DOMMessageEvent);
-
+          expect(sendMessageToParentSpy).not.toBeCalled();
           await stopPromise.catch(err => {
             expect(err).toMatchObject(err);
           });
