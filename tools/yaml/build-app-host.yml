@@ -7,7 +7,7 @@ steps:
   - checkout: self
     persistCredentials: true
 
-  - bash: git clone ${{ parameters.appHostGitPath }}
+  - bash: git clone $(AppHostingSdkGitCloneAddr)
 
   - task: NodeTool@0
     inputs:
