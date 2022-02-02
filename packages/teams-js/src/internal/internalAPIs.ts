@@ -37,7 +37,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  *
  * @internal
  */
-export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
+export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
   if (isNaN(value)) {
     return false;
