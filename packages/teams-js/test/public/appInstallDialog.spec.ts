@@ -20,15 +20,19 @@ describe('appInstallDialog', () => {
     }
   });
 
-  it('should not allow openAppInstallDialog before initialization', () => {
-    expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
-      'The library has not yet been initialized',
-    );
+  it('should not allow openAppInstallDialog before initialization', async () => {
+    expect.assertions(1);
+    await appInstallDialog
+      .openAppInstallDialog(mockOpenAppInstallDialogParams)
+      .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
   });
 
-  it('Should not allow openAppInstallDialog if not supported', () => {
+  it('Should not allow openAppInstallDialog if not supported', async () => {
+    expect.assertions(1);
     utils.initializeWithContext(FrameContexts.content);
-    expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toEqual('Not supported');
+    await appInstallDialog
+      .openAppInstallDialog(mockOpenAppInstallDialogParams)
+      .catch(e => expect(e).toMatch('Not supported'));
   });
 
   it('openAppInstallDialog should be called if supported', async () => {
