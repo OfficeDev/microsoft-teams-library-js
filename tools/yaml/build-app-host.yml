@@ -5,8 +5,9 @@ parameters:
 
 steps:
   - checkout: self
-  - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
+
+  - bash: git checkout ${{ parameters.appHostGitPath }}
 
   - task: NodeTool@0
     inputs:
