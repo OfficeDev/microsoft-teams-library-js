@@ -15,7 +15,6 @@ module.exports = {
   bumpDeps: false,
   generateChangelog: true,
   hooks: { postbump },
-  // TODO: move the changelog file
   ignorePatterns: ['.*ignore', '*.config.js', '**/test/**'],
   publish: false,
   push: false,
