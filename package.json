@@ -26,7 +26,6 @@
     "efb": "lerna run eslint-fix-build",
     "generate-change-files": "yarn beachball change",
     "lint": "lerna run lint",
-    "release": "node tools/cli/prepNextRelease.js",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
