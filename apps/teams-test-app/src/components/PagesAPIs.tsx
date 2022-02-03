@@ -140,7 +140,7 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });
-        return 'registered';
+        setResult('registered');
       },
     },
   });
