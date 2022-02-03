@@ -19,5 +19,5 @@ module.exports = {
   ignorePatterns: ['.*ignore', '*.config.js', 'test/**'],
   publish: false,
   push: false,
-  scope: ['packages/teams-js/src'],
+  scope: ['packages/teams-js/src/**'],
 };
