@@ -16,7 +16,7 @@ module.exports = {
   generateChangelog: true,
   hooks: { postbump },
   // TODO: move the changelog file
-  ignorePatterns: ['.*ignore', '*.config.js', 'test/**'],
+  ignorePatterns: ['.*ignore', '*.config.js', '**/test/**'],
   publish: false,
   push: false,
   scope: ['packages/teams-js'],
