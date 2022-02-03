@@ -2,6 +2,7 @@ import { app, appInitialization } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { getTestBackCompat } from './utils/getTestBackCompat';
 
 const NotifyLoaded = (): React.ReactElement =>
   ApiWithoutInput({
@@ -36,7 +37,7 @@ const NotifySuccess = (): React.ReactElement =>
   });
 
 const NotifyFailure = (): React.ReactElement =>
-  ApiWithTextInput<app.FailedReason>({
+  ApiWithTextInput<app.FailedReason | appInitialization.FailedReason>({
     name: 'appInitializationFailure2',
     title: 'appInitialization.failure',
     onClick: {
@@ -45,7 +46,9 @@ const NotifyFailure = (): React.ReactElement =>
           // this API actually allow for the input not to be provided
           return;
         }
-        const acceptableValues = Object.values(app.FailedReason);
+        const acceptableValues = getTestBackCompat()
+          ? Object.values(appInitialization.FailedReason)
+          : Object.values(app.FailedReason);
         if (!acceptableValues.includes(input)) {
           throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
         }
@@ -56,7 +59,9 @@ const NotifyFailure = (): React.ReactElement =>
           return 'called';
         },
         withCallback: (input, setResult) => {
-          appInitialization.notifyFailure({ reason: input || app.FailedReason.Other });
+          appInitialization.notifyFailure({
+            reason: input || appInitialization.FailedReason.Other,
+          });
           setResult('called');
         },
       },
@@ -64,22 +69,25 @@ const NotifyFailure = (): React.ReactElement =>
   });
 
 const NotifyExpectedFailure = (): React.ReactElement =>
-  ApiWithTextInput<app.IExpectedFailureRequest>({
+  ApiWithTextInput<app.ExpectedFailureReason | appInitialization.ExpectedFailureReason>({
     name: 'appInitializationExpectedFailure',
     title: 'appInitialization.expectedFailure',
     onClick: {
       validateInput: input => {
-        if (!input.reason) {
-          input.reason = app.ExpectedFailureReason.Other;
+        const acceptableValues = getTestBackCompat()
+          ? Object.values(appInitialization.ExpectedFailureReason)
+          : Object.values(app.ExpectedFailureReason);
+        if (!acceptableValues.includes(input)) {
+          throw new Error(`input must be one of: ${JSON.stringify(acceptableValues)}`);
         }
       },
       submit: {
         withPromise: async input => {
-          app.notifyExpectedFailure(input);
+          app.notifyExpectedFailure({ reason: input || app.ExpectedFailureReason.Other });
           return 'called';
         },
         withCallback: (input, setResult) => {
-          appInitialization.notifyExpectedFailure(input);
+          appInitialization.notifyExpectedFailure({ reason: input || app.ExpectedFailureReason.Other });
           setResult('called');
         },
       },

@@ -1,0 +1,50 @@
+name: Initiate Release Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        default: '2.0.0-beta.x'
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Push base release branch
+        run: |
+          git checkout -b release/${{ github.event.inputs.version }}
+          git push --set-upstream origin release/${{ github.event.inputs.version }} -f
+
+      - name: Install yarn
+        run: yarn install
+
+      - name: Make changes to pull request
+        run: node tools/cli/preRelease.js ${{ github.event.inputs.version }}
+
+      - name: Extract changelog for version
+        id: extract_changelog
+        run: |
+          changelog=$(node tools/cli/readChangelog.js ${{ github.event.inputs.version }})
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A'}"
+          changelog="${changelog//$'\r'/'%0D'}"
+          echo -e "::set-output name=changelog::$changelog"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Releasing ${{ github.event.inputs.version }}
+          title: 'Releasing v${{ github.event.inputs.version }}'
+          body: '${{steps.extract_changelog.outputs.changelog}}'
+          branch: 'actions/release_v${{ github.event.inputs.version }}'
+          base: release/${{ github.event.inputs.version }}
+          delete-branch: true

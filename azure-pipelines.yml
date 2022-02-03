@@ -9,10 +9,9 @@ trigger:
   branches:
     include:
       - '2.0-preview'
-      - 'release*'
   tags:
     include:
-      - 'v*'
+      - v2.0.0-beta.*
 
 jobs:
   - job: Security
@@ -53,7 +52,7 @@ jobs:
           IsShipped: false
           DropsToRetain: 'CodeAnalysisLogs'
         condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta'),
           in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
           ne(variables['Build.Reason'], 'PullRequest'),
           ne(variables['Build.Reason'], 'Manual')
@@ -85,7 +84,7 @@ jobs:
 
       - task: ComponentGovernanceComponentDetection@0
         condition: and(
-          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v')),
+          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta')),
           ne(variables['Build.Reason'], 'PullRequest'))
         displayName: 'Component Governance (2.0-preview, release)'
 
@@ -123,16 +122,6 @@ jobs:
         inputs:
           Arguments: 'build'
         displayName: 'yarn build'
-
-      - script: 'node prepNewReadme.js'
-        workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-        condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v'),
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'),
-          ne(variables['Build.Reason'], 'Manual')
-          )
-        displayName: 'node prepNewReadme.js'
 
       - task: Yarn@3
         inputs:
@@ -436,13 +425,75 @@ jobs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
+
+  - job: E2e_Test_Backwards_Compatibility_Latest
+    displayName: 'E2e test BC Latest'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - checkout: self
+      - checkout: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
+        persistCredentials: true
+
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '14.x'
+        displayName: 'Install Node.js'
+
+      - task: YarnInstaller@3
+        inputs:
+          versionSpec: '1.x'
+
+      - task: Yarn@2
+        displayName: 'Run yarn on app hosting sdk'
+        inputs:
+          Arguments:
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: Yarn@2
+        displayName: 'Build app hosting sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: Yarn@2
+        displayName: 'Run yarn on client sdk'
+        inputs:
+          Arguments:
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+      - task: Yarn@2
+        displayName: 'Build client sdk'
+        inputs:
+          Arguments: 'build'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+      - task: CmdLine@2
+        displayName: 'Configure host machine'
+        inputs:
+          script: |
+            sudo chmod -R 755 ./ 
+            sudo yarn setup
+          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --targetClientSdkCheckpoint=latestBackCompat --reportFileName=e2e-tests-report-bcompat'
+        displayName: 'Run E2E back compat tests against latest version'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+        enabled: true
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
   # - job: E2e_Test_TeamsV1
   #   displayName: 'E2e test TeamsJS V1'
   #   pool:
   #     vmImage: 'ubuntu-latest'
   #   steps:
   #     - checkout: self
-  #     - checkout: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
+  #     - checkout: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
   #       persistCredentials: true
   #     - task: NodeTool@0
   #       inputs:
