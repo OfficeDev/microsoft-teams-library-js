@@ -756,7 +756,7 @@ describe('media', () => {
         };
 
         await new media.VideoController().stop((e: SdkError) => {
-          expect(e).toMatchObject(err);
+          expect(e).toEqual(err);
         });
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
@@ -787,7 +787,7 @@ describe('media', () => {
             return e;
           });
         } catch (err) {
-          expect(err).toMatchObject({ errorCode: ErrorCode.OLD_PLATFORM });
+          expect(err).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         }
 
         expect(sendMessageToParentSpy).not.toHaveBeenCalled();
@@ -802,7 +802,7 @@ describe('media', () => {
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
         await new media.VideoController().stop().catch(err => {
-          return expect(err).toMatchObject({ errorCode: ErrorCode.OLD_PLATFORM });
+          return expect(err).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
         expect(sendMessageToParentSpy).not.toHaveBeenCalled();
       });
@@ -850,7 +850,7 @@ describe('media', () => {
             } as DOMMessageEvent);
           })
           .catch(error => {
-            return expect(error).toMatchObject(err);
+            return expect(error).toEqual(err);
           });
         expect(sendMessageToParentSpy).toHaveBeenCalled();
       });
