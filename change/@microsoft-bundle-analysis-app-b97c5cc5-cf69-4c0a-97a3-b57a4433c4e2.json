@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Introduce beachball",
-  "packageName": "@microsoft/bundle-analysis-app",
-  "email": "aeun@microsoft.com",
-  "dependentChangeType": "patch"
-}
