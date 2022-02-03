@@ -1,8 +1,8 @@
 const exec = require('child_process').exec;
 
 const postbump = (packagePath, packageName, packageVersion) => {
-  if (!packageName.equals('@microsoft/teams-js')) {
-    exec('cd packagePath && rm CHANGELOG.md');
+  if (packageName !== '@microsoft/teams-js') {
+    exec('cd packagePath && rm CHANGELOG.*');
   }
 };
 
