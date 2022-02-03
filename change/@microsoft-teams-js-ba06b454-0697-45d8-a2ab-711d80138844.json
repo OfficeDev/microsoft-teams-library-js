@@ -1,7 +1,0 @@
-{
-  "type": "prerelease",
-  "comment": "Fix beachball config syntax",
-  "packageName": "@microsoft/teams-js",
-  "email": "aeun@microsoft.com",
-  "dependentChangeType": "patch"
-}
