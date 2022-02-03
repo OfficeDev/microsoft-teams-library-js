@@ -496,38 +496,46 @@ jobs:
       - checkout: self
       - checkout: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
         persistCredentials: true
+
       - task: NodeTool@0
         inputs:
           versionSpec: '14.x'
         displayName: 'Install Node.js'
+
       - task: YarnInstaller@3
         inputs:
           versionSpec: '1.x'
+
       - task: Yarn@2
         displayName: 'Run yarn on app hosting sdk'
         inputs:
           Arguments:
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Build app hosting sdk'
         inputs:
           Arguments: 'build'
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Run yarn on client sdk'
         inputs:
           Arguments:
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Build client sdk'
         inputs:
           Arguments: 'build'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
       - task: Yarn@2
         displayName: 'Build Teams Test App V1'
         inputs:
           Arguments: 'build-test-app-V1'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
       - task: CmdLine@2
         displayName: 'Configure host machine'
         inputs:
@@ -535,10 +543,12 @@ jobs:
             sudo chmod -R 755 ./
             sudo yarn setup
           workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=--envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
         displayName: 'Run E2E integration tests on Teams Test App V1'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
