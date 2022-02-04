@@ -32,7 +32,6 @@ describe('authentication', () => {
   });
 
   it('should not allow authentication.authenticate calls before initialization', () => {
-    expect.assertions(1);
     const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
       width: 100,
@@ -59,7 +58,6 @@ describe('authentication', () => {
     .forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it(`should allow authentication.authenticate calls from ${context} context`, async () => {
-          expect.assertions(1);
           await utils.initializeWithContext(context);
 
           const authenticationParams: authentication.AuthenticatePopUpParameters = {
@@ -79,7 +77,7 @@ describe('authentication', () => {
             },
           } as MessageEvent);
 
-          return expect(promise).resolves.toEqual(mockResult);
+          await expect(promise).resolves.toEqual(mockResult);
         });
       } else {
         it(`should not allow authentication.authenticate calls from ${context} context`, async () => {
@@ -208,7 +206,7 @@ describe('authentication', () => {
     expect(windowOpenCalled).toBe(true);
 
     utils.childWindow.closed = true;
-    await promise.catch(e => expect(e).toMatchObject(new Error('CancelledByUser')));
+    await expect(promise).rejects.toThrowError('CancelledByUser');
   });
 
   it('should successfully handle auth success in legacy flow', done => {
@@ -260,7 +258,7 @@ describe('authentication', () => {
       },
     } as MessageEvent);
 
-    return expect(promise).resolves.toEqual(mockResult);
+    await expect(promise).resolves.toEqual(mockResult);
   });
 
   it('should successfully handle auth failure in legacy flow', done => {
@@ -293,7 +291,6 @@ describe('authentication', () => {
   });
 
   it('should successfully handle auth failure', async () => {
-    expect.assertions(1);
     await utils.initializeWithContext('content');
 
     const authenticationParams = {
@@ -313,14 +310,11 @@ describe('authentication', () => {
       },
     } as MessageEvent);
 
-    await promise.catch(e => {
-      expect(e).toMatchObject(new Error(errorMessage));
-    });
+    await expect(promise).rejects.toThrowError(errorMessage);
   });
 
   ['android', 'ios', 'desktop'].forEach(hostClientType => {
     it(`should successfully pop up the auth window in the ${hostClientType} client in legacy flow`, () => {
-      expect.assertions(6);
       return utils.initializeWithContext('content', hostClientType).then(() => {
         const authenticationParams = {
           url: 'https://someUrl',
@@ -562,7 +556,7 @@ describe('authentication', () => {
     expect(message).not.toBeNull();
 
     // Wait 100ms for the message queue and 200ms for the close delay
-    return new Promise<void>(resolve =>
+    await new Promise<void>(resolve =>
       setTimeout(() => {
         expect(closeWindowSpy).toHaveBeenCalled();
         resolve();
@@ -589,7 +583,7 @@ describe('authentication', () => {
     expect(message).not.toBeNull();
 
     // Wait 100ms for the message queue and 200ms for the close delay
-    return new Promise<void>(resolve =>
+    await new Promise<void>(resolve =>
       setTimeout(() => {
         expect(closeWindowSpy).toHaveBeenCalled();
         resolve();
@@ -598,7 +592,6 @@ describe('authentication', () => {
   });
 
   it('should not allow getAuthToken calls before initialization', () => {
-    expect.assertions(1);
     const authTokenRequest = {
       resources: [mockResource],
       claims: [mockClaim],
@@ -668,7 +661,6 @@ describe('authentication', () => {
   });
 
   it('should successfully return getAuthToken in case of success', async () => {
-    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const authTokenRequest = {
@@ -687,11 +679,10 @@ describe('authentication', () => {
     expect(message.args[2]).toEqual(false);
 
     utils.respondToMessage(message, true, 'token');
-    return expect(promise).resolves.toEqual('token');
+    await expect(promise).resolves.toEqual('token');
   });
 
   it('should successfully return getAuthToken in case of success when using no authTokenRequest', async () => {
-    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const promise = authentication.getAuthToken();
@@ -704,11 +695,10 @@ describe('authentication', () => {
     expect(message.args[2]).toEqual(undefined);
 
     utils.respondToMessage(message, true, 'token');
-    return expect(promise).resolves.toEqual('token');
+    await expect(promise).resolves.toEqual('token');
   });
 
   it('should successfully return error from getAuthToken in case of failure', async () => {
-    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const authTokenRequest: authentication.AuthTokenRequestParameters = {
@@ -725,11 +715,10 @@ describe('authentication', () => {
     expect(message.args[2]).toEqual(undefined);
 
     utils.respondToMessage(message, false, errorMessage);
-    await promise.catch(e => expect(e).toMatchObject(new Error(errorMessage)));
+    await expect(promise).rejects.toThrowError(errorMessage);
   });
 
   it('should successfully return error from getAuthToken in case of failure when using no authTokenRequest', async () => {
-    expect.assertions(6);
     await utils.initializeWithContext('content');
 
     const promise = authentication.getAuthToken();
@@ -742,6 +731,6 @@ describe('authentication', () => {
     expect(message.args[2]).toEqual(undefined);
 
     utils.respondToMessage(message, false, errorMessage);
-    await promise.catch(e => expect(e).toMatchObject(new Error(errorMessage)));
+    await expect(promise).rejects.toThrowError(errorMessage);
   });
 });
