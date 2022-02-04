@@ -713,7 +713,7 @@ describe('media', () => {
           },
         } as DOMMessageEvent);
 
-        await expect(promise).rejects.toMatchObject({ errorCode: ErrorCode.SIZE_EXCEEDED });
+        await expect(promise).rejects.toEqual({ errorCode: ErrorCode.SIZE_EXCEEDED });
       });
     });
   });
