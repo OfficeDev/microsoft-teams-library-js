@@ -38,8 +38,7 @@ describe('AppSDK-app', () => {
   });
 
   it('should not allow calls before initialization', async () => {
-    expect.assertions(1);
-    await app.getContext().catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+    await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
   });
 
   it('should successfully initialize', () => {
@@ -155,13 +154,12 @@ describe('AppSDK-app', () => {
   });
 
   it('should throw an error if the given runtime config causes a non parsing related error', async () => {
-    expect.assertions(1);
     const promise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
     utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
 
-    await promise.catch(e => expect(e).toMatchObject(new Error('Received runtime config is invalid')));
+    await expect(promise).rejects.toThrowError('Received runtime config is invalid');
   });
 
   it('should not use the teams config as a default if another proper config is given', async () => {
@@ -436,14 +434,10 @@ describe('AppSDK-app', () => {
     for (const context in contexts) {
       describe(`openLink in ${contexts[context]} context `, () => {
         it('should not allow calls before initialization', async () => {
-          expect.assertions(1);
-          await app
-            .openLink('dummyLink')
-            .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+          await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
         });
 
         it('should successfully send a request', async () => {
-          expect.assertions(3);
           await utils.initializeWithContext(contexts[context]);
           const request = 'dummyDeepLink';
 
@@ -467,7 +461,6 @@ describe('AppSDK-app', () => {
         });
 
         it('should invoke error callback', async () => {
-          expect.assertions(3);
           await utils.initializeWithContext(contexts[context]);
           const request = 'dummyDeepLink';
 
@@ -487,7 +480,7 @@ describe('AppSDK-app', () => {
             error: mockErrorMessage,
           };
           utils.respondToMessage(message, data.success, data.error);
-          await promise.catch(e => expect(e).toMatchObject(new Error(mockErrorMessage)));
+          await expect(promise).rejects.toThrowError(mockErrorMessage);
         });
       });
     }
