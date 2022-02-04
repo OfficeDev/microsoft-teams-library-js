@@ -436,7 +436,7 @@ export namespace media {
 
       return Promise.resolve()
         .then(() => {
-          return throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+          throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
         })
         .then(() => {
           const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };

@@ -919,7 +919,7 @@ describe('media', () => {
         });
       });
 
-      it('getMedia call in task frameContext works', async () => {
+      it('getMedia call in task frameContext works', done => {
         mobilePlatformMock.initializeWithContext(FrameContexts.task).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
           const mediaOutput: media.Media = new media.Media();
@@ -930,6 +930,7 @@ describe('media', () => {
           const message = mobilePlatformMock.findMessageByFunc('getMedia');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(2);
+          done();
         });
       });
 
