@@ -3,6 +3,7 @@ export enum HostClientType {
   web = 'web',
   android = 'android',
   ios = 'ios',
+  ipados = 'ipados',
   /**
    * @deprecated Use teamsRoomsWindows instead.
    */
