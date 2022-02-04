@@ -23,7 +23,6 @@
     "clean:modules": "lerna clean -y && rimraf node_modules",
     "docs": "yarn workspace @microsoft/teams-js docs",
     "lint": "lerna run lint",
-    "release": "node tools/cli/prepNextRelease.js",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
