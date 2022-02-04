@@ -490,7 +490,7 @@ describe('media', () => {
         try {
           await media.selectMedia(mediaInputs, emptyCallback);
         } catch (error) {
-          expect(error).toMatchObject({ errorCode: ErrorCode.OLD_PLATFORM });
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         }
       });
 
@@ -688,7 +688,6 @@ describe('media', () => {
         expect(mediaAttachment.size).not.toBeNull();
         expect(typeof mediaAttachment.size === 'number').toBeTruthy();
         expect(mediaAttachment.getMedia).toBeDefined();
-        await expect(promise).resolves;
       });
 
       it('selectMedia calls with error', async () => {
