@@ -17,6 +17,6 @@ module.exports = {
   hooks: { postbump },
   ignorePatterns: ['.*ignore', '*.config.js', '**/test/**'],
   publish: false,
-  push: false,
+  push: true,
   scope: ['packages/teams-js'],
 };

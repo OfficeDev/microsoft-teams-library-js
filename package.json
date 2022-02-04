@@ -21,7 +21,7 @@
     "clean": "lerna run clean --stream",
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
-    "collate-change-files": "yarn beachball publish --no-publish --verbose",
+    "collate-change-files": "yarn beachball bump",
     "docs": "yarn workspace @microsoft/teams-js docs",
     "efb": "lerna run eslint-fix-build",
     "generate-change-files": "yarn beachball change",
