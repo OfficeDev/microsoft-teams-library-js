@@ -15,7 +15,7 @@ module.exports = {
   bumpDeps: false,
   generateChangelog: true,
   hooks: { postbump },
-  ignorePatterns: ['.*ignore', '*config.js', '**/test/**'],
+  ignorePatterns: ['.*ignore', '*config.js', '*.md', '**/test/**'],
   publish: false,
   push: false,
   scope: ['packages/teams-js'],
