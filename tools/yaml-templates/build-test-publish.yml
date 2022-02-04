@@ -1,3 +1,6 @@
+# Specific to validating build/unit tests, creating PR comments on bundle analysis, and then publishing artifacts for release.
+# If this needs to be reused, the parts not specific to building and testing should be extracted.
+
 steps:
   - task: YarnInstaller@3
     displayName: 'Yarn 1.x'

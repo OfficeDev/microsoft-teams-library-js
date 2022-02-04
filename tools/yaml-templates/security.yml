@@ -1,3 +1,6 @@
+# This does all the Guardian Security and Component Governance checks.
+# Should be used in any other new pipelines we have that are linked to this repo.
+
 steps:
   - task: ESLint@1
     displayName: 'Run ESLint'
