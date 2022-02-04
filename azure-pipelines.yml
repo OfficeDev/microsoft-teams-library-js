@@ -110,7 +110,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=--envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
         displayName: 'Run E2E integration tests on Teams Test App V1'
