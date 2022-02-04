@@ -526,9 +526,10 @@ describe('media', () => {
           maxMediaCount: 10,
           videoProps: {},
         };
-        media.selectMedia(mediaInputs, (e: SdkError, attachments: media.Media[]) => {
+        const callbackSpy = jest.fn((e: SdkError, attachments: media.Media[]) => {
           mediaError = e;
         });
+        media.selectMedia(mediaInputs, callbackSpy);
         const message = mobilePlatformMock.findMessageByFunc('selectMedia');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -540,7 +541,7 @@ describe('media', () => {
           },
         } as DOMMessageEvent);
         expect(mediaError).toBeFalsy();
-        expect(jest.fn()).not.toHaveBeenCalled();
+        expect(callbackSpy).not.toHaveBeenCalled();
       });
     });
     describe('v2', () => {
