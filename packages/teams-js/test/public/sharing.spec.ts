@@ -42,7 +42,7 @@ describe('sharing_v1', () => {
             ],
           };
           expect(() => sharing.shareWebContent(shareRequest)).toThrowError(
-            `This call is only allowed in following contexts: ["content","sidePanel","task","stage","meetingStage"]. Current context: "${frameContext}".`,
+            `This call is only allowed in following contexts: ${allowedContext}. Current context: "${frameContext}".`,
           );
         });
       }
@@ -332,7 +332,7 @@ describe('sharing_v2', () => {
             ],
           };
           expect(() => sharing.shareWebContent(shareRequest)).toThrowError(
-            `This call is only allowed in following contexts: ["content","sidePanel","task","stage","meetingStage"]. Current context: "${frameContext}".`,
+            `This call is only allowed in following contexts: ${allowedContext}. Current context: "${frameContext}".`,
           );
         });
       }
