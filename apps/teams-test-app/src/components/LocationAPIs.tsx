@@ -55,6 +55,7 @@ const ShowLocation = (): React.ReactElement =>
           return 'Completed';
         },
         withCallback: (locationProps, setResult) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const callback = (error: SdkError, status: boolean): void => {
             if (error) {
               setResult(JSON.stringify(error));
