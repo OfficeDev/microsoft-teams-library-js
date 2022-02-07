@@ -1,9 +1,8 @@
-import { sharing } from '../../src/public/sharing';
 import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
-import { ErrorCode } from '../../src/public/interfaces';
+import { stageView } from '../../src/public';
 
-describe('sharing', () => {
+describe('stageView', () => {
   const utils = new Utils();
 
   beforeEach(() => {
@@ -23,193 +22,72 @@ describe('sharing', () => {
     }
   });
 
-  it('should handle share web content in success scenario', () => {
-    utils.initializeWithContext('content');
-    const cb = jasmine.createSpy('callback');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test',
-        },
-      ],
-    };
+  const stageViewParams: stageView.StageViewParams = {
+    appId: 'appId',
+    contentUrl: 'contentUrl',
+    threadId: 'threadId',
+    title: 'title',
+    websiteUrl: 'websiteUrl',
+    entityId: 'entityId',
+  };
 
-    let response;
-    sharing.shareWebContent(shareRequest, cb);
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-
-    expect(shareMessage).not.toBeNull();
-    expect(shareMessage.args.length).toBe(1);
-    expect(shareMessage.args[0]).toEqual(shareRequest);
-    utils.respondToMessage(shareMessage);
-    expect(cb).toHaveBeenCalledWith(undefined);
-  });
-
-  it('should handle share web content when content is missing', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = { content: undefined };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing',
-    };
-
-    let response: any;
-    sharing.shareWebContent(shareRequest, res => {
-      response = res;
+  describe('open', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => stageView.open(stageViewParams)).toThrowError('The library has not yet been initialized');
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
 
-  it('should handle share web content when content array is empty', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = { content: [] };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content is missing',
-    };
+    it('should not allow calls from stage context', () => {
+      utils.initializeWithContext('stage');
 
-    let response: any;
-    sharing.shareWebContent(shareRequest, res => {
-      response = res;
+      expect(() => stageView.open(stageViewParams)).toThrowError("This call is not allowed in the 'stage' context");
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
 
-  it('should handle share web content when content type is missing', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test',
-        },
-      ],
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content type cannot be undefined',
-    };
+    it('should not allow a null StageViewParams parameter', () => {
+      utils.initializeWithContext('content');
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, res => {
-      response = res;
+      expect(() => stageView.open(null)).toThrowError('[stageView.open] Stage view params cannot be null');
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
 
-  it('should handle share web content when content items are of mixed types', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test',
-        },
-        {
-          type: 'text',
-          message: 'Test',
-        },
-      ],
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Shared content must be of the same type',
-    };
+    it('should pass along entire StageViewParams parameter in content context', () => {
+      utils.initializeWithContext('content');
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, res => {
-      response = res;
+      stageView.open(stageViewParams, () => {
+        return;
+      });
+
+      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+      expect(openStageViewMessage).not.toBeNull();
+      expect(openStageViewMessage.args).toEqual([stageViewParams]);
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
 
-  it('should handle share web content when url is missing in URL content type', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'URL',
-          message: 'test',
-        },
-      ],
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'URLs are required for URL content types',
-    };
+    it('should invoke callback with result', () => {
+      utils.initializeWithContext('content');
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, res => {
-      response = res;
+      let callbackCalled = false;
+      stageView.open(stageViewParams, err => {
+        expect(err).toBeNull();
+        callbackCalled = true;
+      });
+
+      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+      expect(openStageViewMessage).not.toBeNull();
+      utils.respondToMessage(openStageViewMessage, null);
+      expect(callbackCalled).toBe(true);
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
 
-  it('should handle share web content when content is an unsupported type', () => {
-    utils.initializeWithContext('content');
-    const shareRequest = {
-      content: [
-        {
-          type: 'image',
-          src: 'Test',
-        },
-      ],
-    };
-    const error = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Content type is unsupported',
-    };
+    it('should invoke callback with error', () => {
+      utils.initializeWithContext('content');
 
-    let response: any;
-    sharing.shareWebContent(shareRequest as any, res => {
-      response = res;
+      let callbackCalled = false;
+      stageView.open(stageViewParams, err => {
+        expect(err).toBe('someError');
+        callbackCalled = true;
+      });
+
+      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+      expect(openStageViewMessage).not.toBeNull();
+      utils.respondToMessage(openStageViewMessage, 'someError');
+      expect(callbackCalled).toBe(true);
     });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).toBeNull();
-    expect(response).toEqual(error);
-  });
-
-  it('should handle share web content when other errors occur', () => {
-    utils.initializeWithContext('content');
-    const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
-      content: [
-        {
-          type: 'URL',
-          url: 'https://www.microsoft.com',
-          preview: true,
-          message: 'Test',
-        },
-      ],
-    };
-    const error = {
-      errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-      message: 'Feature is not supported.',
-    };
-
-    let response: any;
-    sharing.shareWebContent(shareRequest, res => {
-      response = res;
-    });
-    const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    expect(shareMessage).not.toBeNull();
-    expect(shareMessage.args[0]).toEqual(shareRequest);
-    utils.respondToMessage(shareMessage, error);
-    expect(response).toEqual(error);
   });
 });

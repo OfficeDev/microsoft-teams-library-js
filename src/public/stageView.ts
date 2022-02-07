@@ -56,9 +56,9 @@ export namespace stageView {
     ensureInitialized(FrameContexts.content);
 
     if (!stageViewParams) {
-      throw new Error('[open] Stage view params cannot be null');
+      throw new Error('[stageView.open] Stage view params cannot be null');
     }
 
-    sendMessageToParent('openStageView', [stageViewParams], callback);
+    sendMessageToParent('stageView.open', [stageViewParams], callback);
   }
 }
