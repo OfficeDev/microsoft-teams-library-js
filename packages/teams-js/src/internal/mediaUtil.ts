@@ -66,11 +66,11 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
  */
 export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-    return throwExceptionIfMobileApiIsNotSupported(videoAndImageMediaAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
-    return throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
   } else if (isMediaCallForImageOutputFormats(mediaInputs)) {
-    return throwExceptionIfMobileApiIsNotSupported(imageOutputFormatsAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(imageOutputFormatsAPISupportVersion);
   }
 }
 

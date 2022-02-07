@@ -3,6 +3,7 @@ import {
   FrameInfo,
   navigateCrossDomain,
   pages,
+  registerFocusEnterHandler,
   registerFullScreenHandler,
   returnFocus,
   setFrameContext,
@@ -126,12 +127,21 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerFocusEnterHandler',
     title: 'Register On Focus Enter Handler',
-    onClick: async setResult => {
-      teamsCore.registerFocusEnterHandler(navigateForward => {
-        setResult('successfully called with navigateForward:' + navigateForward);
-        return true;
-      });
-      return 'registered';
+    onClick: {
+      withPromise: async setResult => {
+        teamsCore.registerFocusEnterHandler(navigateForward => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        return 'registered';
+      },
+      withCallback: setResult => {
+        registerFocusEnterHandler(navigateForward => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        setResult('registered');
+      },
     },
   });
 

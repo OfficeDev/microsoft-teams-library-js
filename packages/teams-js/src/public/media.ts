@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+
 import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
@@ -410,34 +412,47 @@ export namespace media {
      * @hidden
      * Hide from docs
      * --------
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * @returns A promise resolved promise
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.notifyEventToHost media.MediaController.notifyEventToHost(mediaEvent: MediaControllerEvent): Promise\<void\>} instead.
+     *
      * Function to notify the host client to programatically control the experience
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void;
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
-      let mediaError;
-      const promise = Promise.resolve().then(() =>
-        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion),
-      );
 
-      const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-
-      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
-        if (callback) {
-          return callback(err);
-        } else if (err) {
-          mediaError = err;
-        }
-      });
-
-      return promise
+      return Promise.resolve()
         .then(() => {
-          if (mediaError) {
-            throw mediaError;
-          }
+          throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+        })
+        .then(() => {
+          const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
+
+          sendMessageToParent('media.controller', [params], (err?: SdkError) => {
+            if (callback) {
+              callback(err);
+            } else if (err) {
+              throw err;
+            }
+          });
         })
         .catch(err => {
+          if (callback) {
+            callback(err);
+          }
           throw err;
         });
     }
@@ -449,16 +464,17 @@ export namespace media {
      * */
     public stop(): Promise<void>;
     /**
-     * @deprecated
-     * As of 2.0.0-beta.3, please use {@link MediaController.stop MediaController.stop(): Promise\<void\>} instead.
-     
+     *
      * Function to programatically stop the ongoing media event
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.stop media.MediaController.stop(): Promise\<void\>} instead.
+     *
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback: (err?: SdkError) => void): void;
+    public stop(callback?: (err?: SdkError) => void): void;
     public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      const wrappedFunction = (): Promise<void> => this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
-      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
+      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
     }
   }
 
