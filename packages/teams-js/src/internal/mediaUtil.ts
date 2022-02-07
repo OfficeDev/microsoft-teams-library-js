@@ -1,4 +1,3 @@
-import { SdkError } from '../public/interfaces';
 import { media } from '../public/media';
 import { people } from '../public/people';
 import {
@@ -6,7 +5,7 @@ import {
   nonFullScreenVideoModeAPISupportVersion,
   videoAndImageMediaAPISupportVersion,
 } from './constants';
-import { isApiSupportedOnMobile } from './internalAPIs';
+import { throwExceptionIfMobileApiIsNotSupported } from './internalAPIs';
 
 /**
  * @hidden
@@ -61,19 +60,18 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 
 /**
  * @hidden
- * Function returns null if the media call is supported on current mobile version, else SdkError.
- *
+ * Function throws an SdkError if the media call is not supported on current mobile version, else undefined.
+ * @throws an SdkError if the media call is not supported
  * @internal
  */
-export function isMediaCallSupportedOnMobile(mediaInputs: media.MediaInputs): SdkError {
+export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
-    return isApiSupportedOnMobile(videoAndImageMediaAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(videoAndImageMediaAPISupportVersion);
   } else if (isMediaCallForNonFullScreenVideoMode(mediaInputs)) {
-    return isApiSupportedOnMobile(nonFullScreenVideoModeAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
   } else if (isMediaCallForImageOutputFormats(mediaInputs)) {
-    return isApiSupportedOnMobile(imageOutputFormatsAPISupportVersion);
+    throwExceptionIfMobileApiIsNotSupported(imageOutputFormatsAPISupportVersion);
   }
-  return null;
 }
 
 /**
