@@ -6,6 +6,7 @@ import { Utils } from '../utils';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
+  const allowedContext = ['content', 'sidePanel', 'task', 'stage', 'meetingStage'];
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -23,6 +24,29 @@ describe('sharing_v1', () => {
       app._uninitialize();
     }
   });
+
+  Object.keys(FrameContexts)
+    .map(key => FrameContexts[key])
+    .forEach(frameContext => {
+      if (!allowedContext.includes(frameContext)) {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
+            content: [
+              {
+                type: 'URL',
+                url: 'https://www.microsoft.com',
+                preview: true,
+                message: 'Test',
+              },
+            ],
+          };
+          expect(() => sharing.shareWebContent(shareRequest)).toThrowError(
+            `This call is only allowed in following contexts: ["content","sidePanel","task","stage","meetingStage"]. Current context: "${frameContext}".`,
+          );
+        });
+      }
+    });
 
   it('should successfully call the callback function when given the share web content in correct format - success scenario', done => {
     utils.initializeWithContext(FrameContexts.content).then(() => {
@@ -273,7 +297,7 @@ describe('sharing_v1', () => {
 
 describe('sharing_v2', () => {
   const utils = new Utils();
-
+  const allowedContext = ['content', 'sidePanel', 'task', 'stage', 'meetingStage'];
   beforeEach(() => {
     utils.processMessage = null;
     utils.messages = [];
@@ -290,6 +314,29 @@ describe('sharing_v2', () => {
       app._uninitialize();
     }
   });
+
+  Object.keys(FrameContexts)
+    .map(key => FrameContexts[key])
+    .forEach(frameContext => {
+      if (!allowedContext.includes(frameContext)) {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
+            content: [
+              {
+                type: 'URL',
+                url: 'https://www.microsoft.com',
+                preview: true,
+                message: 'Test',
+              },
+            ],
+          };
+          expect(() => sharing.shareWebContent(shareRequest)).toThrowError(
+            `This call is only allowed in following contexts: ["content","sidePanel","task","stage","meetingStage"]. Current context: "${frameContext}".`,
+          );
+        });
+      }
+    });
 
   it('should successfully resolves when given the share web content in correct format - success scenario', async () => {
     await utils.initializeWithContext(FrameContexts.content);
