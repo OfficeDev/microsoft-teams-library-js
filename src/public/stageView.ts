@@ -13,51 +13,33 @@ export namespace stageView {
   export interface StageViewParams {
     /**
      * The application ID of the Teams application to be opened.
-     * Required
      */
     appId: string;
 
     /**
      * The URL of the content to display.
-     * Required
      */
     contentUrl: string;
 
     /**
+     * The chat or channel ID.
+     */
+    threadId: string;
+
+    /**
+     * The title to give the stage view.
+     */
+    title: string;
+
+    /**
      * The Teams app website URL.
-     * Not required but still used to populate an open website button in stage view.
      */
     websiteUrl?: string;
 
     /**
-     * The name of the stage view.
-     * Delete seems unused
-     */
-    name?: string;
-
-    /**
-     * The entity ID.
-     * Not sure
+     * The entity ID of the Teams app.
      */
     entityId?: string;
-
-    /**
-     * The chat or channel ID.
-     * Not sure
-     */
-    threadId?: string;
-
-    /**
-     * The initatiator of the stage view request.
-     * Delete seems unused
-     */
-    source?: string;
-
-    /**
-     * The title to give the stage view.
-     * Used by the error dialog.  Should this be required?
-     */
-    title?: string;
   }
 
   /**
@@ -70,11 +52,11 @@ export namespace stageView {
    *                 The callback takes as an argument an SdkError in case something happened (i.e.
    *                 no permissions to execute the API)
    */
-  export function openStageView(stageViewParams: StageViewParams, callback?: (sdkError?: SdkError) => void): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.stage);
+  export function open(stageViewParams: StageViewParams, callback?: (sdkError?: SdkError) => void): void {
+    ensureInitialized(FrameContexts.content);
 
     if (!stageViewParams) {
-      throw new Error('[openStageView] Stage view params cannot be null');
+      throw new Error('[open] Stage view params cannot be null');
     }
 
     sendMessageToParent('openStageView', [stageViewParams], callback);
