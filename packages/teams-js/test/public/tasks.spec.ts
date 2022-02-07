@@ -3,6 +3,7 @@ import { TaskModuleDimension } from '../../src/public/constants';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
+import { FrameContexts } from '../../src/public/constants';
 
 describe('tasks', () => {
   // Use to send a mock message from the app.
@@ -30,7 +31,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
+      await utils.initializeWithContext(FrameContexts.settings);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.startTask(taskInfo)).toThrowError(
@@ -39,7 +40,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
+      await utils.initializeWithContext(FrameContexts.authentication);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.startTask(taskInfo)).toThrowError(
@@ -48,7 +49,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
+      await utils.initializeWithContext(FrameContexts.remove);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.startTask(taskInfo)).toThrowError(
@@ -57,7 +58,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from task context', async () => {
-      await utils.initializeWithContext('task');
+      await utils.initializeWithContext(FrameContexts.task);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.startTask(taskInfo)).toThrowError(
@@ -66,7 +67,7 @@ describe('tasks', () => {
     });
 
     it('should pass along entire TaskInfo parameter in sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
+      await utils.initializeWithContext(FrameContexts.sidePanel);
 
       const taskInfo: TaskInfo = {
         card: 'someCard',
@@ -88,7 +89,7 @@ describe('tasks', () => {
     });
 
     it('should pass along entire TaskInfo parameter in content', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       const taskInfo: TaskInfo = {
         card: 'someCard',
@@ -110,7 +111,7 @@ describe('tasks', () => {
     });
 
     it('should invoke callback with result', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       let callbackCalled = false;
       const taskInfo: TaskInfo = {};
@@ -127,7 +128,7 @@ describe('tasks', () => {
     });
 
     it('should invoke callback with error', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       let callbackCalled = false;
       const taskInfo: TaskInfo = {};
@@ -151,7 +152,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.updateTask(taskInfo)).toThrowError(
@@ -160,7 +161,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
+      await utils.initializeWithContext(FrameContexts.sidePanel);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.updateTask(taskInfo)).toThrowError(
@@ -169,7 +170,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
+      await utils.initializeWithContext(FrameContexts.meetingStage);
 
       const taskInfo: TaskInfo = {};
       expect(() => tasks.updateTask(taskInfo)).toThrowError(
@@ -178,7 +179,7 @@ describe('tasks', () => {
     });
 
     it('should successfully pass taskInfo in task context', async () => {
-      await utils.initializeWithContext('task');
+      await utils.initializeWithContext(FrameContexts.task);
       const taskInfo = { width: 10, height: 10 };
 
       tasks.updateTask(taskInfo);
@@ -189,7 +190,7 @@ describe('tasks', () => {
     });
 
     it('should throw an error if extra properties are provided', async () => {
-      await utils.initializeWithContext('task');
+      await utils.initializeWithContext(FrameContexts.task);
       const taskInfo = { width: 10, height: 10, title: 'anything' };
 
       expect(() => tasks.updateTask(taskInfo)).toThrowError(
@@ -204,7 +205,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
+      await utils.initializeWithContext(FrameContexts.settings);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "settings".',
@@ -212,7 +213,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "content".',
@@ -220,7 +221,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
+      await utils.initializeWithContext(FrameContexts.sidePanel);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
@@ -228,7 +229,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
+      await utils.initializeWithContext(FrameContexts.meetingStage);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
@@ -236,7 +237,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
+      await utils.initializeWithContext(FrameContexts.authentication);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "authentication".',
@@ -244,7 +245,7 @@ describe('tasks', () => {
     });
 
     it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
+      await utils.initializeWithContext(FrameContexts.remove);
 
       expect(() => tasks.submitTask()).toThrowError(
         'This call is only allowed in following contexts: ["task"]. Current context: "remove".',
@@ -252,7 +253,7 @@ describe('tasks', () => {
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {
-      await utils.initializeWithContext('task');
+      await utils.initializeWithContext(FrameContexts.task);
 
       tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
 
@@ -262,7 +263,7 @@ describe('tasks', () => {
     });
 
     it('should handle a single string passed as appIds parameter', async () => {
-      await utils.initializeWithContext('task');
+      await utils.initializeWithContext(FrameContexts.task);
 
       tasks.submitTask('someResult', 'someAppId');
 
