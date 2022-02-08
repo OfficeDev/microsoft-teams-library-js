@@ -84,6 +84,10 @@ export namespace video {
      */
     id: string;
     /**
+     * display name
+     */
+    name: string;
+    /**
      * effect type defined by app
      */
     type: string;
@@ -127,13 +131,15 @@ export namespace video {
    * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
    * @param effectChangeType the effect change type.
    * @param effectId Newly selected effect id.
+   * @param effectParam param for the selected effect.
    */
   export function notifySelectedVideoEffectChanged(
     effectChangeType: EffectChangeType,
     effectId: string | undefined,
+    effectParam: string | undefined,
   ): void {
     ensureInitialized(FrameContexts.sidePanel);
-    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId]);
+    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId, effectParam]);
   }
 
   /**
