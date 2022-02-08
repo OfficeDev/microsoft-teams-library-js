@@ -754,10 +754,11 @@ describe('media', () => {
           errorCode: ErrorCode.INTERNAL_ERROR,
         };
 
-        await new media.VideoController().stop((e: SdkError) => {
-          expect(e).toEqual(err);
-        });
-
+        try {
+          new media.VideoController().stop(emptyCallback);
+        } catch (error) {
+          expect(error).toEqual(err);
+        }
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
