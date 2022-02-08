@@ -15,10 +15,6 @@ import { media } from '../../src/public/media';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
-// scanBarcode
-// viewImages
-// getMedia
-
 /**
  * Test cases for media APIs
  */
@@ -759,6 +755,7 @@ describe('media', () => {
         } catch (error) {
           expect(error).toEqual(err);
         }
+
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
