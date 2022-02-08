@@ -1006,8 +1006,6 @@ describe('media', () => {
           mediaOutput.format = media.FileFormat.ID;
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
-              console.log('%c RESARESRESRESRESRESRES: ', 'color: turquoise', res);
-
               expect(res).toEqual(stringMediaData);
               done();
             });
