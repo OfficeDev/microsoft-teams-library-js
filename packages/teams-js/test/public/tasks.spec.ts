@@ -25,45 +25,25 @@ describe('tasks', () => {
   });
 
   describe('startTask', () => {
+    const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+
     it('should not allow calls before initialization', () => {
       const taskInfo: TaskInfo = {};
       expect(() => tasks.startTask(taskInfo)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext(FrameContexts.settings);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "settings".',
-      );
-    });
-
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext(FrameContexts.authentication);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "authentication".',
-      );
-    });
-
-    it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext(FrameContexts.remove);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "remove".',
-      );
-    });
-
-    it('should not allow calls from task context', async () => {
-      await utils.initializeWithContext(FrameContexts.task);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","meetingStage"]. Current context: "task".',
-      );
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo: TaskInfo = {};
+          expect(() => tasks.startTask(taskInfo)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
 
     it('should pass along entire TaskInfo parameter in sidePanel context', async () => {
@@ -146,36 +126,24 @@ describe('tasks', () => {
   });
 
   describe('updateTask', () => {
+    const allowedContexts = [FrameContexts.task];
     it('should not allow calls before initialization', () => {
       // tslint:disable-next-line:no-any
       expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
-      );
-    });
-
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext(FrameContexts.sidePanel);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
-      );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext(FrameContexts.meetingStage);
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
-      );
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo: TaskInfo = {};
+          expect(() => tasks.updateTask(taskInfo)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
 
     it('should successfully pass taskInfo in task context', async () => {
@@ -200,56 +168,23 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
+    const allowedContexts = [FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from settings context', async () => {
-      await utils.initializeWithContext(FrameContexts.settings);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "settings".',
-      );
-    });
-
-    it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
-      );
-    });
-
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext(FrameContexts.sidePanel);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
-      );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext(FrameContexts.meetingStage);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
-      );
-    });
-
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext(FrameContexts.authentication);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "authentication".',
-      );
-    });
-
-    it('should not allow calls from remove context', async () => {
-      await utils.initializeWithContext(FrameContexts.remove);
-
-      expect(() => tasks.submitTask()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "remove".',
-      );
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo: TaskInfo = {};
+          expect(() => tasks.submitTask(taskInfo)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {
