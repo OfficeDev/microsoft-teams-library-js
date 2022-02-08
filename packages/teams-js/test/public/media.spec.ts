@@ -721,8 +721,6 @@ describe('media', () => {
   describe('videoController', () => {
     describe('v1', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
-        expect.assertions(7); // initializeWithContext has 3 assertions + 4 in this test = 7
-
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
@@ -745,8 +743,6 @@ describe('media', () => {
       });
 
       it('videoController stop function returns SdkError to callback when parent rejects message"', async () => {
-        expect.assertions(7);
-
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
@@ -808,7 +804,6 @@ describe('media', () => {
       });
 
       it('videoController notifyEventToHost is handled successfully', async () => {
-        expect.assertions(6); // initializeWithContext has 3 assertions + 3 local assertion
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
@@ -1011,6 +1006,8 @@ describe('media', () => {
           mediaOutput.format = media.FileFormat.ID;
           mediaOutput.getMedia((error: SdkError, blob: Blob) => {
             getStringContainedInBlob(blob).then(res => {
+              console.log('%c RESARESRESRESRESRESRES: ', 'color: turquoise', res);
+
               expect(res).toEqual(stringMediaData);
               done();
             });
@@ -1047,6 +1044,7 @@ describe('media', () => {
               },
             } as DOMMessageEvent);
           }
+          done();
         });
       });
 
