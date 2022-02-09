@@ -1,16 +1,23 @@
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { app } from '../../src/public/app';
-import { ChannelType, HostClientType, HostName, TeamType, UserTeamRole } from '../../src/public/constants';
-import { FrameContexts } from '../../src/public/constants';
+import {
+  ChannelType,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  TeamType,
+  UserTeamRole,
+} from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { pages } from '../../src/public/pages';
 import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
+
+  const mockErrorMessage = 'Something went wrong...';
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -30,8 +37,8 @@ describe('AppSDK-app', () => {
     }
   });
 
-  it('should not allow calls before initialization', () => {
-    return expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+  it('should not allow calls before initialization', async () => {
+    await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
   });
 
   it('should successfully initialize', () => {
@@ -146,11 +153,13 @@ describe('AppSDK-app', () => {
     expect(runtime).toEqual(teamsRuntimeConfig);
   });
 
-  it('should throw an error if the given runtime config causes a non parsing related error', () => {
-    app.initialize();
+  it('should throw an error if the given runtime config causes a non parsing related error', async () => {
+    const promise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
-    expect(utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null)).toThrowError;
+    utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
+
+    await expect(promise).rejects.toThrowError('Received runtime config is invalid');
   });
 
   it('should not use the teams config as a default if another proper config is given', async () => {
@@ -186,7 +195,7 @@ describe('AppSDK-app', () => {
     expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
   });
 
-  it('should initialized with clientSupportedSDKVersion and runtimeConfig arguments flipped', async () => {
+  it('should initialize with clientSupportedSDKVersion and runtimeConfig arguments flipped', async () => {
     const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
@@ -203,7 +212,7 @@ describe('AppSDK-app', () => {
     expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
   });
 
-  it('should initialized with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
+  it('should initialize with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
     const initPromise = app.initialize();
 
     const initMessage = utils.findMessageByFunc('initialize');
@@ -420,353 +429,60 @@ describe('AppSDK-app', () => {
     expect(actualContext.page.frameContext).toBe(FrameContexts.sidePanel);
   });
 
-  describe('navigateCrossDomain', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with a bad origin', () => {
-      return expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with an empty origin', () => {
-      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls with a blank origin', () => {
-      return expect(pages.navigateCrossDomain(' ')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls with an origin without base', () => {
-      return expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with an origin without suffix', () => {
-      return expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with an origin with invalid base', () => {
-      return expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with an empty origin', () => {
-      return expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
-
-      return expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
-      );
-    });
-
-    it('should allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from task context', async () => {
-      await utils.initializeWithContext('task');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from stage context', async () => {
-      await utils.initializeWithContext('stage');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should successfully navigate cross-origin', async () => {
-      await utils.initializeWithContext('content');
-
-      pages.navigateCrossDomain('https://valid.origin.com');
-
-      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-      expect(navigateCrossDomainMessage).not.toBeNull();
-      expect(navigateCrossDomainMessage.args.length).toBe(1);
-      expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
-    });
-
-    it('should throw on invalid cross-origin navigation request', async () => {
-      await utils.initializeWithContext('settings');
-
-      const promise = pages.navigateCrossDomain('https://invalid.origin.com');
-
-      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-      expect(navigateCrossDomainMessage).not.toBeNull();
-      expect(navigateCrossDomainMessage.args.length).toBe(1);
-      expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
-
-      utils.respondToMessage(navigateCrossDomainMessage, false);
-
-      return expect(promise).rejects.toThrowError();
-    });
-  });
-
-  describe('openLink in content context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext('content');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-
-    it('should invoke error callback', async () => {
-      await utils.initializeWithContext('content');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: false,
-        error: 'Something went wrong...',
-      };
-      utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext('content');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-  });
-
-  describe('openLink in sidePanel context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext('sidePanel');
-      const request = 'dummyDeepLink';
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-
-    it('should invoke error callback', async () => {
-      await utils.initializeWithContext('sidePanel');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: false,
-        error: 'Something went wrong...',
-      };
-      utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext('sidePanel');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-  });
-
-  describe('openLink in task module context ', () => {
-    it('should not allow calls before initialization', () => {
-      return expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext(FrameContexts.task);
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-
-    it('should invoke error callback', async () => {
-      await utils.initializeWithContext(FrameContexts.task);
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: false,
-        error: 'Something went wrong...',
-      };
-
-      utils.respondToMessage(message, data.success, data.error);
-      return expect(promise).rejects.toThrowError('Something went wrong...');
-    });
-
-    it('should successfully send a request', async () => {
-      await utils.initializeWithContext('content');
-      const request = 'dummyDeepLink';
-
-      // send message request
-      const promise = app.openLink(request);
-
-      // find message request in jest
-      const message = utils.findMessageByFunc('executeDeepLink');
-
-      // check message is sending correct data
-      expect(message).not.toBeUndefined();
-      expect(message.args).toContain(request);
-
-      // simulate response
-      const data = {
-        success: true,
-      };
-
-      utils.respondToMessage(message, data.success);
-      return expect(promise).resolves;
-    });
-  });
-
-  describe('returnFocus', () => {
-    it('should successfully returnFocus', async () => {
-      await utils.initializeWithContext('content');
-
-      pages.returnFocus(true);
-
-      const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-      expect(returnFocusMessage).not.toBeNull();
-      expect(returnFocusMessage.args.length).toBe(1);
-      expect(returnFocusMessage.args[0]).toBe(true);
-    });
+  describe('openLink', () => {
+    const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
+    for (const context in contexts) {
+      describe(`openLink in ${contexts[context]} context `, () => {
+        it('should not allow calls before initialization', async () => {
+          await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        });
+
+        it('should successfully send a request', async () => {
+          await utils.initializeWithContext(contexts[context]);
+          const request = 'dummyDeepLink';
+
+          // send message request
+          const promise = app.openLink(request);
+
+          // find message request in jest
+          const message = utils.findMessageByFunc('executeDeepLink');
+
+          // check message is sending correct data
+          expect(message).not.toBeUndefined();
+          expect(message.args).toContain(request);
+
+          // simulate response
+          const data = {
+            success: true,
+          };
+
+          utils.respondToMessage(message, data.success);
+          await expect(promise).resolves.not.toThrow();
+        });
+
+        it('should invoke error callback', async () => {
+          await utils.initializeWithContext(contexts[context]);
+          const request = 'dummyDeepLink';
+
+          // send message request
+          const promise = app.openLink(request);
+
+          // find message request in jest
+          const message = utils.findMessageByFunc('executeDeepLink');
+
+          // check message is sending correct data
+          expect(message).not.toBeUndefined();
+          expect(message.args).toContain(request);
+
+          // simulate response
+          const data = {
+            success: false,
+            error: mockErrorMessage,
+          };
+          utils.respondToMessage(message, data.success, data.error);
+          await expect(promise).rejects.toThrowError(mockErrorMessage);
+        });
+      });
+    }
   });
 });

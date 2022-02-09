@@ -10,7 +10,7 @@ module.exports = {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
   },
-  plugins: ['@typescript-eslint', 'simple-import-sort'],
+  plugins: ['@typescript-eslint', 'only-error', 'simple-import-sort'],
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     '@typescript-eslint/no-use-before-define': 'off',

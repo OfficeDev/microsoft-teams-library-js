@@ -43,5 +43,6 @@ module.exports = {
     https: true,
     disableHostCheck: true,
   },
+  performance: { hints: false },
   plugins: [new HtmlWebPackPlugin({ template: './index.html', filename: 'index.html' })],
 };
