@@ -121,38 +121,40 @@ describe('AppSDK-TeamsAPIs', () => {
       );
     });
 
-    // Skipping these tests as url validation is not implemented
-    it.skip('should not allow calls with a bad origin', async () => {
+    // Commenting out these tests as url validation is not implemented
+    /*
+    it('should not allow calls with a bad origin', async () => {
       await expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
 
-    it.skip('should not allow calls with an empty origin', async () => {
+    it('should not allow calls with an empty origin', async () => {
       await expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it.skip('should not allow calls with a blank origin', async () => {
+    it('should not allow calls with a blank origin', async () => {
       await expect(pages.navigateCrossDomain(' ')).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it.skip('should not allow calls with an origin without base', async () => {
+    it('should not allow calls with an origin without base', async () => {
       await expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
 
-    it.skip('should not allow calls with an origin without suffix', async () => {
+    it('should not allow calls with an origin without suffix', async () => {
       await expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
 
-    it.skip('should not allow calls with an origin with invalid base', async () => {
+    it('should not allow calls with an origin with invalid base', async () => {
       await expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
+    */
 
     Object.keys(FrameContexts).forEach(k => {
       const context = FrameContexts[k];
