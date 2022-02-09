@@ -722,9 +722,11 @@ describe('media', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+
+        const videoController = new media.VideoController();
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
-        await expect(new media.VideoController().stop(emptyCallback)).resolves.not.toThrow();
+        await expect(videoController.stop(emptyCallback)).resolves.not.toThrow();
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
@@ -745,12 +747,14 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
+        const videoController = new media.VideoController();
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
         const err = {
           errorCode: ErrorCode.INTERNAL_ERROR,
         };
         const callbackSpy = jest.fn();
-        new media.VideoController().stop(callbackSpy);
+
+        videoController.stop(callbackSpy);
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
@@ -773,10 +777,11 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
 
+        const videoController = new media.VideoController();
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
         try {
-          await new media.VideoController().stop(e => {
+          await videoController.stop(e => {
             return e;
           });
         } catch (err) {
@@ -792,9 +797,11 @@ describe('media', () => {
         expect.assertions(5); // initializeWithContext has 3 assertions + 2 local assertion
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+
+        const videoController = new media.VideoController();
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
-        await new media.VideoController().stop().catch(err => {
+        await videoController.stop().catch(err => {
           return expect(err).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
         expect(sendMessageToParentSpy).not.toHaveBeenCalled();
@@ -804,7 +811,9 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
-        await expect(new media.VideoController().stop()).resolves.not.toThrow();
+        const videoController = new media.VideoController();
+
+        await expect(videoController.stop()).resolves.not.toThrow();
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -823,11 +832,11 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
+        const videoController = new media.VideoController();
         const err = { errorCode: ErrorCode.INTERNAL_ERROR };
-
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
-        await new media.VideoController()
+        await videoController
           .stop()
           .then(() => {
             const message = mobilePlatformMock.findMessageByFunc('media.controller');
