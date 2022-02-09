@@ -26,7 +26,7 @@ describe('call', () => {
     await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
   });
 
-  it('shoud not allow calls if not supported', async () => {
+  it('should not allow calls if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
     await expect(call.startCall(mockStartCallParams)).rejects.toEqual('Not supported');
   });
