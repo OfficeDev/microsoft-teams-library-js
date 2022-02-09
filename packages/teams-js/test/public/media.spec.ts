@@ -742,19 +742,16 @@ describe('media', () => {
       });
 
       it('videoController stop function returns SdkError to callback when parent rejects message"', async () => {
+        expect.assertions(7); // 3 assertions in initializeWithContext + 4 local
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-
+        
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
         const err = {
           errorCode: ErrorCode.INTERNAL_ERROR,
         };
-
-        try {
-          new media.VideoController().stop(emptyCallback);
-        } catch (error) {
-          expect(error).toEqual(err);
-        }
+        const callbackSpy = jest.fn();
+        new media.VideoController().stop(callbackSpy);
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
@@ -767,7 +764,7 @@ describe('media', () => {
             args: [err],
           },
         } as DOMMessageEvent);
-
+        expect(callbackSpy).toBeCalledWith(err);
         expect(sendMessageToParentSpy).toHaveBeenCalled();
       });
 
