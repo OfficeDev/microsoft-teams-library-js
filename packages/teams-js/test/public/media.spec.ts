@@ -741,11 +741,10 @@ describe('media', () => {
         expect(sendMessageToParentSpy).toHaveBeenCalled();
       });
 
-      it('videoController stop function returns SdkError to callback when parent rejects message"', async () => {
-        expect.assertions(7); // 3 assertions in initializeWithContext + 4 local
+      it('videoController stop function returns SdkError to callback when parent rejects message', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
-        
+
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
         const err = {
           errorCode: ErrorCode.INTERNAL_ERROR,
