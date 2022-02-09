@@ -6,7 +6,8 @@
 import { BundleComparison, BundleMetric } from '../BundleBuddyTypes';
 import { totalSizeMetricName } from './Constants';
 
-const bundleDetailsTableHeader = `<table><tr><th>Metric Name</th><th>Baseline Size</th><th>Compare Size</th><th>Size Diff</th></tr>`;
+const bundleDetailsTableHeader =
+  '<table><tr><th>Metric Name</th><th>Baseline Size</th><th>Compare Size</th><th>Size Diff</th></tr>';
 
 /**
  * Generates the comment message for all Bundle Diffs with the commit hash of the baseline on the footer

@@ -62,17 +62,17 @@ const PagesBackStackAPIs = (): ReactElement => {
     setAddStatesValue('total States: ' + newNumStates);
   }, [totalStates, setTotalStates, setAddStatesValue]);
 
-  const registerBackButtonHandlerHelper = (): boolean => {
-    if (totalStates > 0) {
-      const newNumStates = totalStates - 1;
-      setTotalStates(newNumStates);
-      setRegisterBackButtonHandlerValue('back button clicked. total remaining state: ' + newNumStates);
-      return true;
-    }
-    return false;
-  };
-
   const onRegisterBackButtonHandler = React.useCallback(() => {
+    const registerBackButtonHandlerHelper = (): boolean => {
+      if (totalStates > 0) {
+        const newNumStates = totalStates - 1;
+        setTotalStates(newNumStates);
+        setRegisterBackButtonHandlerValue('back button clicked. total remaining state: ' + newNumStates);
+        return true;
+      }
+      return false;
+    };
+
     if (getTestBackCompat()) {
       registerBackButtonHandler((): boolean => {
         return registerBackButtonHandlerHelper();
@@ -84,7 +84,7 @@ const PagesBackStackAPIs = (): ReactElement => {
     }
 
     setRegisterBackButtonHandlerValue('total States: ' + totalStates);
-  }, [totalStates, setTotalStates, setRegisterBackButtonHandlerValue]);
+  }, [totalStates]);
 
   return (
     <>
