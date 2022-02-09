@@ -1,7 +1,7 @@
 import { sendAndUnwrap } from '../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
+import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -32,7 +32,7 @@ export namespace legacy {
             GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
             GlobalVars.hostClientType === HostClientType.teamsPhones ||
             GlobalVars.hostClientType === HostClientType.teamsDisplays) &&
-          !isAPISupportedByPlatform(getUserJoinedTeamsSupportedAndroidClientVersion)
+          !isCurrentSDKVersionAtLeast(getUserJoinedTeamsSupportedAndroidClientVersion)
         ) {
           const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
           throw new Error(JSON.stringify(oldPlatformError));
