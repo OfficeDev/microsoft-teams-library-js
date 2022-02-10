@@ -213,6 +213,7 @@ const ShareAppContentToStage = (): React.ReactElement =>
           return 'shareAppContentToStage() succeeded';
         },
         withCallback: (input, setResult) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const callback = (error: SdkError | null, result: boolean | null): void => {
             if (error) {
               setResult(JSON.stringify(error));
