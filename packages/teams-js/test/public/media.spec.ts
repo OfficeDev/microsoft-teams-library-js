@@ -717,6 +717,7 @@ describe('media', () => {
       });
     });
   });
+
   describe('videoController', () => {
     describe('v1', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
@@ -724,11 +725,11 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
         const videoController = new media.VideoController();
-        const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
-
-        await expect(videoController.stop(emptyCallback)).resolves.not.toThrow();
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+        videoController.stop(emptyCallback);
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
+
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
@@ -740,7 +741,7 @@ describe('media', () => {
           },
         } as DOMMessageEvent);
 
-        expect(sendMessageToParentSpy).toHaveBeenCalled();
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
       });
 
       it('videoController stop function returns SdkError to callback when parent rejects message', async () => {
@@ -748,13 +749,12 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
         const videoController = new media.VideoController();
-        const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
         const err = {
           errorCode: ErrorCode.INTERNAL_ERROR,
         };
-        const callbackSpy = jest.fn();
 
-        videoController.stop(callbackSpy);
+        videoController.stop(emptyCallback);
 
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
         expect(message).not.toBeNull();
@@ -767,8 +767,8 @@ describe('media', () => {
             args: [err],
           },
         } as DOMMessageEvent);
-        expect(callbackSpy).toBeCalledWith(err);
-        expect(sendMessageToParentSpy).toHaveBeenCalled();
+
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
       });
 
       it('videoController notifyEventToHost should fail in default version of platform and should exit early', async () => {
@@ -793,67 +793,65 @@ describe('media', () => {
     });
 
     describe('v2', () => {
-      it('videoController notifyEventToHost should fail in default version of platform and exit early', async () => {
-        expect.assertions(5); // initializeWithContext has 3 assertions + 2 local assertion
-        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
-        mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-
-        const videoController = new media.VideoController();
-        const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
-
-        await videoController.stop().catch(err => {
-          return expect(err).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
-        });
-        expect(sendMessageToParentSpy).not.toHaveBeenCalled();
-      });
-
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
         const videoController = new media.VideoController();
-
-        await expect(videoController.stop()).resolves.not.toThrow();
+        const promise = videoController.stop();
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
+
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
+
         const callbackId = message.id;
+
         mobilePlatformMock.respondToMessage({
           data: {
             id: callbackId,
             args: [undefined],
           },
         } as DOMMessageEvent);
+        await expect(promise).resolves.not.toThrowError();
+      });
+
+      it('videoController notifyEventToHost should fail in default version of platform and exit early', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+        mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+
+        const videoController = new media.VideoController();
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+        const promise = videoController.stop();
+
+        await expect(promise).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+
+        expect(sendAndHandleSdkErrorSpy).not.toHaveBeenCalled();
       });
 
       it('videoController notifyEventToHost is not handled successfully and returns error', async () => {
-        expect.assertions(7);
-
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
 
         const videoController = new media.VideoController();
+        const promise = videoController.stop();
         const err = { errorCode: ErrorCode.INTERNAL_ERROR };
-        const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+        const message = mobilePlatformMock.findMessageByFunc('media.controller');
 
-        await videoController
-          .stop()
-          .then(() => {
-            const message = mobilePlatformMock.findMessageByFunc('media.controller');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            const callbackId = message.id;
-            return mobilePlatformMock.respondToMessage({
-              data: {
-                id: callbackId,
-                args: [err],
-              },
-            } as DOMMessageEvent);
-          })
-          .catch(error => {
-            return expect(error).toEqual(err);
-          });
-        expect(sendMessageToParentSpy).toHaveBeenCalled();
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1);
+
+        const callbackId = message.id;
+
+        mobilePlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [err],
+          },
+        } as DOMMessageEvent);
+
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
+        return expect(promise).rejects.toEqual(err);
       });
     });
   });

@@ -448,17 +448,7 @@ export namespace media {
       };
 
       const wrappedFunction = (): Promise<void> =>
-        new Promise(resolve =>
-          resolve(
-            sendMessageToParent('media.controller', [params], (err?: SdkError) => {
-              if (callback) {
-                callback(err);
-              } else if (err) {
-                throw err;
-              }
-            }),
-          ),
-        );
+        new Promise(resolve => resolve(sendAndHandleSdkError('media.controller', [params])));
 
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
