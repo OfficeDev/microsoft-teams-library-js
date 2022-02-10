@@ -409,7 +409,7 @@ describe('sharing_v2', () => {
 
     const promise = sharing.shareWebContent(shareRequest as any);
     const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
-    // expect(shareMessage).toBeNull();
+    expect(shareMessage).toBeNull();
     await expect(promise).rejects.toEqual(error);
   });
 
