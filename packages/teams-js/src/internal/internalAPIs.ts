@@ -37,7 +37,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  *
  * @internal
  */
-export function isAPISupportedByPlatform(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
+export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
   if (isNaN(value)) {
     return false;
@@ -58,20 +58,21 @@ export function isHostClientMobile(): boolean {
 /**
  * @hidden
  * Helper function which indicates if current API is supported on mobile or not.
- * @returns SdkError if host client is not android/ios or if the requiredVersion is not
+ * @throws SdkError if host client is not android/ios or if the requiredVersion is not
  *          supported by platform or not. Null is returned in case of success.
  *
  * @internal
  */
-export function isApiSupportedOnMobile(requiredVersion: string = defaultSDKVersionForCompatCheck): SdkError {
+export function throwExceptionIfMobileApiIsNotSupported(
+  requiredVersion: string = defaultSDKVersionForCompatCheck,
+): void {
   if (!isHostClientMobile()) {
     const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-    return notSupportedError;
-  } else if (!isAPISupportedByPlatform(requiredVersion)) {
+    throw notSupportedError;
+  } else if (!isCurrentSDKVersionAtLeast(requiredVersion)) {
     const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-    return oldPlatformError;
+    throw oldPlatformError;
   }
-  return null;
 }
 
 /**

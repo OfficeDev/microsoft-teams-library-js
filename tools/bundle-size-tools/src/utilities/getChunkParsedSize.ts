@@ -10,7 +10,7 @@ import { WebpackStatsJson } from '../BundleBuddyTypes';
  */
 export function getChunkParsedSize(stats: WebpackStatsJson, chunkId: string | number): number {
   if (stats.assets === undefined) {
-    throw new Error(`No assets property in the stats file, can't compute parsed sizes of chunks`);
+    throw new Error("No assets property in the stats file, can't compute parsed sizes of chunks");
   }
 
   const matchingAsset = stats.assets.find(asset => {

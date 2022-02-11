@@ -54,9 +54,13 @@ module.exports = {
         include: /\.min\.js$/,
       }),
     ],
+    nodeEnv: 'production',
   },
   // webpack.production.config.js
   mode: 'production',
+  performance: {
+    hints: false,
+  },
   plugins: [
     new DefinePlugin({
       PACKAGE_VERSION: JSON.stringify(packageVersion),

@@ -1,7 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 variables:
   - group: InfoSec-SecurityResults
 
@@ -9,9 +5,7 @@ trigger:
   branches:
     include:
       - '2.0-preview'
-  tags:
-    include:
-      - v2.0.0-beta.*
+      - 'release/2.0.0-beta.*'
 
 jobs:
   - job: Security
@@ -19,334 +13,23 @@ jobs:
     pool:
       vmImage: 'windows-latest'
     steps:
-      - task: ESLint@1
-        displayName: 'Run ESLint'
-        inputs:
-          Configuration: 'required'
-          TargetType: 'eslint'
-          TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
-          ErrorLevel: 'warn'
-
-      - task: CredScan@3
-        displayName: 'Run Credential Scanner'
-        condition: succeededOrFailed()
-        inputs:
-          debugMode: false
-          suppressionsFile: '.sdl\CredScanSuppressions.json'
-
-      - task: PublishSecurityAnalysisLogs@3
-        inputs:
-          ArtifactName: 'CodeAnalysisLogs'
-          ArtifactType: 'M365'
-          AllTools: true
-          ToolLogsNotFoundAction: 'Standard'
-        condition: succeededOrFailed()
-        displayName: 'Publish Guardian Artifacts 2'
-
-        # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
-      - task: AssetRetention@3
-        inputs:
-          ArrowServiceConnection: '$(ArrowConnection)'
-          AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
-          AssetNumber: '$(Build.BuildId)'
-          IsShipped: false
-          DropsToRetain: 'CodeAnalysisLogs'
-        condition: and(
-          startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta'),
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'),
-          ne(variables['Build.Reason'], 'Manual')
-          )
-        displayName: 'Artifact Retention(Arrow)'
-
-      - task: PostAnalysis@2
-        condition: succeededOrFailed()
-        displayName: 'Guardian Break'
-        inputs:
-          GdnBreakPolicyMinSev: Warning
-          GdnBreakAllTools: true
-          GdnBreakGdnToolCredScan: true
-          GdnBreakGdnToolCredScanSeverity: Warning
-          GdnBreakGdnToolESLint: true
-          GdnBreakGdnToolESLintSeverity: Warning
-          GdnBreakPolicy: M365
-
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          eq(variables['Build.Reason'], 'PullRequest'),
-          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-        inputs:
-          scanType: 'LogOnly'
-          verbosity: 'Verbose'
-          alertWarningLevel: 'High'
-          failOnAlert: true
-        displayName: 'Component Governance (Pull Request)'
-
-      - task: ComponentGovernanceComponentDetection@0
-        condition: and(
-          or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta')),
-          ne(variables['Build.Reason'], 'PullRequest'))
-        displayName: 'Component Governance (2.0-preview, release)'
+      - template: tools/yaml-templates/security.yml
 
   - job: Build
-    displayName: 'Build, Test, and Publish Artifacts'
+    displayName: 'Build Test Publish'
     pool:
       vmImage: 'windows-latest'
     steps:
-      - task: YarnInstaller@3
-        displayName: 'Yarn 1.x'
-        inputs:
-          versionSpec: '1.x'
+      - template: tools/yaml-templates/build-test-publish.yml
 
-      - task: NodeTool@0
-        displayName: 'Install Node.js'
-        inputs:
-          versionSpec: '14.x'
-
-      - task: Yarn@3
-        displayName: 'yarn install'
-        inputs:
-          Arguments: 'install'
-
-      - script: 'node prepNextDevRelease.js'
-        displayName: 'node prepNextDevRelease.js'
-        workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-        condition: and(
-          eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'),
-          ne(variables['Build.Reason'], 'Manual')
-          )
-
-      - task: Yarn@3
-        inputs:
-          Arguments: 'build'
-        displayName: 'yarn build'
-
-      - task: Yarn@3
-        inputs:
-          Arguments: 'test'
-        displayName: 'yarn test'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/unit-tests-report*.xml'
-        condition: succeededOrFailed()
-
-      - task: Yarn@2
-        inputs:
-          Arguments: 'bundleAnalyze:collect'
-        displayName: 'Run bundle analysis and collect'
-
-      # Bundle analysis comparison : should trigger only by PR against 2.0-preview
-      # Adding comment for a commit that should queue the pipeline with a PR trigger
-      - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
-        env:
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        condition: and(
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          eq(variables['Build.Reason'], 'PullRequest'),
-          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-        name: bundleAnalysisTask
-        displayName: 'Analyze bundles against 2.0-preview and output result'
-
-      - task: GitHubComment@0
-        condition: and(
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          eq(variables['Build.Reason'], 'PullRequest'),
-          eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
-        inputs:
-          gitHubConnection: '$(RepoGitHubConnection)'
-          repositoryName: '$(Build.Repository.Name)'
-          id: '$(System.PullRequest.PullRequestNumber)'
-          comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-        displayName: 'Post bundle analysis result as PR comment on GitHub'
-
-      - task: PublishBuildArtifacts@1
-        condition: and(
-          in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-          ne(variables['Build.Reason'], 'PullRequest'))
-        inputs:
-          PathtoPublish: './common/temp/bundleAnalysis'
-          ArtifactName: '$(bundleArtifactName)'
-        displayName: 'Publish bundle analysis'
-
-      - powershell: |
-          $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
-          Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
-        name: package
-        displayName: 'Set package.version Variable'
-
-      - task: CopyFiles@2
-        inputs:
-          sourceFolder: 'apps/teams-test-app/build'
-          contents: '**'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
-        displayName: 'Copy Test app to artifacts staging directory'
-
-      - task: ArchiveFiles@2
-        inputs:
-          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
-          includeRootFolder: false
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-          replaceExistingArchive: true
-        displayName: 'Zip Test app artifacts'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-          ArtifactName: 'teams-test-app'
-        displayName: 'Publish Test app artifacts'
-
-      - task: CopyFiles@2
-        inputs:
-          sourceFolder: 'packages\teams-js\dist'
-          contents: '**\?(*.js|*.ts|*.map)'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
-        displayName: 'Copy TeamsJS Content for CDN'
-
-      - task: CopyFiles@2
-        inputs:
-          Contents: |
-            packages\teams-js\package.json
-            packages\teams-js\README.md
-            LICENSE
-          TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-          flattenFolders: true
-        displayName: 'Copy TeamsJS Content for NPM'
-
-      - task: CopyFiles@2
-        inputs:
-          Contents: |
-            packages\teams-js\dist\**\?(*.js|*.ts|*.map)
-          TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
-          flattenFolders: true
-        displayName: 'Copy JS Content for NPM'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
-          ArtifactName: 'CDNFeed'
-        displayName: 'Publish CDN feed to build Artifacts'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-          ArtifactName: 'NPMFeed'
-        displayName: 'Publish NPM feed to Build Artifacts'
-
-  - job: E2e_Test
-    displayName: 'E2e test'
+  - job: E2ETest1
+    displayName: 'E2E Test - Perf'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./ 
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - bash: 'node tools/cli/runAppsWithE2ETests.js'
-        displayName: 'Run E2E integration tests'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report*.xml'
-        condition: succeededOrFailed()
-
-  - job: E2e_Performance_Test
-    displayName: 'E2e performance test'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath2)
-        persistCredentials: true
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
@@ -359,61 +42,34 @@ jobs:
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
 
-  - job: E2e_Test_Local_Script_Tag
-    displayName: 'E2e test with local script tag'
+  - job: E2ETest2
+    displayName: 'E2E Test - Default'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath3)
-        persistCredentials: false
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
 
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js'
+        displayName: 'Run E2E integration tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      - task: YarnInstaller@3
+      - task: PublishTestResults@2
         inputs:
-          versionSpec: '1.x'
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
 
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build Test App Local'
-        inputs:
-          Arguments: 'build-test-app-local'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./ 
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+  - job: E2ETest3
+    displayName: 'E2E Test - Local Tag'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=--envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
@@ -426,55 +82,14 @@ jobs:
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
 
-  - job: E2e_Test_Backwards_Compatibility_Latest
-    displayName: 'E2e test BC Latest'
+  - job: E2ETest4
+    displayName: 'E2E Test - BC Latest'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-      - checkout: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
-        persistCredentials: true
-
-      - task: NodeTool@0
-        inputs:
-          versionSpec: '14.x'
-        displayName: 'Install Node.js'
-
-      - task: YarnInstaller@3
-        inputs:
-          versionSpec: '1.x'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on app hosting sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build app hosting sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run yarn on client sdk'
-        inputs:
-          Arguments:
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Build client sdk'
-        inputs:
-          Arguments: 'build'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - task: CmdLine@2
-        displayName: 'Configure host machine'
-        inputs:
-          script: |
-            sudo chmod -R 755 ./ 
-            sudo yarn setup
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --targetClientSdkCheckpoint=latestBackCompat --reportFileName=e2e-tests-report-bcompat'
         displayName: 'Run E2E back compat tests against latest version'
@@ -487,59 +102,23 @@ jobs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
-  # - job: E2e_Test_TeamsV1
-  #   displayName: 'E2e test TeamsJS V1'
-  #   pool:
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #     - checkout: self
-  #     - checkout: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
-  #       persistCredentials: true
-  #     - task: NodeTool@0
-  #       inputs:
-  #         versionSpec: '14.x'
-  #       displayName: 'Install Node.js'
-  #     - task: YarnInstaller@3
-  #       inputs:
-  #         versionSpec: '1.x'
-  #     - task: Yarn@2
-  #       displayName: 'Run yarn on app hosting sdk'
-  #       inputs:
-  #         Arguments:
-  #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build app hosting sdk'
-  #       inputs:
-  #         Arguments: 'build'
-  #         ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Run yarn on client sdk'
-  #       inputs:
-  #         Arguments:
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build client sdk'
-  #       inputs:
-  #         Arguments: 'build'
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: Yarn@2
-  #       displayName: 'Build Teams Test App V1'
-  #       inputs:
-  #         Arguments: 'build-test-app-V1'
-  #         ProjectDirectory: '$(ClientSdkProjectDirectory)'
-  #     - task: CmdLine@2
-  #       displayName: 'Configure host machine'
-  #       inputs:
-  #         script: |
-  #           sudo chmod -R 755 ./
-  #           sudo yarn setup
-  #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-V1 --envType=--envType=teamsV1'
-  #       displayName: 'Run E2E integration tests on Teams Test App V1'
-  #       condition: succeeded()
-  #       workingDirectory: '$(AppHostingSdkProjectDirectory)'
-  #     - task: PublishTestResults@2
-  #       inputs:
-  #         testResultsFormat: 'JUnit'
-  #         testResultsFiles: '**/e2e-tests-report*.xml'
-  #       condition: succeededOrFailed()
+
+  - job: E2ETest5
+    displayName: 'E2E Test - TeamsJS V1'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=--envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
+        displayName: 'Run E2E integration tests on Teams Test App V1'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
