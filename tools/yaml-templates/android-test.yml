@@ -1,6 +1,11 @@
+parameters:
+  - name: 'androidAppHostingSdkGitPath'
+    default: none
+    type: string
+
 steps:
 - checkout: self
-- checkout: ${{ AndroidAppHostingSdkGitPath }}
+- checkout: ${{ parameters.androidAppHostingSdkGitPath }}
   persistCredentials: true
 
 - task: NodeTool@0

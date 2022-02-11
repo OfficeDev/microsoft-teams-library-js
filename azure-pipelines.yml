@@ -129,3 +129,5 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - template: tools/yaml-templates/android-test.yml
+        parameters:
+          androidAppHostingSdkGitPath: git://$(AndroidAppHostingSdkGitPath)
