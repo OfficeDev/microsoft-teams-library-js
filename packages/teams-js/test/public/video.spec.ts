@@ -77,8 +77,7 @@ describe('video', () => {
       let returnedVideoFrame: video.VideoFrame;
       let handlerInvoked = false;
 
-      //callback
-      let emptyVideoEffectCallback = (
+      let videoEffectCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
@@ -87,7 +86,7 @@ describe('video', () => {
         returnedVideoFrame = _frame;
       };
 
-      video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
+      video.registerForVideoFrame(videoEffectCallback, videoFrameConfig);
       const videoFrameMock = {
         width: 30,
         height: 40,
@@ -101,8 +100,7 @@ describe('video', () => {
     it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const errorMessage = 'error occurs';
-      //callback
-      const emptyVideoEffectCallback = (
+      const videoEffectCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
@@ -114,7 +112,7 @@ describe('video', () => {
         }
       };
 
-      video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
+      video.registerForVideoFrame(videoEffectCallback, videoFrameConfig);
       const videoFrameMock = {
         width: 30,
         height: 40,
@@ -129,8 +127,7 @@ describe('video', () => {
     it('should invoke video frame event handler and successfully send notifyError', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const errorMessage = 'error occurs';
-      //callback
-      const emptyVideoEffectCallback = (
+      const videoEffectCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
@@ -142,7 +139,7 @@ describe('video', () => {
         }
       };
 
-      video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
+      video.registerForVideoFrame(videoEffectCallback, videoFrameConfig);
 
       desktopPlatformMock.sendMessage('video.newVideoFrame', null);
       const message = desktopPlatformMock.findMessageByFunc('video.notifyError');
@@ -154,17 +151,15 @@ describe('video', () => {
 
     it('should not invoke video frame event handler when videoFrame is undefined', async () => {
       await desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      let videoFrame: video.VideoFrame;
       let handlerInvoked = false;
-      let emptyVideoEffectCallback = (
+      let videoEffectCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
         handlerInvoked = true;
-        videoFrame = _frame;
       };
-      video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
+      video.registerForVideoFrame(videoEffectCallback, videoFrameConfig);
       desktopPlatformMock.sendMessage('video.newVideoFrame', undefined);
       expect(handlerInvoked).toBe(false);
     });
