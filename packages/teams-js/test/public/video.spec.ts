@@ -4,8 +4,6 @@ import { FrameContexts } from '../../src/public/constants';
 import { video } from '../../src/public/video';
 import { Utils } from '../utils';
 
-import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { SdkError } from '../../src/public';
 /**
  * Test cases for selectPeople API
  */
