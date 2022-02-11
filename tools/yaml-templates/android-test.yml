@@ -1,0 +1,43 @@
+steps:
+- checkout: self
+- checkout: ${{ AndroidAppHostingSdkGitPath }}
+  persistCredentials: true
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: "14.x"
+  displayName: "Install Node.js"
+
+- task: YarnInstaller@3
+  inputs:
+    versionSpec: "1.x"
+
+- task: Yarn@2
+  inputs:
+    Arguments: 'install'
+    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+  displayName: 'Run yarn install on TeamsJS'
+
+- task: Yarn@2
+  inputs:
+    Arguments: 'build'
+    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+  displayName: 'Build TeamsJS'
+
+- bash: 'nohup yarn start-test-app &'
+  displayName: "Run sample test app in background"
+  workingDirectory: '$(ClientSdkProjectDirectory)'
+
+- bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+  displayName: 'Install Emulator'
+  workingDirectory: '$(AndroidAppHostingSdkProjectDirectory)/devtools/ci'
+
+- task: Gradle@2
+  displayName: 'UI Auto Tests'
+  inputs:
+    workingDirectory: '$(AndroidAppHostingSdkProjectDirectory)/apps/orangeandroid'
+    gradleWrapperFile: '$(AndroidAppHostingSdkProjectDirectory)/apps/orangeandroid/gradlew'
+    gradleOptions: '-Xmx3072m'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    tasks: 'connectedAndroidTest'
