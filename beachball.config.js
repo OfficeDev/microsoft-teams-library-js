@@ -13,6 +13,7 @@ const postbump = (packagePath, packageName, packageVersion) => {
 module.exports = {
   branch: 'origin/2.0-preview',
   bumpDeps: false,
+  disallowedChangeTypes: ['preRelease'],
   generateChangelog: true,
   hooks: { postbump },
   ignorePatterns: ['.*ignore', '*config.js', '*.md', '**/test/**'],

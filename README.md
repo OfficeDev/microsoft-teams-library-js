@@ -4,7 +4,7 @@
 [![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js?branchName=2.0-preview)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483&branchName=2.0-preview)
 [![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the monorepo root of the `2.0-preview` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our changelog in the `<root>/packages/teams-js` directory of the `2.0-preview` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
 ## Getting Started
 
@@ -47,7 +47,7 @@ If you would like to locally generate reference documentation for TeamsJS v2, si
 
 ## Contributing
 
-We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md).
+We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md) which contains important information.
 
 ---
 
