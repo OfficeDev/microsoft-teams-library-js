@@ -12,6 +12,7 @@ import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { media } from '../../src/public/media';
+import { runtime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -44,6 +45,18 @@ describe('media', () => {
       app._uninitialize();
     }
     jest.clearAllMocks();
+  });
+
+  describe('isSupported', () => {
+    it('returns true if media is supported', () => {
+      Object.defineProperty(runtime.supports, 'media', { value: true });
+      expect(media.isSupported()).toBe(true);
+    });
+    it('returns false if media is not supported', () => {
+      Object.defineProperty(runtime.supports, 'media', { value: false });
+
+      expect(media.isSupported()).toBe(false);
+    });
   });
 
   describe('captureImage', () => {
@@ -778,7 +791,7 @@ describe('media', () => {
       });
 
       it('videoController notifyEventToHost should fail in default version of platform and should exit early', async () => {
-        expect.assertions(5);
+        expect.assertions(5); // initializeWithContext has 3 assertions + 2 in this test = 5
 
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
