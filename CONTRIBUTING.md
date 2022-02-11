@@ -56,7 +56,7 @@ Beachball generates JSON change files based on a few simple answers from you:
 
 - Describe changes (type your own or choose one of the commit descriptions. They'll also give you a huge list of those so you can pick the one you want)
 
-And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run the script (which we'll provide you with) to do the above change file generation as the last step in your branch to make sure your PR is ready for review.
+And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run the script (which we'll provide you with) to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you haven't generated a changefile and they will fail if that's the case, so please remember to generate a changefile and update the content accordingly.
 
 ## Contributor License
 
