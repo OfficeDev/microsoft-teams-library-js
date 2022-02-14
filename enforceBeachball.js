@@ -5,6 +5,8 @@ cp.exec('yarn beachball < killProcessCommand.txt', (err, stdout, stderr) => {
     console.log('Beachball guidelines were correctly followed. Continuing...');
     return;
   } else {
+    console.log(`err: ${err}`);
+    console.log(`stderr: ${stderr}`);
     throw new Error(
       "Change files should be created before merging. Please run 'yarn beachball' or yarn 'generate-change-files' from the monorepo root.",
     );

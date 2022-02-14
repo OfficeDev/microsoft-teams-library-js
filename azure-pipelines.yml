@@ -15,14 +15,6 @@ jobs:
     steps:
       - template: tools/yaml-templates/security.yml
 
-  - job: DetectChangeFiles
-    displayName: 'Detect Change Files'
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-      - bash: 'node enforceBeachball.js'
-        displayName: 'run enforceBeachball.js script'
-
   - job: Build
     displayName: 'Build Test Publish'
     pool:
