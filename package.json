@@ -24,7 +24,8 @@
     "docs": "yarn workspace @microsoft/teams-js docs",
     "lint": "lerna run lint",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
-    "start-test-app": "yarn workspace teams-test-app start",
+    "start-test-app": "yarn workspace teams-test-app start:CDN",
+    "start-test-app-CDN": "yarn workspace teams-test-app start:CDN",
     "start-test-app-local": "yarn workspace teams-test-app start:local",
     "start-test-app-V1": "yarn workspace teams-test-app start:CDNV1",
     "test": "lerna run test --stream"
