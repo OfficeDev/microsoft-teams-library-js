@@ -6,7 +6,7 @@ import { Utils } from '../utils';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
-  const allowedContext = ['content', 'sidePanel', 'task', 'stage', 'meetingStage'];
+  const allowedContexts = ['content', 'sidePanel', 'task', 'stage', 'meetingStage'];
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -28,7 +28,7 @@ describe('sharing_v1', () => {
   Object.keys(FrameContexts)
     .map(key => FrameContexts[key])
     .forEach(frameContext => {
-      if (!allowedContext.includes(frameContext)) {
+      if (!allowedContexts.includes(frameContext)) {
         it(`should not allow calls from ${frameContext} context`, async () => {
           await utils.initializeWithContext(frameContext);
           const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
@@ -43,7 +43,7 @@ describe('sharing_v1', () => {
           };
           expect(() => sharing.shareWebContent(shareRequest)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContext,
+              allowedContexts,
             )}. Current context: "${frameContext}".`,
           );
         });
