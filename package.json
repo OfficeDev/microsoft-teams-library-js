@@ -22,7 +22,6 @@
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
     "docs": "yarn workspace @microsoft/teams-js docs",
-    "efb": "lerna run eslint-fix-build",
     "generate-change-files": "yarn beachball change",
     "lint": "lerna run lint",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
