@@ -71,7 +71,13 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=--envType=localScriptTag'
+      - task: Yarn@2
+        displayName: 'Build Test App Local'
+        inputs:
+          Arguments: 'build-test-app-local'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -112,7 +118,13 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=--envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
+      - task: Yarn@2
+        displayName: 'Build Teams Test App V1'
+        inputs:
+          Arguments: 'build-test-app-V1'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
         displayName: 'Run E2E integration tests on Teams Test App V1'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
