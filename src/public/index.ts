@@ -41,6 +41,7 @@ export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from '.
 export { settings } from './settings';
 export { tasks } from './tasks';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
+export { menus } from './menus';
 export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
