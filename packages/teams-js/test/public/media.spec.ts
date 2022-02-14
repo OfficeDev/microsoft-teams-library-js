@@ -70,7 +70,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
         media.captureImage((error: SdkError, f: media.File[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -102,7 +102,7 @@ describe('media', () => {
         await desktopPlatformMock.initializeWithContext(FrameContexts.content);
         media.captureImage((error: SdkError, f: media.File[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM });
         });
       });
 
@@ -165,7 +165,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForCaptureImage);
         media.captureImage((error: SdkError, files: media.File[]) => {
           expect(files).toBeFalsy();
-          expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
+          expect(error).toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
         });
 
         const message = mobilePlatformMock.findMessageByFunc('captureImage');
@@ -305,7 +305,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
         media.selectMedia(null, (error: SdkError, attachments: media.Media[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -318,7 +318,7 @@ describe('media', () => {
         };
         media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -331,7 +331,7 @@ describe('media', () => {
         };
         media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -344,7 +344,7 @@ describe('media', () => {
         };
         media.selectMedia(mediaInputs, (error: SdkError, attachments: media.Media[]) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -522,7 +522,7 @@ describe('media', () => {
         };
         media.selectMedia(mediaInputs, (mediaError: SdkError, mediaAttachments: media.Media[]) => {
           expect(mediaAttachments).toBeFalsy();
-          expect(mediaError.errorCode).toBe(ErrorCode.SIZE_EXCEEDED);
+          expect(mediaError).toEqual({ errorCode: ErrorCode.SIZE_EXCEEDED });
         });
         const message = mobilePlatformMock.findMessageByFunc('selectMedia');
         expect(message).not.toBeNull();
@@ -886,7 +886,7 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -899,7 +899,7 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -912,7 +912,7 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.Base64;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -925,7 +925,7 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -1017,7 +1017,7 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           getStringContainedInBlob(blob).then(res => {
-            expect(res).toEqual(stringMediaData);
+            return expect(res).toEqual(stringMediaData);
           });
         });
 
@@ -1062,8 +1062,7 @@ describe('media', () => {
         mediaOutput.mimeType = 'image/jpeg';
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
-          expect(error.errorCode).toBe(500);
-          expect(error.message).toEqual('data received is null');
+          expect(error).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
           expect(blob).toBeFalsy();
         });
 
@@ -1090,7 +1089,10 @@ describe('media', () => {
         mediaOutput.format = media.FileFormat.ID;
         mediaOutput.getMedia((error: SdkError, blob: Blob) => {
           expect(blob).toBeFalsy();
-          expect(error.errorCode).toBe(500);
+          expect(error).toEqual({
+            errorCode: ErrorCode.INTERNAL_ERROR,
+            message: 'Error parsing the response: undefined',
+          });
         });
 
         const message = mobilePlatformMock.findMessageByFunc('getMedia');
@@ -1262,7 +1264,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
         media.viewImages(null, (error: SdkError) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -1272,7 +1274,7 @@ describe('media', () => {
         const uris: media.ImageUri[] = [];
         media.viewImages(uris, (error: SdkError) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         });
       });
 
@@ -1287,7 +1289,7 @@ describe('media', () => {
         uris.push(uri);
         media.viewImages(uris, (error: SdkError) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -1331,7 +1333,7 @@ describe('media', () => {
         };
         uris.push(uri);
         media.viewImages(uris, (error: SdkError) => {
-          expect(error.errorCode).toBe(ErrorCode.FILE_NOT_FOUND);
+          expect(error).toEqual({ errorCode: ErrorCode.FILE_NOT_FOUND });
         });
 
         const message = mobilePlatformMock.findMessageByFunc('viewImages');
@@ -1438,7 +1440,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
         media.scanBarCode((e: SdkError, d: string) => {
           expect(e).not.toBeNull();
-          expect(e.errorCode).toBe(ErrorCode.OLD_PLATFORM);
+          expect(e).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
         });
       });
 
@@ -1522,7 +1524,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
         media.scanBarCode((err: SdkError, decodedText: string) => {
           expect(decodedText).toBeFalsy();
-          expect(err.errorCode).toBe(ErrorCode.OPERATION_TIMED_OUT);
+          expect(err).toEqual({ errorCode: ErrorCode.OPERATION_TIMED_OUT });
         });
 
         const message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
@@ -1546,7 +1548,7 @@ describe('media', () => {
         };
         media.scanBarCode((mediaError: SdkError, d: string) => {
           expect(mediaError).not.toBeNull();
-          expect(mediaError.errorCode).toBe(ErrorCode.INVALID_ARGUMENTS);
+          expect(mediaError).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
         }, barCodeConfig);
       });
 
@@ -1554,7 +1556,7 @@ describe('media', () => {
         await desktopPlatformMock.initializeWithContext(FrameContexts.content, HostClientType.desktop);
         media.scanBarCode((error: SdkError, d: string) => {
           expect(error).not.toBeNull();
-          expect(error.errorCode).toBe(ErrorCode.NOT_SUPPORTED_ON_PLATFORM);
+          expect(error).toEqual({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM });
         });
       });
     });
