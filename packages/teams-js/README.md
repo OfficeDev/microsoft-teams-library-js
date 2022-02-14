@@ -1,6 +1,6 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams JavaScript client SDK ! For breaking changes, please refer to our changelog in `<root>/packages/teams-js` directory of the `2.0-preview` branch.
+Welcome to the Teams JavaScript client SDK! For breaking changes, please refer to our changelog in the current `<root>/packages/teams-js` directory of the `2.0-preview` branch.
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
 
@@ -68,3 +68,7 @@ Stay tuned for examples coming soon.
 ## Testing
 
 The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
+
+## Contributing
+
+Please be sure to check out the [Contributor's guide](../../CONTRIBUTING.md) for crucial steps.
