@@ -1007,6 +1007,66 @@ describe('media', () => {
         }
       });
 
+      it('getMedia calls with error when data is null via the handler', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+        mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+        const mediaOutput: media.Media = new media.Media();
+        mediaOutput.content = '12345678';
+        mediaOutput.mimeType = 'image/jpeg';
+        mediaOutput.format = media.FileFormat.ID;
+        mediaOutput.getMedia((error: SdkError, blob: Blob) => {
+          expect(error).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+          expect(blob).toBeFalsy();
+        });
+
+        const handlerRegistrationMessage = mobilePlatformMock.findMessageByFunc('registerHandler');
+        const getMediaHandlerName = handlerRegistrationMessage.args[0];
+
+        callHandler(getMediaHandlerName, [JSON.stringify({})]);
+      });
+
+      it('getMedia via handler call returns error when mediaResult contains SDK error', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+        //mediaAPISupport version(1.8.0) is less than the MediaCallbackSupportVersion(2.0.0)
+        mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+        const mediaOutput: media.Media = new media.Media();
+        mediaOutput.content = '1234567';
+        mediaOutput.mimeType = 'image/jpeg';
+        mediaOutput.format = media.FileFormat.ID;
+        mediaOutput.getMedia((error: SdkError, blob: Blob) =>
+          expect(error).toEqual({ errorCode: ErrorCode.USER_ABORT }),
+        );
+
+        const message = mobilePlatformMock.findMessageByFunc('getMedia');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(2);
+
+        const stringMediaData = 'the media data';
+        const firstMediaResult: media.MediaResult = {
+          error: { errorCode: ErrorCode.USER_ABORT },
+          mediaChunk: {
+            chunk: btoa(stringMediaData),
+            chunkSequence: 1,
+          },
+        };
+        const secondMediaResult: media.MediaResult = {
+          error: undefined,
+          mediaChunk: {
+            chunk: undefined,
+            chunkSequence: 0,
+          },
+        };
+
+        const handlerRegistrationMessage = mobilePlatformMock.findMessageByFunc('registerHandler');
+        const getMediaHandlerName = handlerRegistrationMessage.args[0];
+
+        const mediaResults = Array.of(firstMediaResult, secondMediaResult);
+
+        for (let i = 0; i < mediaResults.length; ++i) {
+          callHandler(getMediaHandlerName, [JSON.stringify(mediaResults[i])]);
+        }
+      });
+
       it('getMedia calls with successful result via the callback', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content);
         // here we give the same version as the supported version
@@ -1054,7 +1114,52 @@ describe('media', () => {
         }
       });
 
-      it('getMedia calls with error with MediaCallback', async () => {
+      it('getMedia returns error when called via the callback', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+        // here we give the same version as the supported version
+        mobilePlatformMock.setClientSupportedSDKVersion(getMediaCallbackSupportVersion);
+        const mediaOutput: media.Media = new media.Media();
+        mediaOutput.content = '1234567';
+        mediaOutput.mimeType = 'image/jpeg';
+        mediaOutput.format = media.FileFormat.ID;
+        mediaOutput.getMedia((error: SdkError, blob: Blob) => {
+          expect(error).toEqual({ errorCode: ErrorCode.USER_ABORT });
+        });
+
+        const message = mobilePlatformMock.findMessageByFunc('getMedia');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1); // args will be of length 1 for the supported version
+
+        const stringMediaData = 'the media data';
+        const firstMediaResult: media.MediaResult = {
+          error: { errorCode: ErrorCode.USER_ABORT },
+          mediaChunk: {
+            chunk: btoa(stringMediaData),
+            chunkSequence: 1,
+          },
+        };
+        const secondMediaResult: media.MediaResult = {
+          error: undefined,
+          mediaChunk: {
+            chunk: undefined,
+            chunkSequence: 0,
+          },
+        };
+
+        const mediaResults = Array.of(firstMediaResult, secondMediaResult);
+
+        for (let i = 0; i < mediaResults.length; ++i) {
+          mobilePlatformMock.respondToMessage({
+            data: {
+              id: message.id,
+              args: [mediaResults[i]],
+              isPartialResponse: i < mediaResults.length - 1,
+            },
+          } as DOMMessageEvent);
+        }
+      });
+
+      it('getMedia calls with error with MediaCallback when data is null', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content);
         mobilePlatformMock.setClientSupportedSDKVersion(getMediaCallbackSupportVersion);
         const mediaOutput: media.Media = new media.Media();
@@ -1113,7 +1218,9 @@ describe('media', () => {
         mediaOutput.content = '1234567';
         mediaOutput.mimeType = null;
         mediaOutput.format = media.FileFormat.ID;
-        return expect(mediaOutput.getMedia()).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
+        return expect(mediaOutput.getMedia()).rejects.toEqual({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+        });
       });
 
       it('should not allow getMedia calls with invalid media content', async () => {
@@ -1123,7 +1230,9 @@ describe('media', () => {
         mediaOutput.content = null;
         mediaOutput.mimeType = 'image/jpeg';
         mediaOutput.format = media.FileFormat.ID;
-        return expect(mediaOutput.getMedia()).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
+        return expect(mediaOutput.getMedia()).rejects.toEqual({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+        });
       });
 
       it('should not allow getMedia calls with invalid media file format', async () => {
@@ -1133,7 +1242,9 @@ describe('media', () => {
         mediaOutput.content = '1234567';
         mediaOutput.mimeType = 'image/jpeg';
         mediaOutput.format = media.FileFormat.Base64;
-        return expect(mediaOutput.getMedia()).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
+        return expect(mediaOutput.getMedia()).rejects.toEqual({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+        });
       });
 
       it('getMedia call in default version of platform support fails', async () => {
@@ -1143,7 +1254,9 @@ describe('media', () => {
         mediaOutput.content = '1234567';
         mediaOutput.mimeType = 'image/jpeg';
         mediaOutput.format = media.FileFormat.ID;
-        return expect(mediaOutput.getMedia()).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+        return expect(mediaOutput.getMedia()).rejects.toEqual({
+          errorCode: ErrorCode.OLD_PLATFORM,
+        });
       });
 
       it('getMedia call in task frameContext works', async () => {
@@ -1220,6 +1333,47 @@ describe('media', () => {
         expect(blobContents).toEqual(stringMediaData);
       }
 
+      async function inValidateGetMediaMessageAndResults(
+        supportedSDKVersion: string,
+        expectedNumberOfParametersInGetMediaMessage: number,
+        respondToMessages: (message: MessageRequest, mediaResults: media.MediaResult[]) => void,
+      ): Promise<void> {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+        mobilePlatformMock.setClientSupportedSDKVersion(supportedSDKVersion);
+
+        const stringMediaData = 'the media data';
+        const firstMediaResult: media.MediaResult = {
+          error: { errorCode: ErrorCode.USER_ABORT },
+          mediaChunk: {
+            chunk: btoa(stringMediaData),
+            chunkSequence: 1,
+          },
+        };
+        const secondMediaResult: media.MediaResult = {
+          error: undefined,
+          mediaChunk: {
+            chunk: undefined,
+            chunkSequence: 0,
+          },
+        };
+
+        const mediaOutput: media.Media = new media.Media();
+        mediaOutput.content = '1234567';
+        mediaOutput.mimeType = 'image/jpeg';
+        mediaOutput.format = media.FileFormat.ID;
+        const getMediaPromise: Promise<Blob> = mediaOutput.getMedia();
+
+        const message = mobilePlatformMock.findMessageByFunc('getMedia');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(expectedNumberOfParametersInGetMediaMessage);
+
+        respondToMessages(message, [firstMediaResult, secondMediaResult]);
+
+        return expect(getMediaPromise).rejects.toEqual({
+          errorCode: ErrorCode.USER_ABORT,
+        });
+      }
+
       it('getMedia using callback method returns successful result with expected data', async () => {
         validateGetMediaMessageAndResults(
           getMediaCallbackSupportVersion,
@@ -1240,8 +1394,68 @@ describe('media', () => {
         );
       });
 
+      it('getMedia calls with error with MediaCallback', async () => {
+        inValidateGetMediaMessageAndResults(
+          getMediaCallbackSupportVersion,
+          1,
+          (message: MessageRequest, mediaResults: media.MediaResult[]) => {
+            const callbackId = message.id;
+
+            for (let i = 0; i < mediaResults.length; ++i) {
+              mobilePlatformMock.respondToMessage({
+                data: {
+                  id: callbackId,
+                  args: [mediaResults[i]],
+                  isPartialResponse: i < mediaResults.length - 1,
+                },
+              } as DOMMessageEvent);
+            }
+          },
+        );
+      });
+
       it('getMedia using register handler method returns successful result with expected data', async () => {
         validateGetMediaMessageAndResults(
+          mediaAPISupportVersion,
+          2,
+          (_message: MessageRequest, mediaResults: media.MediaResult[]) => {
+            const handlerRegistrationMessage = mobilePlatformMock.findMessageByFunc('registerHandler');
+            const getMediaHandlerName = handlerRegistrationMessage.args[0];
+
+            for (let i = 0; i < mediaResults.length; ++i) {
+              callHandler(getMediaHandlerName, [JSON.stringify(mediaResults[i])]);
+            }
+          },
+        );
+      });
+
+      it('getMedia via the handler rejects if there is no data', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+        mobilePlatformMock.setClientSupportedSDKVersion(mediaAPISupportVersion);
+
+        const mediaOutput: media.Media = new media.Media();
+        mediaOutput.content = '1234567';
+        mediaOutput.mimeType = 'image/jpeg';
+        mediaOutput.format = media.FileFormat.ID;
+        const getMediaPromise: Promise<Blob> = mediaOutput.getMedia();
+
+        const message = mobilePlatformMock.findMessageByFunc('getMedia');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(2);
+
+        const handlerRegistrationMessage = mobilePlatformMock.findMessageByFunc('registerHandler');
+        const getMediaHandlerName = handlerRegistrationMessage.args[0];
+
+        callHandler(getMediaHandlerName, [JSON.stringify({})]);
+
+        return expect(getMediaPromise).rejects.toEqual({
+          errorCode: ErrorCode.INTERNAL_ERROR,
+          message: 'data received is null',
+        });
+      });
+
+      it('getMedia calls with error via Handler', async () => {
+        inValidateGetMediaMessageAndResults(
           mediaAPISupportVersion,
           2,
           (_message: MessageRequest, mediaResults: media.MediaResult[]) => {
