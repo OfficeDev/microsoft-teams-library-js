@@ -1,3 +1,4 @@
+import { FrameContexts } from '../../src/public';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
@@ -20,37 +21,23 @@ describe('settings', () => {
       _uninitialize();
     }
   });
-
-  it('should not allow calls from the wrong context', () => {
-    utils.initializeWithContext('content').then(() => {
-      expect(() => settings.setValidityState(true)).toThrowError(
-        'This call is only allowed in following contexts: ["settings","remove"]. Current context: "content".',
-      );
+  describe('Testing settings.setValidityState function', () => {
+    const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+        it(`settings.setValidityState does not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => settings.setValidityState(true)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
-  });
 
-  it('should successfully notify success on save when there is no registered handler', () => {
-    utils.initializeWithContext('settings').then(() => {
-      utils.sendMessage('settings.save');
-
-      const message = utils.findMessageByFunc('settings.save.success');
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(0);
-    });
-  });
-
-  it('should successfully register a remove handler', done => {
-    utils.initializeWithContext('remove').then(() => {
-      settings.registerOnRemoveHandler(() => {
-        done();
-      });
-
-      utils.sendMessage('settings.remove');
-    });
-  });
-
-  it('should successfully set validity state to true', () => {
-    utils.initializeWithContext('settings').then(() => {
+    it('settings.setValidityState should successfully set validity state to true', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
       settings.setValidityState(true);
 
       const message = utils.findMessageByFunc('settings.setValidityState');
@@ -58,10 +45,9 @@ describe('settings', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe(true);
     });
-  });
 
-  it('should successfully set validity state to false', () => {
-    utils.initializeWithContext('settings').then(() => {
+    it('settings.setValidityState should successfully set validity state to false', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
       settings.setValidityState(false);
 
       const message = utils.findMessageByFunc('settings.setValidityState');
@@ -71,46 +57,131 @@ describe('settings', () => {
     });
   });
 
-  it('should successfully get settings', done => {
-    utils.initializeWithContext('settings').then(() => {
-      settings.getSettings(settings => {
-        expect(settings).toBe(expectedSettings);
-        done();
-      });
+  describe('Testing settings.getSettings function', () => {
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.sidePanel,
+    ];
+    const expectedSettings: settings.Settings = {
+      suggestedDisplayName: 'someSuggestedDisplayName',
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
+      entityId: 'someEntityId',
+    };
 
-      const message = utils.findMessageByFunc('settings.getSettings');
-      expect(message).not.toBeNull();
-
+    it('settings.getSettings should not allow calls before initialization', () => {
       const expectedSettings: settings.Settings = {
         suggestedDisplayName: 'someSuggestedDisplayName',
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
         entityId: 'someEntityId',
       };
+      expect(() => {
+        settings.getSettings(settings => {
+          expect(settings).toBe(expectedSettings);
+        });
+      }).toThrowError('The library has not yet been initialized');
+    });
 
-      utils.respondToMessage(message, expectedSettings);
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+        it(`settings.getSettings does not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => {
+            settings.getSettings(settings => {
+              expect(settings).toBe(expectedSettings);
+            });
+          }).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      } else {
+        it(`settings.getSettings should successfully get settings from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          settings.getSettings(settings => {
+            expect(settings).toBe(expectedSettings);
+          });
+
+          const message = utils.findMessageByFunc('settings.getSettings');
+          expect(message).not.toBeNull();
+
+          utils.respondToMessage(message, expectedSettings);
+        });
+      }
     });
   });
 
-  it('should successfully set settings', () => {
-    utils.initializeWithContext('settings').then(() => {
-      const settingsObj: settings.Settings = {
-        suggestedDisplayName: 'someSuggestedDisplayName',
-        contentUrl: 'someContentUrl',
-        websiteUrl: 'someWebsiteUrl',
-        entityId: 'someEntityId',
-      };
-      settings.setSettings(settingsObj);
+  describe('Testing settings.setSettings function', () => {
+    const allowedContexts = [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel];
+    const settingsObj: settings.Settings = {
+      suggestedDisplayName: 'someSuggestedDisplayName',
+      contentUrl: 'someContentUrl',
+      websiteUrl: 'someWebsiteUrl',
+      entityId: 'someEntityId',
+    };
 
-      const message = utils.findMessageByFunc('settings.setSettings');
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
-      expect(message.args[0]).toBe(settingsObj);
+    it('settings.setSettings should not allow calls before initialization', () => {
+      expect(() => {
+        settings.setSettings(settingsObj);
+      }).toThrowError('The library has not yet been initialized');
+    });
+
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+        it(`settings.setSettings does not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => {
+            settings.setSettings(settingsObj);
+          }).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      } else {
+        it(`settings.setSettings should successfully set settings from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          settings.setSettings(settingsObj);
+          const message = utils.findMessageByFunc('settings.setSettings');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toBe(settingsObj);
+        });
+      }
     });
   });
 
-  it('should successfully register a save handler', () => {
-    utils.initializeWithContext('settings').then(() => {
+  describe('Testing settings.registerOnSaveHandler function', () => {
+    const allowedContexts = [FrameContexts.settings];
+    it('settings.registerOnSaveHandler should not allow calls before initialization', () => {
+      expect(() => {
+        let handlerCalled = false;
+        settings.registerOnSaveHandler(() => {
+          handlerCalled = true;
+        });
+      }).toThrowError('The library has not yet been initialized');
+    });
+
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+        it(`settings.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          let handlerCalled = false;
+          expect(() => settings.registerOnSaveHandler(() => (handlerCalled = true))).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+
+    it('settings.registerOnSaveHandler should successfully register a save handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
       let handlerCalled = false;
       settings.registerOnSaveHandler(() => {
         handlerCalled = true;
@@ -120,10 +191,10 @@ describe('settings', () => {
 
       expect(handlerCalled).toBe(true);
     });
-  });
 
-  it('should successfully register a remove handler', () => {
-    return utils.initializeWithContext('settings').then(() => {
+    it('settings.registerOnSaveHandler should successfully register a remove handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
       let handlerCalled = false;
       settings.registerOnSaveHandler(saveEvent => {
         handlerCalled = true;
@@ -138,120 +209,154 @@ describe('settings', () => {
 
       expect(handlerCalled).toBe(true);
     });
+
+    it('settings.registerOnSaveHandler should successfully override a save handler with another', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
+      let handler1Called = false;
+      let handler2Called = false;
+      settings.registerOnSaveHandler(() => {
+        handler1Called = true;
+      });
+      settings.registerOnSaveHandler(() => {
+        handler2Called = true;
+      });
+
+      utils.sendMessage('settings.save');
+
+      expect(handler1Called).toBe(false);
+      expect(handler2Called).toBe(true);
+    });
+
+    it('settings.registerOnSaveHandler should successfully notify success from the registered save handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
+      let handlerCalled = false;
+      settings.registerOnSaveHandler(saveEvent => {
+        saveEvent.notifySuccess();
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.save');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.save.success');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(0);
+    });
+
+    it('settings.registerOnSaveHandler should successfully notify failure from the registered save handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
+      let handlerCalled = false;
+      settings.registerOnSaveHandler(saveEvent => {
+        saveEvent.notifyFailure('someReason');
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.save');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.save.failure');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe('someReason');
+    });
+
+    it('settings.registerOnSaveHandler should not allow multiple notifies from the registered save handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
+      let handlerCalled = false;
+      settings.registerOnSaveHandler(saveEvent => {
+        saveEvent.notifySuccess();
+        expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
+        expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.save');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.save.success');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(0);
+    });
   });
 
-  it('should successfully override a save handler with another', async () => {
-    await utils.initializeWithContext('settings');
-
-    let handler1Called = false;
-    let handler2Called = false;
-    settings.registerOnSaveHandler(() => {
-      handler1Called = true;
+  describe('Testing settings.registerOnRemoveHandler function', () => {
+    const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+        it(`settings.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => settings.registerOnRemoveHandler(() => true)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
-    settings.registerOnSaveHandler(() => {
-      handler2Called = true;
+
+    it('should successfully register a remove handler', async () => {
+      await utils.initializeWithContext(FrameContexts.remove);
+      settings.registerOnRemoveHandler(() => {
+        return;
+      });
+
+      utils.sendMessage('settings.remove');
     });
 
+    it('settings.registerOnRemoveHandler should successfully notify success on remove when there is no registered handler', async () => {
+      await utils.initializeWithContext(FrameContexts.remove);
+
+      utils.sendMessage('settings.remove');
+
+      const message = utils.findMessageByFunc('settings.remove.success');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(0);
+    });
+
+    it('settings.registerOnRemoveHandler should successfully notify success from the registered remove handler', async () => {
+      await utils.initializeWithContext(FrameContexts.remove);
+
+      let handlerCalled = false;
+      settings.registerOnRemoveHandler(removeEvent => {
+        removeEvent.notifySuccess();
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.remove');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.remove.success');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(0);
+    });
+
+    it('settings.registerOnRemoveHandler should successfully notify failure from the registered remove handler', async () => {
+      await utils.initializeWithContext(FrameContexts.remove);
+
+      let handlerCalled = false;
+      settings.registerOnRemoveHandler(removeEvent => {
+        removeEvent.notifyFailure('someReason');
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.remove');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.remove.failure');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe('someReason');
+    });
+  });
+
+  it('should successfully notify success on save when there is no registered handler', async () => {
+    await utils.initializeWithContext(FrameContexts.settings);
     utils.sendMessage('settings.save');
 
-    expect(handler1Called).toBe(false);
-    expect(handler2Called).toBe(true);
-  });
-
-  it('should successfully notify success from the registered save handler', async () => {
-    await utils.initializeWithContext('settings');
-
-    let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
-      saveEvent.notifySuccess();
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('settings.save');
-
-    expect(handlerCalled).toBe(true);
-    const message = utils.findMessageByFunc('settings.save.success');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(0);
-  });
-
-  it('should successfully notify failure from the registered save handler', async () => {
-    await utils.initializeWithContext('settings');
-
-    let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
-      saveEvent.notifyFailure('someReason');
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('settings.save');
-
-    expect(handlerCalled).toBe(true);
-    const message = utils.findMessageByFunc('settings.save.failure');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe('someReason');
-  });
-
-  it('should successfully notify success on remove when there is no registered handler', async () => {
-    await utils.initializeWithContext('remove');
-
-    utils.sendMessage('settings.remove');
-
-    const message = utils.findMessageByFunc('settings.remove.success');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(0);
-  });
-
-  it('should successfully notify success from the registered remove handler', async () => {
-    await utils.initializeWithContext('remove');
-
-    let handlerCalled = false;
-    settings.registerOnRemoveHandler(removeEvent => {
-      removeEvent.notifySuccess();
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('settings.remove');
-
-    expect(handlerCalled).toBe(true);
-    const message = utils.findMessageByFunc('settings.remove.success');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(0);
-  });
-
-  it('should successfully notify failure from the registered remove handler', async () => {
-    await utils.initializeWithContext('remove');
-
-    let handlerCalled = false;
-    settings.registerOnRemoveHandler(removeEvent => {
-      removeEvent.notifyFailure('someReason');
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('settings.remove');
-
-    expect(handlerCalled).toBe(true);
-    const message = utils.findMessageByFunc('settings.remove.failure');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toBe('someReason');
-  });
-
-  it('should not allow multiple notifies from the registered save handler', async () => {
-    await utils.initializeWithContext('settings');
-
-    let handlerCalled = false;
-    settings.registerOnSaveHandler(saveEvent => {
-      saveEvent.notifySuccess();
-      expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
-      expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');
-      handlerCalled = true;
-    });
-
-    utils.sendMessage('settings.save');
-
-    expect(handlerCalled).toBe(true);
     const message = utils.findMessageByFunc('settings.save.success');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(0);
