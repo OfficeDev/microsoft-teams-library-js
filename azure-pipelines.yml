@@ -139,7 +139,7 @@ jobs:
     displayName: 'E2E Test - CDN'
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/release/2.0.0-beta.')
+      startsWith(variables['System.PullRequest.SourceBranch'], 'ramourt/')
       )
     pool:
       vmImage: 'ubuntu-latest'
