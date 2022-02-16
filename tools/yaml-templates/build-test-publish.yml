@@ -17,7 +17,7 @@ steps:
     inputs:
       Arguments: 'install'
 
-  - script: 'node enforceBeachball.js < killProcessCommand.txt'
+  - script: 'node enforceBeachball.js'
     displayName: 'run enforceBeachball.js script'
 
   - script: 'node prepNextDevRelease.js'
