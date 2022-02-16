@@ -470,4 +470,16 @@ export namespace files {
 
     sendMessageToParent('files.getFileDownloads', [], callback);
   }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Open download preference folder
+   */
+  export function openDownloadFolder(): void {
+    ensureInitialized(FrameContexts.content);
+
+    sendMessageToParent('files.openDownloadFolder', []);
+  }
 }
