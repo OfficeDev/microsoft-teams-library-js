@@ -54,7 +54,7 @@ Beachball generates JSON change files based on a few simple answers from you:
 
   - Major - major feature; breaking changes.
 
-- Describe changes (type your own or choose one of the commit descriptions. They'll also give you a huge list of those so you can pick the one you want)
+- Describe changes (type your own or choose one of the commit descriptions. Try to make it descriptive- it will help you if you need to locate the changefile later.)
 
 And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run `yarn changefile` in the monorepo root to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you haven't generated a changefile and they will fail if that's the case, so please remember to generate a changefile and update the content accordingly.
 
@@ -74,4 +74,4 @@ Each PR will not be able to have more than one changefile. (e.g. A bug fix and a
 
 ### Q. I made new changes during my PR after I already generated the changefile/I made a mistake while generating the changefile! How can I edit it?
 
-You can manually edit the changefile- it's actually just a JSON file. Locate your changefile under the [change](./change) directory.
+You can manually edit the changefile- it's actually just a JSON file. Locate your changefile under the [change](./change) directory. If you're having trouble finding your changefile, try searching the directory in your IDE for your change description or going through your branch's commit history for the changefile you had committed.
