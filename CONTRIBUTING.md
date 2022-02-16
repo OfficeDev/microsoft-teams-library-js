@@ -44,7 +44,7 @@ The TeamsJS Client SDK `2.0-preview` branch contains a [changelog](./packages/te
 
 Beachball generates JSON change files based on a few simple answers from you:
 
-- Change type: this can be one of four things. (The Prerelease option is not allowed in this repo at this time.) Patch, Minor, None, and Major.
+- Change type: this can be one of four types: Patch, Minor, None, and Major.
 
   - Patch - bug fixes; no API changes.
 
