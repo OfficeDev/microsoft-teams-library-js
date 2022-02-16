@@ -465,4 +465,29 @@ describe('files', () => {
     });
   });
 
+  describe('openDownloadFolder', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.openDownloadFolder()).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.openDownloadFolder()).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      files.openDownloadFolder();
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      expect(openDownloadFolderMessage.args).toEqual([]);
+    });
+  });
+
 });
