@@ -561,6 +561,33 @@ describe('media', () => {
         expect(mediaError).toBeFalsy();
         expect(callbackSpy).not.toHaveBeenCalled();
       });
+      it('should invoke video callback for MediaControllerEvent when registered', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
+        mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+        let mediaError: SdkError;
+
+        const mediaInputs: media.MediaInputs = {
+          mediaType: media.MediaType.Video,
+          maxMediaCount: 10,
+          videoProps: { videoController: new media.VideoController() },
+        };
+        const callbackSpy = jest.fn((e: SdkError, attachments: media.Media[]) => {
+          mediaError = e;
+        });
+        media.selectMedia(mediaInputs, callbackSpy);
+        const message = mobilePlatformMock.findMessageByFunc('selectMedia');
+        expect(message).not.toBeNull();
+        expect(message.args.length).toBe(1);
+        const callbackId = message.id;
+        mobilePlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [undefined, undefined, 1],
+          },
+        } as DOMMessageEvent);
+        expect(mediaError).toBeFalsy();
+        expect(callbackSpy).not.toHaveBeenCalled();
+      });
     });
 
     describe('v2', () => {
@@ -808,6 +835,38 @@ describe('media', () => {
         }
 
         expect(sendMessageToParentSpy).not.toHaveBeenCalled();
+      });
+
+      it('videoController notifyEventToApp should return if no callback is provided', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+        mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+
+        const videoController = new media.VideoController();
+        const notifyEventToApp = jest.spyOn(videoController, 'notifyEventToApp');
+
+        try {
+          await videoController.stop(e => {
+            return e;
+          });
+        } catch (err) {
+          expect(err).toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+        }
+
+        expect(notifyEventToApp).not.toHaveBeenCalled();
+      });
+
+      it('videoController notifyEventToApp should call the callback if callback is provided and mediaType is 1', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+        mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+
+        const videoControllerCallback: media.VideoControllerCallback = { onRecordingStarted: jest.fn() };
+        const videoController = new media.VideoController(videoControllerCallback);
+
+        const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
+        videoController.notifyEventToApp(1);
+
+        expect(notifyEventToAppSpy).toHaveBeenCalledWith(1);
+        expect(videoControllerCallback.onRecordingStarted).toHaveBeenCalled();
       });
     });
 
