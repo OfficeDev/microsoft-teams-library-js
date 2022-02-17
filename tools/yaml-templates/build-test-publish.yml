@@ -17,8 +17,8 @@ steps:
     inputs:
       Arguments: 'install'
 
-  - script: 'node enforceBeachball.js'
-    displayName: 'run enforceBeachball.js script'
+  # - script: 'node enforceBeachball.js'
+  #   displayName: 'run enforceBeachball.js script'
 
   - script: 'node prepNextDevRelease.js'
     displayName: 'node prepNextDevRelease.js'
