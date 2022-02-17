@@ -17,8 +17,10 @@ steps:
     inputs:
       Arguments: 'install'
 
-  # - script: 'node enforceBeachball.js'
-  #   displayName: 'run enforceBeachball.js script'
+  - task: Yarn@3
+    displayName: 'Check that changefile was created if needed'
+    inputs:
+      Arguments: 'beachball check'
 
   - script: 'node prepNextDevRelease.js'
     displayName: 'node prepNextDevRelease.js'
