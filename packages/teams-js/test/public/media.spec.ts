@@ -863,6 +863,7 @@ describe('media', () => {
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
 
         const videoControllerCallback: media.VideoControllerCallback = { onRecordingStarted: jest.fn() };
+
         const videoController = new media.VideoController(videoControllerCallback);
 
         const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
