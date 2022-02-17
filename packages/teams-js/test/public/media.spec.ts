@@ -49,13 +49,14 @@ describe('media', () => {
 
   describe('isSupported', () => {
     it('returns true if media is supported', () => {
-      Object.defineProperty(runtime.supports, 'media', { value: true });
-      expect(media.isSupported()).toBe(true);
+      Object.defineProperty(runtime.supports, 'media', { value: {} });
+      expect(media.isSupported()).toBeTruthy();
     });
-    it('returns false if media is not supported', () => {
-      Object.defineProperty(runtime.supports, 'media', { value: false });
 
-      expect(media.isSupported()).toBe(false);
+    it('returns false if media is not supported', () => {
+      Object.defineProperty(runtime.supports, 'media', { value: undefined });
+
+      expect(media.isSupported()).toBeFalsy();
     });
   });
 
@@ -535,6 +536,7 @@ describe('media', () => {
           },
         } as DOMMessageEvent);
       });
+
       it('should not invoke video callback for MediaControllerEvent when not registered', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
@@ -561,6 +563,7 @@ describe('media', () => {
         expect(mediaError).toBeFalsy();
         expect(callbackSpy).not.toHaveBeenCalled();
       });
+
       it('should invoke video callback for MediaControllerEvent when registered', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
