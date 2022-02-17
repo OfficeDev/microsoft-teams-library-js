@@ -65,7 +65,7 @@ export namespace meetingRoom {
      */
     showVideoGalleryAndContent = 'showVideoGalleryAndContent',
     /**
-     * Stage layout control capability: show laryge gallery mode.
+     * Stage layout control capability: show large gallery mode.
      */
     showLargeGallery = 'showLargeGallery',
     /**
