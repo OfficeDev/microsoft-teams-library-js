@@ -7,6 +7,9 @@ describe('settings', () => {
   // Use to send a mock message from the app.
 
   const utils = new Utils();
+  const emptyCallback = (): void => {
+    return;
+  };
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -21,10 +24,20 @@ describe('settings', () => {
       _uninitialize();
     }
   });
+
+  it('should successfully notify success on save when there is no registered handler', async () => {
+    await utils.initializeWithContext(FrameContexts.settings);
+    utils.sendMessage('settings.save');
+
+    const message = utils.findMessageByFunc('settings.save.success');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(0);
+  });
+
   describe('Testing settings.setValidityState function', () => {
     const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.setValidityState does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => settings.setValidityState(true)).toThrowError(
@@ -72,12 +85,6 @@ describe('settings', () => {
     };
 
     it('settings.getSettings should not allow calls before initialization', () => {
-      const expectedSettings: settings.Settings = {
-        suggestedDisplayName: 'someSuggestedDisplayName',
-        contentUrl: 'someContentUrl',
-        websiteUrl: 'someWebsiteUrl',
-        entityId: 'someEntityId',
-      };
       expect(() => {
         settings.getSettings(settings => {
           expect(settings).toBe(expectedSettings);
@@ -86,14 +93,10 @@ describe('settings', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.getSettings does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
-          expect(() => {
-            settings.getSettings(settings => {
-              expect(settings).toBe(expectedSettings);
-            });
-          }).toThrowError(
+          expect(() => settings.getSettings(emptyCallback)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
@@ -131,7 +134,7 @@ describe('settings', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.setSettings does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => {
@@ -157,6 +160,7 @@ describe('settings', () => {
 
   describe('Testing settings.registerOnSaveHandler function', () => {
     const allowedContexts = [FrameContexts.settings];
+
     it('settings.registerOnSaveHandler should not allow calls before initialization', () => {
       expect(() => {
         let handlerCalled = false;
@@ -167,11 +171,25 @@ describe('settings', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
-        it(`settings.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is called`, async () => {
           await utils.initializeWithContext(context);
           let handlerCalled = false;
           expect(() => settings.registerOnSaveHandler(() => (handlerCalled = true))).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is not called`, async () => {
+          await utils.initializeWithContext(context);
+          let handlerCalled = true;
+          expect(() => settings.registerOnSaveHandler(() => (handlerCalled = false))).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
@@ -192,7 +210,7 @@ describe('settings', () => {
       expect(handlerCalled).toBe(true);
     });
 
-    it('settings.registerOnSaveHandler should successfully register a remove handler', async () => {
+    it('settings.registerOnSaveHandler should successfully register a save handler', async () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
@@ -263,7 +281,7 @@ describe('settings', () => {
       expect(message.args[0]).toBe('someReason');
     });
 
-    it('settings.registerOnSaveHandler should not allow multiple notifies from the registered save handler', async () => {
+    it('settings.registerOnSaveHandler should not allow multiple notifies from the saveEvent.notifySuccess save handler', async () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
@@ -281,12 +299,32 @@ describe('settings', () => {
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
     });
+
+    it('settings.registerOnSaveHandler should not allow multiple notifies from saveEvent.notifyFailure save handler', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+
+      let handlerCalled = false;
+      settings.registerOnSaveHandler(saveEvent => {
+        saveEvent.notifyFailure('someReason');
+        expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
+        expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');
+        handlerCalled = true;
+      });
+
+      utils.sendMessage('settings.save');
+
+      expect(handlerCalled).toBe(true);
+      const message = utils.findMessageByFunc('settings.save.failure');
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe('someReason');
+    });
   });
 
   describe('Testing settings.registerOnRemoveHandler function', () => {
     const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts == context)) {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => settings.registerOnRemoveHandler(() => true)).toThrowError(
@@ -296,15 +334,6 @@ describe('settings', () => {
           );
         });
       }
-    });
-
-    it('should successfully register a remove handler', async () => {
-      await utils.initializeWithContext(FrameContexts.remove);
-      settings.registerOnRemoveHandler(() => {
-        return;
-      });
-
-      utils.sendMessage('settings.remove');
     });
 
     it('settings.registerOnRemoveHandler should successfully notify success on remove when there is no registered handler', async () => {
@@ -351,14 +380,5 @@ describe('settings', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe('someReason');
     });
-  });
-
-  it('should successfully notify success on save when there is no registered handler', async () => {
-    await utils.initializeWithContext(FrameContexts.settings);
-    utils.sendMessage('settings.save');
-
-    const message = utils.findMessageByFunc('settings.save.success');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(0);
   });
 });
