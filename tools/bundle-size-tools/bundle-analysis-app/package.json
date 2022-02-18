@@ -5,9 +5,9 @@
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "yarn lint && webpack",
     "clean": "rimraf ./dist ./bundleAnalysis",
-    "eslint-fix-build": "yarn eslint ./src --fix && webpack",
+    "lint": "yarn eslint --max-warnings 0 --fix --ext .ts ./src",
     "webpack:profile": "webpack"
   },
   "dependencies": {
