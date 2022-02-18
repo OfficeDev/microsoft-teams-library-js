@@ -62,6 +62,22 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
   fs.writeFileSync(absolutePath, result);
 };
 
+const updateChangeLog = async version => {
+  const relativePathToChangelog = '../../packages/teams-js/CHANGELOG.md';
+  const absolutePathToChangelog = path.resolve(__dirname, relativePathToChangelog);
+  if (!fs.existsSync(absolutePathToChangelog)) {
+    throw `ERROR: ${absolutePathToChangelog} was not found.`;
+  }
+  await execShellCommand('yarn beachball bump');
+  const changeLog = fs.readFileSync(absolutePathToChangelog, 'utf8');
+  if (!version) {
+    return changeLog;
+  } else {
+    const newChangeLog = changeLog.replace(/(## 2.0.0)/, `## ${version}"`);
+    fs.writeFileSync(absolutePathToChangelog, newChangeLog);
+  }
+};
+
 (async () => {
   const args = process.argv.slice(2);
   const version = args[0];
@@ -79,6 +95,8 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
     const absolutePathTestAppPackageJson = path.resolve(__dirname, relativePathToTestAppPackageJson);
     const absolutePathToTeamsJsReadme = path.resolve(__dirname, relativePathToTeamsJsReadme);
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
+
+    await updateChangeLog(version);
 
     updatePackageJson(absolutePathTeamsJsPackageJson, version);
     updatePackageJson(absolutePathTestAppPackageJson, version);
