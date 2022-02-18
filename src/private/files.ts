@@ -230,6 +230,18 @@ export namespace files {
    * @private
    * Hide from docs
    *
+   * Download status enum
+   */
+   export enum FileDownloadStatus {
+    Downloaded = 'Downloaded',
+    Downloading = 'Downloading',
+    Failed = 'Failed'
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
    * Download Files interface
    */
   export interface IFileItem {
@@ -242,13 +254,13 @@ export namespace files {
      */
     path?: string;
     /**
-     * Size of the file
+     * Size of the file in bytes
      */
     size?: number;
     /**
      * Download status
      */
-    status?: string;
+    status?: FileDownloadStatus;
     /**
      * Download timestamp
      */
@@ -258,7 +270,7 @@ export namespace files {
      */
     title: string;
     /**
-     * Type of file
+     * Type of file i.e. the file extension.
      */
     type: string;
   }
@@ -461,7 +473,7 @@ export namespace files {
    * Gets list of downloads for current user
    * @param callback Callback that will be triggered post downloads load
    */
-  export function getFileDownloads(callback: (error: SdkError, files: IFileItem[]) => void): void {
+  export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
