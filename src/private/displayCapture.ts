@@ -1,25 +1,25 @@
-import { desktopCaptureAPISupportVersion } from '../internal/constants';
+import { displayCaptureAPISupportVersion } from '../internal/constants';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized, isAPISupportedByPlatform } from '../internal/internalAPIs';
 import { FrameContexts, SdkError, ErrorCode } from '../public';
 
-export namespace desktopCapture {
+export namespace displayCapture {
   export interface Size {
     width: number;
     height: number;
   }
 
-  export enum DesktopCaptureType {
+  export enum DisplayCaptureType {
     screen,
     window,
   }
 
-  export interface DesktopCaptureOptions {
+  export interface DisplayCaptureOptions {
     /**
      * An array of Strings that lists the types of desktop sources to be captured.
      * Available types are `screen` and `window`.
      */
-    types: DesktopCaptureType[];
+    types: DisplayCaptureType[];
     /**
      * The size that the media source thumbnail should be scaled to.
      * Default is 150 x 150.
@@ -34,7 +34,7 @@ export namespace desktopCapture {
 
   export type DataUrl = string;
 
-  export interface DesktopCapturerSource {
+  export interface DisplayCapturerSource {
     // Docs: https://electronjs.org/docs/api/structures/desktop-capturer-source
 
     /**
@@ -67,7 +67,7 @@ export namespace desktopCapture {
     /**
      * A thumbnail image in dataUrl. **Note:** There is no guarantee that the size of the
      * thumbnail is the same as the `thumbnailSize` specified in the `options` passed
-     * to `desktopCapturer.getSources`. The actual size depends on the scale of the
+     * to `displayCapturer.getSources`. The actual size depends on the scale of the
      * screen or window.
      */
     thumbnail: DataUrl;
@@ -78,15 +78,15 @@ export namespace desktopCapture {
    * @param callback Callback to invoke when current user location is fetched
    */
   export function getSources(
-    options: DesktopCaptureOptions,
-    callback: (error: SdkError, sources?: DesktopCapturerSource[]) => void,
+    options: DisplayCaptureOptions,
+    callback: (error: SdkError, sources?: DisplayCapturerSource[]) => void,
   ): void {
     if (!callback) {
-      throw new Error('[desktopCapture.getSources] Callback cannot be null');
+      throw new Error('[displayCapture.getSources] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content);
 
-    if (!isAPISupportedByPlatform(desktopCaptureAPISupportVersion)) {
+    if (!isAPISupportedByPlatform(displayCaptureAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       callback(oldPlatformError, undefined);
       return;
@@ -96,6 +96,6 @@ export namespace desktopCapture {
       callback(invalidInput, undefined);
       return;
     }
-    sendMessageToParent('desktopCapture.getSources', [options], callback);
+    sendMessageToParent('displayCapture.getSources', [options], callback);
   }
 }

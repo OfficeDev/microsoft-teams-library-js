@@ -59,9 +59,9 @@ export const getMediaCallbackSupportVersion = '2.0.0';
 export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
 /**
- * This is the client version when desktopCapture API is supported.
+ * This is the client version when displayCapture API is supported.
  */
-export const desktopCaptureAPISupportVersion = '2.0.3';
+export const displayCaptureAPISupportVersion = '2.0.3';
 
 /**
  * List of supported Host origins

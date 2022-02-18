@@ -32,4 +32,4 @@ export { remoteCamera } from './remoteCamera';
 export { files } from './files';
 export { appEntity } from './appEntity';
 export { teams } from './teams';
-export { desktopCapture } from './desktopCapture';
+export { displayCapture } from './displayCapture';
