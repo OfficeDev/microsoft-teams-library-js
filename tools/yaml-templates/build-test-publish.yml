@@ -28,8 +28,7 @@ steps:
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
+      ne(variables['Build.Reason'], 'PullRequest')
       )
 
   - task: Yarn@3
