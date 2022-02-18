@@ -134,3 +134,37 @@ jobs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
         condition: succeededOrFailed()
+
+  - job: E2ETestCDN
+    displayName: 'E2E Test - CDN'
+    # This test only runs after deployment from a release branch and the new CDN version has been deployed
+    # This check will run on the PR to merge the release branch back into 2.0-preview
+    condition: and(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta'),
+      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview')
+      )
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - template: tools/yaml-templates/build-app-host.yml
+        parameters:
+          appHostGitPath: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
+
+      - task: Yarn@2
+        displayName: 'Build Test App CDN'
+        inputs:
+          Arguments: 'build-test-app-cdn'
+          ProjectDirectory: '$(ClientSdkProjectDirectory)'
+
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
+        displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+        enabled: true
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+        condition: succeededOrFailed()
