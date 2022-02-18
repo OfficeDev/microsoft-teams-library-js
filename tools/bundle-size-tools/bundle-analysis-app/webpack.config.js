@@ -30,6 +30,7 @@ module.exports = {
       },
     ],
   },
+  performance: { hints: false },
   plugins: [
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',

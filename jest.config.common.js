@@ -17,4 +17,5 @@ module.exports = {
       },
     ],
   ],
+  clearMocks: true,
 };

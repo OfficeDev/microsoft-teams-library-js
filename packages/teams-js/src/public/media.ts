@@ -434,27 +434,23 @@ export namespace media {
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      return Promise.resolve()
-        .then(() => {
-          throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
-        })
-        .then(() => {
-          const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
+      try {
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+      } catch (err) {
+        const wrappedRejectedErrorFn: InputFunction<void> = () => Promise.reject(err);
 
-          sendMessageToParent('media.controller', [params], (err?: SdkError) => {
-            if (callback) {
-              callback(err);
-            } else if (err) {
-              throw err;
-            }
-          });
-        })
-        .catch(err => {
-          if (callback) {
-            callback(err);
-          }
-          throw err;
-        });
+        return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedRejectedErrorFn, callback);
+      }
+
+      const params: MediaControllerParam = {
+        mediaType: this.getMediaType(),
+        mediaControllerEvent: mediaEvent,
+      };
+
+      const wrappedFunction = (): Promise<void> =>
+        new Promise(resolve => resolve(sendAndHandleSdkError('media.controller', [params])));
+
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
 
     /**
