@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const readChangeLog = version => {
-  const relativePathToChangelog = '../../CHANGELOG.md';
+  const relativePathToChangelog = '../../teams-js/packages/CHANGELOG.md';
   const absolutePathToChangelog = path.resolve(__dirname, relativePathToChangelog);
   if (!fs.existsSync(absolutePathToChangelog)) {
     throw `ERROR: ${absolutePathToChangelog} was not found.`;
