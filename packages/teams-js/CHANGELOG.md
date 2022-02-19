@@ -21,8 +21,9 @@
 ### Major changes
 
 - The Teams JavaScript client SDK repo is now a monorepo
-- We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. <br> The files specific to the Teams client SDK have been moved to an inner directory with the name `teams-js`
-- A new TeamsJS Test App for validating the Teams client SDK has been added in the <root>/apps/teams-test-app location.
+
+  - We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. <br> The files specific to the Teams client SDK have been moved to an inner directory with the name `teams-js`
+  - A new TeamsJS Test App for validating the Teams client SDK has been added in the <root>/apps/teams-test-app location.
 
 - Several API functions have been moved and renamed. <br>
   Organized top-level library functions under a core namespace. For example, `shareDeepLink` has been moved under `core` namespace. <br> Using `import * as ... from ...` will now fail. Importing now follows the following convention: <br>
