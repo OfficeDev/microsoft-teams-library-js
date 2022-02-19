@@ -70,7 +70,7 @@ const updateChangeLog = async version => {
   }
   await execShellCommand('yarn beachball bump');
   const changeLog = fs.readFileSync(absolutePathToChangelog, 'utf8');
-  const newChangeLog = changeLog.replace(/(## 2.0.0)/, `## ${version}"`);
+  const newChangeLog = changeLog.replace(/(## 2.0.0)/, `## ${version}`);
   fs.writeFileSync(absolutePathToChangelog, newChangeLog);
 };
 
