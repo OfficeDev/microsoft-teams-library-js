@@ -11,7 +11,7 @@ const postbump = (packagePath, packageName, packageVersion) => {
 };
 
 // Overriding the default entry renderer so that it just shows the comment without the author.
-const customRenderEntry = ChangelogEntry => `- ${ChangelogEntry.comment}`;
+const customRenderEntry = ChangelogEntry => new Promise(res => res(`- ${ChangelogEntry.comment}`));
 
 module.exports = {
   branch: 'origin/2.0-preview',
