@@ -1,0 +1,34 @@
+{
+  "name": "@microsoft/teams-js",
+  "entries": [
+    {
+      "date": "Tue, 22 Feb 2022 17:36:46 GMT",
+      "tag": "@microsoft/teams-js_v2.0.0",
+      "version": "2.0.0",
+      "comments": {
+        "patch": [
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "b77bb95deb7208c6e49b16d650c904ec2d166c05",
+            "comment": "`null` runtimeConfig is no longer allowed during initialization. This will now throw a \"Received runtime config is invalid\" error."
+          }
+        ],
+        "major": [
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "b77bb95deb7208c6e49b16d650c904ec2d166c05",
+            "comment": "`core.shareDeepLink` has moved to `pages.shareDeepLink`"
+          },
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "b77bb95deb7208c6e49b16d650c904ec2d166c05",
+            "comment": "`core.executeDeepLink` has renamed and moved to `app.openLink`"
+          }
+        ]
+      }
+    }
+  ]
+}
