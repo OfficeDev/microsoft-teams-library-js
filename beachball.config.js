@@ -10,6 +10,9 @@ const postbump = (packagePath, packageName, packageVersion) => {
   });
 };
 
+// Overriding the default entry renderer so that it just shows the comment without the author.
+const customRenderEntry = ChangelogEntry => new Promise(res => res(`- ${ChangelogEntry.comment}`));
+
 module.exports = {
   branch: 'origin/2.0-preview',
   bumpDeps: false,
@@ -20,4 +23,9 @@ module.exports = {
   publish: false,
   push: false,
   scope: ['packages/teams-js'],
+  changelog: {
+    customRenderers: {
+      renderEntry: customRenderEntry,
+    },
+  },
 };
