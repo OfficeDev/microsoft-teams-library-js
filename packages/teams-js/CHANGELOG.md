@@ -1,3 +1,22 @@
+# Change Log - @microsoft/teams-js
+
+This log was last generated on Tue, 22 Feb 2022 22:30:06 GMT and should not be manually modified.
+
+<!-- Start content -->
+
+## 2.0.0-beta.3
+
+Tue, 22 Feb 2022 22:30:06 GMT
+
+### Major changes
+
+- `core.shareDeepLink` has moved to `pages.shareDeepLink`
+- `core.executeDeepLink` has renamed and moved to `app.openLink`
+
+### Patches
+
+- `null` runtimeConfig is no longer allowed during initialization. This will now throw a "Received runtime config is invalid" error.
+
 ## 2.0.0-beta.2
 
 ### Patches

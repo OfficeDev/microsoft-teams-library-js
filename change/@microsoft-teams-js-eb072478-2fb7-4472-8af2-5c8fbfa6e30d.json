@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "`core.shareDeepLink` has moved to `pages.shareDeepLink`",
-  "packageName": "@microsoft/teams-js",
-  "email": "ramourt@microsoft.com",
-  "dependentChangeType": "major"
-}
