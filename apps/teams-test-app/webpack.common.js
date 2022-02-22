@@ -40,4 +40,5 @@ module.exports = {
     https: true,
     disableHostCheck: true,
   },
+  performance: { hints: false },
 };
