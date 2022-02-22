@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "`core.executeDeepLink` has renamed and moved to `app.openLink`",
-  "packageName": "@microsoft/teams-js",
-  "email": "ramourt@microsoft.com",
-  "dependentChangeType": "major"
-}
