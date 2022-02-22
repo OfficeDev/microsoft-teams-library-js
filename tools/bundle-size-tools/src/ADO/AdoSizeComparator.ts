@@ -110,7 +110,7 @@ export class ADOSizeComparator {
 
       // Baseline build does not have id
       if (baselineBuild.id === undefined) {
-        const message = `Baseline build does not have a build id`;
+        const message = 'Baseline build does not have a build id';
         console.log(message);
         return { message, comparison: undefined };
       }
