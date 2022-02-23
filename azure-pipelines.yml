@@ -154,7 +154,7 @@ jobs:
       - task: Yarn@2
         displayName: 'Build Test App CDN'
         inputs:
-          Arguments: 'build-test-app-cdn'
+          Arguments: 'build-test-app-CDN'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
