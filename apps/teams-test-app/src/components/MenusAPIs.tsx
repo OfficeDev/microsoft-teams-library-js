@@ -5,7 +5,7 @@ import { ApiWithTextInput } from './utils';
 
 const SetUpViews = (): React.ReactElement =>
   ApiWithTextInput<menus.ViewConfiguration[]>({
-    name: 'menus.setUpViews',
+    name: 'menusSetUpViews',
     title: 'Set Up Views',
     onClick: {
       validateInput: input => {
@@ -27,7 +27,7 @@ const SetUpViews = (): React.ReactElement =>
 
 const SetNavBarMenu = (): React.ReactElement =>
   ApiWithTextInput<menus.MenuItem[]>({
-    name: 'menus.setNavBarBenu',
+    name: 'menusSetNavBarBenu',
     title: 'Set Nav Bar Menu',
     onClick: {
       validateInput: input => {
@@ -49,7 +49,7 @@ const SetNavBarMenu = (): React.ReactElement =>
 
 const ShowActionMenu = (): React.ReactElement =>
   ApiWithTextInput<menus.ActionMenuParameters>({
-    name: 'menus.showActionMenu',
+    name: 'menusShowActionMenu',
     title: 'Show Action Menu',
     onClick: {
       validateInput: input => {
