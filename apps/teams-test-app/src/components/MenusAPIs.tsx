@@ -27,7 +27,7 @@ const SetUpViews = (): React.ReactElement =>
 
 const SetNavBarMenu = (): React.ReactElement =>
   ApiWithTextInput<menus.MenuItem[]>({
-    name: 'menusSetNavBarBenu',
+    name: 'menusSetNavBarMenu',
     title: 'Set Nav Bar Menu',
     onClick: {
       validateInput: input => {
