@@ -36,11 +36,16 @@ describe('stageView', () => {
       expect(() => stageView.open(stageViewParams)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from stage context', () => {
-      utils.initializeWithContext('stage');
+    test.each([['settings'], ['sidePanel'], ['authentication'], ['remove'], ['task'], ['meetingStage'], ['stage']])(
+      'should not allow calls from %s context',
+      invalidContext => {
+        utils.initializeWithContext(invalidContext);
 
-      expect(() => stageView.open(stageViewParams)).toThrowError("This call is not allowed in the 'stage' context");
-    });
+        expect(() => stageView.open(stageViewParams)).toThrowError(
+          `This call is not allowed in the '${invalidContext}' context`,
+        );
+      },
+    );
 
     it('should not allow a null StageViewParams parameter', () => {
       utils.initializeWithContext('content');
