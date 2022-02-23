@@ -19,6 +19,11 @@ steps:
 
   - task: Yarn@3
     displayName: 'Check that changefile was created if needed'
+    condition: and(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta')),
+      not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/2.0.0-beta'))
+      )
     inputs:
       Arguments: 'beachball check'
 
