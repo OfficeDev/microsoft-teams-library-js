@@ -37,7 +37,7 @@ export namespace stageView {
     websiteUrl?: string;
 
     /**
-     * The entity ID of the Teams app.
+     * The entity ID of the Teams app content being opened.
      */
     entityId?: string;
   }
