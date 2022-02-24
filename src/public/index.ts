@@ -48,3 +48,4 @@ export { monetization } from './monetization';
 export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
+export { stageView } from './stageView';
