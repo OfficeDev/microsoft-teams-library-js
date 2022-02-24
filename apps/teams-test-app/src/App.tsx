@@ -35,6 +35,7 @@ import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { getTestBackCompat } from './components/utils/getTestBackCompat';
+import MenusAPIs from './components/MenusAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -119,6 +120,7 @@ const App = (): ReactElement => {
       <MediaAPIs />
       <MeetingAPIs />
       <MeetingRoomAPIs />
+      <MenusAPIs />
       <MonetizationAPIs />
       <NotificationAPIs />
       <PagesAPIs />
