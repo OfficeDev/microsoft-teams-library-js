@@ -1,6 +1,6 @@
 import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
-import { stageView } from '../../src/public';
+import { FrameContexts, stageView } from '../../src/public';
 
 describe('stageView', () => {
   const utils = new Utils();
@@ -36,16 +36,19 @@ describe('stageView', () => {
       expect(() => stageView.open(stageViewParams)).toThrowError('The library has not yet been initialized');
     });
 
-    test.each([['settings'], ['sidePanel'], ['authentication'], ['remove'], ['task'], ['meetingStage'], ['stage']])(
-      'should not allow calls from %s context',
-      invalidContext => {
-        utils.initializeWithContext(invalidContext);
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        if (frameContext !== 'content') {
+          it(`should not allow calls from ${frameContext} context`, () => {
+            utils.initializeWithContext(frameContext);
 
-        expect(() => stageView.open(stageViewParams)).toThrowError(
-          `This call is not allowed in the '${invalidContext}' context`,
-        );
-      },
-    );
+            expect(() => stageView.open(stageViewParams)).toThrowError(
+              `This call is not allowed in the '${frameContext}' context`,
+            );
+          });
+        }
+      });
 
     it('should not allow a null StageViewParams parameter', () => {
       utils.initializeWithContext('content');
