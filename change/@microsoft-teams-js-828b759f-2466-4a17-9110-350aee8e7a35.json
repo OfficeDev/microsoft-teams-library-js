@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "change the constructor function to make the onRecordingStarted callback mandatory, make onRecordingStopped an optional property that can be pssed to the constructor, add appropriate tests",
+  "comment": "change the constructor function to make the onRecordingStarted callback mandatory, make onRecordingStopped an optional property that can be pssed to the constructor",
   "packageName": "@microsoft/teams-js",
   "email": "jekoch@microsoft.com",
   "dependentChangeType": "patch"
