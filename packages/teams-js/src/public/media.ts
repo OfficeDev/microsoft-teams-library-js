@@ -495,6 +495,7 @@ export namespace media {
         case MediaControllerEvent.StartRecording:
           this.controllerCallback.onRecordingStarted();
           break;
+        // TODO - Should discuss whether this function should be required
         case MediaControllerEvent.StopRecording:
           this.controllerCallback.onRecordingStopped && this.controllerCallback.onRecordingStopped();
           break;
