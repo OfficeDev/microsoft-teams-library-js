@@ -569,11 +569,12 @@ describe('media', () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.ios);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
         let mediaError: SdkError;
+        const videoControllerCallback: media.VideoControllerCallback = { onRecordingStarted: jest.fn() };
 
         const mediaInputs: media.MediaInputs = {
           mediaType: media.MediaType.Video,
           maxMediaCount: 10,
-          videoProps: { videoController: new media.VideoController() },
+          videoProps: { videoController: new media.VideoController(videoControllerCallback) },
         };
         const callbackSpy = jest.fn((e: SdkError, attachments: media.Media[]) => {
           mediaError = e;
@@ -773,8 +774,11 @@ describe('media', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
         videoController.stop(emptyCallback);
 
@@ -797,8 +801,11 @@ describe('media', () => {
       it('videoController stop function returns SdkError to callback when parent rejects message', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
         const err = {
           errorCode: ErrorCode.INTERNAL_ERROR,
@@ -826,8 +833,11 @@ describe('media', () => {
 
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const sendMessageToParentSpy = jest.spyOn(communication, 'sendMessageToParent');
 
         try {
@@ -844,8 +854,11 @@ describe('media', () => {
       it('videoController notifyEventToApp should return if no callback is provided', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const notifyEventToApp = jest.spyOn(videoController, 'notifyEventToApp');
 
         try {
@@ -859,19 +872,39 @@ describe('media', () => {
         expect(notifyEventToApp).not.toHaveBeenCalled();
       });
 
-      it('videoController notifyEventToApp should call the callback if callback is provided and mediaType is 1', async () => {
+      it('videoController notifyEventToApp should call the onRecordingStarted callback when the mediaControllerEvent is 1', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
 
-        const videoControllerCallback: media.VideoControllerCallback = { onRecordingStarted: jest.fn() };
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
         const videoController = new media.VideoController(videoControllerCallback);
 
         const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
-        videoController.notifyEventToApp(1);
+        videoController.notifyEventToApp(media.MediaControllerEvent.StartRecording);
 
-        expect(notifyEventToAppSpy).toHaveBeenCalledWith(1);
+        expect(notifyEventToAppSpy).toHaveBeenCalledWith(media.MediaControllerEvent.StartRecording);
         expect(videoControllerCallback.onRecordingStarted).toHaveBeenCalled();
+      });
+
+      it('videoController notifyEventToApp should call the onRecordingStopped callback if callback is provided and mediaControllerEvent is 2', async () => {
+        await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
+        mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: emptyCallback,
+          onRecordingStopped: jest.fn(),
+        };
+
+        const videoController = new media.VideoController(videoControllerCallback);
+
+        const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
+        videoController.notifyEventToApp(media.MediaControllerEvent.StopRecording);
+
+        expect(notifyEventToAppSpy).toHaveBeenCalledWith(media.MediaControllerEvent.StopRecording);
+        expect(videoControllerCallback.onRecordingStopped).toHaveBeenCalled();
       });
     });
 
@@ -879,8 +912,11 @@ describe('media', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const promise = videoController.stop();
         const message = mobilePlatformMock.findMessageByFunc('media.controller');
 
@@ -901,8 +937,11 @@ describe('media', () => {
       it('videoController notifyEventToHost should fail in default version of platform and exit early', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
         const promise = videoController.stop();
 
@@ -914,8 +953,11 @@ describe('media', () => {
       it('videoController notifyEventToHost is not handled successfully and returns error', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
         mobilePlatformMock.setClientSupportedSDKVersion(nonFullScreenVideoModeAPISupportVersion);
+        const videoControllerCallback: media.VideoControllerCallback = {
+          onRecordingStarted: jest.fn(),
+        };
 
-        const videoController = new media.VideoController();
+        const videoController = new media.VideoController(videoControllerCallback);
         const promise = videoController.stop();
         const err = { errorCode: ErrorCode.INTERNAL_ERROR };
         const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
