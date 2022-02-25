@@ -29,6 +29,7 @@ describe('media', () => {
   const mediaAPISupportVersion = '1.8.0';
   const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
   const imageOutputFormatsAPISupportVersion = '2.0.4';
+  const utils = new Utils();
 
   const emptyCallback = () => {};
 
@@ -49,12 +50,12 @@ describe('media', () => {
 
   describe('isSupported', () => {
     it('returns true if media is supported', () => {
-      Object.defineProperty(runtime.supports, 'media', { value: {} });
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { media: {} } });
       expect(media.isSupported()).toBeTruthy();
     });
 
     it('returns false if media is not supported', () => {
-      Object.defineProperty(runtime.supports, 'media', { value: undefined });
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { media: undefined } });
 
       expect(media.isSupported()).toBeFalsy();
     });
