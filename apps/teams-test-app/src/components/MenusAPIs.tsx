@@ -1,6 +1,7 @@
 import { menus } from '@microsoft/teams-js';
 import React from 'react';
 import { ReactElement } from 'react';
+
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckMenusCapability = (): React.ReactElement =>
