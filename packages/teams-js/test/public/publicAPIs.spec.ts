@@ -129,7 +129,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a change settings handler', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
 
     registerEnterSettingsHandler(() => {
@@ -142,7 +142,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a app button click handler', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
 
     registerAppButtonClickHandler(() => {
@@ -154,7 +154,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a app button hover enter handler', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
 
     registerAppButtonHoverEnterHandler(() => {
@@ -167,7 +167,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a app button hover leave handler', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
 
     registerAppButtonHoverLeaveHandler(() => {
@@ -180,7 +180,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a theme change handler', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
 
     let newTheme: string;
     registerOnThemeChangeHandler(theme => {
@@ -193,7 +193,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should call navigateBack automatically when no back button handler is registered', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
 
     utils.sendMessage('backButtonPress');
 
@@ -202,7 +202,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a back button handler and not call navigateBack if it returns true', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     let handlerInvoked = false;
     registerBackButtonHandler(() => {
       handlerInvoked = true;
@@ -217,7 +217,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a focus enter handler and return true', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
 
     let handlerInvoked = false;
     registerFocusEnterHandler((x: boolean) => {
@@ -230,7 +230,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully get context', done => {
-    utils.initializeWithContext('content').then(() => {
+    utils.initializeWithContext(FrameContexts.content).then(() => {
       const expectedContext: Context = {
         groupId: 'someGroupId',
         teamId: 'someTeamId',
@@ -325,7 +325,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully register a back button handler and call navigateBack if it returns false', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
 
     let handlerInvoked = false;
     registerBackButtonHandler(() => {
@@ -342,7 +342,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   describe('getTabInstances', () => {
     it('should allow a missing and valid optional parameter', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       getTabInstances(tabInfo => tabInfo);
       getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
@@ -351,7 +351,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   describe('getMruTabInstances', () => {
     it('should allow a missing and valid optional parameter', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       getMruTabInstances(tabInfo => tabInfo);
       getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
@@ -368,7 +368,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', done => {
-      utils.initializeWithContext('content').then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(true);
@@ -396,7 +396,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke error callback', done => {
-      utils.initializeWithContext('content').then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(false);
@@ -424,7 +424,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke getGenericOnCompleteHandler when no callback is provided.', done => {
-      utils.initializeWithContext('content').then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
@@ -455,7 +455,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', done => {
-      utils.initializeWithContext('content').then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(true);
@@ -492,7 +492,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', done => {
-      utils.initializeWithContext('sidePanel').then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -521,7 +521,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should invoke error callback', done => {
-      utils.initializeWithContext('sidePanel').then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -550,7 +550,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', done => {
-      utils.initializeWithContext('sidePanel').then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -647,7 +647,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', done => {
-      utils.initializeWithContext('content').then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -764,7 +764,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
     it('should successfully register handler', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       let handlerInvoked = false;
       registerOnLoadHandler(() => {
@@ -778,6 +778,31 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
+  describe('should not allow authentication and remove context', () => {
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    ];
+
+    Object.values(FrameContexts).forEach(context => {
+      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const request = 'dummyDeepLink';
+          expect(() => executeDeepLink(request)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+  });
+
   describe('registerBeforeUnloadHandler', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
@@ -788,7 +813,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully register a before unload handler', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       let handlerInvoked = false;
       registerBeforeUnloadHandler(() => {
@@ -802,7 +827,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should call readyToUnload automatically when no before unload handler is registered', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       utils.sendMessage('beforeUnload');
 
@@ -811,7 +836,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully share a deep link in content context', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       shareDeepLink({
         subEntityId: 'someSubEntityId',
@@ -828,7 +853,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully share a deep link in sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
+      await utils.initializeWithContext(FrameContexts.sidePanel);
 
       shareDeepLink({
         subEntityId: 'someSubEntityId',
@@ -845,7 +870,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully register a before unload handler and not call readyToUnload if it returns true', async () => {
-      await utils.initializeWithContext('content');
+      await utils.initializeWithContext(FrameContexts.content);
 
       let handlerInvoked = false;
       let readyToUnloadFunc: () => void;
@@ -868,7 +893,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully frame context', async () => {
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
 
     const frameContext: FrameContext = {
       contentUrl: 'someContentUrl',
@@ -887,7 +912,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
-    await utils.initializeWithContext('content');
+    await utils.initializeWithContext(FrameContexts.content);
     initializeWithFrameContext(frameContext);
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(2);

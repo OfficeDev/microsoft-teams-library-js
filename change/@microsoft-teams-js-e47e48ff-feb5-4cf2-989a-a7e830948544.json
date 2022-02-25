@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "`null` runtimeConfig is no longer allowed during initialization. This will now throw a \"Received runtime config is invalid\" error.",
+  "packageName": "@microsoft/teams-js",
+  "email": "ramourt@microsoft.com",
+  "dependentChangeType": "patch"
+}
