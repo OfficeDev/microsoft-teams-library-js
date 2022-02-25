@@ -11,7 +11,7 @@ export namespace mail {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw 'Not Supported';
+        throw new Error('Not supported');
       }
 
       if (!openMailItemParams.itemId || !openMailItemParams.itemId.trim()) {
@@ -26,7 +26,7 @@ export namespace mail {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw 'Not Supported';
+        throw new Error('Not supported');
       }
 
       resolve(sendAndHandleError('mail.composeMail', composeMailParams));
