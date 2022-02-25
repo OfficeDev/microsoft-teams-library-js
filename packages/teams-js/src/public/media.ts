@@ -508,7 +508,7 @@ export namespace media {
    * --------
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
-  enum MediaControllerEvent {
+  export enum MediaControllerEvent {
     StartRecording = 1,
     StopRecording = 2,
   }

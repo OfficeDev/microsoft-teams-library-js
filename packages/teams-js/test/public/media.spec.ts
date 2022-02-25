@@ -770,10 +770,6 @@ describe('media', () => {
   });
 
   describe('videoController', () => {
-    enum MediaControllerEvent {
-      StartRecording = 1,
-      StopRecording = 2,
-    }
     describe('v1', () => {
       it('videoController notifyEventToHost is handled successfully', async () => {
         await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
@@ -887,9 +883,9 @@ describe('media', () => {
         const videoController = new media.VideoController(videoControllerCallback);
 
         const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
-        videoController.notifyEventToApp(MediaControllerEvent.StartRecording);
+        videoController.notifyEventToApp(media.MediaControllerEvent.StartRecording);
 
-        expect(notifyEventToAppSpy).toHaveBeenCalledWith(MediaControllerEvent.StartRecording);
+        expect(notifyEventToAppSpy).toHaveBeenCalledWith(media.MediaControllerEvent.StartRecording);
         expect(videoControllerCallback.onRecordingStarted).toHaveBeenCalled();
       });
 
@@ -905,9 +901,9 @@ describe('media', () => {
         const videoController = new media.VideoController(videoControllerCallback);
 
         const notifyEventToAppSpy = jest.spyOn(videoController, 'notifyEventToApp');
-        videoController.notifyEventToApp(MediaControllerEvent.StopRecording);
+        videoController.notifyEventToApp(media.MediaControllerEvent.StopRecording);
 
-        expect(notifyEventToAppSpy).toHaveBeenCalledWith(MediaControllerEvent.StopRecording);
+        expect(notifyEventToAppSpy).toHaveBeenCalledWith(media.MediaControllerEvent.StopRecording);
         expect(videoControllerCallback.onRecordingStopped).toHaveBeenCalled();
       });
     });
