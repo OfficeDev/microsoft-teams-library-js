@@ -256,7 +256,7 @@ export namespace files {
     /**
      * Size of the file in bytes
      */
-    size?: number;
+    sizeInBytes?: number;
     /**
      * Download status
      */
@@ -264,7 +264,7 @@ export namespace files {
     /**
      * Download timestamp
      */
-    timestamp: Date | string;
+    timestamp: Date;
     /**
      * File name
      */
@@ -272,7 +272,7 @@ export namespace files {
     /**
      * Type of file i.e. the file extension.
      */
-    type: string;
+    extension: string;
   }
 
   /**
