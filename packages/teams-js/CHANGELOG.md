@@ -2,7 +2,7 @@
 
 ### Patches
 
-- The API `registerFocusEnterHandler` has been moved from teamsCore namespace to Pages
+- The API `registerFocusEnterHandler` has been moved from teamsCore namespace to `Pages`.
 
 ## 2.0.0-beta.2
 
