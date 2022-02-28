@@ -222,6 +222,7 @@ describe('AppSDK-TeamsAPIs', () => {
       expect(returnFocusMessage.args[0]).toBe(true);
     });
   });
+
   describe('registerFocusEnterHandler', () => {
     it('should successfully register a focus enter handler', async () => {
       await utils.initializeWithContext('content');
@@ -233,6 +234,7 @@ describe('AppSDK-TeamsAPIs', () => {
       expect(messageForRegister.args.length).toBe(1);
       expect(messageForRegister.args[0]).toBe('focusEnter');
     });
+
     it('should successfully invoke focus enter handler', async () => {
       await utils.initializeWithContext('content');
 

@@ -28,6 +28,7 @@ export namespace pages {
 
     sendMessageToParent('returnFocus', [navigateForward]);
   }
+
   /**
    * @hidden
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
@@ -40,6 +41,7 @@ export namespace pages {
     ensureInitialized();
     registerHandler('focusEnter', handler);
   }
+
   export function setCurrentFrame(frameInfo: FrameInfo): void {
     ensureInitialized(FrameContexts.content);
     sendMessageToParent('setFrameContext', [frameInfo]);
