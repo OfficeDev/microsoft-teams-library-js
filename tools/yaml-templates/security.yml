@@ -1,0 +1,68 @@
+# This does all the Guardian Security and Component Governance checks.
+# Should be used in any other new pipelines we have that are linked to this repo.
+
+steps:
+  - task: ESLint@1
+    displayName: 'Run ESLint'
+    inputs:
+      Configuration: 'required'
+      TargetType: 'eslint'
+      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      ErrorLevel: 'warn'
+
+  - task: CredScan@3
+    displayName: 'Run Credential Scanner'
+    condition: succeededOrFailed()
+    inputs:
+      debugMode: false
+      suppressionsFile: '.sdl\CredScanSuppressions.json'
+
+  - task: PublishSecurityAnalysisLogs@3
+    inputs:
+      ArtifactName: 'CodeAnalysisLogs'
+      ArtifactType: 'M365'
+      AllTools: true
+      ToolLogsNotFoundAction: 'Standard'
+    condition: succeededOrFailed()
+    displayName: 'Publish Guardian Artifacts 2'
+
+    # Retaining artifacts using Arrow service (https://aka.ms/m365sdlonboarding​)
+  - task: AssetRetention@3
+    inputs:
+      ArrowServiceConnection: '$(ArrowConnection)'
+      AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+      AssetNumber: '$(Build.BuildId)'
+      IsShipped: false
+      DropsToRetain: 'CodeAnalysisLogs'
+    condition: and(
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta.')),
+      ne(variables['Build.Reason'], 'PullRequest')
+      )
+    displayName: 'Artifact Retention(Arrow)'
+
+  - task: PostAnalysis@2
+    condition: succeededOrFailed()
+    displayName: 'Guardian Break'
+    inputs:
+      GdnBreakPolicyMinSev: Warning
+      GdnBreakAllTools: true
+      GdnBreakGdnToolCredScan: true
+      GdnBreakGdnToolCredScanSeverity: Warning
+      GdnBreakGdnToolESLint: true
+      GdnBreakGdnToolESLintSeverity: Warning
+      GdnBreakPolicy: M365
+
+  - task: ComponentGovernanceComponentDetection@0
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      scanType: 'LogOnly'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
+      failOnAlert: true
+    displayName: 'Component Governance (Pull Request)'
+
+  - task: ComponentGovernanceComponentDetection@0
+    condition: and(
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta.')),
+      ne(variables['Build.Reason'], 'PullRequest'))
+    displayName: 'Component Governance (2.0-preview, release)'

@@ -22,17 +22,16 @@ describe('call', () => {
     }
   });
 
-  it('should not allow calls before initialization', () => {
-    return expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
+  it('should not allow calls before initialization', async () => {
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
   });
 
-  it('shoud not allow calls if not supported', () => {
+  it('should not allow calls if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
-    return expect(call.startCall(mockStartCallParams)).rejects.toEqual('Not supported');
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('Not supported');
   });
 
   it('startCall should be called if supported', async () => {
-    expect.assertions(3);
     utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,
