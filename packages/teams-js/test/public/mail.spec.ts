@@ -68,7 +68,7 @@ describe('mail', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await mail.openMailItem(openMailItemParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(mail.openMailItem(openMailItemParams)).rejects.toThrowError('Not supported');
     });
 
     it('should throw if a null itemId is supplied', async () => {
@@ -199,7 +199,7 @@ describe('mail', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await mail.composeMail(composeMailParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(mail.composeMail(composeMailParams)).rejects.toThrowError('Not supported');
     });
 
     it('should successfully throw if the composeMail message sends and fails', async () => {

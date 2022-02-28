@@ -89,7 +89,7 @@ export namespace menus {
      * @hidden
      * Interface to show list of items on selection of menu item.
      */
-    public viewData: ViewData;
+    public viewData?: ViewData;
     /**
      * @hidden
      * Whether the menu item is selected or not
