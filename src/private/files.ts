@@ -232,10 +232,10 @@ export namespace files {
    *
    * Download status enum
    */
-   export enum FileDownloadStatus {
+  export enum FileDownloadStatus {
     Downloaded = 'Downloaded',
     Downloading = 'Downloading',
-    Failed = 'Failed'
+    Failed = 'Failed',
   }
 
   /**
