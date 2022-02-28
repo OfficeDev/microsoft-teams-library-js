@@ -19,7 +19,7 @@ const readChangeLog = version => {
       const log = result[index + 1];
       return log;
     }
-    throw 'Matching version in changelog was not found';
+    throw new Error('Matching version in changelog was not found');
   }
 };
 
