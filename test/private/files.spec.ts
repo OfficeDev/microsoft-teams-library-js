@@ -447,7 +447,7 @@ describe('files', () => {
         {
           timestamp: new Date(),
           title: 'title',
-          type: 'docx',
+          extension: 'docx',
         },
       ];
 
