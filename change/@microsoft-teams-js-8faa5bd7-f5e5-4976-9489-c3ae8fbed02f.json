@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "The API registerFocusEnterHandler has been moved from teamsCore namespace to Pages",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "major"
+}
