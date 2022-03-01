@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const postbump = (packagePath, packageName, packageVersion) => {
-  fs.rm(`${packagePath}\\CHANGELOG.json`, err => {
+  fs.rm(`${packagePath}/CHANGELOG.json`, err => {
     if (err) {
       console.log(err.message);
       return;
