@@ -111,6 +111,30 @@ export namespace meeting {
     isAppSharing: boolean;
   }
 
+  export interface IParticipantSpeakingState {
+    /**
+     * id of participant
+     */
+    id: string;
+
+    /**
+     * indicates whether a participant is speaking
+     */
+    isSpeaking: boolean;
+  }
+
+  export interface ISpeakingState {
+    /**
+     * indicates whether one or more participants in a meeting are speaking
+     */
+    isSpeakingDetected: boolean;
+
+    /**
+     * returns speaking state of participants
+     */
+    participantSpeakingStates: [IParticipantSpeakingState] | undefined;
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -324,5 +348,23 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
+  }
+
+  /**
+   * Registers a handler for changes to speaking array.
+   * @param handler The handler to invoke when the array of participants speaking changes. A value
+   * of 0 (no participants speaking) or 1 (one or more participants are speaking) is provided.
+   * @param includeParticipants is a flag to opt-in to receive participant ids of who is speaking.
+   * Default value is false.
+   */
+  export function registerDetectSpeakingStateChangedHandler(
+    handler: (isSpeakingDetected: ISpeakingState) => void,
+    includeParticipants?: boolean,
+  ): void {
+    if (!handler) {
+      throw new Error('[registerDetectSpeakingStateChangedHandler] Handler cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.speakingStateChanged', handler, true, [includeParticipants]);
   }
 }

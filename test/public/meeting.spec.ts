@@ -553,6 +553,7 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
+  });
     describe('shareAppContentToStage', () => {
       it('should not allow to share app content to stage with null callback', () => {
         expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
@@ -832,5 +833,36 @@ describe('meeting', () => {
         expect(returnedResult).toStrictEqual(appContentStageSharingState);
       });
     });
+
+    describe('registerDetectSpeakingStateChangedHandler', () => {
+      it('should fail when called without a handler', () => {
+        expect(() => meeting.registerDetectSpeakingStateChangedHandler(null)).toThrowError(
+          '[registerDetectSpeakingStateChangedHandler] Handler cannot be null',
+        );
+      });
+  
+      it('should fail when called before app is initialized', () => {
+        expect(() => meeting.registerDetectSpeakingStateChangedHandler(() => {})).toThrowError(
+          'The library has not yet been initialized',
+        );
+      });
+  
+      it('should successfully register a handler for when the array of participants speaking changes', () => {
+        utils.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+  
+        let handlerCalled = false;
+        let returnedSpeakingState: meeting.ISpeakingState | null;
+  
+        meeting.registerDetectSpeakingStateChangedHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+          handlerCalled = true;
+          returnedSpeakingState = isSpeakingDetected;
+        });
+  
+        utils.sendMessage('meeting.speakingStateChanged', { isSpeakingDetected: true });
+  
+        expect(handlerCalled).toBe(true);
+        expect(returnedSpeakingState).not.toBeNull();
+        expect(returnedSpeakingState).toEqual({ isSpeakingDetected: true });
+      });
   });
 });
