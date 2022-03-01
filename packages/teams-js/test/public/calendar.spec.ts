@@ -158,7 +158,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(openCalendarItemMessage, data.success);
-      expect(openCalendarItemPromise).resolves;
+      await expect(openCalendarItemPromise).resolves.not.toThrow();
     });
   });
 
