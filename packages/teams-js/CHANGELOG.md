@@ -1,3 +1,28 @@
+# Change Log - @microsoft/teams-js
+
+This log was last generated on Tue, 01 Mar 2022 19:13:08 GMT and should not be manually modified.
+
+<!-- Start content -->
+
+## 2.0.0-beta.3
+
+Tue, 01 Mar 2022 19:13:08 GMT
+
+### Major changes
+
+- The API registerFocusEnterHandler has been moved from teamsCore namespace to Pages
+- `core.shareDeepLink` has been moved to `pages.shareDeepLink`
+- `core.executeDeepLink` has been renamed and moved to `app.openLink`
+
+### Minor changes
+
+- change the constructor function to make the onRecordingStarted callback mandatory, make onRecordingStopped an optional property that can be passed to the constructor.  This is because without the onRecordingStopped, the VideoController doesn't do anything.
+
+### Patches
+
+- Source code will now throw errors instead of throwing strings across the repo.
+- `null` runtimeConfig is no longer allowed during initialization. This will now throw a "Received runtime config is invalid" error.
+
 ## 2.0.0-beta.2
 
 ### Patches

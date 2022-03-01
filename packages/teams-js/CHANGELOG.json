@@ -1,0 +1,62 @@
+{
+  "name": "@microsoft/teams-js",
+  "entries": [
+    {
+      "date": "Tue, 01 Mar 2022 19:13:08 GMT",
+      "tag": "@microsoft/teams-js_v2.0.0",
+      "version": "2.0.0",
+      "comments": {
+        "none": [
+          {
+            "author": "jeklouda@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "Add Menus capabilities to test app"
+          }
+        ],
+        "patch": [
+          {
+            "author": "aeun@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "Source code will now throw errors instead of throwing strings across the repo."
+          },
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "`null` runtimeConfig is no longer allowed during initialization. This will now throw a \"Received runtime config is invalid\" error."
+          }
+        ],
+        "minor": [
+          {
+            "author": "jekoch@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "change the constructor function to make the onRecordingStarted callback mandatory, make onRecordingStopped an optional property that can be passed to the constructor.  This is because without the onRecordingStopped, the VideoController doesn't do anything."
+          }
+        ],
+        "major": [
+          {
+            "author": "lakhveerkaur@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "The API registerFocusEnterHandler has been moved from teamsCore namespace to Pages"
+          },
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "`core.shareDeepLink` has been moved to `pages.shareDeepLink`"
+          },
+          {
+            "author": "ramourt@microsoft.com",
+            "package": "@microsoft/teams-js",
+            "commit": "a934d4b21a1b54c65411db83a302cb353d5ae256",
+            "comment": "`core.executeDeepLink` has been renamed and moved to `app.openLink`"
+          }
+        ]
+      }
+    }
+  ]
+}
