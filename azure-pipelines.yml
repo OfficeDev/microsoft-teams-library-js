@@ -5,9 +5,7 @@ trigger:
   branches:
     include:
       - '2.0-preview'
-  tags:
-    include:
-      - 'v2.0.0-beta.*'
+      - 'release/2.0.0-beta.*'
 
 jobs:
   - job: Security

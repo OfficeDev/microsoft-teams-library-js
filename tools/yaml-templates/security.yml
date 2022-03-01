@@ -35,7 +35,7 @@ steps:
       IsShipped: false
       DropsToRetain: 'CodeAnalysisLogs'
     condition: and(
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta.')),
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/2.0.0-beta.')),
       ne(variables['Build.Reason'], 'PullRequest')
       )
     displayName: 'Artifact Retention(Arrow)'
@@ -63,6 +63,6 @@ steps:
 
   - task: ComponentGovernanceComponentDetection@0
     condition: and(
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v2.0.0-beta.')),
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/2.0.0-beta.')),
       ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Component Governance (2.0-preview, release)'
