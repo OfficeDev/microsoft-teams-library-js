@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Add Menus capabilities to test app",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "none"
-}
