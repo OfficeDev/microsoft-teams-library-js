@@ -37,7 +37,7 @@ export namespace call {
     return new Promise(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw 'Not supported';
+        throw new Error('Not supported');
       }
       return sendMessageToParent('call.startCall', [startCallParams], resolve);
     });

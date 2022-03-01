@@ -35,7 +35,7 @@ const buildAndGetIntegrityHash = async () => {
   const manifestJson = JSON.parse(manifestFile);
   const integrityHash = manifestJson['MicrosoftTeams.min.js']['integrity'];
   if (!integrityHash) {
-    throw 'ERROR: MicrosoftTeams.min.js integrity hash value was not parsed';
+    throw new Error('MicrosoftTeams.min.js integrity hash value was not parsed');
   }
   return integrityHash;
 };
