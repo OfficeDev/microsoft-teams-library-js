@@ -1,7 +1,15 @@
 import { menus } from '@microsoft/teams-js';
 import React from 'react';
 import { ReactElement } from 'react';
-import { ApiWithTextInput } from './utils';
+
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
+
+const CheckMenusCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkMenusCapability',
+    title: 'Check Menus Capability',
+    onClick: async () => `Menus module ${menus.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
 const SetUpViews = (): React.ReactElement =>
   ApiWithTextInput<menus.ViewConfiguration[]>({
@@ -75,6 +83,7 @@ const ShowActionMenu = (): React.ReactElement =>
 const MenusAPIs = (): ReactElement => (
   <>
     <h1>Menus</h1>
+    <CheckMenusCapability />
     <SetUpViews />
     <SetNavBarMenu />
     <ShowActionMenu />

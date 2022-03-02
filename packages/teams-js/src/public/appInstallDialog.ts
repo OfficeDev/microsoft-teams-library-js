@@ -22,7 +22,7 @@ export namespace appInstallDialog {
         FrameContexts.meetingStage,
       );
       if (!isSupported()) {
-        throw 'Not supported';
+        throw new Error('Not supported');
       }
       sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
       resolve();

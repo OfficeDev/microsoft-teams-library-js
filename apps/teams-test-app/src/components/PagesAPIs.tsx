@@ -9,7 +9,6 @@ import {
   setFrameContext,
   settings,
   shareDeepLink,
-  teamsCore,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -129,7 +128,7 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     title: 'Register On Focus Enter Handler',
     onClick: {
       withPromise: async setResult => {
-        teamsCore.registerFocusEnterHandler(navigateForward => {
+        pages.registerFocusEnterHandler(navigateForward => {
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });
