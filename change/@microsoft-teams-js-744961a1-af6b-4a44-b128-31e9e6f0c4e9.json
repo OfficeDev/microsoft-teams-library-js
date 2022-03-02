@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Source code will now throw errors instead of throwing strings across the repo.",
-  "packageName": "@microsoft/teams-js",
-  "email": "aeun@microsoft.com",
-  "dependentChangeType": "patch"
-}
