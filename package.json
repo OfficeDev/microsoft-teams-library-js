@@ -7,10 +7,6 @@
     "packages/*",
     "tools/**/*"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OfficeDev/microsoft-teams-library-js/tree/2.0-preview"
-  },
   "scripts": {
     "build": "lerna run build --stream",
     "build:clean": "yarn clean && yarn build",

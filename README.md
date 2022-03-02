@@ -1,10 +1,10 @@
 # Microsoft Teams JavaScript client SDK
 
-[![Microsoft Teams Library JS CI v2.0-preview](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?branch=2.0-preview&event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
-[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js?branchName=2.0-preview)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483&branchName=2.0-preview)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=2.0-preview)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=2.0-preview)
+[![Microsoft Teams Library JS CI](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
+[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
+[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js)
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory of the `2.0-preview` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory of the `main` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
 ## Getting Started
 

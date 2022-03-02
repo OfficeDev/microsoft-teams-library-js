@@ -4,7 +4,7 @@ variables:
 trigger:
   branches:
     include:
-      - '2.0-preview'
+      - 'main'
       - 'release/2.0.0-beta.*'
 
 jobs:
@@ -138,11 +138,11 @@ jobs:
   - job: E2ETestCDN
     displayName: 'E2E Test - CDN'
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
-    # This check will run on the PR to merge the release branch back into 2.0-preview
+    # This check will run on the PR to merge the release branch back into main
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
       startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview')
+      eq(variables['System.PullRequest.TargetBranch'], 'main')
       )
     pool:
       vmImage: 'ubuntu-latest'
