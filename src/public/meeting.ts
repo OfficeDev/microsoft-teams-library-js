@@ -132,7 +132,7 @@ export namespace meeting {
     /**
      * returns speaking state of participants
      */
-    participantSpeakingStates: [IParticipantSpeakingState] | undefined;
+    participantSpeakingStates?: IParticipantSpeakingState[];
   }
 
   export enum MeetingType {
