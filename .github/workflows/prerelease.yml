@@ -1,11 +1,6 @@
 name: Initiate Release Workflow
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version'
-        required: true
-        default: ''
 
 jobs:
   Release:
@@ -19,21 +14,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Push base release branch
-        run: |
-          git checkout -b release/${{ github.event.inputs.version }}
-          git push --set-upstream origin release/${{ github.event.inputs.version }} -f
-
       - name: Install yarn
         run: yarn install
 
       - name: Make changes to pull request
-        run: node tools/cli/preRelease.js ${{ github.event.inputs.version }}
+        run: node tools/cli/preRelease.js
+
+      - name: Extract version from package.json
+        id: extract_version
+        run: |
+          version=$(node -p "require('./packages/teams-js/package.json').version")
+          echo "::set-output name=version::$version"
+
+      - name: Push base release branch
+        run: |
+          git checkout -b release/${{steps.extract_version.outputs.version}}
+          git push --set-upstream origin release/${{steps.extract_version.outputs.version}} -f
 
       - name: Extract changelog for version
         id: extract_changelog
         run: |
-          changelog=$(node tools/cli/readChangelog.js ${{ github.event.inputs.version }})
+          changelog=$(node tools/cli/readChangelog.js ${{steps.extract_version.outputs.version}})
           changelog="${changelog//'%'/'%25'}"
           changelog="${changelog//$'\n'/'%0A'}"
           changelog="${changelog//$'\r'/'%0D'}"
@@ -42,9 +43,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: Releasing ${{ github.event.inputs.version }}
-          title: 'Releasing v${{ github.event.inputs.version }}'
+          commit-message: Releasing${{steps.extract_version.outputs.version}}
+          title: 'Releasing v${{steps.extract_version.outputs.version}}'
           body: '${{steps.extract_changelog.outputs.changelog}}'
-          branch: 'actions/release_v${{ github.event.inputs.version }}'
-          base: release/${{ github.event.inputs.version }}
+          branch: 'actions/release_v${{steps.extract_version.outputs.version}}'
+          base: release/${{steps.extract_version.outputs.version}}
           delete-branch: true

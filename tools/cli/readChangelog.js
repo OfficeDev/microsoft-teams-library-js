@@ -13,7 +13,7 @@ const readChangeLog = version => {
   if (!version) {
     return fullChangelog;
   } else {
-    const result = fullChangelog.split(/(## 2.0.0-beta..*\d)/);
+    const result = fullChangelog.split(/(## .*\d)/);
     const index = result.findIndex(substr => substr.startsWith(`## ${version}`));
     if (index !== -1) {
       const log = result[index + 1];
