@@ -1,7 +1,7 @@
 name: Post Release
 on:
   pull_request:
-    branches: [release/2.0.0-beta.*]
+    branches: [release/*]
     types: [closed]
 
 jobs:
@@ -43,5 +43,5 @@ jobs:
           commit: '${{steps.extract_branch.outputs.branch}}'
           tag: 'v${{steps.extract_version.outputs.version}}'
           name: 'v${{steps.extract_version.outputs.version}}'
-          prerelease: true
+          prerelease: false
           body: '${{steps.extract_changelog.outputs.changelog}}'

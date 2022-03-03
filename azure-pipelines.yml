@@ -5,7 +5,7 @@ trigger:
   branches:
     include:
       - '2.0-preview'
-      - 'release/2.0.0-beta.*'
+      - 'release/*'
 
 jobs:
   - job: Security
@@ -141,7 +141,7 @@ jobs:
     # This check will run on the PR to merge the release branch back into 2.0-preview
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
-      startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta'),
+      startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
       eq(variables['System.PullRequest.TargetBranch'], '2.0-preview')
       )
     pool:
