@@ -1,5 +1,6 @@
+import exp from 'constants';
 import * as utilFunc from '../../src/internal/utils';
-import { FrameContexts } from '../../src/public';
+import { FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
@@ -31,6 +32,13 @@ describe('MicrosoftTeams-Navigation', () => {
 
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
+          returnFocus(true);
+          expect(pagesReturnFocus).toHaveBeenCalled();
+        });
+
         it(`navigation.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -80,6 +88,13 @@ describe('MicrosoftTeams-Navigation', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
+      it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
+        navigateToTab(null);
+        expect(pagesNavigateToTabs).toHaveBeenCalled();
+      });
+
       it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, () => {
         utils.initializeWithContext(context);
         navigateToTab(null);
@@ -108,6 +123,13 @@ describe('MicrosoftTeams-Navigation', () => {
 
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`navigation.navigateCrossDomain should successfully call pages.navigateCrossDomain when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const pagesNavigateCrossDomain = jest.spyOn(pages, 'navigateCrossDomain');
+          navigateCrossDomain('https://valid.origin.com');
+          expect(pagesNavigateCrossDomain).toHaveBeenCalled();
+        });
+
         it(`navigation.navigateCrossDomain should allow calls when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -183,6 +205,12 @@ describe('MicrosoftTeams-Navigation', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
+      it(`navigation.navigateBack should successfully call pages.backStack.navigateBack when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesBackStackNavigateBack = jest.spyOn(pages.backStack, 'navigateBack');
+        navigateBack();
+        expect(pagesBackStackNavigateBack).toHaveBeenCalled();
+      });
       it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
         utils.initializeWithContext(context);
         navigateBack();
