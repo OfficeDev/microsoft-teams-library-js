@@ -45,11 +45,3 @@ jobs:
           name: 'v${{steps.extract_version.outputs.version}}'
           prerelease: true
           body: '${{steps.extract_changelog.outputs.changelog}}'
-
-      - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
-        with:
-          pr_title: Merge ${{steps.extract_branch.outputs.branch}} into 2.0-preview
-          source_branch: ${{steps.extract_branch.outputs.branch}}
-          destination_branch: 2.0-preview
-          github_token: ${{ secrets.GITHUB_TOKEN }}
