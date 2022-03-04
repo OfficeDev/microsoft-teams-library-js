@@ -352,13 +352,13 @@ export namespace meeting {
 
   /**
    * Registers a handler for changes to speaking array.
-   * @param handler The handler to invoke when the array of participants speaking changes. A value
-   * of 0 (no participants speaking) or 1 (one or more participants are speaking) is provided.
+   * @param handler The handler to invoke when start/stop speaking events are detected.
    * @param includeParticipants is a flag to opt-in to receive participant ids of who is speaking.
-   * Default value is false.
+   * The default value is false. If the participant ids are needed, register for the permission:
+   * OnlineMeetingParticipant.Read.Chat in the app's manifest.
    */
   export function registerDetectSpeakingStateChangedHandler(
-    handler: (isSpeakingDetected: ISpeakingState) => void,
+    handler: (speakingState: ISpeakingState) => void,
     includeParticipants?: boolean,
   ): void {
     if (!handler) {
