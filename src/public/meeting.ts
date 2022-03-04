@@ -352,7 +352,7 @@ export namespace meeting {
 
   /**
    * Registers a handler for changes to speaking array.
-   * @param handler The handler to invoke when start/stop speaking events are detected.
+   * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    * @param includeParticipants is a flag to opt-in to receive participant ids of who is speaking.
    * The default value is false. If the participant ids are needed, register for the permission:
    * OnlineMeetingParticipant.Read.Chat in the app's manifest.
