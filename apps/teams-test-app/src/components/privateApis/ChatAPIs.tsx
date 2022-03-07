@@ -47,7 +47,7 @@ const OpenConversation = (): React.ReactElement =>
           );
         };
 
-        await chat.openConversation(input);
+        await chat.conversation.openConversation(input);
         return 'conversations.openConversation()' + noHostSdkMsg;
       },
     },
@@ -58,7 +58,7 @@ const CloseConversation = (): React.ReactElement =>
     name: 'closeConversation',
     title: 'Close Conversation',
     onClick: async () => {
-      chat.closeConversation();
+      chat.conversation.closeConversation();
       return 'Conversation Closed!';
     },
   });
