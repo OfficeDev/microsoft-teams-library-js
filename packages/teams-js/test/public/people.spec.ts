@@ -49,7 +49,8 @@ describe('people', () => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         return;
       }
-      it('should not allow selectPeople calls from the wrong context', async () => {
+
+      it(`should not allow selectPeople calls from the wrong context. context: ${context}`, async () => {
         await mobilePlatformMock.initializeWithContext(context);
 
         expect(() => people.selectPeople()).toThrowError(
@@ -156,12 +157,13 @@ describe('people', () => {
     it('should not allow selectPeople calls before initialization', async () => {
       expect(() => people.selectPeople(() => {})).toThrowError('The library has not yet been initialized');
     });
+
     Object.values(FrameContexts).forEach(context => {
       if (!allowedContexts.some(allowedContext => allowedContext === context)) {
         return;
       }
 
-      it('should allow selectPeople calls with null peoplePickerInputs', async () => {
+      it(`should allow selectPeople calls with null peoplePickerInputs context: ${context}`, async () => {
         await mobilePlatformMock.initializeWithContext(context);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
         people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {}, null);
@@ -171,7 +173,7 @@ describe('people', () => {
         expect(message.args[0]).toEqual(null);
       });
 
-      it('should allow selectPeople calls with no peoplePickerInputs', async () => {
+      it(`should allow selectPeople calls with no peoplePickerInputs. context: ${context}`, async () => {
         await mobilePlatformMock.initializeWithContext(context);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
         people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {});
@@ -181,7 +183,7 @@ describe('people', () => {
         expect(message.args[0]).toEqual(null);
       });
 
-      it('should allow selectPeople calls with undefined peoplePickerInputs', async () => {
+      it(`should allow selectPeople calls with undefined peoplePickerInputs. context: ${context}`, async () => {
         await mobilePlatformMock.initializeWithContext(context);
         mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
         people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {}, undefined);
@@ -191,7 +193,7 @@ describe('people', () => {
         expect(message.args[0]).toEqual(null);
       });
 
-      it('selectPeople call in default version of platform support fails', done => {
+      it(`selectPeople call in default version of platform support fails. context: ${context}`, done => {
         mobilePlatformMock.initializeWithContext(context).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
           people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
@@ -202,7 +204,7 @@ describe('people', () => {
         });
       });
 
-      it('selectPeople calls with valid peoplePickerInput', done => {
+      it(`selectPeople calls with valid peoplePickerInput. context: ${context}`, done => {
         mobilePlatformMock.initializeWithContext(context).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
 
@@ -224,7 +226,7 @@ describe('people', () => {
         });
       });
 
-      it('selectPeople calls with error', done => {
+      it(`selectPeople calls with error. context: ${context}`, done => {
         mobilePlatformMock.initializeWithContext(context).then(() => {
           mobilePlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
 
