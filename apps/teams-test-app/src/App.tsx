@@ -16,6 +16,7 @@ import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
+import MenusAPIs from './components/MenusAPIs';
 import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
@@ -35,7 +36,6 @@ import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { getTestBackCompat } from './components/utils/getTestBackCompat';
-import MenusAPIs from './components/MenusAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 

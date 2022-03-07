@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Add Menus capabilities to test app",
+  "comment": "Merging beta.3 into 2.0-preview",
   "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
+  "email": "ramourt@microsoft.com",
   "dependentChangeType": "none"
 }
