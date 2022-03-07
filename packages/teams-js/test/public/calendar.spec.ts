@@ -69,7 +69,7 @@ describe('calendar', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await calendar.openCalendarItem(openCalendarItemParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(calendar.openCalendarItem(openCalendarItemParams)).rejects.toThrowError('Not supported');
     });
 
     it('should throw if a null itemId is supplied', async () => {
@@ -158,7 +158,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(openCalendarItemMessage, data.success);
-      expect(openCalendarItemPromise).resolves;
+      await expect(openCalendarItemPromise).resolves.not.toThrow();
     });
   });
 
@@ -203,7 +203,7 @@ describe('calendar', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await calendar.composeMeeting(composeMeetingParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(calendar.composeMeeting(composeMeetingParams)).rejects.toThrowError('Not supported');
     });
 
     it('should successfully throw if the composeMeeting message sends and fails', async () => {
@@ -257,7 +257,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(composeMeetingMessage, data.success);
-      expect(composeMeetingPromise).resolves;
+      await expect(composeMeetingPromise).resolves.not.toThrow();
     });
   });
 

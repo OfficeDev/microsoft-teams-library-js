@@ -17,14 +17,23 @@ steps:
     inputs:
       Arguments: 'install'
 
+  - task: Yarn@3
+    displayName: 'Check that changefile was created if needed'
+    condition: and(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta')),
+      not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/2.0.0-beta'))
+      )
+    inputs:
+      Arguments: 'beachball check'
+
   - script: 'node prepNextDevRelease.js'
     displayName: 'node prepNextDevRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
+      ne(variables['Build.Reason'], 'PullRequest')
       )
 
   - task: Yarn@3

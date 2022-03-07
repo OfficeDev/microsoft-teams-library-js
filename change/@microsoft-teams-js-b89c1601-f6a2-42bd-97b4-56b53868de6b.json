@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Merging beta.3 into 2.0-preview",
+  "packageName": "@microsoft/teams-js",
+  "email": "ramourt@microsoft.com",
+  "dependentChangeType": "none"
+}

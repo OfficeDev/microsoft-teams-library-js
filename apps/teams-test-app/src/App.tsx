@@ -16,6 +16,7 @@ import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
+import MenusAPIs from './components/MenusAPIs';
 import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
@@ -119,6 +120,7 @@ const App = (): ReactElement => {
       <MediaAPIs />
       <MeetingAPIs />
       <MeetingRoomAPIs />
+      <MenusAPIs />
       <MonetizationAPIs />
       <NotificationAPIs />
       <PagesAPIs />
