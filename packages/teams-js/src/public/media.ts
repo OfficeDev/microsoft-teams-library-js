@@ -392,7 +392,7 @@ export namespace media {
   abstract class MediaController<T> {
     protected controllerCallback: T;
 
-    public constructor(controllerCallback?: T) {
+    public constructor(controllerCallback: T) {
       this.controllerCallback = controllerCallback;
     }
 
@@ -478,7 +478,8 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   export interface VideoControllerCallback {
-    onRecordingStarted?(): void;
+    onRecordingStarted(): void;
+    onRecordingStopped?(): void;
   }
 
   /**
@@ -490,17 +491,14 @@ export namespace media {
     }
 
     public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
-      if (!this.controllerCallback) {
-        // Early return as app has not registered with the callback
-        return;
-      }
-
       switch (mediaEvent) {
         case MediaControllerEvent.StartRecording:
-          if (this.controllerCallback.onRecordingStarted) {
-            this.controllerCallback.onRecordingStarted();
-            break;
-          }
+          this.controllerCallback.onRecordingStarted();
+          break;
+        // TODO - Should discuss whether this function should be required
+        case MediaControllerEvent.StopRecording:
+          this.controllerCallback.onRecordingStopped && this.controllerCallback.onRecordingStopped();
+          break;
       }
     }
   }
@@ -511,7 +509,7 @@ export namespace media {
    * --------
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
-  enum MediaControllerEvent {
+  export enum MediaControllerEvent {
     StartRecording = 1,
     StopRecording = 2,
   }

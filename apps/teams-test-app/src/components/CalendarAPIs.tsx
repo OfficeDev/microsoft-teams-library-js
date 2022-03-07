@@ -31,7 +31,7 @@ const OpenCalendarItem = (): React.ReactElement =>
       },
       validateInput: x => {
         if (!x.itemId) {
-          throw 'itemId is required';
+          throw new Error('itemId is required');
         }
       },
     },

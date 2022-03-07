@@ -222,4 +222,30 @@ describe('AppSDK-TeamsAPIs', () => {
       expect(returnFocusMessage.args[0]).toBe(true);
     });
   });
+
+  describe('registerFocusEnterHandler', () => {
+    it('should successfully register a focus enter handler', async () => {
+      await utils.initializeWithContext('content');
+      pages.registerFocusEnterHandler((x: boolean) => {
+        return true;
+      });
+      const messageForRegister = utils.findMessageByFunc('registerHandler');
+      expect(messageForRegister).not.toBeNull();
+      expect(messageForRegister.args.length).toBe(1);
+      expect(messageForRegister.args[0]).toBe('focusEnter');
+    });
+
+    it('should successfully invoke focus enter handler', async () => {
+      await utils.initializeWithContext('content');
+
+      let handlerInvoked = false;
+      pages.registerFocusEnterHandler((x: boolean) => {
+        handlerInvoked = true;
+        return true;
+      });
+
+      utils.sendMessage('focusEnter');
+      expect(handlerInvoked).toBe(true);
+    });
+  });
 });
