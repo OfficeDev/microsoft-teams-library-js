@@ -10,7 +10,9 @@ export interface IRuntime {
     readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
-    readonly chat?: {};
+    readonly chat?: {
+      readonly conversation?: {};
+    };
     readonly dialog?: {};
     readonly files?: {};
     readonly location?: {};
@@ -47,7 +49,9 @@ export let runtime: IRuntime = {
     bot: undefined,
     calendar: undefined,
     call: undefined,
-    chat: undefined,
+    chat: {
+      conversation: undefined,
+    },
     dialog: undefined,
     location: undefined,
     logs: undefined,
@@ -84,7 +88,9 @@ export const teamsRuntimeConfig: IRuntime = {
     appEntity: {},
     bot: {},
     call: {},
-    chat: {},
+    chat: {
+      conversation: {},
+    },
     dialog: {},
     files: {},
     location: {},

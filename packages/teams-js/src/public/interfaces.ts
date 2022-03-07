@@ -577,6 +577,48 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
+/** 
+
+ * 
+
+ * @internal 
+
+ */
+
+export interface OpenChatRequest {
+  /** 
+
+   * @hidden 
+
+   * Array of members email addresses to open chat with 
+
+   */
+
+  members: string[];
+
+  /** 
+
+   * @hidden 
+
+   * The message to send when opening chat 
+
+   */
+
+  message?: string;
+}
+
+export interface OpenGroupChatRequest extends OpenChatRequest {
+  /**  
+
+ * @hidden  
+
+ * The display name of a conversation for 3 or more users  
+
+ */
+
+  topic?: string;
+}
+
 /**
  * @hidden
  * Hide from docs.
