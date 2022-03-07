@@ -28,7 +28,7 @@ describe('call', () => {
 
   it('should not allow calls if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
-    await expect(call.startCall(mockStartCallParams)).rejects.toEqual('Not supported');
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('Not supported');
   });
 
   it('startCall should be called if supported', async () => {

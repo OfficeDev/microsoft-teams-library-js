@@ -69,7 +69,7 @@ describe('calendar', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await calendar.openCalendarItem(openCalendarItemParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(calendar.openCalendarItem(openCalendarItemParams)).rejects.toThrowError('Not supported');
     });
 
     it('should throw if a null itemId is supplied', async () => {
@@ -203,7 +203,7 @@ describe('calendar', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await calendar.composeMeeting(composeMeetingParams).catch(e => expect(e).toBe('Not Supported'));
+      await expect(calendar.composeMeeting(composeMeetingParams)).rejects.toThrowError('Not supported');
     });
 
     it('should successfully throw if the composeMeeting message sends and fails', async () => {

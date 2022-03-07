@@ -208,7 +208,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link teamsCore.registerFocusEnterHandler teamsCore.registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void} instead.
+ * As of 2.0.0-beta.3, please use {@link pages.registerFocusEnterHandler pages.registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void} instead.
  *
  * @hidden
  * Registers a handler when focus needs to be passed from teams to the place of choice on app.
@@ -216,7 +216,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  teamsCore.registerFocusEnterHandler(handler);
+  pages.registerFocusEnterHandler(handler);
 }
 
 /**

@@ -28,7 +28,7 @@ describe('appInstallDialog', () => {
 
   it('Should not allow openAppInstallDialog if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
-    await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toEqual(
+    await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
       'Not supported',
     );
   });
