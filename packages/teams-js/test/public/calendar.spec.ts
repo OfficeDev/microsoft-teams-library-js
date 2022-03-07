@@ -257,7 +257,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(composeMeetingMessage, data.success);
-      expect(composeMeetingPromise).resolves;
+      await expect(composeMeetingPromise).resolves.not.toThrow();
     });
   });
 
