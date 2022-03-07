@@ -24,7 +24,19 @@ export namespace chat {
    * @returns Promise resolved upon completion
    */
 
-  export function openChat(openChatRequest: OpenChatRequest): Promise<void> {}
+  export function openChat(openChatRequest: OpenChatRequest): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (openChatRequest.members.length !== 1) {
+        throw Error('Incorrect number of users for openChat');
+      }
+      ensureInitialized(FrameContexts.content);
+      const sendPromise = sendAndHandleError('chat.openChat', {
+        members: openChatRequest.members,
+        message: openChatRequest.message,
+      });
+      resolve(sendPromise);
+    });
+  }
 
   /**
    *
@@ -33,7 +45,20 @@ export namespace chat {
    * @returns Promise resolved upon completion
    */
 
-  export function openChat(openChatRequest: OpenGroupChatRequest): Promise<void> {}
+  export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (openChatRequest.members.length <= 1) {
+        throw Error('Incorrect number of users for openGroupChat');
+      }
+      ensureInitialized(FrameContexts.content);
+      const sendPromise = sendAndHandleError('chat.openChat', {
+        members: openChatRequest.members,
+        message: openChatRequest.message,
+        topic: openChatRequest.topic,
+      });
+      resolve(sendPromise);
+    });
+  }
   /**
    * @hidden
    * Hide from docs
