@@ -5,8 +5,6 @@ import { registerHandler } from '../internal/handlers';
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
  *
- * @private
- * Hide from docs until feature is complete
  */
 export namespace menus {
   /**
