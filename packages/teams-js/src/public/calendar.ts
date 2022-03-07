@@ -11,7 +11,7 @@ export namespace calendar {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw 'Not Supported';
+        throw new Error('Not supported');
       }
 
       if (!openCalendarItemParams.itemId || !openCalendarItemParams.itemId.trim()) {
@@ -25,7 +25,7 @@ export namespace calendar {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw 'Not Supported';
+        throw new Error('Not supported');
       }
 
       resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));

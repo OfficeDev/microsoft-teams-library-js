@@ -35,9 +35,8 @@ steps:
       IsShipped: false
       DropsToRetain: 'CodeAnalysisLogs'
     condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest'),
-      ne(variables['Build.Reason'], 'Manual')
+      or(eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/2.0.0-beta.')),
+      ne(variables['Build.Reason'], 'PullRequest')
       )
     displayName: 'Artifact Retention(Arrow)'
 
