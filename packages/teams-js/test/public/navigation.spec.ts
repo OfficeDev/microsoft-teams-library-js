@@ -101,6 +101,25 @@ describe('MicrosoftTeams-Navigation', () => {
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
         expect(navigateToTabMsg).not.toBeNull();
       });
+
+      it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+          return (success: boolean, reason: string): void => {
+            if (!success) {
+              expect(reason).toBe('Invalid internalTabInstanceId and/or channelId were/was provided');
+            }
+          };
+        });
+        navigateToTab(null);
+
+        const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
+        expect(navigateToTabMsg).not.toBeNull();
+        expect(navigateToTabMsg.args.length).toBe(1);
+        expect(navigateToTabMsg.args[0]).toBe(null);
+
+        utils.respondToMessage(navigateToTabMsg, false);
+      });
     });
   });
 
@@ -216,6 +235,24 @@ describe('MicrosoftTeams-Navigation', () => {
         navigateBack();
         const navigateBackMessage = utils.findMessageByFunc('navigateBack');
         expect(navigateBackMessage).not.toBeNull();
+      });
+
+      it(`navigation.navigateBack should call getGenericOnCompleteHandler when no callback is provided when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+          return (success: boolean, reason: string): void => {
+            if (!success) {
+              expect(reason).toBe('Back navigation is not supported in the current client or context.');
+            }
+          };
+        });
+        navigateBack();
+
+        const navigateBackMessage = utils.findMessageByFunc('navigateBack');
+        expect(navigateBackMessage).not.toBeNull();
+        expect(navigateBackMessage.args.length).toBe(0);
+
+        utils.respondToMessage(navigateBackMessage, false);
       });
     });
   });
