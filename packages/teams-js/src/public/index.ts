@@ -41,6 +41,7 @@ export { teamsCore } from './teamsAPIs';
 export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
+export { stageView } from './stageView';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
 export {

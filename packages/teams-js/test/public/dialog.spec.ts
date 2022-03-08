@@ -150,33 +150,6 @@ describe('Dialog', () => {
       expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
-      );
-    });
-
-    it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
-
-      const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
-      );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
-
-      const dialogInfo: DialogInfo = {};
-      expect(() => dialog.resize(dialogInfo)).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
-      );
-    });
-
     it('should successfully pass DialogInfo in Task context', async () => {
       await utils.initializeWithContext('task');
       const dialogInfo = { width: 10, height: 10 };
@@ -207,7 +180,7 @@ describe('Dialog', () => {
       await utils.initializeWithContext('settings');
 
       expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "settings".',
+        'This call is only allowed in following contexts: ["content","sidePanel","task","meetingStage"]. Current context: "settings".',
       );
     });
 
@@ -215,7 +188,7 @@ describe('Dialog', () => {
       await utils.initializeWithContext('authentication');
 
       expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "authentication".',
+        'This call is only allowed in following contexts: ["content","sidePanel","task","meetingStage"]. Current context: "authentication".',
       );
     });
 
@@ -223,31 +196,7 @@ describe('Dialog', () => {
       await utils.initializeWithContext('remove');
 
       expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "remove".',
-      );
-    });
-
-    it('should not allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
-
-      expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "content".',
-      );
-    });
-
-    it('should not allow calls from meetingStage context', async () => {
-      await utils.initializeWithContext('meetingStage');
-
-      expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "meetingStage".',
-      );
-    });
-
-    it('should not allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      expect(() => dialog.submit()).toThrowError(
-        'This call is only allowed in following contexts: ["task"]. Current context: "sidePanel".',
+        'This call is only allowed in following contexts: ["content","sidePanel","task","meetingStage"]. Current context: "remove".',
       );
     });
 

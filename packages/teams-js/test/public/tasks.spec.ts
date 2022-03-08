@@ -126,7 +126,12 @@ describe('tasks', () => {
   });
 
   describe('updateTask', () => {
-    const allowedContexts = [FrameContexts.task];
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.task,
+      FrameContexts.meetingStage,
+    ];
     it('should not allow calls before initialization', () => {
       // tslint:disable-next-line:no-any
       expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
@@ -144,6 +149,17 @@ describe('tasks', () => {
           );
         });
       }
+    });
+
+    it('should successfully pass taskInfo in sidePanel context', async () => {
+      await utils.initializeWithContext(FrameContexts.sidePanel);
+      const taskInfo = { width: 10, height: 10 };
+
+      tasks.updateTask(taskInfo);
+
+      const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([taskInfo]);
     });
 
     it('should successfully pass taskInfo in task context', async () => {
@@ -168,7 +184,12 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [FrameContexts.task];
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.task,
+      FrameContexts.meetingStage,
+    ];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
     });
@@ -185,6 +206,16 @@ describe('tasks', () => {
           );
         });
       }
+    });
+
+    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+
+      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
+
+      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {
