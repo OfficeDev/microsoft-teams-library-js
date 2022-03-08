@@ -10,14 +10,14 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
-import { menus } from './menus';
+
 import { registerHandler } from '../internal/handlers';
 import { GlobalVars } from '../internal/globalVars';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 
 export function initializePrivateApis(): void {
-  menus.initialize();
+  //Keeping this API for any future usage, wherein privateAPIs need to be initialized
 }
 
 /**

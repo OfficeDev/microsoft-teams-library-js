@@ -21,6 +21,7 @@ import {
 } from '../internal/communication';
 import { authentication } from './authentication';
 import { initializePrivateApis } from '../private/privateAPIs';
+import { menus } from './menus';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 
 // ::::::::::::::::::::::: MicrosoftTeams SDK public API ::::::::::::::::::::
@@ -58,6 +59,7 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
     authentication.initialize();
     settings.initialize();
+    menus.initialize();
     initializePrivateApis();
   }
 
