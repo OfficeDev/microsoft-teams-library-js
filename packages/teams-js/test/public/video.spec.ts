@@ -78,7 +78,7 @@ describe('video', () => {
       expect(message.args).toEqual([videoFrameConfig]);
     });
 
-    it('FRAMED - should successful register video frame handler', async () => {
+    it('FRAMED - should successfully register video frame handler', async () => {
       await framedPlatformMock.initializeWithContext('sidePanel');
 
       video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
@@ -89,7 +89,7 @@ describe('video', () => {
       expect(messageForRegister.args[0]).toBe('video.newVideoFrame');
     });
 
-    it('FRAMELESS - should successful register video frame handler', async () => {
+    it('FRAMELESS - should successfully register video frame handler', async () => {
       await framelessPlatformMock.initializeWithContext('sidePanel');
 
       video.registerForVideoFrame(emptyVideoEffectCallback, videoFrameConfig);
@@ -384,7 +384,7 @@ describe('video', () => {
       });
     });
 
-    it('FRAMED - should successful register effectParameterChange', async () => {
+    it('FRAMED - should successfully register effectParameterChange', async () => {
       await framedPlatformMock.initializeWithContext('sidePanel');
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -396,7 +396,7 @@ describe('video', () => {
       expect(messageForRegister.args[0]).toBe('video.effectParameterChange');
     });
 
-    it('FRAMELESS - should successful register effectParameterChange', async () => {
+    it('FRAMELESS - should successfully register effectParameterChange', async () => {
       await framelessPlatformMock.initializeWithContext('sidePanel');
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
