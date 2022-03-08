@@ -148,6 +148,7 @@ export namespace video {
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
     registerHandler('video.effectParameterChange', callback);
+    sendMessageToParent('video.registerForVideoEffect');
   }
 
   /**
