@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "gitmagic additions to 2.0-preview for February 28, 2022. Changes merged in from V1 include stageView implementation and modifying dialog.resize() and dialog.submit() to also work in FrameContexts sidePanel, content, meetingStage, and task rather than just task.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
