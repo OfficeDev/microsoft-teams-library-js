@@ -153,7 +153,7 @@ describe('mail', () => {
 
       utils.respondToMessage(openMailItemMessage, data.success);
 
-      expect(promise).resolves;
+      await expect(promise).resolves.not.toThrow();
     });
   });
 
@@ -254,7 +254,7 @@ describe('mail', () => {
       };
 
       utils.respondToMessage(composeMailMessage, data.success);
-      expect(promise).resolves;
+      await expect(promise).resolves.not.toThrow();
     });
   });
 

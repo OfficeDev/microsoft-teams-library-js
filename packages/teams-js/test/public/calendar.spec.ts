@@ -158,7 +158,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(openCalendarItemMessage, data.success);
-      expect(openCalendarItemPromise).resolves;
+      await expect(openCalendarItemPromise).resolves.not.toThrow();
     });
   });
 
@@ -257,7 +257,7 @@ describe('calendar', () => {
       };
 
       utils.respondToMessage(composeMeetingMessage, data.success);
-      expect(composeMeetingPromise).resolves;
+      await expect(composeMeetingPromise).resolves.not.toThrow();
     });
   });
 
