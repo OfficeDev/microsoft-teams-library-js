@@ -42,7 +42,7 @@ describe('people', () => {
     /**
      * People Picker tests
      */
-    it('should not allow selectPeople calls before initialization', async () => {
+    it('should not allow selectPeople calls before initialization', () => {
       expect(() => people.selectPeople()).toThrowError('The library has not yet been initialized');
     });
     Object.values(FrameContexts).forEach(context => {
@@ -143,7 +143,7 @@ describe('people', () => {
     /**
      * People Picker tests
      */
-    it('should not allow selectPeople calls before initialization', async () => {
+    it('should not allow selectPeople calls before initialization', () => {
       expect(() => people.selectPeople(() => {})).toThrowError('The library has not yet been initialized');
     });
 
