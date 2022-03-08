@@ -115,6 +115,7 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           await expect(promise).resolves.toBe(true);
         });
+
         it(`should throw if the getIncomingClientAudioState message sends and fails ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -166,6 +167,7 @@ describe('meeting', () => {
           expect(getMeetingDetailsMessage).not.toBeNull();
           expect(getMeetingDetailsMessage.args.length).toEqual(0);
         });
+
         it(`should resolve the promise after succesfully sending the meeting.getMeetingDetails calls. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -201,6 +203,7 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           await expect(promise).resolves.toBe(meetingDetails);
         });
+
         it(`should throw if the getMeetingDetails message sends and fails. context: ${context} `, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -251,6 +254,7 @@ describe('meeting', () => {
           expect(getAnonymousUserTokenMessage).not.toBeNull();
           expect(getAnonymousUserTokenMessage.args.length).toEqual(0);
         });
+
         it(`should resolve promise after successfully sending the getAuthenticationTokenForAnonymousUser message. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -269,6 +273,7 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           await expect(promise).resolves.toBe(mockAuthenticationToken);
         });
+
         it(`should throw if the getAuthenticationTokenForAnonymousUser message sends and fails. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           const promise = meeting.getAuthenticationTokenForAnonymousUser();
@@ -331,6 +336,7 @@ describe('meeting', () => {
 
         await expect(promise).resolves.toEqual({ isStreaming: true });
       });
+
       it(`should throw if the getLiveStreamState message sends and fails. context: ${context}`, async () => {
         await framelessPlatformMock.initializeWithContext(context);
 
@@ -361,7 +367,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the requestStartLiveStreaming message.', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           meeting.requestStartLiveStreaming('streamurl', 'streamkey');
 
@@ -373,7 +379,7 @@ describe('meeting', () => {
         });
 
         it('should throw if the requestStartLiveStreaming message sends and fails', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.requestStartLiveStreaming('streamurl', 'streamkey');
 
@@ -393,7 +399,7 @@ describe('meeting', () => {
         });
 
         it('should resolve the promise after succesfully sending the meeting.requestStartLiveStreaming call', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.requestStartLiveStreaming('streamurl', 'streamkey');
 
@@ -434,7 +440,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the requestStartLiveStreaming message.', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           meeting.requestStopLiveStreaming();
 
@@ -446,7 +452,7 @@ describe('meeting', () => {
         });
 
         it('should throw if the requestStopLiveStreaming message sends and fails', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.requestStopLiveStreaming();
 
@@ -466,7 +472,7 @@ describe('meeting', () => {
         });
 
         it('should resolve the promise after succesfully sending the meeting.requestStopLiveStreaming call', async () => {
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.requestStopLiveStreaming();
 
@@ -515,7 +521,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully register a handler for when live stream is changed', async () => {
-          await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framedPlatformMock.initializeWithContext(context);
 
           let handlerCalled = false;
           let returnedLiveStreamState: meeting.LiveStreamState | null;
@@ -555,7 +561,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the shareAppContentToStage message.', async () => {
-          framelessPlatformMock.initializeWithContext('sidePanel');
+          framelessPlatformMock.initializeWithContext(context);
 
           const requestUrl = 'validUrl';
           meeting.shareAppContentToStage(requestUrl);
@@ -566,8 +572,9 @@ describe('meeting', () => {
           expect(shareAppContentToStageMessage).not.toBeNull();
           expect(shareAppContentToStageMessage.args).toContain(requestUrl);
         });
+
         it('should resolve the promise after succesfully sending the meeting.shareAppContentToStage call', async () => {
-          framelessPlatformMock.initializeWithContext('sidePanel');
+          framelessPlatformMock.initializeWithContext(context);
 
           const requestUrl = 'validUrl';
           const promise = meeting.shareAppContentToStage(requestUrl);
@@ -589,7 +596,7 @@ describe('meeting', () => {
         });
 
         it('should throw if the shareAppContentToStage message sends and fails', async () => {
-          framelessPlatformMock.initializeWithContext('sidePanel');
+          framelessPlatformMock.initializeWithContext(context);
 
           const requestUrl = 'invalidAppUrl';
           const promise = meeting.shareAppContentToStage(requestUrl);
@@ -631,7 +638,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingCapabilities message.', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           meeting.getAppContentStageSharingCapabilities();
 
@@ -641,8 +648,9 @@ describe('meeting', () => {
           expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
           expect(appContentStageSharingCapabilitiesMessage.args.length).toEqual(0);
         });
+
         it('should return correct error information', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.getAppContentStageSharingCapabilities();
 
@@ -661,7 +669,7 @@ describe('meeting', () => {
         });
 
         it('should resolve the promise after succesfully sending the meeting.getAppContentStageSharingCapabilities call', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.getAppContentStageSharingCapabilities();
 
@@ -705,7 +713,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the stopSharingAppContentToStage message.', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           meeting.stopSharingAppContentToStage();
 
@@ -715,8 +723,9 @@ describe('meeting', () => {
           expect(stopSharingAppContentToStageMessage).not.toBeNull();
           expect(stopSharingAppContentToStageMessage.args.length).toEqual(0);
         });
+
         it('should successfully resolve the promise after sending stopSharingAppContentToStage call', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.stopSharingAppContentToStage();
 
@@ -734,7 +743,7 @@ describe('meeting', () => {
         });
 
         it('should throw if the stopSharingAppContentToStage message sends and fails', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.stopSharingAppContentToStage();
 
@@ -773,7 +782,7 @@ describe('meeting', () => {
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingState message.', async () => {
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           meeting.getAppContentStageSharingState();
 
@@ -783,9 +792,10 @@ describe('meeting', () => {
           expect(appContentStageSharingStateMessage).not.toBeNull();
           expect(appContentStageSharingStateMessage.args.length).toEqual(0);
         });
+
         it('should successfully get current stage sharing state information and resolves the promise', async () => {
           expect.assertions(4); // 1 assertions from this unit test, and 3 assertions from framelessPlatformMock.initializeWithContext
-          await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          await framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.getAppContentStageSharingState();
 
@@ -809,7 +819,7 @@ describe('meeting', () => {
 
         it('should throw if the getAppContentStageSharingState message sends and fails', async () => {
           expect.assertions(4); // 1 assertions from this unit test, and 3 assertions from framelessPlatformMock.initializeWithContext
-          framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+          framelessPlatformMock.initializeWithContext(context);
 
           const promise = meeting.getAppContentStageSharingState();
 
