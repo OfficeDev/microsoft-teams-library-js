@@ -1,12 +1,10 @@
-import { OBJECTMEMBER_TYPES } from '@babel/types';
-import { rejects } from 'assert';
 import { version } from '../../src/internal/constants';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { DeepLinkParameters, FrameInfo, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
-import { MessageResponse, Utils } from '../utils';
+import { Utils } from '../utils';
 
 const emptyCallback = () => {};
 
