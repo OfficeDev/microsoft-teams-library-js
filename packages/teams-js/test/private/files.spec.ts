@@ -484,20 +484,20 @@ describe('files', () => {
       expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls without frame context initialization', () => {
-      utils.initializeWithContext('settings');
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
       expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
-        "This call is not allowed in the 'settings' context",
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
 
-    it('should not allow calls with empty callback', () => {
-      utils.initializeWithContext('content');
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
       expect(() => files.getFileDownloads(null)).toThrowError();
     });
 
-    it('should trigger callback correctly', () => {
-      utils.initializeWithContext('content');
+    it('should trigger callback correctly', async () => {
+      await utils.initializeWithContext('content');
       const mockFileDownloads: files.IFileItem[] = [
         {
           timestamp: new Date(),
@@ -525,13 +525,15 @@ describe('files', () => {
       expect(() => files.openDownloadFolder()).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls without frame context initialization', () => {
-      utils.initializeWithContext('settings');
-      expect(() => files.openDownloadFolder()).toThrowError("This call is not allowed in the 'settings' context");
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.openDownloadFolder()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       files.openDownloadFolder();
 
