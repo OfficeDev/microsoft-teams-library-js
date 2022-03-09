@@ -52,8 +52,6 @@ export namespace sharing {
    *
    * @param shareWebContentRequest - web content info
    * @returns Promise that will be fulfilled when the operation has completed
-   *
-   * @internal
    */
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   /**
@@ -65,8 +63,6 @@ export namespace sharing {
    *
    * @param shareWebContentRequest - web content info
    * @param callback - optional callback
-   *
-   * @internal
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
