@@ -3,7 +3,7 @@ import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
 
-describe('authentication', () => {
+describe('Testing authentication module', () => {
   let utils = new Utils();
 
   const errorMessage = 'mockError';
@@ -31,6 +31,41 @@ describe('authentication', () => {
     }
   });
 
+  describe('Testing authentication.initialize function', () => {
+    it('authentication.initialize should successfully register authentication.authenticate.success/failure handler', async () => {
+      authentication.initialize();
+      const messageForAuthenticationSuccess = utils.findMessageByFunc('authentication.authenticate.success');
+      const messageForAuthenticationFailure = utils.findMessageByFunc('authentication.authenticate.failure');
+      expect(messageForAuthenticationSuccess).toBeNull();
+      expect(messageForAuthenticationFailure).toBeNull();
+    });
+  });
+
+  describe('Testing authentication.registerAuthenticationHandlers function', () => {
+    it('authentication.registerAuthenticationHandlers should successfully pop up the auth window when authenticate called with authenticationParams for connectors', async () => {
+      await utils.initializeWithContext('content');
+      let windowOpenCalled = false;
+      jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+        (url: string, name: string, specs: string): Window => {
+          expect(url).toEqual('https://someurl/');
+          expect(name).toEqual('_blank');
+          expect(specs.indexOf('width=100')).not.toBe(-1);
+          expect(specs.indexOf('height=200')).not.toBe(-1);
+          windowOpenCalled = true;
+          return utils.childWindow as Window;
+        },
+      );
+
+      const authenticationParams = {
+        url: 'https://someurl/',
+        width: 100,
+        height: 200,
+      };
+      authentication.registerAuthenticationHandlers(authenticationParams);
+      authentication.authenticate();
+      expect(windowOpenCalled).toBe(true);
+    });
+  });
   it('should not allow authentication.authenticate calls before initialization', () => {
     const authenticationParams: authentication.AuthenticatePopUpParameters = {
       url: 'https://someurl/',
@@ -119,32 +154,6 @@ describe('authentication', () => {
     };
     authentication.authenticate(authenticationParams);
     expect(windowOpenCalled).toBe(true);
-  });
-
-  it('should successfully pop up the auth window when authenticate called without authenticationParams for connectors', () => {
-    expect.assertions(5);
-    return utils.initializeWithContext('content').then(() => {
-      let windowOpenCalled = false;
-      jest.spyOn(utils.mockWindow, 'open').mockImplementation(
-        (url: string, name: string, specs: string): Window => {
-          expect(url).toEqual('https://someurl/');
-          expect(name).toEqual('_blank');
-          expect(specs.indexOf('width=100')).not.toBe(-1);
-          expect(specs.indexOf('height=200')).not.toBe(-1);
-          windowOpenCalled = true;
-          return utils.childWindow as Window;
-        },
-      );
-
-      const authenticationParams = {
-        url: 'https://someurl/',
-        width: 100,
-        height: 200,
-      };
-      authentication.registerAuthenticationHandlers(authenticationParams);
-      authentication.authenticate();
-      expect(windowOpenCalled).toBe(true);
-    });
   });
 
   it('should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called in legacy flow', done => {
