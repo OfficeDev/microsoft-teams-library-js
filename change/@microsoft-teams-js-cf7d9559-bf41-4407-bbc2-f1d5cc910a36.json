@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Moving chat.openConversation and chat.closeConversation into a subcategory chat.conversation. Added in new APIs chat.openChat and chat.openGroupChat to leverage deeplinking to open Teams chats with one or more user",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
