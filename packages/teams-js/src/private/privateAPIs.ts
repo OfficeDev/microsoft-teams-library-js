@@ -5,13 +5,12 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { UserSettingTypes } from './interfaces';
-import { menus } from './menus';
 
 /**
  * @internal
  */
 export function initializePrivateApis(): void {
-  menus.initialize();
+  //Keeping this API for any future usage, wherein privateAPIs need to be initialized
 }
 
 /**
