@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "gitmagic additions to 2.0-preview for March 09, 2022. Changes merged in from V1 include removing private tag for sharing, making Menu APIs Public, and adding new features for files API(enum FileDownloadStatus, interface IFileItem, getFileDownloads(), openDownloadFolder())",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
