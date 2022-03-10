@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "In `appWindow.ts` file, `ChildAppWindow` and `ParentAppWindow` are convereted back to synchronous calls because the promise was never being resolved.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
