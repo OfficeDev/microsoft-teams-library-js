@@ -114,9 +114,10 @@ describe('Dialog', () => {
 
       let callbackCalled = false;
       const dialogInfo: DialogInfo = {};
-      dialog.open(dialogInfo, (err, result) => {
-        expect(err).toBeNull();
-        expect(result).toBe('someResult');
+      dialog.open(dialogInfo, resultObj => {
+        expect(resultObj.err).toBeNull();
+        expect(resultObj.result).toBe('someResult');
+
         callbackCalled = true;
       });
 
@@ -131,9 +132,9 @@ describe('Dialog', () => {
 
       let callbackCalled = false;
       const dialogInfo: DialogInfo = {};
-      dialog.open(dialogInfo, (err, result) => {
-        expect(err).toBe('someError');
-        expect(result).toBeUndefined();
+      dialog.open(dialogInfo, resultObj => {
+        expect(resultObj.err).toBe('someError');
+        expect(resultObj.result).toBeUndefined();
         callbackCalled = true;
       });
 

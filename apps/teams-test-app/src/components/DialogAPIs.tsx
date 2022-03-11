@@ -14,6 +14,10 @@ const DialogAPIs = (): ReactElement => {
     });
     childWindowRef.current = childWindow;
   };
+  interface Result {
+    err: string;
+    result: string | object;
+  }
 
   const OpenDialog = (): ReactElement =>
     ApiWithTextInput<DialogInfo | TaskInfo>({
@@ -27,15 +31,19 @@ const DialogAPIs = (): ReactElement => {
         },
         submit: {
           withPromise: async (dialogInfo, setResult) => {
-            const onComplete = (err: string, result: string | object): void => {
-              setResult('Error: ' + err + '\nResult: ' + result);
+            const onComplete = (result: Result): void => {
+              setResult('Result' + JSON.stringify(result));
             };
-            openDialogHelper(dialog.open(dialogInfo, onComplete), setResult);
+            const messageForChildHandler = (message: string): void => {
+              // Message from parent
+              setResult(message);
+            };
+            dialog.open(dialogInfo, onComplete, messageForChildHandler);
             return '';
           },
           withCallback: (taskInfo, setResult) => {
             const onComplete = (err: string, result: string | object): void => {
-              setResult('Error: ' + err + '\nResult: ' + result);
+              setResult('Result' + JSON.stringify(result));
             };
             // Store the reference of child window in React
             openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);

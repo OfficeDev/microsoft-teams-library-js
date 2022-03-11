@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts } from './constants';
 import { DialogInfo } from './interfaces';
@@ -16,7 +18,15 @@ import { runtime } from './runtime';
  *
  * @beta
  */
+export interface Result {
+  err: string;
+  result: string | object;
+}
+
 export namespace dialog {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type PostMessageChannel = (message: any) => void;
+  type DialogSubmitHandler = (result: Result) => void;
   /**
    * Allows an app to open the dialog module.
    *
@@ -25,12 +35,25 @@ export namespace dialog {
    */
   export function open(
     dialogInfo: DialogInfo,
-    submitHandler?: (err: string, result: string | object) => void,
-  ): IAppWindow {
+    submitHandler?: DialogSubmitHandler,
+    messageForChildHandler?: PostMessageChannel,
+  ): PostMessageChannel {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-    sendMessageToParent('tasks.startTask', [dialogInfo], submitHandler);
-    return new ChildAppWindow();
+    if (messageForChildHandler) {
+      registerHandler('messageForParent', messageForChildHandler);
+    }
+
+    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+      submitHandler({ err, result });
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
+      ensureInitialized();
+      sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    };
+    return sendMessageToDialog;
   }
 
   /**

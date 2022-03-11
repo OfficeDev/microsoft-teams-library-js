@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { IAppWindow } from './appWindow';
-import { TaskModuleDimension } from './constants';
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { ChildAppWindow, IAppWindow } from './appWindow';
+import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import { TaskInfo } from './interfaces';
 
@@ -27,7 +29,10 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    return dialog.open(getDialogInfoFromTaskInfo(taskInfo), submitHandler);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+    sendMessageToParent('tasks.startTask', [getDialogInfoFromTaskInfo(taskInfo)], submitHandler);
+    return new ChildAppWindow();
   }
 
   /**
