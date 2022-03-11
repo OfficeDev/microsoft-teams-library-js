@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Dialog.open function takes an extra optionl parameter named messageForChildHandler and retuns a handler back instead of a ChildAppWindow. ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
