@@ -19,9 +19,29 @@ const DialogAPIs = (): ReactElement => {
     result: string | object;
   }
 
-  const OpenDialog = (): ReactElement =>
+  const StartTask = (): ReactElement =>
     ApiWithTextInput<DialogInfo | TaskInfo>({
       name: 'dialogOpen',
+      title: 'Start Task',
+      onClick: {
+        validateInput: input => {
+          if (input.url === undefined) {
+            throw new Error('Url undefined');
+          }
+        },
+        submit: async (taskInfo, setResult) => {
+          const onComplete = (err: string, result: string | object): void => {
+            setResult('Error: ' + err + '\nResult: ' + result);
+          };
+          openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
+          return '';
+        },
+      },
+    });
+
+  const OpenDialog = (): ReactElement =>
+    ApiWithTextInput<DialogInfo | TaskInfo>({
+      name: 'dialogOpen_v2',
       title: 'Dialog Open',
       onClick: {
         validateInput: input => {
@@ -29,25 +49,16 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('Url undefined');
           }
         },
-        submit: {
-          withPromise: async (dialogInfo, setResult) => {
-            const onComplete = (result: Result): void => {
-              setResult('Result' + JSON.stringify(result));
-            };
-            const messageForChildHandler = (message: string): void => {
-              // Message from parent
-              setResult(message);
-            };
-            dialog.open(dialogInfo, onComplete, messageForChildHandler);
-            return '';
-          },
-          withCallback: (taskInfo, setResult) => {
-            const onComplete = (err: string, result: string | object): void => {
-              setResult('Result' + JSON.stringify(result));
-            };
-            // Store the reference of child window in React
-            openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
-          },
+        submit: async (dialogInfo, setResult) => {
+          const onComplete = (resultObj: Result): void => {
+            setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
+          };
+          const messageForChildHandler = (message: string): void => {
+            // Message from parent
+            setResult(message);
+          };
+          dialog.open(dialogInfo, onComplete, messageForChildHandler);
+          return '';
         },
       },
     });
@@ -207,6 +218,7 @@ const DialogAPIs = (): ReactElement => {
     <>
       <h1>dialog</h1>
       <CheckDialogCapability />
+      <StartTask />
       <OpenDialog />
       <ResizeDialog />
       <SubmitDialogWithInput />
