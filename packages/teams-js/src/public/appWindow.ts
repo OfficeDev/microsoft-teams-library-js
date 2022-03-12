@@ -30,7 +30,7 @@ export interface IAppWindow {
 
 export class ChildAppWindow implements IAppWindow {
   /**
-   * Send a message to the AppWindow.
+   * Send a message to the ChildAppWindow.
    *
    * @param message - The message to send
    * @param onComplete - The callback to know if the postMessage has been success/failed.
@@ -40,7 +40,7 @@ export class ChildAppWindow implements IAppWindow {
     sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
   /**
-   * Add a listener that will be called when an event is received from this AppWindow.
+   * Add a listener that will be called when an event is received from the ChildAppWindow.
    *
    * @param type - The event to listen to. Currently the only supported type is 'message'.
    * @param listener - The listener that will be called
@@ -60,7 +60,7 @@ export class ParentAppWindow implements IAppWindow {
   }
 
   /**
-   * Send a message to the AppWindow.
+   * Send a message to the ParentAppWindow.
    *
    * @param message - The message to send
    * @param onComplete - The callback to know if the postMessage has been success/failed.
@@ -71,7 +71,7 @@ export class ParentAppWindow implements IAppWindow {
   }
 
   /**
-   * Add a listener that will be called when an event is received from this AppWindow.
+   * Add a listener that will be called when an event is received from the ParentAppWindow.
    *
    * @param type - The event to listen to. Currently the only supported type is 'message'.
    * @param listener - The listener that will be called
