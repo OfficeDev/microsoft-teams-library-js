@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Moved ParentAppWindow functionality into dialog capability. ParentAppWindow.postMessage becomes dialog.sendMessageToParent(message: any): void. And ParentAppWindow.addEventListener becomes dialog.registerOnMessageFromParent. ",
+  "comment": "Copied ParentAppWindow functionality into dialog capability. In Dialogs, ParentAppWindow.postMessage becomes dialog.sendMessageToParent(message: any): void. And ParentAppWindow.addEventListener becomes dialog.registerOnMessageFromParent.",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
