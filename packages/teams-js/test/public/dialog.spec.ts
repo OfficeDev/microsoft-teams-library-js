@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { DialogInfo } from '../../src/public/interfaces';
-import { DialogDimension } from '../../src/public/constants';
+import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
@@ -219,5 +220,46 @@ describe('Dialog', () => {
       expect(submitMessage).not.toBeNull();
       expect(submitMessage.args).toEqual(['someResult', ['someAppId']]);
     });
+  });
+  describe('sendMessageToParentFromDialog', () => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const emptyCallback = () => {};
+    const allowedContexts = [FrameContexts.task];
+    it('should not allow calls before initialization', () => {
+      expect.assertions(1);
+      expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        if (frameContext === FrameContexts.task) {
+          it(`should successfully send the message to Parent: ${frameContext}`, async () => {
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            dialog.sendMessageToParentFromDialog('exampleMessage', emptyCallback);
+            const message = utils.findMessageByFunc('messageForParent');
+            expect(message).not.toBeUndefined();
+          });
+        } else {
+          it(`should not allow calls from ${frameContext} context`, async () => {
+            await utils.initializeWithContext(frameContext);
+            expect(() => dialog.sendMessageToParentFromDialog('message', emptyCallback)).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            );
+          });
+        }
+      });
+  });
+  it('registerOnMessageFromParent', () => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const emptyCallback = () => {};
+    dialog.registerOnMessageFromParent('message', emptyCallback);
+    const message = utils.findMessageByFunc('messageForChild');
+    expect(message).not.toBeUndefined();
   });
 });

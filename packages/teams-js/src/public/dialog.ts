@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { getGenericOnCompleteHandler } from '../internal/utils';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts } from './constants';
 import { DialogInfo } from './interfaces';
@@ -60,6 +63,34 @@ export namespace dialog {
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+  }
+
+  /**
+   *  The callback to know if the message to parent has been success/failed.
+   *
+   * @param message - The message to send
+   * @param onComplete - The callback to know if the message to parent has been success/failed.
+   */
+  export function sendMessageToParentFromDialog(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message: any,
+    onComplete?: (status: boolean, reason?: string) => void,
+  ): void {
+    ensureInitialized(FrameContexts.task);
+    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+  }
+
+  /**
+   * Fucntion to call when an event is received from the Parent
+   *
+   * @param type - The event to listen to. Currently the only supported type is 'message'.
+   * @param listener - listener - The listener that will be called.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function registerOnMessageFromParent(type: string, listener: (message: any) => void): void {
+    if (type === 'message') {
+      registerHandler('messageForChild', listener);
+    }
   }
 
   export function isSupported(): boolean {
