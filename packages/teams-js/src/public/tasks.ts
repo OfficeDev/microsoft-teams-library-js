@@ -18,7 +18,7 @@ import { TaskInfo } from './interfaces';
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.open dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageForChildHandler?: PostMessageChannel): PostMessageChannel} instead.
    *
    * Allows an app to open the task module.
    *
