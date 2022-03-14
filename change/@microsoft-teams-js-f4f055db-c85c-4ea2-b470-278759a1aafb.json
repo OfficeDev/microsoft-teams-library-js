@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "In `dialog.ts` moved `Resize` functionality in a subcapability named `update`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
