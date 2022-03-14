@@ -110,29 +110,12 @@ export namespace meeting {
      */
     isAppSharing: boolean;
   }
-
-  export interface IParticipantSpeakingState {
-    /**
-     * id of participant
-     */
-    id: string;
-
-    /**
-     * indicates whether a participant is speaking
-     */
-    isSpeaking: boolean;
-  }
-
   export interface ISpeakingState {
     /**
-     * indicates whether one or more participants in a meeting are speaking
+     * indicates whether one or more participants in a meeting are speaking, or
+     * if no participants are speaking
      */
     isSpeakingDetected: boolean;
-
-    /**
-     * returns speaking state of participants
-     */
-    participantSpeakingStates?: IParticipantSpeakingState[];
   }
 
   export enum MeetingType {
@@ -351,20 +334,17 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for changes to speaking array.
+   * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
+   * will be true. If no participants are speaking, isSpeakingDetected will be false.
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
-   * @param includeParticipants is a flag to opt-in to receive participant ids of who is speaking.
-   * The default value is false. If the participant ids are needed, register for the permission:
-   * OnlineMeetingParticipant.Read.Chat in the app's manifest.
    */
   export function registerDetectSpeakingStateChangedHandler(
-    handler: (speakingState: ISpeakingState) => void,
-    includeParticipants?: boolean,
+    handler: (error: SdkError | null, speakingState: ISpeakingState) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerDetectSpeakingStateChangedHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.speakingStateChanged', handler, true, [includeParticipants]);
+    registerHandler('meeting.speakingStateChanged', handler, true);
   }
 }
