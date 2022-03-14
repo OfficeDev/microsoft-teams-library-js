@@ -850,24 +850,33 @@ describe('meeting', () => {
     });
 
     it('should successfully register a handler for when the array of participants speaking changes', () => {
-      utils.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
       let returnedSpeakingState: meeting.ISpeakingState | null;
-      let returnedSdkError: SdkError | null;
+      // let returnedSdkError: SdkError | null;
 
-      meeting.registerDetectSpeakingStateChangedHandler(
-        (error: SdkError, isSpeakingDetected: meeting.ISpeakingState) => {
-          handlerCalled = true;
-          returnedSpeakingState = isSpeakingDetected;
-          returnedSdkError = error;
+      meeting.registerDetectSpeakingStateChangedHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+        handlerCalled = true;
+        returnedSpeakingState = isSpeakingDetected;
+      });
+
+      // utils.sendMessage('meeting.speakingStateChanged', { isSpeakingDetected: true });
+      let registerHandlerMessage = desktopPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
+
+      desktopPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.speakingStateChanged',
+          args: [speakingState],
         },
-      );
+      } as DOMMessageEvent);
 
-      utils.sendMessage('meeting.speakingStateChanged', { isSpeakingDetected: true });
-      expect(handlerCalled).toBe(true);
-      expect(returnedSpeakingState).not.toBeNull();
-      expect(returnedSpeakingState).toEqual({ isSpeakingDetected: true });
+      expect(handlerCalled).toBeTruthy();
+      expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
     });
   });
 });
