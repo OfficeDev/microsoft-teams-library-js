@@ -230,6 +230,55 @@ export namespace files {
    * @private
    * Hide from docs
    *
+   * Download status enum
+   */
+  export enum FileDownloadStatus {
+    Downloaded = 'Downloaded',
+    Downloading = 'Downloading',
+    Failed = 'Failed',
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Download Files interface
+   */
+  export interface IFileItem {
+    /**
+     * ID of the file metadata
+     */
+    objectId?: string;
+    /**
+     * Path of the file
+     */
+    path?: string;
+    /**
+     * Size of the file in bytes
+     */
+    sizeInBytes?: number;
+    /**
+     * Download status
+     */
+    status?: FileDownloadStatus;
+    /**
+     * Download timestamp
+     */
+    timestamp: Date;
+    /**
+     * File name
+     */
+    title: string;
+    /**
+     * Type of file i.e. the file extension.
+     */
+    extension: string;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
    * Gets a list of cloud storage folders added to the channel
    * @param channelId ID of the channel whose cloud storage folders should be retrieved
    * @param callback Callback that will be triggered post folders load
@@ -415,5 +464,34 @@ export namespace files {
       [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
       callback,
     );
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Gets list of downloads for current user
+   * @param callback Callback that will be triggered post downloads load
+   */
+  export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw new Error('[files.getFileDownloads] Callback cannot be null');
+    }
+
+    sendMessageToParent('files.getFileDownloads', [], callback);
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   *
+   * Open download preference folder
+   */
+  export function openDownloadFolder(): void {
+    ensureInitialized(FrameContexts.content);
+
+    sendMessageToParent('files.openDownloadFolder', []);
   }
 }

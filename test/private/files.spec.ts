@@ -421,4 +421,73 @@ describe('files', () => {
       expect(callback).toHaveBeenCalled();
     });
   });
+
+  describe('getFileDownloads', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should not allow calls with empty callback', () => {
+      utils.initializeWithContext('content');
+      expect(() => files.getFileDownloads(null)).toThrowError();
+    });
+
+    it('should trigger callback correctly', () => {
+      utils.initializeWithContext('content');
+      const mockFileDownloads: files.IFileItem[] = [
+        {
+          timestamp: new Date(),
+          title: 'title',
+          extension: 'docx',
+        },
+      ];
+
+      const callback = jest.fn((err, fileList) => {
+        expect(err).toBeFalsy();
+        expect(fileList).toEqual(mockFileDownloads);
+      });
+
+      files.getFileDownloads(callback);
+
+      const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+      expect(getFileDownloadsMessage).not.toBeNull();
+      utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('openDownloadFolder', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.openDownloadFolder()).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.openDownloadFolder()).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      files.openDownloadFolder();
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      expect(openDownloadFolderMessage.args).toEqual([]);
+    });
+  });
+
 });
