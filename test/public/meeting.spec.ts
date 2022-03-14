@@ -853,14 +853,14 @@ describe('meeting', () => {
       utils.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
 
       let handlerCalled = false;
-      let returnedSdkError: SdkError | null;
       let returnedSpeakingState: meeting.ISpeakingState | null;
+      let returnedSdkError: SdkError | null;
 
       meeting.registerDetectSpeakingStateChangedHandler(
         (error: SdkError, isSpeakingDetected: meeting.ISpeakingState) => {
           handlerCalled = true;
-          returnedSdkError = error;
           returnedSpeakingState = isSpeakingDetected;
+          returnedSdkError = error;
         },
       );
 
