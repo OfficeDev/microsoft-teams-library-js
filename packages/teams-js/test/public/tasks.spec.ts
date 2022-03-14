@@ -178,7 +178,7 @@ describe('tasks', () => {
       const taskInfo = { width: 10, height: 10, title: 'anything' };
 
       expect(() => tasks.updateTask(taskInfo)).toThrowError(
-        'resize requires a dialogInfo argument containing only width and height',
+        'resize requires a TaskInfo argument containing only width and height',
       );
     });
   });

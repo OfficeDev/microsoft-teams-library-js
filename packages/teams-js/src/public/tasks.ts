@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { IAppWindow } from './appWindow';
-import { TaskModuleDimension } from './constants';
+import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import { TaskInfo } from './interfaces';
 
@@ -32,14 +34,22 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
+   * As of 2.0.0-beta.1, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
    * @param taskInfo - An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    dialog.resize(taskInfo);
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { width, height, ...extra } = taskInfo;
+
+    if (!Object.keys(extra).length) {
+      sendMessageToParent('tasks.updateTask', [taskInfo]);
+    } else {
+      throw new Error('resize requires a TaskInfo argument containing only width and height');
+    }
   }
 
   /**

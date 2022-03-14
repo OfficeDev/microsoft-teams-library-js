@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, IAppWindow, ParentAppWindow, TaskInfo, tasks } from '@microsoft/teams-js';
+import { dialog, DialogInfo, DialogSize, IAppWindow, ParentAppWindow, TaskInfo, tasks } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -44,26 +44,51 @@ const DialogAPIs = (): ReactElement => {
       },
     });
 
-  const ResizeDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
-      name: 'dialogResize',
-      title: 'Dialog Resize',
+  const UpdateTaskModule = (): ReactElement =>
+    ApiWithTextInput<TaskInfo>({
+      name: 'updateTaskModule',
+      title: 'Update Task Module',
       onClick: {
         validateInput: input => {
           if (input.height === undefined && input.width === undefined) {
             throw new Error('Height and width undefined');
           }
         },
-        submit: {
-          withPromise: async dialogInfo => {
-            dialog.resize(dialogInfo);
-            return 'Teams client SDK call dialog.resize was called';
-          },
-          withCallback: (taskInfo, setResult) => {
-            tasks.updateTask(taskInfo);
-            setResult('Teams client SDK call tasks.updateTask was called');
-          },
+        submit: async (taskInfo, setResult) => {
+          tasks.updateTask(taskInfo);
+          setResult('Teams client SDK call tasks.updateTask was called');
+          return '';
         },
+      },
+    });
+  const ResizeDialog = (): ReactElement =>
+    ApiWithTextInput<DialogSize>({
+      name: 'dialogResize',
+      title: 'Dialog Resize',
+      onClick: {
+        validateInput: input => {
+          if (!input) {
+            throw new Error('input is undefined');
+          }
+        },
+        submit: async (dimensions, setResult) => {
+          dialog.update.resize(dimensions);
+          setResult('Teams client SDK call dailog.update.resize was called');
+          return '';
+        },
+      },
+    });
+
+  const CheckDialogResizeCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCapabilityResizeDialog',
+      title: 'Check Capability Resize Dialog',
+      onClick: async () => {
+        if (dialog.update.isSupported()) {
+          return 'Dialog.update module is supported';
+        } else {
+          return 'Dialog.update module is not supported';
+        }
       },
     });
 
@@ -200,7 +225,9 @@ const DialogAPIs = (): ReactElement => {
       <h1>dialog</h1>
       <CheckDialogCapability />
       <OpenDialog />
+      <UpdateTaskModule />
       <ResizeDialog />
+      <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
       <SendMessageToChild />
       <SendMessageToParent />
