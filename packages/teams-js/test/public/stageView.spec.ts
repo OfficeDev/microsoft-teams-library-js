@@ -42,10 +42,10 @@ describe('stageView', () => {
       .map(k => FrameContexts[k])
       .forEach(frameContext => {
         if (frameContext !== 'content') {
-          it.skip(`should not allow calls from ${frameContext} context`, () => {
-            utils.initializeWithContext(frameContext);
+          it.skip(`should not allow calls from ${frameContext} context`, async () => {
+            await utils.initializeWithContext(frameContext);
 
-            expect(() => stageView.open(stageViewParams)).toThrowError(
+            expect(stageView.open(stageViewParams)).toThrowError(
               `This call is not allowed in the '${frameContext}' context`,
             );
           });
@@ -59,19 +59,6 @@ describe('stageView', () => {
     });
 
     describe('v1', () => {
-      // it('should pass along entire StageViewParams parameter in content context', () => {
-      //   utils.initializeWithContext('content');
-
-      //   stageView.open(stageViewParams, () => {
-      //     return;
-      //   });
-
-      //   const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-
-      //   expect(openStageViewMessage).not.toBeNull();
-      //   expect(openStageViewMessage.args).toEqual([stageViewParams]);
-      // });
-
       it('should pass along entire StageViewParams parameter in content context', () => {
         utils.initializeWithContext('content');
 
