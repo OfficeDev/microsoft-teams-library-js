@@ -4,41 +4,48 @@ import React, { ReactElement } from 'react';
 import { ApiWithTextInput } from './utils';
 
 const OpenStageView = (): ReactElement =>
-  ApiWithTextInput({
+  ApiWithTextInput<stageView.StageViewParams>({
     name: 'stageViewOpen',
     title: 'StageView Open',
     onClick: {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: input => {
-        console.log('input!!!!!!!: ', input);
-        return input;
+        if (!input.appId) {
+          throw new Error('appId are required.');
+        }
+        if (!input.contentUrl) {
+          throw new Error('contentUrl are required.');
+        }
+        if (!input.threadId) {
+          throw new Error('threadId are required.');
+        }
+        if (!input.title) {
+          throw new Error('title are required.');
+        }
       },
       submit: {
         withPromise: async input => {
+          console.log('input!!!!!!!: ', input);
           await stageView.open(input);
           return 'opened';
         },
         withCallback: (input, setResult) => {
-          const callback = (error: SdkError, result: string): void => {
+          console.log('input!!!!!!!: ', input);
+
+          const callback = (error?: SdkError): void => {
             if (error) {
               setResult(JSON.stringify(error));
-            } else {
-              setResult('result: ' + result);
             }
           };
-          stageView.open(callback, input);
+          stageView.open(input, callback);
         },
       },
     },
-    defaultInput: JSON.stringify({
-      appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
-      contentUrl: '',
-      threadId: '',
-      title: 'imma title',
-    }),
   });
 
 const StageViewAPIs = (): ReactElement => (
   <>
+    <h1>stageView</h1>
     <OpenStageView />
   </>
 );
