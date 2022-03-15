@@ -18,33 +18,33 @@ import { runtime } from './runtime';
  *
  * @beta
  */
-export interface Result {
+export interface SdkResponse {
   err: string;
   result: string | object;
 }
 
 export namespace dialog {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  type PostMessageChannel = (message: any) => void;
-  type DialogSubmitHandler = (result: Result) => void;
+  export type PostMessageChannel = (message: any, onComplete?: (status: boolean, reason?: string) => void) => void;
+  export type DialogSubmitHandler = (result: SdkResponse) => void;
   /**
    * Allows an app to open the dialog module.
    *
    * @param dialogInfo - An object containing the parameters of the dialog module
    * @param submitHandler - Handler to call when the task module is completed
-   * @param messageForChildHandler - Handler that triggers if dialog tries to send a message to the app.
+   * @param messageFromChildHandler - Handler that triggers if dialog tries to send a message to the app.
    *
    * @returns a Handler that is triggerd to send a message to the dialog.
    */
   export function open(
     dialogInfo: DialogInfo,
     submitHandler?: DialogSubmitHandler,
-    messageForChildHandler?: PostMessageChannel,
+    messageFromChildHandler?: PostMessageChannel,
   ): PostMessageChannel {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-    if (messageForChildHandler) {
-      registerHandler('messageForParent', messageForChildHandler);
+    if (messageFromChildHandler) {
+      registerHandler('messageForParent', messageFromChildHandler);
     }
 
     sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
@@ -53,7 +53,6 @@ export namespace dialog {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
-      ensureInitialized();
       sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
     };
     return sendMessageToDialog;

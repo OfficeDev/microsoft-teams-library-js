@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParent } from '../internal/communication';
-import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { FrameContexts, TaskModuleDimension } from './constants';
-import { dialog } from './dialog';
+import { TaskModuleDimension } from './constants';
+import { dialog, SdkResponse } from './dialog';
 import { TaskInfo } from './interfaces';
 
 /**
@@ -18,7 +16,7 @@ import { TaskInfo } from './interfaces';
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageForChildHandler?: PostMessageChannel): PostMessageChannel} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} instead.
    *
    * Allows an app to open the task module.
    *
@@ -29,9 +27,9 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-
-    sendMessageToParent('tasks.startTask', [getDialogInfoFromTaskInfo(taskInfo)], submitHandler);
+    dialog.open(getDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+      submitHandler(sdkResponse.err, sdkResponse.result),
+    );
     return new ChildAppWindow();
   }
 

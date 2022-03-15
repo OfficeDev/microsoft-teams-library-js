@@ -1,5 +1,5 @@
 import { DialogInfo } from '../../src/public/interfaces';
-import { DialogDimension } from '../../src/public/constants';
+import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
@@ -24,6 +24,9 @@ describe('Dialog', () => {
   });
 
   describe('open', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const emptyCallback = (): void => {};
+
     it('should not allow calls before initialization', () => {
       const dialogInfo: DialogInfo = {};
       expect(() => dialog.open(dialogInfo)).toThrowError('The library has not yet been initialized');
@@ -142,6 +145,55 @@ describe('Dialog', () => {
       expect(openMessage).not.toBeNull();
       utils.respondToMessage(openMessage, 'someError');
       expect(callbackCalled).toBe(true);
+    });
+
+    it('Should register messageFromChildHandler if it is passed', async () => {
+      await utils.initializeWithContext('content');
+      const dialogInfo: DialogInfo = {};
+      const messageFromChild = 'MessageFromChild';
+      let returnedMessage: string;
+      let handlerCalled = false;
+      dialog.open(dialogInfo, emptyCallback, messageFromChild => {
+        handlerCalled = true;
+        returnedMessage = messageFromChild;
+      });
+
+      utils.sendMessage('messageForParent', messageFromChild);
+
+      const handlerMessage = utils.findMessageByFunc('registerHandler');
+      expect(handlerMessage).not.toBeNull();
+      expect(handlerCalled).toBe(true);
+      expect(returnedMessage).toEqual(messageFromChild);
+    });
+
+    describe('send a message to dialog using returned fucntion from dialog.open API call', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      const emptyCallback = (): void => {};
+      const dialogInfo: DialogInfo = {};
+
+      it('should successfully send the post the message to dialog', async () => {
+        await utils.initializeWithContext('content');
+        const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
+        sendMessageToDialogHandler('exampleMessage', (success, reason) => {
+          expect(success).toBeTruthy();
+          expect(reason).toBeNull;
+        });
+        const message = utils.findMessageByFunc('messageForChild');
+        utils.respondToMessage(message, true);
+        expect(message).not.toBeUndefined();
+      });
+      it('should successfully receive the error message if the post message to dialog fails', async () => {
+        await utils.initializeWithContext('content');
+        const error = 'some Error Occured';
+        const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
+        sendMessageToDialogHandler('exampleMessage', (success, reason) => {
+          expect(success).toBeFalsy();
+          expect(reason).toBe(error);
+        });
+        const message = utils.findMessageByFunc('messageForChild');
+        utils.respondToMessage(message, false, error);
+        expect(message).not.toBeUndefined();
+      });
     });
   });
 

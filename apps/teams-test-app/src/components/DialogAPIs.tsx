@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, IAppWindow, ParentAppWindow, TaskInfo, tasks } from '@microsoft/teams-js';
+import { dialog, DialogInfo, IAppWindow, ParentAppWindow, SdkResponse, TaskInfo, tasks } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -14,10 +14,6 @@ const DialogAPIs = (): ReactElement => {
     });
     childWindowRef.current = childWindow;
   };
-  interface Result {
-    err: string;
-    result: string | object;
-  }
 
   const StartTask = (): ReactElement =>
     ApiWithTextInput<DialogInfo | TaskInfo>({
@@ -50,14 +46,14 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (dialogInfo, setResult) => {
-          const onComplete = (resultObj: Result): void => {
+          const onComplete = (resultObj: SdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
-          const messageForChildHandler = (message: string): void => {
+          const messageFromChildHandler: dialog.PostMessageChannel = (message: string): void => {
             // Message from parent
             setResult(message);
           };
-          dialog.open(dialogInfo, onComplete, messageForChildHandler);
+          dialog.open(dialogInfo, onComplete, messageFromChildHandler);
           return '';
         },
       },
@@ -93,35 +89,51 @@ const DialogAPIs = (): ReactElement => {
       onClick: {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
-        submit: {
-          withPromise: async message => {
-            if (childWindowRef.current && childWindowRef.current !== null) {
-              const childWindow = childWindowRef.current;
-              await childWindow.postMessage(message);
-              return 'Message sent to child';
-            } else {
-              return "childWindow doesn't exist";
-            }
-          },
-          withCallback: (message, setResult) => {
-            if (childWindowRef.current && childWindowRef.current !== null) {
-              const childWindow = childWindowRef.current;
-              const onComplete = (status: boolean, reason?: string): void => {
-                if (!status) {
-                  if (reason) {
-                    setResult(JSON.stringify(reason));
-                  } else {
-                    setResult("Status is false but there's no reason?! This shouldn't happen.");
-                  }
+        submit: async (message, setResult) => {
+          if (childWindowRef.current && childWindowRef.current !== null) {
+            const childWindow = childWindowRef.current;
+            const onComplete = (status: boolean, reason?: string): void => {
+              if (!status) {
+                if (reason) {
+                  setResult(JSON.stringify(reason));
                 } else {
-                  setResult('Message sent to child');
+                  setResult("Status is false but there's no reason?! This shouldn't happen.");
                 }
-              };
-              childWindow.postMessage(message, onComplete);
+              } else {
+                setResult('Message sent to child');
+              }
+            };
+            childWindow.postMessage(message, onComplete);
+          } else {
+            setResult("childWindow doesn't exist");
+          }
+          return '';
+        },
+      },
+    });
+
+  const SendMessageToChild_v2 = (): ReactElement =>
+    ApiWithTextInput<string>({
+      name: 'sendMessageToChild_v2',
+      title: 'sendMessageToChild_v2',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: async (message, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's no reason?! This shouldn't happen.");
+              }
             } else {
-              setResult("childWindow doesn't exist");
+              setResult('Message sent to child');
             }
-          },
+          };
+          const sendMessageToDialogHandler = dialog.open({});
+          sendMessageToDialogHandler(message, onComplete);
+          return '';
         },
       },
     });
@@ -223,6 +235,7 @@ const DialogAPIs = (): ReactElement => {
       <ResizeDialog />
       <SubmitDialogWithInput />
       <SendMessageToChild />
+      <SendMessageToChild_v2 />
       <SendMessageToParent />
       <RegisterForParentMessage />
     </>
