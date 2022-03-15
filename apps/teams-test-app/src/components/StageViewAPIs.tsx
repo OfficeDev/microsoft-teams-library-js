@@ -8,7 +8,6 @@ const OpenStageView = (): ReactElement =>
     name: 'stageViewOpen',
     title: 'StageView Open',
     onClick: {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: input => {
         if (!input.appId) {
           throw new Error('appId are required.');
@@ -25,13 +24,10 @@ const OpenStageView = (): ReactElement =>
       },
       submit: {
         withPromise: async input => {
-          console.log('input!!!!!!!: ', input);
           await stageView.open(input);
           return 'opened';
         },
         withCallback: (input, setResult) => {
-          console.log('input!!!!!!!: ', input);
-
           const callback = (error?: SdkError): void => {
             if (error) {
               setResult(JSON.stringify(error));
