@@ -1,5 +1,5 @@
 import { SdkError, stageView } from '@microsoft/teams-js';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import { ApiWithTextInput } from './utils';
 
