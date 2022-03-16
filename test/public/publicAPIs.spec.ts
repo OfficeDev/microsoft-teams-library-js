@@ -9,7 +9,7 @@ import {
   registerOnLoadHandler,
   registerBeforeUnloadHandler,
   enablePrintCapability,
-  registerEnterSettingsHandler,
+  registerChangeSettingsHandler,
   getContext,
   _initialize,
   _uninitialize,
@@ -142,7 +142,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.initializeWithContext('content');
     let handlerCalled = false;
 
-    registerEnterSettingsHandler(() => {
+    registerChangeSettingsHandler(() => {
       handlerCalled = true;
     });
 
