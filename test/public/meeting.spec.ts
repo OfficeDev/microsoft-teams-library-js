@@ -834,16 +834,16 @@ describe('meeting', () => {
     });
   });
 
-  describe('registerDetectSpeakingStateChangedHandler', () => {
+  describe('registerSpeakingStateChangeHandler', () => {
     it('should fail when called without a handler', () => {
-      expect(() => meeting.registerDetectSpeakingStateChangedHandler(null)).toThrowError(
-        '[registerDetectSpeakingStateChangedHandler] Handler cannot be null',
+      expect(() => meeting.registerSpeakingStateChangeHandler(null)).toThrowError(
+        '[registerSpeakingStateChangeHandler] Handler cannot be null',
       );
     });
 
     it('should fail when called before app is initialized', () => {
       expect(() =>
-        meeting.registerDetectSpeakingStateChangedHandler(() => {
+        meeting.registerSpeakingStateChangeHandler(() => {
           return;
         }),
       ).toThrowError('The library has not yet been initialized');
@@ -855,14 +855,12 @@ describe('meeting', () => {
 
       let handlerCalled = false;
       let returnedSpeakingState: meeting.ISpeakingState | null;
-      // let returnedSdkError: SdkError | null;
 
-      meeting.registerDetectSpeakingStateChangedHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+      meeting.registerSpeakingStateChangeHandler((isSpeakingDetected: meeting.ISpeakingState) => {
         handlerCalled = true;
         returnedSpeakingState = isSpeakingDetected;
       });
 
-      // utils.sendMessage('meeting.speakingStateChanged', { isSpeakingDetected: true });
       let registerHandlerMessage = desktopPlatformMock.findMessageByFunc('registerHandler');
       expect(registerHandlerMessage).not.toBeNull();
       expect(registerHandlerMessage.args.length).toBe(1);

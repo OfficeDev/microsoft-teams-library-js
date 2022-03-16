@@ -339,13 +339,12 @@ export namespace meeting {
    * at a time. A subsequent registration replaces an existing registration.
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    */
-  export function registerDetectSpeakingStateChangedHandler(handler: (speakingState: ISpeakingState) => void): void {
+  export function registerSpeakingStateChangeHandler(handler: (speakingState: ISpeakingState) => void): void {
     if (!handler) {
-      throw new Error('[registerDetectSpeakingStateChangedHandler] Handler cannot be null');
+      throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', (speakingState: ISpeakingState) => {
-      ensureInitialized();
       handler(speakingState);
     });
   }
