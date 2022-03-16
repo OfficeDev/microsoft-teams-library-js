@@ -190,7 +190,7 @@ const DialogAPIs = (): ReactElement => {
       name: 'registerForParentMessage_v2',
       title: 'registerForParentMessage_v2',
       onClick: async setResult => {
-        dialog.registerOnMessageFromParent('message', (message: string) => {
+        dialog.registerOnMessageFromParent((message: string) => {
           setResult(message);
         });
         return 'Completed';

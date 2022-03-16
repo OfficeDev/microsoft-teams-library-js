@@ -87,10 +87,9 @@ export namespace dialog {
    * @param listener - listener - The listener that will be called.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function registerOnMessageFromParent(type: string, listener: (message: any) => void): void {
-    if (type === 'message') {
-      registerHandler('messageForChild', listener);
-    }
+  export function registerOnMessageFromParent(listener: (message: any) => void): void {
+    ensureInitialized();
+    registerHandler('messageForChild', listener);
   }
 
   export function isSupported(): boolean {

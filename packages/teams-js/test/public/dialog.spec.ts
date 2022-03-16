@@ -147,7 +147,7 @@ describe('Dialog', () => {
 
   describe('resize', () => {
     it('should not allow calls before initialization', () => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
     });
 
@@ -239,8 +239,24 @@ describe('Dialog', () => {
           it(`should successfully send the message to Parent: ${frameContext}`, async () => {
             await utils.initializeWithContext(frameContext);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
-            dialog.sendMessageToParentFromDialog('exampleMessage', emptyCallback);
+            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
+              expect(success).toBeTruthy();
+              expect(reason).toBeNull;
+            });
             const message = utils.findMessageByFunc('messageForParent');
+            utils.respondToMessage(message, true);
+            expect(message).not.toBeUndefined();
+          });
+          it(`should successfully throws the error if the message fails to send: ${frameContext}`, async () => {
+            const error = 'some Error Occured';
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
+              expect(success).toBeFalsy();
+              expect(reason).toBe(error);
+            });
+            const message = utils.findMessageByFunc('messageForParent');
+            utils.respondToMessage(message, false, error);
             expect(message).not.toBeUndefined();
           });
         } else {
@@ -255,11 +271,22 @@ describe('Dialog', () => {
         }
       });
   });
-  it('registerOnMessageFromParent', () => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const emptyCallback = () => {};
-    dialog.registerOnMessageFromParent('message', emptyCallback);
-    const message = utils.findMessageByFunc('messageForChild');
-    expect(message).not.toBeUndefined();
+
+  describe('registerOnMessageFromParent', () => {
+    it('should successfully register the handler.', async () => {
+      let returnedMessage: string;
+      let handlerCalled = false;
+      await utils.initializeWithContext('content');
+      const messageFromParent = 'messageFromParent';
+      dialog.registerOnMessageFromParent(messageFromParent => {
+        handlerCalled = true;
+        returnedMessage = messageFromParent;
+      });
+      const message = utils.findMessageByFunc('registerHandler');
+      utils.sendMessage('messageForChild', messageFromParent);
+      expect(message).not.toBeNull();
+      expect(handlerCalled).toBe(true);
+      expect(returnedMessage).toEqual(messageFromParent);
+    });
   });
 });
