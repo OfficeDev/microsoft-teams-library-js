@@ -112,7 +112,7 @@ export namespace meeting {
   }
   export interface ISpeakingState {
     /**
-     * indicates whether one or more participants in a meeting are speaking, or
+     * Indicates whether one or more participants in a meeting are speaking, or
      * if no participants are speaking
      */
     isSpeakingDetected: boolean;
