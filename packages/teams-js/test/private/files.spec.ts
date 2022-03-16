@@ -492,7 +492,7 @@ describe('files', () => {
       });
 
       it('should trigger callback correctly', async () => {
-        expect.assertions(4);
+        expect.assertions(3);
 
         await utils.initializeWithContext('content');
 
