@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "In `dialog.ts` moved `Resize` functionality in a subcapability named `update`.",
+  "comment": "dialog.resize() function has been moved to a new dialog subcapability and is now dialog.update.resize(). The parameter has been changed to DialogSize type",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
