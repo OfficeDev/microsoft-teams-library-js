@@ -4,6 +4,7 @@ import {
   sendMessageToParentAsync,
 } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
@@ -524,14 +525,25 @@ export namespace files {
    * Gets list of downloads for current user
    * @param callback Callback that will be triggered post downloads load
    */
-  export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void {
+  export function getFileDownloads(): Promise<IFileItem[]>;
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   *
+   * @deprecated
+   * As of 2.0.0-beta.3, please use {@link file.getFileDownloads file.getFileDownloads(): Promise\<IFileItem[]\>} instead.
+   * Gets list of downloads for current user
+   * @param callback Callback that will be triggered post downloads load
+   */
+  export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void;
+  export function getFileDownloads(callback?: (error?: SdkError, files?: IFileItem[]) => void): Promise<IFileItem[]> {
     ensureInitialized(FrameContexts.content);
 
-    if (!callback) {
-      throw new Error('[files.getFileDownloads] Callback cannot be null');
-    }
+    const wrappedFunction = (): Promise<IFileItem[]> =>
+      new Promise(resolve => resolve(sendAndHandleError('files.getFileDownloads', [])));
 
-    sendMessageToParent('files.getFileDownloads', [], callback);
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 
   /**
