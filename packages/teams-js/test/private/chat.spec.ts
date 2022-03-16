@@ -144,5 +144,14 @@ describe('chat', () => {
         'The library has not yet been initialized',
       );
     });
+    it('should not allow calls when no members are provided', () => {
+      const conversationRequest: OpenGroupChatRequest = {
+        members: [],
+        message: 'someMessage',
+      };
+      return expect(chat.openGroupChat(conversationRequest)).rejects.toThrowError(
+        'OpenGroupChat Failed: No users specified',
+      );
+    });
   });
 });

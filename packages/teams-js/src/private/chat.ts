@@ -49,7 +49,7 @@ export namespace chat {
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
       if (openChatRequest.members.length < 1) {
-        throw Error('No users specified');
+        throw Error('OpenGroupChat Failed: No users specified');
       }
       if (openChatRequest.members.length === 1) {
         const chatRequest: OpenSingleChatRequest = {
