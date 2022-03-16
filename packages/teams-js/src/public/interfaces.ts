@@ -577,45 +577,50 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
-/** 
-
- * 
-
- * @internal 
-
+/**
+ *
+ * @internal
  */
-
-export interface OpenChatRequest {
-  /** 
-
-   * @hidden 
-
-   * Array of members email addresses to open chat with 
-
+interface OpenChatRequest {
+  /**
+   * @hidden
+   * The message to send when opening chat
    */
-
-  members: string[];
-
-  /** 
-
-   * @hidden 
-
-   * The message to send when opening chat 
-
-   */
-
   message?: string;
 }
 
-export interface OpenGroupChatRequest extends OpenChatRequest {
-  /**  
-
- * @hidden  
-
- * The display name of a conversation for 3 or more users  
-
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
  */
+export interface OpenSingleChatRequest extends OpenChatRequest {
+  /**
+   * @hidden
+   * Member's UPN to open chat with
+   */
+  member: string;
+}
 
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
+ */
+export interface OpenGroupChatRequest extends OpenChatRequest {
+  /**
+   * @hidden
+   * Array containing UPNs of individuals to open chat with
+   */
+  members: string[];
+  /**
+   * @hidden
+   * The display name of a conversation for 3 or more users
+   */
   topic?: string;
 }
 

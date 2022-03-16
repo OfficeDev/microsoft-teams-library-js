@@ -1,4 +1,4 @@
-import { OpenConversationRequest } from '../../src/public/interfaces';
+import { OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/interfaces';
 import { chat } from '../../src/private/chat';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
@@ -120,6 +120,29 @@ describe('chat', () => {
       expect(getChatMembersMessage).not.toBeNull();
       utils.respondToMessage(getChatMembersMessage, {});
       return expect(promise).resolves;
+    });
+  });
+
+  describe('openChat', () => {
+    it('should not allow calls before initialization', () => {
+      const conversationRequest: OpenSingleChatRequest = {
+        member: 'someUPN',
+        message: 'someMessage',
+      };
+      return expect(chat.openChat(conversationRequest)).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+  });
+  describe('openGroupChat', () => {
+    it('should not allow calls before initialization', () => {
+      const conversationRequest: OpenGroupChatRequest = {
+        members: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+      };
+      return expect(chat.openGroupChat(conversationRequest)).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
     });
   });
 });
