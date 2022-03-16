@@ -48,4 +48,5 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     failTaskOnFailedTests: false
     testRunTitle: 'Test results'
+    searchFolder: '$(Agent.BuildDirectory)/androidHost'
   condition: succeededOrFailed()
