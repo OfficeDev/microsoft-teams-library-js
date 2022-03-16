@@ -66,7 +66,7 @@ export namespace dialog {
   }
 
   /**
-   *  The callback to know if the message to parent has been success/failed.
+   *  Send message to the parent from dialog
    *
    * @param message - The message to send
    * @param onComplete - The callback to know if the message to parent has been success/failed.
