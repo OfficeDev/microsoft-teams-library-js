@@ -532,7 +532,7 @@ export namespace files {
    * ------
    *
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link file.getFileDownloads file.getFileDownloads(): Promise\<IFileItem[]\>} instead.
+   * As of 2.0.0-beta.4, please use {@link file.getFileDownloads file.getFileDownloads(): Promise\<IFileItem[]\>} instead.
    * Gets list of downloads for current user
    * @param callback Callback that will be triggered post downloads load
    */
