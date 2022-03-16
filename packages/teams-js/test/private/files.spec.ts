@@ -493,7 +493,9 @@ describe('files', () => {
 
       it('should trigger callback correctly', async () => {
         expect.assertions(4);
+
         await utils.initializeWithContext('content');
+
         const mockFileDownloads: files.IFileItem[] = [
           {
             timestamp: new Date(),
@@ -501,20 +503,18 @@ describe('files', () => {
             extension: 'docx',
           },
         ];
-        let called = false;
 
         const callback = jest.fn((err, fileList) => {
-          called = true;
-
           expect(err).toBeFalsy();
           expect(fileList).toEqual(mockFileDownloads);
-          expect(called).toBe(true);
         });
 
         files.getFileDownloads(callback);
 
         const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+
         expect(getFileDownloadsMessage).not.toBeNull();
+
         utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
       });
     });
