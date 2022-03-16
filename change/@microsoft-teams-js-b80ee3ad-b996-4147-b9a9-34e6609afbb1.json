@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "promisify getFileDownloads",
+  "comment": "promisify files.getFileDownloads",
   "packageName": "@microsoft/teams-js",
   "email": "jekoch@microsoft.com",
   "dependentChangeType": "patch"
