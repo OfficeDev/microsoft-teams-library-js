@@ -5,9 +5,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts } from './constants';
-import { DialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -30,14 +29,14 @@ export namespace dialog {
   /**
    * Allows an app to open the dialog module.
    *
-   * @param dialogInfo - An object containing the parameters of the dialog module
+   * @param urldialogInfo - An object containing the parameters of the dialog module
    * @param submitHandler - Handler to call when the task module is completed
    * @param messageFromChildHandler - Handler that triggers if dialog tries to send a message to the app.
    *
    * @returns a Handler that is triggerd to send a message to the dialog.
    */
   export function open(
-    dialogInfo: DialogInfo,
+    urlDialogInfo: UrlDialogInfo,
     submitHandler?: DialogSubmitHandler,
     messageFromChildHandler?: PostMessageChannel,
   ): PostMessageChannel {
@@ -47,7 +46,7 @@ export namespace dialog {
       registerHandler('messageForParent', messageFromChildHandler);
     }
 
-    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+    sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
     });
 
@@ -89,5 +88,31 @@ export namespace dialog {
 
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
+  }
+  export namespace bot {
+    export function open(
+      botUrlDialogInfo: BotUrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): PostMessageChannel {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+      if (messageFromChildHandler) {
+        registerHandler('messageForParent', messageFromChildHandler);
+      }
+
+      sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
+        submitHandler({ err, result });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
+        sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+      };
+      return sendMessageToDialog;
+    }
+    export function isSupported(): boolean {
+      return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
+    }
   }
 }

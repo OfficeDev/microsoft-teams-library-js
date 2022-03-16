@@ -11,7 +11,9 @@ export interface IRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly dialog?: {};
+    readonly dialog?: {
+      readonly bot?: {};
+    };
     readonly files?: {};
     readonly location?: {};
     readonly logs?: {};

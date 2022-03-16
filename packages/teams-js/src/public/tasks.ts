@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { TaskModuleDimension } from './constants';
+import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog, SdkResponse } from './dialog';
-import { TaskInfo } from './interfaces';
+import { BotUrlDialogInfo, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
@@ -27,9 +29,18 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    dialog.open(getDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
-      submitHandler(sdkResponse.err, sdkResponse.result),
-    );
+    if (taskInfo.card !== undefined) {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.startTask', [getDialogInfoFromTaskInfo(taskInfo)], submitHandler);
+    } else if (taskInfo.completionBotId !== undefined) {
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+        submitHandler(sdkResponse.err, sdkResponse.result),
+      );
+    } else {
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo) as UrlDialogInfo, (sdkResponse: SdkResponse) =>
+        submitHandler(sdkResponse.err, sdkResponse.result),
+      );
+    }
     return new ChildAppWindow();
   }
 
@@ -77,6 +88,49 @@ export namespace tasks {
       completionBotId: taskInfo.completionBotId,
     };
     return dialogInfo;
+  }
+
+  function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
+    const dialogHeight =
+      taskInfo.height && typeof taskInfo.height !== 'number'
+        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
+        : (taskInfo.height as number);
+    const dialogWidth =
+      taskInfo.width && typeof taskInfo.width !== 'number'
+        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
+        : (taskInfo.width as number);
+    const urldialogInfo: UrlDialogInfo = {
+      url: taskInfo.url,
+      size: {
+        height: dialogHeight,
+        width: dialogWidth,
+      },
+      title: taskInfo.title,
+      fallbackUrl: taskInfo.fallbackUrl,
+    };
+    return urldialogInfo;
+  }
+
+  function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
+    const dialogHeight =
+      taskInfo.height && typeof taskInfo.height !== 'number'
+        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
+        : (taskInfo.height as number);
+    const dialogWidth =
+      taskInfo.width && typeof taskInfo.width !== 'number'
+        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
+        : (taskInfo.width as number);
+    const botUrldialogInfo: BotUrlDialogInfo = {
+      url: taskInfo.url,
+      size: {
+        height: dialogHeight,
+        width: dialogWidth,
+      },
+      title: taskInfo.title,
+      fallbackUrl: taskInfo.fallbackUrl,
+      completionBotId: taskInfo.completionBotId,
+    };
+    return botUrldialogInfo;
   }
 
   function getDialogDimensionFromTaskModuleDimension(taskModuleDimension: TaskModuleDimension): TaskModuleDimension {

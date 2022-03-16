@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, IAppWindow, ParentAppWindow, SdkResponse, TaskInfo, tasks } from '@microsoft/teams-js';
+import {
+  dialog,
+  DialogInfo,
+  IAppWindow,
+  ParentAppWindow,
+  SdkResponse,
+  TaskInfo,
+  tasks,
+  UrlDialogInfo,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -36,7 +45,7 @@ const DialogAPIs = (): ReactElement => {
     });
 
   const OpenDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
+    ApiWithTextInput<UrlDialogInfo>({
       name: 'dialogOpen_v2',
       title: 'Dialog Open',
       onClick: {
@@ -45,7 +54,7 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('Url undefined');
           }
         },
-        submit: async (dialogInfo, setResult) => {
+        submit: async (urlDialogInfo, setResult) => {
           const onComplete = (resultObj: SdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
@@ -53,7 +62,7 @@ const DialogAPIs = (): ReactElement => {
             // Message from parent
             setResult(message);
           };
-          dialog.open(dialogInfo, onComplete, messageFromChildHandler);
+          dialog.open(urlDialogInfo, onComplete, messageFromChildHandler);
           return '';
         },
       },
@@ -131,7 +140,14 @@ const DialogAPIs = (): ReactElement => {
               setResult('Message sent to child');
             }
           };
-          const sendMessageToDialogHandler = dialog.open({});
+          const dialogInfo = {
+            url: 'someUrl',
+            size: {
+              height: 5,
+              width: 5,
+            },
+          };
+          const sendMessageToDialogHandler = dialog.open(dialogInfo);
           sendMessageToDialogHandler(message, onComplete);
           return '';
         },
