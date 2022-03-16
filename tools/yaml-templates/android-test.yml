@@ -36,11 +36,11 @@ steps:
 
 - bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
   displayName: 'Install Emulator'
-  workingDirectory: 'androidHost/devtools/ci'
+  workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
 
 - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
   displayName: 'Run Android E2E Tests'
-  workingDirectory: 'androidHost/apps/orangeandroid'
+  workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
