@@ -164,6 +164,59 @@ const CopyMoveFiles = (): ReactElement =>
     },
   });
 
+enum FileDownloadStatus {
+  Downloaded = 'Downloaded',
+  Downloading = 'Downloading',
+  Failed = 'Failed',
+}
+interface IFileItem {
+  objectId?: string;
+  path?: string;
+  sizeInBytes?: number;
+  status?: FileDownloadStatus;
+  timestamp: Date;
+  title: string;
+  extension: string;
+}
+
+const GetFileDownloads = (): ReactElement =>
+  ApiWithTextInput<IFileItem[]>({
+    name: 'getFileDownloads',
+    title: 'Get File Downloads',
+    onClick: {
+      validateInput: () => {
+        return;
+      },
+      submit: {
+        withCallback: (input, setResult) => {
+          const callback = (error, files): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              setResult(files);
+            }
+          };
+
+          files.getFileDownloads(callback);
+        },
+        withPromise: async () => {
+          await files.getFileDownloads();
+          return 'files.getFileDownloads complete';
+        },
+      },
+    },
+  });
+
+const OpenDownloadFolder = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'openDownloadFolder',
+    title: 'Open Download Folder',
+    onClick: async () => {
+      files.openDownloadFolder();
+      return 'Opened download folder';
+    },
+  });
+
 const FilesAPIs = (): ReactElement => (
   <>
     <h1>files</h1>
@@ -176,6 +229,8 @@ const FilesAPIs = (): ReactElement => (
     <CheckFilesCapability />
     <GetExternalProviders />
     <CopyMoveFiles />
+    <GetFileDownloads />
+    <OpenDownloadFolder />
   </>
 );
 
