@@ -1,4 +1,4 @@
-import { FileOpenPreference, FilePreviewParameters, files } from '@microsoft/teams-js';
+import { FileOpenPreference, FilePreviewParameters, files, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -169,6 +169,7 @@ enum FileDownloadStatus {
   Downloading = 'Downloading',
   Failed = 'Failed',
 }
+
 interface IFileItem {
   objectId?: string;
   path?: string;
@@ -180,29 +181,24 @@ interface IFileItem {
 }
 
 const GetFileDownloads = (): ReactElement =>
-  ApiWithTextInput<IFileItem[]>({
+  ApiWithoutInput({
     name: 'getFileDownloads',
     title: 'Get File Downloads',
     onClick: {
-      validateInput: () => {
-        return;
-      },
-      submit: {
-        withCallback: (input, setResult) => {
-          const callback = (error, files): void => {
-            if (error) {
-              setResult(JSON.stringify(error));
-            } else {
-              setResult(files);
-            }
-          };
+      withCallback: setResult => {
+        const callback = (error?: SdkError, files?: IFileItem[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(files));
+          }
+        };
 
-          files.getFileDownloads(callback);
-        },
-        withPromise: async () => {
-          await files.getFileDownloads();
-          return 'files.getFileDownloads complete';
-        },
+        files.getFileDownloads(callback);
+      },
+      withPromise: async () => {
+        await files.getFileDownloads();
+        return 'files.getFileDownloads complete';
       },
     },
   });
