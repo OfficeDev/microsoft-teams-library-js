@@ -1,0 +1,52 @@
+parameters:
+  - name: 'androidAppHostingSdkGitPath'
+    default: none
+    type: string
+
+steps:
+- checkout: self
+- checkout: ${{ parameters.androidAppHostingSdkGitPath }}
+  path: androidHost
+  persistCredentials: true
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: "14.x"
+  displayName: "Install Node.js"
+
+- task: YarnInstaller@3
+  inputs:
+    versionSpec: "1.x"
+
+- task: Yarn@2
+  inputs:
+    Arguments: 'install'
+    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+  displayName: 'Run yarn install on TeamsJS'
+
+- task: Yarn@2
+  inputs:
+    Arguments: 'build'
+    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+  displayName: 'Build TeamsJS'
+
+- bash: 'nohup yarn start-test-app &'
+  displayName: "Run sample test app in background"
+  workingDirectory: '$(ClientSdkProjectDirectory)'
+
+- bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+  displayName: 'Install Emulator'
+  workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+
+- bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+  displayName: 'Run Android E2E Tests'
+  workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFiles: '**/TEST-*.xml'
+    failTaskOnFailedTests: false
+    testRunTitle: 'Test results'
+    searchFolder: '$(Agent.BuildDirectory)/androidHost'
+  condition: succeededOrFailed()
