@@ -1,7 +1,7 @@
 import { app } from '../../src/public/app';
 import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
-import { BotUrlDialogInfo, DialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
+import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 describe('Dialog', () => {
   // Use to send a mock message from the app.

@@ -5,7 +5,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog, SdkResponse } from './dialog';
-import { BotUrlDialogInfo, TaskInfo, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
@@ -29,15 +29,16 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
+    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
     if (taskInfo.card !== undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [getDialogInfoFromTaskInfo(taskInfo)], submitHandler);
+      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo) as UrlDialogInfo, (sdkResponse: SdkResponse) =>
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     }
@@ -69,41 +70,12 @@ export namespace tasks {
     dialog.submit(result, appIds);
   }
 
-  function getDialogInfoFromTaskInfo(taskInfo: TaskInfo): TaskInfo {
-    const dialogHeight =
-      taskInfo.height && typeof taskInfo.height !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
-        : (taskInfo.height as number);
-    const dialogWidth =
-      taskInfo.width && typeof taskInfo.width !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
-        : (taskInfo.width as number);
-    const dialogInfo: TaskInfo = {
-      url: taskInfo.url,
-      card: taskInfo.card,
-      height: dialogHeight,
-      width: dialogWidth,
-      title: taskInfo.title,
-      fallbackUrl: taskInfo.fallbackUrl,
-      completionBotId: taskInfo.completionBotId,
-    };
-    return dialogInfo;
-  }
-
-  function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
-    const dialogHeight =
-      taskInfo.height && typeof taskInfo.height !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
-        : (taskInfo.height as number);
-    const dialogWidth =
-      taskInfo.width && typeof taskInfo.width !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
-        : (taskInfo.width as number);
+  export function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: dialogHeight,
-        width: dialogWidth,
+        height: taskInfo.height,
+        width: taskInfo.width,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
@@ -111,20 +83,12 @@ export namespace tasks {
     return urldialogInfo;
   }
 
-  function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
-    const dialogHeight =
-      taskInfo.height && typeof taskInfo.height !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
-        : (taskInfo.height as number);
-    const dialogWidth =
-      taskInfo.width && typeof taskInfo.width !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
-        : (taskInfo.width as number);
+  export function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: dialogHeight,
-        width: dialogWidth,
+        height: taskInfo.height,
+        width: taskInfo.width,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
@@ -132,14 +96,10 @@ export namespace tasks {
     };
     return botUrldialogInfo;
   }
+}
 
-  function getDialogDimensionFromTaskModuleDimension(taskModuleDimension: TaskModuleDimension): TaskModuleDimension {
-    if (taskModuleDimension === TaskModuleDimension.Large) {
-      return TaskModuleDimension.Large;
-    } else if (taskModuleDimension === TaskModuleDimension.Medium) {
-      return TaskModuleDimension.Medium;
-    } else {
-      return TaskModuleDimension.Small;
-    }
-  }
+export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
+  taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Medium;
+  taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Medium;
+  return taskInfo;
 }
