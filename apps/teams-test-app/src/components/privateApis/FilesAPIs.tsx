@@ -164,29 +164,13 @@ const CopyMoveFiles = (): ReactElement =>
     },
   });
 
-enum FileDownloadStatus {
-  Downloaded = 'Downloaded',
-  Downloading = 'Downloading',
-  Failed = 'Failed',
-}
-
-interface IFileItem {
-  objectId?: string;
-  path?: string;
-  sizeInBytes?: number;
-  status?: FileDownloadStatus;
-  timestamp: Date;
-  title: string;
-  extension: string;
-}
-
 const GetFileDownloads = (): ReactElement =>
   ApiWithoutInput({
     name: 'getFileDownloads',
     title: 'Get File Downloads',
     onClick: {
       withCallback: setResult => {
-        const callback = (error?: SdkError, files?: IFileItem[]): void => {
+        const callback = (error?: SdkError, files?: files.IFileItem[]): void => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {
