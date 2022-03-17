@@ -1,4 +1,4 @@
-import { chat, OpenConversationRequest } from '@microsoft/teams-js';
+import { chat, OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -9,6 +9,40 @@ const CheckChatCapability = (): React.ReactElement =>
     name: 'checkChatCapability',
     title: 'Check Chat Capability',
     onClick: async () => `Chat module ${chat.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
+const OpenChat = (): React.ReactElement =>
+  ApiWithTextInput<OpenSingleChatRequest>({
+    name: 'openChat',
+    title: 'Open Chat',
+    onClick: {
+      validateInput: input => {
+        if (!input.member) {
+          throw new Error('member is required on the input');
+        }
+      },
+      submit: async input => {
+        await chat.openChat(input);
+        return 'chat.openChat()' + noHostSdkMsg;
+      },
+    },
+  });
+
+const OpenGroupChat = (): React.ReactElement =>
+  ApiWithTextInput<OpenGroupChatRequest>({
+    name: 'openChat',
+    title: 'Open Chat',
+    onClick: {
+      validateInput: input => {
+        if (!input.members) {
+          throw new Error('members is required on the input');
+        }
+      },
+      submit: async input => {
+        await chat.openGroupChat(input);
+        return 'chat.openChat()' + noHostSdkMsg;
+      },
+    },
   });
 
 const OpenConversation = (): React.ReactElement =>
@@ -76,6 +110,8 @@ const GetChatMembers = (): React.ReactElement =>
 const ConversationsAPIs = (): React.ReactElement => (
   <>
     <h1>chat</h1>
+    <OpenChat />
+    <OpenGroupChat />
     <OpenConversation />
     <CloseConversation />
     <GetChatMembers />

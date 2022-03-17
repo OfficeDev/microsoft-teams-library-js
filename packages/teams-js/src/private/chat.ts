@@ -6,7 +6,7 @@ import {
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { OpenSingleChatRequest, OpenConversationRequest, OpenGroupChatRequest } from '../public/interfaces';
+import { OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
