@@ -56,6 +56,23 @@ describe('tasks', () => {
           expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
+        it(`should pass along the taskInfo correctly when URL is not specified. ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([taskInfo]);
+        });
+
         it(`should pass along the taskInfo correctly when completionBotid is specified. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
 
@@ -77,7 +94,7 @@ describe('tasks', () => {
           expect(startTaskMessage.args).toEqual([tasks.getBotUrlDialogInfoFromTaskInfo(taskInfo)]);
         });
 
-        it(`should pass along the taskInfo correctly when there is no card or completionBotID. context: ${context}`, async () => {
+        it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
 
           const taskInfo: TaskInfo = {

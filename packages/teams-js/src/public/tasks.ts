@@ -30,7 +30,7 @@ export namespace tasks {
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
     taskInfo = getDefaultSizeIfNotProvided(taskInfo);
-    if (taskInfo.card !== undefined) {
+    if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
