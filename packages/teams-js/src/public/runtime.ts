@@ -50,7 +50,9 @@ export let runtime: IRuntime = {
     calendar: undefined,
     call: undefined,
     chat: undefined,
-    dialog: undefined,
+    dialog: {
+      bot: undefined,
+    },
     location: undefined,
     logs: undefined,
     mail: undefined,
@@ -87,7 +89,9 @@ export const teamsRuntimeConfig: IRuntime = {
     bot: {},
     call: {},
     chat: {},
-    dialog: {},
+    dialog: {
+      bot: {},
+    },
     files: {},
     location: {},
     logs: {},
