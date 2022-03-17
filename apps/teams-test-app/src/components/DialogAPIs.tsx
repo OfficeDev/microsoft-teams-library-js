@@ -61,6 +61,7 @@ const DialogAPIs = (): ReactElement => {
         },
       },
     });
+
   const ResizeDialog = (): ReactElement =>
     ApiWithTextInput<DialogSize>({
       name: 'dialogResize',
