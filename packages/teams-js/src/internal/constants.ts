@@ -110,6 +110,8 @@ export const validOrigins = [
   '*.sharepointonline.com',
   'outlook.office.com',
   'outlook-sdf.office.com',
+  'outlook.office365.com',
+  'outlook-sdf.office365.com',
   '*.teams.microsoft.com',
   'www.office.com',
   'word.office.com',
