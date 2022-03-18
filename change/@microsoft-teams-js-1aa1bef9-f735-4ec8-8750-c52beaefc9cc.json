@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Adds office365 Outlook to domain whitelist",
+  "packageName": "@microsoft/teams-js",
+  "email": "ruiconti@gmail.com",
+  "dependentChangeType": "patch"
+}
