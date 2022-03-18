@@ -1,7 +1,6 @@
-import { OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/interfaces';
-import { chat } from '../../src/private/chat';
-import { Utils } from '../utils';
+import { chat, OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/private/chat';
 import { app } from '../../src/public/app';
+import { Utils } from '../utils';
 
 describe('chat', () => {
   // Use to send a mock message from the app.

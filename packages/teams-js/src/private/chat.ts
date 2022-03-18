@@ -6,9 +6,139 @@ import {
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
+
+/**
+ *
+ * @internal
+ */
+interface OpenChatRequest {
+  /**
+   * @hidden
+   * The message to send when opening chat
+   */
+  message?: string;
+}
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
+ */
+export interface OpenSingleChatRequest extends OpenChatRequest {
+  /**
+   * @hidden
+   * User's UPN to open chat with
+   */
+  user: string;
+}
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
+ */
+export interface OpenGroupChatRequest extends OpenChatRequest {
+  /**
+   * @hidden
+   * Array containing UPNs of users to open chat with
+   */
+  users: string[];
+  /**
+   * @hidden
+   * The display name of a conversation for 3 or more users
+   */
+  topic?: string;
+}
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
+ */
+export interface OpenConversationRequest {
+  /**
+   * @hidden
+   * The Id of the subEntity where the conversation is taking place
+   */
+  subEntityId: string;
+
+  /**
+   * @hidden
+   * The title of the conversation
+   */
+  title: string;
+
+  /**
+   * @hidden
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
+  conversationId?: string;
+
+  /**
+   * @hidden
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  channelId?: string;
+
+  /**
+   * @hidden
+   * The entity Id of the tab
+   */
+  entityId: string;
+
+  /**
+   * @hidden
+   * A function that is called once the conversation Id has been created
+   */
+  onStartConversation?: (conversationResponse: ConversationResponse) => void;
+
+  /**
+   * @hidden
+   * A function that is called if the pane is closed
+   */
+  onCloseConversation?: (conversationResponse: ConversationResponse) => void;
+}
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
+ */
+export interface ConversationResponse {
+  /**
+   * @hidden
+   * The Id of the subEntity where the conversation is taking place
+   */
+  subEntityId: string;
+
+  /**
+   * @hidden
+   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   */
+  conversationId?: string;
+
+  /**
+   * @hidden
+   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   */
+  channelId?: string;
+
+  /**
+   * @hidden
+   * The entity Id of the tab
+   */
+  entityId?: string;
+}
 
 /**
  * @hidden
@@ -23,6 +153,8 @@ export namespace chat {
    * --------------
    * Allows the user to open a chat with a single user and allows
    * for the user to specify the message they wish to send.
+   *
+   *@param openChatRequest: OpenSingleChatRequest - a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
    */
@@ -43,6 +175,8 @@ export namespace chat {
    * Allows the user to create a chat with multiple users (2+) and allows
    * for the user to specify a message and name the topic of the conversation. If
    * only 1 user is provided into users array default back to origin openChat.
+   *
+   * @param openChatRequest: OpenGroupChatRequest - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
    */
@@ -76,7 +210,6 @@ export namespace chat {
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the members are and never as proof of membership.
    *
-   * @param callback The callback to invoke when the {@link ChatMembersInformation} object is retrieved.
    * @returns Promise resolved with information on all chat members
    *
    * @internal
