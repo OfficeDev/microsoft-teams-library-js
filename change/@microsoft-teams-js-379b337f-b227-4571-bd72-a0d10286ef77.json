@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "promisify stageView",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}
