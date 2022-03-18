@@ -11,7 +11,7 @@ One of the best ways to contribute is to participate in discussions and discuss 
 5. Run `yarn changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Changelog section.
 6. Create a [pull request against the upstream's `2.0-preview` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
 7. A user with write access to the upstream repo will need to trigger the checks that run on pull requests in the teams-js repo.
-8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch.
+8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch and/or fork.
 
 Before submitting a feature or substantial code contribution please discuss it with the team and ensure it follows the product roadmap. You might also read these two blogs posts on contributing code: [Open Source Contribution Etiquette](http://tirania.org/blog/archive/2010/Dec-31.html) by Miguel de Icaza and [Don't "Push" Your Pull Requests](http://www.igvita.com/2011/12/19/dont-push-your-pull-requests/) by Ilya Grigorik.
 
