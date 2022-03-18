@@ -491,7 +491,7 @@ export namespace files {
    * @param filePath: Path of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
-  export function openDownloadFolder(filePath: string, callback: (error?: SdkError) => void): void {
+  export function openDownloadFolder(filePath: string = null, callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
