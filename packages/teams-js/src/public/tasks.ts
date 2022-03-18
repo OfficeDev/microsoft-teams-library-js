@@ -94,8 +94,8 @@ export namespace tasks {
   }
 
   export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
-    taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Medium;
-    taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Medium;
+    taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
+    taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
     return taskInfo;
   }
 }

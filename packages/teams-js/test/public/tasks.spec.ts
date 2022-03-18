@@ -144,12 +144,11 @@ describe('tasks', () => {
           const taskInfo = { width: 10, height: 10 };
 
           tasks.updateTask(taskInfo);
-          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
           expect(updateTaskMessage).not.toBeNull();
           expect(updateTaskMessage.args).toEqual([taskInfo]);
-          expect(updateTaskMessage.args).toEqual([taskInfoWithSize]);
         });
+
         it(`should successfully pass the default info if height/width is missing: ${JSON.stringify(
           context,
         )}`, async () => {
@@ -157,11 +156,13 @@ describe('tasks', () => {
           const taskInfo = { width: 10 };
 
           tasks.updateTask(taskInfo);
-
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
           expect(updateTaskMessage).not.toBeNull();
           expect(updateTaskMessage.args).toEqual([taskInfo]);
+          expect(updateTaskMessage.args).toEqual([taskInfoWithSize]);
         });
+
         it(`should throw an error if extra properties are provided context: ${JSON.stringify(context)}`, async () => {
           await utils.initializeWithContext(context);
           const taskInfo = { width: 10, height: 10, title: 'anything' };
