@@ -206,9 +206,9 @@ export namespace chat {
    * @hidden
    * Hide from docs
    * ------
-   * Allows an app to retrieve information of all chat members
-   * Because a malicious party run your content in a browser, this value should
-   * be used only as a hint as to who the members are and never as proof of membership.
+   * Allows retrieval of information for all chat members.
+   * NOTE: This value should be used only as a hint as to who the members are
+   * and never as proof of membership in case your app is being hosted by a malicious party.
    *
    * @returns Promise resolved with information on all chat members
    *
