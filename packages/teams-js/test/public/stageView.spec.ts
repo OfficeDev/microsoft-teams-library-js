@@ -1,6 +1,8 @@
-import { _uninitialize, _initialize } from '../../src/public/publicAPIs';
+import { ErrorCode } from '../../src/public';
+import { app } from '../../src/public/app';
+import { FrameContexts } from '../../src/public/constants';
+import { stageView } from '../../src/public/stageView';
 import { Utils } from '../utils';
-import { FrameContexts, stageView } from '../../src/public';
 
 describe('stageView', () => {
   const utils = new Utils();
@@ -12,13 +14,13 @@ describe('stageView', () => {
     utils.childWindow.closed = false;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
@@ -39,15 +41,17 @@ describe('stageView', () => {
     Object.keys(FrameContexts)
       .map(k => FrameContexts[k])
       .forEach(frameContext => {
-        if (frameContext !== 'content') {
-          it.skip(`should not allow calls from ${frameContext} context`, () => {
-            utils.initializeWithContext(frameContext);
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          if (frameContext === FrameContexts.content) {
+            return;
+          }
 
-            expect(() => stageView.open(stageViewParams)).toThrowError(
-              `This call is not allowed in the '${frameContext}' context`,
-            );
-          });
-        }
+          await utils.initializeWithContext(frameContext);
+
+          expect(() => stageView.open(stageViewParams)).toThrowError(
+            `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+          );
+        });
       });
 
     it('should not allow a null StageViewParams parameter', () => {
@@ -56,46 +60,85 @@ describe('stageView', () => {
       expect(() => stageView.open(null)).toThrowError('[stageView.open] Stage view params cannot be null');
     });
 
-    it('should pass along entire StageViewParams parameter in content context', () => {
-      utils.initializeWithContext('content');
+    describe('v1', () => {
+      it('should pass along entire StageViewParams parameter in content context', () => {
+        utils.initializeWithContext('content');
 
-      stageView.open(stageViewParams, () => {
-        return;
+        stageView.open(stageViewParams, () => {
+          return;
+        });
+
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage).not.toBeNull();
+        expect(openStageViewMessage.args).toEqual([stageViewParams]);
       });
 
-      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-      expect(openStageViewMessage).not.toBeNull();
-      expect(openStageViewMessage.args).toEqual([stageViewParams]);
+      it('should invoke callback with result', done => {
+        utils.initializeWithContext('content');
+
+        let callbackCalled = false;
+        stageView.open(stageViewParams, err => {
+          try {
+            callbackCalled = true;
+            expect(callbackCalled).toBe(true);
+            expect(err).toBeUndefined();
+            done(err);
+          } catch (err) {
+            done(err);
+          }
+        });
+
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage).not.toBeNull();
+        utils.respondToMessage(openStageViewMessage, null);
+      });
+
+      it('should invoke callback with error', done => {
+        utils.initializeWithContext('content');
+
+        let callbackCalled = false;
+        stageView.open(stageViewParams, () => {
+          try {
+            callbackCalled = true;
+            done();
+          } catch (error) {
+            expect(callbackCalled).toBe(true);
+            expect(error).toBe('someError');
+            done(error);
+          }
+        });
+
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage).not.toBeNull();
+        utils.respondToMessage(openStageViewMessage, 'someError');
+      });
     });
 
-    it('should invoke callback with result', () => {
-      utils.initializeWithContext('content');
+    describe('v2', () => {
+      it('should return promise and resolve', async () => {
+        await utils.initializeWithContext('content');
 
-      let callbackCalled = false;
-      stageView.open(stageViewParams, err => {
-        expect(err).toBeNull();
-        callbackCalled = true;
+        const promise = stageView.open(stageViewParams);
+
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage.args).toEqual([stageViewParams]);
+        expect(openStageViewMessage).not.toBeNull();
+        utils.respondToMessage(openStageViewMessage, null);
+        await expect(promise).resolves.not.toThrowError();
       });
 
-      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-      expect(openStageViewMessage).not.toBeNull();
-      utils.respondToMessage(openStageViewMessage, null);
-      expect(callbackCalled).toBe(true);
-    });
+      it('should properly handle errors', async () => {
+        await utils.initializeWithContext('content');
 
-    it('should invoke callback with error', () => {
-      utils.initializeWithContext('content');
+        const promise = stageView.open(stageViewParams);
+        const err = { errorCode: ErrorCode.INTERNAL_ERROR };
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage).not.toBeNull();
 
-      let callbackCalled = false;
-      stageView.open(stageViewParams, err => {
-        expect(err).toBe('someError');
-        callbackCalled = true;
+        utils.respondToMessage(openStageViewMessage, err);
+
+        await expect(promise).rejects.toEqual(err);
       });
-
-      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-      expect(openStageViewMessage).not.toBeNull();
-      utils.respondToMessage(openStageViewMessage, 'someError');
-      expect(callbackCalled).toBe(true);
     });
   });
 });
