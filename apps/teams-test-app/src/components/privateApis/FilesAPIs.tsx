@@ -181,8 +181,8 @@ const GetFileDownloads = (): ReactElement =>
         files.getFileDownloads(callback);
       },
       withPromise: async () => {
-        await files.getFileDownloads();
-        return 'files.getFileDownloads complete';
+        const filesOutput = await files.getFileDownloads();
+        return JSON.stringify(filesOutput);
       },
     },
   });
