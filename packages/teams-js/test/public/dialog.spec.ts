@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { DialogInfo } from '../../src/public/interfaces';
-import { DialogDimension } from '../../src/public/constants';
+import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
@@ -146,7 +147,7 @@ describe('Dialog', () => {
 
   describe('resize', () => {
     it('should not allow calls before initialization', () => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
     });
 
@@ -218,6 +219,74 @@ describe('Dialog', () => {
       const submitMessage = utils.findMessageByFunc('tasks.completeTask');
       expect(submitMessage).not.toBeNull();
       expect(submitMessage.args).toEqual(['someResult', ['someAppId']]);
+    });
+  });
+  describe('sendMessageToParentFromDialog', () => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const emptyCallback = () => {};
+    const allowedContexts = [FrameContexts.task];
+    it('should not allow calls before initialization', () => {
+      expect.assertions(1);
+      expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        if (frameContext === FrameContexts.task) {
+          it(`should successfully send the message to Parent: ${frameContext}`, async () => {
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
+              expect(success).toBeTruthy();
+              expect(reason).toBeNull;
+            });
+            const message = utils.findMessageByFunc('messageForParent');
+            utils.respondToMessage(message, true);
+            expect(message).not.toBeUndefined();
+          });
+          it(`should successfully throws the error if the message fails to send: ${frameContext}`, async () => {
+            const error = 'some Error Occured';
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
+              expect(success).toBeFalsy();
+              expect(reason).toBe(error);
+            });
+            const message = utils.findMessageByFunc('messageForParent');
+            utils.respondToMessage(message, false, error);
+            expect(message).not.toBeUndefined();
+          });
+        } else {
+          it(`should not allow calls from ${frameContext} context`, async () => {
+            await utils.initializeWithContext(frameContext);
+            expect(() => dialog.sendMessageToParentFromDialog('message', emptyCallback)).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            );
+          });
+        }
+      });
+  });
+
+  describe('registerOnMessageFromParent', () => {
+    it('should successfully register the handler.', async () => {
+      let returnedMessage: string;
+      let handlerCalled = false;
+      await utils.initializeWithContext('content');
+      const messageFromParent = 'messageFromParent';
+      dialog.registerOnMessageFromParent(messageFromParent => {
+        handlerCalled = true;
+        returnedMessage = messageFromParent;
+      });
+      const message = utils.findMessageByFunc('registerHandler');
+      utils.sendMessage('messageForChild', messageFromParent);
+      expect(message).not.toBeNull();
+      expect(handlerCalled).toBe(true);
+      expect(returnedMessage).toEqual(messageFromParent);
     });
   });
 });
