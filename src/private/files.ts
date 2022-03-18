@@ -487,8 +487,8 @@ export namespace files {
    * @private
    * Hide from docs
    *
-   * Open download preference folder or filePath if its value is non-null
-   * @param filePath: Path of the file which should be opened
+   * Open download preference folder or folder containing filePath if its value is non-null
+   * @param filePath: Path of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
   export function openDownloadFolder(filePath: string, callback: (error?: SdkError) => void): void {
