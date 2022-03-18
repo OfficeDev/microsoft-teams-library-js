@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -84,6 +85,33 @@ export namespace dialog {
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+  }
+
+  /**
+   *  Send message to the parent from dialog
+   *
+   * @param message - The message to send
+   * @param onComplete - The callback to know if the message to parent has been success/failed.
+   */
+  export function sendMessageToParentFromDialog(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message: any,
+    onComplete?: (status: boolean, reason?: string) => void,
+  ): void {
+    ensureInitialized(FrameContexts.task);
+    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+  }
+
+  /**
+   * Fucntion to call when an event is received from the Parent
+   *
+   * @param type - The event to listen to. Currently the only supported type is 'message'.
+   * @param listener - listener - The listener that will be called.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function registerOnMessageFromParent(listener: (message: any) => void): void {
+    ensureInitialized();
+    registerHandler('messageForChild', listener);
   }
 
   export function isSupported(): boolean {

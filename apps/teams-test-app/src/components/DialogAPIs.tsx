@@ -161,35 +161,50 @@ const DialogAPIs = (): ReactElement => {
       onClick: {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
-        submit: {
-          withPromise: async message => {
-            const parentWindow = ParentAppWindow.Instance;
-            if (parentWindow) {
-              await parentWindow.postMessage(message);
-              return 'Message sent to parent';
-            } else {
-              return "parentWindow doesn't exist";
-            }
-          },
-          withCallback: (message, setResult) => {
-            const parentWindow = ParentAppWindow.Instance;
-            if (parentWindow) {
-              const onComplete = (status: boolean, reason?: string): void => {
-                if (!status) {
-                  if (reason) {
-                    setResult(JSON.stringify(reason));
-                  } else {
-                    setResult("Status is false but there's no reason?! This shouldn't happen.");
-                  }
+        submit: async (message, setResult) => {
+          const parentWindow = ParentAppWindow.Instance;
+          if (parentWindow) {
+            const onComplete = (status: boolean, reason?: string): void => {
+              if (!status) {
+                if (reason) {
+                  setResult(JSON.stringify(reason));
                 } else {
-                  setResult('Message sent to parent');
+                  setResult("Status is false but there's no reason?! This shouldn't happen.");
                 }
-              };
-              parentWindow.postMessage(message, onComplete);
+              } else {
+                setResult('Message sent to parent');
+              }
+            };
+            parentWindow.postMessage(message, onComplete);
+          } else {
+            setResult("parentWindow doesn't exist");
+          }
+          return '';
+        },
+      },
+    });
+
+  const SendMessageToParent_v2 = (): ReactElement =>
+    ApiWithTextInput<string>({
+      name: 'sendMessageToParent_v2',
+      title: 'sendMessageToParent_v2',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: async (message, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's no reason?! This shouldn't happen.");
+              }
             } else {
-              setResult("parentWindow doesn't exist");
+              setResult('Message sent to parent');
             }
-          },
+          };
+          dialog.sendMessageToParentFromDialog(message, onComplete);
+          return '';
         },
       },
     });
@@ -201,6 +216,18 @@ const DialogAPIs = (): ReactElement => {
       onClick: async setResult => {
         const parentWindow = ParentAppWindow.Instance;
         parentWindow.addEventListener('message', (message: string) => {
+          setResult(message);
+        });
+        return 'Completed';
+      },
+    });
+
+  const RegisterForParentMessage_v2 = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'registerForParentMessage_v2',
+      title: 'registerForParentMessage_v2',
+      onClick: async setResult => {
+        dialog.registerOnMessageFromParent((message: string) => {
           setResult(message);
         });
         return 'Completed';
@@ -253,7 +280,9 @@ const DialogAPIs = (): ReactElement => {
       <SendMessageToChild />
       <SendMessageToChild_v2 />
       <SendMessageToParent />
+      <SendMessageToParent_v2 />
       <RegisterForParentMessage />
+      <RegisterForParentMessage_v2 />
     </>
   );
 };
