@@ -125,33 +125,80 @@ describe('chat', () => {
 
   describe('openChat', () => {
     it('should not allow calls before initialization', () => {
-      const conversationRequest: OpenSingleChatRequest = {
-        member: 'someUPN',
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
         message: 'someMessage',
       };
-      return expect(chat.openChat(conversationRequest)).rejects.toThrowError(
-        'The library has not yet been initialized',
+      return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
+        message: 'someMessage',
+      };
+      return expect(chat.openChat(chatRequest)).rejects.toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
+    });
+
+    it.skip('should successfully pass chatRequest', async () => {
+      await utils.initializeWithContext('content');
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
+        message: 'someMessage',
+      };
+
+      chat.openChat(chatRequest);
+
+      const openChatMessage = utils.findMessageByFunc('chat.openChat');
+      expect(openChatMessage).not.toBeNull();
+      expect(openChatMessage.args).toEqual([chatRequest]);
     });
   });
+
   describe('openGroupChat', () => {
     it('should not allow calls before initialization', () => {
-      const conversationRequest: OpenGroupChatRequest = {
-        members: ['someUPN', 'someUPN2'],
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
       };
-      return expect(chat.openGroupChat(conversationRequest)).rejects.toThrowError(
-        'The library has not yet been initialized',
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls when no members are provided', () => {
+      const chatRequest: OpenGroupChatRequest = {
+        users: [],
+        message: 'someMessage',
+      };
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('OpenGroupChat Failed: No users specified');
+    });
+
+    it('should not allow calls from settings context', async () => {
+      await utils.initializeWithContext('settings');
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+      };
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
-    it('should not allow calls when no members are provided', () => {
-      const conversationRequest: OpenGroupChatRequest = {
-        members: [],
+
+    it.skip('should successfully pass chatRequest', async () => {
+      await utils.initializeWithContext('content');
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
+        topic: 'someTopic',
       };
-      return expect(chat.openGroupChat(conversationRequest)).rejects.toThrowError(
-        'OpenGroupChat Failed: No users specified',
-      );
+
+      chat.openGroupChat(chatRequest);
+
+      const openChatMessage = utils.findMessageByFunc('chat.openChat');
+      expect(openChatMessage).not.toBeNull();
+      expect(openChatMessage.args).toEqual([chatRequest]);
     });
   });
 });

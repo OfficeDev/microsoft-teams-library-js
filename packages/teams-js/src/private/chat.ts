@@ -30,7 +30,7 @@ export namespace chat {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       const sendPromise = sendAndHandleError('chat.openChat', {
-        members: openChatRequest.member,
+        members: openChatRequest.user,
         message: openChatRequest.message,
       });
       resolve(sendPromise);
@@ -48,19 +48,19 @@ export namespace chat {
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
-      if (openChatRequest.members.length < 1) {
+      if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
       }
-      if (openChatRequest.members.length === 1) {
+      if (openChatRequest.users.length === 1) {
         const chatRequest: OpenSingleChatRequest = {
-          member: openChatRequest.members[0],
+          user: openChatRequest.users[0],
           message: openChatRequest.message,
         };
         openChat(chatRequest);
       } else {
         ensureInitialized(FrameContexts.content);
         const sendPromise = sendAndHandleError('chat.openChat', {
-          members: openChatRequest.members,
+          members: openChatRequest.users,
           message: openChatRequest.message,
           topic: openChatRequest.topic,
         });

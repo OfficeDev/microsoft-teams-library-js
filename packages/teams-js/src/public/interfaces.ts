@@ -599,9 +599,9 @@ interface OpenChatRequest {
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
    * @hidden
-   * Member's UPN to open chat with
+   * User's UPN to open chat with
    */
-  member: string;
+  user: string;
 }
 
 /**
@@ -614,9 +614,9 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
    * @hidden
-   * Array containing UPNs of individuals to open chat with
+   * Array containing UPNs of users to open chat with
    */
-  members: string[];
+  users: string[];
   /**
    * @hidden
    * The display name of a conversation for 3 or more users

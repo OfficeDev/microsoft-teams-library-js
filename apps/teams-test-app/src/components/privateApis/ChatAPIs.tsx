@@ -17,8 +17,8 @@ const OpenChat = (): React.ReactElement =>
     title: 'Open Chat',
     onClick: {
       validateInput: input => {
-        if (!input.member) {
-          throw new Error('member is required on the input');
+        if (!input.user) {
+          throw new Error('user is required on the input');
         }
       },
       submit: async input => {
@@ -34,8 +34,8 @@ const OpenGroupChat = (): React.ReactElement =>
     title: 'Open Group Chat',
     onClick: {
       validateInput: input => {
-        if (!input.members) {
-          throw new Error('members is required on the input');
+        if (!input.users) {
+          throw new Error('users is required on the input');
         }
       },
       submit: async input => {
