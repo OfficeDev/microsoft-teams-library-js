@@ -127,6 +127,31 @@ const DialogAPIs = (): ReactElement => {
       },
     });
 
+  const SendMessageToParent_v2 = (): ReactElement =>
+    ApiWithTextInput<string>({
+      name: 'sendMessageToParent_v2',
+      title: 'sendMessageToParent_v2',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: async (message, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's no reason?! This shouldn't happen.");
+              }
+            } else {
+              setResult('Message sent to parent');
+            }
+          };
+          dialog.sendMessageToParentFromDialog(message, onComplete);
+          return '';
+        },
+      },
+    });
+
   const RegisterForParentMessage = (): ReactElement =>
     ApiWithoutInput({
       name: 'registerForParentMessage',
@@ -134,6 +159,18 @@ const DialogAPIs = (): ReactElement => {
       onClick: async setResult => {
         const parentWindow = ParentAppWindow.Instance;
         parentWindow.addEventListener('message', (message: string) => {
+          setResult(message);
+        });
+        return 'Completed';
+      },
+    });
+
+  const RegisterForParentMessage_v2 = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'registerForParentMessage_v2',
+      title: 'registerForParentMessage_v2',
+      onClick: async setResult => {
+        dialog.registerOnMessageFromParent((message: string) => {
           setResult(message);
         });
         return 'Completed';
@@ -184,7 +221,9 @@ const DialogAPIs = (): ReactElement => {
       <SubmitDialogWithInput />
       <SendMessageToChild />
       <SendMessageToParent />
+      <SendMessageToParent_v2 />
       <RegisterForParentMessage />
+      <RegisterForParentMessage_v2 />
     </>
   );
 };
