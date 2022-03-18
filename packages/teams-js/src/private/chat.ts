@@ -21,7 +21,7 @@ export namespace chat {
    * @hidden
    * Hide from docs
    * --------------
-   * Allows the user to open a chat with a single user using a deep link and
+   * Allows the user to open a chat with a single user and allows
    * for the user to specify the message they wish to send.
    *
    * @returns Promise resolved upon completion
@@ -40,9 +40,9 @@ export namespace chat {
    * @hidden
    * Hide from docs
    * --------------
-   * Allows the user to create a chat with multiple users (2+) using a deep link and
+   * Allows the user to create a chat with multiple users (2+) and allows
    * for the user to specify a message and name the topic of the conversation. If
-   * hub only provides 1 member into members array default back to origin openChat.
+   * only 1 user is provided into users array default back to origin openChat.
    *
    * @returns Promise resolved upon completion
    */

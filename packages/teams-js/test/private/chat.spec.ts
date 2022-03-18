@@ -143,7 +143,7 @@ describe('chat', () => {
       );
     });
 
-    it.skip('should successfully pass chatRequest', async () => {
+    it('should successfully pass chatRequest', async () => {
       await utils.initializeWithContext('content');
       const chatRequest: OpenSingleChatRequest = {
         user: 'someUPN',
@@ -152,9 +152,14 @@ describe('chat', () => {
 
       chat.openChat(chatRequest);
 
+      const chatResponse = {
+        members: 'someUPN',
+        message: 'someMessage',
+      };
+
       const openChatMessage = utils.findMessageByFunc('chat.openChat');
       expect(openChatMessage).not.toBeNull();
-      expect(openChatMessage.args).toEqual([chatRequest]);
+      expect(openChatMessage.args).toEqual([chatResponse]);
     });
   });
 
@@ -186,10 +191,16 @@ describe('chat', () => {
       );
     });
 
-    it.skip('should successfully pass chatRequest', async () => {
+    it('should successfully pass chatRequest', async () => {
       await utils.initializeWithContext('content');
       const chatRequest: OpenGroupChatRequest = {
         users: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+        topic: 'someTopic',
+      };
+
+      const chatResponse = {
+        members: ['someUPN', 'someUPN2'],
         message: 'someMessage',
         topic: 'someTopic',
       };
@@ -198,7 +209,7 @@ describe('chat', () => {
 
       const openChatMessage = utils.findMessageByFunc('chat.openChat');
       expect(openChatMessage).not.toBeNull();
-      expect(openChatMessage.args).toEqual([chatRequest]);
+      expect(openChatMessage.args).toEqual([chatResponse]);
     });
   });
 });
