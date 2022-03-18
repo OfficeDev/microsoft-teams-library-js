@@ -30,8 +30,8 @@ const OpenChat = (): React.ReactElement =>
 
 const OpenGroupChat = (): React.ReactElement =>
   ApiWithTextInput<OpenGroupChatRequest>({
-    name: 'openChat',
-    title: 'Open Chat',
+    name: 'openGroupChat',
+    title: 'Open Group Chat',
     onClick: {
       validateInput: input => {
         if (!input.members) {
