@@ -1,4 +1,4 @@
-import { FileOpenPreference, FilePreviewParameters, files } from '@microsoft/teams-js';
+import { FileOpenPreference, FilePreviewParameters, files, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -164,6 +164,39 @@ const CopyMoveFiles = (): ReactElement =>
     },
   });
 
+const GetFileDownloads = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'getFileDownloads',
+    title: 'Get File Downloads',
+    onClick: {
+      withCallback: setResult => {
+        const callback = (error?: SdkError, files?: files.IFileItem[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(files));
+          }
+        };
+
+        files.getFileDownloads(callback);
+      },
+      withPromise: async () => {
+        const filesOutput = await files.getFileDownloads();
+        return JSON.stringify(filesOutput);
+      },
+    },
+  });
+
+const OpenDownloadFolder = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'openDownloadFolder',
+    title: 'Open Download Folder',
+    onClick: async () => {
+      files.openDownloadFolder();
+      return 'Opened download folder';
+    },
+  });
+
 const FilesAPIs = (): ReactElement => (
   <>
     <h1>files</h1>
@@ -176,6 +209,8 @@ const FilesAPIs = (): ReactElement => (
     <CheckFilesCapability />
     <GetExternalProviders />
     <CopyMoveFiles />
+    <GetFileDownloads />
+    <OpenDownloadFolder />
   </>
 );
 
