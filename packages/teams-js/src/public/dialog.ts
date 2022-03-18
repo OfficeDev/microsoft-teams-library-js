@@ -29,11 +29,11 @@ export namespace dialog {
   /**
    * Allows an app to open the dialog module.
    *
-   * @param urlDialogInfo - An object containing the parameters of the dialog module
-   * @param submitHandler - Handler to call when the task module is completed
-   * @param messageFromChildHandler - Handler that triggers if dialog tries to send a message to the app.
+   * @param urlDialogInfo - An object containing the parameters of the dialog module.
+   * @param submitHandler - This Handler is called when the dialog has been submitted or closed.
+   * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
    *
-   * @returns a Handler that is triggerd to send a message to the dialog.
+   * @returns a function that can be used to send messages to the dialog.
    */
   export function open(
     urlDialogInfo: UrlDialogInfo,

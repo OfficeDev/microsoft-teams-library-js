@@ -2,7 +2,7 @@ import { app } from '../../src/public/app';
 import { TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
-import { getDefaultSizeIfNotProvided, tasks } from '../../src/public/tasks';
+import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
 
 describe('tasks', () => {
@@ -127,7 +127,7 @@ describe('tasks', () => {
           tasks.startTask(taskInfo, () => {
             return;
           });
-          const taskInfoWithSize = getDefaultSizeIfNotProvided(taskInfo);
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
 
           expect(startTaskMessage).not.toBeNull();

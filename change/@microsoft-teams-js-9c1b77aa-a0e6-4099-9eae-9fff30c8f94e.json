@@ -1,6 +1,12 @@
 {
   "type": "major",
-  "comment": "Dialog.open function takes an extra optionl parameter named messageFromChildHandler and returns a handler back instead of a ChildAppWindow.",
+  "comment": [
+    "1. Dialog capability has been split into a main capability (dialog) for supporting HTML-based dialogs and a subcapability dialog.bot for bot based dialogs. For now, dialog capability does not support adaptive card based dialogs",
+    "\n  2. dialog.open has been changed to take UrlDialogInfo instead of DialogInfo to enforce only HTML based dialogs",
+    "\n  3. dialog.open takes an extra optional parameter named messageFromChildHandler which is triggered if dialog sends a message to the app",
+    "\n  4. dialog.open returns a function that can be used to send messages to the dialog instead of returning a ChildAppWindow",
+    "\n  5. dialog.bot.open has the same function signature except it takes BotUrlDialogInfo instead of UrlDialogInfo"
+  ],
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
