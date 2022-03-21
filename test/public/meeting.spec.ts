@@ -595,6 +595,34 @@ describe('meeting', () => {
         expect(shareAppContentToStageMessage.args).toContain(requestUrl);
       });
 
+      it('should successfully share app content to stage', () => {
+        desktopPlatformMock.initializeWithContext('meetingStage');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        let requestUrl = 'validUrl';
+        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        }, requestUrl);
+
+        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        expect(shareAppContentToStageMessage).not.toBeNull();
+        let callbackId = shareAppContentToStageMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+        expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+      });
+
       it('should return error code 500', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
 

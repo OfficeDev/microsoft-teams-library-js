@@ -267,7 +267,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
   }
 
