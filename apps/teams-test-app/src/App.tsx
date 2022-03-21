@@ -100,42 +100,97 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
+enum API {
+  ALL = 'All',
+  APP = 'App',
+  APP_INIT = 'App Initialization',
+  APP_INSTALL = 'App Install Dialog',
+  AUTH = 'Authentication',
+  APP_ENTITY = 'App Entity',
+  BOT = 'Bot',
+  CALENDAR = 'Calendar',
+  CALL = 'Call',
+  CHAT = 'Chat',
+  DIALOG = 'Dialog',
+  FILES = 'Files',
+  FULL_TRUST = 'Full Trust APIs',
+  LOCATION = 'Location',
+  LOG = 'Logs',
+  MAIL = 'Mail',
+  MEDIA = 'Media',
+  MEETING = 'Meeting',
+  MEETING_ROOM = 'Meeting Room',
+  MENUS = 'Menus',
+  MONETIZATION = 'Monetization',
+  NOTIFICATIONS = 'Notifications',
+  PAGES = 'Pages',
+  PAGES_APP_BUTTON = 'Pages.appButton',
+  PAGES_BACKSTACK = 'Pages.backStack',
+  PAGES_CONFIG = 'Pages.config',
+  PAGES_TABS = 'Pages.tabs',
+  PEOPLE = 'People',
+  PRIVATE = 'Private APIs',
+  REMOTE_CAMERA = 'Remote Camera',
+  SHARING = 'Sharing',
+  STAGE_VIEW = 'Stage View',
+  TEAMS_CORE = 'Teams Core',
+  TEAMS = 'Teams APIs',
+}
+
 const App = (): ReactElement => {
+  const [showApiSelector, setShowApiSelector] = React.useState(false);
+  const [showApi, setShowApi] = React.useState<API>(API.ALL);
+  const shouldShowApi = (api: API): boolean => showApi === API.ALL || showApi === api;
   return (
     <>
-      <AppAPIs />
-      <AppInitializationAPIs />
-      <AppInstallDialogAPIs />
-      <AuthenticationAPIs />
-      <AppEntityAPIs />
-      <BotAPIs />
-      <CalendarAPIs />
-      <CallAPIs />
-      <ChatAPIs />
-      <DialogAPIs />
-      <FilesAPIs />
-      <FullTrustAPIs />
-      <LocationAPIs />
-      <LogAPIs />
-      <MailAPIs />
-      <MediaAPIs />
-      <MeetingAPIs />
-      <MeetingRoomAPIs />
-      <MenusAPIs />
-      <MonetizationAPIs />
-      <NotificationAPIs />
-      <PagesAPIs />
-      <PagesAppButtonAPIs />
-      <PagesBackStackAPIs />
-      <PagesConfigAPIs />
-      <PagesTabsAPIs />
-      <PeopleAPIs />
-      <PrivateAPIs />
-      <RemoteCameraAPIs />
-      <SharingAPIs />
-      <StageViewAPIs />
-      <TeamsCoreAPIs />
-      <TeamsAPIs />
+      <button onClick={() => setShowApiSelector(prev => !prev)}>Show capability</button>
+      {showApiSelector &&
+        Object.values(API).map(value => (
+          <div key={value}>
+            <a
+              key={value}
+              onClick={() => {
+                setShowApi(value);
+                setShowApiSelector(false);
+              }}
+            >
+              {value}
+            </a>
+          </div>
+        ))}
+      {shouldShowApi(API.APP) && <AppAPIs />}
+      {shouldShowApi(API.APP_INIT) && <AppInitializationAPIs />}
+      {shouldShowApi(API.APP_INSTALL) && <AppInstallDialogAPIs />}
+      {shouldShowApi(API.AUTH) && <AuthenticationAPIs />}
+      {shouldShowApi(API.APP_ENTITY) && <AppEntityAPIs />}
+      {shouldShowApi(API.BOT) && <BotAPIs />}
+      {shouldShowApi(API.CALENDAR) && <CalendarAPIs />}
+      {shouldShowApi(API.CALL) && <CallAPIs />}
+      {shouldShowApi(API.CHAT) && <ChatAPIs />}
+      {shouldShowApi(API.DIALOG) && <DialogAPIs />}
+      {shouldShowApi(API.FILES) && <FilesAPIs />}
+      {shouldShowApi(API.FULL_TRUST) && <FullTrustAPIs />}
+      {shouldShowApi(API.LOCATION) && <LocationAPIs />}
+      {shouldShowApi(API.LOG) && <LogAPIs />}
+      {shouldShowApi(API.MAIL) && <MailAPIs />}
+      {shouldShowApi(API.MEDIA) && <MediaAPIs />}
+      {shouldShowApi(API.MEETING) && <MeetingAPIs />}
+      {shouldShowApi(API.MEETING_ROOM) && <MeetingRoomAPIs />}
+      {shouldShowApi(API.MENUS) && <MenusAPIs />}
+      {shouldShowApi(API.MONETIZATION) && <MonetizationAPIs />}
+      {shouldShowApi(API.NOTIFICATIONS) && <NotificationAPIs />}
+      {shouldShowApi(API.PAGES) && <PagesAPIs />}
+      {shouldShowApi(API.PAGES_APP_BUTTON) && <PagesAppButtonAPIs />}
+      {shouldShowApi(API.PAGES_BACKSTACK) && <PagesBackStackAPIs />}
+      {shouldShowApi(API.PAGES_CONFIG) && <PagesConfigAPIs />}
+      {shouldShowApi(API.PAGES_TABS) && <PagesTabsAPIs />}
+      {shouldShowApi(API.PEOPLE) && <PeopleAPIs />}
+      {shouldShowApi(API.PRIVATE) && <PrivateAPIs />}
+      {shouldShowApi(API.REMOTE_CAMERA) && <RemoteCameraAPIs />}
+      {shouldShowApi(API.SHARING) && <SharingAPIs />}
+      {shouldShowApi(API.STAGE_VIEW) && <StageViewAPIs />}
+      {shouldShowApi(API.TEAMS_CORE) && <TeamsCoreAPIs />}
+      {shouldShowApi(API.TEAMS) && <TeamsAPIs />}
     </>
   );
 };
