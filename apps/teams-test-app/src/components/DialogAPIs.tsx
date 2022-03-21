@@ -72,10 +72,17 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('input is undefined');
           }
         },
-        submit: async (dimensions, setResult) => {
-          dialog.update.resize(dimensions);
-          setResult('Teams client SDK call dailog.update.resize was called');
-          return '';
+        submit: {
+          withPromise: async (dimensions, setResult) => {
+            dialog.update.resize(dimensions);
+            setResult('Teams client SDK call dailog.update.resize was called');
+            return '';
+          },
+          //For V1 back compatibility
+          withCallback: (taskInfo, setResult) => {
+            tasks.updateTask(taskInfo);
+            setResult('Teams client SDK call tasks.updateTask was called');
+          },
         },
       },
     });
