@@ -6,9 +6,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts } from './constants';
-import { DialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -19,21 +18,44 @@ import { runtime } from './runtime';
  *
  * @beta
  */
+export interface SdkResponse {
+  err: string;
+  result: string | object;
+}
+
 export namespace dialog {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type PostMessageChannel = (message: any, onComplete?: (status: boolean, reason?: string) => void) => void;
+  export type DialogSubmitHandler = (result: SdkResponse) => void;
   /**
    * Allows an app to open the dialog module.
    *
-   * @param dialogInfo - An object containing the parameters of the dialog module
-   * @param submitHandler - Handler to call when the task module is completed
+   * @param urlDialogInfo - An object containing the parameters of the dialog module.
+   * @param submitHandler - This Handler is called when the dialog has been submitted or closed.
+   * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+   *
+   * @returns a function that can be used to send messages to the dialog.
    */
   export function open(
-    dialogInfo: DialogInfo,
-    submitHandler?: (err: string, result: string | object) => void,
-  ): IAppWindow {
+    urlDialogInfo: UrlDialogInfo,
+    submitHandler?: DialogSubmitHandler,
+    messageFromChildHandler?: PostMessageChannel,
+  ): PostMessageChannel {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-    sendMessageToParent('tasks.startTask', [dialogInfo], submitHandler);
-    return new ChildAppWindow();
+    if (messageFromChildHandler) {
+      registerHandler('messageForParent', messageFromChildHandler);
+    }
+
+    sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
+      submitHandler({ err, result });
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
+      sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    };
+    return sendMessageToDialog;
   }
 
   /**
@@ -94,5 +116,31 @@ export namespace dialog {
 
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
+  }
+  export namespace bot {
+    export function open(
+      botUrlDialogInfo: BotUrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): PostMessageChannel {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+      if (messageFromChildHandler) {
+        registerHandler('messageForParent', messageFromChildHandler);
+      }
+
+      sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
+        submitHandler({ err, result });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
+        sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+      };
+      return sendMessageToDialog;
+    }
+    export function isSupported(): boolean {
+      return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
+    }
   }
 }
