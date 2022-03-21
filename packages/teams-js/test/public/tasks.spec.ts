@@ -33,7 +33,142 @@ describe('tasks', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should pass along the taskInfo correctly when card is specified. ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            card: 'someCard',
+            fallbackUrl: 'someFallbackUrl',
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+            title: 'someTitle',
+            url: 'someUrl',
+            completionBotId: 'someCompletionBotId',
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([taskInfo]);
+        });
+
+        it(`should pass along the taskInfo correctly when URL is not specified. ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([taskInfo]);
+        });
+
+        it(`should pass along the taskInfo correctly when completionBotid is specified. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            fallbackUrl: 'someFallbackUrl',
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+            title: 'someTitle',
+            url: 'someUrl',
+            completionBotId: 'someCompletionBotId',
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([tasks.getBotUrlDialogInfoFromTaskInfo(taskInfo)]);
+        });
+
+        it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            fallbackUrl: 'someFallbackUrl',
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+            title: 'someTitle',
+            url: 'someUrl',
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([tasks.getUrlDialogInfoFromTaskInfo(taskInfo)]);
+        });
+
+        it(`should Provide default Size if taskInfo doesn't have length or width. ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const taskInfo: TaskInfo = {
+            fallbackUrl: 'someFallbackUrl',
+            height: TaskModuleDimension.Large,
+            url: 'someUrl',
+            card: 'someCard',
+          };
+
+          tasks.startTask(taskInfo, () => {
+            return;
+          });
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+
+          expect(startTaskMessage).not.toBeNull();
+          expect(startTaskMessage.args).toEqual([taskInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfoWithSize]);
+        });
+
+        it(`should invoke callback with result. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+
+          let callbackCalled = false;
+          const taskInfo: TaskInfo = {};
+          tasks.startTask(taskInfo, (err, result) => {
+            expect(err).toBeNull();
+            expect(result).toBe('someResult');
+            callbackCalled = true;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          utils.respondToMessage(startTaskMessage, null, 'someResult');
+          expect(callbackCalled).toBe(true);
+        });
+
+        it(`should invoke callback with error. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+
+          let callbackCalled = false;
+          const taskInfo: TaskInfo = {};
+          tasks.startTask(taskInfo, (err, result) => {
+            expect(err).toBe('someError');
+            expect(result).toBeUndefined();
+            callbackCalled = true;
+          });
+
+          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+          expect(startTaskMessage).not.toBeNull();
+          utils.respondToMessage(startTaskMessage, 'someError');
+          expect(callbackCalled).toBe(true);
+        });
+      } else {
         it(`should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const taskInfo: TaskInfo = {};
@@ -44,84 +179,6 @@ describe('tasks', () => {
           );
         });
       }
-    });
-
-    it('should pass along entire TaskInfo parameter in sidePanel context', async () => {
-      await utils.initializeWithContext(FrameContexts.sidePanel);
-
-      const taskInfo: TaskInfo = {
-        card: 'someCard',
-        fallbackUrl: 'someFallbackUrl',
-        height: TaskModuleDimension.Large,
-        width: TaskModuleDimension.Large,
-        title: 'someTitle',
-        url: 'someUrl',
-        completionBotId: 'someCompletionBotId',
-      };
-
-      tasks.startTask(taskInfo, () => {
-        return;
-      });
-
-      const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-      expect(startTaskMessage).not.toBeNull();
-      expect(startTaskMessage.args).toEqual([taskInfo]);
-    });
-
-    it('should pass along entire TaskInfo parameter in content', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-
-      const taskInfo: TaskInfo = {
-        card: 'someCard',
-        fallbackUrl: 'someFallbackUrl',
-        height: TaskModuleDimension.Large,
-        width: TaskModuleDimension.Large,
-        title: 'someTitle',
-        url: 'someUrl',
-        completionBotId: 'someCompletionBotId',
-      };
-
-      tasks.startTask(taskInfo, () => {
-        return;
-      });
-
-      const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-      expect(startTaskMessage).not.toBeNull();
-      expect(startTaskMessage.args).toEqual([taskInfo]);
-    });
-
-    it('should invoke callback with result', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-
-      let callbackCalled = false;
-      const taskInfo: TaskInfo = {};
-      tasks.startTask(taskInfo, (err, result) => {
-        expect(err).toBeNull();
-        expect(result).toBe('someResult');
-        callbackCalled = true;
-      });
-
-      const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-      expect(startTaskMessage).not.toBeNull();
-      utils.respondToMessage(startTaskMessage, null, 'someResult');
-      expect(callbackCalled).toBe(true);
-    });
-
-    it('should invoke callback with error', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-
-      let callbackCalled = false;
-      const taskInfo: TaskInfo = {};
-      tasks.startTask(taskInfo, (err, result) => {
-        expect(err).toBe('someError');
-        expect(result).toBeUndefined();
-        callbackCalled = true;
-      });
-
-      const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-      expect(startTaskMessage).not.toBeNull();
-      utils.respondToMessage(startTaskMessage, 'someError');
-      expect(callbackCalled).toBe(true);
     });
   });
 
