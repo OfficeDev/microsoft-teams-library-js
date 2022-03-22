@@ -69,24 +69,6 @@ const DialogAPIs = (): ReactElement => {
       },
     });
 
-  const UpdateTaskModule = (): ReactElement =>
-    ApiWithTextInput<TaskInfo>({
-      name: 'updateTaskModule',
-      title: 'Update Task Module',
-      onClick: {
-        validateInput: input => {
-          if (input.height === undefined && input.width === undefined) {
-            throw new Error('Height and width undefined');
-          }
-        },
-        submit: async (taskInfo, setResult) => {
-          tasks.updateTask(taskInfo);
-          setResult('Teams client SDK call tasks.updateTask was called');
-          return '';
-        },
-      },
-    });
-
   const ResizeDialog = (): ReactElement =>
     ApiWithTextInput<DialogSize>({
       name: 'dialogResize',
@@ -309,7 +291,6 @@ const DialogAPIs = (): ReactElement => {
       <CheckDialogCapability />
       <StartTask />
       <OpenDialog />
-      <UpdateTaskModule />
       <ResizeDialog />
       <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
