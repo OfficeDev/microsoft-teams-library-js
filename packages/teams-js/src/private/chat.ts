@@ -154,7 +154,7 @@ export namespace chat {
    * Allows the user to open a chat with a single user and allows
    * for the user to specify the message they wish to send.
    *
-   *@param openChatRequest: OpenSingleChatRequest - a request object that contains a user's email as well as an optional message parameter.
+   *@param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
    */
@@ -176,7 +176,7 @@ export namespace chat {
    * for the user to specify a message and name the topic of the conversation. If
    * only 1 user is provided into users array default back to origin openChat.
    *
-   * @param openChatRequest: OpenGroupChatRequest - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
+   * @param openChatRequest: {@link OpenGroupChatRequest} - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
    */
