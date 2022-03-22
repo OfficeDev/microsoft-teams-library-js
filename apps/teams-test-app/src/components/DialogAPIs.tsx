@@ -2,6 +2,7 @@
 import {
   dialog,
   DialogInfo,
+  DialogSize,
   IAppWindow,
   ParentAppWindow,
   SdkResponse,
@@ -69,25 +70,40 @@ const DialogAPIs = (): ReactElement => {
     });
 
   const ResizeDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
+    ApiWithTextInput<DialogSize>({
       name: 'dialogResize',
       title: 'Dialog Resize',
       onClick: {
         validateInput: input => {
-          if (input.height === undefined && input.width === undefined) {
-            throw new Error('Height and width undefined');
+          if (!input) {
+            throw new Error('input is undefined');
           }
         },
         submit: {
-          withPromise: async dialogInfo => {
-            dialog.resize(dialogInfo);
-            return 'Teams client SDK call dialog.resize was called';
+          withPromise: async (dimensions, setResult) => {
+            dialog.update.resize(dimensions);
+            setResult('Teams client SDK call dailog.update.resize was called');
+            return '';
           },
+          //For V1 back compatibility
           withCallback: (taskInfo, setResult) => {
             tasks.updateTask(taskInfo);
             setResult('Teams client SDK call tasks.updateTask was called');
           },
         },
+      },
+    });
+
+  const CheckDialogResizeCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCapabilityResizeDialog',
+      title: 'Check Capability Resize Dialog',
+      onClick: async () => {
+        if (dialog.update.isSupported()) {
+          return 'Dialog.update module is supported';
+        } else {
+          return 'Dialog.update module is not supported';
+        }
       },
     });
 
@@ -276,6 +292,7 @@ const DialogAPIs = (): ReactElement => {
       <StartTask />
       <OpenDialog />
       <ResizeDialog />
+      <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
       <SendMessageToChild />
       <SendMessageToChild_v2 />

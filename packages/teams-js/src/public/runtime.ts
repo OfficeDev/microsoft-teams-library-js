@@ -13,6 +13,7 @@ export interface IRuntime {
     readonly chat?: {};
     readonly dialog?: {
       readonly bot?: {};
+      readonly update?: {};
     };
     readonly files?: {};
     readonly location?: {};
@@ -52,6 +53,7 @@ export let runtime: IRuntime = {
     chat: undefined,
     dialog: {
       bot: undefined,
+      update: undefined,
     },
     location: undefined,
     logs: undefined,
@@ -91,6 +93,7 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     dialog: {
       bot: {},
+      update: {},
     },
     files: {},
     location: {},

@@ -5,7 +5,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog, SdkResponse } from './dialog';
-import { BotUrlDialogInfo, DialogInfo, TaskInfo, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
@@ -47,14 +47,21 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
    * @param taskInfo - An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    dialog.resize(taskInfo);
+    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { width, height, ...extra } = taskInfo;
+
+    if (Object.keys(extra).length) {
+      throw new Error('resize requires a TaskInfo argument containing only width and height');
+    }
+    dialog.update.resize(taskInfo as DialogSize);
   }
 
   /**

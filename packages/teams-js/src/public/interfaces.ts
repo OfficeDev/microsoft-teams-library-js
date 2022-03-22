@@ -620,6 +620,10 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
+export interface DialogSize {
+  height: DialogDimension | number;
+  width: DialogDimension | number;
+}
 /**
  * @hidden
  * Hide from docs.

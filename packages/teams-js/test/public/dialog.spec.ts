@@ -1,3 +1,4 @@
+import { DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { app } from '../../src/public/app';
 import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
@@ -140,28 +141,55 @@ describe('Dialog', () => {
       }
     });
   });
+  describe('Update', () => {
+    describe('resize function', () => {
+      const allowedContexts = [
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.task,
+        FrameContexts.meetingStage,
+      ];
+      const dimensions: DialogSize = { width: 10, height: 10 };
 
-  describe('resize', () => {
-    it('should not allow calls before initialization', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(() => dialog.resize({} as any)).toThrowError('The library has not yet been initialized');
+      it('should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        expect(() => dialog.update.resize({} as any)).toThrowError('The library has not yet been initialized');
+      });
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`should successfully pass DialogInfo in context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            dialog.update.resize(dimensions);
+            const resizeMessage = utils.findMessageByFunc('tasks.updateTask');
+            expect(resizeMessage).not.toBeNull();
+            expect(resizeMessage.args).toEqual([dimensions]);
+          });
+        } else {
+          it(`should not allow calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+            expect(() => dialog.update.resize(dimensions)).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
     });
-
-    it('should successfully pass DialogInfo in Task context', async () => {
-      await utils.initializeWithContext('task');
-      const dialogInfo = { width: 10, height: 10 };
-      dialog.resize(dialogInfo);
-      const resizeMessage = utils.findMessageByFunc('tasks.updateTask');
-      expect(resizeMessage).not.toBeNull();
-      expect(resizeMessage.args).toEqual([dialogInfo]);
-    });
-
-    it('should throw an error if extra properties are provided', async () => {
-      await utils.initializeWithContext('task');
-      const dialogInfo = { width: 10, height: 10, title: 'anything' };
-      expect(() => dialog.resize(dialogInfo)).toThrowError(
-        'resize requires a dialogInfo argument containing only width and height',
-      );
+    describe('dialog.update.isSupported function', () => {
+      it('dialog.update.isSupported should return false if the runtime says dialog is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(dialog.update.isSupported()).not.toBeTruthy();
+      });
+      it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+        expect(dialog.update.isSupported()).not.toBeTruthy();
+      });
+      it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { update: {} } } });
+        expect(dialog.update.isSupported()).toBeTruthy();
+      });
     });
   });
   describe('submit', () => {
@@ -204,6 +232,17 @@ describe('Dialog', () => {
       const submitMessage = utils.findMessageByFunc('tasks.completeTask');
       expect(submitMessage).not.toBeNull();
       expect(submitMessage.args).toEqual(['someResult', ['someAppId']]);
+    });
+  });
+  describe('dialog.isSupported function', () => {
+    it('dialog.isSupported should return false if the runtime says dialog is not supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(dialog.isSupported()).not.toBeTruthy();
+    });
+
+    it('dialog.update.isSupported should return true if the runtime says dialog is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+      expect(dialog.isSupported()).toBeTruthy();
     });
   });
 

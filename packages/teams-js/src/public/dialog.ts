@@ -7,7 +7,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogInfo, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -59,22 +59,6 @@ export namespace dialog {
   }
 
   /**
-   * Update height/width dialog info properties.
-   *
-   * @param dialogInfo - An object containing width and height properties
-   */
-  export function resize(dialogInfo: DialogInfo): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
-    const { width, height, ...extra } = dialogInfo;
-
-    if (!Object.keys(extra).length) {
-      sendMessageToParent('tasks.updateTask', [dialogInfo]);
-    } else {
-      throw new Error('resize requires a dialogInfo argument containing only width and height');
-    }
-  }
-
-  /**
    * Submit the dialog module.
    *
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
@@ -117,6 +101,22 @@ export namespace dialog {
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
   }
+
+  export namespace update {
+    /**
+     * Update dimensions - height/width of a dialog.
+     *
+     * @param dimensions - An object containing width and height properties.
+     */
+    export function resize(dimensions: DialogSize): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.updateTask', [dimensions]);
+    }
+    export function isSupported(): boolean {
+      return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
+    }
+  }
+
   export namespace bot {
     export function open(
       botUrlDialogInfo: BotUrlDialogInfo,
