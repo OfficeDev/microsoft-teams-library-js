@@ -1,8 +1,35 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 01 Mar 2022 19:50:49 GMT and should not be manually modified.
+This log was last generated on Tue, 22 Mar 2022 21:20:32 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.4
+
+Tue, 22 Mar 2022 21:20:32 GMT
+
+### Major changes
+
+- 1. Dialog capability has been split into a main capability (dialog) for supporting HTML-based dialogs and a subcapability dialog.bot for bot based dialogs. For now, dialog capability does not support adaptive card based dialogs,
+  2. dialog.open takes a UrlDialogInfo instead of DialogInfo to enforce only HTML based dialogs,
+  3. callback submitHandler takes a single object parameter containing both error and result,
+  4. dialog.open takes one more optional parameter named messageFromChildHandler which is triggered if dialog sends a message to the app,
+  5. dialog.open returns a function that can be used to send messages to the dialog instead of returning a ChildAppWindow,
+  6. dialog.bot.open has the same function signature except it takes BotUrlDialogInfo instead of UrlDialogInfo
+- dialog.resize() function has been moved to a new dialog subcapability and is now dialog.update.resize(). The parameter has been changed to DialogSize type
+
+### Minor changes
+
+- gitmagic additions to 2.0-preview for March 09, 2022. Changes merged in from V1 include removing private tag for sharing, making Menu APIs Public, and adding new features for files API (enum FileDownloadStatus, interface IFileItem, getFileDownloads(), openDownloadFolder())
+- Copied ParentAppWindow functionality into dialog capability. In Dialogs, ParentAppWindow.postMessage becomes dialog.sendMessageToParent(message: any): void. And ParentAppWindow.addEventListener becomes dialog.registerOnMessageFromParent.
+- gitmagic additions to 2.0-preview for February 28, 2022. Changes merged in from V1 include stageView implementation and modifying dialog.resize() and dialog.submit() to also work in FrameContexts sidePanel, content, meetingStage, and task rather than just task.
+
+### Patches
+
+- Adds office365 Outlook to domain whitelist
+- In `appWindow.ts` file, `ChildAppWindow` and `ParentAppWindow` are converted back to synchronous calls because the promise was never being resolved.
+- promisify stageView
+- added promisified files.getFileDownloads
 
 ## 2.0.0-beta.3
 
