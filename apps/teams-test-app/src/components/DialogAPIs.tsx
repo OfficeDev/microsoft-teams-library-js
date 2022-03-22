@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, IAppWindow, ParentAppWindow, TaskInfo, tasks } from '@microsoft/teams-js';
+import {
+  dialog,
+  DialogInfo,
+  DialogSize,
+  IAppWindow,
+  ParentAppWindow,
+  SdkResponse,
+  TaskInfo,
+  tasks,
+  UrlDialogInfo,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -15,9 +25,29 @@ const DialogAPIs = (): ReactElement => {
     childWindowRef.current = childWindow;
   };
 
-  const OpenDialog = (): ReactElement =>
+  const StartTask = (): ReactElement =>
     ApiWithTextInput<DialogInfo | TaskInfo>({
       name: 'dialogOpen',
+      title: 'Start Task',
+      onClick: {
+        validateInput: input => {
+          if (input.url === undefined) {
+            throw new Error('Url undefined');
+          }
+        },
+        submit: async (taskInfo, setResult) => {
+          const onComplete = (err: string, result: string | object): void => {
+            setResult('Error: ' + err + '\nResult: ' + result);
+          };
+          openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
+          return '';
+        },
+      },
+    });
+
+  const OpenDialog = (): ReactElement =>
+    ApiWithTextInput<UrlDialogInfo>({
+      name: 'dialogOpen_v2',
       title: 'Dialog Open',
       onClick: {
         validateInput: input => {
@@ -25,45 +55,55 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('Url undefined');
           }
         },
-        submit: {
-          withPromise: async (dialogInfo, setResult) => {
-            const onComplete = (err: string, result: string | object): void => {
-              setResult('Error: ' + err + '\nResult: ' + result);
-            };
-            openDialogHelper(dialog.open(dialogInfo, onComplete), setResult);
-            return '';
-          },
-          withCallback: (taskInfo, setResult) => {
-            const onComplete = (err: string, result: string | object): void => {
-              setResult('Error: ' + err + '\nResult: ' + result);
-            };
-            // Store the reference of child window in React
-            openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
-          },
+        submit: async (urlDialogInfo, setResult) => {
+          const onComplete = (resultObj: SdkResponse): void => {
+            setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
+          };
+          const messageFromChildHandler: dialog.PostMessageChannel = (message: string): void => {
+            // Message from parent
+            setResult(message);
+          };
+          dialog.open(urlDialogInfo, onComplete, messageFromChildHandler);
+          return '';
         },
       },
     });
 
   const ResizeDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
+    ApiWithTextInput<DialogSize>({
       name: 'dialogResize',
       title: 'Dialog Resize',
       onClick: {
         validateInput: input => {
-          if (input.height === undefined && input.width === undefined) {
-            throw new Error('Height and width undefined');
+          if (!input) {
+            throw new Error('input is undefined');
           }
         },
         submit: {
-          withPromise: async dialogInfo => {
-            dialog.resize(dialogInfo);
-            return 'Teams client SDK call dialog.resize was called';
+          withPromise: async (dimensions, setResult) => {
+            dialog.update.resize(dimensions);
+            setResult('Teams client SDK call dailog.update.resize was called');
+            return '';
           },
+          //For V1 back compatibility
           withCallback: (taskInfo, setResult) => {
             tasks.updateTask(taskInfo);
             setResult('Teams client SDK call tasks.updateTask was called');
           },
         },
+      },
+    });
+
+  const CheckDialogResizeCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCapabilityResizeDialog',
+      title: 'Check Capability Resize Dialog',
+      onClick: async () => {
+        if (dialog.update.isSupported()) {
+          return 'Dialog.update module is supported';
+        } else {
+          return 'Dialog.update module is not supported';
+        }
       },
     });
 
@@ -92,6 +132,39 @@ const DialogAPIs = (): ReactElement => {
           } else {
             setResult("childWindow doesn't exist");
           }
+          return '';
+        },
+      },
+    });
+
+  const SendMessageToChild_v2 = (): ReactElement =>
+    ApiWithTextInput<string>({
+      name: 'sendMessageToChild_v2',
+      title: 'sendMessageToChild_v2',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        validateInput: () => {},
+        submit: async (message, setResult) => {
+          const onComplete = (status: boolean, reason?: string): void => {
+            if (!status) {
+              if (reason) {
+                setResult(JSON.stringify(reason));
+              } else {
+                setResult("Status is false but there's no reason?! This shouldn't happen.");
+              }
+            } else {
+              setResult('Message sent to child');
+            }
+          };
+          const dialogInfo = {
+            url: 'someUrl',
+            size: {
+              height: 5,
+              width: 5,
+            },
+          };
+          const sendMessageToDialogHandler = dialog.open(dialogInfo);
+          sendMessageToDialogHandler(message, onComplete);
           return '';
         },
       },
@@ -216,10 +289,13 @@ const DialogAPIs = (): ReactElement => {
     <>
       <h1>dialog</h1>
       <CheckDialogCapability />
+      <StartTask />
       <OpenDialog />
       <ResizeDialog />
+      <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
       <SendMessageToChild />
+      <SendMessageToChild_v2 />
       <SendMessageToParent />
       <SendMessageToParent_v2 />
       <RegisterForParentMessage />

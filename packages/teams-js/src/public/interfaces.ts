@@ -532,6 +532,49 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
+export interface DialogSize {
+  /**
+   * The requested height of the webview/iframe.
+   */
+  height: DialogDimension | number;
+
+  /**
+   * The requested width of the webview/iframe.
+   */
+  width: DialogDimension | number;
+}
+
+export interface UrlDialogInfo {
+  /**
+   * The url to be rendered in the webview/iframe.
+   */
+  url: string;
+
+  /*
+   * The requested height and width of the dialog
+   */
+  size: DialogSize;
+
+  /**
+   * Title of the task module.
+   */
+  title?: string;
+
+  /**
+   * If client doesnt support the URL, the URL that needs to be opened in the browser.
+   */
+  fallbackUrl?: string;
+}
+
+export interface BotUrlDialogInfo extends UrlDialogInfo {
+  /**
+   * Specifies a bot ID to send the result of the user's interaction with the task module.
+   * The bot will receive a task/complete invoke event with a JSON object
+   * in the event payload.
+   */
+  completionBotId: string;
+}
+
 export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
@@ -577,6 +620,10 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
+export interface DialogSize {
+  height: DialogDimension | number;
+  width: DialogDimension | number;
+}
 /**
  * @hidden
  * Hide from docs.
