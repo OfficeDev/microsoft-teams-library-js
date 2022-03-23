@@ -1,12 +1,17 @@
-.wrapper {
+.labelIconWrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: baseline;
 }
 
 .supportButton {
   width: 25px;
   height: 25px;
   border-radius: 100px;
+}
+
+.stateWrapper {
+  display: flex;
 }
 
 .supported {

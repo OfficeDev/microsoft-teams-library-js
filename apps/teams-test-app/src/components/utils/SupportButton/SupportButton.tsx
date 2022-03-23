@@ -14,20 +14,22 @@ export type GlowButtonProps = {
 
 export const SupportButton = (props: GlowButtonProps): ReactElement => {
   const { module, name, isSupported } = props;
-  const label = `Is ${module} supported?: ${
-    isSupported ? (
-      <>
-        <Check fill="green" /> yes
-      </>
-    ) : (
-      <>
-        <X fill="red" /> no
-      </>
-    )
-  }`;
+  const label = `Is ${module} supported?:`;
+  const supportIcon = isSupported ? (
+    <div className="stateWrapper">
+      <Check fill="green" /> yes
+    </div>
+  ) : (
+    <div className="stateWrapper">
+      <X fill="red" /> no
+    </div>
+  );
+
   return (
     <BlockContainer name={name}>
-      <div className="wrapper">{label}</div>
+      <div className="labelIconWrapper">
+        {label} {supportIcon}
+      </div>
     </BlockContainer>
   );
 };
