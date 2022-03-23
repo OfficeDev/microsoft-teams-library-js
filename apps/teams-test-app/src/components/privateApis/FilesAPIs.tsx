@@ -2,12 +2,13 @@ import { FileOpenPreference, FilePreviewParameters, files, SdkError } from '@mic
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckFilesCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityFiles',
-    title: 'Check Files Capability',
-    onClick: async () => `Files module ${files.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Files',
+    isSupported: files.isSupported(),
   });
 
 const OpenFilePreview = (): React.ReactElement =>
@@ -200,13 +201,13 @@ const OpenDownloadFolder = (): ReactElement =>
 const FilesAPIs = (): ReactElement => (
   <>
     <h1>files</h1>
+    <CheckFilesCapability />
     <OpenFilePreview />
     <GetCloudStorageFolders />
     <AddCloudStorageFolder />
     <DeleteCloudStorageFolder />
     <GetCloudStorageFolderContents />
     <OpenCloudStorageFile />
-    <CheckFilesCapability />
     <GetExternalProviders />
     <CopyMoveFiles />
     <GetFileDownloads />

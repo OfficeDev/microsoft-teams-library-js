@@ -1,13 +1,14 @@
 import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckNotificationCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityNotifications',
-    title: 'Check Capability Notifications',
-    onClick: async () => `Notifications module ${notifications.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Notifications',
+    isSupported: notifications.isSupported(),
   });
 
 const ShowNotification = (): React.ReactElement =>

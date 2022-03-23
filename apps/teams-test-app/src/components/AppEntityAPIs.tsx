@@ -1,13 +1,14 @@
 import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
-const CheckAppEntityCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkAppEntityCapability',
-    title: 'Check AppEntity Capability',
-    onClick: async () => `AppEntity ${appEntity.isSupported() ? 'is' : 'is not'} supported`,
+const AppEntityCapability = (): React.ReactElement =>
+  SupportButton({
+    name: 'appEntityCapability',
+    module: 'AppEntity Capability',
+    isSupported: appEntity.isSupported(),
   });
 
 interface AppEntityParams {
@@ -56,8 +57,8 @@ const SelectAppEntity = (): React.ReactElement =>
 const AppEntityAPIs = (): ReactElement => (
   <>
     <h1>appEntity</h1>
+    <AppEntityCapability />
     <SelectAppEntity />
-    <CheckAppEntityCapability />
   </>
 );
 

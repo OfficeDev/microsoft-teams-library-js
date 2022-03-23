@@ -1,13 +1,14 @@
 import { mail } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckMailCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityMail',
-    title: 'Check Mail Call',
-    onClick: async () => `Mail module ${mail.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Mail',
+    isSupported: mail.isSupported(),
   });
 
 const ComposeMail = (): React.ReactElement =>

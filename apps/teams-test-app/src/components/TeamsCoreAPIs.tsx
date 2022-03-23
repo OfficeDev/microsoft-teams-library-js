@@ -9,6 +9,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const EnablePrintCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -104,20 +105,20 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
   });
 
 const CheckTeamsCoreCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkTeamsCoreCapability',
-    title: 'Check TeamsCore Capability',
-    onClick: async () => `TeamsCore ${teamsCore.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'TeamsCore',
+    isSupported: teamsCore.isSupported(),
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
   <>
     <h1>teamsCore</h1>
+    <CheckTeamsCoreCapability />
     <EnablePrintCapability />
     <Print />
     <RegisterOnLoadHandler />
     <RegisterBeforeUnloadHandler />
-    <CheckTeamsCoreCapability />
   </>
 );
 

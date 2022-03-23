@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
@@ -126,22 +127,22 @@ const RegisterOChangeConfigHandler = (): React.ReactElement =>
   });
 
 const CheckPageConfigCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkPageConfigCapability',
-    title: 'Check Page config Call',
-    onClick: async () => `Pages.config module ${pages.config.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Page config',
+    isSupported: pages.config.isSupported(),
   });
 
 const PagesConfigAPIs = (): ReactElement => (
   <>
     <h1>pages.config</h1>
+    <CheckPageConfigCapability />
     <Initialize />
     <RegisterOnSaveHandler />
     <SetConfig />
     <SetValidityState />
     <RegisterOnRemoveHandler />
     <RegisterOChangeConfigHandler />
-    <CheckPageConfigCapability />
   </>
 );
 

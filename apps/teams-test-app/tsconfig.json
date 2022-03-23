@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "sourceMap": true
   },
   "include": ["src"],

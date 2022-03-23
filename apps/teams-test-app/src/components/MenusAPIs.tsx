@@ -2,13 +2,14 @@ import { menus } from '@microsoft/teams-js';
 import React from 'react';
 import { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckMenusCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkMenusCapability',
-    title: 'Check Menus Capability',
-    onClick: async () => `Menus module ${menus.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Menus Capability',
+    isSupported: menus.isSupported(),
   });
 
 const SetUpViews = (): React.ReactElement =>

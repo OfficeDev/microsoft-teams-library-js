@@ -7,7 +7,8 @@
     "noEmitOnError": false,
     "noImplicitReturns": true,
     "sourceMap": true,
-    "target": "es5"
+    "target": "es5",
+    "jsx": "react-jsx"
   },
   "exclude": ["node_modules"]
 }

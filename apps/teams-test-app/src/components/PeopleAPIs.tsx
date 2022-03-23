@@ -1,13 +1,14 @@
 import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckPeopleCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityPeople',
-    title: 'Check People Call',
-    onClick: async () => `People module ${people.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'People',
+    isSupported: people.isSupported(),
   });
 
 const SelectPeople = (): React.ReactElement =>

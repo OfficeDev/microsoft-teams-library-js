@@ -12,6 +12,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -257,16 +258,10 @@ const DialogAPIs = (): ReactElement => {
     });
 
   const CheckDialogCapability = (): ReactElement =>
-    ApiWithoutInput({
+    SupportButton({
       name: 'checkCapabilityDialog',
-      title: 'Check Capability Dialog',
-      onClick: async () => {
-        if (dialog.isSupported()) {
-          return 'Dialog module is supported';
-        } else {
-          return 'Dialog module is not supported';
-        }
-      },
+      module: 'Dialog',
+      isSupported: dialog.isSupported(),
     });
 
   return (

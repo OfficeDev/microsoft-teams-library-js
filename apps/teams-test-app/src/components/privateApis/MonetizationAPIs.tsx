@@ -2,13 +2,14 @@ import { monetization, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
-import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckMonetizationCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityMonetization',
-    title: 'Check Monetization Capability',
-    onClick: async () => `Monetization module ${monetization.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Monetization',
+    isSupported: monetization.isSupported(),
   });
 
 const OpenPurchaseExperience = (): React.ReactElement =>
@@ -46,8 +47,8 @@ const OpenPurchaseExperience = (): React.ReactElement =>
 const MonetizationAPIs = (): ReactElement => (
   <>
     <h1>monetization</h1>
-    <OpenPurchaseExperience />
     <CheckMonetizationCapability />
+    <OpenPurchaseExperience />
   </>
 );
 

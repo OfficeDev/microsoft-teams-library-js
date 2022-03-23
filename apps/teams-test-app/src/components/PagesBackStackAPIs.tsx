@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput } from './utils';
 import { ApiContainer } from './utils/ApiContainer';
 import { getTestBackCompat } from './utils/getTestBackCompat';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
@@ -32,10 +33,10 @@ const NavigateBack = (): React.ReactElement =>
   });
 
 const CheckPageBackStackCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkPageBackStackCapability',
-    title: 'Check Page BackStack Call',
-    onClick: async () => `Pages.backStack module ${pages.backStack.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Page BackStack Call',
+    isSupported: pages.backStack.isSupported(),
   });
 
 const PagesBackStackAPIs = (): ReactElement => {
@@ -90,6 +91,7 @@ const PagesBackStackAPIs = (): ReactElement => {
     <>
       <h1>pages.backStack</h1>
       <NavigateBack />
+      <CheckPageBackStackCapability />
       <ApiContainer name="addStates" title="Add States" result={addStatesValue}>
         <input name="button_addStates" type="button" value="Add States" onClick={onAddStatesClick} />
       </ApiContainer>
@@ -105,7 +107,6 @@ const PagesBackStackAPIs = (): ReactElement => {
           onClick={onRegisterBackButtonHandler}
         />
       </ApiContainer>
-      <CheckPageBackStackCapability />
     </>
   );
 };

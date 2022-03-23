@@ -9,7 +9,8 @@ import {
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const NavigateToTab = (): React.ReactElement =>
   ApiWithTextInput<TabInstance>({
@@ -89,19 +90,19 @@ const GetMruTabInstances = (): React.ReactElement =>
   });
 
 const CheckPagesTabsCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkPageTabsCapability',
-    title: 'Check Page Tabs Call',
-    onClick: async () => `Pages.tabs module ${pages.tabs.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Page Tabs',
+    isSupported: pages.tabs.isSupported(),
   });
 
 const PagesTabsAPIs = (): ReactElement => (
   <>
     <h1>pages.tabs</h1>
+    <CheckPagesTabsCapability />
     <NavigateToTab />
     <GetTabInstances />
     <GetMruTabInstances />
-    <CheckPagesTabsCapability />
   </>
 );
 

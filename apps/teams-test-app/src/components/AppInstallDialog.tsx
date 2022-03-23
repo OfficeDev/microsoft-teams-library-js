@@ -1,13 +1,15 @@
 import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
-const CheckAppInstallDialogCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkCapabilityAppInstallDialog',
-    title: 'Check Capability App Install Dialog',
-    onClick: async () => `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`,
+const AppInstallDialogCapability = (): React.ReactElement =>
+  SupportButton({
+    name: 'appInstallDialog',
+
+    module: 'App Install Dialog',
+    isSupported: appInstallDialog.isSupported(),
   });
 
 const OpenAppInstallDialog = (): React.ReactElement =>
@@ -30,8 +32,8 @@ const OpenAppInstallDialog = (): React.ReactElement =>
 const AppInstallDialogAPIs: React.FC = () => (
   <>
     <h1>appInstallDialog</h1>
+    <AppInstallDialogCapability />
     <OpenAppInstallDialog />
-    <CheckAppInstallDialogCapability />
   </>
 );
 

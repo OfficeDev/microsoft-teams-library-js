@@ -2,12 +2,13 @@ import { bot } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckBotCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkBotCapability',
-    title: 'Check Bot Capability',
-    onClick: async () => `Bot ${bot.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Bot',
+    isSupported: bot.isSupported(),
   });
 
 const SendQuery = (): React.ReactElement =>
@@ -69,10 +70,10 @@ const Authenticate = (): React.ReactElement =>
 const BotAPIs = (): React.ReactElement => (
   <>
     <h1>bot</h1>
+    <CheckBotCapability />
     <SendQuery />
     <GetSupportedCommands />
     <Authenticate />
-    <CheckBotCapability />
   </>
 );
 

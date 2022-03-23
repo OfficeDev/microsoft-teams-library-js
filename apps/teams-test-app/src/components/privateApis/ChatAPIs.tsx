@@ -3,12 +3,13 @@ import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckChatCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkChatCapability',
-    title: 'Check Chat Capability',
-    onClick: async () => `Chat module ${chat.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Chat ',
+    isSupported: chat.isSupported(),
   });
 
 const OpenConversation = (): React.ReactElement =>
@@ -76,10 +77,10 @@ const GetChatMembers = (): React.ReactElement =>
 const ConversationsAPIs = (): React.ReactElement => (
   <>
     <h1>chat</h1>
+    <CheckChatCapability />
     <OpenConversation />
     <CloseConversation />
     <GetChatMembers />
-    <CheckChatCapability />
   </>
 );
 

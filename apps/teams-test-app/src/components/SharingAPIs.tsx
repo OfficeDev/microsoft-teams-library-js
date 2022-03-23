@@ -1,13 +1,14 @@
 import { SdkError, sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckSharingCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkSharingCapability',
-    title: 'Check Sharing Capability',
-    onClick: async () => `Sharing ${sharing.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Sharing',
+    isSupported: sharing.isSupported(),
   });
 
 const ShareWebContent = (): React.ReactElement =>

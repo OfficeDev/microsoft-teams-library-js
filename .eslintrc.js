@@ -21,6 +21,8 @@ module.exports = {
         allowExpressions: true,
       },
     ],
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     curly: 'error',
     'simple-import-sort/imports': 'error',
     quotes: ['error', 'single', { avoidEscape: true }],

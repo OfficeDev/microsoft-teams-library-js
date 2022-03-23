@@ -2,19 +2,20 @@ import { legacy, pages, TeamInstanceParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckLegacyFullTrustCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkLegacyFulltrustCapability',
-    title: 'Check Legacy Fullrust Capability',
-    onClick: async () => `Legacy Fulltrust module ${legacy.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Legacy Fullrust ',
+    isSupported: legacy.fullTrust.isSupported(),
   });
 
 const CheckPagesFullTrustCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkPagesFulltrustCapability',
-    title: 'Check Pages Fullrust Capability',
-    onClick: async () => `Pages Fulltrust module ${pages.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Pages Fullrust ',
+    isSupported: pages.fullTrust.isSupported(),
   });
 
 const EnterFullScreen = (): React.ReactElement =>
@@ -67,12 +68,12 @@ const GetConfigSetting = (): React.ReactElement =>
 const FullTrustAPIs = (): ReactElement => (
   <>
     <h1>FullTrustAPIs</h1>
+    <CheckLegacyFullTrustCapability />
+    <CheckPagesFullTrustCapability />
     <GetUserJoinedTeams />
     <GetConfigSetting />
     <EnterFullScreen />
     <ExitFullScreen />
-    <CheckLegacyFullTrustCapability />
-    <CheckPagesFullTrustCapability />
   </>
 );
 

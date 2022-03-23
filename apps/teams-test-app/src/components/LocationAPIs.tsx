@@ -1,13 +1,14 @@
 import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckLocationCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkLocationCapability',
-    title: 'Check Location Capability',
-    onClick: async () => `Location module ${location.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Location',
+    isSupported: location.isSupported(),
   });
 
 const GetLocation = (): React.ReactElement =>

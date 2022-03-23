@@ -3,12 +3,13 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const RemoteCameraCapabilityCheck = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkRemoteCameraCapability',
-    title: 'Check Remote Camera Capability',
-    onClick: async () => `Remote Camera module ${remoteCamera.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Remote Camera',
+    isSupported: remoteCamera.isSupported(),
   });
 
 const GetCapableParticipants = (): React.ReactElement =>

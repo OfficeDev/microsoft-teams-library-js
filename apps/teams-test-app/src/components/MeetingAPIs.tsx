@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
@@ -228,10 +229,10 @@ const ShareAppContentToStage = (): React.ReactElement =>
   });
 
 const MeetingCapabilityCheck = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkMeetingCapability',
-    title: 'Check Meeting Capability',
-    onClick: async () => `Meeting module ${meeting.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Meeting',
+    isSupported: meeting.isSupported(),
   });
 
 const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
@@ -312,6 +313,7 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
 const MeetingAPIs = (): ReactElement => (
   <>
     <h1>meeting</h1>
+    <MeetingCapabilityCheck />
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
     <GetMeetingDetails />
@@ -321,7 +323,6 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
     <ShareAppContentToStage />
-    <MeetingCapabilityCheck />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />

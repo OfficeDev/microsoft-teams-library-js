@@ -13,6 +13,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
@@ -188,15 +189,16 @@ const RegisterFullScreenChangeHandler = (): React.ReactElement =>
   });
 
 const CheckPageCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkPageCapability',
-    title: 'Check Page Call',
-    onClick: async () => `Pages module ${pages.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Page',
+    isSupported: pages.isSupported(),
   });
 
 const PagesAPIs = (): ReactElement => (
   <>
     <h1>pages</h1>
+    <CheckPageCapability />
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
@@ -205,7 +207,6 @@ const PagesAPIs = (): ReactElement => (
     <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
-    <CheckPageCapability />
   </>
 );
 

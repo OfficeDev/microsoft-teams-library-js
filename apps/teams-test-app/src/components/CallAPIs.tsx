@@ -1,13 +1,14 @@
 import { call } from '@microsoft/teams-js';
 import React from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const CheckCallCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkCapabilityCall',
-    title: 'Check Capability Call',
-    onClick: async () => `Call module ${call.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'Call',
+    isSupported: call.isSupported(),
   });
 
 const StartCall = (): React.ReactElement =>
@@ -34,8 +35,8 @@ const StartCall = (): React.ReactElement =>
 const CallAPIs: React.FC = () => (
   <>
     <h1>call</h1>
-    <StartCall />
     <CheckCallCapability />
+    <StartCall />
   </>
 );
 

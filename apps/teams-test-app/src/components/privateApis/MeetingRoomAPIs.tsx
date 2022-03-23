@@ -3,12 +3,13 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { SupportButton } from '../utils/SupportButton/SupportButton';
 
 const CheckMeetingRoomCapability = (): React.ReactElement =>
-  ApiWithoutInput({
+  SupportButton({
     name: 'checkMeetingRoomCapability',
-    title: 'Check MeetingRoom Capability',
-    onClick: async () => `MeetingRoom ${meetingRoom.isSupported() ? 'is' : 'is not'} supported`,
+    module: 'MeetingRoom',
+    isSupported: meetingRoom.isSupported(),
   });
 
 const GetPairedMeetingRoomInfo = (): React.ReactElement =>
@@ -69,11 +70,11 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
 const MeetingRoomAPIs = (): React.ReactElement => (
   <>
     <h1>meetingRoom</h1>
+    <CheckMeetingRoomCapability />
     <GetPairedMeetingRoomInfo />
     <SendCommandToPairedMeetingRoom />
     <RegisterMeetingRoomCapabilitiesUpdateHandler />
     <RegisterMeetingRoomStatesUpdateHandler />
-    <CheckMeetingRoomCapability />
   </>
 );
 

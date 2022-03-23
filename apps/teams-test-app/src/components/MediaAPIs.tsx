@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const mediaHelper = (item: string): string => {
   let output = '';
@@ -258,23 +259,23 @@ const ViewImagesWithUrls = (): React.ReactElement =>
     },
   });
 
-const CheckMediaCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkMediaCapability',
-    title: 'Check Media Call',
-    onClick: async () => `Media module ${media.isSupported() ? 'is' : 'is not'} supported`,
+const MediaCapability = (): React.ReactElement =>
+  SupportButton({
+    name: 'mediaCapability',
+    module: 'Media',
+    isSupported: media.isSupported(),
   });
 
 const MediaAPIs = (): ReactElement => (
   <>
     <h1>media</h1>
+    <MediaCapability />
     <CaptureImage />
     <SelectMedia />
     <GetMedia />
     <ViewImagesWithId />
     <ViewImagesWithUrls />
     <ScanBarCode />
-    <CheckMediaCapability />
   </>
 );
 
