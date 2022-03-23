@@ -5,6 +5,7 @@
 import {
   Communication,
   initializeCommunication,
+  sendAndHandleSdkError as sendAndHandleError,
   sendAndHandleStatusAndReason as send,
   sendAndUnwrap,
   sendMessageToParent,
@@ -413,6 +414,51 @@ export namespace app {
      * Info of the Microsoft Teams team
      */
     team?: TeamInfo;
+  }
+
+  /*
+   * Should this be in the top level capability, or should it be in a subcapability?
+   * In the top level, could the host respond to these if the host isn't using teamsjs-sdk 2.0 yet?
+   * What would happen if teamsjs-sdk 2.0 was talking to an "unenlightened" host? Can the
+   * sdk detect and reply "correctly" in those cases?
+   */
+  export enum devicePermissions {
+    geolocation = 'geolocation',
+    media = 'media',
+    midi = 'midi',
+    notifications = 'notifications',
+  }
+
+  export function hasPermission(permission: devicePermissions): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleError('app.hasPermission', permission));
+    });
+  }
+
+  // This should not trigger the "refresh the app scenario" because this is for setting things up
+  // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
+  // would have the new allow parameters, but only the AppPermissions dialog should trigger the
+  // "ask the user to refresh" flow
+  export function requestPermission(permission: devicePermissions): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleError('app.requestPermission', permission));
+    });
+  }
+
+  export async function permissionExample(permission: devicePermissions): Promise<void> {
+    hasPermission(permission).then(alreadyHadPermission => {
+      if (!alreadyHadPermission) {
+        requestPermission(permission).then(permissionStatus => {
+          if (permissionStatus) {
+            alert('Use function that required permission');
+          } else {
+            alert('User was asked to grant permission and refused');
+          }
+        });
+      } else {
+        alert('User has previously granted permission, call function that required permission');
+      }
+    });
   }
 
   /**
