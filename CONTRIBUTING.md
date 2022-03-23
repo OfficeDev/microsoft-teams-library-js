@@ -42,7 +42,7 @@ the PR.
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.
 
-The TeamsJS Client SDK `2.0-preview` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`), you must run `yarn changefile` from the monorepo root to generate change files.
+The TeamsJS Client SDK `2.0-preview` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `yarn changefile` from the monorepo root to generate change files.
 
 Beachball generates JSON change files based on a few simple answers from you:
 
