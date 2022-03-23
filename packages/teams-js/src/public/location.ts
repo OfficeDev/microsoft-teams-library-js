@@ -121,7 +121,7 @@ export namespace location {
     }
 
     export function isSupported(): boolean {
-      return runtime.supports.location ? true : false;
+      return runtime.supports.location.map ? true : false;
     }
   }
 }
