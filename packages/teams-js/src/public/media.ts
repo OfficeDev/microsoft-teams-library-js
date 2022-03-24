@@ -2,7 +2,6 @@
 
 import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
-  captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,

@@ -495,7 +495,7 @@ export function selectMedia(
  *
  * @returns A promise resolved with a collection of @see File objects or rejected with an @see SdkError
  */
-export function captureImage(): Promise<File[]>;
+export function captureImage(): Promise<media.File[]>;
 /**
  * Launch camera, capture image or choose image from gallery and return the images as a File[] object
  *
@@ -509,12 +509,12 @@ export function captureImage(): Promise<File[]>;
  * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
  *
  */
-export function captureImage(callback: (error?: SdkError, files?: File[]) => void): void;
-export function captureImage(callback?: (error?: SdkError, files?: File[]) => void): Promise<File[]> {
+export function captureImage(callback: (error?: SdkError, files?: media.File[]) => void): void;
+export function captureImage(callback?: (error?: SdkError, files?: media.File[]) => void): Promise<media.File[]> {
   ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-  const wrappedFunction: InputFunction<File[]> = () =>
-    new Promise<File[]>(resolve => {
+  const wrappedFunction: InputFunction<media.File[]> = () =>
+    new Promise<media.File[]>(resolve => {
       if (!GlobalVars.isFramelessWindow) {
         throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
       }
@@ -526,5 +526,5 @@ export function captureImage(callback?: (error?: SdkError, files?: File[]) => vo
       resolve(sendAndHandleSdkError('captureImage'));
     });
 
-  return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<File[]>(wrappedFunction, callback);
+  return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.File[]>(wrappedFunction, callback);
 }
