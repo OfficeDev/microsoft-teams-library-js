@@ -4,11 +4,16 @@ import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } 
 import {
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
   scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import {
+  ensureInitialized,
+  isCurrentSDKVersionAtLeast,
+  throwExceptionIfMobileApiIsNotSupported,
+} from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
@@ -27,17 +32,53 @@ import {
 } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
-import { media } from './media';
 import { runtime } from './runtime';
 
 /**
  * @alpha
  */
 export namespace mediaNEW {
+  export enum FileFormat {
+    Base64 = 'base64',
+    ID = 'id',
+  }
+
+  /**
+   * File object that can be used to represent image or video or audio
+   */
+  export class File {
+    /**
+     * Content of the file. When format is Base64, this is the base64 content
+     * When format is ID, this is id mapping to the URI
+     * When format is base64 and app needs to use this directly in HTML tags, it should convert this to dataUrl.
+     */
+    public content: string;
+
+    /**
+     * Format of the content
+     */
+    public format: FileFormat;
+
+    /**
+     * Size of the file in KB
+     */
+    public size: number;
+
+    /**
+     * MIME type. This can be used for constructing a dataUrl, if needed.
+     */
+    public mimeType: string;
+
+    /**
+     * Optional: Name of the file
+     */
+    public name?: string;
+  }
+
   /**
    * Media object returned by the select Media API
    */
-  export class Media extends media.File {
+  export class Media extends File {
     constructor(that: Media = null) {
       super();
       if (that) {
@@ -157,6 +198,152 @@ export namespace mediaNEW {
   }
 
   /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Base class which holds the callback and notifies events to the host client
+   */
+  export abstract class MediaController<T> {
+    protected controllerCallback: T;
+
+    public constructor(controllerCallback: T) {
+      this.controllerCallback = controllerCallback;
+    }
+
+    protected abstract getMediaType(): MediaType;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     * This function will be implemented by the respective media class which holds the logic
+     * of specific events that needs to be notified to the app.
+     * @param mediaEvent indicates the event signed by the host client to the app
+     */
+    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * @returns A promise resolved promise
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.notifyEventToHost media.MediaController.notifyEventToHost(mediaEvent: MediaControllerEvent): Promise\<void\>} instead.
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void;
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+      try {
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+      } catch (err) {
+        const wrappedRejectedErrorFn: InputFunction<void> = () => Promise.reject(err);
+
+        return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedRejectedErrorFn, callback);
+      }
+
+      const params: MediaControllerParam = {
+        mediaType: this.getMediaType(),
+        mediaControllerEvent: mediaEvent,
+      };
+
+      const wrappedFunction = (): Promise<void> =>
+        new Promise(resolve => resolve(sendAndHandleSdkError('media.controller', [params])));
+
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
+    }
+
+    /**
+     * Function to programatically stop the ongoing media event
+     *
+     * @returns A resolved promise
+     * */
+    public stop(): Promise<void>;
+    /**
+     *
+     * Function to programatically stop the ongoing media event
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.stop media.MediaController.stop(): Promise\<void\>} instead.
+     *
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
+     */
+    public stop(callback?: (err?: SdkError) => void): void;
+    public stop(callback?: (err?: SdkError) => void): Promise<void> {
+      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
+    }
+  }
+
+  export enum MediaControllerEvent {
+    StartRecording = 1,
+    StopRecording = 2,
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Interface with relevant info to send communication from the app to the host client
+   */
+  interface MediaControllerParam {
+    /**
+     * List of team information
+     */
+    mediaType: MediaType;
+
+    /**
+     * List of team information
+     */
+    mediaControllerEvent: MediaControllerEvent;
+  }
+
+  export interface MediaInputs {
+    /**
+     * Only one media type can be selected at a time
+     */
+    mediaType: MediaType;
+
+    /**
+     * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
+     */
+    maxMediaCount: number;
+
+    /**
+     * Additional properties for customization of select media - Image in mobile devices
+     */
+    imageProps?: camera.ImageProps;
+
+    /**
+     * Additional properties for customization of select media - Video in mobile devices
+     */
+    videoProps?: camera.video.VideoProps;
+
+    /**
+     * Additional properties for customization of select media - VideoAndImage in mobile devices
+     */
+    videoAndImageProps?: camera.ImageProps & camera.video.VideoProps;
+
+    /**
+     * Additional properties for audio capture flows.
+     */
+    audioProps?: audio.AudioProps;
+  }
+
+  /**
    * Helper object to assembled media chunks
    */
   export interface AssembleAttachment {
@@ -212,7 +399,7 @@ export namespace mediaNEW {
     Audio = 4,
   }
 
-  function selectMediaHelper(imageInputs: media.MediaInputs): Promise<Media[]> {
+  function selectMediaHelper(imageInputs: MediaInputs): Promise<Media[]> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     // Probably should clean this up, no reason to use this structure anymore
@@ -371,7 +558,7 @@ export namespace mediaNEW {
      * View images using native image viewer
      *
      * @deprecated
-     * As of 2.0.0-beta.1, please use {@link media.viewImages media.viewImages(uriList: ImageUri[]): Promise\<void\>} instead.
+     * As of 2.0.0-beta.1, please use {@link mediaNEW.camera.viewImages mediaNEW.camera.viewImages(uriList: ImageUri[]): Promise\<void\>} instead.
      *
      * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
      * @param callback - returns back error if encountered, returns null in case of success
@@ -478,18 +665,18 @@ export namespace mediaNEW {
       /**
        * VideoController class is used to communicate between the app and the host client during the video capture flow
        */
-      export class VideoController extends media.MediaController<VideoControllerCallback> {
+      export class VideoController extends MediaController<VideoControllerCallback> {
         protected getMediaType(): MediaType {
           return MediaType.Video;
         }
 
-        public notifyEventToApp(mediaEvent: media.MediaControllerEvent): void {
+        public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
           switch (mediaEvent) {
-            case media.MediaControllerEvent.StartRecording:
+            case MediaControllerEvent.StartRecording:
               this.controllerCallback.onRecordingStarted();
               break;
             // TODO - Should discuss whether this function should be required
-            case media.MediaControllerEvent.StopRecording:
+            case MediaControllerEvent.StopRecording:
               this.controllerCallback.onRecordingStopped && this.controllerCallback.onRecordingStopped();
               break;
           }
@@ -503,7 +690,7 @@ export namespace mediaNEW {
         ensureInitialized(FrameContexts.content, FrameContexts.task);
 
         const wrappedFunction: InputFunction<Media[]> = () =>
-          new Promise<[SdkError, Media[], media.MediaControllerEvent]>(resolve => {
+          new Promise<[SdkError, Media[], MediaControllerEvent]>(resolve => {
             if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
               throw { errorCode: ErrorCode.OLD_PLATFORM };
             }
@@ -515,8 +702,8 @@ export namespace mediaNEW {
 
             const params = [mediaInputs];
             // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-            resolve(sendMessageToParentAsync<[SdkError, Media[], media.MediaControllerEvent]>('selectMedia', params));
-          }).then(([err, localAttachments, mediaEvent]: [SdkError, Media[], media.MediaControllerEvent]) => {
+            resolve(sendMessageToParentAsync<[SdkError, Media[], MediaControllerEvent]>('selectMedia', params));
+          }).then(([err, localAttachments, mediaEvent]: [SdkError, Media[], MediaControllerEvent]) => {
             // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
             if (mediaEvent) {
               if (isVideoControllerRegistered(mediaInputs)) {
@@ -565,7 +752,7 @@ export namespace mediaNEW {
        * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
        *
        * @deprecated
-       * As of 2.0.0-beta.1, please use {@link media.scanBarCode media.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
+       * As of 2.0.0-beta.1, please use {@link media.camera.barcode.scanBarCode media.camera.barcode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
        *
        * @param callback - callback to invoke after scanning the barcode
        * @param config - optional input configuration to customize the barcode scanning experience
@@ -692,17 +879,17 @@ export namespace mediaNEW {
  * Select an attachment using camera/gallery
  *
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link media.selectMedia media.selectMedia(mediaInputs: MediaInputs): Promise\<Media[]\>} instead.
+ * As of 2.0.0-beta.1, please use {@link mediaNEW.camera.selectImages media.camera.selectImages(imageInputs: ImageInputs): Promise\<Media[]\>}, {@link mediaNEW.audio.selectAudio mediaNEW.audio.selectAudio(audioInputs: AudioInputs): Promise\<Media[]\>}, or {@link mediaNEW.camera.video.selectMediaContainingVideo mediaNEW.camera.video.selectMediaContainingVideo(mediaInputs: VideoInputs | VideoAndImageInputs): Promise\<Media[]\>} instead.
  *
  * @param mediaInputs - The input params to customize the media to be selected
  * @param callback - The callback to invoke after fetching the media
  */
 export function selectMedia(
-  mediaInputs: media.MediaInputs,
+  mediaInputs: mediaNEW.MediaInputs,
   callback: (error: SdkError, attachments: mediaNEW.Media[]) => void,
 );
 export function selectMedia(
-  mediaInputs: media.MediaInputs,
+  mediaInputs: mediaNEW.MediaInputs,
   callback?: (error?: SdkError, attachments?: mediaNEW.Media[]) => void,
 ): Promise<mediaNEW.Media[]> {
   const wrappedFunction: InputFunction<mediaNEW.Media[]> = () => {
