@@ -166,7 +166,7 @@ export function validateGetMediaInputs(mimeType: string, format: media.FileForma
  *
  * @internal
  */
-export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
+export function validateViewImagesInput(uriList: media.camera.ImageUri[]): boolean {
   if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
     return false;
   }
@@ -179,7 +179,7 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
  *
  * @internal
  */
-export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): boolean {
+export function validateScanBarCodeInput(barCodeConfig: media.camera.barcode.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
       barCodeConfig.timeOutIntervalInSec === null ||
