@@ -21,7 +21,13 @@ export interface IRuntime {
     };
     readonly logs?: {};
     readonly mail?: {};
-    readonly media?: {};
+    readonly media?: {
+      readonly audio?: {};
+      readonly camera?: {
+        readonly barcode?: {};
+        readonly video?: {};
+      };
+    };
     readonly meeting?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
@@ -62,7 +68,13 @@ export let runtime: IRuntime = {
     },
     logs: undefined,
     mail: undefined,
-    media: undefined,
+    media: {
+      audio: undefined,
+      camera: {
+        barcode: undefined,
+        video: undefined,
+      },
+    },
     meeting: undefined,
     meetingRoom: undefined,
     menus: undefined,
@@ -104,7 +116,13 @@ export const teamsRuntimeConfig: IRuntime = {
       map: {},
     },
     logs: {},
-    media: {},
+    media: {
+      audio: {},
+      camera: {
+        barcode: {},
+        video: {},
+      },
+    },
     meeting: {},
     meetingRoom: {},
     menus: {},

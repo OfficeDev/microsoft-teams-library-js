@@ -63,6 +63,8 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
  * Function throws an SdkError if the media call is not supported on current mobile version, else undefined.
  * @throws an SdkError if the media call is not supported
  * @internal
+ * This would need to change in order to support media on non-mobile devices, currently this throws if the host
+ * device is not mobile
  */
 export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {

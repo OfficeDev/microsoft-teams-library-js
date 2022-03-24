@@ -6,7 +6,6 @@ import {
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
-  scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -21,9 +20,7 @@ import {
   isVideoControllerRegistered,
   throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
-  validateScanBarCodeInput,
   validateSelectMediaInputs,
-  validateViewImagesInput,
 } from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
@@ -31,7 +28,7 @@ import {
   generateGUID,
   InputFunction,
 } from '../internal/utils';
-import { FrameContexts, HostClientType } from './constants';
+import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -79,6 +76,7 @@ export namespace media {
     public name?: string;
   }
 
+  // captureImage is just selectMedia but the host sdk stores a default set of MediaInputs. Think we should deprecate captureImage
   /**
    * Launch camera, capture image or choose image from gallery and return the images as a File[] object
    *
@@ -123,128 +121,6 @@ export namespace media {
   }
 
   /**
-   * Media object returned by the select Media API
-   */
-  export class Media extends File {
-    constructor(that: Media = null) {
-      super();
-      if (that) {
-        this.content = that.content;
-        this.format = that.format;
-        this.mimeType = that.mimeType;
-        this.name = that.name;
-        this.preview = that.preview;
-        this.size = that.size;
-      }
-    }
-
-    /**
-     * A preview of the file which is a lightweight representation.
-     * In case of images this will be a thumbnail/compressed image in base64 encoding.
-     */
-    public preview: string;
-
-    /**
-     * Gets the media in chunks irrespective of size, these chunks are assembled and sent back to the webapp as file/blob
-     *
-     * @returns A promise resolved with the @see Blob or rejected with a @see SdkError
-     */
-    public getMedia(): Promise<Blob>;
-    /**
-     * Gets the media in chunks irrespective of size, these chunks are assembled and sent back to the webapp as file/blob
-     *
-     * @deprecated
-     * As of 2.0.0-beta.1, please use {@link media.Media.getMedia media.Media.getMedia(): Promise\<Blob\>} instead.
-     *
-     * @param callback - returns blob of media
-     */
-    public getMedia(callback: (error: SdkError, blob: Blob) => void): void;
-    public getMedia(callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-      const wrappedFunction: InputFunction<Blob> = () =>
-        new Promise<Blob>(resolve => {
-          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-            throw { errorCode: ErrorCode.OLD_PLATFORM };
-          }
-          if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
-            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-          }
-          // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-          if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
-            resolve(this.getMediaViaCallback());
-          } else {
-            resolve(this.getMediaViaHandler());
-          }
-        });
-
-      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Blob>(wrappedFunction, callback);
-    }
-
-    private getMediaViaCallback(): Promise<Blob> {
-      return new Promise<Blob>((resolve, reject) => {
-        const helper: MediaHelper = {
-          mediaMimeType: this.mimeType,
-          assembleAttachment: [],
-        };
-        const localUriId = [this.content];
-        sendMessageToParent('getMedia', localUriId, (mediaResult: MediaResult) => {
-          if (mediaResult && mediaResult.error) {
-            reject(mediaResult.error);
-          } else if (!mediaResult || !mediaResult.mediaChunk) {
-            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
-          } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
-            const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-            resolve(file);
-          } else {
-            // Keep pushing chunks into assemble attachment
-            const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-            helper.assembleAttachment.push(assemble);
-          }
-        });
-      });
-    }
-
-    private getMediaViaHandler(): Promise<Blob> {
-      return new Promise<Blob>((resolve, reject) => {
-        const actionName = generateGUID();
-        const helper: MediaHelper = {
-          mediaMimeType: this.mimeType,
-          assembleAttachment: [],
-        };
-        const params = [actionName, this.content];
-        this.content && sendMessageToParent('getMedia', params);
-
-        registerHandler('getMedia' + actionName, (response: string) => {
-          try {
-            const mediaResult: MediaResult = JSON.parse(response);
-            if (mediaResult.error) {
-              reject(mediaResult.error);
-              removeHandler('getMedia' + actionName);
-            } else if (!mediaResult || !mediaResult.mediaChunk) {
-              reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
-              removeHandler('getMedia' + actionName);
-            } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
-              // If the chunksequence number is less than equal to 0 implies EOF
-              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
-              const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-              resolve(file);
-              removeHandler('getMedia' + actionName);
-            } else {
-              // Keep pushing chunks into assemble attachment
-              const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-              helper.assembleAttachment.push(assemble);
-            }
-          } catch (err) {
-            // catch JSON.parse() errors
-            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'Error parsing the response: ' + response });
-          }
-        });
-      });
-    }
-  }
-
-  /**
    * Input parameter supplied to the select Media API
    */
   export interface MediaInputs {
@@ -277,6 +153,126 @@ export namespace media {
      * Additional properties for audio capture flows.
      */
     audioProps?: AudioProps;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Base class which holds the callback and notifies events to the host client
+   */
+  export abstract class MediaController<T> {
+    protected controllerCallback: T;
+
+    public constructor(controllerCallback: T) {
+      this.controllerCallback = controllerCallback;
+    }
+
+    protected abstract getMediaType(): MediaType;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     * This function will be implemented by the respective media class which holds the logic
+     * of specific events that needs to be notified to the app.
+     * @param mediaEvent indicates the event signed by the host client to the app
+     */
+    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * @returns A promise resolved promise
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.notifyEventToHost media.MediaController.notifyEventToHost(mediaEvent: MediaControllerEvent): Promise\<void\>} instead.
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void;
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+      try {
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+      } catch (err) {
+        const wrappedRejectedErrorFn: InputFunction<void> = () => Promise.reject(err);
+
+        return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedRejectedErrorFn, callback);
+      }
+
+      const params: MediaControllerParam = {
+        mediaType: this.getMediaType(),
+        mediaControllerEvent: mediaEvent,
+      };
+
+      const wrappedFunction = (): Promise<void> =>
+        new Promise(resolve => resolve(sendAndHandleSdkError('media.controller', [params])));
+
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
+    }
+
+    /**
+     * Function to programatically stop the ongoing media event
+     *
+     * @returns A resolved promise
+     * */
+    public stop(): Promise<void>;
+    /**
+     *
+     * Function to programatically stop the ongoing media event
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link media.MediaController.stop media.MediaController.stop(): Promise\<void\>} instead.
+     *
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
+     */
+    public stop(callback?: (err?: SdkError) => void): void;
+    public stop(callback?: (err?: SdkError) => void): Promise<void> {
+      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
+    }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Events which are used to communicate between the app and the host client during the media recording flow
+   */
+  export enum MediaControllerEvent {
+    StartRecording = 1,
+    StopRecording = 2,
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Interface with relevant info to send communication from the app to the host client
+   */
+  interface MediaControllerParam {
+    /**
+     * List of team information
+     */
+    mediaType: media.MediaType;
+
+    /**
+     * List of team information
+     */
+    mediaControllerEvent: MediaControllerEvent;
   }
 
   /**
@@ -384,155 +380,6 @@ export namespace media {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
-   * Base class which holds the callback and notifies events to the host client
-   */
-  abstract class MediaController<T> {
-    protected controllerCallback: T;
-
-    public constructor(controllerCallback: T) {
-      this.controllerCallback = controllerCallback;
-    }
-
-    protected abstract getMediaType(): MediaType;
-
-    /**
-     * @hidden
-     * Hide from docs
-     * --------
-     * This function will be implemented by the respective media class which holds the logic
-     * of specific events that needs to be notified to the app.
-     * @param mediaEvent indicates the event signed by the host client to the app
-     */
-    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
-
-    /**
-     * @hidden
-     * Hide from docs
-     * --------
-     *
-     * Function to notify the host client to programatically control the experience
-     * @param mediaEvent indicates what the event that needs to be signaled to the host client
-     * @returns A promise resolved promise
-     */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
-    /**
-     * @hidden
-     * Hide from docs
-     * --------
-     *
-     * @deprecated
-     * As of 2.0.0-beta.3, please use {@link media.MediaController.notifyEventToHost media.MediaController.notifyEventToHost(mediaEvent: MediaControllerEvent): Promise\<void\>} instead.
-     *
-     * Function to notify the host client to programatically control the experience
-     * @param mediaEvent indicates what the event that needs to be signaled to the host client
-     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
-     */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void;
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): Promise<void> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-      try {
-        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
-      } catch (err) {
-        const wrappedRejectedErrorFn: InputFunction<void> = () => Promise.reject(err);
-
-        return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedRejectedErrorFn, callback);
-      }
-
-      const params: MediaControllerParam = {
-        mediaType: this.getMediaType(),
-        mediaControllerEvent: mediaEvent,
-      };
-
-      const wrappedFunction = (): Promise<void> =>
-        new Promise(resolve => resolve(sendAndHandleSdkError('media.controller', [params])));
-
-      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
-    }
-
-    /**
-     * Function to programatically stop the ongoing media event
-     *
-     * @returns A resolved promise
-     * */
-    public stop(): Promise<void>;
-    /**
-     *
-     * Function to programatically stop the ongoing media event
-     *
-     * @deprecated
-     * As of 2.0.0-beta.3, please use {@link media.MediaController.stop media.MediaController.stop(): Promise\<void\>} instead.
-     *
-     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
-     */
-    public stop(callback?: (err?: SdkError) => void): void;
-    public stop(callback?: (err?: SdkError) => void): Promise<void> {
-      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
-    }
-  }
-
-  /**
-   * Callback which will register your app to listen to lifecycle events during the video capture flow
-   */
-  export interface VideoControllerCallback {
-    onRecordingStarted(): void;
-    onRecordingStopped?(): void;
-  }
-
-  /**
-   * VideoController class is used to communicate between the app and the host client during the video capture flow
-   */
-  export class VideoController extends MediaController<VideoControllerCallback> {
-    protected getMediaType(): MediaType {
-      return MediaType.Video;
-    }
-
-    public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
-      switch (mediaEvent) {
-        case MediaControllerEvent.StartRecording:
-          this.controllerCallback.onRecordingStarted();
-          break;
-        // TODO - Should discuss whether this function should be required
-        case MediaControllerEvent.StopRecording:
-          this.controllerCallback.onRecordingStopped && this.controllerCallback.onRecordingStopped();
-          break;
-      }
-    }
-  }
-
-  /**
-   * @hidden
-   * Hide from docs
-   * --------
-   * Events which are used to communicate between the app and the host client during the media recording flow
-   */
-  export enum MediaControllerEvent {
-    StartRecording = 1,
-    StopRecording = 2,
-  }
-
-  /**
-   * @hidden
-   * Hide from docs
-   * --------
-   * Interface with relevant info to send communication from the app to the host client
-   */
-  interface MediaControllerParam {
-    /**
-     * List of team information
-     */
-    mediaType: media.MediaType;
-
-    /**
-     * List of team information
-     */
-    mediaControllerEvent: MediaControllerEvent;
-  }
-
-  /**
    * The modes in which camera can be launched in select Media API
    */
   export enum CameraStartMode {
@@ -621,22 +468,6 @@ export namespace media {
     sequence: number;
     file: Blob;
   }
-
-  /**
-   * Helper class for assembling media
-   */
-  interface MediaHelper {
-    mediaMimeType: string;
-    assembleAttachment: AssembleAttachment[];
-  }
-
-  /**
-   * Select an attachment using camera/gallery
-   *
-   * @param mediaInputs - The input params to customize the media to be selected
-   * @returns  A promise resolved with an array of media data or rejected with an @see SdkError
-   */
-  export function selectMedia(mediaInputs: MediaInputs): Promise<Media[]>;
   /**
    * Select an attachment using camera/gallery
    *
@@ -688,131 +519,6 @@ export namespace media {
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Media[]>(wrappedFunction, callback);
-  }
-
-  /**
-   * View images using native image viewer
-   *
-   * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
-   * @returns A promise resolved when the viewing action is completed or rejected with an @see SdkError
-   */
-  export function viewImages(uriList: ImageUri[]): Promise<void>;
-  /**
-   * View images using native image viewer
-   *
-   * @deprecated
-   * As of 2.0.0-beta.1, please use {@link media.viewImages media.viewImages(uriList: ImageUri[]): Promise\<void\>} instead.
-   *
-   * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
-   * @param callback - returns back error if encountered, returns null in case of success
-   */
-  export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void);
-  export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    const wrappedFunction: InputFunction<void> = () =>
-      new Promise<void>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        if (!validateViewImagesInput(uriList)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        resolve(sendAndHandleSdkError('viewImages', uriList));
-      });
-
-    return callCallbackWithSdkErrorFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
-  }
-
-  /**
-   * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
-   * All properties in BarCodeConfig are optional and have default values in the platform
-   */
-  export interface BarCodeConfig {
-    /**
-     * Optional; Lets the developer specify the scan timeout interval in seconds
-     * Default value is 30 seconds and max allowed value is 60 seconds
-     */
-    timeOutIntervalInSec?: number;
-  }
-
-  /**
-   * Scan Barcode/QRcode using camera
-   *
-   * @remarks
-   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   *
-   * @param config - optional input configuration to customize the barcode scanning experience
-   * @returns A promise resolved with the barcode data or rejected with an @see SdkError
-   */
-  export function scanBarCode(config?: BarCodeConfig): Promise<string>;
-  /**
-   * Scan Barcode/QRcode using camera
-   *
-   * @remarks
-   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   *
-   * @deprecated
-   * As of 2.0.0-beta.1, please use {@link media.scanBarCode media.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
-   *
-   * @param callback - callback to invoke after scanning the barcode
-   * @param config - optional input configuration to customize the barcode scanning experience
-   */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig);
-  export function scanBarCode(
-    callbackOrConfig?: ((error: SdkError, decodedText: string) => void) | BarCodeConfig,
-    configMaybe?: BarCodeConfig,
-  ): Promise<string> {
-    let callback: (error: SdkError, decodedText: string) => void | undefined;
-    let config: BarCodeConfig | undefined;
-
-    // Because the callback isn't the second parameter in the original v1 method we need to
-    // do a bit of trickery to see which of the two ways were used to call into
-    // the flow and if the first parameter is a callback (v1) or a config object (v2)
-
-    if (callbackOrConfig === undefined) {
-      // no first parameter - the second one might be a config, definitely no callback
-      config = configMaybe;
-    } else {
-      if (typeof callbackOrConfig === 'object') {
-        // the first parameter is an object - it's the config! No callback.
-        config = callbackOrConfig;
-      } else {
-        // otherwise, it's a function, so a callback. The second parameter might be a callback
-        callback = callbackOrConfig;
-        config = configMaybe;
-      }
-    }
-
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    const wrappedFunction: InputFunction<string> = () =>
-      new Promise<string>(resolve => {
-        if (
-          GlobalVars.hostClientType === HostClientType.desktop ||
-          GlobalVars.hostClientType === HostClientType.web ||
-          GlobalVars.hostClientType === HostClientType.rigel ||
-          GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-          GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-          GlobalVars.hostClientType === HostClientType.teamsPhones ||
-          GlobalVars.hostClientType === HostClientType.teamsDisplays
-        ) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-        }
-
-        if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-
-        if (!validateScanBarCodeInput(config)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        resolve(sendAndHandleSdkError('media.scanBarCode', config));
-      });
-
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
   }
 
   export function isSupported(): boolean {
