@@ -1,15 +1,26 @@
-import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
+import { sendAndHandleSdkError } from '../internal/communication';
+import { captureImageMobileSupportVersion, mediaAPISupportVersion } from '../internal/constants';
+import { GlobalVars } from '../internal/globalVars';
+import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { throwExceptionIfMediaCallIsNotSupportedOnMobile } from '../internal/mediaUtil';
+import {
+  callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
+  getGenericOnCompleteHandler,
+  InputFunction,
+} from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,
   DeepLinkParameters,
+  ErrorCode,
   FrameContext,
   LoadContext,
+  SdkError,
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
+import { media } from './media';
 import { pages } from './pages';
 import { teamsCore } from './teamsAPIs';
 
@@ -429,4 +440,91 @@ function transformAppContextToLegacyContext(appContext: app.Context): Context {
   };
 
   return context;
+}
+
+/**
+ * TODO: RESTORE TO OLD CALLBACK FUNCTION SINCE THIS IS BACKCOMPAT ONLY?
+ * WHERE SHOULD THIS LIVE?
+ * Select an attachment using camera/gallery
+ *
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link media.camera.selectImages media.camera.selectImages(imageInputs: ImageInputs): Promise\<Media[]\>}, {@link media.audio.selectAudio media.audio.selectAudio(audioInputs: AudioInputs): Promise\<Media[]\>}, or {@link media.camera.video.selectMediaContainingVideo media.camera.video.selectMediaContainingVideo(mediaInputs: VideoInputs | VideoAndImageInputs): Promise\<Media[]\>} instead.
+ *
+ * @param mediaInputs - The input params to customize the media to be selected
+ * @param callback - The callback to invoke after fetching the media
+ */
+export function selectMedia(
+  mediaInputs: media.MediaInputs,
+  callback: (error: SdkError, attachments: media.Media[]) => void,
+);
+export function selectMedia(
+  mediaInputs: media.MediaInputs,
+  callback?: (error?: SdkError, attachments?: media.Media[]) => void,
+): Promise<media.Media[]> {
+  const wrappedFunction: InputFunction<media.Media[]> = () => {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+      throw { errorCode: ErrorCode.OLD_PLATFORM };
+    }
+    throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
+
+    // Probably need to be more careful than this, but in general call the new mediaFunctions as part of back compatibility
+    if (mediaInputs.imageProps) {
+      return media.camera.selectImages(mediaInputs as media.camera.ImageInputs);
+    } else if (mediaInputs.audioProps) {
+      return media.audio.selectAudio(mediaInputs as media.audio.AudioInputs);
+    } else {
+      return media.camera.video.selectMediaContainingVideo(
+        (mediaInputs as media.camera.video.VideoInputs)
+          ? (mediaInputs as media.camera.video.VideoInputs)
+          : (mediaInputs as media.camera.video.VideoAndImageInputs),
+      );
+    }
+  };
+
+  return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction, callback);
+}
+
+// captureImage is just selectMedia but the host sdk stores a default set of MediaInputs. Think we should deprecate captureImage
+/**
+ * Launch camera, capture image or choose image from gallery and return the images as a File[] object
+ *
+ * @remarks
+ * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
+ * Note: For desktop, this API is not supported. Promise will be rejected with ErrorCode.NotSupported.
+ *
+ * @returns A promise resolved with a collection of @see File objects or rejected with an @see SdkError
+ */
+export function captureImage(): Promise<File[]>;
+/**
+ * Launch camera, capture image or choose image from gallery and return the images as a File[] object
+ *
+ * @param callback - Callback to invoke when the image is captured.
+ *
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link media.captureImage media.captureImage(): Promise\<File[]\>} instead.
+ *
+ * @remarks
+ * Note: Currently we support getting one File through this API, i.e. the file arrays size will be one.
+ * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+ *
+ */
+export function captureImage(callback: (error?: SdkError, files?: File[]) => void): void;
+export function captureImage(callback?: (error?: SdkError, files?: File[]) => void): Promise<File[]> {
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+  const wrappedFunction: InputFunction<File[]> = () =>
+    new Promise<File[]>(resolve => {
+      if (!GlobalVars.isFramelessWindow) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
+
+      if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
+        throw { errorCode: ErrorCode.OLD_PLATFORM };
+      }
+
+      resolve(sendAndHandleSdkError('captureImage'));
+    });
+
+  return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<File[]>(wrappedFunction, callback);
 }
