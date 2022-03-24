@@ -113,88 +113,92 @@ export namespace media {
      */
     public getMedia(callback: (error: SdkError, blob: Blob) => void): void;
     public getMedia(callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-      const wrappedFunction: InputFunction<Blob> = () =>
-        new Promise<Blob>(resolve => {
-          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-            throw { errorCode: ErrorCode.OLD_PLATFORM };
-          }
-          if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
-            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-          }
-          // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
-          if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
-            resolve(this.getMediaViaCallback());
-          } else {
-            resolve(this.getMediaViaHandler());
-          }
-        });
-
-      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Blob>(wrappedFunction, callback);
+      return media.getMediaAsBlob(this, callback);
     }
+  }
 
-    private getMediaViaCallback(): Promise<Blob> {
-      return new Promise<Blob>((resolve, reject) => {
-        const helper: MediaAttachmentHelper = {
-          mediaMimeType: this.mimeType,
-          assembleAttachment: [],
-        };
-        const localUriId = [this.content];
-        sendMessageToParent('getMedia', localUriId, (mediaResult: MediaResult) => {
-          if (mediaResult && mediaResult.error) {
+  export function getMediaAsBlob(media: Media, callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    const wrappedFunction: InputFunction<Blob> = () =>
+      new Promise<Blob>(resolve => {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
+        if (!validateGetMediaInputs(media.mimeType, media.format, media.content)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
+        // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+        if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
+          resolve(getMediaViaCallback(media));
+        } else {
+          resolve(getMediaViaHandler(media));
+        }
+      });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Blob>(wrappedFunction, callback);
+  }
+
+  function getMediaViaCallback(media: Media): Promise<Blob> {
+    return new Promise<Blob>((resolve, reject) => {
+      const helper: MediaAttachmentHelper = {
+        mediaMimeType: media.mimeType,
+        assembleAttachment: [],
+      };
+      const localUriId = [media.content];
+      sendMessageToParent('getMedia', localUriId, (mediaResult: MediaResult) => {
+        if (mediaResult && mediaResult.error) {
+          reject(mediaResult.error);
+        } else if (!mediaResult || !mediaResult.mediaChunk) {
+          reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+        } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+          const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+          resolve(file);
+        } else {
+          // Keep pushing chunks into assemble attachment
+          const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+          helper.assembleAttachment.push(assemble);
+        }
+      });
+    });
+  }
+
+  function getMediaViaHandler(media: Media): Promise<Blob> {
+    return new Promise<Blob>((resolve, reject) => {
+      const actionName = generateGUID();
+      const helper: MediaAttachmentHelper = {
+        mediaMimeType: media.mimeType,
+        assembleAttachment: [],
+      };
+      const params = [actionName, media.content];
+      media.content && sendMessageToParent('getMedia', params);
+
+      registerHandler('getMedia' + actionName, (response: string) => {
+        try {
+          const mediaResult: MediaResult = JSON.parse(response);
+          if (mediaResult.error) {
             reject(mediaResult.error);
+            removeHandler('getMedia' + actionName);
           } else if (!mediaResult || !mediaResult.mediaChunk) {
             reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+            removeHandler('getMedia' + actionName);
           } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+            // If the chunksequence number is less than equal to 0 implies EOF
+            // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
             const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
             resolve(file);
+            removeHandler('getMedia' + actionName);
           } else {
             // Keep pushing chunks into assemble attachment
             const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
             helper.assembleAttachment.push(assemble);
           }
-        });
+        } catch (err) {
+          // catch JSON.parse() errors
+          reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'Error parsing the response: ' + response });
+        }
       });
-    }
-
-    private getMediaViaHandler(): Promise<Blob> {
-      return new Promise<Blob>((resolve, reject) => {
-        const actionName = generateGUID();
-        const helper: MediaAttachmentHelper = {
-          mediaMimeType: this.mimeType,
-          assembleAttachment: [],
-        };
-        const params = [actionName, this.content];
-        this.content && sendMessageToParent('getMedia', params);
-
-        registerHandler('getMedia' + actionName, (response: string) => {
-          try {
-            const mediaResult: MediaResult = JSON.parse(response);
-            if (mediaResult.error) {
-              reject(mediaResult.error);
-              removeHandler('getMedia' + actionName);
-            } else if (!mediaResult || !mediaResult.mediaChunk) {
-              reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
-              removeHandler('getMedia' + actionName);
-            } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
-              // If the chunksequence number is less than equal to 0 implies EOF
-              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
-              const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-              resolve(file);
-              removeHandler('getMedia' + actionName);
-            } else {
-              // Keep pushing chunks into assemble attachment
-              const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-              helper.assembleAttachment.push(assemble);
-            }
-          } catch (err) {
-            // catch JSON.parse() errors
-            reject({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'Error parsing the response: ' + response });
-          }
-        });
-      });
-    }
+    });
   }
 
   /**
