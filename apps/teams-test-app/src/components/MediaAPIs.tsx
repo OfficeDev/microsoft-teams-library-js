@@ -1,5 +1,5 @@
 import { media, SdkError } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import React, { ForwardedRef, forwardRef, ReactElement, RefObject } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -266,17 +266,27 @@ const MediaCapability = (): React.ReactElement =>
     isSupported: media.isSupported(),
   });
 
-const MediaAPIs = (): ReactElement => (
-  <>
-    <h1>media</h1>
-    <MediaCapability />
-    <CaptureImage />
-    <SelectMedia />
-    <GetMedia />
-    <ViewImagesWithId />
-    <ViewImagesWithUrls />
-    <ScanBarCode />
-  </>
+export type MediaAPIProps = {
+  ref: RefObject<HTMLDivElement>;
+};
+
+const MediaAPIs = forwardRef(
+  (_props, ref: ForwardedRef<HTMLDivElement>): ReactElement => {
+    return (
+      <div ref={ref}>
+        <h1>media</h1>
+        <MediaCapability />
+        <CaptureImage />
+        <SelectMedia />
+        <GetMedia />
+        <ViewImagesWithId />
+        <ViewImagesWithUrls />
+        <ScanBarCode />
+      </div>
+    );
+  },
 );
+
+MediaAPIs.displayName = 'MediaAPIs';
 
 export default MediaAPIs;

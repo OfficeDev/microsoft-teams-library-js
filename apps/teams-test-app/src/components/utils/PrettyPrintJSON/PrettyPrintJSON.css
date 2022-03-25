@@ -1,0 +1,19 @@
+.prettyPrintWrapper {
+  background-color: #1f4662;
+  color: #fff;
+  font-size: 12px;
+}
+
+.header {
+  background-color: #193549;
+  padding: 5px 10px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #ffc600;
+}
+pre {
+  display: block;
+  padding: 10px 30px;
+  margin: 0;
+  overflow: scroll;
+}

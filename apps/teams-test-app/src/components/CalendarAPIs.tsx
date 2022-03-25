@@ -1,50 +1,52 @@
 import { calendar } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import { ForwardedRef, forwardRef, ReactElement } from 'react';
 
-import { ApiWithTextInput } from './utils';
+import { DynamicForm } from './utils/DynamicForm/DynamicForm';
 import { SupportButton } from './utils/SupportButton/SupportButton';
 
-const CheckCalendarCapability = (): React.ReactElement =>
+const composeMeeting = async (input: calendar.ComposeMeetingParams): Promise<string> => {
+  const meeting = await calendar.composeMeeting(input).catch(err => {
+    return err;
+  });
+  return `Result: ${meeting}`;
+};
+
+const openCalendarItem = async (input: calendar.OpenCalendarItemParams): Promise<string | void> => {
+  if (!input.itemId) {
+    throw new Error('itemId is required');
+  }
+  return await calendar.openCalendarItem(input);
+};
+
+const ComposeMeeting = (): ReactElement => (
+  <DynamicForm
+    onSubmit={composeMeeting}
+    label="Compose Meeting 2"
+    inputFields={{ attendees: ['Nico', 'Ash'], startTime: 'Now', endTime: '2:00', subject: 'Im an Event' }}
+  />
+);
+const OpenCalendarItem = (): ReactElement => (
+  <DynamicForm onSubmit={openCalendarItem} label="Open Calendar Item" inputFields={{ itemId: '1' }} />
+);
+
+const CheckCalendarCapability = (): ReactElement =>
   SupportButton({
     name: 'checkCalendarCapability',
     module: 'Calendar Capability',
     isSupported: calendar.isSupported(),
   });
 
-const ComposeMeeting = (): React.ReactElement =>
-  ApiWithTextInput<calendar.ComposeMeetingParams>({
-    name: 'composeMeeting',
-    title: 'Compose Meeting',
-    onClick: async input => {
-      await calendar.composeMeeting(input);
-      return 'Completed';
-    },
-  });
-
-const OpenCalendarItem = (): React.ReactElement =>
-  ApiWithTextInput<calendar.OpenCalendarItemParams>({
-    name: 'openCalendarItem',
-    title: 'Open CalendarItem',
-    onClick: {
-      submit: async input => {
-        await calendar.openCalendarItem(input);
-        return 'Completed';
-      },
-      validateInput: x => {
-        if (!x.itemId) {
-          throw new Error('itemId is required');
-        }
-      },
-    },
-  });
-
-const CalendarAPIs = (): ReactElement => (
-  <>
-    <h1>calendar</h1>
-    <CheckCalendarCapability />
-    <ComposeMeeting />
-    <OpenCalendarItem />
-  </>
+const CalendarAPIs = forwardRef(
+  (_props, ref: ForwardedRef<HTMLDivElement>): ReactElement => (
+    <div className="module" ref={ref}>
+      <h1>calendar</h1>
+      <CheckCalendarCapability />
+      <ComposeMeeting />
+      <OpenCalendarItem />
+    </div>
+  ),
 );
+
+CalendarAPIs.displayName = 'CalendarAPIs';
 
 export default CalendarAPIs;

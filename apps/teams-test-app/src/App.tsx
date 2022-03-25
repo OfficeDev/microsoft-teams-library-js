@@ -1,7 +1,7 @@
 import './App.css';
 
 import { app, appInitialization, initialize } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import { ReactElement, RefObject, useRef } from 'react';
 
 import AppAPIs from './components/AppAPIs';
 import AppEntityAPIs from './components/AppEntityAPIs';
@@ -100,42 +100,62 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
+const scrollToForm = (ref: RefObject<HTMLDivElement>): void => {
+  if (!ref.current) {
+    return;
+  }
+
+  ref.current.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+};
+
 const App = (): ReactElement => {
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+
+  const scrollToCalendar = (): void => scrollToForm(calendarRef);
+  const scrollToMedia = (): void => scrollToForm(mediaRef);
+
   return (
     <>
-      <AppAPIs />
-      <AppInitializationAPIs />
-      <AppInstallDialogAPIs />
-      <AuthenticationAPIs />
-      <AppEntityAPIs />
-      <BotAPIs />
-      <CalendarAPIs />
-      <CallAPIs />
-      <ChatAPIs />
-      <DialogAPIs />
-      <FilesAPIs />
-      <FullTrustAPIs />
-      <LocationAPIs />
-      <LogAPIs />
-      <MailAPIs />
-      <MediaAPIs />
-      <MeetingAPIs />
-      <MeetingRoomAPIs />
-      <MenusAPIs />
-      <MonetizationAPIs />
-      <NotificationAPIs />
-      <PagesAPIs />
-      <PagesAppButtonAPIs />
-      <PagesBackStackAPIs />
-      <PagesConfigAPIs />
-      <PagesTabsAPIs />
-      <PeopleAPIs />
-      <PrivateAPIs />
-      <RemoteCameraAPIs />
-      <SharingAPIs />
-      <StageViewAPIs />
-      <TeamsCoreAPIs />
-      <TeamsAPIs />
+      <div>
+        <button onClick={scrollToCalendar}>Go to calendar</button>
+        <button onClick={scrollToMedia}>Go to media</button>
+      </div>
+      <div>
+        <AppAPIs />
+        <AppInitializationAPIs />
+        <AppInstallDialogAPIs />
+        <AuthenticationAPIs />
+        <AppEntityAPIs />
+        <BotAPIs />
+        <CalendarAPIs ref={calendarRef} />
+        <CallAPIs />
+        <ChatAPIs />
+        <DialogAPIs />
+        <FilesAPIs />
+        <FullTrustAPIs />
+        <LocationAPIs />
+        <LogAPIs />
+        <MailAPIs />
+        <MediaAPIs ref={mediaRef} />
+        <MeetingAPIs />
+        <MeetingRoomAPIs />
+        <MenusAPIs />
+        <MonetizationAPIs />
+        <NotificationAPIs />
+        <PagesAPIs />
+        <PagesAppButtonAPIs />
+        <PagesBackStackAPIs />
+        <PagesConfigAPIs />
+        <PagesTabsAPIs />
+        <PeopleAPIs />
+        <PrivateAPIs />
+        <RemoteCameraAPIs />
+        <SharingAPIs />
+        <StageViewAPIs />
+        <TeamsCoreAPIs />
+        <TeamsAPIs />
+      </div>
     </>
   );
 };

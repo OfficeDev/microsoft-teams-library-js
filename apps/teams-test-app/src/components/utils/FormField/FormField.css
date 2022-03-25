@@ -1,0 +1,9 @@
+.formField {
+  margin: 10px;
+  display: block;
+}
+
+.formField > label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
