@@ -126,9 +126,6 @@ steps:
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
 
-  # - script: cp .npmrc_publish .npmrc
-  #   displayName: 'Copy .npmrc_publish file to .npmc for publishing'
-
   # We can't check in the .npmrc file as-is because the build will fail
   # Copy .npmrc_publish to .npmrc before including it in the NPMFeed build artifact
   - powershell: |
