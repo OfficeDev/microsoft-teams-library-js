@@ -1,0 +1,4 @@
+.checkboxWrapper {
+  display: flex;
+  flex-direction: column;
+}
