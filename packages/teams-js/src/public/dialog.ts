@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
@@ -49,6 +49,7 @@ export namespace dialog {
 
     sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
+      removeHandler('messageForParent');
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,6 +130,7 @@ export namespace dialog {
 
       sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
+        removeHandler('messageForParent');
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
