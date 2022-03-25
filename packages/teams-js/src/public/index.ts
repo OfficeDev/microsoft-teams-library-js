@@ -22,7 +22,6 @@ export {
   DialogInfo,
   TeamInformation,
   FileOpenPreference,
-  OpenConversationRequest,
   LocaleInfo,
   FrameInfo,
 } from './interfaces';
