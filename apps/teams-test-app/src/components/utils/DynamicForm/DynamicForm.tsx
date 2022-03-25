@@ -9,11 +9,12 @@ export type DynamicFormProps<T> = {
   inputFields: T;
   label: string;
   onSubmit: (inputFields: T) => Promise<string | void>;
+  name: string;
 };
 
 // comma in generic is needed if in a TSX file
 export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
-  const { inputFields, label, onSubmit } = props;
+  const { inputFields, label, onSubmit, name } = props;
   const [values, setValues] = useState(inputFields);
   const [submissionResult, setSubmissionResult] = useState('');
 
@@ -34,7 +35,7 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
 
   return (
     <>
-      <div className="dynamicForm">
+      <div className="dynamicForm" id={`box_${name}`}>
         <h4 className="dynamicFormHeader">{label}</h4>
         <>
           <form onSubmit={submitForm}>

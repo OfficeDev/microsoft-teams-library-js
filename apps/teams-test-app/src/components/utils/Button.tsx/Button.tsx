@@ -4,7 +4,7 @@ export type ButtonProps = {
   label: string;
 };
 
-export const Button = (props: ButtonProps) => {
+export const Button = (props: ButtonProps): JSX.Element => {
   const { label, onClick } = props;
 
   return (

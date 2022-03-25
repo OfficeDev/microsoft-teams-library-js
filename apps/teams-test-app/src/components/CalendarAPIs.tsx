@@ -20,13 +20,19 @@ const openCalendarItem = async (input: calendar.OpenCalendarItemParams): Promise
 
 const ComposeMeeting = (): ReactElement => (
   <DynamicForm
+    name="composeMeeting"
     onSubmit={composeMeeting}
     label="Compose Meeting 2"
     inputFields={{ attendees: ['Nico', 'Ash'], startTime: 'Now', endTime: '2:00', subject: 'Im an Event' }}
   />
 );
 const OpenCalendarItem = (): ReactElement => (
-  <DynamicForm onSubmit={openCalendarItem} label="Open Calendar Item" inputFields={{ itemId: '1' }} />
+  <DynamicForm
+    name="openCalendarItem"
+    onSubmit={openCalendarItem}
+    label="Open Calendar Item"
+    inputFields={{ itemId: '1' }}
+  />
 );
 
 const CheckCalendarCapability = (): ReactElement =>
