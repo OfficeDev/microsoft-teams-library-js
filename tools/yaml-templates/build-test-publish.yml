@@ -132,6 +132,7 @@ steps:
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE
+        .npmrc
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
