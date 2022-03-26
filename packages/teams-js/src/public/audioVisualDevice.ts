@@ -456,33 +456,19 @@ export namespace audioVisualDevice {
      * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
      * @returns A promise resolved when the viewing action is completed or rejected with an @see SdkError
      */
-    export function viewImages(uriList: ImageUri[]): Promise<void>;
-    /**
-     * View images using native image viewer
-     *
-     * @deprecated
-     * As of 2.0.0-beta.1, please use {@link audioVisualDevice.camera.viewImages media.camera.viewImages(uriList: ImageUri[]): Promise\<void\>} instead.
-     *
-     * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
-     * @param callback - returns back error if encountered, returns null in case of success
-     */
-    export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void);
-    export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
+    export function viewImages(uriList: ImageUri[]): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      const wrappedFunction: InputFunction<void> = () =>
-        new Promise<void>(resolve => {
-          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-            throw { errorCode: ErrorCode.OLD_PLATFORM };
-          }
-          if (!validateViewImagesInput(uriList)) {
-            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-          }
+      return new Promise<void>(resolve => {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+          throw { errorCode: ErrorCode.OLD_PLATFORM };
+        }
+        if (!validateViewImagesInput(uriList)) {
+          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        }
 
-          resolve(sendAndHandleSdkError('viewImages', uriList));
-        });
-
-      return callCallbackWithSdkErrorFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
+        resolve(sendAndHandleSdkError('viewImages', uriList));
+      });
     }
 
     export function isSupported(): boolean {
@@ -649,73 +635,32 @@ export namespace audioVisualDevice {
        * @param config - optional input configuration to customize the barcode scanning experience
        * @returns A promise resolved with the barcode data or rejected with an @see SdkError
        */
-      export function scanBarCode(config?: BarCodeConfig): Promise<string>;
-      /**
-       * Scan Barcode/QRcode using camera
-       *
-       * @remarks
-       * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-       *
-       * @deprecated
-       * As of 2.0.0-beta.1, please use {@link audioVisualDevice.camera.barcode.scanBarCode media.camera.barcode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
-       *
-       * @param callback - callback to invoke after scanning the barcode
-       * @param config - optional input configuration to customize the barcode scanning experience
-       */
-      export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig);
-      export function scanBarCode(
-        callbackOrConfig?: ((error: SdkError, decodedText: string) => void) | BarCodeConfig,
-        configMaybe?: BarCodeConfig,
-      ): Promise<string> {
-        let callback: (error: SdkError, decodedText: string) => void | undefined;
-        let config: BarCodeConfig | undefined;
-
-        // Because the callback isn't the second parameter in the original v1 method we need to
-        // do a bit of trickery to see which of the two ways were used to call into
-        // the flow and if the first parameter is a callback (v1) or a config object (v2)
-
-        if (callbackOrConfig === undefined) {
-          // no first parameter - the second one might be a config, definitely no callback
-          config = configMaybe;
-        } else {
-          if (typeof callbackOrConfig === 'object') {
-            // the first parameter is an object - it's the config! No callback.
-            config = callbackOrConfig;
-          } else {
-            // otherwise, it's a function, so a callback. The second parameter might be a callback
-            callback = callbackOrConfig;
-            config = configMaybe;
-          }
-        }
-
+      export function scanBarCode(config?: BarCodeConfig): Promise<string> {
         ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-        const wrappedFunction: InputFunction<string> = () =>
-          new Promise<string>(resolve => {
-            if (
-              GlobalVars.hostClientType === HostClientType.desktop ||
-              GlobalVars.hostClientType === HostClientType.web ||
-              GlobalVars.hostClientType === HostClientType.rigel ||
-              GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-              GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-              GlobalVars.hostClientType === HostClientType.teamsPhones ||
-              GlobalVars.hostClientType === HostClientType.teamsDisplays
-            ) {
-              throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-            }
+        return new Promise<string>(resolve => {
+          if (
+            GlobalVars.hostClientType === HostClientType.desktop ||
+            GlobalVars.hostClientType === HostClientType.web ||
+            GlobalVars.hostClientType === HostClientType.rigel ||
+            GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+            GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+            GlobalVars.hostClientType === HostClientType.teamsPhones ||
+            GlobalVars.hostClientType === HostClientType.teamsDisplays
+          ) {
+            throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+          }
 
-            if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-              throw { errorCode: ErrorCode.OLD_PLATFORM };
-            }
+          if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
+            throw { errorCode: ErrorCode.OLD_PLATFORM };
+          }
 
-            if (!validateScanBarCodeInput(config)) {
-              throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-            }
+          if (!validateScanBarCodeInput(config)) {
+            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+          }
 
-            resolve(sendAndHandleSdkError('media.scanBarCode', config));
-          });
-
-        return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
+          resolve(sendAndHandleSdkError('media.scanBarCode', config));
+        });
       }
 
       /**

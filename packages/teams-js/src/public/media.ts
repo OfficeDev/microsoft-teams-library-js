@@ -1,27 +1,16 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
-import {
-  captureImageMobileSupportVersion,
-  mediaAPISupportVersion,
-  scanBarCodeAPIMobileSupportVersion,
-} from '../internal/constants';
+import { sendAndHandleSdkError } from '../internal/communication';
+import { captureImageMobileSupportVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import {
-  isVideoControllerRegistered,
-  throwExceptionIfMediaCallIsNotSupportedOnMobile,
-  validateScanBarCodeInput,
-  validateSelectMediaInputs,
-  validateViewImagesInput,
-} from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
   InputFunction,
 } from '../internal/utils';
 import { audioVisualDevice } from './audioVisualDevice';
-import { FrameContexts, HostClientType } from './constants';
+import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -190,92 +179,14 @@ export namespace media {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
-   * All properties common to Image and Video Props
-   */
-  interface MediaProps {
-    /**
-     * @hidden
-     * Optional; Lets the developer specify the media source, more than one can be specified.
-     * Default value is both camera and gallery
-     */
-    sources?: Source[];
-
-    /**
-     * @hidden
-     * Optional; Specify in which mode the camera will be opened.
-     * Default value is Photo
-     */
-    startMode?: CameraStartMode;
-
-    /**
-     * @hidden
-     * Optional; indicate if user is allowed to move between front and back camera
-     * Default value is true
-     */
-    cameraSwitcher?: boolean;
-  }
-
-  /**
    *  All properties in ImageProps are optional and have default values in the platform
    */
-  export interface ImageProps extends MediaProps {
-    /**
-     * Optional; indicate if inking on the selected Image is allowed or not
-     * Default value is true
-     */
-    ink?: boolean;
-
-    /**
-     * Optional; indicate if putting text stickers on the selected Image is allowed or not
-     * Default value is true
-     */
-    textSticker?: boolean;
-
-    /**
-     * Optional; indicate if image filtering mode is enabled on the selected image
-     * Default value is false
-     */
-    enableFilter?: boolean;
-
-    /**
-     * Optional; Lets the developer specify the image output formats, more than one can be specified.
-     * Default value is Image.
-     */
-    imageOutputFormats?: ImageOutputFormats[];
-  }
+  export import ImageProps = audioVisualDevice.camera.ImageProps;
 
   /**
    * All properties in VideoProps are optional and have default values in the platform
    */
-  export interface VideoProps extends MediaProps {
-    /**
-     * Optional; the maximum duration in seconds after which the recording should terminate automatically.
-     * Default value is defined by the platform serving the API.
-     */
-    maxDuration?: number;
-
-    /**
-     * Optional; to determine if the video capturing flow needs to be launched
-     * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
-     * Default value is true, indicating video will always launch in Full Screen Mode via lens.
-     */
-    isFullScreenMode?: boolean;
-
-    /**
-     * Optional; controls the visibility of stop button in PictureInPicture Mode.
-     * Default value is true, indicating the user will be able to stop the video.
-     */
-    isStopButtonVisible?: boolean;
-
-    /**
-     * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
-     * Your app can also dynamically control the experience while capturing the video by notifying the host client.
-     */
-    videoController?: VideoController;
-  }
+  export import VideoProps = audioVisualDevice.camera.video.VideoProps;
 
   /**
    * All properties in VideoAndImageProps are optional and have default values in the platform
@@ -296,14 +207,13 @@ export namespace media {
   /**
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
-  export interface VideoControllerCallback {
-    onRecordingStarted(): void;
-    onRecordingStopped?(): void;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export import VideoControllerCallback = audioVisualDevice.camera.video.VideoControllerCallback;
 
   /**
    * VideoController class is used to communicate between the app and the host client during the video capture flow
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import VideoController = audioVisualDevice.camera.video.VideoController;
 
   /**
@@ -312,25 +222,20 @@ export namespace media {
    * --------
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import MediaControllerEvent = audioVisualDevice.MediaControllerEvent;
 
   /**
    * The modes in which camera can be launched in select Media API
    */
-  export enum CameraStartMode {
-    Photo = 1,
-    Document = 2,
-    Whiteboard = 3,
-    BusinessCard = 4,
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export import CameraStartMode = audioVisualDevice.camera.CameraStartMode;
 
   /**
    * Specifies the image source
    */
-  export enum Source {
-    Camera = 1,
-    Gallery = 2,
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export import Source = audioVisualDevice.camera.Source;
 
   // /**
   //  * Specifies the type of Media
@@ -340,26 +245,19 @@ export namespace media {
   /**
    * Input for view images API
    */
-  export interface ImageUri {
-    value: string;
-    type: ImageUriType;
-  }
+  export import ImageUri = audioVisualDevice.camera.ImageUri;
 
   /**
    * ID contains a mapping for content uri on platform's side, URL is generic
    */
-  export enum ImageUriType {
-    ID = 1,
-    URL = 2,
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export import ImageUriType = audioVisualDevice.camera.ImageUriType;
 
   /**
    * Specifies the image output formats.
    */
-  export enum ImageOutputFormats {
-    IMAGE = 1,
-    PDF = 2,
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export import ImageOutputFormats = audioVisualDevice.camera.ImageOutputFormats;
 
   /**
    * Media chunks an output of getMedia API from platform
@@ -400,40 +298,26 @@ export namespace media {
     mediaInputs: MediaInputs,
     callback?: (error?: SdkError, attachments?: Media[]) => void,
   ): Promise<Media[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-
+    // Probably we should be more careful about casting this?
     const wrappedFunction: InputFunction<Media[]> = () =>
-      new Promise<[SdkError, Media[], MediaControllerEvent]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
+      new Promise<Media[]>(resolve => {
+        if (mediaInputs.audioProps) {
+          resolve(audioVisualDevice.audio.selectAudio(mediaInputs as audioVisualDevice.audio.AudioInputs));
+        } else if (mediaInputs.videoAndImageProps) {
+          resolve(
+            audioVisualDevice.camera.video.selectMediaContainingVideo(
+              mediaInputs as audioVisualDevice.camera.video.VideoAndImageInputs,
+            ),
+          );
+        } else if (mediaInputs.videoProps) {
+          resolve(
+            audioVisualDevice.camera.video.selectMediaContainingVideo(
+              mediaInputs as audioVisualDevice.camera.video.VideoInputs,
+            ),
+          );
+        } else {
+          resolve(audioVisualDevice.camera.selectImages(mediaInputs as audioVisualDevice.camera.ImageInputs));
         }
-        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
-
-        if (!validateSelectMediaInputs(mediaInputs)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        const params = [mediaInputs];
-        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, Media[], MediaControllerEvent]>('selectMedia', params));
-      }).then(([err, localAttachments, mediaEvent]: [SdkError, Media[], MediaControllerEvent]) => {
-        // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
-        if (mediaEvent) {
-          if (isVideoControllerRegistered(mediaInputs)) {
-            mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
-          }
-          return [];
-        }
-
-        // Media Attachments are final response to selectMedia
-        if (!localAttachments) {
-          throw err;
-        }
-        const mediaArray: Media[] = [];
-        for (const attachment of localAttachments) {
-          mediaArray.push(new Media(attachment));
-        }
-        return mediaArray;
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Media[]>(wrappedFunction, callback);
@@ -459,17 +343,7 @@ export namespace media {
   export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    const wrappedFunction: InputFunction<void> = () =>
-      new Promise<void>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        if (!validateViewImagesInput(uriList)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        resolve(sendAndHandleSdkError('viewImages', uriList));
-      });
+    const wrappedFunction: InputFunction<void> = () => audioVisualDevice.camera.viewImages(uriList);
 
     return callCallbackWithSdkErrorFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
   }
@@ -478,13 +352,7 @@ export namespace media {
    * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
    * All properties in BarCodeConfig are optional and have default values in the platform
    */
-  export interface BarCodeConfig {
-    /**
-     * Optional; Lets the developer specify the scan timeout interval in seconds
-     * Default value is 30 seconds and max allowed value is 60 seconds
-     */
-    timeOutIntervalInSec?: number;
-  }
+  export import BarCodeConfig = audioVisualDevice.camera.barcode.BarCodeConfig;
 
   /**
    * Scan Barcode/QRcode using camera
@@ -536,30 +404,7 @@ export namespace media {
 
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-    const wrappedFunction: InputFunction<string> = () =>
-      new Promise<string>(resolve => {
-        if (
-          GlobalVars.hostClientType === HostClientType.desktop ||
-          GlobalVars.hostClientType === HostClientType.web ||
-          GlobalVars.hostClientType === HostClientType.rigel ||
-          GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-          GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-          GlobalVars.hostClientType === HostClientType.teamsPhones ||
-          GlobalVars.hostClientType === HostClientType.teamsDisplays
-        ) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-        }
-
-        if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-
-        if (!validateScanBarCodeInput(config)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        resolve(sendAndHandleSdkError('media.scanBarCode', config));
-      });
+    const wrappedFunction: InputFunction<string> = () => audioVisualDevice.camera.barcode.scanBarCode(config);
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
   }

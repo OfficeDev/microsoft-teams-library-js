@@ -1,3 +1,4 @@
+import { audioVisualDevice } from '../public/audioVisualDevice';
 import { media } from '../public/media';
 import { people } from '../public/people';
 import {
@@ -166,7 +167,7 @@ export function validateGetMediaInputs(mimeType: string, format: media.FileForma
  *
  * @internal
  */
-export function validateViewImagesInput(uriList: media.camera.ImageUri[]): boolean {
+export function validateViewImagesInput(uriList: audioVisualDevice.camera.ImageUri[]): boolean {
   if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
     return false;
   }
@@ -179,7 +180,7 @@ export function validateViewImagesInput(uriList: media.camera.ImageUri[]): boole
  *
  * @internal
  */
-export function validateScanBarCodeInput(barCodeConfig: media.camera.barcode.BarCodeConfig): boolean {
+export function validateScanBarCodeInput(barCodeConfig: audioVisualDevice.camera.barcode.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
       barCodeConfig.timeOutIntervalInSec === null ||

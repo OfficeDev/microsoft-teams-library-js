@@ -2,17 +2,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { notDeepStrictEqual } from 'assert';
-
 import * as communication from '../../src/internal/communication';
-import { captureImageMobileSupportVersion, getMediaCallbackSupportVersion } from '../../src/internal/constants';
+import { getMediaCallbackSupportVersion } from '../../src/internal/constants';
 import { callHandler } from '../../src/internal/handlers';
 import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { media } from '../../src/public/media';
-import { runtime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
