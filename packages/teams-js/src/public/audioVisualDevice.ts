@@ -38,9 +38,7 @@ import { runtime } from './runtime';
 /**
  * @alpha
  */
-// TODO - finished going through top level
 // TODO - should I use Media class internally or convert to structin back-compat?
-// TODO - move interfaces etc. out of audioVisualDevice and up into top level so they aren't in a capability
 export namespace audioVisualDevice {
   export function getMediaAsBlob(media: media.Media, callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -333,6 +331,16 @@ export namespace audioVisualDevice {
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
+  }
+
+  // This should not trigger the "refresh the app scenario" because this is for setting things up
+  // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
+  // would have the new allow parameters, but only the AppPermissions dialog should trigger the
+  // "ask the user to refresh" flow
+  export function requestPermission(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleSdkError('location.requestPermission'));
+    });
   }
 
   export function isSupported(): boolean {
