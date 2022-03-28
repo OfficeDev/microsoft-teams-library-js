@@ -1,0 +1,13 @@
+.module {
+  border: 3px solid #080809;
+  padding-bottom: 20px;
+
+  /* box-shadow: 4px 4px 4px 0px #d1d9e6 inset, -4px -4px 4px 0px #ffffff inset; */
+}
+
+.moduleHeading {
+  background: BLACK;
+  color: WHITE;
+  margin: 0;
+  padding: 20px;
+}

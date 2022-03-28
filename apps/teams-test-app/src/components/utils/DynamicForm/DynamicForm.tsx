@@ -5,8 +5,19 @@ import { FormEvent, useState } from 'react';
 import { FormField } from '../FormField/FormField';
 import { PrettyPrintJSON } from '../PrettyPrintJSON/PrettyPrintJSON';
 
+export type DynamicFormInputFields2<T> = {
+  [Property in keyof T]: {
+    value: T[Property];
+    inputType: 'radio' | 'text';
+  };
+};
+
+export type DynamicFormInputFields<T> = {
+  [Property in keyof T]: T[Property];
+};
+
 export type DynamicFormProps<T> = {
-  inputFields: T;
+  inputFields: DynamicFormInputFields<T>;
   label: string;
   onSubmit: (inputFields: T) => Promise<string | void>;
   name: string;
@@ -20,13 +31,17 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
 
   const submitForm = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    await onSubmit(values).then(result => {
-      if (!result) {
-        setSubmissionResult('done');
-      } else {
-        setSubmissionResult(result);
-      }
-    });
+    const vals = onSubmit(values);
+
+    return vals
+      .then(result => {
+        if (!result) {
+          setSubmissionResult('Nothing to see here');
+        } else {
+          setSubmissionResult(result);
+        }
+      })
+      .catch(err => console.log(err));
   };
 
   const fieldChanged = (fieldName, value): void => {
@@ -40,18 +55,27 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
         <>
           <form onSubmit={submitForm}>
             {Object.entries(values).map(([key, value], index) => {
+              console.log('%c key: ', 'color: turquoise', key);
+              console.log('%c value: ', 'color: turquoise', value);
+
               return (
-                <FormField fieldChanged={fieldChanged} label={key} name={key} value={value} key={`${index}-${key}`} />
+                <FormField
+                  fieldChanged={fieldChanged}
+                  label={`${value}`}
+                  name={key}
+                  value={`${value}`}
+                  key={`${index}-${value}`}
+                />
               );
             })}
             <button type="submit">Submit</button>
           </form>
         </>
         <>
-          <PrettyPrintJSON label="Data" data={values} />
+          <PrettyPrintJSON name={name} label="Data" data={values} />
         </>
         <>
-          <PrettyPrintJSON label="Result" data={submissionResult} />
+          <PrettyPrintJSON name={name} label="Result" data={submissionResult} />
         </>
       </div>
       <hr />

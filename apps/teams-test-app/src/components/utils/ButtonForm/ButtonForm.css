@@ -1,0 +1,16 @@
+.buttonForm {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: min-content 1fr;
+  gap: 10px;
+}
+
+.buttonFormLabel {
+  grid-column: 1/-1;
+  grid-row: 1;
+}
+
+.buttonFormButton {
+  grid-row: 2;
+  grid-column: 1;
+}
