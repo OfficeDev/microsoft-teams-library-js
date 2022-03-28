@@ -28,7 +28,7 @@ describe('AppSDK-privateAPIs', () => {
   });
   describe('getUserJoinedTeams', () => {
     it('should not allow calls before initialization', () => {
-      return expect(legacy.fullTrust.getUserJoinedTeams()).rejects.toThrowError(
+      return expect(legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -36,7 +36,9 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a valid optional parameter set to true', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({ favoriteTeamsOnly: true } as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
+        favoriteTeamsOnly: true,
+      } as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -47,7 +49,9 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a valid optional parameter set to false', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({ favoriteTeamsOnly: false } as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
+        favoriteTeamsOnly: false,
+      } as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -58,7 +62,7 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a missing optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams();
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams();
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -69,7 +73,7 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({} as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({} as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();

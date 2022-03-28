@@ -42,7 +42,7 @@ const GetUserJoinedTeams = (): React.ReactElement =>
     name: 'getUserJoinedTeams',
     title: 'Get User Joined Teams',
     onClick: async input => {
-      const result = await legacy.fullTrust.getUserJoinedTeams(input);
+      const result = await legacy.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
   });
