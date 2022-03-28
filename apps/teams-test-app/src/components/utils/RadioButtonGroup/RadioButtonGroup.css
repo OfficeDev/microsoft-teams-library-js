@@ -1,0 +1,27 @@
+.radioGroupForm {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: min-content 1fr;
+  gap: 10px;
+}
+
+.radioGroup {
+  display: flex;
+}
+
+.radioLabel {
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+}
+
+.radioFormLabel {
+  grid-column: 1/-1;
+  grid-row: 1;
+}
+
+.radioButton {
+  grid-row: 2;
+  grid-column: 1;
+  margin: 10px;
+}
