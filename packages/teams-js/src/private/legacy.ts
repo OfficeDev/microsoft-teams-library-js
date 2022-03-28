@@ -12,6 +12,27 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces
  */
 export namespace legacy {
   export namespace fullTrust {
+    export function getUserJoinedTeams(
+      teamInstanceParameters?: TeamInstanceParameters,
+    ): Promise<UserJoinedTeamsInformation> {
+      return new Promise<UserJoinedTeamsInformation>(resolve => {
+        ensureInitialized();
+
+        if (
+          (GlobalVars.hostClientType === HostClientType.android ||
+            GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+            GlobalVars.hostClientType === HostClientType.teamsPhones ||
+            GlobalVars.hostClientType === HostClientType.teamsDisplays) &&
+          !isCurrentSDKVersionAtLeast(getUserJoinedTeamsSupportedAndroidClientVersion)
+        ) {
+          const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+          throw new Error(JSON.stringify(oldPlatformError));
+        }
+
+        resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
+      });
+    }
+
     export namespace joinedTeams {
       /**
        * @hidden
@@ -47,6 +68,8 @@ export namespace legacy {
         return runtime.supports.teams
           ? runtime.supports.teams.fullTrust
             ? runtime.supports.teams.fullTrust.joinedTeams
+              ? true
+              : false
             : false
           : false;
       }

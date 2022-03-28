@@ -38,7 +38,9 @@ export interface IRuntime {
     readonly remoteCamera?: {};
     readonly sharing?: {};
     readonly teams?: {
-      readonly fullTrust?: {};
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
     };
     readonly teamsCore?: {};
     readonly video?: {};
