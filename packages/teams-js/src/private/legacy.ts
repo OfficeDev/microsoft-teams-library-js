@@ -45,8 +45,10 @@ export namespace legacy {
 
       export function isSupported(): boolean {
         return runtime.supports.teams
-          ? (runtime.supports.teams.fullTrust
-            ? runtime.supports.teams.fullTrust.joinedTeams);
+          ? runtime.supports.teams.fullTrust
+            ? runtime.supports.teams.fullTrust.joinedTeams
+            : false
+          : false;
       }
     }
 
