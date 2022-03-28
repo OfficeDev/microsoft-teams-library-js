@@ -59,6 +59,10 @@ export namespace dialog {
     return sendMessageToDialog;
   }
 
+  export function sendMessageToDialog(message: any): void {
+    sendMessageToParent('messageForChild', [message]);
+  }
+
   /**
    * Submit the dialog module.
    *
