@@ -1,4 +1,6 @@
 .button {
-  background-color: tomato;
+  background-color: black;
+  color: white;
+  cursor: pointer;
   padding: 5px 10px;
 }
