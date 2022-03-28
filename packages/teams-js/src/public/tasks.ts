@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { IAppWindow } from './appWindow';
-import { TaskModuleDimension } from './constants';
-import { dialog } from './dialog';
-import { TaskInfo } from './interfaces';
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { ChildAppWindow, IAppWindow } from './appWindow';
+import { FrameContexts, TaskModuleDimension } from './constants';
+import { dialog, SdkResponse } from './dialog';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
@@ -16,7 +18,7 @@ import { TaskInfo } from './interfaces';
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.open dialog.open(dialogInfo: DialogInfo, submitHandler?: (err: string, result: string) => void): IAppWindow} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} instead.
    *
    * Allows an app to open the task module.
    *
@@ -27,19 +29,39 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    return dialog.open(getDialogInfoFromTaskInfo(taskInfo), submitHandler);
+    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
+    if (taskInfo.card !== undefined || taskInfo.url === undefined) {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+    } else if (taskInfo.completionBotId !== undefined) {
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+        submitHandler(sdkResponse.err, sdkResponse.result),
+      );
+    } else {
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+        submitHandler(sdkResponse.err, sdkResponse.result),
+      );
+    }
+    return new ChildAppWindow();
   }
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
    * @param taskInfo - An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    dialog.resize(taskInfo);
+    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { width, height, ...extra } = taskInfo;
+
+    if (Object.keys(extra).length) {
+      throw new Error('resize requires a TaskInfo argument containing only width and height');
+    }
+    dialog.update.resize(taskInfo as DialogSize);
   }
 
   /**
@@ -55,34 +77,35 @@ export namespace tasks {
     dialog.submit(result, appIds);
   }
 
-  function getDialogInfoFromTaskInfo(taskInfo: TaskInfo): TaskInfo {
-    const dialogHeight =
-      taskInfo.height && typeof taskInfo.height !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.height)
-        : (taskInfo.height as number);
-    const dialogWidth =
-      taskInfo.width && typeof taskInfo.width !== 'number'
-        ? getDialogDimensionFromTaskModuleDimension(taskInfo.width)
-        : (taskInfo.width as number);
-    const dialogInfo: TaskInfo = {
+  export function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
+    const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
-      card: taskInfo.card,
-      height: dialogHeight,
-      width: dialogWidth,
+      size: {
+        height: taskInfo.height,
+        width: taskInfo.width,
+      },
+      title: taskInfo.title,
+      fallbackUrl: taskInfo.fallbackUrl,
+    };
+    return urldialogInfo;
+  }
+
+  export function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
+    const botUrldialogInfo: BotUrlDialogInfo = {
+      url: taskInfo.url,
+      size: {
+        height: taskInfo.height,
+        width: taskInfo.width,
+      },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
       completionBotId: taskInfo.completionBotId,
     };
-    return dialogInfo;
+    return botUrldialogInfo;
   }
-
-  function getDialogDimensionFromTaskModuleDimension(taskModuleDimension: TaskModuleDimension): TaskModuleDimension {
-    if (taskModuleDimension === TaskModuleDimension.Large) {
-      return TaskModuleDimension.Large;
-    } else if (taskModuleDimension === TaskModuleDimension.Medium) {
-      return TaskModuleDimension.Medium;
-    } else {
-      return TaskModuleDimension.Small;
-    }
+  export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
+    taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
+    taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
+    return taskInfo;
   }
 }
