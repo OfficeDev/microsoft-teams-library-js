@@ -1,11 +1,11 @@
 .prettyPrintWrapper {
-  background-color: #1f4662;
+  background-color: rgba(0, 0, 0, 0.75);
   color: #fff;
   font-size: 12px;
 }
 
 .header {
-  background-color: #193549;
+  background-color: #000;
   padding: 5px 10px;
   font-family: monospace;
   font-weight: 600;
