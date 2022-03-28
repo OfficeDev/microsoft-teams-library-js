@@ -6,6 +6,7 @@ import { Utils } from '../utils';
 
 describe('files', () => {
   const utils = new Utils();
+  const emptyCallback = () => {};
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -475,6 +476,97 @@ describe('files', () => {
       expect(copyMoveFilesMessage).not.toBeNull();
       utils.respondToMessage(copyMoveFilesMessage, false);
       await expect(promise).resolves.toEqual(undefined);
+    });
+  });
+
+  describe('getFileDownloads', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
+    });
+    describe('v1', () => {
+      it('should not allow calls without frame context initialization', async () => {
+        await utils.initializeWithContext('settings');
+        expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+          'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+        );
+      });
+
+      it('should trigger callback correctly', async () => {
+        expect.assertions(3);
+
+        await utils.initializeWithContext('content');
+
+        const mockFileDownloads: files.IFileItem[] = [
+          {
+            timestamp: new Date(),
+            title: 'title',
+            extension: 'docx',
+          },
+        ];
+
+        const callback = jest.fn((err, fileList) => {
+          expect(err).toBeFalsy();
+          expect(fileList).toEqual(mockFileDownloads);
+        });
+
+        files.getFileDownloads(callback);
+
+        const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+
+        expect(getFileDownloadsMessage).not.toBeNull();
+
+        utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+      });
+    });
+    describe('v2', () => {
+      it('should not allow calls without frame context initialization', async () => {
+        await utils.initializeWithContext('settings');
+        expect(() => files.getFileDownloads()).toThrowError(
+          'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+        );
+      });
+
+      it('should send the message to parent correctly', async () => {
+        await utils.initializeWithContext('content');
+
+        const mockFileDownloads: files.IFileItem[] = [
+          {
+            timestamp: new Date(),
+            title: 'title',
+            extension: 'docx',
+          },
+        ];
+        const promise = files.getFileDownloads();
+
+        const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+
+        expect(getFileDownloadsMessage).not.toBeNull();
+        utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+        await expect(promise).resolves.not.toThrowError();
+      });
+    });
+  });
+
+  describe('openDownloadFolder', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.openDownloadFolder()).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.openDownloadFolder()).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
+
+      files.openDownloadFolder();
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      expect(openDownloadFolderMessage.args).toEqual([]);
     });
   });
 });

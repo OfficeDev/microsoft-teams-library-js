@@ -4,6 +4,7 @@ import {
   sendMessageToParentAsync,
 } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
@@ -256,6 +257,55 @@ export namespace files {
   /**
    * @hidden
    * Hide from docs
+   *
+   * Download status enum
+   */
+  export enum FileDownloadStatus {
+    Downloaded = 'Downloaded',
+    Downloading = 'Downloading',
+    Failed = 'Failed',
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Download Files interface
+   */
+  export interface IFileItem {
+    /**
+     * ID of the file metadata
+     */
+    objectId?: string;
+    /**
+     * Path of the file
+     */
+    path?: string;
+    /**
+     * Size of the file in bytes
+     */
+    sizeInBytes?: number;
+    /**
+     * Download status
+     */
+    status?: FileDownloadStatus;
+    /**
+     * Download timestamp
+     */
+    timestamp: Date;
+    /**
+     * File name
+     */
+    title: string;
+    /**
+     * Type of file i.e. the file extension.
+     */
+    extension: string;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
    * ------
    * Gets a list of cloud storage folders added to the channel
    *
@@ -466,5 +516,45 @@ export namespace files {
 
   export function isSupported(): boolean {
     return runtime.supports.files ? true : false;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Gets list of downloads for current user
+   * @param callback Callback that will be triggered post downloads load
+   */
+  export function getFileDownloads(): Promise<IFileItem[]>;
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   *
+   * @deprecated
+   * As of 2.0.0-beta.4, please use {@link file.getFileDownloads file.getFileDownloads(): Promise\<IFileItem[]\>} instead.
+   * Gets list of downloads for current user
+   * @param callback Callback that will be triggered post downloads load
+   */
+  export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void;
+  export function getFileDownloads(callback?: (error?: SdkError, files?: IFileItem[]) => void): Promise<IFileItem[]> {
+    ensureInitialized(FrameContexts.content);
+
+    const wrappedFunction = (): Promise<IFileItem[]> =>
+      new Promise(resolve => resolve(sendAndHandleError('files.getFileDownloads', [])));
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Open download preference folder
+   */
+  export function openDownloadFolder(): void {
+    ensureInitialized(FrameContexts.content);
+
+    sendMessageToParent('files.openDownloadFolder', []);
   }
 }

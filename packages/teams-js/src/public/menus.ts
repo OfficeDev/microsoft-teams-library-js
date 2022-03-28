@@ -4,12 +4,8 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
 
 /**
- * @hidden
  * Namespace to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
- *
- * Hide from docs until feature is complete
- * @alpha
  */
 export namespace menus {
   /**
