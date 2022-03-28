@@ -55,13 +55,10 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
         <>
           <form onSubmit={submitForm}>
             {Object.entries(values).map(([key, value], index) => {
-              console.log('%c key: ', 'color: turquoise', key);
-              console.log('%c value: ', 'color: turquoise', value);
-
               return (
                 <FormField
                   fieldChanged={fieldChanged}
-                  label={`${value}`}
+                  label={`${key}`}
                   name={key}
                   value={`${value}`}
                   key={`${index}-${value}`}
