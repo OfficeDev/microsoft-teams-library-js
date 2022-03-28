@@ -1,4 +1,4 @@
-import { chat, OpenConversationRequest } from '@microsoft/teams-js';
+import { chat, OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -9,6 +9,40 @@ const CheckChatCapability = (): React.ReactElement =>
     name: 'checkChatCapability',
     title: 'Check Chat Capability',
     onClick: async () => `Chat module ${chat.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
+const OpenChat = (): React.ReactElement =>
+  ApiWithTextInput<OpenSingleChatRequest>({
+    name: 'openChat',
+    title: 'Open Chat',
+    onClick: {
+      validateInput: input => {
+        if (!input.user) {
+          throw new Error('user is required on the input');
+        }
+      },
+      submit: async input => {
+        await chat.openChat(input);
+        return 'chat.openChat()' + noHostSdkMsg;
+      },
+    },
+  });
+
+const OpenGroupChat = (): React.ReactElement =>
+  ApiWithTextInput<OpenGroupChatRequest>({
+    name: 'openGroupChat',
+    title: 'Open Group Chat',
+    onClick: {
+      validateInput: input => {
+        if (!input.users) {
+          throw new Error('users is required on the input');
+        }
+      },
+      submit: async input => {
+        await chat.openGroupChat(input);
+        return 'chat.openChat()' + noHostSdkMsg;
+      },
+    },
   });
 
 const OpenConversation = (): React.ReactElement =>
@@ -47,7 +81,7 @@ const OpenConversation = (): React.ReactElement =>
           );
         };
 
-        await chat.openConversation(input);
+        await chat.conversation.openConversation(input);
         return 'conversations.openConversation()' + noHostSdkMsg;
       },
     },
@@ -58,7 +92,7 @@ const CloseConversation = (): React.ReactElement =>
     name: 'closeConversation',
     title: 'Close Conversation',
     onClick: async () => {
-      chat.closeConversation();
+      chat.conversation.closeConversation();
       return 'Conversation Closed!';
     },
   });
@@ -76,6 +110,8 @@ const GetChatMembers = (): React.ReactElement =>
 const ConversationsAPIs = (): React.ReactElement => (
   <>
     <h1>chat</h1>
+    <OpenChat />
+    <OpenGroupChat />
     <OpenConversation />
     <CloseConversation />
     <GetChatMembers />
