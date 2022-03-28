@@ -42,6 +42,12 @@ export namespace legacy {
           resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
         });
       }
+
+      export function isSupported(): boolean {
+        return runtime.supports.teams
+          ? (runtime.supports.teams.fullTrust
+            ? runtime.supports.teams.fullTrust.joinedTeams);
+      }
     }
 
     /**

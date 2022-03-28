@@ -79,7 +79,9 @@ export let runtime: IRuntime = {
     remoteCamera: undefined,
     sharing: undefined,
     teams: {
-      fullTrust: undefined,
+      fullTrust: {
+        joinedTeams: undefined,
+      },
     },
     teamsCore: undefined,
     video: undefined,
@@ -121,7 +123,9 @@ export const teamsRuntimeConfig: IRuntime = {
     remoteCamera: {},
     sharing: {},
     teams: {
-      fullTrust: {},
+      fullTrust: {
+        joinedTeams: {},
+      },
     },
     teamsCore: {},
     video: {},

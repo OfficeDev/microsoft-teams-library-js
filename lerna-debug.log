@@ -1,0 +1,24 @@
+0 silly argv {
+0 silly argv   _: [ 'clean' ],
+0 silly argv   y: true,
+0 silly argv   yes: true,
+0 silly argv   lernaVersion: '3.22.1',
+0 silly argv   '$0': 'node_modules\\lerna\\cli.js'
+0 silly argv }
+1 notice cli v3.22.1
+2 verbose rootPath C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js
+3 info clean removing C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\apps\teams-perf-test-app\node_modules
+4 silly rimrafDir C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\apps\teams-perf-test-app\node_modules
+5 info clean removing C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\apps\teams-test-app\node_modules
+6 silly rimrafDir C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\apps\teams-test-app\node_modules
+7 info clean removing C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\packages\teams-js\node_modules
+8 silly rimrafDir C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\packages\teams-js\node_modules
+9 info clean removing C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\tools\bundle-size-tools\bundle-analysis-app\node_modules
+10 silly rimrafDir C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\tools\bundle-size-tools\bundle-analysis-app\node_modules
+11 info clean removing C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\tools\bundle-size-tools\node_modules
+12 silly rimrafDir C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\tools\bundle-size-tools\node_modules
+13 verbose rimrafDir removed C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\packages\teams-js\node_modules
+14 verbose rimrafDir removed C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\tools\bundle-size-tools\node_modules
+15 error Error: Command failed: C:\Program Files\nodejs\node.exe C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\node_modules\@lerna\rimraf-dir\node_modules\rimraf\bin.js --no-glob C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\apps\teams-test-app\node_modules\
+15 error     at makeError (C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\node_modules\@lerna\child-process\node_modules\execa\index.js:174:9)
+15 error     at C:\Users\shrshinde\OneDrive - Microsoft\Documents\GitHub\microsoft-teams-library-js\node_modules\@lerna\child-process\node_modules\execa\index.js:278:16
