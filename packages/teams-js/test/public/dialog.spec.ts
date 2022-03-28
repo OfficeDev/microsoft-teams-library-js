@@ -1,7 +1,7 @@
-import { DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { app } from '../../src/public/app';
 import { DialogDimension, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
+import { DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 describe('Dialog', () => {
@@ -57,48 +57,12 @@ describe('Dialog', () => {
           expect(openMessage.args).toEqual([dialogInfo]);
         });
 
-        it(`should invoke callback with error. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          let callbackCalled = false;
-          dialog.open(dialogInfo, resultObj => {
-            expect(resultObj.err).toBe('someError');
-            expect(resultObj.result).toBeUndefined();
-            callbackCalled = true;
-          });
-          const openMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(openMessage).not.toBeNull();
-          utils.respondToMessage(openMessage, 'someError');
-          expect(callbackCalled).toBe(true);
-        });
-
         it(`Should register messageFromChildHandler if it is passed. context: ${context}`, async () => {
+          utils.messages = [];
           await utils.initializeWithContext(context);
-          const messageFromChild = 'MessageFromChild';
-          let returnedMessage: string;
-          let handlerCalled = false;
-          dialog.open(dialogInfo, emptyCallback, messageFromChild => {
-            handlerCalled = true;
-            returnedMessage = messageFromChild;
-          });
-          utils.sendMessage('messageForParent', messageFromChild);
+          dialog.open(dialogInfo, emptyCallback, emptyCallback);
           const handlerMessage = utils.findMessageByFunc('registerHandler');
           expect(handlerMessage).not.toBeNull();
-          expect(handlerCalled).toBe(true);
-          expect(returnedMessage).toEqual(messageFromChild);
-        });
-
-        it(`should invoke callback with result. context: ${context} `, async () => {
-          await utils.initializeWithContext(context);
-          let callbackCalled = false;
-          dialog.open(dialogInfo, resultObj => {
-            expect(resultObj.err).toBeNull();
-            expect(resultObj.result).toBe('someResult');
-            callbackCalled = true;
-          });
-          const openMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(openMessage).not.toBeNull();
-          utils.respondToMessage(openMessage, null, 'someResult');
-          expect(callbackCalled).toBe(true);
         });
 
         describe('send a message to dialog using returned function from dialog.open API call', () => {
@@ -107,25 +71,8 @@ describe('Dialog', () => {
           it(`should successfully send the post the message to dialog. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-            sendMessageToDialogHandler('exampleMessage', (success, reason) => {
-              expect(success).toBeTruthy();
-              expect(reason).toBeNull;
-            });
+            sendMessageToDialogHandler('exampleMessage');
             const message = utils.findMessageByFunc('messageForChild');
-            utils.respondToMessage(message, true);
-            expect(message).not.toBeUndefined();
-          });
-
-          it(`should successfully receive the error message if the post message to dialog fails. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            const error = 'some Error Occured';
-            const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-            sendMessageToDialogHandler('exampleMessage', (success, reason) => {
-              expect(success).toBeFalsy();
-              expect(reason).toBe(error);
-            });
-            const message = utils.findMessageByFunc('messageForChild');
-            utils.respondToMessage(message, false, error);
             expect(message).not.toBeUndefined();
           });
         });
@@ -249,6 +196,7 @@ describe('Dialog', () => {
   describe('Open dialog with bot', () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const emptyCallback = (): void => {};
+
     const dialogInfo: BotUrlDialogInfo = {
       url: 'someUrl',
       size: {
@@ -259,7 +207,7 @@ describe('Dialog', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => dialog.open(dialogInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.bot.open(dialogInfo)).toThrowError('The library has not yet been initialized');
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -274,7 +222,7 @@ describe('Dialog', () => {
             fallbackUrl: 'someFallbackUrl',
             completionBotId: 'botId',
           };
-          dialog.open(dialogInfo, () => {
+          dialog.bot.open(dialogInfo, () => {
             return;
           });
           const openMessage = utils.findMessageByFunc('tasks.startTask');
@@ -282,82 +230,29 @@ describe('Dialog', () => {
           expect(openMessage.args).toEqual([dialogInfo]);
         });
 
-        it(`should invoke callback with error. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          let callbackCalled = false;
-          dialog.open(dialogInfo, resultObj => {
-            expect(resultObj.err).toBe('someError');
-            expect(resultObj.result).toBeUndefined();
-            callbackCalled = true;
-          });
-          const openMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(openMessage).not.toBeNull();
-          utils.respondToMessage(openMessage, 'someError');
-          expect(callbackCalled).toBe(true);
-        });
-
         it(`Should register messageFromChildHandler if it is passed. context: ${context}`, async () => {
+          utils.messages = [];
           await utils.initializeWithContext(context);
-          const messageFromChild = 'MessageFromChild';
-          let returnedMessage: string;
-          let handlerCalled = false;
-          dialog.open(dialogInfo, emptyCallback, messageFromChild => {
-            handlerCalled = true;
-            returnedMessage = messageFromChild;
-          });
-          utils.sendMessage('messageForParent', messageFromChild);
+          dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
           const handlerMessage = utils.findMessageByFunc('registerHandler');
           expect(handlerMessage).not.toBeNull();
-          expect(handlerCalled).toBe(true);
-          expect(returnedMessage).toEqual(messageFromChild);
         });
 
-        it(`should invoke callback with result. context: ${context} `, async () => {
-          await utils.initializeWithContext(context);
-          let callbackCalled = false;
-          dialog.open(dialogInfo, resultObj => {
-            expect(resultObj.err).toBeNull();
-            expect(resultObj.result).toBe('someResult');
-            callbackCalled = true;
-          });
-          const openMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(openMessage).not.toBeNull();
-          utils.respondToMessage(openMessage, null, 'someResult');
-          expect(callbackCalled).toBe(true);
-        });
-
-        describe('send a message to dialog using returned function from dialog.open API call', () => {
+        describe('send a message to dialog using returned function from dialog.bot.open API call', () => {
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           const emptyCallback = (): void => {};
           it(`should successfully send the post the message to dialog. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-            sendMessageToDialogHandler('exampleMessage', (success, reason) => {
-              expect(success).toBeTruthy();
-              expect(reason).toBeNull;
-            });
+            const sendMessageToDialogHandler = dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
+            sendMessageToDialogHandler('exampleMessage');
             const message = utils.findMessageByFunc('messageForChild');
-            utils.respondToMessage(message, true);
-            expect(message).not.toBeUndefined();
-          });
-
-          it(`should successfully receive the error message if the post message to dialog fails. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            const error = 'some Error Occured';
-            const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-            sendMessageToDialogHandler('exampleMessage', (success, reason) => {
-              expect(success).toBeFalsy();
-              expect(reason).toBe(error);
-            });
-            const message = utils.findMessageByFunc('messageForChild');
-            utils.respondToMessage(message, false, error);
             expect(message).not.toBeUndefined();
           });
         });
       } else {
         it(`should not allow calls from context ${context}`, async () => {
           await utils.initializeWithContext(context);
-          expect(() => dialog.open(dialogInfo)).toThrowError(
+          expect(() => dialog.bot.open(dialogInfo)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: ${JSON.stringify(context)}.`,
@@ -385,10 +280,6 @@ describe('Dialog', () => {
   });
 
   describe('sendMessageToParentFromDialog', () => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const emptyCallback = () => {
-      return;
-    };
     const allowedContexts = [FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
@@ -404,30 +295,14 @@ describe('Dialog', () => {
           it(`should successfully send the message to Parent: ${frameContext}`, async () => {
             await utils.initializeWithContext(frameContext);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
-            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
-              expect(success).toBeTruthy();
-              expect(reason).toBeNull;
-            });
+            dialog.sendMessageToParentFromDialog('exampleMessage');
             const message = utils.findMessageByFunc('messageForParent');
-            utils.respondToMessage(message, true);
-            expect(message).not.toBeUndefined();
-          });
-          it(`should successfully throws the error if the message fails to send: ${frameContext}`, async () => {
-            const error = 'some Error Occured';
-            await utils.initializeWithContext(frameContext);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
-            dialog.sendMessageToParentFromDialog('exampleMessage', (success, reason) => {
-              expect(success).toBeFalsy();
-              expect(reason).toBe(error);
-            });
-            const message = utils.findMessageByFunc('messageForParent');
-            utils.respondToMessage(message, false, error);
             expect(message).not.toBeUndefined();
           });
         } else {
           it(`should not allow calls from ${frameContext} context`, async () => {
             await utils.initializeWithContext(frameContext);
-            expect(() => dialog.sendMessageToParentFromDialog('message', emptyCallback)).toThrowError(
+            expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${frameContext}".`,

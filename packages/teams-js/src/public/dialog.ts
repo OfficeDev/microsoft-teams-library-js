@@ -3,9 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
@@ -18,14 +17,15 @@ import { runtime } from './runtime';
  *
  * @beta
  */
+
 export interface SdkResponse {
-  err: string;
-  result: string | object;
+  err?: string;
+  result?: string | object;
 }
 
 export namespace dialog {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export type PostMessageChannel = (message: any, onComplete?: (status: boolean, reason?: string) => void) => void;
+  export type PostMessageChannel = (message: any) => void;
   export type DialogSubmitHandler = (result: SdkResponse) => void;
   /**
    * Allows an app to open the dialog module.
@@ -49,11 +49,12 @@ export namespace dialog {
 
     sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
+      removeHandler('messageForParent');
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
-      sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    const sendMessageToDialog = (message: any): void => {
+      sendMessageToParent('messageForChild', [message]);
     };
     return sendMessageToDialog;
   }
@@ -75,15 +76,13 @@ export namespace dialog {
    *  Send message to the parent from dialog
    *
    * @param message - The message to send
-   * @param onComplete - The callback to know if the message to parent has been success/failed.
    */
   export function sendMessageToParentFromDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: any,
-    onComplete?: (status: boolean, reason?: string) => void,
   ): void {
     ensureInitialized(FrameContexts.task);
-    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    sendMessageToParent('messageForParent', [message]);
   }
 
   /**
@@ -131,11 +130,12 @@ export namespace dialog {
 
       sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
+        removeHandler('messageForParent');
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sendMessageToDialog = (message: any, onComplete?: (status: boolean, reason?: string) => void): void => {
-        sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+      const sendMessageToDialog = (message: any): void => {
+        sendMessageToParent('messageForChild', [message]);
       };
       return sendMessageToDialog;
     }
