@@ -8,6 +8,7 @@ export interface IRuntime {
     readonly audioDevice?: {};
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly barcodeDevice?: {};
     readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
@@ -23,9 +24,7 @@ export interface IRuntime {
     readonly logs?: {};
     readonly mail?: {};
     readonly media?: {
-      readonly camera?: {
-        readonly barcode?: {};
-      };
+      readonly camera?: {};
     };
     readonly meeting?: {};
     readonly meetingRoom?: {};
@@ -56,6 +55,7 @@ export let runtime: IRuntime = {
   supports: {
     appInstallDialog: undefined,
     audioDevice: undefined,
+    barcodeDevice: undefined,
     bot: undefined,
     calendar: undefined,
     call: undefined,
@@ -70,9 +70,7 @@ export let runtime: IRuntime = {
     logs: undefined,
     mail: undefined,
     media: {
-      camera: {
-        barcode: undefined,
-      },
+      camera: {},
     },
     meeting: undefined,
     meetingRoom: undefined,
@@ -105,6 +103,7 @@ export const teamsRuntimeConfig: IRuntime = {
     appInstallDialog: {},
     appEntity: {},
     audioDevice: {},
+    barcodeDevice: {},
     bot: {},
     call: {},
     chat: {},
@@ -118,9 +117,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     logs: {},
     media: {
-      camera: {
-        barcode: {},
-      },
+      camera: {},
     },
     meeting: {},
     meetingRoom: {},

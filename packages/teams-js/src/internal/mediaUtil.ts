@@ -1,4 +1,5 @@
 import { audioVisualDevice } from '../public/audioVisualDevice';
+import { barcodeDevice } from '../public/barcodeDevice';
 import { media } from '../public/media';
 import { people } from '../public/people';
 import {
@@ -180,7 +181,7 @@ export function validateViewImagesInput(uriList: audioVisualDevice.camera.ImageU
  *
  * @internal
  */
-export function validateScanBarCodeInput(barCodeConfig: audioVisualDevice.camera.barcode.BarCodeConfig): boolean {
+export function validateScanBarCodeInput(barCodeConfig: barcodeDevice.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
       barCodeConfig.timeOutIntervalInSec === null ||

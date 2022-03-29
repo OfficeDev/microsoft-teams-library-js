@@ -11,6 +11,7 @@ import {
 } from '../internal/utils';
 import { audio } from './audioDevice';
 import { audioVisualDevice } from './audioVisualDevice';
+import { barcodeDevice } from './barcodeDevice';
 import * as constants from './constants';
 import * as interfaces from './interfaces';
 import { runtime } from './runtime';
@@ -349,7 +350,7 @@ export namespace media {
    * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
    * All properties in BarCodeConfig are optional and have default values in the platform
    */
-  export import BarCodeConfig = audioVisualDevice.camera.barcode.BarCodeConfig;
+  export import BarCodeConfig = barcodeDevice.BarCodeConfig;
 
   /**
    * Scan Barcode/QRcode using camera
@@ -404,7 +405,7 @@ export namespace media {
 
     ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
-    const wrappedFunction: InputFunction<string> = () => audioVisualDevice.camera.barcode.scanBarCode(config);
+    const wrappedFunction: InputFunction<string> = () => barcodeDevice.scanBarCode(config);
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
   }
