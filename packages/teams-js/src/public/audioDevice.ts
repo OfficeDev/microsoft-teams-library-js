@@ -1,4 +1,4 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
 import { mediaAPISupportVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validateSelectMediaInputs } from '../internal/mediaUtil';
@@ -70,6 +70,22 @@ export namespace audio {
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
+  }
+
+  export function hasPermission(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleSdkError('audioDevice.hasPermission'));
+    });
+  }
+
+  // This should not trigger the "refresh the app scenario" because this is for setting things up
+  // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
+  // would have the new allow parameters, but only the AppPermissions dialog should trigger the
+  // "ask the user to refresh" flow
+  export function requestPermission(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleSdkError('audioDevice.requestPermission'));
+    });
   }
 
   export function isSupported(): boolean {
