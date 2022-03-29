@@ -1,6 +1,5 @@
 import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
-import { mediaAPISupportVersion } from '../internal/constants';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { validateSelectMediaInputs } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts, MediaType } from './constants';
