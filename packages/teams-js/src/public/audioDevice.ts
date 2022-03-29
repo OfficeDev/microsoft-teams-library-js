@@ -46,10 +46,6 @@ export namespace audio {
     // Probably should clean this up, no reason to use this structure anymore
     const wrappedFunction: InputFunction<media.Media[]> = () =>
       new Promise<[SdkError, media.Media[]]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-
         if (!validateSelectMediaInputs(audioInput)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
         }

@@ -371,6 +371,10 @@ export namespace media {
     // Probably we should be more careful about casting this?
     const wrappedFunction: InputFunction<Media[]> = () =>
       new Promise<Media[]>(resolve => {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+          throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
+        }
+
         if (mediaInputs.audioProps) {
           resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));
         } else if (mediaInputs.videoAndImageProps) {

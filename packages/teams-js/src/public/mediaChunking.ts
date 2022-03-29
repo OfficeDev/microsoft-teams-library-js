@@ -77,7 +77,7 @@ export namespace mediaChunking {
     chunkSequence: number;
   }
 
-  // doesn't require permissions
+  // doesn't require permissions because only works with existing pieces of Media
 
   export function isSupported(): boolean {
     return runtime.supports.media ? true : false;
