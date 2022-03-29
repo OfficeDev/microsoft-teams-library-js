@@ -59,10 +59,6 @@ export namespace dialog {
     return sendMessageToDialog;
   }
 
-  export function sendMessageToDialog(message: any): void {
-    sendMessageToParent('messageForChild', [message]);
-  }
-
   /**
    * Submit the dialog module.
    *
@@ -87,6 +83,19 @@ export namespace dialog {
   ): void {
     ensureInitialized(FrameContexts.task);
     sendMessageToParent('messageForParent', [message]);
+  }
+
+  /**
+   *  Send message to the dialog from the parent, used exclusively for testing
+   *
+   * @param message - The message to send
+   */
+  export function sendMessageToDialog(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message: any,
+  ): void {
+    ensureInitialized(FrameContexts.task);
+    sendMessageToParent('messageForChild', [message]);
   }
 
   /**

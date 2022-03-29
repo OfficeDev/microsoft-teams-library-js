@@ -121,14 +121,7 @@ const DialogAPIs = (): ReactElement => {
             return '';
           } else {
             setResult('A post call to child is initiated');
-            // const dialogInfo = {
-            //   url: 'https://localhost:4000',
-            //   size: {
-            //     height: 5,
-            //     width: 5,
-            //   },
-            // };
-
+            dialog.sendMessageToDialog(message);
             return '';
           }
         },
@@ -143,38 +136,28 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const parentWindow = ParentAppWindow.Instance;
-          if (parentWindow) {
-            const onComplete = (status: boolean, reason?: string): void => {
-              if (!status) {
-                if (reason) {
-                  setResult(JSON.stringify(reason));
+          if (getTestBackCompat()) {
+            const parentWindow = ParentAppWindow.Instance;
+            if (parentWindow) {
+              const onComplete = (status: boolean, reason?: string): void => {
+                if (!status) {
+                  if (reason) {
+                    setResult(JSON.stringify(reason));
+                  } else {
+                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  }
                 } else {
-                  setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  setResult('Message sent to parent');
                 }
-              } else {
-                setResult('Message sent to parent');
-              }
-            };
-            parentWindow.postMessage(message, onComplete);
+              };
+              parentWindow.postMessage(message, onComplete);
+            } else {
+              setResult("parentWindow doesn't exist");
+            }
           } else {
-            setResult("parentWindow doesn't exist");
+            setResult('A post call to parent is initiated');
+            dialog.sendMessageToParentFromDialog(message);
           }
-          return '';
-        },
-      },
-    });
-
-  const SendMessageToParent_v2 = (): ReactElement =>
-    ApiWithTextInput<string>({
-      name: 'sendMessageToParent_v2',
-      title: 'sendMessageToParent_v2',
-      onClick: {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        validateInput: () => {},
-        submit: async (message, setResult) => {
-          setResult('A post call to parent is initiated');
-          dialog.sendMessageToParentFromDialog(message);
           return '';
         },
       },
@@ -192,7 +175,6 @@ const DialogAPIs = (): ReactElement => {
           });
         } else {
           dialog.registerOnMessageFromParent((message: string) => {
-            console.log(message);
             setResult(message);
           });
         }
@@ -245,7 +227,6 @@ const DialogAPIs = (): ReactElement => {
       <SubmitDialogWithInput />
       <SendMessageToChild />
       <SendMessageToParent />
-      <SendMessageToParent_v2 />
       <RegisterForParentMessage />
     </>
   );
