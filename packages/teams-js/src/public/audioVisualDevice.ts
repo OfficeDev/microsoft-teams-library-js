@@ -209,39 +209,6 @@ export namespace audioVisualDevice {
     Audio = 4,
   }
 
-  function selectMediaHelper(imageInputs: camera.ImageInputs | audio.AudioInputs): Promise<media.Media[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    // Probably should clean this up, no reason to use this structure anymore
-    const wrappedFunction: InputFunction<media.Media[]> = () =>
-      new Promise<[SdkError, media.Media[]]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        throwExceptionIfMediaCallIsNotSupportedOnMobile(imageInputs);
-
-        if (!validateSelectMediaInputs(imageInputs)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        const params = [imageInputs];
-        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params));
-      }).then(([err, localAttachments]: [SdkError, media.Media[]]) => {
-        // Media Attachments are final response to selectMedia
-        if (!localAttachments) {
-          throw err;
-        }
-        const mediaArray: media.Media[] = [];
-        for (const attachment of localAttachments) {
-          mediaArray.push(new media.Media(attachment));
-        }
-        return mediaArray;
-      });
-
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
-  }
-
   // This should not trigger the "refresh the app scenario" because this is for setting things up
   // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
   // would have the new allow parameters, but only the AppPermissions dialog should trigger the
@@ -364,7 +331,36 @@ export namespace audioVisualDevice {
     }
 
     export function selectImages(imageInputs: ImageInputs): Promise<media.Media[]> {
-      return selectMediaHelper(imageInputs);
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+      // Probably should clean this up, no reason to use this structure anymore
+      const wrappedFunction: InputFunction<media.Media[]> = () =>
+        new Promise<[SdkError, media.Media[]]>(resolve => {
+          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+            throw { errorCode: ErrorCode.OLD_PLATFORM };
+          }
+          throwExceptionIfMediaCallIsNotSupportedOnMobile(imageInputs);
+
+          if (!validateSelectMediaInputs(imageInputs)) {
+            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+          }
+
+          const params = [imageInputs];
+          // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+          resolve(sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params));
+        }).then(([err, localAttachments]: [SdkError, media.Media[]]) => {
+          // Media Attachments are final response to selectMedia
+          if (!localAttachments) {
+            throw err;
+          }
+          const mediaArray: media.Media[] = [];
+          for (const attachment of localAttachments) {
+            mediaArray.push(new media.Media(attachment));
+          }
+          return mediaArray;
+        });
+
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
     }
 
     /**
@@ -725,7 +721,35 @@ export namespace audioVisualDevice {
     }
 
     export function selectAudio(audioInput: AudioInputs): Promise<media.Media[]> {
-      return selectMediaHelper(audioInput);
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+      // Probably should clean this up, no reason to use this structure anymore
+      const wrappedFunction: InputFunction<media.Media[]> = () =>
+        new Promise<[SdkError, media.Media[]]>(resolve => {
+          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+            throw { errorCode: ErrorCode.OLD_PLATFORM };
+          }
+
+          if (!validateSelectMediaInputs(audioInput)) {
+            throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+          }
+
+          const params = [audioInput];
+          // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+          resolve(sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params));
+        }).then(([err, localAttachments]: [SdkError, media.Media[]]) => {
+          // Media Attachments are final response to selectMedia
+          if (!localAttachments) {
+            throw err;
+          }
+          const mediaArray: media.Media[] = [];
+          for (const attachment of localAttachments) {
+            mediaArray.push(new media.Media(attachment));
+          }
+          return mediaArray;
+        });
+
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
     }
 
     export function isSupported(): boolean {
