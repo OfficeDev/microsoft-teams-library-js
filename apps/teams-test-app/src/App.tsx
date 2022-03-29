@@ -36,6 +36,7 @@ import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import { Button } from './components/utils/Button.tsx/Button';
 import { getTestBackCompat } from './components/utils/getTestBackCompat';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -109,24 +110,34 @@ const scrollToForm = (ref: RefObject<HTMLDivElement>): void => {
 };
 
 const App = (): ReactElement => {
+  const appEntityRef = useRef<HTMLDivElement>(null);
+  const appInitRef = useRef<HTMLDivElement>(null);
+  const appInstallDialogRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
 
+  const scrollToAppEntity = (): void => scrollToForm(appEntityRef);
+  const scrollToAppInit = (): void => scrollToForm(appEntityRef);
+  const scrollToAppInstallDialog = (): void => scrollToForm(appInstallDialogRef);
   const scrollToCalendar = (): void => scrollToForm(calendarRef);
+
   const scrollToMedia = (): void => scrollToForm(mediaRef);
 
   return (
     <>
-      <div>
-        <button onClick={scrollToCalendar}>Go to calendar</button>
-        <button onClick={scrollToMedia}>Go to media</button>
+      <div className="buttonBar">
+        <Button label="Go to app entity" onClick={scrollToAppEntity} />
+        <Button label="Go to app initialization" onClick={scrollToAppInit} />
+        <Button label="Go to app install dialog" onClick={scrollToAppInit} />
+        <Button label="Go to calendar" onClick={scrollToCalendar} />
+        <Button label="Go to media" onClick={scrollToMedia} />
       </div>
       <div>
         <AppAPIs />
-        <AppInitializationAPIs />
-        <AppInstallDialogAPIs />
+        <AppEntityAPIs ref={appEntityRef} />
+        <AppInitializationAPIs ref={appInitRef} />
+        <AppInstallDialogAPIs ref={scrollToAppInstallDialog} />
         <AuthenticationAPIs />
-        <AppEntityAPIs />
         <BotAPIs />
         <CalendarAPIs ref={calendarRef} />
         <CallAPIs />

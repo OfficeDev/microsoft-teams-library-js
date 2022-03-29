@@ -3,6 +3,7 @@ import React, { ForwardedRef, forwardRef, ReactElement, RefObject } from 'react'
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper/ModuleWrapper';
 import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const mediaHelper = (item: string): string => {
@@ -273,8 +274,7 @@ export type MediaAPIProps = {
 const MediaAPIs = forwardRef(
   (_props, ref: ForwardedRef<HTMLDivElement>): ReactElement => {
     return (
-      <div ref={ref}>
-        <h1>media</h1>
+      <ModuleWrapper heading="media" ref={ref}>
         <MediaCapability />
         <CaptureImage />
         <SelectMedia />
@@ -282,7 +282,7 @@ const MediaAPIs = forwardRef(
         <ViewImagesWithId />
         <ViewImagesWithUrls />
         <ScanBarCode />
-      </div>
+      </ModuleWrapper>
     );
   },
 );

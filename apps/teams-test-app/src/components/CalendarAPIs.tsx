@@ -2,6 +2,7 @@ import { calendar } from '@microsoft/teams-js';
 import { ForwardedRef, forwardRef, ReactElement } from 'react';
 
 import { DynamicForm } from './utils/DynamicForm/DynamicForm';
+import { ModuleWrapper } from './utils/ModuleWrapper/ModuleWrapper';
 import { SupportButton } from './utils/SupportButton/SupportButton';
 
 const composeMeeting = async (input: calendar.ComposeMeetingParams): Promise<string> => {
@@ -44,12 +45,11 @@ const CheckCalendarCapability = (): ReactElement =>
 
 const CalendarAPIs = forwardRef(
   (_props, ref: ForwardedRef<HTMLDivElement>): ReactElement => (
-    <div className="module" ref={ref}>
-      <h1>calendar</h1>
+    <ModuleWrapper heading="Calendar" ref={ref}>
       <CheckCalendarCapability />
       <ComposeMeeting />
       <OpenCalendarItem />
-    </div>
+    </ModuleWrapper>
   ),
 );
 

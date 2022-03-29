@@ -1,26 +1,47 @@
 import { app, authentication, initialize } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import React, { ForwardedRef, forwardRef, ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ButtonForm } from './utils/ButtonForm/ButtonForm';
+import { ModuleWrapper } from './utils/ModuleWrapper/ModuleWrapper';
 
-const Initialize = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'initialize',
-    title: 'Initialize',
-    onClick: {
+const Initialize = (): React.ReactElement => (
+  <ButtonForm
+    label={'Initialize'}
+    name={'initialize'}
+    onClick={{
       withPromise: async () => {
         await app.initialize();
-        return 'called';
+        return 'initialized';
       },
       withCallback: setResult => {
         const callback = (): void => {
           return;
         };
         initialize(callback);
-        setResult('called');
+        setResult('initialized');
       },
-    },
-  });
+    }}
+  />
+);
+// const OGInitialize = (): React.ReactElement =>
+//   ApiWithoutInput({
+//     name: 'initialize',
+//     title: 'Initialize',
+//     onClick: {
+//       withPromise: async () => {
+//         await app.initialize();
+//         return 'called';
+//       },
+//       withCallback: setResult => {
+//         const callback = (): void => {
+//           return;
+//         };
+//         initialize(callback);
+//         setResult('called');
+//       },
+//     },
+//   });
 
 const GetAuthToken = (): React.ReactElement =>
   ApiWithTextInput<authentication.AuthTokenRequestParameters>({
@@ -128,16 +149,17 @@ const Authenticate = (): React.ReactElement =>
     },
   });
 
-const AuthenticationAPIs = (): ReactElement => (
-  <>
-    <h1>authentication</h1>
-    <Initialize />
-    <GetAuthToken />
-    <GetUser />
-    <NotifyFailure />
-    <NotifySuccess />
-    <Authenticate />
-  </>
+const AuthenticationAPIs = forwardRef(
+  (_props, ref: ForwardedRef<HTMLDivElement>): ReactElement => (
+    <ModuleWrapper ref={ref} heading="authentication">
+      <Initialize />
+      <GetAuthToken />
+      <GetUser />
+      <NotifyFailure />
+      <NotifySuccess />
+      <Authenticate />
+    </ModuleWrapper>
+  ),
 );
-
+AuthenticationAPIs.displayName = 'AuthenticationAPIs';
 export default AuthenticationAPIs;

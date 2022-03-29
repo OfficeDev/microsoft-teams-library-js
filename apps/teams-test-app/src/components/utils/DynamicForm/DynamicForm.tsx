@@ -5,15 +5,11 @@ import { FormEvent, useState } from 'react';
 import { FormField } from '../FormField/FormField';
 import { PrettyPrintJSON } from '../PrettyPrintJSON/PrettyPrintJSON';
 
-export type DynamicFormInputFields2<T> = {
-  [Property in keyof T]: {
-    value: T[Property];
-    inputType: 'radio' | 'text';
-  };
-};
-
 export type DynamicFormInputFields<T> = {
-  [Property in keyof T]: T[Property];
+  [Property in keyof T]: { value: T[Property]; type: 'radio' | 'text' };
+};
+export type DynamicFormReturnValues<T> = {
+  [Property in keyof T]:  T[Property];
 };
 
 export type DynamicFormProps<T> = {
@@ -31,9 +27,15 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
 
   const submitForm = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    const vals = onSubmit(values);
+    let formValues = {}
+    for(const k in values) {
+      const value = values[k].value
+      formValues = {...formValues, [k]: value}
+    }
 
-    return vals
+    
+
+    return onSubmit(formValues as  DynamicFormReturnValues<T>)
       .then(result => {
         if (!result) {
           setSubmissionResult('Nothing to see here');
@@ -54,13 +56,13 @@ export const DynamicForm = <T,>(props: DynamicFormProps<T>): JSX.Element => {
         <h4 className="dynamicFormHeader">{label}</h4>
         <>
           <form onSubmit={submitForm}>
-            {Object.entries(values).map(([key, value], index) => {
+            {Object.entries(values).map(([key, value]: [key: string, value: {value: T[Property]}], index): JSX.Element => {
               return (
                 <FormField
                   fieldChanged={fieldChanged}
                   label={`${key}`}
                   name={key}
-                  value={`${value}`}
+                  value={`${value.value}`}
                   key={`${index}-${value}`}
                 />
               );

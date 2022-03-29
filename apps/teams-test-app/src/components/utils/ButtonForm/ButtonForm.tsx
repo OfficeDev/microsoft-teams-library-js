@@ -43,7 +43,7 @@ export const ButtonForm = (props: ButtonFormProps): JSX.Element => {
   }, [label, onClick]);
 
   return (
-    <FormWrapper name={name} className="radioGroupForm">
+    <FormWrapper name={name} className="buttonForm">
       <h3 className="buttonFormLabel">{label}</h3>
       <div>
         <Button className="buttonFormButton" onClick={onClickCallback} label={buttonLabel || label} />
