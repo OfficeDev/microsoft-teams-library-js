@@ -79,3 +79,13 @@ export enum ChannelType {
   Private = 'Private',
   Shared = 'Shared',
 }
+
+/**
+ * Specifies the type of Media
+ */
+export enum MediaType {
+  Image = 1,
+  Video = 2,
+  VideoAndImage = 3,
+  Audio = 4,
+}

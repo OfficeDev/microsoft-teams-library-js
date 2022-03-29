@@ -9,8 +9,9 @@ import {
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
   InputFunction,
 } from '../internal/utils';
+import { audio } from './audioDevice';
 import { audioVisualDevice } from './audioVisualDevice';
-import { FrameContexts } from './constants';
+import * as constants from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -83,7 +84,7 @@ export namespace media {
    */
   export function captureImage(callback: (error?: SdkError, files?: File[]) => void): void;
   export function captureImage(callback?: (error?: SdkError, files?: File[]) => void): Promise<File[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
     const wrappedFunction: InputFunction<File[]> = () =>
       new Promise<File[]>(resolve => {
@@ -240,7 +241,7 @@ export namespace media {
   // /**
   //  * Specifies the type of Media
   //  */
-  export import MediaType = audioVisualDevice.MediaType;
+  export import MediaType = constants.MediaType;
 
   /**
    * Input for view images API
@@ -302,7 +303,7 @@ export namespace media {
     const wrappedFunction: InputFunction<Media[]> = () =>
       new Promise<Media[]>(resolve => {
         if (mediaInputs.audioProps) {
-          resolve(audioVisualDevice.audio.selectAudio(mediaInputs as audioVisualDevice.audio.AudioInputs));
+          resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));
         } else if (mediaInputs.videoAndImageProps) {
           resolve(
             audioVisualDevice.camera.video.selectMediaContainingVideo(
@@ -341,7 +342,7 @@ export namespace media {
    */
   export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void);
   export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
     const wrappedFunction: InputFunction<void> = () => audioVisualDevice.camera.viewImages(uriList);
 
@@ -402,7 +403,7 @@ export namespace media {
       }
     }
 
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
     const wrappedFunction: InputFunction<string> = () => audioVisualDevice.camera.barcode.scanBarCode(config);
 
