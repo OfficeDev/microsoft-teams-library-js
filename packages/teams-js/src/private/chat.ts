@@ -7,7 +7,34 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { ChatMembersInformation } from './interfaces';
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Information about all members in a chat
+ *
+ * @alpha
+ */
+export interface ChatMembersInformation {
+  members: ThreadMember[];
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Information about a chat member
+ *
+ * @alpha
+ */
+export interface ThreadMember {
+  /**
+   * @hidden
+   * The member's user principal name in the current tenant.
+   */
+  upn: string;
+}
 
 /**
  *
@@ -162,7 +189,7 @@ export namespace chat {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       const sendPromise = sendAndHandleError('chat.openChat', {
-        members: openChatRequest.user,
+        members: [openChatRequest.user],
         message: openChatRequest.message,
       });
       resolve(sendPromise);

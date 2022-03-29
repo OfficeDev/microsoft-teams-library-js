@@ -1,12 +1,10 @@
 export { bot } from './bot';
 export { logs } from './logs';
 export {
-  ChatMembersInformation,
   FilePreviewParameters,
   NotificationTypes,
   ShowNotificationParameters,
   TeamInstanceParameters,
-  ThreadMember,
   UserJoinedTeamsInformation,
   ViewerActionTypes,
   UserSettingTypes,
