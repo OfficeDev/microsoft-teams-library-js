@@ -57,6 +57,22 @@ export namespace barcodeDevice {
     timeOutIntervalInSec?: number;
   }
 
+  export function hasPermission(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleSdkError('barcodeDevice.hasPermission'));
+    });
+  }
+
+  // This should not trigger the "refresh the app scenario" because this is for setting things up
+  // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
+  // would have the new allow parameters, but only the AppPermissions dialog should trigger the
+  // "ask the user to refresh" flow
+  export function requestPermission(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleSdkError('barcodeDevice.requestPermission'));
+    });
+  }
+
   export function isSupported(): boolean {
     return runtime.supports.barcodeDevice ? true : false;
   }

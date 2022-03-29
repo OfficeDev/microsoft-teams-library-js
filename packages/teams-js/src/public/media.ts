@@ -12,6 +12,7 @@ import {
 import { audio } from './audioDevice';
 import { audioVisualDevice } from './audioVisualDevice';
 import { barcodeDevice } from './barcodeDevice';
+import { cameraDevice } from './cameraDevice';
 import * as constants from './constants';
 import * as interfaces from './interfaces';
 import { runtime } from './runtime';
@@ -248,13 +249,13 @@ export namespace media {
   /**
    * Input for view images API
    */
-  export import ImageUri = audioVisualDevice.camera.ImageUri;
+  export import ImageUri = interfaces.ImageUri;
 
   /**
    * ID contains a mapping for content uri on platform's side, URL is generic
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import ImageUriType = audioVisualDevice.camera.ImageUriType;
+  export import ImageUriType = interfaces.ImageUriType;
 
   /**
    * Specifies the image output formats.
@@ -314,7 +315,7 @@ export namespace media {
         } else if (mediaInputs.videoProps) {
           resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
         } else {
-          resolve(audioVisualDevice.camera.selectImages(mediaInputs as audioVisualDevice.camera.ImageInputs));
+          resolve(cameraDevice.selectImages(mediaInputs as cameraDevice.ImageInputs));
         }
       });
 
@@ -341,7 +342,7 @@ export namespace media {
   export function viewImages(uriList: ImageUri[], callback?: (error?: interfaces.SdkError) => void): Promise<void> {
     ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
-    const wrappedFunction: InputFunction<void> = () => audioVisualDevice.camera.viewImages(uriList);
+    const wrappedFunction: InputFunction<void> = () => cameraDevice.viewImages(uriList);
 
     return callCallbackWithSdkErrorFromPromiseAndReturnPromise<void>(wrappedFunction, callback);
   }

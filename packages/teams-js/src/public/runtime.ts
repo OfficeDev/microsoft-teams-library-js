@@ -12,6 +12,7 @@ export interface IRuntime {
     readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
+    readonly cameraDevice?: {};
     readonly chat?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -23,9 +24,7 @@ export interface IRuntime {
     };
     readonly logs?: {};
     readonly mail?: {};
-    readonly media?: {
-      readonly camera?: {};
-    };
+    readonly media?: {};
     readonly meeting?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
@@ -59,6 +58,7 @@ export let runtime: IRuntime = {
     bot: undefined,
     calendar: undefined,
     call: undefined,
+    cameraDevice: undefined,
     chat: undefined,
     dialog: {
       bot: undefined,
@@ -69,9 +69,7 @@ export let runtime: IRuntime = {
     },
     logs: undefined,
     mail: undefined,
-    media: {
-      camera: {},
-    },
+    media: {},
     meeting: undefined,
     meetingRoom: undefined,
     menus: undefined,
@@ -106,6 +104,7 @@ export const teamsRuntimeConfig: IRuntime = {
     barcodeDevice: {},
     bot: {},
     call: {},
+    cameraDevice: {},
     chat: {},
     dialog: {
       bot: {},
@@ -116,9 +115,7 @@ export const teamsRuntimeConfig: IRuntime = {
       map: {},
     },
     logs: {},
-    media: {
-      camera: {},
-    },
+    media: {},
     meeting: {},
     meetingRoom: {},
     menus: {},

@@ -920,3 +920,19 @@ export interface VideoProps extends MediaProps {
    */
   videoController?: videoDevice.VideoController;
 }
+
+/**
+ * Input for view images API
+ */
+export interface ImageUri {
+  value: string;
+  type: ImageUriType;
+}
+
+/**
+ * ID contains a mapping for content uri on platform's side, URL is generic
+ */
+export enum ImageUriType {
+  ID = 1,
+  URL = 2,
+}

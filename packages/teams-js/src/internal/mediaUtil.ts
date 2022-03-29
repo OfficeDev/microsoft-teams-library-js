@@ -1,5 +1,5 @@
-import { audioVisualDevice } from '../public/audioVisualDevice';
 import { barcodeDevice } from '../public/barcodeDevice';
+import { ImageUri } from '../public/interfaces';
 import { media } from '../public/media';
 import { people } from '../public/people';
 import {
@@ -168,7 +168,7 @@ export function validateGetMediaInputs(mimeType: string, format: media.FileForma
  *
  * @internal
  */
-export function validateViewImagesInput(uriList: audioVisualDevice.camera.ImageUri[]): boolean {
+export function validateViewImagesInput(uriList: ImageUri[]): boolean {
   if (uriList == null || uriList.length <= 0 || uriList.length > 10) {
     return false;
   }
