@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkError } from '../internal/communication';
-import { captureImageMobileSupportVersion } from '../internal/constants';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import {
+  captureImageMobileSupportVersion,
+  getMediaCallbackSupportVersion,
+  mediaAPISupportVersion,
+} from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { createFile, decodeAttachment, validateGetMediaInputs } from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
+  generateGUID,
   InputFunction,
 } from '../internal/utils';
 import { audio } from './audioDevice';
@@ -143,7 +150,63 @@ export namespace media {
      */
     public getMedia(callback: (error: interfaces.SdkError, blob: Blob) => void): void;
     public getMedia(callback?: (error: interfaces.SdkError, blob: Blob) => void): Promise<Blob> {
-      return mediaChunking.getMediaAsBlob(this, callback);
+      const wrappedFunction: InputFunction<Blob> = () =>
+        new Promise<Blob>(resolve => {
+          if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+            throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
+          }
+          if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
+            throw { errorCode: interfaces.ErrorCode.INVALID_ARGUMENTS };
+          }
+          // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
+          if (isCurrentSDKVersionAtLeast(getMediaCallbackSupportVersion)) {
+            resolve(mediaChunking.getMediaAsBlob(this));
+          } else {
+            resolve(this.getMediaViaHandler(this));
+          }
+        });
+      return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Blob>(wrappedFunction, callback);
+    }
+
+    private getMediaViaHandler(media: media.Media): Promise<Blob> {
+      return new Promise<Blob>((resolve, reject) => {
+        const actionName = generateGUID();
+        const helper: interfaces.MediaAttachmentHelper = {
+          mediaMimeType: media.mimeType,
+          assembleAttachment: [],
+        };
+        const params = [actionName, media.content];
+        media.content && sendMessageToParent('getMedia', params);
+
+        registerHandler('getMedia' + actionName, (response: string) => {
+          try {
+            const mediaResult: MediaResult = JSON.parse(response);
+            if (mediaResult.error) {
+              reject(mediaResult.error);
+              removeHandler('getMedia' + actionName);
+            } else if (!mediaResult || !mediaResult.mediaChunk) {
+              reject({ errorCode: interfaces.ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+              removeHandler('getMedia' + actionName);
+            } else if (mediaResult.mediaChunk.chunkSequence <= 0) {
+              // If the chunksequence number is less than equal to 0 implies EOF
+              // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
+              const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
+              resolve(file);
+              removeHandler('getMedia' + actionName);
+            } else {
+              // Keep pushing chunks into assemble attachment
+              const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
+              helper.assembleAttachment.push(assemble);
+            }
+          } catch (err) {
+            // catch JSON.parse() errors
+            reject({
+              errorCode: interfaces.ErrorCode.INTERNAL_ERROR,
+              message: 'Error parsing the response: ' + response,
+            });
+          }
+        });
+      });
     }
   }
 

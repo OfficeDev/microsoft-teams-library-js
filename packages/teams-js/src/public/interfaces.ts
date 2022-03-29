@@ -936,3 +936,19 @@ export enum ImageUriType {
   ID = 1,
   URL = 2,
 }
+
+/**
+ * @hidden
+ */
+export interface MediaAttachmentHelper {
+  mediaMimeType: string;
+  assembleAttachment: AssembleAttachment[];
+}
+
+/**
+ * Helper object to assembled media chunks
+ */
+export interface AssembleAttachment {
+  sequence: number;
+  file: Blob;
+}

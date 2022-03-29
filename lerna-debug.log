@@ -1,0 +1,53 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   stream: true,
+0 silly argv   '--': [
+0 silly argv     '--testLocationInResults',
+0 silly argv     '--json',
+0 silly argv     '--useStderr',
+0 silly argv     '--outputFile',
+0 silly argv     'C:\\Users\\trharris\\AppData\\Local\\Temp\\jest_runner_microsoft_teams_library_js.json',
+0 silly argv     '--watch',
+0 silly argv     '--no-coverage',
+0 silly argv     '--reporters',
+0 silly argv     'default',
+0 silly argv     '--reporters',
+0 silly argv     'c:\\Users\\trharris\\.vscode\\extensions\\orta.vscode-jest-4.2.1\\out\\reporter.js',
+0 silly argv     '--colors'
+0 silly argv   ],
+0 silly argv   lernaVersion: '3.22.1',
+0 silly argv   '$0': 'node_modules\\lerna\\cli.js',
+0 silly argv   script: 'test'
+0 silly argv }
+1 notice cli v3.22.1
+2 verbose rootPath C:\Repos\GitHub\microsoft-teams-library-js
+3 info Executing command in 1 package: "yarn run test --testLocationInResults --json --useStderr --outputFile C:\\Users\\trharris\\AppData\\Local\\Temp\\jest_runner_microsoft_teams_library_js.json --watch --no-coverage --reporters default --reporters c:\\Users\\trharris\\.vscode\\extensions\\orta.vscode-jest-4.2.1\\out\\reporter.js --colors"
+4 silly npmRunScript.stream [
+4 silly npmRunScript.stream   'test',
+4 silly npmRunScript.stream   [
+4 silly npmRunScript.stream     '--testLocationInResults',
+4 silly npmRunScript.stream     '--json',
+4 silly npmRunScript.stream     '--useStderr',
+4 silly npmRunScript.stream     '--outputFile',
+4 silly npmRunScript.stream     'C:\\Users\\trharris\\AppData\\Local\\Temp\\jest_runner_microsoft_teams_library_js.json',
+4 silly npmRunScript.stream     '--watch',
+4 silly npmRunScript.stream     '--no-coverage',
+4 silly npmRunScript.stream     '--reporters',
+4 silly npmRunScript.stream     'default',
+4 silly npmRunScript.stream     '--reporters',
+4 silly npmRunScript.stream     'c:\\Users\\trharris\\.vscode\\extensions\\orta.vscode-jest-4.2.1\\out\\reporter.js',
+4 silly npmRunScript.stream     '--colors'
+4 silly npmRunScript.stream   ],
+4 silly npmRunScript.stream   '@microsoft/teams-js'
+4 silly npmRunScript.stream ]
+5 silly getExecOpts C:\Repos\GitHub\microsoft-teams-library-js\packages\teams-js undefined
+6 error MaxBufferError: stderr maxBuffer exceeded
+6 error     at PassThrough.<anonymous> (C:\Repos\GitHub\microsoft-teams-library-js\node_modules\get-stream\index.js:41:19)
+6 error     at PassThrough.emit (node:events:532:35)
+6 error     at addChunk (node:internal/streams/readable:315:12)
+6 error     at readableAddChunk (node:internal/streams/readable:285:11)
+6 error     at PassThrough.Readable.push (node:internal/streams/readable:228:10)
+6 error     at node:internal/streams/transform:192:12
+6 error     at PassThrough._transform (node:internal/streams/passthrough:46:3)
+6 error     at PassThrough.Transform._write (node:internal/streams/transform:184:23)
+6 error     at writeOrBuffer (node:internal/streams/writable:389:12)
