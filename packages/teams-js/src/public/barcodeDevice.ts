@@ -1,9 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
-import { scanBarCodeAPIMobileSupportVersion } from '../internal/constants';
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
-import { FrameContexts, HostClientType } from './constants';
+import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
@@ -21,22 +19,6 @@ export namespace barcodeDevice {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     return new Promise<string>(resolve => {
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.web ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays
-      ) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      }
-
-      if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
-
       if (!validateScanBarCodeInput(config)) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }

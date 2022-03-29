@@ -5,6 +5,7 @@ import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
+  scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -342,7 +343,7 @@ export namespace media {
    * Helper object to assembled media chunks
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import AssembleAttachment = mediaChunking.AssembleAttachment;
+  export import AssembleAttachment = interfaces.AssembleAttachment;
 
   /**
    * Select an attachment using camera/gallery
@@ -473,7 +474,26 @@ export namespace media {
 
     ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
-    const wrappedFunction: InputFunction<string> = () => barcodeDevice.scanBarCode(config);
+    const wrappedFunction: InputFunction<string> = () =>
+      new Promise<string>(resolve => {
+        if (
+          GlobalVars.hostClientType === constants.HostClientType.desktop ||
+          GlobalVars.hostClientType === constants.HostClientType.web ||
+          GlobalVars.hostClientType === constants.HostClientType.rigel ||
+          GlobalVars.hostClientType === constants.HostClientType.teamsRoomsWindows ||
+          GlobalVars.hostClientType === constants.HostClientType.teamsRoomsAndroid ||
+          GlobalVars.hostClientType === constants.HostClientType.teamsPhones ||
+          GlobalVars.hostClientType === constants.HostClientType.teamsDisplays
+        ) {
+          throw { errorCode: interfaces.ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        }
+
+        if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
+          throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
+        }
+
+        resolve(sendAndHandleSdkError('media.scanBarCode', config));
+      });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
   }
