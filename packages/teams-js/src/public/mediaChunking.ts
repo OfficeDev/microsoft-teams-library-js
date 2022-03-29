@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { getMediaCallbackSupportVersion, mediaAPISupportVersion } from '../internal/constants';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
@@ -19,7 +19,7 @@ import { runtime } from './runtime';
  * @alpha
  */
 // TODO - should I use Media class internally or convert to structin back-compat?
-export namespace audioVisualDevice {
+export namespace mediaChunking {
   export function getMediaAsBlob(media: media.Media, callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
@@ -150,15 +150,7 @@ export namespace audioVisualDevice {
     chunkSequence: number;
   }
 
-  // This should not trigger the "refresh the app scenario" because this is for setting things up
-  // for use through teamsjs-sdk 2.0. If the user DOES refresh the app after calling this the iframe
-  // would have the new allow parameters, but only the AppPermissions dialog should trigger the
-  // "ask the user to refresh" flow
-  export function requestPermission(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('location.requestPermission'));
-    });
-  }
+  // doesn't require permissions
 
   export function isSupported(): boolean {
     return runtime.supports.media ? true : false;

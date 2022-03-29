@@ -10,11 +10,11 @@ import {
   InputFunction,
 } from '../internal/utils';
 import { audio } from './audioDevice';
-import { audioVisualDevice } from './audioVisualDevice';
 import { barcodeDevice } from './barcodeDevice';
 import { cameraDevice } from './cameraDevice';
 import * as constants from './constants';
 import * as interfaces from './interfaces';
+import { mediaChunking } from './mediaChunking';
 import { runtime } from './runtime';
 import { videoDevice } from './videoDevice';
 
@@ -143,7 +143,7 @@ export namespace media {
      */
     public getMedia(callback: (error: interfaces.SdkError, blob: Blob) => void): void;
     public getMedia(callback?: (error: interfaces.SdkError, blob: Blob) => void): Promise<Blob> {
-      return audioVisualDevice.getMediaAsBlob(this, callback);
+      return mediaChunking.getMediaAsBlob(this, callback);
     }
   }
 
@@ -267,19 +267,19 @@ export namespace media {
    * Media chunks an output of getMedia API from platform
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import MediaChunk = audioVisualDevice.MediaChunk;
+  export import MediaChunk = mediaChunking.MediaChunk;
 
   /**
    * Output of getMedia API from platform
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import MediaResult = audioVisualDevice.MediaResult;
+  export import MediaResult = mediaChunking.MediaResult;
 
   /**
    * Helper object to assembled media chunks
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import AssembleAttachment = audioVisualDevice.AssembleAttachment;
+  export import AssembleAttachment = mediaChunking.AssembleAttachment;
 
   /**
    * Select an attachment using camera/gallery
