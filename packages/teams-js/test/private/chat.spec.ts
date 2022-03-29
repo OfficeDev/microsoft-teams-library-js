@@ -152,7 +152,7 @@ describe('chat', () => {
       chat.openChat(chatRequest);
 
       const chatResponse = {
-        members: 'someUPN',
+        members: ['someUPN'],
         message: 'someMessage',
       };
 
