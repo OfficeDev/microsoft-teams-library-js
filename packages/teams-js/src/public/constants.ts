@@ -89,3 +89,40 @@ export enum MediaType {
   VideoAndImage = 3,
   Audio = 4,
 }
+
+/**
+ * Specifies the image source
+ */
+export enum Source {
+  Camera = 1,
+  Gallery = 2,
+}
+
+/**
+ * The modes in which camera can be launched in select Media API
+ */
+export enum CameraStartMode {
+  Photo = 1,
+  Document = 2,
+  Whiteboard = 3,
+  BusinessCard = 4,
+}
+
+/**
+ * Specifies the image output formats.
+ */
+export enum ImageOutputFormats {
+  IMAGE = 1,
+  PDF = 2,
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Events which are used to communicate between the app and the host client during the media recording flow
+ */
+export enum MediaControllerEvent {
+  StartRecording = 1,
+  StopRecording = 2,
+}

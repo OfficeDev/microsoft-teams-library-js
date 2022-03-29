@@ -5,6 +5,7 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly audioDevice?: {};
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
     readonly bot?: {};
@@ -22,10 +23,8 @@ export interface IRuntime {
     readonly logs?: {};
     readonly mail?: {};
     readonly media?: {
-      readonly audio?: {};
       readonly camera?: {
         readonly barcode?: {};
-        readonly video?: {};
       };
     };
     readonly meeting?: {};
@@ -48,6 +47,7 @@ export interface IRuntime {
     };
     readonly teamsCore?: {};
     readonly video?: {};
+    readonly videoDevice?: {};
   };
 }
 
@@ -55,6 +55,7 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    audioDevice: undefined,
     bot: undefined,
     calendar: undefined,
     call: undefined,
@@ -69,10 +70,8 @@ export let runtime: IRuntime = {
     logs: undefined,
     mail: undefined,
     media: {
-      audio: undefined,
       camera: {
         barcode: undefined,
-        video: undefined,
       },
     },
     meeting: undefined,
@@ -95,6 +94,7 @@ export let runtime: IRuntime = {
     },
     teamsCore: undefined,
     video: undefined,
+    videoDevice: undefined,
   },
 };
 
@@ -104,6 +104,7 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
+    audioDevice: {},
     bot: {},
     call: {},
     chat: {},
@@ -117,10 +118,8 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     logs: {},
     media: {
-      audio: {},
       camera: {
         barcode: {},
-        video: {},
       },
     },
     meeting: {},
@@ -143,6 +142,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     teamsCore: {},
     video: {},
+    videoDevice: {},
   },
 };
 

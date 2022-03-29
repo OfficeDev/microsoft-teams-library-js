@@ -1,7 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  CameraStartMode,
+  ChannelType,
+  DialogDimension,
+  HostClientType,
+  HostName,
+  ImageOutputFormats,
+  Source,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { FrameContexts } from './constants';
+import { videoDevice } from './videoDevice';
 
 /**
  * Represents information about tabs for an app
@@ -820,4 +831,92 @@ export enum ErrorCode {
    * The return value is too big and has exceeded our size boundries
    */
   SIZE_EXCEEDED = 10000,
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * All properties common to Image and Video Props
+ */
+interface MediaProps {
+  /**
+   * @hidden
+   * Optional; Lets the developer specify the media source, more than one can be specified.
+   * Default value is both camera and gallery
+   */
+  sources?: Source[];
+
+  /**
+   * @hidden
+   * Optional; Specify in which mode the camera will be opened.
+   * Default value is Photo
+   */
+  startMode?: CameraStartMode;
+
+  /**
+   * @hidden
+   * Optional; indicate if user is allowed to move between front and back camera
+   * Default value is true
+   */
+  cameraSwitcher?: boolean;
+}
+
+/**
+ *  All properties in ImageProps are optional and have default values in the platform
+ */
+export interface ImageProps extends MediaProps {
+  /**
+   * Optional; indicate if inking on the selected Image is allowed or not
+   * Default value is true
+   */
+  ink?: boolean;
+
+  /**
+   * Optional; indicate if putting text stickers on the selected Image is allowed or not
+   * Default value is true
+   */
+  textSticker?: boolean;
+
+  /**
+   * Optional; indicate if image filtering mode is enabled on the selected image
+   * Default value is false
+   */
+  enableFilter?: boolean;
+
+  /**
+   * Optional; Lets the developer specify the image output formats, more than one can be specified.
+   * Default value is Image.
+   */
+  imageOutputFormats?: ImageOutputFormats[];
+}
+
+/**
+ * All properties in VideoProps are optional and have default values in the platform
+ */
+export interface VideoProps extends MediaProps {
+  /**
+   * Optional; the maximum duration in seconds after which the recording should terminate automatically.
+   * Default value is defined by the platform serving the API.
+   */
+  maxDuration?: number;
+
+  /**
+   * Optional; to determine if the video capturing flow needs to be launched
+   * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
+   * Default value is true, indicating video will always launch in Full Screen Mode via lens.
+   */
+  isFullScreenMode?: boolean;
+
+  /**
+   * Optional; controls the visibility of stop button in PictureInPicture Mode.
+   * Default value is true, indicating the user will be able to stop the video.
+   */
+  isStopButtonVisible?: boolean;
+
+  /**
+   * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
+   * Your app can also dynamically control the experience while capturing the video by notifying the host client.
+   */
+  videoController?: videoDevice.VideoController;
 }

@@ -12,8 +12,9 @@ import {
 import { audio } from './audioDevice';
 import { audioVisualDevice } from './audioVisualDevice';
 import * as constants from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import * as interfaces from './interfaces';
 import { runtime } from './runtime';
+import { videoDevice } from './videoDevice';
 
 /**
  * @alpha
@@ -82,18 +83,18 @@ export namespace media {
    * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
    */
-  export function captureImage(callback: (error?: SdkError, files?: File[]) => void): void;
-  export function captureImage(callback?: (error?: SdkError, files?: File[]) => void): Promise<File[]> {
+  export function captureImage(callback: (error?: interfaces.SdkError, files?: File[]) => void): void;
+  export function captureImage(callback?: (error?: interfaces.SdkError, files?: File[]) => void): Promise<File[]> {
     ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
     const wrappedFunction: InputFunction<File[]> = () =>
       new Promise<File[]>(resolve => {
         if (!GlobalVars.isFramelessWindow) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+          throw { errorCode: interfaces.ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
         }
 
         if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
+          throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
         }
 
         resolve(sendAndHandleSdkError('captureImage'));
@@ -138,8 +139,8 @@ export namespace media {
      *
      * @param callback - returns blob of media
      */
-    public getMedia(callback: (error: SdkError, blob: Blob) => void): void;
-    public getMedia(callback?: (error: SdkError, blob: Blob) => void): Promise<Blob> {
+    public getMedia(callback: (error: interfaces.SdkError, blob: Blob) => void): void;
+    public getMedia(callback?: (error: interfaces.SdkError, blob: Blob) => void): Promise<Blob> {
       return audioVisualDevice.getMediaAsBlob(this, callback);
     }
   }
@@ -182,12 +183,12 @@ export namespace media {
   /**
    *  All properties in ImageProps are optional and have default values in the platform
    */
-  export import ImageProps = audioVisualDevice.camera.ImageProps;
+  export import ImageProps = interfaces.ImageProps;
 
   /**
    * All properties in VideoProps are optional and have default values in the platform
    */
-  export import VideoProps = audioVisualDevice.camera.video.VideoProps;
+  export import VideoProps = interfaces.VideoProps;
 
   /**
    * All properties in VideoAndImageProps are optional and have default values in the platform
@@ -209,13 +210,13 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import VideoControllerCallback = audioVisualDevice.camera.video.VideoControllerCallback;
+  export import VideoControllerCallback = videoDevice.VideoControllerCallback;
 
   /**
    * VideoController class is used to communicate between the app and the host client during the video capture flow
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import VideoController = audioVisualDevice.camera.video.VideoController;
+  export import VideoController = videoDevice.VideoController;
 
   /**
    * @hidden
@@ -224,19 +225,19 @@ export namespace media {
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import MediaControllerEvent = audioVisualDevice.MediaControllerEvent;
+  export import MediaControllerEvent = constants.MediaControllerEvent;
 
   /**
    * The modes in which camera can be launched in select Media API
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import CameraStartMode = audioVisualDevice.camera.CameraStartMode;
+  export import CameraStartMode = constants.CameraStartMode;
 
   /**
    * Specifies the image source
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import Source = audioVisualDevice.camera.Source;
+  export import Source = constants.Source;
 
   // /**
   //  * Specifies the type of Media
@@ -258,7 +259,7 @@ export namespace media {
    * Specifies the image output formats.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import ImageOutputFormats = audioVisualDevice.camera.ImageOutputFormats;
+  export import ImageOutputFormats = constants.ImageOutputFormats;
 
   /**
    * Media chunks an output of getMedia API from platform
@@ -294,10 +295,13 @@ export namespace media {
    * @param mediaInputs - The input params to customize the media to be selected
    * @param callback - The callback to invoke after fetching the media
    */
-  export function selectMedia(mediaInputs: MediaInputs, callback: (error: SdkError, attachments: Media[]) => void);
   export function selectMedia(
     mediaInputs: MediaInputs,
-    callback?: (error?: SdkError, attachments?: Media[]) => void,
+    callback: (error: interfaces.SdkError, attachments: Media[]) => void,
+  );
+  export function selectMedia(
+    mediaInputs: MediaInputs,
+    callback?: (error?: interfaces.SdkError, attachments?: Media[]) => void,
   ): Promise<Media[]> {
     // Probably we should be more careful about casting this?
     const wrappedFunction: InputFunction<Media[]> = () =>
@@ -305,17 +309,9 @@ export namespace media {
         if (mediaInputs.audioProps) {
           resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));
         } else if (mediaInputs.videoAndImageProps) {
-          resolve(
-            audioVisualDevice.camera.video.selectMediaContainingVideo(
-              mediaInputs as audioVisualDevice.camera.video.VideoAndImageInputs,
-            ),
-          );
+          resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoAndImageInputs));
         } else if (mediaInputs.videoProps) {
-          resolve(
-            audioVisualDevice.camera.video.selectMediaContainingVideo(
-              mediaInputs as audioVisualDevice.camera.video.VideoInputs,
-            ),
-          );
+          resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
         } else {
           resolve(audioVisualDevice.camera.selectImages(mediaInputs as audioVisualDevice.camera.ImageInputs));
         }
@@ -340,8 +336,8 @@ export namespace media {
    * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
    * @param callback - returns back error if encountered, returns null in case of success
    */
-  export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void);
-  export function viewImages(uriList: ImageUri[], callback?: (error?: SdkError) => void): Promise<void> {
+  export function viewImages(uriList: ImageUri[], callback: (error?: interfaces.SdkError) => void);
+  export function viewImages(uriList: ImageUri[], callback?: (error?: interfaces.SdkError) => void): Promise<void> {
     ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
 
     const wrappedFunction: InputFunction<void> = () => audioVisualDevice.camera.viewImages(uriList);
@@ -377,12 +373,15 @@ export namespace media {
    * @param callback - callback to invoke after scanning the barcode
    * @param config - optional input configuration to customize the barcode scanning experience
    */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig);
   export function scanBarCode(
-    callbackOrConfig?: ((error: SdkError, decodedText: string) => void) | BarCodeConfig,
+    callback: (error: interfaces.SdkError, decodedText: string) => void,
+    config?: BarCodeConfig,
+  );
+  export function scanBarCode(
+    callbackOrConfig?: ((error: interfaces.SdkError, decodedText: string) => void) | BarCodeConfig,
     configMaybe?: BarCodeConfig,
   ): Promise<string> {
-    let callback: (error: SdkError, decodedText: string) => void | undefined;
+    let callback: (error: interfaces.SdkError, decodedText: string) => void | undefined;
     let config: BarCodeConfig | undefined;
 
     // Because the callback isn't the second parameter in the original v1 method we need to

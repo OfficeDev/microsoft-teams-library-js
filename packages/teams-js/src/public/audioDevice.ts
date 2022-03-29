@@ -89,6 +89,6 @@ export namespace audio {
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.media.audio ? true : false;
+    return runtime.supports.audioDevice ? true : false;
   }
 }
