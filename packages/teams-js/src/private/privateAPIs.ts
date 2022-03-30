@@ -10,9 +10,8 @@ import { UserSettingTypes } from './interfaces';
  * @internal
  */
 export function initializePrivateApis(): void {
-  //Keeping this API for any future usage, wherein privateAPIs need to be initialized
+  // To maintain backwards compatability, this function cannot be deleted as it is callable
 }
-
 /**
  * @hidden
  * Hide from docs.
