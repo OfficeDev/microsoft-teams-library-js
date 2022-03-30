@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added ensureInitialized call to addEvenListener function in appWindow.ts",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
