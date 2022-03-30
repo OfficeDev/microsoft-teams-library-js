@@ -620,90 +620,10 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
-/**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
- */
-export interface OpenConversationRequest {
-  /**
-   * @hidden
-   * The Id of the subEntity where the conversation is taking place
-   */
-  subEntityId: string;
-
-  /**
-   * @hidden
-   * The title of the conversation
-   */
-  title: string;
-
-  /**
-   * @hidden
-   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-   */
-  conversationId?: string;
-
-  /**
-   * @hidden
-   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
-   */
-  channelId?: string;
-
-  /**
-   * @hidden
-   * The entity Id of the tab
-   */
-  entityId: string;
-
-  /**
-   * @hidden
-   * A function that is called once the conversation Id has been created
-   */
-  onStartConversation?: (conversationResponse: ConversationResponse) => void;
-
-  /**
-   * @hidden
-   * A function that is called if the pane is closed
-   */
-  onCloseConversation?: (conversationResponse: ConversationResponse) => void;
+export interface DialogSize {
+  height: DialogDimension | number;
+  width: DialogDimension | number;
 }
-
-/**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
- */
-export interface ConversationResponse {
-  /**
-   * @hidden
-   * The Id of the subEntity where the conversation is taking place
-   */
-  subEntityId: string;
-
-  /**
-   * @hidden
-   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-   */
-  conversationId?: string;
-
-  /**
-   * @hidden
-   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
-   */
-  channelId?: string;
-
-  /**
-   * @hidden
-   * The entity Id of the tab
-   */
-  entityId?: string;
-}
-
 /**
  * @hidden
  * Hide from docs.

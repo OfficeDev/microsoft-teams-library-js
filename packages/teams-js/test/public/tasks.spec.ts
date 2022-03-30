@@ -195,7 +195,40 @@ describe('tasks', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`should successfully pass taskInfo in context: ${JSON.stringify(context)}`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo = { width: 10, height: 10 };
+
+          tasks.updateTask(taskInfo);
+          const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
+          expect(updateTaskMessage).not.toBeNull();
+          expect(updateTaskMessage.args).toEqual([taskInfo]);
+        });
+
+        it(`should successfully pass the default info if height/width is missing: ${JSON.stringify(
+          context,
+        )}`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo = { width: 10 };
+
+          tasks.updateTask(taskInfo);
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
+          const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
+          expect(updateTaskMessage).not.toBeNull();
+          expect(updateTaskMessage.args).toEqual([taskInfo]);
+          expect(updateTaskMessage.args).toEqual([taskInfoWithSize]);
+        });
+
+        it(`should throw an error if extra properties are provided context: ${JSON.stringify(context)}`, async () => {
+          await utils.initializeWithContext(context);
+          const taskInfo = { width: 10, height: 10, title: 'anything' };
+
+          expect(() => tasks.updateTask(taskInfo)).toThrowError(
+            'resize requires a TaskInfo argument containing only width and height',
+          );
+        });
+      } else {
         it(`should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const taskInfo: TaskInfo = {};
@@ -206,37 +239,6 @@ describe('tasks', () => {
           );
         });
       }
-    });
-
-    it('should successfully pass taskInfo in sidePanel context', async () => {
-      await utils.initializeWithContext(FrameContexts.sidePanel);
-      const taskInfo = { width: 10, height: 10 };
-
-      tasks.updateTask(taskInfo);
-
-      const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
-      expect(updateTaskMessage).not.toBeNull();
-      expect(updateTaskMessage.args).toEqual([taskInfo]);
-    });
-
-    it('should successfully pass taskInfo in task context', async () => {
-      await utils.initializeWithContext(FrameContexts.task);
-      const taskInfo = { width: 10, height: 10 };
-
-      tasks.updateTask(taskInfo);
-
-      const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
-      expect(updateTaskMessage).not.toBeNull();
-      expect(updateTaskMessage.args).toEqual([taskInfo]);
-    });
-
-    it('should throw an error if extra properties are provided', async () => {
-      await utils.initializeWithContext(FrameContexts.task);
-      const taskInfo = { width: 10, height: 10, title: 'anything' };
-
-      expect(() => tasks.updateTask(taskInfo)).toThrowError(
-        'resize requires a dialogInfo argument containing only width and height',
-      );
     });
   });
 

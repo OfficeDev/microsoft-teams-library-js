@@ -2,6 +2,7 @@
 import {
   dialog,
   DialogInfo,
+  DialogSize,
   IAppWindow,
   ParentAppWindow,
   SdkResponse,
@@ -69,25 +70,40 @@ const DialogAPIs = (): ReactElement => {
     });
 
   const ResizeDialog = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
+    ApiWithTextInput<DialogSize>({
       name: 'dialogResize',
       title: 'Dialog Resize',
       onClick: {
         validateInput: input => {
-          if (input.height === undefined && input.width === undefined) {
-            throw new Error('Height and width undefined');
+          if (!input) {
+            throw new Error('input is undefined');
           }
         },
         submit: {
-          withPromise: async dialogInfo => {
-            dialog.resize(dialogInfo);
-            return 'Teams client SDK call dialog.resize was called';
+          withPromise: async (dimensions, setResult) => {
+            dialog.update.resize(dimensions);
+            setResult('Teams client SDK call dailog.update.resize was called');
+            return '';
           },
+          //For V1 back compatibility
           withCallback: (taskInfo, setResult) => {
             tasks.updateTask(taskInfo);
             setResult('Teams client SDK call tasks.updateTask was called');
           },
         },
+      },
+    });
+
+  const CheckDialogResizeCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCapabilityResizeDialog',
+      title: 'Check Capability Resize Dialog',
+      onClick: async () => {
+        if (dialog.update.isSupported()) {
+          return 'Dialog.update module is supported';
+        } else {
+          return 'Dialog.update module is not supported';
+        }
       },
     });
 
@@ -129,17 +145,7 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              } else {
-                setResult("Status is false but there's no reason?! This shouldn't happen.");
-              }
-            } else {
-              setResult('Message sent to child');
-            }
-          };
+          setResult('A post call to child is initiated');
           const dialogInfo = {
             url: 'someUrl',
             size: {
@@ -148,7 +154,7 @@ const DialogAPIs = (): ReactElement => {
             },
           };
           const sendMessageToDialogHandler = dialog.open(dialogInfo);
-          sendMessageToDialogHandler(message, onComplete);
+          sendMessageToDialogHandler(message);
           return '';
         },
       },
@@ -192,18 +198,8 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              } else {
-                setResult("Status is false but there's no reason?! This shouldn't happen.");
-              }
-            } else {
-              setResult('Message sent to parent');
-            }
-          };
-          dialog.sendMessageToParentFromDialog(message, onComplete);
+          setResult('A post call to parent is initiated');
+          dialog.sendMessageToParentFromDialog(message);
           return '';
         },
       },
@@ -276,6 +272,7 @@ const DialogAPIs = (): ReactElement => {
       <StartTask />
       <OpenDialog />
       <ResizeDialog />
+      <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
       <SendMessageToChild />
       <SendMessageToChild_v2 />
