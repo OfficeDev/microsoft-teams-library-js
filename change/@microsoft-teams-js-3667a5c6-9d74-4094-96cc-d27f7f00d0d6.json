@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added comments to the dialogs capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
