@@ -46,6 +46,7 @@ export class ChildAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
+    ensureInitialized();
     if (type === 'message') {
       registerHandler('messageForParent', listener);
     }
@@ -77,6 +78,7 @@ export class ParentAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
+    ensureInitialized();
     if (type === 'message') {
       registerHandler('messageForChild', listener);
     }
