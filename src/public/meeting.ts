@@ -267,7 +267,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
   }
 
@@ -287,7 +287,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
 
@@ -305,7 +305,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 
@@ -322,7 +322,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
   }
 }
