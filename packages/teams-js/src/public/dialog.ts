@@ -19,7 +19,14 @@ import { runtime } from './runtime';
  */
 
 export interface SdkResponse {
+  /**
+   * Error in case there is a failure before dialog submission
+   */
   err?: string;
+
+  /**
+   * Result value that the dialog is submitted with
+   */
   result?: string | object;
 }
 
@@ -31,7 +38,7 @@ export namespace dialog {
    * Allows an app to open the dialog module.
    *
    * @param urlDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - This Handler is called when the dialog has been submitted or closed.
+   * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
    * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
    *
    * @returns a function that can be used to send messages to the dialog.
@@ -75,7 +82,10 @@ export namespace dialog {
   /**
    *  Send message to the parent from dialog
    *
-   * @param message - The message to send
+   *  @remarks
+   * This function is only called from inside of a dialog
+   *
+   * @param message - The message to send to the parent
    */
   export function sendMessageToParentFromDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,14 +96,14 @@ export namespace dialog {
   }
 
   /**
-   * Fucntion to call when an event is received from the Parent
+   * Register a listener that wil be triggerd when an event is received from the parent
    *
-   * @param type - The event to listen to. Currently the only supported type is 'message'.
-   * @param listener - listener - The listener that will be called.
+   * @remarks
+   * This function is only called from inside of a dialog
+   *
+   * @param listener - The listener that will be triggered.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function registerOnMessageFromParent(listener: (message: any) => void): void {
-    ensureInitialized();
+  export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     registerHandler('messageForChild', listener);
   }
 
@@ -117,6 +127,15 @@ export namespace dialog {
   }
 
   export namespace bot {
+    /**
+     * Allows an app to open the dialog module using bot.
+     *
+     * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
+     * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
+     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+     *
+     * @returns a function that can be used to send messages to the dialog.
+     */
     export function open(
       botUrlDialogInfo: BotUrlDialogInfo,
       submitHandler?: DialogSubmitHandler,
