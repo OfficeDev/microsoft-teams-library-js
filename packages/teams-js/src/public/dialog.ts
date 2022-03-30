@@ -104,6 +104,7 @@ export namespace dialog {
    * @param listener - The listener that will be triggered.
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
+    ensureInitialized();
     registerHandler('messageForChild', listener);
   }
 
