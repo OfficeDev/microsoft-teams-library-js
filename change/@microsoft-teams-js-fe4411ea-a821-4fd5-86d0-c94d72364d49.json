@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added comments in dialogs cabality file",
+  "comment": "Added comments in dialogs capability file",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "none"
