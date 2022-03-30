@@ -399,10 +399,6 @@ describe('Dialog', () => {
   });
 
   describe('sendMessageToParentFromDialog', () => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const emptyCallback = () => {
-      return;
-    };
     const allowedContexts = [FrameContexts.task];
 
     it('should not allow calls before initialization', () => {
@@ -421,7 +417,7 @@ describe('Dialog', () => {
             dialog.sendMessageToParentFromDialog('exampleMessage');
             const message = framedMock.findMessageByFunc('messageForParent');
             expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual('exampleMessage');
+            expect(message.args).toStrictEqual(['exampleMessage']);
           });
 
           it(`FRAMELESS: should initiate the post message to Parent: ${frameContext}`, async () => {
@@ -429,12 +425,12 @@ describe('Dialog', () => {
             dialog.sendMessageToParentFromDialog('exampleMessage');
             const message = framelessMock.findMessageByFunc('messageForParent');
             expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual('exampleMessage');
+            expect(message.args).toStrictEqual(['exampleMessage']);
           });
         } else {
           it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
             await framedMock.initializeWithContext(frameContext);
-            expect(() => dialog.sendMessageToParentFromDialog('message', emptyCallback)).toThrowError(
+            expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${frameContext}".`,
@@ -443,7 +439,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
             await framelessMock.initializeWithContext(frameContext);
-            expect(() => dialog.sendMessageToParentFromDialog('message', emptyCallback)).toThrowError(
+            expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${frameContext}".`,
