@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Moved ThreadMember and ChatMembersInformation interfaces from interfaces.ts into chat.ts. Correctly adding OpenSingleChatRequest's user string into the members array for Post communication consistency and updated unit tests accordingly",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
