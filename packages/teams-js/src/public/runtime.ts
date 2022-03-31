@@ -102,7 +102,6 @@ export const teamsRuntimeConfig: IRuntime = {
       update: {},
     },
     files: {},
-    location: {},
     logs: {},
     media: {},
     meeting: {},
@@ -127,6 +126,17 @@ export const teamsRuntimeConfig: IRuntime = {
     video: {},
   },
 };
+
+// object of version constants
+const versionConstants = {
+  '1.9.0': 'location',
+};
+
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+  const backCompatRuntimeConfig: IRuntime = teamsRuntimeConfig;
+  // for every key version in object, compare version with highestSupportedVersion.
+  // if highestSupportedVersion >= key version, add these items to the returned runtime config.
+}
 
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
   runtime = deepFreeze(runtimeConfig);
