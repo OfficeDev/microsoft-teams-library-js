@@ -28,7 +28,7 @@ describe('AppSDK-privateAPIs', () => {
   });
   describe('getUserJoinedTeams', () => {
     it('should not allow calls before initialization', () => {
-      return expect(legacy.fullTrust.getUserJoinedTeams()).rejects.toThrowError(
+      return expect(legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -36,7 +36,9 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a valid optional parameter set to true', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({ favoriteTeamsOnly: true } as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
+        favoriteTeamsOnly: true,
+      } as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -47,7 +49,9 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a valid optional parameter set to false', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({ favoriteTeamsOnly: false } as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
+        favoriteTeamsOnly: false,
+      } as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -58,7 +62,7 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a missing optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams();
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams();
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
@@ -69,12 +73,53 @@ describe('AppSDK-privateAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = legacy.fullTrust.getUserJoinedTeams({} as TeamInstanceParameters);
+      const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({} as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
       expect(getUserJoinedTeamsMessage).not.toBeNull();
       utils.respondToMessage(getUserJoinedTeamsMessage, {});
       return expect(promise).resolves;
+    });
+  });
+
+  describe('joinedTeams.isSupported function', () => {
+    const utils = new Utils();
+    it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
+    });
+
+    it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
+    });
+
+    it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams and fullTrust is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
+    });
+
+    it('joinedTeams.isSupported should return true if the runtime says joinedTeams is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).toBeTruthy();
+    });
+  });
+
+  describe('legacy.fullTrust.isSupported function', () => {
+    const utils = new Utils();
+    it('legacy.fullTrust.isSupported should return false if the runtime says fullTrust is not supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(legacy.fullTrust.isSupported()).not.toBeTruthy();
+    });
+
+    it('legacy.fullTrust.isSupported should return false if the runtime says fullTrust is not supported when teams is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+      expect(legacy.fullTrust.isSupported()).not.toBeTruthy();
+    });
+
+    it('legacy.fullTrust.isSupported should return true if the runtime says fullTrust is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
+      expect(legacy.fullTrust.isSupported()).toBeTruthy();
     });
   });
 
