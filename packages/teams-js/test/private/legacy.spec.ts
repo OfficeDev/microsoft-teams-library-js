@@ -89,6 +89,16 @@ describe('AppSDK-privateAPIs', () => {
       expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
     });
 
+    it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
+    });
+
+    it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams and fullTrust is supported', () => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
+      expect(legacy.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
+    });
+
     it('joinedTeams.isSupported should return true if the runtime says joinedTeams is supported', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
       expect(legacy.fullTrust.joinedTeams.isSupported()).toBeTruthy();
