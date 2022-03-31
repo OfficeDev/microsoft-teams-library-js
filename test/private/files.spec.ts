@@ -467,27 +467,55 @@ describe('files', () => {
 
   describe('openDownloadFolder', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.openDownloadFolder()).toThrowError(
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
+    it('should not allow calls with empty callback', () => {
+      utils.initializeWithContext('content');
+      expect(() => files.openDownloadFolder(null, null)).toThrowError();
+    });
+
     it('should not allow calls without frame context initialization', () => {
       utils.initializeWithContext('settings');
-      expect(() => files.openDownloadFolder()).toThrowError(
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
         "This call is not allowed in the 'settings' context",
       );
     });
 
-    it('should send the message to parent correctly', () => {
+    // null file path value is interpreted as opening cofigured download preference folder 
+    it('should send the message to parent correctly with file path as null', () => {
       utils.initializeWithContext('content');
 
-      files.openDownloadFolder();
+      const callback = jest.fn((err) => {
+        expect(err).toBeFalsy();
+      });
+
+      files.openDownloadFolder(null, callback);
 
       const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
       expect(openDownloadFolderMessage).not.toBeNull();
-      expect(openDownloadFolderMessage.args).toEqual([]);
+      utils.respondToMessage(openDownloadFolderMessage, false);
+      expect(callback).toHaveBeenCalled();
     });
+
+    // non-null file path value is interpreted as opening containing folder for the given file path
+    it('should send the message to parent correctly with non-null file path', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn((err) => {
+        expect(err).toBeFalsy();
+      });
+
+      files.openDownloadFolder("fileObjectId", callback);
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      utils.respondToMessage(openDownloadFolderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+
   });
 
 });
