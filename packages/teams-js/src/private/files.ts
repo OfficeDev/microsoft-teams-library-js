@@ -565,16 +565,12 @@ export namespace files {
    * @param fileObjectId Id of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
-  export function openDownloadFolder(fileObjectId: string | undefined, callback: (error?: SdkError) => void): void;
+  export function openDownloadFolder(fileObjectId: string | undefined, callback?: (error?: SdkError) => void): void;
   export function openDownloadFolder(
     fileObjectId: string = undefined,
     callback?: (error?: SdkError) => void,
   ): Promise<void> {
     ensureInitialized(FrameContexts.content);
-
-    if (!callback) {
-      throw new Error('[files.openDownloadFolder] Callback cannot be null');
-    }
 
     const wrappedFunction = (): Promise<void> =>
       new Promise(resolve => resolve(sendAndHandleSdkError('files.openDownloadFolder', [fileObjectId])));

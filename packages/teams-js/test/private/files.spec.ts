@@ -549,64 +549,104 @@ describe('files', () => {
   });
 
   describe('openDownloadFolder', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    it('should not allow calls with empty callback', () => {
-      utils.initializeWithContext('content');
-      expect(() => files.openDownloadFolder(null, null)).toThrowError();
-    });
-
-    it('should not allow calls without frame context initialization', async () => {
-      await utils.initializeWithContext('settings');
-      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
-      );
-    });
-
-    // null file path value is interpreted as opening cofigured download preference folder
-    it('should send the message to parent correctly with file path as null', done => {
-      utils.initializeWithContext('content');
-
-      const callback = (err: SdkError): void => {
-        try {
-          expect(err).toBeFalsy();
-          done();
-        } catch (error) {
-          done(error);
-        }
-      };
-
-      files.openDownloadFolder(null, callback);
-
-      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
-      expect(openDownloadFolderMessage).not.toBeNull();
-      utils.respondToMessage(openDownloadFolderMessage, false);
-    });
-
-    // non-null file path value is interpreted as opening containing folder for the given file path
-    it('should send the message to parent correctly with non-null file path', done => {
-      utils.initializeWithContext('content');
-      const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
-
-      const callback = jest.fn(err => {
-        try {
-          expect(err).toBeFalsy();
-          done();
-        } catch (error) {
-          done(error);
-        }
+    describe('v1', () => {
+      it('should not allow calls before initialization', () => {
+        expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
-      files.openDownloadFolder('fileObjectId', callback);
+      it('should not allow calls without frame context initialization', async () => {
+        await utils.initializeWithContext('settings');
+        expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
+          'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+        );
+      });
 
-      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
-      expect(openDownloadFolderMessage).not.toBeNull();
-      utils.respondToMessage(openDownloadFolderMessage, false);
-      expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
+      // null file path value is interpreted as opening cofigured download preference folder
+      it('should send the message to parent correctly with file path as null', done => {
+        utils.initializeWithContext('content');
+
+        const callback = (err: SdkError): void => {
+          try {
+            expect(err).toBeFalsy();
+            done();
+          } catch (error) {
+            done(error);
+          }
+        };
+
+        files.openDownloadFolder(null, callback);
+
+        const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+        expect(openDownloadFolderMessage).not.toBeNull();
+        utils.respondToMessage(openDownloadFolderMessage, false);
+      });
+
+      // non-null file path value is interpreted as opening containing folder for the given file path
+      it('should send the message to parent correctly with non-null file path', done => {
+        utils.initializeWithContext('content');
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+
+        const callback = jest.fn(err => {
+          try {
+            expect(err).toBeTruthy();
+            done();
+          } catch (error) {
+            done(error);
+          }
+        });
+
+        files.openDownloadFolder('fileObjectId', callback);
+
+        const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+        expect(openDownloadFolderMessage).not.toBeNull();
+        utils.respondToMessage(openDownloadFolderMessage, false);
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
+        // expect(callback).toHaveBeenCalled();
+      });
+    });
+    describe('v2', () => {
+      it('should not allow calls before initialization', async () => {
+        expect(() => files.openDownloadFolder(null)).toThrowError('The library has not yet been initialized');
+      });
+
+      // it('should not allow calls without frame context initialization', async () => {
+      //   await utils.initializeWithContext('settings');
+      //   const promise = files.openDownloadFolder(null);
+      //   await expect(promise).toThrowError(
+      //     'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      //   );
+      // });
+
+      // null file path value is interpreted as opening cofigured download preference folder
+      it('should send the message to parent correctly with file path as null', async () => {
+        await utils.initializeWithContext('content');
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+
+        const promise = files.openDownloadFolder(null);
+
+        const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+        expect(openDownloadFolderMessage).not.toBeNull();
+        utils.respondToMessage(openDownloadFolderMessage, false);
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
+        await expect(promise).resolves.not.toThrowError();
+      });
+
+      // non-null file path value is interpreted as opening containing folder for the given file path
+      it('should send the message to parent correctly with non-null file path', async () => {
+        utils.initializeWithContext('content');
+        utils.initializeWithContext('content');
+        const sendAndHandleSdkErrorSpy = jest.spyOn(communication, 'sendAndHandleSdkError');
+
+        const promise = files.openDownloadFolder('fileObjectId');
+
+        const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+        expect(openDownloadFolderMessage).not.toBeNull();
+        utils.respondToMessage(openDownloadFolderMessage, false);
+        expect(sendAndHandleSdkErrorSpy).toHaveBeenCalled();
+        await expect(promise).resolves.not.toThrowError();
+      });
     });
   });
 });
