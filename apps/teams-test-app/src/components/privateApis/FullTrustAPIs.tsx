@@ -50,7 +50,7 @@ const GetUserJoinedTeams = (): React.ReactElement =>
 const CheckLegacyFullTrustGetUserJoinedCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CheckLegacyFullTrustGetUserJoinedCapability',
-    title: 'Check Legacy Fullrust Joined Teams isSupported Capability',
+    title: 'Check Legacy FullTrust Joined Teams isSupported Capability',
     onClick: async () =>
       `Legacy Fulltrust module ${legacy.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
   });
