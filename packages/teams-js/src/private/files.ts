@@ -1,5 +1,6 @@
 import {
   sendAndHandleSdkError as sendAndHandleError,
+  sendAndHandleSdkError,
   sendMessageToParent,
   sendMessageToParentAsync,
 } from '../internal/communication';
@@ -552,15 +553,32 @@ export namespace files {
    *
    * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
    * @param fileObjectId Id of the file whose containing folder should be opened
+   */
+  export function openDownloadFolder(fileObjectId: string | undefined): Promise<void>;
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * @deprecated
+   * As of 2.0.0-beta.4, please use {@link file.openDownloadFolder file.openDownloadFolder(fileObjectId?: string): Promise\<void\>}
+   * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
+   * @param fileObjectId Id of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
-  export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
+  export function openDownloadFolder(fileObjectId: string | undefined, callback: (error?: SdkError) => void): void;
+  export function openDownloadFolder(
+    fileObjectId: string = undefined,
+    callback?: (error?: SdkError) => void,
+  ): Promise<void> {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
+    const wrappedFunction = (): Promise<void> =>
+      new Promise(resolve => resolve(sendAndHandleSdkError('files.openDownloadFolder', [fileObjectId])));
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 }
