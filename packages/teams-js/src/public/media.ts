@@ -10,7 +10,12 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import { createFile, decodeAttachment, validateGetMediaInputs } from '../internal/mediaUtil';
+import {
+  createFile,
+  decodeAttachment,
+  throwExceptionIfMediaCallIsNotSupportedOnMobile,
+  validateGetMediaInputs,
+} from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
@@ -375,6 +380,7 @@ export namespace media {
         if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
           throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
         }
+        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
 
         if (mediaInputs.audioProps) {
           resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));

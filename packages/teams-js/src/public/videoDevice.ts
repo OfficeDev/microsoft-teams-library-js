@@ -1,15 +1,7 @@
 import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
-import { mediaAPISupportVersion, nonFullScreenVideoModeAPISupportVersion } from '../internal/constants';
-import {
-  ensureInitialized,
-  isCurrentSDKVersionAtLeast,
-  throwExceptionIfMobileApiIsNotSupported,
-} from '../internal/internalAPIs';
-import {
-  isVideoControllerRegistered,
-  throwExceptionIfMediaCallIsNotSupportedOnMobile,
-  validateSelectMediaInputs,
-} from '../internal/mediaUtil';
+import { nonFullScreenVideoModeAPISupportVersion } from '../internal/constants';
+import { ensureInitialized, throwExceptionIfMobileApiIsNotSupported } from '../internal/internalAPIs';
+import { isVideoControllerRegistered, validateSelectMediaInputs } from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
@@ -175,6 +167,8 @@ export namespace videoDevice {
     }
   }
 
+  // Let's assume none of the public functions on VideoController are called in the host sdk or host layer and just keep going for now
+  // Video controller is nullable so we can omit from the transfer if needed
   /**
    * VideoController class is used to communicate between the app and the host client during the video capture flow
    */
@@ -204,11 +198,6 @@ export namespace videoDevice {
 
     const wrappedFunction: InputFunction<media.Media[]> = () =>
       new Promise<[SdkError, media.Media[], MediaControllerEvent]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
-
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
         }
