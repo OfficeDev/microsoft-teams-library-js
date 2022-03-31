@@ -1,4 +1,5 @@
 import { app, call, FrameContexts } from '../../src/public';
+import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('call', () => {
@@ -24,6 +25,12 @@ describe('call', () => {
 
   it('should not allow calls before initialization', async () => {
     await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
+  });
+
+  it('runtime check', () => {
+    expect(JSON.stringify(generateBackCompatRuntimeConfig('1.9.0'))).toContain('location');
+    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.0.0'))).toContain('location');
+    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.0.0'))).toContain('people');
   });
 
   it('should not allow calls if not supported', async () => {

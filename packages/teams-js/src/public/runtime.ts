@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { deepFreeze } from '../internal/utils';
+import { compareSDKVersions, deepFreeze } from '../internal/utils';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
@@ -129,13 +129,73 @@ export const teamsRuntimeConfig: IRuntime = {
 
 // object of version constants
 const versionConstants = {
-  '1.9.0': 'location',
+  '1.9.0': {
+    capabilities: ['location'],
+    hostClientTypes: [],
+  },
+  '2.0.0': {
+    capabilities: ['people'],
+    hostClientTypes: [],
+  },
+  // '2.0.1': {
+  //   capabilities: ['joinedTeams'],
+  //   hostClientTypes: [],
+  // },
 };
 
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
-  const backCompatRuntimeConfig: IRuntime = teamsRuntimeConfig;
+  const backCompatRuntimeConfig: IRuntime = {
+    apiVersion: 1,
+    isLegacyTeams: true,
+    supports: {
+      appInstallDialog: {},
+      appEntity: {},
+      bot: {},
+      call: {},
+      chat: {
+        conversation: {},
+      },
+      dialog: {
+        bot: {},
+        update: {},
+      },
+      files: {},
+      logs: {},
+      media: {},
+      meeting: {},
+      meetingRoom: {},
+      menus: {},
+      monetization: {},
+      notifications: {},
+      pages: {
+        appButton: {},
+        tabs: {},
+        config: {},
+        backStack: {},
+        fullTrust: {},
+      },
+      remoteCamera: {},
+      sharing: {},
+      teams: {
+        fullTrust: {},
+      },
+      teamsCore: {},
+      video: {},
+    },
+  };
   // for every key version in object, compare version with highestSupportedVersion.
   // if highestSupportedVersion >= key version, add these items to the returned runtime config.
+  // TODO: add check for hostclienttypes
+  // TODO: check what happens with object .add like Shreyas said
+  Object.keys(versionConstants).forEach(versionNumber => {
+    if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
+      versionConstants[versionNumber].capabilities.forEach(capability => {
+        backCompatRuntimeConfig.supports[capability] = {};
+      });
+    }
+  });
+
+  return backCompatRuntimeConfig;
 }
 
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
