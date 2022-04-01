@@ -28,7 +28,8 @@ export namespace dialog {
     err?: string;
 
     /**
-     * Result value that the dialog is submitted with
+     * Result value that the dialog is submitted with using {@linkcode submit} function
+     *
      */
     result?: string | object;
   }
@@ -37,10 +38,10 @@ export namespace dialog {
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
 
   /**
-   * Allows an app to open the dialog module.
+   * Allows app to open a dialog.
    *
    * @param urlDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
+   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
    * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
    *
    * @returns a function that can be used to send messages to the dialog.
@@ -71,7 +72,7 @@ export namespace dialog {
   /**
    * Submit the dialog module.
    *
-   * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
@@ -98,10 +99,10 @@ export namespace dialog {
   }
 
   /**
-   * Register a listener that wil be triggerd when an event is received from the parent
+   * Register a listener that will be triggered when a message is received from the app that opened the dialog.
    *
    * @remarks
-   * This function is only called from inside of a dialog
+   * This function is only called from inside of a dialog.
    *
    * @param listener - The listener that will be triggered.
    */
@@ -111,7 +112,7 @@ export namespace dialog {
   }
 
   /**
-   * Checks if dialog module is supported currently
+   * Checks if dialog module is supported by the host
    *
    * @returns boolean to represent whether dialog module is supported
    */
@@ -134,7 +135,7 @@ export namespace dialog {
     }
 
     /**
-     * Checks if dialog.update capability is supported currently
+     * Checks if dialog.update capability is supported by the host
      *
      * @returns boolean to represent whether dialog.update is supported
      */
@@ -144,7 +145,7 @@ export namespace dialog {
   }
 
   /**
-   * Namespace to open the dialog using bot
+   * Namespace to open a dialog that sends results to the bot framework
    */
   export namespace bot {
     /**
@@ -180,7 +181,7 @@ export namespace dialog {
     }
 
     /**
-     * Checks if dialog.bot capability is supported currently
+     * Checks if dialog.bot capability is supported by the host
      *
      * @returns boolean to represent whether dialog.bot is supported
      */
