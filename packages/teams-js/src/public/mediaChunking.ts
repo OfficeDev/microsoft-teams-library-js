@@ -5,6 +5,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { createFile, decodeAttachment, validateGetMediaInputs } from '../internal/mediaUtil';
 import { FrameContexts } from './constants';
 import { AssembleAttachment, ErrorCode, MediaAttachmentHelper, SdkError } from './interfaces';
+// We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
 import { runtime } from './runtime';
 

@@ -9,6 +9,7 @@ import {
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts, MediaType } from './constants';
 import { ErrorCode, ImageProps, ImageUri, SdkError } from './interfaces';
+// We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
 import { runtime } from './runtime';
 

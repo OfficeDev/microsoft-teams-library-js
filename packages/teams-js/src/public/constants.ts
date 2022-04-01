@@ -122,7 +122,7 @@ export enum ImageOutputFormats {
  * --------
  * Events which are used to communicate between the app and the host client during the media recording flow
  */
-export enum MediaControllerEvent {
+export enum VideoMediaEvent {
   StartRecording = 1,
   StopRecording = 2,
 }

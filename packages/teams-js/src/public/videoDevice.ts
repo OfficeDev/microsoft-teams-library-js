@@ -2,8 +2,9 @@ import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/com
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateSelectMediaInputs } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
-import { FrameContexts, MediaControllerEvent, MediaType } from './constants';
+import { FrameContexts, MediaType, VideoMediaEvent } from './constants';
 import { ErrorCode, ImageProps, MediaProps, SdkError } from './interfaces';
+// We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
 import { runtime } from './runtime';
 
@@ -72,7 +73,7 @@ export namespace videoDevice {
   /**
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
-  export interface VideoControllerCallback {
+  export interface VideoEventCallbacks {
     onRecordingStarted(): void;
     onRecordingStopped?(): void;
   }
@@ -92,10 +93,10 @@ export namespace videoDevice {
     /**
      * List of team information
      */
-    mediaControllerEvent: MediaControllerEvent;
+    mediaControllerEvent: VideoMediaEvent;
   }
 
-  export function sendMediaEventToHost(mediaEvent: MediaControllerEvent, mediaType: MediaType): Promise<void> {
+  export function sendVideoMediaEventToHost(mediaEvent: VideoMediaEvent, mediaType: MediaType): Promise<void> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     const params: MediaControllerParam = {
@@ -106,34 +107,32 @@ export namespace videoDevice {
     return sendAndHandleSdkError('media.controller', [params]);
   }
 
-  // This is very similar to selectImage and selectAudio, other than the MediaControllerEvent parts
-  // I can't decide if it's worth it to merge this into a single shared function that is more confusing
-  // to read or keep this out as a "related but different" function
+  // This probably won't do much good unless you call mediaChunking.getMediaAsBlob on the result
   export function selectMediaContainingVideo(
     mediaInputs: VideoInputs | VideoAndImageInputs,
-    mediaEventCallback?: VideoControllerCallback,
+    mediaEventCallback?: VideoEventCallbacks,
   ): Promise<media.Media[]> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
     const wrappedFunction: InputFunction<media.Media[]> = () =>
-      new Promise<[SdkError, media.Media[], MediaControllerEvent]>(resolve => {
+      new Promise<[SdkError, media.Media[], VideoMediaEvent]>(resolve => {
         if (!validateSelectMediaInputs(mediaInputs)) {
           throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
         }
 
         const params = [mediaInputs];
         // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, media.Media[], MediaControllerEvent]>('selectMedia', params));
-      }).then(([err, localAttachments, mediaEvent]: [SdkError, media.Media[], MediaControllerEvent]) => {
+        resolve(sendMessageToParentAsync<[SdkError, media.Media[], VideoMediaEvent]>('selectMedia', params));
+      }).then(([err, localAttachments, mediaEvent]: [SdkError, media.Media[], VideoMediaEvent]) => {
         // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
         if (mediaEvent) {
           if (mediaEventCallback) {
             switch (mediaEvent) {
-              case MediaControllerEvent.StartRecording:
+              case VideoMediaEvent.StartRecording:
                 mediaEventCallback.onRecordingStarted();
                 break;
               // TODO - Should discuss whether this function should be required
-              case MediaControllerEvent.StopRecording:
+              case VideoMediaEvent.StopRecording:
                 mediaEventCallback.onRecordingStopped && mediaEventCallback.onRecordingStopped();
                 break;
             }

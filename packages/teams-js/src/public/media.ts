@@ -311,7 +311,7 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import VideoControllerCallback = videoDevice.VideoControllerCallback;
+  export import VideoControllerCallback = videoDevice.VideoEventCallbacks;
 
   /**
    * @hidden
@@ -320,7 +320,7 @@ export namespace media {
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import MediaControllerEvent = constants.MediaControllerEvent;
+  export import MediaControllerEvent = constants.VideoMediaEvent;
 
   /**
    * The modes in which camera can be launched in select Media API
@@ -595,7 +595,7 @@ export namespace media {
       }
 
       const wrappedFunction = (): Promise<void> =>
-        new Promise(resolve => resolve(videoDevice.sendMediaEventToHost(mediaEvent, this.getMediaType())));
+        new Promise(resolve => resolve(videoDevice.sendVideoMediaEventToHost(mediaEvent, this.getMediaType())));
 
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
