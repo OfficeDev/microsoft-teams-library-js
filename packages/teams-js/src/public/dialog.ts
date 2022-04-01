@@ -6,7 +6,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -17,23 +17,25 @@ import { runtime } from './runtime';
  *
  * @beta
  */
-
-export interface SdkResponse {
-  /**
-   * Error in case there is a failure before dialog submission
-   */
-  err?: string;
-
-  /**
-   * Result value that the dialog is submitted with
-   */
-  result?: string | object;
-}
-
 export namespace dialog {
+  /**
+   * Data Structure to represent the SDK response when dialog closes
+   */
+  export interface ISdkResponse {
+    /**
+     * Error in case there is a failure before dialog submission
+     */
+    err?: string;
+
+    /**
+     * Result value that the dialog is submitted with
+     */
+    result?: string | object;
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
-  export type DialogSubmitHandler = (result: SdkResponse) => void;
+  export type DialogSubmitHandler = (result: ISdkResponse) => void;
+
   /**
    * Allows an app to open the dialog module.
    *
@@ -108,10 +110,18 @@ export namespace dialog {
     registerHandler('messageForChild', listener);
   }
 
+  /**
+   * Checks if dialog module is supported currently
+   *
+   * @returns boolean to represent whether dialog module is supported
+   */
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
   }
 
+  /**
+   * Namespace to update the dialog
+   */
   export namespace update {
     /**
      * Update dimensions - height/width of a dialog.
@@ -122,11 +132,20 @@ export namespace dialog {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
       sendMessageToParent('tasks.updateTask', [dimensions]);
     }
+
+    /**
+     * Checks if dialog.update capability is supported currently
+     *
+     * @returns boolean to represent whether dialog.update is supported
+     */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
     }
   }
 
+  /**
+   * Namespace to open the dialog using bot
+   */
   export namespace bot {
     /**
      * Allows an app to open the dialog module using bot.
@@ -159,6 +178,12 @@ export namespace dialog {
       };
       return sendMessageToDialog;
     }
+
+    /**
+     * Checks if dialog.bot capability is supported currently
+     *
+     * @returns boolean to represent whether dialog.bot is supported
+     */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
