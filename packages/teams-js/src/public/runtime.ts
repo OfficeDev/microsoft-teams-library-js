@@ -86,7 +86,7 @@ export let runtime: IRuntime = {
   },
 };
 
-export const teamsRuntimeConfig: IRuntime = {
+export const teamsRuntimeConfig = {
   apiVersion: 1,
   isLegacyTeams: true,
   supports: {
@@ -116,7 +116,6 @@ export const teamsRuntimeConfig: IRuntime = {
       backStack: {},
       fullTrust: {},
     },
-    people: {},
     remoteCamera: {},
     sharing: {},
     teams: {
@@ -130,21 +129,21 @@ export const teamsRuntimeConfig: IRuntime = {
 // object of version constants
 const versionConstants = {
   '1.9.0': {
-    capabilities: ['location'],
+    capabilities: { location: {} },
     hostClientTypes: [],
   },
   '2.0.0': {
-    capabilities: ['people'],
+    capabilities: { people: {} },
     hostClientTypes: [],
   },
-  // '2.0.1': {
-  //   capabilities: ['joinedTeams'],
-  //   hostClientTypes: [],
-  // },
+  '2.0.1': {
+    capabilities: { teams: { fullTrust: { joinedTeams: {} } } },
+    hostClientTypes: [],
+  },
 };
 
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
-  const backCompatRuntimeConfig: IRuntime = {
+  const backCompatRuntimeConfig = {
     apiVersion: 1,
     isLegacyTeams: true,
     supports: {
@@ -187,11 +186,13 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
   // if highestSupportedVersion >= key version, add these items to the returned runtime config.
   // TODO: add check for hostclienttypes
   // TODO: check what happens with object .add like Shreyas said
+  // TODO: add nested joinedTeams
   Object.keys(versionConstants).forEach(versionNumber => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      versionConstants[versionNumber].capabilities.forEach(capability => {
-        backCompatRuntimeConfig.supports[capability] = {};
-      });
+      backCompatRuntimeConfig.supports = Object.assign(
+        backCompatRuntimeConfig.supports,
+        versionConstants[versionNumber].capabilities,
+      );
     }
   });
 
