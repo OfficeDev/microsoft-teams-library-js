@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { GlobalVars } from '../internal/globalVars';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
+import { HostClientType } from './constants';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
@@ -136,65 +138,56 @@ export const teamsRuntimeConfig = {
 const versionConstants = {
   '1.9.0': {
     capabilities: { location: {} },
-    hostClientTypes: [],
+    hostClientTypes: [
+      HostClientType.desktop,
+      HostClientType.web,
+      HostClientType.android,
+      HostClientType.ios,
+      HostClientType.rigel,
+      HostClientType.surfaceHub,
+      HostClientType.teamsRoomsWindows,
+      HostClientType.teamsRoomsAndroid,
+      HostClientType.teamsPhones,
+      HostClientType.teamsDisplays,
+    ],
   },
   '2.0.0': {
     capabilities: { people: {} },
-    hostClientTypes: [],
+    hostClientTypes: [
+      HostClientType.desktop,
+      HostClientType.web,
+      HostClientType.android,
+      HostClientType.ios,
+      HostClientType.rigel,
+      HostClientType.surfaceHub,
+      HostClientType.teamsRoomsWindows,
+      HostClientType.teamsRoomsAndroid,
+      HostClientType.teamsPhones,
+      HostClientType.teamsDisplays,
+    ],
   },
   '2.0.1': {
     capabilities: { teams: { fullTrust: { joinedTeams: {} } } },
-    hostClientTypes: [],
+    hostClientTypes: [
+      HostClientType.android,
+      HostClientType.teamsRoomsAndroid,
+      HostClientType.teamsPhones,
+      HostClientType.teamsDisplays,
+    ],
   },
 };
 
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
-  const backCompatRuntimeConfig = {
-    apiVersion: 1,
-    isLegacyTeams: true,
-    supports: {
-      appInstallDialog: {},
-      appEntity: {},
-      bot: {},
-      call: {},
-      chat: {
-        conversation: {},
-      },
-      dialog: {
-        bot: {},
-        update: {},
-      },
-      files: {},
-      logs: {},
-      media: {},
-      meeting: {},
-      meetingRoom: {},
-      menus: {},
-      monetization: {},
-      notifications: {},
-      pages: {
-        appButton: {},
-        tabs: {},
-        config: {},
-        backStack: {},
-        fullTrust: {},
-      },
-      remoteCamera: {},
-      sharing: {},
-      teams: {
-        fullTrust: {},
-      },
-      teamsCore: {},
-      video: {},
-    },
-  };
+  const backCompatRuntimeConfig = teamsRuntimeConfig;
+
   // for every key version in object, compare version with highestSupportedVersion.
   // if highestSupportedVersion >= key version, add these items to the returned runtime config.
   // TODO: add check for hostclienttypes
-  // TODO: check what happens with object .add like Shreyas said
-  // TODO: add nested joinedTeams
   Object.keys(versionConstants).forEach(versionNumber => {
-    if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
+    if (
+      compareSDKVersions(highestSupportedVersion, versionNumber) >= 0 &&
+      versionConstants[versionNumber].hostClientTypes.contains(GlobalVars.hostClientType)
+    ) {
       backCompatRuntimeConfig.supports = Object.assign(
         backCompatRuntimeConfig.supports,
         versionConstants[versionNumber].capabilities,
