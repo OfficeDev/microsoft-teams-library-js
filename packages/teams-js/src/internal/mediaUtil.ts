@@ -80,23 +80,6 @@ export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: med
 
 /**
  * @hidden
- * Function returns true if the app has registered to listen to video controller events, else false.
- *
- * @internal
- */
-export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
-  if (
-    mediaInputs.mediaType == media.MediaType.Video &&
-    mediaInputs.videoProps &&
-    mediaInputs.videoProps.videoController
-  ) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * @hidden
  * Returns true if the mediaInput params are valid and false otherwise
  *
  * @internal

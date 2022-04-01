@@ -12,7 +12,6 @@ import {
   UserTeamRole,
 } from './constants';
 import { FrameContexts } from './constants';
-import { videoDevice } from './videoDevice';
 
 /**
  * Represents information about tabs for an app
@@ -839,7 +838,7 @@ export enum ErrorCode {
  * --------
  * All properties common to Image and Video Props
  */
-interface MediaProps {
+export interface MediaProps {
   /**
    * @hidden
    * Optional; Lets the developer specify the media source, more than one can be specified.
@@ -889,36 +888,6 @@ export interface ImageProps extends MediaProps {
    * Default value is Image.
    */
   imageOutputFormats?: ImageOutputFormats[];
-}
-
-/**
- * All properties in VideoProps are optional and have default values in the platform
- */
-export interface VideoProps extends MediaProps {
-  /**
-   * Optional; the maximum duration in seconds after which the recording should terminate automatically.
-   * Default value is defined by the platform serving the API.
-   */
-  maxDuration?: number;
-
-  /**
-   * Optional; to determine if the video capturing flow needs to be launched
-   * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
-   * Default value is true, indicating video will always launch in Full Screen Mode via lens.
-   */
-  isFullScreenMode?: boolean;
-
-  /**
-   * Optional; controls the visibility of stop button in PictureInPicture Mode.
-   * Default value is true, indicating the user will be able to stop the video.
-   */
-  isStopButtonVisible?: boolean;
-
-  /**
-   * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
-   * Your app can also dynamically control the experience while capturing the video by notifying the host client.
-   */
-  videoController?: videoDevice.VideoController;
 }
 
 /**

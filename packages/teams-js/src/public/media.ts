@@ -5,11 +5,16 @@ import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
+  nonFullScreenVideoModeAPISupportVersion,
   scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import {
+  ensureInitialized,
+  isCurrentSDKVersionAtLeast,
+  throwExceptionIfMobileApiIsNotSupported,
+} from '../internal/internalAPIs';
 import {
   createFile,
   decodeAttachment,
@@ -259,7 +264,32 @@ export namespace media {
   /**
    * All properties in VideoProps are optional and have default values in the platform
    */
-  export import VideoProps = interfaces.VideoProps;
+  export interface VideoProps extends interfaces.MediaProps {
+    /**
+     * Optional; the maximum duration in seconds after which the recording should terminate automatically.
+     * Default value is defined by the platform serving the API.
+     */
+    maxDuration?: number;
+
+    /**
+     * Optional; to determine if the video capturing flow needs to be launched
+     * in Full Screen Mode (Lens implementation) or PictureInPicture Mode (Native implementation).
+     * Default value is true, indicating video will always launch in Full Screen Mode via lens.
+     */
+    isFullScreenMode?: boolean;
+
+    /**
+     * Optional; controls the visibility of stop button in PictureInPicture Mode.
+     * Default value is true, indicating the user will be able to stop the video.
+     */
+    isStopButtonVisible?: boolean;
+
+    /**
+     * Optional; setting VideoController will register your app to listen to the lifecycle events during the video capture flow.
+     * Your app can also dynamically control the experience while capturing the video by notifying the host client.
+     */
+    videoController?: media.VideoController;
+  }
 
   /**
    * All properties in VideoAndImageProps are optional and have default values in the platform
@@ -282,12 +312,6 @@ export namespace media {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export import VideoControllerCallback = videoDevice.VideoControllerCallback;
-
-  /**
-   * VideoController class is used to communicate between the app and the host client during the video capture flow
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export import VideoController = videoDevice.VideoController;
 
   /**
    * @hidden
@@ -385,8 +409,12 @@ export namespace media {
         if (mediaInputs.audioProps) {
           resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));
         } else if (mediaInputs.videoAndImageProps) {
+          // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
+          // but whoever implements this should verify
           resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoAndImageInputs));
         } else if (mediaInputs.videoProps) {
+          // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
+          // but whoever implements this should verify
           resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
         } else {
           resolve(cameraDevice.selectImages(mediaInputs as cameraDevice.ImageInputs));
@@ -502,6 +530,118 @@ export namespace media {
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(wrappedFunction, callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Base class which holds the callback and notifies events to the host client
+   */
+  abstract class MediaController<T> {
+    protected controllerCallback: T;
+
+    public constructor(controllerCallback: T) {
+      this.controllerCallback = controllerCallback;
+    }
+
+    protected abstract getMediaType(): MediaType;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     * This function will be implemented by the respective media class which holds the logic
+     * of specific events that needs to be notified to the app.
+     * @param mediaEvent indicates the event signed by the host client to the app
+     */
+    protected abstract notifyEventToApp(mediaEvent: MediaControllerEvent): void;
+
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * @returns A promise resolved promise
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent): Promise<void>;
+    /**
+     * @hidden
+     * Hide from docs
+     * --------
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link audioVisualDevice.MediaController.notifyEventToHost media.MediaController.notifyEventToHost(mediaEvent: MediaControllerEvent): Promise\<void\>} instead.
+     *
+     * Function to notify the host client to programatically control the experience
+     * @param mediaEvent indicates what the event that needs to be signaled to the host client
+     * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
+     */
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: interfaces.SdkError) => void): void;
+    protected notifyEventToHost(
+      mediaEvent: MediaControllerEvent,
+      callback?: (err?: interfaces.SdkError) => void,
+    ): Promise<void> {
+      ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
+
+      try {
+        throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
+      } catch (err) {
+        const wrappedRejectedErrorFn: InputFunction<void> = () => Promise.reject(err);
+
+        return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedRejectedErrorFn, callback);
+      }
+
+      const wrappedFunction = (): Promise<void> =>
+        new Promise(resolve => resolve(videoDevice.sendMediaEventToHost(mediaEvent, this.getMediaType())));
+
+      return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
+    }
+
+    /**
+     * Function to programatically stop the ongoing media event
+     *
+     * @returns A resolved promise
+     * */
+    public stop(): Promise<void>;
+    /**
+     *
+     * Function to programatically stop the ongoing media event
+     *
+     * @deprecated
+     * As of 2.0.0-beta.3, please use {@link audioVisualDevice.MediaController.stop media.MediaController.stop(): Promise\<void\>} instead.
+     *
+     * Optional; @param callback is used to send app if host client has successfully stopped the event or not
+     */
+    public stop(callback?: (err?: interfaces.SdkError) => void): void;
+    public stop(callback?: (err?: interfaces.SdkError) => void): Promise<void> {
+      return Promise.resolve(this.notifyEventToHost(MediaControllerEvent.StopRecording, callback));
+    }
+  }
+
+  // Let's assume none of the public functions on VideoController are called in the host sdk or host layer and just keep going for now
+  // Video controller is nullable so we can omit from the transfer if needed
+  /**
+   * VideoController class is used to communicate between the app and the host client during the video capture flow
+   */
+  export class VideoController extends MediaController<VideoControllerCallback> {
+    protected getMediaType(): MediaType {
+      return MediaType.Video;
+    }
+
+    public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
+      switch (mediaEvent) {
+        case MediaControllerEvent.StartRecording:
+          this.controllerCallback.onRecordingStarted();
+          break;
+        // TODO - Should discuss whether this function should be required
+        case MediaControllerEvent.StopRecording:
+          this.controllerCallback.onRecordingStopped && this.controllerCallback.onRecordingStopped();
+          break;
+      }
+    }
   }
 
   export function isSupported(): boolean {
