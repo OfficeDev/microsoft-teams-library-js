@@ -34,7 +34,7 @@ describe('call', () => {
     expect(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0'))).toContain('location');
     expect(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0'))).toContain('people');
     console.log(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0')));
-    console.log(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0').supports.teams.fullTrust));
+    expect(generateBackCompatRuntimeConfig('2.2.0').supports.teams.fullTrust.joinedTeams).toBe(true);
   });
 
   it('should not allow calls if not supported', async () => {
