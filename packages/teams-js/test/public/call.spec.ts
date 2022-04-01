@@ -27,15 +27,6 @@ describe('call', () => {
     await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
   });
 
-  it('runtime check', () => {
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('1.9.0'))).toContain('location');
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.0.0'))).toContain('location');
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.0.0'))).toContain('people');
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0'))).toContain('location');
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0'))).toContain('people');
-    expect(JSON.stringify(generateBackCompatRuntimeConfig('2.2.0').supports.teams.fullTrust)).toContain('joinedTeams');
-  });
-
   it('should not allow calls if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
     await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('Not supported');

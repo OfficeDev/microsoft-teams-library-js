@@ -125,9 +125,7 @@ export const teamsRuntimeConfig = {
     remoteCamera: {},
     sharing: {},
     teams: {
-      fullTrust: {
-        joinedTeams: {},
-      },
+      fullTrust: {},
     },
     teamsCore: {},
     video: {},
@@ -135,7 +133,7 @@ export const teamsRuntimeConfig = {
 };
 
 // object of version constants
-const versionConstants = {
+export const versionConstants = {
   '1.9.0': {
     capabilities: { location: {} },
     hostClientTypes: [
@@ -178,23 +176,27 @@ const versionConstants = {
 };
 
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
-  const backCompatRuntimeConfig = teamsRuntimeConfig;
+  let newSupports = { ...teamsRuntimeConfig.supports, ...{} };
 
   // for every key version in object, compare version with highestSupportedVersion.
   // if highestSupportedVersion >= key version, add these items to the returned runtime config.
-  // TODO: add check for hostclienttypes
   Object.keys(versionConstants).forEach(versionNumber => {
     if (
       compareSDKVersions(highestSupportedVersion, versionNumber) >= 0 &&
-      versionConstants[versionNumber].hostClientTypes.contains(GlobalVars.hostClientType)
+      versionConstants[versionNumber].hostClientTypes.includes(GlobalVars.hostClientType)
     ) {
-      backCompatRuntimeConfig.supports = Object.assign(
-        backCompatRuntimeConfig.supports,
-        versionConstants[versionNumber].capabilities,
-      );
+      newSupports = {
+        ...newSupports,
+        ...versionConstants[versionNumber].capabilities,
+      };
     }
   });
 
+  const backCompatRuntimeConfig: IRuntime = {
+    apiVersion: 1,
+    isLegacyTeams: true,
+    supports: newSupports,
+  };
   return backCompatRuntimeConfig;
 }
 
