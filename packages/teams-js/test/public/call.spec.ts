@@ -1,5 +1,4 @@
 import { app, call, FrameContexts } from '../../src/public';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('call', () => {

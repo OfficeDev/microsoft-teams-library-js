@@ -92,7 +92,7 @@ export let runtime: IRuntime = {
   },
 };
 
-export const teamsRuntimeConfig = {
+export const teamsRuntimeConfig: IRuntime = {
   apiVersion: 1,
   isLegacyTeams: true,
   supports: {
