@@ -38,7 +38,7 @@ export namespace dialog {
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
 
   /**
-   * Allows app to open a dialog.
+   * Allows app to open a url based dialog.
    *
    * @param urlDialogInfo - An object containing the parameters of the dialog module.
    * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
