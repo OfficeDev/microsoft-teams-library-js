@@ -49,7 +49,7 @@ export namespace meeting {
     /**
      * type of the meeting
      */
-    type?: MeetingType;
+    type?: MeetingType | MeetingDetailsCallType;
   }
 
   /**
@@ -118,6 +118,11 @@ export namespace meeting {
     Recurring = 'Recurring',
     Broadcast = 'Broadcast',
     MeetNow = 'MeetNow',
+  }
+
+  export enum MeetingDetailsCallType {
+    OneOnOneCall = 'oneOnOneCall',
+    GroupCall = 'groupCall',
   }
 
   /**
