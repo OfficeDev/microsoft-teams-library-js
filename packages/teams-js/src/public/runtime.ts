@@ -132,63 +132,84 @@ export const teamsRuntimeConfig: IRuntime = {
   },
 };
 
-// object of version constants
-export const versionConstants = {
-  '1.9.0': {
-    capabilities: { location: {} },
-    hostClientTypes: [
-      HostClientType.desktop,
-      HostClientType.web,
-      HostClientType.android,
-      HostClientType.ios,
-      HostClientType.rigel,
-      HostClientType.surfaceHub,
-      HostClientType.teamsRoomsWindows,
-      HostClientType.teamsRoomsAndroid,
-      HostClientType.teamsPhones,
-      HostClientType.teamsDisplays,
-    ],
-  },
-  '2.0.0': {
-    capabilities: { people: {} },
-    hostClientTypes: [
-      HostClientType.desktop,
-      HostClientType.web,
-      HostClientType.android,
-      HostClientType.ios,
-      HostClientType.rigel,
-      HostClientType.surfaceHub,
-      HostClientType.teamsRoomsWindows,
-      HostClientType.teamsRoomsAndroid,
-      HostClientType.teamsPhones,
-      HostClientType.teamsDisplays,
-    ],
-  },
-  '2.0.1': {
-    capabilities: { teams: { fullTrust: { joinedTeams: {} } } },
-    hostClientTypes: [
-      HostClientType.android,
-      HostClientType.teamsRoomsAndroid,
-      HostClientType.teamsPhones,
-      HostClientType.teamsDisplays,
-    ],
-  },
+interface ICapabilityReqs {
+  readonly capability: object;
+  readonly hostClientTypes: Array<string>;
+}
+
+// change capabilities to capability
+// create new interface for this
+export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
+  '1.9.0': [
+    {
+      capability: { location: {} },
+      hostClientTypes: [
+        HostClientType.desktop,
+        HostClientType.web,
+        HostClientType.android,
+        HostClientType.ios,
+        HostClientType.rigel,
+        HostClientType.surfaceHub,
+        HostClientType.teamsRoomsWindows,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
+  '2.0.0': [
+    {
+      capability: { people: {} },
+      hostClientTypes: [
+        HostClientType.desktop,
+        HostClientType.web,
+        HostClientType.android,
+        HostClientType.ios,
+        HostClientType.rigel,
+        HostClientType.surfaceHub,
+        HostClientType.teamsRoomsWindows,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
+  '2.0.1': [
+    {
+      capability: { teams: { fullTrust: { joinedTeams: {} } } },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
 };
 
+/**
+ * @internal
+ *
+ * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
+ * and do not provide their own runtime config. Their supported capabilities are based on the highest
+ * client SDK version that they can support.
+ *
+ * @param highestSupportedVersion - The highest client SDK version that the host client can support.
+ * @returns runtime which describes the APIs supported by the legacy host client.
+ */
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
-  let newSupports = { ...teamsRuntimeConfig.supports, ...{} };
+  let newSupports = { ...teamsRuntimeConfig.supports };
 
-  // for every key version in object, compare version with highestSupportedVersion.
-  // if highestSupportedVersion >= key version, add these items to the returned runtime config.
   Object.keys(versionConstants).forEach(versionNumber => {
-    if (
-      compareSDKVersions(highestSupportedVersion, versionNumber) >= 0 &&
-      versionConstants[versionNumber].hostClientTypes.includes(GlobalVars.hostClientType)
-    ) {
-      newSupports = {
-        ...newSupports,
-        ...versionConstants[versionNumber].capabilities,
-      };
+    if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
+      versionConstants[versionNumber].forEach(capabilityReqs => {
+        if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
+          newSupports = {
+            ...newSupports,
+            ...capabilityReqs.capability,
+          };
+        }
+      });
     }
   });
 
