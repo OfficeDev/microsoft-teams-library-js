@@ -12,9 +12,6 @@ import { runtime } from './runtime';
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
  *
- * @remarks
- * This object is usable only on the content frame.
- *
  * @beta
  */
 export namespace dialog {
@@ -39,6 +36,9 @@ export namespace dialog {
 
   /**
    * Allows app to open a url based dialog.
+   *
+   * @remarks
+   * This function cannot be called from inside of a dialog
    *
    * @param urlDialogInfo - An object containing the parameters of the dialog module.
    * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
