@@ -1,9 +1,7 @@
 import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { validateSelectMediaInputs } from '../internal/mediaUtil';
-import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts, MediaType } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import { SdkError } from './interfaces';
 // We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
 import { runtime } from './runtime';
@@ -40,32 +38,20 @@ export namespace audio {
     maxDuration?: number;
   }
 
-  export function selectAudio(audioInput: AudioInputs): Promise<media.Media[]> {
+  export function captureAudio(audioProps?: AudioProps): Promise<media.Media[]> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    // Probably should clean this up, no reason to use this structure anymore
-    const wrappedFunction: InputFunction<media.Media[]> = () =>
-      new Promise<[SdkError, media.Media[]]>(resolve => {
-        if (!validateSelectMediaInputs(audioInput)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        const params = [audioInput];
-        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params));
-      }).then(([err, localAttachments]: [SdkError, media.Media[]]) => {
-        // Media Attachments are final response to selectMedia
+    const audioInput: AudioInputs = { mediaType: MediaType.Audio, maxMediaCount: 1, audioProps: audioProps };
+    const params = [audioInput];
+    // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+    return sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params).then(
+      ([err, localAttachments]: [SdkError, media.Media[]]) => {
         if (!localAttachments) {
           throw err;
         }
-        const mediaArray: media.Media[] = [];
-        for (const attachment of localAttachments) {
-          mediaArray.push(new media.Media(attachment));
-        }
-        return mediaArray;
-      });
 
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
+        return localAttachments;
+      },
+    );
   }
 
   export function hasPermission(): Promise<boolean> {

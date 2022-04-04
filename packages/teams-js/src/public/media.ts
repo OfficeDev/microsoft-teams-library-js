@@ -20,6 +20,7 @@ import {
   decodeAttachment,
   throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
+  validateSelectMediaInputs,
 } from '../internal/mediaUtil';
 import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
@@ -407,7 +408,10 @@ export namespace media {
         throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
 
         if (mediaInputs.audioProps) {
-          resolve(audio.selectAudio(mediaInputs as audio.AudioInputs));
+          if (!validateSelectMediaInputs(mediaInputs)) {
+            throw { errorCode: interfaces.ErrorCode.INVALID_ARGUMENTS };
+          }
+          resolve(audio.captureAudio(mediaInputs.audioProps));
         } else if (mediaInputs.videoAndImageProps) {
           // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
           // but whoever implements this should verify
