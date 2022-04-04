@@ -548,7 +548,7 @@ export interface DialogSize {
 }
 
 /**
- * Data structure to describe dialog information needed to open open a url based dialog.
+ * Data structure to describe dialog information needed to open a url based dialog.
  */
 export interface UrlDialogInfo {
   /**
