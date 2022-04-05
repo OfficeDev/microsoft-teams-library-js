@@ -553,6 +553,7 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
+
     describe('shareAppContentToStage', () => {
       it('should not allow to share app content to stage with null callback', () => {
         expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
@@ -954,6 +955,50 @@ describe('meeting', () => {
         expect(callbackCalled).toBe(true);
         expect(returnedSdkError).toBeNull();
         expect(returnedResult).toStrictEqual(appContentStageSharingState);
+      });
+    });
+
+    describe('registerSpeakingStateChangeHandler', () => {
+      it('should fail when called without a handler', () => {
+        expect(() => meeting.registerSpeakingStateChangeHandler(null)).toThrowError(
+          '[registerSpeakingStateChangeHandler] Handler cannot be null',
+        );
+      });
+
+      it('should fail when called before app is initialized', () => {
+        expect(() =>
+          meeting.registerSpeakingStateChangeHandler(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully register a handler for when the array of participants speaking changes', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+        const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
+
+        let handlerCalled = false;
+        let returnedSpeakingState: meeting.ISpeakingState | null;
+
+        meeting.registerSpeakingStateChangeHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+          handlerCalled = true;
+          returnedSpeakingState = isSpeakingDetected;
+        });
+
+        let registerHandlerMessage = desktopPlatformMock.findMessageByFunc('registerHandler');
+        expect(registerHandlerMessage).not.toBeNull();
+        expect(registerHandlerMessage.args.length).toBe(1);
+        expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
+
+        desktopPlatformMock.respondToMessage({
+          data: {
+            func: 'meeting.speakingStateChanged',
+            args: [speakingState],
+          },
+        } as DOMMessageEvent);
+
+        expect(handlerCalled).toBeTruthy();
+        expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
       });
     });
   });
