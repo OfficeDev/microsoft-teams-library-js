@@ -411,7 +411,7 @@ export namespace media {
           if (!validateSelectMediaInputs(mediaInputs)) {
             throw { errorCode: interfaces.ErrorCode.INVALID_ARGUMENTS };
           }
-          resolve(audio.captureAudio(mediaInputs.audioProps));
+          resolve(audio.captureAudio(mediaInputs.audioProps)); // this isn't quite right, need to create new Media objects so function works
         } else if (mediaInputs.videoAndImageProps) {
           // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
           // but whoever implements this should verify
