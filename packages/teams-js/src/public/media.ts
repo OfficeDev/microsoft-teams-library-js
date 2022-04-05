@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
@@ -421,11 +421,44 @@ export namespace media {
           // but whoever implements this should verify
           resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
         } else {
-          resolve(cameraDevice.selectImages(mediaInputs as cameraDevice.ImageInputs));
+          resolve(selectImages(mediaInputs as cameraDevice.ImageInputs));
         }
       });
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Media[]>(wrappedFunction, callback);
+  }
+
+  function selectImages(imageInputs: cameraDevice.ImageInputs): Promise<media.Media[]> {
+    ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
+
+    // Probably should clean this up, no reason to use this structure anymore
+    const wrappedFunction: InputFunction<media.Media[]> = () =>
+      new Promise<[interfaces.SdkError, media.Media[]]>(resolve => {
+        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
+          throw { errorCode: interfaces.ErrorCode.OLD_PLATFORM };
+        }
+        throwExceptionIfMediaCallIsNotSupportedOnMobile(imageInputs);
+
+        if (!validateSelectMediaInputs(imageInputs)) {
+          throw { errorCode: interfaces.ErrorCode.INVALID_ARGUMENTS };
+        }
+
+        const params = [imageInputs];
+        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+        resolve(sendMessageToParentAsync<[interfaces.SdkError, media.Media[]]>('selectMedia', params));
+      }).then(([err, localAttachments]: [interfaces.SdkError, media.Media[]]) => {
+        // Media Attachments are final response to selectMedia
+        if (!localAttachments) {
+          throw err;
+        }
+        const mediaArray: media.Media[] = [];
+        for (const attachment of localAttachments) {
+          mediaArray.push(new media.Media(attachment));
+        }
+        return mediaArray;
+      });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
   }
 
   /**

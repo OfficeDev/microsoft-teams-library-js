@@ -1,13 +1,8 @@
 import { sendAndHandleSdkError, sendMessageToParentAsync } from '../internal/communication';
 import { mediaAPISupportVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import {
-  throwExceptionIfMediaCallIsNotSupportedOnMobile,
-  validateSelectMediaInputs,
-  validateViewImagesInput,
-} from '../internal/mediaUtil';
-import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
-import { FrameContexts, MediaType } from './constants';
+import { validateViewImagesInput } from '../internal/mediaUtil';
+import { FrameContexts, ImageOutputFormats, MediaType, Source } from './constants';
 import { ErrorCode, ImageProps, ImageUri, SdkError } from './interfaces';
 // We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
@@ -20,37 +15,27 @@ export namespace cameraDevice {
     imageProps?: ImageProps;
   }
 
-  export function selectImages(imageInputs: ImageInputs): Promise<media.Media[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    // Probably should clean this up, no reason to use this structure anymore
-    const wrappedFunction: InputFunction<media.Media[]> = () =>
-      new Promise<[SdkError, media.Media[]]>(resolve => {
-        if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
-          throw { errorCode: ErrorCode.OLD_PLATFORM };
-        }
-        throwExceptionIfMediaCallIsNotSupportedOnMobile(imageInputs);
-
-        if (!validateSelectMediaInputs(imageInputs)) {
-          throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        }
-
-        const params = [imageInputs];
-        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
-        resolve(sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', params));
-      }).then(([err, localAttachments]: [SdkError, media.Media[]]) => {
-        // Media Attachments are final response to selectMedia
+  // used to capture one or more images from camera, gallery, or both. Lets app decide whether or not user can switch between front and back camera
+  export function captureImages(count: number, sources?: Source[], cameraSwitcher?: boolean): Promise<media.Media[]> {
+    const imageProps: ImageProps = {};
+    if (sources) {
+      imageProps.sources = sources;
+    }
+    if (cameraSwitcher) {
+      imageProps.cameraSwitcher = cameraSwitcher;
+    }
+    imageProps.ink = false;
+    imageProps.textSticker = false;
+    const imageInputs: ImageInputs = { mediaType: MediaType.Image, maxMediaCount: count, imageProps };
+    return sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', [imageInputs]).then(
+      ([err, localAttachments]: [SdkError, media.Media[]]) => {
         if (!localAttachments) {
           throw err;
         }
-        const mediaArray: media.Media[] = [];
-        for (const attachment of localAttachments) {
-          mediaArray.push(new media.Media(attachment));
-        }
-        return mediaArray;
-      });
 
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
+        return localAttachments;
+      },
+    );
   }
 
   /**
@@ -92,5 +77,98 @@ export namespace cameraDevice {
 
   export function isSupported(): boolean {
     return runtime.supports.cameraDevice ? true : false;
+  }
+
+  export namespace augment {
+    export interface ModifyImageProps {
+      /**
+       * Optional; indicate if inking on the selected Image is allowed or not
+       * Default value is true
+       */
+      allowUserInking?: boolean;
+
+      /**
+       * Optional; indicate if putting text stickers on the selected Image is allowed or not
+       * Default value is true
+       */
+      allowUserTextStickers?: boolean;
+
+      /**
+       * Optional; indicate if image filtering mode is enabled on the selected image
+       * Default value is false
+       */
+      enableFilter?: boolean;
+    }
+
+    // used to capture one or more images from camera, gallery, or both. Lets app decide whether or not user can switch between front and back camera
+    export function captureImages(
+      count: number,
+      sources?: Source[],
+      cameraSwitcher?: boolean,
+      modifyImageProps?: ModifyImageProps,
+    ): Promise<media.Media[]> {
+      let imageProps: ImageProps = {};
+
+      if (modifyImageProps) {
+        imageProps = modifyImageProps;
+      }
+
+      if (sources) {
+        imageProps.sources = sources;
+      }
+
+      if (cameraSwitcher) {
+        imageProps.cameraSwitcher = cameraSwitcher;
+      }
+
+      const imageInputs: ImageInputs = { mediaType: MediaType.Image, maxMediaCount: count, imageProps };
+      return sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', [imageInputs]).then(
+        ([err, localAttachments]: [SdkError, media.Media[]]) => {
+          if (!localAttachments) {
+            throw err;
+          }
+
+          return localAttachments;
+        },
+      );
+    }
+
+    export function isSupported(): boolean {
+      return runtime.supports.cameraDevice.augment ? true : false;
+    }
+  }
+
+  export namespace convert {
+    // used to capture one or more images from camera, gallery, or both. Lets app decide whether or not user can switch between front and back camera
+    export function captureImagesAsPdf(
+      count: number,
+      sources?: Source[],
+      cameraSwitcher?: boolean,
+    ): Promise<media.Media[]> {
+      const imageProps: ImageProps = { imageOutputFormats: [ImageOutputFormats.PDF] };
+
+      if (sources) {
+        imageProps.sources = sources;
+      }
+
+      if (cameraSwitcher) {
+        imageProps.cameraSwitcher = cameraSwitcher;
+      }
+
+      const imageInputs: ImageInputs = { mediaType: MediaType.Image, maxMediaCount: count, imageProps };
+      return sendMessageToParentAsync<[SdkError, media.Media[]]>('selectMedia', [imageInputs]).then(
+        ([err, localAttachments]: [SdkError, media.Media[]]) => {
+          if (!localAttachments) {
+            throw err;
+          }
+
+          return localAttachments;
+        },
+      );
+    }
+
+    export function isSupported(): boolean {
+      return runtime.supports.cameraDevice.convert ? true : false;
+    }
   }
 }

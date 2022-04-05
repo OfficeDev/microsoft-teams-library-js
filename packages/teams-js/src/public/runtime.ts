@@ -12,7 +12,10 @@ export interface IRuntime {
     readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
-    readonly cameraDevice?: {};
+    readonly cameraDevice?: {
+      readonly augment?: {};
+      readonly convert?: {};
+    };
     readonly chat?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -59,7 +62,10 @@ export let runtime: IRuntime = {
     bot: undefined,
     calendar: undefined,
     call: undefined,
-    cameraDevice: undefined,
+    cameraDevice: {
+      augment: undefined,
+      convert: undefined,
+    },
     chat: undefined,
     dialog: {
       bot: undefined,
@@ -106,7 +112,10 @@ export const teamsRuntimeConfig: IRuntime = {
     barcodeDevice: {},
     bot: {},
     call: {},
-    cameraDevice: {},
+    cameraDevice: {
+      augment: {},
+      convert: {},
+    },
     chat: {},
     dialog: {
       bot: {},
