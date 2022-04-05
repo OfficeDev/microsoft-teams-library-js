@@ -3,10 +3,12 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { validateSelectMediaInputs } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { FrameContexts, MediaType, VideoMediaEvent } from './constants';
-import { ErrorCode, ImageProps, MediaProps, SdkError } from './interfaces';
+import { ErrorCode, MediaProps, SdkError } from './interfaces';
 // We should not be importing this class. Should make an interface for this (the function on media isn't needed and has been replaced with mediaChunking.getMediaAsBlob)
 import { media } from './media';
 import { runtime } from './runtime';
+
+// VideoAndImage removed
 
 export namespace videoDevice {
   /**
@@ -53,23 +55,6 @@ export namespace videoDevice {
     videoProps?: VideoProps;
   }
 
-  export interface VideoAndImageInputs {
-    /**
-     * Only one media type can be selected at a time
-     */
-    mediaType: MediaType.VideoAndImage;
-
-    /**
-     * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
-     */
-    maxMediaCount: number;
-
-    /**
-     * Additional properties for customization of select media - VideoAndImage in mobile devices
-     */
-    videoAndImageProps?: ImageProps & VideoProps;
-  }
-
   /**
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
@@ -109,7 +94,7 @@ export namespace videoDevice {
 
   // This probably won't do much good unless you call mediaChunking.getMediaAsBlob on the result
   export function selectMediaContainingVideo(
-    mediaInputs: VideoInputs | VideoAndImageInputs,
+    mediaInputs: VideoInputs,
     mediaEventCallback?: VideoEventCallbacks,
   ): Promise<media.Media[]> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);

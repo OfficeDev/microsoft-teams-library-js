@@ -415,11 +415,11 @@ export namespace media {
         } else if (mediaInputs.videoAndImageProps) {
           // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
           // but whoever implements this should verify
-          resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoAndImageInputs));
+          resolve(selectMediaContainingVideo(mediaInputs as videoDevice.VideoAndImageInputs));
         } else if (mediaInputs.videoProps) {
           // videocontroller has been removed from the VideoInputs interface in videoDevice. I *think* this casting should just work
           // but whoever implements this should verify
-          resolve(videoDevice.selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
+          resolve(selectMediaContainingVideo(mediaInputs as videoDevice.VideoInputs));
         } else {
           resolve(selectImages(mediaInputs as cameraDevice.ImageInputs));
         }
@@ -457,6 +457,76 @@ export namespace media {
         }
         return mediaArray;
       });
+
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
+  }
+
+  export interface VideoAndImageInputs {
+    /**
+     * Only one media type can be selected at a time
+     */
+    mediaType: MediaType.VideoAndImage;
+
+    /**
+     * max limit of media allowed to be selected in one go, current max limit is 10 set by office lens.
+     */
+    maxMediaCount: number;
+
+    /**
+     * Additional properties for customization of select media - VideoAndImage in mobile devices
+     */
+    videoAndImageProps?: ImageProps & VideoProps;
+  }
+
+  export function selectMediaContainingVideo(
+    mediaInputs: videoDevice.VideoInputs | VideoAndImageInputs,
+    mediaEventCallback?: videoDevice.VideoEventCallbacks,
+  ): Promise<media.Media[]> {
+    ensureInitialized(constants.FrameContexts.content, constants.FrameContexts.task);
+
+    const wrappedFunction: InputFunction<media.Media[]> = () =>
+      new Promise<[interfaces.SdkError, media.Media[], constants.VideoMediaEvent]>(resolve => {
+        if (!validateSelectMediaInputs(mediaInputs)) {
+          throw { errorCode: interfaces.ErrorCode.INVALID_ARGUMENTS };
+        }
+
+        const params = [mediaInputs];
+        // What comes back from native at attachments would just be objects and will be missing getMedia method on them.
+        resolve(
+          sendMessageToParentAsync<[interfaces.SdkError, media.Media[], constants.VideoMediaEvent]>(
+            'selectMedia',
+            params,
+          ),
+        );
+      }).then(
+        ([err, localAttachments, mediaEvent]: [interfaces.SdkError, media.Media[], constants.VideoMediaEvent]) => {
+          // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
+          if (mediaEvent) {
+            if (mediaEventCallback) {
+              switch (mediaEvent) {
+                case constants.VideoMediaEvent.StartRecording:
+                  mediaEventCallback.onRecordingStarted();
+                  break;
+                // TODO - Should discuss whether this function should be required
+                case constants.VideoMediaEvent.StopRecording:
+                  mediaEventCallback.onRecordingStopped && mediaEventCallback.onRecordingStopped();
+                  break;
+              }
+            }
+            return [];
+          }
+
+          // Media Attachments are final response to selectMedia
+          if (!localAttachments) {
+            throw err;
+          }
+          const mediaArray: media.Media[] = [];
+          for (const attachment of localAttachments) {
+            mediaArray.push(new media.Media(attachment));
+          }
+          return mediaArray;
+        },
+      );
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<media.Media[]>(wrappedFunction);
   }
