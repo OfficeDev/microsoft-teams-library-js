@@ -557,7 +557,7 @@ describe('meeting', () => {
       expect(() => meeting.shareAppContentToStage('')).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the shareAppContentToStage message.', async () => {
@@ -634,7 +634,7 @@ describe('meeting', () => {
         'The library has not yet been initialized',
       );
     });
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingCapabilities message.', async () => {
@@ -709,7 +709,7 @@ describe('meeting', () => {
       expect(() => meeting.stopSharingAppContentToStage()).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the stopSharingAppContentToStage message.', async () => {
@@ -778,7 +778,7 @@ describe('meeting', () => {
       expect(() => meeting.getAppContentStageSharingState()).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingState message.', async () => {

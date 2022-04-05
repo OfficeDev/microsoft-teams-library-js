@@ -5,7 +5,6 @@ import {
   DialogSize,
   IAppWindow,
   ParentAppWindow,
-  SdkResponse,
   TaskInfo,
   tasks,
   UrlDialogInfo,
@@ -56,7 +55,7 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (urlDialogInfo, setResult) => {
-          const onComplete = (resultObj: SdkResponse): void => {
+          const onComplete = (resultObj: dialog.ISdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
           const messageFromChildHandler: dialog.PostMessageChannel = (message: string): void => {
@@ -145,17 +144,7 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              } else {
-                setResult("Status is false but there's no reason?! This shouldn't happen.");
-              }
-            } else {
-              setResult('Message sent to child');
-            }
-          };
+          setResult('A post call to child is initiated');
           const dialogInfo = {
             url: 'someUrl',
             size: {
@@ -164,7 +153,7 @@ const DialogAPIs = (): ReactElement => {
             },
           };
           const sendMessageToDialogHandler = dialog.open(dialogInfo);
-          sendMessageToDialogHandler(message, onComplete);
+          sendMessageToDialogHandler(message);
           return '';
         },
       },
@@ -208,18 +197,8 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const onComplete = (status: boolean, reason?: string): void => {
-            if (!status) {
-              if (reason) {
-                setResult(JSON.stringify(reason));
-              } else {
-                setResult("Status is false but there's no reason?! This shouldn't happen.");
-              }
-            } else {
-              setResult('Message sent to parent');
-            }
-          };
-          dialog.sendMessageToParentFromDialog(message, onComplete);
+          setResult('A post call to parent is initiated');
+          dialog.sendMessageToParentFromDialog(message);
           return '';
         },
       },
