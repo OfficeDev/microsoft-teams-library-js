@@ -487,17 +487,17 @@ export namespace files {
    * @private
    * Hide from docs
    *
-   * Open download preference folder or folder containing filePath if its value is non-null
-   * @param filePath: Path of the file whose containing folder should be opened
+   * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
+   * @param fileObjectId: Id of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
-  export function openDownloadFolder(filePath: string = null, callback: (error?: SdkError) => void): void {
+  export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.openDownloadFolder', [filePath], callback);
+    sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
   }
 }
