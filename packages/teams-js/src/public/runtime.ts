@@ -7,7 +7,6 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
-    readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {
@@ -51,7 +50,6 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
-    bot: undefined,
     calendar: undefined,
     call: undefined,
     chat: {
@@ -96,7 +94,6 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
-    bot: {},
     call: {},
     chat: {
       conversation: {},
