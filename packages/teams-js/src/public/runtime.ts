@@ -137,41 +137,32 @@ interface ICapabilityReqs {
   readonly hostClientTypes: Array<string>;
 }
 
-// change capabilities to capability
+const v1HostClientTypes = [
+  HostClientType.desktop,
+  HostClientType.web,
+  HostClientType.android,
+  HostClientType.ios,
+  HostClientType.rigel,
+  HostClientType.surfaceHub,
+  HostClientType.teamsRoomsWindows,
+  HostClientType.teamsRoomsAndroid,
+  HostClientType.teamsPhones,
+  HostClientType.teamsDisplays,
+];
+
 // create new interface for this
+// make sure to keep this data structure in order
 export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [
     {
       capability: { location: {} },
-      hostClientTypes: [
-        HostClientType.desktop,
-        HostClientType.web,
-        HostClientType.android,
-        HostClientType.ios,
-        HostClientType.rigel,
-        HostClientType.surfaceHub,
-        HostClientType.teamsRoomsWindows,
-        HostClientType.teamsRoomsAndroid,
-        HostClientType.teamsPhones,
-        HostClientType.teamsDisplays,
-      ],
+      hostClientTypes: v1HostClientTypes,
     },
   ],
   '2.0.0': [
     {
       capability: { people: {} },
-      hostClientTypes: [
-        HostClientType.desktop,
-        HostClientType.web,
-        HostClientType.android,
-        HostClientType.ios,
-        HostClientType.rigel,
-        HostClientType.surfaceHub,
-        HostClientType.teamsRoomsWindows,
-        HostClientType.teamsRoomsAndroid,
-        HostClientType.teamsPhones,
-        HostClientType.teamsDisplays,
-      ],
+      hostClientTypes: v1HostClientTypes,
     },
   ],
   '2.0.1': [

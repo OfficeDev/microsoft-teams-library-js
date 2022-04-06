@@ -1,5 +1,5 @@
 import { compareSDKVersions } from '../../src/internal/utils';
-import { app } from '../../src/public';
+import { app, HostClientType } from '../../src/public';
 import { generateBackCompatRuntimeConfig, versionConstants } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -24,9 +24,6 @@ describe('runtime', () => {
       capabilities.forEach(supportedCapability => {
         const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
         supportedCapability.hostClientTypes.forEach(clientType => {
-          // this only checks that host clients with the same version number supports that specific capability
-          // but not that it supports every capability with required versions lower than the host's supported
-          // version.
           it(`Back compat host client type ${clientType} supporting up to ${version} should support ${capability.replace(
             /:/g,
             ' ',
@@ -38,19 +35,53 @@ describe('runtime', () => {
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
           });
 
-          // should not support capabilities above version
+          it(`Back compat host client type ${clientType} supporting lower than up to ${version} should NOT support ${capability.replace(
+            /:/g,
+            ' ',
+          )} capability`, async () => {
+            await utils.initializeWithContext('content', clientType);
+            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
+              generateBackCompatRuntimeConfig('1.4.0').supports,
+            ).replace(/[{}]/g, '');
+            expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
+          });
 
-          // should not work in disallowed host client types
+          const lowerVersions = Object.keys(versionConstants).filter(
+            otherVer => compareSDKVersions(version, otherVer) >= 0,
+          );
+
+          lowerVersions.forEach(lowerVersion => {
+            versionConstants[lowerVersion].forEach(lowerCap => {
+              it(`Back compat host client type ${clientType} supporting up to ${version} should ALSO support ${JSON.stringify(
+                lowerCap.capability,
+              ).replace(/[{:}]/g, ' ')} capability`, async () => {
+                await utils.initializeWithContext('content', clientType);
+                const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
+                  generateBackCompatRuntimeConfig(version).supports,
+                ).replace(/[{}]/g, '');
+                expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
+              });
+            });
+          });
+        });
+
+        const notSupportedHostClientTypes = Object.values(HostClientType).filter(
+          type => !supportedCapability.hostClientTypes.includes(type),
+        );
+
+        notSupportedHostClientTypes.forEach(clientType => {
+          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(
+            /:/g,
+            ' ',
+          )} capability`, async () => {
+            await utils.initializeWithContext('content', clientType);
+            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
+              generateBackCompatRuntimeConfig(version).supports,
+            ).replace(/[{}]/g, '');
+            expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
+          });
         });
       });
-    });
-
-    it('Back compat should return false when not proper version is supported', async () => {
-      await utils.initializeWithContext('content', 'ios');
-      const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-        generateBackCompatRuntimeConfig('1.4.5').supports,
-      ).replace(/[{}]/g, '');
-      expect(generatedRuntimeConfigSupportedCapabilities.includes('location')).toBe(false);
     });
   });
 });
