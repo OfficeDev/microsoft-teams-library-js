@@ -153,6 +153,21 @@ export namespace meeting {
   }
 
   /**
+   * Allows an app to mute the incoming audio speaker in the meeting. Unmute is not allowed
+   * @param callback Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError, incase of an error, or null when toggle is successful
+   * result can either contain the true/false value, incase of a successful toggle or null when the toggling fails
+   * result: True means incoming audio is muted
+   */
+  export function muteViaMeshApp(callback: (error: SdkError | null, result: boolean | null) => void): void {
+    if (!callback) {
+      throw new Error('[mute via mesh app] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('muteViaMeshApp', callback);
+  }
+
+  /**
    * @private
    * Hide from docs
    * Allows an app to get the meeting details for the meeting
