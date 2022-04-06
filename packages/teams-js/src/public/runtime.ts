@@ -147,8 +147,6 @@ const v1HostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
-// create new interface for this
-// make sure to keep this data structure in order
 export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [
     {
