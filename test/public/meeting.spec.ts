@@ -832,5 +832,70 @@ describe('meeting', () => {
         expect(returnedResult).toStrictEqual(appContentStageSharingState);
       });
     });
+    describe('muteViaMeshApp', () => {
+      it('should not allow mute via mesh app calls with null callback', () => {
+        expect(() => meeting.muteViaMeshApp(null)).toThrowError('[mute via mesh app] Callback cannot be null');
+      });
+      it('should not allow calls before initialization', () => {
+        expect(() =>
+          meeting.muteViaMeshApp(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully toggle the incoming client audio', () => {
+        desktopPlatformMock.initializeWithContext('sidePanel');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        meeting.muteViaMeshApp((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        const muteViaMeshAppMessage = desktopPlatformMock.findMessageByFunc('muteViaMeshApp');
+        expect(muteViaMeshAppMessage).not.toBeNull();
+        const callbackId = muteViaMeshAppMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+      });
+
+      it('should return error code 501', () => {
+        desktopPlatformMock.initializeWithContext('meetingStage');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        meeting.muteViaMeshApp((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        const muteViaMeshAppMessage = desktopPlatformMock.findMessageByFunc('muteViaMeshApp');
+        expect(muteViaMeshAppMessage).not.toBeNull();
+        const callbackId = muteViaMeshAppMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [{ errorCode: ErrorCode.NOT_SUPPORTED_IN_CURRENT_CONTEXT }, null],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).not.toBeNull();
+        expect(returnedSdkError).toEqual({ errorCode: ErrorCode.NOT_SUPPORTED_IN_CURRENT_CONTEXT });
+        expect(returnedResult).toBe(null);
+      });
+    });
   });
 });
