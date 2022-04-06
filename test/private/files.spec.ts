@@ -508,7 +508,7 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.openDownloadFolder("C:\\Downloads\\abc.txt", callback);
+      files.openDownloadFolder("fileObjectId", callback);
 
       const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
       expect(openDownloadFolderMessage).not.toBeNull();
