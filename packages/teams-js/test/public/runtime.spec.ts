@@ -21,9 +21,6 @@ describe('runtime', () => {
 
   describe('generateBackCompatRuntimeConfig', () => {
     Object.entries(versionConstants).forEach(([version, capabilities]) => {
-      const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-        generateBackCompatRuntimeConfig(version).supports,
-      ).replace(/[{}]/g, '');
       capabilities.forEach(supportedCapability => {
         const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
         supportedCapability.hostClientTypes.forEach(clientType => {
@@ -35,6 +32,9 @@ describe('runtime', () => {
             ' ',
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
+            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
+              generateBackCompatRuntimeConfig(version).supports,
+            ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
           });
 
