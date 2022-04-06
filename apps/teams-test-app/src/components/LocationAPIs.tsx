@@ -1,6 +1,7 @@
 import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+// update these
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckLocationCapability = (): React.ReactElement =>

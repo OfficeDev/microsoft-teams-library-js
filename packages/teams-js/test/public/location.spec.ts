@@ -8,6 +8,7 @@ import { Utils } from '../utils';
 
 /**
  * Test cases for location APIs
+ * Need to update tests
  */
 describe('location', () => {
   const mobilePlatformMock = new FramelessPostMocks();
