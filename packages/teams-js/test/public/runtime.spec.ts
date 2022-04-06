@@ -21,19 +21,26 @@ describe('runtime', () => {
 
   describe('generateBackCompatRuntimeConfig', () => {
     Object.entries(versionConstants).forEach(([version, capabilities]) => {
+      const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
+        generateBackCompatRuntimeConfig(version).supports,
+      ).replace(/[{}]/g, '');
       capabilities.forEach(supportedCapability => {
         const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
         supportedCapability.hostClientTypes.forEach(clientType => {
+          // this only checks that host clients with the same version number supports that specific capability
+          // but not that it supports every capability with required versions lower than the host's supported
+          // version.
           it(`Back compat host client type ${clientType} supporting up to ${version} should support ${capability.replace(
             /:/g,
             ' ',
-          )} capability and not any later capabilities`, async () => {
+          )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
-            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig(version).supports,
-            ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
           });
+
+          // should not support capabilities above version
+
+          // should not work in disallowed host client types
         });
       });
     });
