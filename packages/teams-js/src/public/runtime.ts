@@ -108,6 +108,7 @@ export const teamsRuntimeConfig: IRuntime = {
       update: {},
     },
     files: {},
+    location: {},
     logs: {},
     media: {},
     meeting: {},
@@ -122,6 +123,7 @@ export const teamsRuntimeConfig: IRuntime = {
       backStack: {},
       fullTrust: {},
     },
+    people: {},
     remoteCamera: {},
     sharing: {},
     teams: {
