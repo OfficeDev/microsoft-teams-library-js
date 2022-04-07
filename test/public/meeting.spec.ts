@@ -553,6 +553,7 @@ describe('meeting', () => {
       expect(returnedLiveStreamState).not.toBeNull();
       expect(returnedLiveStreamState).toEqual({ isStreaming: true });
     });
+
     describe('shareAppContentToStage', () => {
       it('should not allow to share app content to stage with null callback', () => {
         expect(() => meeting.shareAppContentToStage(null, '')).toThrowError(
@@ -569,6 +570,34 @@ describe('meeting', () => {
 
       it('should successfully share app content to stage', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        let requestUrl = 'validUrl';
+        meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        }, requestUrl);
+
+        let shareAppContentToStageMessage = desktopPlatformMock.findMessageByFunc('meeting.shareAppContentToStage');
+        expect(shareAppContentToStageMessage).not.toBeNull();
+        let callbackId = shareAppContentToStageMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+        expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+      });
+
+      it('should successfully share app content to stage', () => {
+        desktopPlatformMock.initializeWithContext('meetingStage');
 
         let callbackCalled = false;
         let returnedSdkError: SdkError | null;
@@ -707,6 +736,40 @@ describe('meeting', () => {
         expect(returnedSdkError).toBeNull();
         expect(returnedResult).toStrictEqual(appContentStageSharingCapabilities);
       });
+      it('should successfully get info in meeting stage', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingCapabilities | null;
+        meeting.getAppContentStageSharingCapabilities(
+          (error: SdkError, appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingCapabilities;
+          },
+        );
+
+        const appContentStageSharingCapabilities = {
+          doesAppHaveSharePermission: true,
+        };
+
+        const appContentStageSharingCapabilitiesMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingCapabilities',
+        );
+        expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
+        let callbackId = appContentStageSharingCapabilitiesMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingCapabilities],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toStrictEqual(appContentStageSharingCapabilities);
+      });
     });
 
     describe('stopSharingAppContentToStage', () => {
@@ -726,6 +789,34 @@ describe('meeting', () => {
 
       it('should successfully terminate app content stage sharing session', () => {
         desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: boolean | null;
+        meeting.stopSharingAppContentToStage((error: SdkError, result: boolean) => {
+          callbackCalled = true;
+          returnedResult = result;
+          returnedSdkError = error;
+        });
+
+        let stopSharingAppContentToStageMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.stopSharingAppContentToStage',
+        );
+        expect(stopSharingAppContentToStageMessage).not.toBeNull();
+        let callbackId = stopSharingAppContentToStageMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toBe(true);
+      });
+
+      it('should successfully terminate app content stage sharing session in meeting stage', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.meetingStage);
 
         let callbackCalled = false;
         let returnedSdkError: SdkError | null;
@@ -830,6 +921,84 @@ describe('meeting', () => {
         expect(callbackCalled).toBe(true);
         expect(returnedSdkError).toBeNull();
         expect(returnedResult).toStrictEqual(appContentStageSharingState);
+      });
+      it('should successfully get current stage sharing state information in meeting stage', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+
+        let callbackCalled = false;
+        let returnedSdkError: SdkError | null;
+        let returnedResult: meeting.IAppContentStageSharingState | null;
+        meeting.getAppContentStageSharingState(
+          (error: SdkError, appContentStageSharingState: meeting.IAppContentStageSharingState) => {
+            callbackCalled = true;
+            returnedSdkError = error;
+            returnedResult = appContentStageSharingState;
+          },
+        );
+
+        const appContentStageSharingState = {
+          isAppSharing: true,
+        };
+
+        const appContentStageSharingStateMessage = desktopPlatformMock.findMessageByFunc(
+          'meeting.getAppContentStageSharingState',
+        );
+        expect(appContentStageSharingStateMessage).not.toBeNull();
+        let callbackId = appContentStageSharingStateMessage.id;
+        desktopPlatformMock.respondToMessage({
+          data: {
+            id: callbackId,
+            args: [null, appContentStageSharingState],
+          },
+        } as DOMMessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(returnedSdkError).toBeNull();
+        expect(returnedResult).toStrictEqual(appContentStageSharingState);
+      });
+    });
+
+    describe('registerSpeakingStateChangeHandler', () => {
+      it('should fail when called without a handler', () => {
+        expect(() => meeting.registerSpeakingStateChangeHandler(null)).toThrowError(
+          '[registerSpeakingStateChangeHandler] Handler cannot be null',
+        );
+      });
+
+      it('should fail when called before app is initialized', () => {
+        expect(() =>
+          meeting.registerSpeakingStateChangeHandler(() => {
+            return;
+          }),
+        ).toThrowError('The library has not yet been initialized');
+      });
+
+      it('should successfully register a handler for when the array of participants speaking changes', () => {
+        desktopPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+        const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
+
+        let handlerCalled = false;
+        let returnedSpeakingState: meeting.ISpeakingState | null;
+
+        meeting.registerSpeakingStateChangeHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+          handlerCalled = true;
+          returnedSpeakingState = isSpeakingDetected;
+        });
+
+        let registerHandlerMessage = desktopPlatformMock.findMessageByFunc('registerHandler');
+        expect(registerHandlerMessage).not.toBeNull();
+        expect(registerHandlerMessage.args.length).toBe(1);
+        expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
+
+        desktopPlatformMock.respondToMessage({
+          data: {
+            func: 'meeting.speakingStateChanged',
+            args: [speakingState],
+          },
+        } as DOMMessageEvent);
+
+        expect(handlerCalled).toBeTruthy();
+        expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
       });
     });
   });

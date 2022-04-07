@@ -42,9 +42,6 @@ export namespace sharing {
   }
 
   /**
-   * @private
-   * Feature is under development
-   *
    * Opens a share dialog for web content
    * @param shareWebContentRequest web content info
    * @param callback optional callback

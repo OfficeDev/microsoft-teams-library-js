@@ -421,4 +421,101 @@ describe('files', () => {
       expect(callback).toHaveBeenCalled();
     });
   });
+
+  describe('getFileDownloads', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    it('should not allow calls with empty callback', () => {
+      utils.initializeWithContext('content');
+      expect(() => files.getFileDownloads(null)).toThrowError();
+    });
+
+    it('should trigger callback correctly', () => {
+      utils.initializeWithContext('content');
+      const mockFileDownloads: files.IFileItem[] = [
+        {
+          timestamp: new Date(),
+          title: 'title',
+          extension: 'docx',
+        },
+      ];
+
+      const callback = jest.fn((err, fileList) => {
+        expect(err).toBeFalsy();
+        expect(fileList).toEqual(mockFileDownloads);
+      });
+
+      files.getFileDownloads(callback);
+
+      const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+      expect(getFileDownloadsMessage).not.toBeNull();
+      utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('openDownloadFolder', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', () => {
+      utils.initializeWithContext('content');
+      expect(() => files.openDownloadFolder(null, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', () => {
+      utils.initializeWithContext('settings');
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
+        "This call is not allowed in the 'settings' context",
+      );
+    });
+
+    // null file path value is interpreted as opening cofigured download preference folder 
+    it('should send the message to parent correctly with file path as null', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn((err) => {
+        expect(err).toBeFalsy();
+      });
+
+      files.openDownloadFolder(null, callback);
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      utils.respondToMessage(openDownloadFolderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    // non-null file path value is interpreted as opening containing folder for the given file path
+    it('should send the message to parent correctly with non-null file path', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn((err) => {
+        expect(err).toBeFalsy();
+      });
+
+      files.openDownloadFolder("fileObjectId", callback);
+
+      const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
+      expect(openDownloadFolderMessage).not.toBeNull();
+      utils.respondToMessage(openDownloadFolderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+
+  });
+
 });

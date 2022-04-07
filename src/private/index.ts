@@ -1,5 +1,4 @@
 export { bot } from './bot';
-export { menus } from './menus';
 export { logs } from './logs';
 export {
   ChatMembersInformation,

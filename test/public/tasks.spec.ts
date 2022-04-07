@@ -142,27 +142,17 @@ describe('tasks', () => {
       expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    it('should not allow calls from content context', () => {
-      utils.initializeWithContext('content');
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'content' context");
-    });
-
-    it('should not allow calls from sidePanel context', () => {
+    it('should successfully pass taskInfo in sidePanel context', () => {
       utils.initializeWithContext('sidePanel');
+      const taskInfo = { width: 10, height: 10 };
 
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'sidePanel' context");
+      tasks.updateTask(taskInfo);
+
+      const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
+      expect(updateTaskMessage).not.toBeNull();
+      expect(updateTaskMessage.args).toEqual([taskInfo]);
     });
 
-    it('should not allow calls from meetingStage context', () => {
-      utils.initializeWithContext('meetingStage');
-
-      const taskInfo: TaskInfo = {};
-      expect(() => tasks.updateTask(taskInfo)).toThrowError("This call is not allowed in the 'meetingStage' context");
-    });
-    
     it('should successfully pass taskInfo in task context', () => {
       utils.initializeWithContext('task');
       const taskInfo = { width: 10, height: 10 };
@@ -195,24 +185,6 @@ describe('tasks', () => {
       expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'settings' context");
     });
 
-    it('should not allow calls from content context', () => {
-      utils.initializeWithContext('content');
-
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'content' context");
-    });
-
-    it('should not allow calls from sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
-
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'sidePanel' context");
-    });
-
-    it('should not allow calls from meetingStage context', () => {
-      utils.initializeWithContext('meetingStage');
-
-      expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'meetingStage' context");
-    });
-
     it('should not allow calls from authentication context', () => {
       utils.initializeWithContext('authentication');
 
@@ -223,6 +195,16 @@ describe('tasks', () => {
       utils.initializeWithContext('remove');
 
       expect(() => tasks.submitTask()).toThrowError("This call is not allowed in the 'remove' context");
+    });
+
+    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
+      utils.initializeWithContext('sidePanel');
+
+      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
+
+      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
+      expect(submitTaskMessage).not.toBeNull();
+      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', () => {
