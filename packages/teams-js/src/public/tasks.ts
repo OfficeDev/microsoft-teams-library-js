@@ -4,7 +4,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
-import { dialog, SdkResponse } from './dialog';
+import { dialog } from './dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
@@ -18,7 +18,8 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} instead.
+   * As of 2.0.0-beta.4, please use {@link dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for url based dialogs
+   * and {@link dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for bot based dialogs.
    *
    * Allows an app to open the task module.
    *
@@ -34,11 +35,11 @@ export namespace tasks {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     }
