@@ -7,6 +7,7 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly barcode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {
@@ -52,6 +53,7 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    barcode: undefined,
     calendar: undefined,
     call: undefined,
     chat: {
@@ -98,6 +100,8 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
+    // I'm actually not sure what the right thing to put here, if we don't use the old format I think we would want this to say false in legacy teams
+    barcode: {},
     call: {},
     chat: {
       conversation: {},
