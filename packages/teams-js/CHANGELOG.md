@@ -16,7 +16,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 ### Minor changes
 
-- Change the constructor function to make the `onRecordingStarted` callback mandatory, make `onRecordingStopped` an optional property that can be passed to the constructor.  This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
+- Change the `VideoControllerCallback` constructor function to make the `onRecordingStarted` callback mandatory and make `onRecordingStopped` an optional property that can be passed to the constructor. This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
 
 ### Patches
 

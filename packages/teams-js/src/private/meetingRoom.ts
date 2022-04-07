@@ -54,7 +54,6 @@ export namespace meetingRoom {
   type StageLayoutControls =
     | 'showVideoGallery'
     | 'showContent'
-    | 'showContent'
     | 'showVideoGalleryAndContent'
     | 'showLargeGallery'
     | 'showTogether';

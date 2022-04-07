@@ -42,9 +42,17 @@ const GetUserJoinedTeams = (): React.ReactElement =>
     name: 'getUserJoinedTeams',
     title: 'Get User Joined Teams',
     onClick: async input => {
-      const result = await legacy.fullTrust.getUserJoinedTeams(input);
+      const result = await legacy.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
+  });
+
+const CheckLegacyFullTrustGetUserJoinedCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'CheckLegacyFullTrustGetUserJoinedCapability',
+    title: 'Check Legacy FullTrust Joined Teams isSupported Capability',
+    onClick: async () =>
+      `Legacy Fulltrust module ${legacy.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetConfigSetting = (): React.ReactElement =>
@@ -71,6 +79,7 @@ const FullTrustAPIs = (): ReactElement => (
     <GetConfigSetting />
     <EnterFullScreen />
     <ExitFullScreen />
+    <CheckLegacyFullTrustGetUserJoinedCapability />
     <CheckLegacyFullTrustCapability />
     <CheckPagesFullTrustCapability />
   </>

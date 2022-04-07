@@ -192,7 +192,8 @@ const OpenDownloadFolder = (): ReactElement =>
     name: 'openDownloadFolder',
     title: 'Open Download Folder',
     onClick: async () => {
-      files.openDownloadFolder();
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      files.openDownloadFolder('fileObjectId', () => {});
       return 'Opened download folder';
     },
   });
