@@ -20,6 +20,7 @@ export namespace notifications {
     ensureInitialized(FrameContexts.content);
     sendMessageToParent('notifications.showNotification', [showNotificationParameters]);
   }
+
   export function isSupported(): boolean {
     return runtime.supports.notifications ? true : false;
   }

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { type } from 'os';
 import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
@@ -313,4 +315,9 @@ export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
     url.searchParams.append('context', JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId }));
   }
   return url.toString();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isThenable<T>(maybePromise: any): maybePromise is Promise<T> {
+  return !!maybePromise && typeof maybePromise.then === 'function';
 }

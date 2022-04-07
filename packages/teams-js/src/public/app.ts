@@ -434,7 +434,7 @@ export namespace app {
   /**
    * Number of milliseconds we'll give the initialization call to return before timing it out
    */
-  const initializationTimeoutInMs = 5000;
+  const initializationTimeoutInMs = 7000;
 
   /**
    * Initializes the library.
