@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
+import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 /**
  * @hidden
@@ -71,6 +72,10 @@ export namespace appEntity {
     callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
+
+    if (!isSupported) {
+      throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    }
 
     if (!threadId || threadId.length == 0) {
       throw new Error('[appEntity.selectAppEntity] threadId name cannot be null or empty');
