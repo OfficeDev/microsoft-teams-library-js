@@ -2,7 +2,7 @@ import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { FrameContexts } from './constants';
-import { ErrorCode } from './interfaces';
+import { DevicePermission, DevicePermissionType, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace barcode {
@@ -23,15 +23,16 @@ export namespace barcode {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
-      // could also not use the old message format here and totally break from media.ts, open to opinions
-      // actually thinking it might be good to totally break from media. Leaving in now to provoke discussion
-      resolve(sendAndHandleSdkError('media.scanBarCode', barcodeConfig));
+      // Decided not to use the old message format here and totally break from media.ts
+      resolve(sendAndHandleSdkError('barcode.scanBarCode', barcodeConfig));
     });
   }
 
   export function hasPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [{ type: DevicePermissionType.Media }];
+
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('barcode.hasPermission'));
+      resolve(sendAndHandleSdkError('permission.has', permissions));
     });
   }
 
@@ -40,8 +41,10 @@ export namespace barcode {
   // would have the new allow parameters, but only the AppPermissions dialog should trigger the
   // "ask the user to refresh" flow
   export function requestPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [{ type: DevicePermissionType.Media }];
+
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleSdkError('barcode.requestPermission'));
+      resolve(sendAndHandleSdkError('permission.request', permissions));
     });
   }
 

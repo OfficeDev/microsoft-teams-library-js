@@ -746,3 +746,14 @@ export enum ErrorCode {
    */
   SIZE_EXCEEDED = 10000,
 }
+
+/** @hidden */
+export enum DevicePermissionType {
+  GeoLocation = 'geolocation',
+  Media = 'media',
+}
+
+/** @hidden */
+export interface DevicePermission {
+  type: DevicePermissionType;
+}

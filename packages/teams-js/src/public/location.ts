@@ -6,7 +6,7 @@ import {
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
 } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import { DevicePermission, DevicePermissionType, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 /**
  * @alpha
@@ -57,8 +57,10 @@ export namespace location {
   }
 
   export function hasPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [{ type: DevicePermissionType.GeoLocation }];
+
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('location.hasPermission'));
+      resolve(sendAndHandleError('permission.has', permissions));
     });
   }
 
@@ -67,8 +69,10 @@ export namespace location {
   // would have the new allow parameters, but only the AppPermissions dialog should trigger the
   // "ask the user to refresh" flow
   export function requestPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [{ type: DevicePermissionType.GeoLocation }];
+
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('location.requestPermission'));
+      resolve(sendAndHandleError('permission.request', permissions));
     });
   }
 
@@ -94,7 +98,8 @@ export namespace location {
   }
 
   /**
-   * IMPLEMENTATION NOTE: this should really just be "the unpromisified version of getLocation". I think this is basically correct
+   * IMPLEMENTATION NOTE: this should really just be "the unpromisified version of getLocation".
+   * There's no reason to go from callback to promise back to callback in the "real" implementation
    * @deprecated
    * As of 2.0.0-beta.4, please use one of the following functions:
    * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>}
@@ -128,7 +133,8 @@ export namespace location {
   }
 
   /**
-   * * IMPLEMENTATION NOTE: this should really just be "the unpromisified version of showLocation". I think this is basically correct
+   * IMPLEMENTATION NOTE: this should really just be "the unpromisified version of getLocation".
+   * There's no reason to go from callback to promise back to callback in the "real" implementation
    * @deprecated
    * As of 2.0.0-beta.4, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
    * Shows the location on map corresponding to the given coordinates
