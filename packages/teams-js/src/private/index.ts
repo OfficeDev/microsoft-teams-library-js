@@ -1,4 +1,3 @@
-export { bot } from './bot';
 export { logs } from './logs';
 export {
   ChatMembersInformation,

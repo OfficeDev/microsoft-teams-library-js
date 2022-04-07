@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "legacy.fullTrust.getUserJoinedTeams() has been moved into its own subcapability called joinedTeams and is now legacy.fullTrust.joinedTeams.getUserJoinedTeams().",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
