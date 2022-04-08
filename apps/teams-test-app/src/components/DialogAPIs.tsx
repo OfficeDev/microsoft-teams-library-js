@@ -5,7 +5,6 @@ import {
   DialogSize,
   IAppWindow,
   ParentAppWindow,
-  SdkResponse,
   TaskInfo,
   tasks,
   UrlDialogInfo,
@@ -56,7 +55,7 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (urlDialogInfo, setResult) => {
-          const onComplete = (resultObj: SdkResponse): void => {
+          const onComplete = (resultObj: dialog.ISdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
           const messageFromChildHandler: dialog.PostMessageChannel = (message: string): void => {
