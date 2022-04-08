@@ -1,8 +1,4 @@
-import {
-  sendAndHandleSdkError as sendAndHandleError,
-  sendMessageToParent,
-  sendMessageToParentAsync,
-} from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
@@ -319,7 +315,7 @@ export namespace files {
         throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
       }
 
-      resolve(sendAndHandleError('files.getCloudStorageFolders', channelId));
+      resolve(sendAndHandleSdkError('files.getCloudStorageFolders', channelId));
     });
   }
 
@@ -368,7 +364,7 @@ export namespace files {
         throw new Error('[files.deleteCloudStorageFolder] folderToDelete cannot be null or empty');
       }
 
-      resolve(sendAndHandleError('files.deleteCloudStorageFolder', channelId, folderToDelete));
+      resolve(sendAndHandleSdkError('files.deleteCloudStorageFolder', channelId, folderToDelete));
     });
   }
 
@@ -396,7 +392,7 @@ export namespace files {
         throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
       }
 
-      resolve(sendAndHandleError('files.getCloudStorageFolderContents', folder, providerCode));
+      resolve(sendAndHandleSdkError('files.getCloudStorageFolderContents', folder, providerCode));
     });
   }
 
@@ -470,7 +466,7 @@ export namespace files {
     return new Promise<IExternalProvider[]>(resolve => {
       ensureInitialized(FrameContexts.content);
 
-      resolve(sendAndHandleError('files.getExternalProviders', excludeAddedProviders));
+      resolve(sendAndHandleSdkError('files.getExternalProviders', excludeAddedProviders));
     });
   }
 
@@ -502,7 +498,7 @@ export namespace files {
       }
 
       resolve(
-        sendAndHandleError(
+        sendAndHandleSdkError(
           'files.copyMoveFiles',
           selectedFiles,
           providerCode,
@@ -541,7 +537,7 @@ export namespace files {
     ensureInitialized(FrameContexts.content);
 
     const wrappedFunction = (): Promise<IFileItem[]> =>
-      new Promise(resolve => resolve(sendAndHandleError('files.getFileDownloads', [])));
+      new Promise(resolve => resolve(sendAndHandleSdkError('files.getFileDownloads', [])));
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
@@ -552,15 +548,27 @@ export namespace files {
    *
    * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
    * @param fileObjectId Id of the file whose containing folder should be opened
+   */
+  export function openDownloadFolder(fileObjectId: string | undefined): Promise<void>;
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * @deprecated
+   * As of 2.0.0-beta.4, please use {@link file.openDownloadFolder file.openDownloadFolder(fileObjectId?: string): Promise\<void\>}
+   * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
+   * @param fileObjectId Id of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
-  export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
+  export function openDownloadFolder(fileObjectId: string | undefined, callback: (error?: SdkError) => void): void;
+  export function openDownloadFolder(
+    fileObjectId: string = undefined,
+    callback?: (error?: SdkError) => void,
+  ): Promise<void> {
     ensureInitialized(FrameContexts.content);
 
-    if (!callback) {
-      throw new Error('[files.openDownloadFolder] Callback cannot be null');
-    }
+    const wrappedFunction = (): Promise<void> => sendAndHandleSdkError('files.openDownloadFolder', [fileObjectId]);
 
-    sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 }
