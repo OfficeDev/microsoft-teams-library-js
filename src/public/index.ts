@@ -47,6 +47,7 @@ export { location } from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
 export { people } from './people';
+export { profile } from './profile';
 export { video } from './video';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
