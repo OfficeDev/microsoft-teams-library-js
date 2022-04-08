@@ -162,7 +162,7 @@ export namespace meeting {
   /**
    * Allows an app to mute the microphone in the meeting.
    * @param callback Callback contains 2 parameters, error and result.
-   * error can either contain an error of type SdkError, incase of an error, or true when mute is successful
+   * error can either contain an error of type SdkError, incase of an error, or null when mute is successful
    * result: True means microphone is muted
    */
   export function muteMicrophone(callback: (error: SdkError | null, result: boolean | null) => void): void {
