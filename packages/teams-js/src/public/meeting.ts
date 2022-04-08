@@ -499,7 +499,7 @@ export namespace meeting {
     param1: string | ((error: SdkError | null, result: boolean | null) => void),
     param2?: string,
   ): Promise<boolean> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     let appContentUrl: string;
     let callback: (error: SdkError | null, result: boolean | null) => void;
     if (typeof param1 === 'function') {
@@ -556,7 +556,7 @@ export namespace meeting {
       appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
     ) => void,
   ): Promise<IAppContentStageSharingCapabilities> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IAppContentStageSharingCapabilities>(
       getAppContentStageSharingCapabilitiesHelper,
       callback,
@@ -601,7 +601,7 @@ export namespace meeting {
   export function stopSharingAppContentToStage(
     callback?: (error: SdkError | null, result: boolean | null) => void,
   ): Promise<boolean> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<boolean>(
       stopSharingAppContentToStageHelper,
       callback,
@@ -640,7 +640,7 @@ export namespace meeting {
   export function getAppContentStageSharingState(
     callback?: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
   ): Promise<IAppContentStageSharingState> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IAppContentStageSharingState>(
       getAppContentStageSharingStateHelper,
       callback,
