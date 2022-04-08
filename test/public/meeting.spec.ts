@@ -1001,33 +1001,33 @@ describe('meeting', () => {
         expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
       });
     });
-    describe('muteViaMeshApp', () => {
-      it('should not allow mute via mesh app calls with null callback', () => {
-        expect(() => meeting.muteViaMeshApp(null)).toThrowError('[mute via mesh app] Callback cannot be null');
+    describe('muteMicrophone', () => {
+      it('should not allow mute microphone with null callback', () => {
+        expect(() => meeting.muteMicrophone(null)).toThrowError('[mute microphone] Callback cannot be null');
       });
       it('should not allow calls before initialization', () => {
         expect(() =>
-          meeting.muteViaMeshApp(() => {
+          meeting.muteMicrophone(() => {
             return;
           }),
         ).toThrowError('The library has not yet been initialized');
       });
 
-      it('should successfully toggle the incoming client audio', () => {
+      it('should successfully mute the incoming client audio', () => {
         desktopPlatformMock.initializeWithContext('sidePanel');
 
         let callbackCalled = false;
         let returnedSdkError: SdkError | null;
         let returnedResult: boolean | null;
-        meeting.muteViaMeshApp((error: SdkError, result: boolean) => {
+        meeting.muteMicrophone((error: SdkError, result: boolean) => {
           callbackCalled = true;
           returnedResult = result;
           returnedSdkError = error;
         });
 
-        const muteViaMeshAppMessage = desktopPlatformMock.findMessageByFunc('muteViaMeshApp');
-        expect(muteViaMeshAppMessage).not.toBeNull();
-        const callbackId = muteViaMeshAppMessage.id;
+        const muteMicrophoneMessage = desktopPlatformMock.findMessageByFunc('muteMicrophone');
+        expect(muteMicrophoneMessage).not.toBeNull();
+        const callbackId = muteMicrophoneMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
@@ -1045,15 +1045,15 @@ describe('meeting', () => {
         let callbackCalled = false;
         let returnedSdkError: SdkError | null;
         let returnedResult: boolean | null;
-        meeting.muteViaMeshApp((error: SdkError, result: boolean) => {
+        meeting.muteMicrophone((error: SdkError, result: boolean) => {
           callbackCalled = true;
           returnedResult = result;
           returnedSdkError = error;
         });
 
-        const muteViaMeshAppMessage = desktopPlatformMock.findMessageByFunc('muteViaMeshApp');
-        expect(muteViaMeshAppMessage).not.toBeNull();
-        const callbackId = muteViaMeshAppMessage.id;
+        const muteMicrophoneMessage = desktopPlatformMock.findMessageByFunc('muteMicrophone');
+        expect(muteMicrophoneMessage).not.toBeNull();
+        const callbackId = muteMicrophoneMessage.id;
         desktopPlatformMock.respondToMessage({
           data: {
             id: callbackId,
