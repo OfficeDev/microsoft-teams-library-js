@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "appEntity APIs will now throw a NOT_SUPPORTED_ON_PLATFORM error if called while capability is not supported.",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
