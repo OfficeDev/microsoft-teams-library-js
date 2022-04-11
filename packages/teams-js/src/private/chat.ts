@@ -163,7 +163,7 @@ export namespace chat {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
       }
       const sendPromise = sendAndHandleError('chat.openChat', {
         members: openChatRequest.user,
@@ -198,7 +198,7 @@ export namespace chat {
       } else {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+          throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
         }
         const sendPromise = sendAndHandleError('chat.openChat', {
           members: openChatRequest.users,
@@ -225,7 +225,7 @@ export namespace chat {
     return new Promise<ChatMembersInformation>(resolve => {
       ensureInitialized();
       if (!isSupported()) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
       }
       resolve(sendAndUnwrap('getChatMembers'));
     });
@@ -248,7 +248,7 @@ export namespace chat {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+          throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
         }
         const sendPromise = sendAndHandleError('conversations.openConversation', {
           title: openConversationRequest.title,
@@ -294,7 +294,7 @@ export namespace chat {
     export function closeConversation(): void {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
       }
       sendMessageToParent('conversations.closeConversation');
       removeHandler('startConversation');
