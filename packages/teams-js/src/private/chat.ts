@@ -7,6 +7,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ErrorCode } from '../public/interfaces';
 import { ChatMembersInformation } from './interfaces';
 
 /**
@@ -161,6 +162,9 @@ export namespace chat {
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
       const sendPromise = sendAndHandleError('chat.openChat', {
         members: openChatRequest.user,
         message: openChatRequest.message,
@@ -193,6 +197,9 @@ export namespace chat {
         openChat(chatRequest);
       } else {
         ensureInitialized(FrameContexts.content);
+        if (!isSupported()) {
+          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        }
         const sendPromise = sendAndHandleError('chat.openChat', {
           members: openChatRequest.users,
           message: openChatRequest.message,
@@ -217,6 +224,9 @@ export namespace chat {
   export function getChatMembers(): Promise<ChatMembersInformation> {
     return new Promise<ChatMembersInformation>(resolve => {
       ensureInitialized();
+      if (!isSupported()) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
       resolve(sendAndUnwrap('getChatMembers'));
     });
   }
@@ -237,6 +247,9 @@ export namespace chat {
     export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content);
+        if (!isSupported()) {
+          throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+        }
         const sendPromise = sendAndHandleError('conversations.openConversation', {
           title: openConversationRequest.title,
           subEntityId: openConversationRequest.subEntityId,
@@ -280,6 +293,9 @@ export namespace chat {
      */
     export function closeConversation(): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      }
       sendMessageToParent('conversations.closeConversation');
       removeHandler('startConversation');
       removeHandler('closeConversation');
