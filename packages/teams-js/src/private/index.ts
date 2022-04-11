@@ -17,7 +17,7 @@ export {
   uploadCustomApp,
   registerUserSettingsChangeHandler,
 } from './privateAPIs';
-export { chat } from './chat';
+export { conversation } from './conversation';
 export { files } from './files';
 export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';
