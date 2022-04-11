@@ -374,8 +374,8 @@ export interface Context {
 
   /**
    * @hidden
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel (deprecated, use teamsRoomsWindows instead),
-   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
