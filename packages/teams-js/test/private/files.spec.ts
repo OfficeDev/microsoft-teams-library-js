@@ -602,12 +602,6 @@ describe('files', () => {
           });
         } else {
           it(`should not allow calls from ${frameContext} context`, async () => {
-            if (frameContext === FrameContexts.content) {
-              return;
-            }
-
-            expect.assertions(1);
-
             await utils.initializeWithContext(frameContext);
             expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
               `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -653,12 +647,6 @@ describe('files', () => {
           });
         } else {
           it(`should not allow calls from ${frameContext} context`, async () => {
-            if (frameContext === FrameContexts.content) {
-              return;
-            }
-
-            expect.assertions(1);
-
             await utils.initializeWithContext(frameContext);
 
             return expect(() => files.openDownloadFolder(null)).toThrowError(
