@@ -2,7 +2,7 @@ import { conversation, OpenConversationRequest } from '../../src/private/convers
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
-describe('chat', () => {
+describe('conversation', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
