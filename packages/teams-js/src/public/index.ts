@@ -27,6 +27,7 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
+export { chat } from './chat';
 export { dialog } from './dialog';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
