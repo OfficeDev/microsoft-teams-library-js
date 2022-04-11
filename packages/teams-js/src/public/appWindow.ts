@@ -78,7 +78,7 @@ export class ParentAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
-    ensureInitialized();
+    ensureInitialized(FrameContexts.task);
     if (type === 'message') {
       registerHandler('messageForChild', listener);
     }
