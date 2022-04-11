@@ -294,7 +294,7 @@ export interface Context {
   /**
    * Unique ID which is tied to the login/logout session of the user for the Host Teams Native App.
    */
-   userSessionId?: string;
+  userSessionId?: string;
 
   /**
    * The user's role in the team.
