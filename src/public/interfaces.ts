@@ -292,6 +292,11 @@ export interface Context {
   sessionId?: string;
 
   /**
+   * Unique ID which is tied to the login/logout session of the user for the Host Teams Native App.
+   */
+   userSessionId?: string;
+
+  /**
    * The user's role in the team.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to the user's role, and never as proof of her role.
