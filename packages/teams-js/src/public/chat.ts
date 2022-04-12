@@ -57,7 +57,7 @@ export namespace chat {
    * Allows the user to open a chat with a single user and allows
    * for the user to specify the message they wish to send.
    *
-   *@param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
+   * @param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
    */
