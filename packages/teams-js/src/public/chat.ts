@@ -4,63 +4,56 @@ import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
+ * Describes information needed to start a chat
  *
- * @internal
+ * @beta
  */
 interface OpenChatRequest {
   /**
-   * @hidden
-   * The message to send when opening chat
+   * An optional message used when initiating chat
    */
   message?: string;
 }
 
 /**
- * @hidden
- * Hide from docs.
- * ------
+ * Used when starting a chat with one person
  *
- * @internal
+ * @see OpenGroupChatRequest for use when a chat with more than one person
+ *
+ * @beta
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
-   * @hidden
-   * User's UPN to open chat with
+   * The Azure Active Directory UPN (e-mail address) of the user to chat with
    */
   user: string;
 }
 
 /**
- * @hidden
- * Hide from docs.
- * ------
+ * Used when starting a chat with more than one person
  *
- * @internal
+ * @see OpenSingleChatRequest for use in a chat with only one person
+ *
+ * @beta
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
-   * @hidden
-   * Array containing UPNs of users to open chat with
+   * Array containing Azure Active Directory UPNs (e-mail addresss) of users to open chat with
    */
   users: string[];
   /**
-   * @hidden
-   * The display name of a conversation for 3 or more users
+   * The display name of a conversation for 3 or more users (chats with fewer than three users will ignore this field)
    */
   topic?: string;
 }
 
 /**
- * @hidden
- * Namespace to interact with the conversational subEntities inside the tab
+ * Contains functionality to start chat with others
  *
- * @alpha
+ * @beta
  */
 export namespace chat {
   /**
-   * @hidden
-   * Hide from docs
-   * --------------
    * Allows the user to open a chat with a single user and allows
    * for the user to specify the message they wish to send.
    *
@@ -79,9 +72,6 @@ export namespace chat {
     });
   }
   /**
-   * @hidden
-   * Hide from docs
-   * --------------
    * Allows the user to create a chat with multiple users (2+) and allows
    * for the user to specify a message and name the topic of the conversation. If
    * only 1 user is provided into users array default back to origin openChat.
