@@ -374,8 +374,8 @@ export interface Context {
 
   /**
    * @hidden
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel (deprecated, use teamsRoomsWindows instead),
-   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
@@ -532,6 +532,9 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
+/**
+ * Data structure to represent the size of a dialog
+ */
 export interface DialogSize {
   /**
    * The requested height of the webview/iframe.
@@ -544,6 +547,9 @@ export interface DialogSize {
   width: DialogDimension | number;
 }
 
+/**
+ * Data structure to describe dialog information needed to open a url based dialog.
+ */
 export interface UrlDialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
@@ -551,7 +557,7 @@ export interface UrlDialogInfo {
   url: string;
 
   /*
-   * The requested height and width of the dialog
+   * The requested size of the dialog
    */
   size: DialogSize;
 
@@ -566,6 +572,9 @@ export interface UrlDialogInfo {
   fallbackUrl?: string;
 }
 
+/**
+ * Data structure to describe dialog information needed to open a bot based dialog.
+ */
 export interface BotUrlDialogInfo extends UrlDialogInfo {
   /**
    * Specifies a bot ID to send the result of the user's interaction with the task module.

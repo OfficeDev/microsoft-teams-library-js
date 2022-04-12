@@ -557,7 +557,7 @@ describe('meeting', () => {
       expect(() => meeting.shareAppContentToStage('')).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the shareAppContentToStage message.', async () => {
@@ -634,7 +634,7 @@ describe('meeting', () => {
         'The library has not yet been initialized',
       );
     });
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingCapabilities message.', async () => {
@@ -709,7 +709,7 @@ describe('meeting', () => {
       expect(() => meeting.stopSharingAppContentToStage()).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the stopSharingAppContentToStage message.', async () => {
@@ -778,7 +778,7 @@ describe('meeting', () => {
       expect(() => meeting.getAppContentStageSharingState()).toThrowError('The library has not yet been initialized');
     });
 
-    const allowedContexts = [FrameContexts.sidePanel];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingState message.', async () => {
@@ -847,6 +847,50 @@ describe('meeting', () => {
           );
         });
       }
+    });
+  });
+
+  describe('registerSpeakingStateChangeHandler', () => {
+    it('should fail when called without a handler', () => {
+      expect(() => meeting.registerSpeakingStateChangeHandler(null)).toThrowError(
+        '[registerSpeakingStateChangeHandler] Handler cannot be null',
+      );
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() =>
+        meeting.registerSpeakingStateChangeHandler(() => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully register a handler for when the array of participants speaking changes', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
+
+      let handlerCalled = false;
+      let returnedSpeakingState: meeting.ISpeakingState | null;
+
+      meeting.registerSpeakingStateChangeHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+        handlerCalled = true;
+        returnedSpeakingState = isSpeakingDetected;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.speakingStateChanged',
+          args: [speakingState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
     });
   });
 });

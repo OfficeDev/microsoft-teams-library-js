@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "packageName": "@microsoft/teams-js",
+  "comment": "Update comment for initializePrivateApis() explaining that this function needs to stay for backwards compatibility purposes",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}

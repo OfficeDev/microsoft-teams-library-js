@@ -5,7 +5,7 @@ import {
   DialogSize,
   IAppWindow,
   ParentAppWindow,
-  SdkResponse,
+  TaskInfo,
   tasks,
   UrlDialogInfo,
 } from '@microsoft/teams-js';
@@ -44,7 +44,7 @@ const DialogAPIs = (): ReactElement => {
             openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
             return '';
           }
-          const onComplete = (resultObj: SdkResponse): void => {
+          const onComplete = (resultObj: dialog.ISdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
           const messageFromChildHandler: dialog.PostMessageChannel = (message: string): void => {

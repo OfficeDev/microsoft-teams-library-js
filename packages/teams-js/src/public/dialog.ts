@@ -6,32 +6,42 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
  *
- * @remarks
- * This object is usable only on the content frame.
- *
  * @beta
  */
-
-export interface SdkResponse {
-  err?: string;
-  result?: string | object;
-}
-
 export namespace dialog {
+  /**
+   * Data Structure to represent the SDK response when dialog closes
+   */
+  export interface ISdkResponse {
+    /**
+     * Error in case there is a failure before dialog submission
+     */
+    err?: string;
+
+    /**
+     * Result value that the dialog is submitted with using {@linkcode submit} function
+     *
+     */
+    result?: string | object;
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
-  export type DialogSubmitHandler = (result: SdkResponse) => void;
+  export type DialogSubmitHandler = (result: ISdkResponse) => void;
+
   /**
-   * Allows an app to open the dialog module.
+   * Allows app to open a url based dialog.
+   *
+   * @remarks
+   * This function cannot be called from inside of a dialog
    *
    * @param urlDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - This Handler is called when the dialog has been submitted or closed.
+   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
    * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
    *
    * @returns a function that can be used to send messages to the dialog.
@@ -62,7 +72,7 @@ export namespace dialog {
   /**
    * Submit the dialog module.
    *
-   * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
@@ -75,7 +85,10 @@ export namespace dialog {
   /**
    *  Send message to the parent from dialog
    *
-   * @param message - The message to send
+   *  @remarks
+   * This function is only called from inside of a dialog
+   *
+   * @param message - The message to send to the parent
    */
   export function sendMessageToParentFromDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,21 +112,30 @@ export namespace dialog {
   }
 
   /**
-   * Fucntion to call when an event is received from the Parent
+   * Register a listener that will be triggered when a message is received from the app that opened the dialog.
    *
-   * @param type - The event to listen to. Currently the only supported type is 'message'.
-   * @param listener - listener - The listener that will be called.
+   * @remarks
+   * This function is only called from inside of a dialog.
+   *
+   * @param listener - The listener that will be triggered.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function registerOnMessageFromParent(listener: (message: any) => void): void {
+  export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized();
     registerHandler('messageForChild', listener);
   }
 
+  /**
+   * Checks if dialog module is supported by the host
+   *
+   * @returns boolean to represent whether dialog module is supported
+   */
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
   }
 
+  /**
+   * Namespace to update the dialog
+   */
   export namespace update {
     /**
      * Update dimensions - height/width of a dialog.
@@ -124,12 +146,30 @@ export namespace dialog {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
       sendMessageToParent('tasks.updateTask', [dimensions]);
     }
+
+    /**
+     * Checks if dialog.update capability is supported by the host
+     *
+     * @returns boolean to represent whether dialog.update is supported
+     */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
     }
   }
 
+  /**
+   * Namespace to open a dialog that sends results to the bot framework
+   */
   export namespace bot {
+    /**
+     * Allows an app to open the dialog module using bot.
+     *
+     * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
+     * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
+     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+     *
+     * @returns a function that can be used to send messages to the dialog.
+     */
     export function open(
       botUrlDialogInfo: BotUrlDialogInfo,
       submitHandler?: DialogSubmitHandler,
@@ -152,6 +192,12 @@ export namespace dialog {
       };
       return sendMessageToDialog;
     }
+
+    /**
+     * Checks if dialog.bot capability is supported by the host
+     *
+     * @returns boolean to represent whether dialog.bot is supported
+     */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
