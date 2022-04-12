@@ -1,3 +1,4 @@
+import { createTeamsDeepLinkForChat } from '../internal/chatUtilities';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
@@ -64,11 +65,20 @@ export namespace chat {
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
-      const sendPromise = sendAndHandleError('chat.openChat', {
-        members: openChatRequest.user,
-        message: openChatRequest.message,
-      });
-      resolve(sendPromise);
+      if (runtime.isLegacyTeams) {
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
+          ),
+        );
+      } else {
+        const sendPromise = sendAndHandleError('chat.openChat', {
+          members: openChatRequest.user,
+          message: openChatRequest.message,
+        });
+        resolve(sendPromise);
+      }
     });
   }
   /**
@@ -93,12 +103,21 @@ export namespace chat {
         openChat(chatRequest);
       } else {
         ensureInitialized(FrameContexts.content);
-        const sendPromise = sendAndHandleError('chat.openChat', {
-          members: openChatRequest.users,
-          message: openChatRequest.message,
-          topic: openChatRequest.topic,
-        });
-        resolve(sendPromise);
+        if (runtime.isLegacyTeams) {
+          resolve(
+            sendAndHandleError(
+              'executeDeepLink',
+              createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
+            ),
+          );
+        } else {
+          const sendPromise = sendAndHandleError('chat.openChat', {
+            members: openChatRequest.users,
+            message: openChatRequest.message,
+            topic: openChatRequest.topic,
+          });
+          resolve(sendPromise);
+        }
       }
     });
   }
