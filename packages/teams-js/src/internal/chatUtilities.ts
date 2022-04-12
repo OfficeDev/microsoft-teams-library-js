@@ -1,8 +1,8 @@
 import {
-  deepLinkUrlPathForChat,
-  messageUrlParameterName,
-  topicUrlParameterName,
-  usersUrlParameterName,
+  teamsDeepLinkMessageUrlParameterName,
+  teamsDeepLinkTopicUrlParameterName,
+  teamsDeepLinkUrlPathForChat,
+  teamsDeepLinkUsersUrlParameterName,
 } from './chatConstants';
 import { teamsDeepLinkHost, teamsDeepLinkProtocol } from './constants';
 
@@ -11,10 +11,12 @@ export function createTeamsDeepLinkForChat(users: string[], topic?: string, mess
     throw new Error('Must have at least one user when creating a chat deep link');
   }
 
-  const usersSearchParameter = `${usersUrlParameterName}=` + users.map(user => encodeURIComponent(user)).join(',');
-  const topicSearchParameter = topic === undefined ? '' : `&${topicUrlParameterName}=${encodeURIComponent(topic)}`;
+  const usersSearchParameter =
+    `${teamsDeepLinkUsersUrlParameterName}=` + users.map(user => encodeURIComponent(user)).join(',');
+  const topicSearchParameter =
+    topic === undefined ? '' : `&${teamsDeepLinkTopicUrlParameterName}=${encodeURIComponent(topic)}`;
   const messageSearchParameter =
-    message === undefined ? '' : `&${messageUrlParameterName}=${encodeURIComponent(message)}`;
+    message === undefined ? '' : `&${teamsDeepLinkMessageUrlParameterName}=${encodeURIComponent(message)}`;
 
-  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${deepLinkUrlPathForChat}?${usersSearchParameter}${topicSearchParameter}${messageSearchParameter}`;
+  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForChat}?${usersSearchParameter}${topicSearchParameter}${messageSearchParameter}`;
 }

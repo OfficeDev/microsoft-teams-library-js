@@ -1,4 +1,4 @@
-export const deepLinkUrlPathForChat = '/l/chat/0/0';
-export const usersUrlParameterName = 'users';
-export const topicUrlParameterName = 'topic';
-export const messageUrlParameterName = 'message';
+export const teamsDeepLinkUrlPathForChat = '/l/chat/0/0';
+export const teamsDeepLinkUsersUrlParameterName = 'users';
+export const teamsDeepLinkTopicUrlParameterName = 'topic';
+export const teamsDeepLinkMessageUrlParameterName = 'message';

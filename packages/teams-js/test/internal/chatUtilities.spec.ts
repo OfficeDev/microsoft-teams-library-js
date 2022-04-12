@@ -1,8 +1,8 @@
 import {
-  deepLinkUrlPathForChat,
-  messageUrlParameterName,
-  topicUrlParameterName,
-  usersUrlParameterName,
+  teamsDeepLinkMessageUrlParameterName,
+  teamsDeepLinkTopicUrlParameterName,
+  teamsDeepLinkUrlPathForChat,
+  teamsDeepLinkUsersUrlParameterName,
 } from '../../src/internal/chatConstants';
 import { createTeamsDeepLinkForChat } from '../../src/internal/chatUtilities';
 import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../../src/internal/constants';
@@ -18,12 +18,12 @@ describe('chatUtilities', () => {
     function validateChatDeepLinkPrefix(chatDeepLink: URL): void {
       expect(chatDeepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
       expect(chatDeepLink.host.toLowerCase() === teamsDeepLinkHost);
-      expect(chatDeepLink.pathname.toLowerCase() === deepLinkUrlPathForChat);
+      expect(chatDeepLink.pathname.toLowerCase() === teamsDeepLinkUrlPathForChat);
     }
 
     function validateChatDeepLinkUsers(chatDeepLink: URL, expectedUsers: string[]): void {
       const searchParams = chatDeepLink.searchParams;
-      const userUrlValues: string[] = searchParams.getAll(usersUrlParameterName);
+      const userUrlValues: string[] = searchParams.getAll(teamsDeepLinkUsersUrlParameterName);
       expect(userUrlValues).toHaveLength(1);
 
       const users: string[] = userUrlValues[0].split(',');
@@ -36,7 +36,7 @@ describe('chatUtilities', () => {
 
     function validateChatDeepLinkTopic(chatDeepLink: URL, expectedTopic?: string): void {
       const searchParams = chatDeepLink.searchParams;
-      const topicUrlValues: string[] = searchParams.getAll(topicUrlParameterName);
+      const topicUrlValues: string[] = searchParams.getAll(teamsDeepLinkTopicUrlParameterName);
 
       if (expectedTopic !== undefined) {
         expect(topicUrlValues).toHaveLength(1);
@@ -49,7 +49,7 @@ describe('chatUtilities', () => {
 
     function validateChatDeepLinkMessage(chatDeepLink: URL, expectedMessage?: string): void {
       const searchParams = chatDeepLink.searchParams;
-      const messageUrlValues: string[] = searchParams.getAll(messageUrlParameterName);
+      const messageUrlValues: string[] = searchParams.getAll(teamsDeepLinkMessageUrlParameterName);
 
       if (expectedMessage !== undefined) {
         expect(messageUrlValues).toHaveLength(1);
