@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Merge branch 'AE-MS/chat_docs' of https://github.com/AE-MS/microsoft-teams-library-js into AE-MS/chat_docs",
+  "comment": "Update documentation on newly public chat capability",
   "packageName": "@microsoft/teams-js",
   "email": "aaroner@microsoft.com",
   "dependentChangeType": "none"
