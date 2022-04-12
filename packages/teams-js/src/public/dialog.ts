@@ -99,7 +99,7 @@ export namespace dialog {
   }
 
   /**
-   *  Send message to the dialog from the parent, used exclusively for testing
+   *  Send message to the dialog from the parent
    *
    * @param message - The message to send
    */
