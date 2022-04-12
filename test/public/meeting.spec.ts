@@ -173,8 +173,8 @@ describe('meeting', () => {
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedMeetingResult: meeting.IMeetingDetails | null;
-      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
+      let returnedMeetingResult: meeting.IMeetingDetailsResponse | null;
+      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetailsResponse) => {
         callbackCalled = true;
         returnedMeetingResult = meetingDetails;
         returnedSdkError = error;
@@ -183,7 +183,7 @@ describe('meeting', () => {
       let getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
       expect(getMeetingDetailsMessage).not.toBeNull();
       let callbackId = getMeetingDetailsMessage.id;
-      const details: meeting.IDetails = {
+      const details: meeting.IMeetingDetails = {
         scheduledStartTime: '2020-12-21T21:30:00+00:00',
         scheduledEndTime: '2020-12-21T22:00:00+00:00',
         joinUrl:
@@ -198,7 +198,7 @@ describe('meeting', () => {
       const conversation: meeting.IConversation = {
         id: `convId`,
       };
-      const meetingDetails: meeting.IMeetingDetails = {
+      const meetingDetails: meeting.IMeetingDetailsResponse = {
         details,
         conversation,
         organizer,
@@ -219,8 +219,8 @@ describe('meeting', () => {
 
       let callbackCalled = false;
       let returnedSdkError: SdkError | null;
-      let returnedMeetingDetails: meeting.IMeetingDetails | null;
-      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
+      let returnedMeetingDetails: meeting.IMeetingDetailsResponse | null;
+      meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetailsResponse) => {
         callbackCalled = true;
         returnedMeetingDetails = meetingDetails;
         returnedSdkError = error;

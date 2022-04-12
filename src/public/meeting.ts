@@ -10,7 +10,7 @@ export namespace meeting {
    * Hide from docs
    * Data structure to represent a meeting details
    */
-  export interface IMeetingDetails {
+  export interface IMeetingDetailsResponse {
     /**
      * details object
      */
@@ -186,12 +186,12 @@ export namespace meeting {
    * @private
    * Hide from docs
    * Allows an app to get the meeting details for the meeting
-   * @param callback Callback contains 2 parameters, error and meetingDetails.
+   * @param callback Callback contains 2 parameters, error and meetingDetailsResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a IMeetingDetails value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetailsResponse value, incase of a successful get or null when the get fails
    */
   export function getMeetingDetails(
-    callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
+    callback: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
   ): void {
     if (!callback) {
       throw new Error('[get meeting details] Callback cannot be null');
