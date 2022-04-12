@@ -25,7 +25,7 @@ export namespace meeting {
      * @hidden
      * details object
      */
-    details: IDetails;
+    details: IMeetingDetails | ICallDetails;
     /**
      * @hidden
      * conversation object
@@ -37,19 +37,35 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+
   /**
    * @hidden
    * Hide from docs
-   * Data structure to represent details.
+   * Data structure to represent details applicable to both Meetings and Calls.
    *
    * @internal
    */
-  export interface IDetails {
+  export interface IMeetingOrCallDetailsBase<T> {
     /**
      * @hidden
      * Scheduled start time of the meeting
      */
     scheduledStartTime: string;
+    /**
+     * @hidden
+     * type of the meeting
+     */
+    type?: T;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * Data structure to represent details of a Meeting.
+   *
+   * @internal
+   */
+  export interface IMeetingDetails extends IMeetingOrCallDetailsBase<MeetingType> {
     /**
      * @hidden
      * Scheduled end time of the meeting
@@ -65,12 +81,15 @@ export namespace meeting {
      * meeting title name of the meeting
      */
     title?: string;
-    /**
-     * @hidden
-     * type of the meeting
-     */
-    type?: MeetingType;
   }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * Data structure to represent details of a Call.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {}
 
   /**
    * @hidden
@@ -145,6 +164,11 @@ export namespace meeting {
     Recurring = 'Recurring',
     Broadcast = 'Broadcast',
     MeetNow = 'MeetNow',
+  }
+
+  export enum CallType {
+    OneOnOneCall = 'oneOnOneCall',
+    GroupCall = 'groupCall',
   }
 
   /**
