@@ -8,13 +8,13 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
-   * Data structure to represent a meeting details.
+   * Data structure to represent a meeting details
    */
   export interface IMeetingDetails {
     /**
      * details object
      */
-    details: IDetails;
+    details: IMeetingDetails | ICallDetails;
     /**
      * conversation object
      */
@@ -24,32 +24,50 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+
   /**
    * @private
    * Hide from docs
-   * Data structure to represent details.
+   * Base data structure to represent a meeting or call detail
    */
-  export interface IDetails {
+  export interface IMeetingOrCallDetailsBase<T> {
     /**
-     * Scheduled start time of the meeting
+     * Scheduled start time of the meeting or start time of the call
      */
     scheduledStartTime: string;
+
+    /**
+     * url to join the current meeting or call
+     */
+    joinUrl?: string;
+
+    /**
+     * type of the meeting or call
+     */
+    type?: T;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent call details
+   */
+  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent meeting details.
+   */
+  export interface IMeetingDetails extends IMeetingOrCallDetailsBase<MeetingType> {
     /**
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
     /**
-     * url to join the current meeting
-     */
-    joinUrl?: string;
-    /**
      * meeting title name of the meeting
      */
     title?: string;
-    /**
-     * type of the meeting
-     */
-    type?: MeetingType | MeetingDetailsCallType;
   }
 
   /**
@@ -120,7 +138,7 @@ export namespace meeting {
     MeetNow = 'MeetNow',
   }
 
-  export enum MeetingDetailsCallType {
+  export enum CallType {
     OneOnOneCall = 'oneOnOneCall',
     GroupCall = 'groupCall',
   }
