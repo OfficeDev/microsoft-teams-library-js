@@ -7,6 +7,51 @@ import {
 import { createTeamsDeepLinkForChat } from '../../src/internal/chatUtilities';
 import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../../src/internal/constants';
 
+export function validateChatDeepLinkPrefix(chatDeepLink: URL): void {
+  expect(chatDeepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
+  expect(chatDeepLink.host.toLowerCase() === teamsDeepLinkHost);
+  expect(chatDeepLink.pathname.toLowerCase() === teamsDeepLinkUrlPathForChat);
+}
+
+export function validateChatDeepLinkUsers(chatDeepLink: URL, expectedUsers: string[]): void {
+  const searchParams = chatDeepLink.searchParams;
+  const userUrlValues: string[] = searchParams.getAll(teamsDeepLinkUsersUrlParameterName);
+  expect(userUrlValues).toHaveLength(1);
+
+  const users: string[] = userUrlValues[0].split(',');
+  expect(users).toHaveLength(expectedUsers.length);
+
+  for (const expectedUser of expectedUsers) {
+    expect(users).toContain(expectedUser);
+  }
+}
+
+export function validateChatDeepLinkTopic(chatDeepLink: URL, expectedTopic?: string): void {
+  const searchParams = chatDeepLink.searchParams;
+  const topicUrlValues: string[] = searchParams.getAll(teamsDeepLinkTopicUrlParameterName);
+
+  if (expectedTopic !== undefined) {
+    expect(topicUrlValues).toHaveLength(1);
+    const topic: string = topicUrlValues[0];
+    expect(topic).toEqual(expectedTopic);
+  } else {
+    expect(topicUrlValues).toHaveLength(0);
+  }
+}
+
+export function validateChatDeepLinkMessage(chatDeepLink: URL, expectedMessage?: string): void {
+  const searchParams = chatDeepLink.searchParams;
+  const messageUrlValues: string[] = searchParams.getAll(teamsDeepLinkMessageUrlParameterName);
+
+  if (expectedMessage !== undefined) {
+    expect(messageUrlValues).toHaveLength(1);
+    const message: string = messageUrlValues[0];
+    expect(message).toEqual(expectedMessage);
+  } else {
+    expect(messageUrlValues).toHaveLength(0);
+  }
+}
+
 describe('chatUtilities', () => {
   describe('createTeamsDeepLinkForChat', () => {
     const user1 = 'user1';
@@ -14,51 +59,6 @@ describe('chatUtilities', () => {
     const user3 = 'my name has & special characters in = it';
     const topic = 'this is &= a topic !! with some % characters # that can be $tricky';
     const message = 'a message with &&&& some = ? special + characters in it';
-
-    function validateChatDeepLinkPrefix(chatDeepLink: URL): void {
-      expect(chatDeepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
-      expect(chatDeepLink.host.toLowerCase() === teamsDeepLinkHost);
-      expect(chatDeepLink.pathname.toLowerCase() === teamsDeepLinkUrlPathForChat);
-    }
-
-    function validateChatDeepLinkUsers(chatDeepLink: URL, expectedUsers: string[]): void {
-      const searchParams = chatDeepLink.searchParams;
-      const userUrlValues: string[] = searchParams.getAll(teamsDeepLinkUsersUrlParameterName);
-      expect(userUrlValues).toHaveLength(1);
-
-      const users: string[] = userUrlValues[0].split(',');
-      expect(users).toHaveLength(expectedUsers.length);
-
-      for (const expectedUser of expectedUsers) {
-        expect(users).toContain(expectedUser);
-      }
-    }
-
-    function validateChatDeepLinkTopic(chatDeepLink: URL, expectedTopic?: string): void {
-      const searchParams = chatDeepLink.searchParams;
-      const topicUrlValues: string[] = searchParams.getAll(teamsDeepLinkTopicUrlParameterName);
-
-      if (expectedTopic !== undefined) {
-        expect(topicUrlValues).toHaveLength(1);
-        const topic: string = topicUrlValues[0];
-        expect(topic).toEqual(expectedTopic);
-      } else {
-        expect(topicUrlValues).toHaveLength(0);
-      }
-    }
-
-    function validateChatDeepLinkMessage(chatDeepLink: URL, expectedMessage?: string): void {
-      const searchParams = chatDeepLink.searchParams;
-      const messageUrlValues: string[] = searchParams.getAll(teamsDeepLinkMessageUrlParameterName);
-
-      if (expectedMessage !== undefined) {
-        expect(messageUrlValues).toHaveLength(1);
-        const message: string = messageUrlValues[0];
-        expect(message).toEqual(expectedMessage);
-      } else {
-        expect(messageUrlValues).toHaveLength(0);
-      }
-    }
 
     it('should create a deep link for a single user with no topic and no message', () => {
       const userList: string[] = [user1];
