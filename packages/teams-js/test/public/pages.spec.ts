@@ -3,7 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
-import { DeepLinkParameters, FrameInfo, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
+import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -661,10 +661,10 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.shareDeepLink function', () => {
       const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-      let deepLinkParameters: DeepLinkParameters = {
-        subEntityId: 'someSubEntityId',
-        subEntityLabel: 'someSubEntityLabel',
-        subEntityWebUrl: 'someSubEntityWebUrl',
+      const deepLinkParameters: ShareDeepLinkParameters = {
+        subPageId: 'someSubEntityId',
+        subPageLabel: 'someSubEntityLabel',
+        subPageWebUrl: 'someSubEntityWebUrl',
       };
 
       it('pages.shareDeepLink should not allow calls before initialization', () => {
@@ -677,12 +677,12 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
 
             pages.shareDeepLink({
-              subEntityId: 'someSubEntityId',
-              subEntityLabel: 'someSubEntityLabel',
-              subEntityWebUrl: 'someSubEntityWebUrl',
+              subPageId: 'someSubEntityId',
+              subPageLabel: 'someSubEntityLabel',
+              subPageWebUrl: 'someSubEntityWebUrl',
             });
 
-            let message = framelessPostMocks.findMessageByFunc('shareDeepLink');
+            const message = framelessPostMocks.findMessageByFunc('shareDeepLink');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(3);
             expect(message.args[0]).toBe('someSubEntityId');
