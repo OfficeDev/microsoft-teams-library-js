@@ -1,6 +1,6 @@
 import {
   chat,
-  conversation,
+  conversations,
   OpenConversationRequest,
   OpenGroupChatRequest,
   OpenSingleChatRequest,
@@ -87,7 +87,7 @@ const OpenConversation = (): React.ReactElement =>
           );
         };
 
-        await conversation.openConversation(input);
+        await conversations.openConversation(input);
         return 'conversations.openConversation()' + noHostSdkMsg;
       },
     },
@@ -98,7 +98,7 @@ const CloseConversation = (): React.ReactElement =>
     name: 'closeConversation',
     title: 'Close Conversation',
     onClick: async () => {
-      conversation.closeConversation();
+      conversations.closeConversation();
       return 'Conversation Closed!';
     },
   });
@@ -108,7 +108,7 @@ const GetChatMembers = (): React.ReactElement =>
     name: 'getChatMembers',
     title: 'Get Chat Members',
     onClick: async () => {
-      const result = await conversation.getChatMembers();
+      const result = await conversations.getChatMembers();
       return JSON.stringify(result);
     },
   });
