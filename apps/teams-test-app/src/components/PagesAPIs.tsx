@@ -95,11 +95,27 @@ const ShareDeepLink = (): ReactElement =>
       },
       submit: {
         withPromise: async input => {
-          await pages.shareDeepLink(input);
+          if (input.subEntityId && input.subEntityLabel) {
+            await pages.shareDeepLink({
+              subPageId: input.subEntityId,
+              subPageLabel: input.subEntityLabel,
+              subPageWebUrl: input.subEntityWebUrl,
+            });
+          } else {
+            await pages.shareDeepLink(input);
+          }
           return 'called shareDeepLink';
         },
         withCallback: (input, setResult) => {
-          shareDeepLink(input);
+          if (input.subEntityId && input.subEntityLabel) {
+            shareDeepLink(input);
+          } else {
+            shareDeepLink({
+              subEntityId: input.subPageId,
+              subEntityLabel: input.subPageLabel,
+              subEntityWebUrl: input.subPageWebUrl,
+            });
+          }
           setResult('called shareDeepLink');
         },
       },
