@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
-import { getTestBackCompat } from './getTestBackCompat';
+import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithTextInputProps<T> {
   title: string;
@@ -46,7 +46,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
           const result = await submit(input, setResult);
           setResult(result);
         } else {
-          if (getTestBackCompat()) {
+          if (isTestBackCompat()) {
             submit.withCallback(input, setResult);
           } else {
             const result = await submit.withPromise(input, setResult);

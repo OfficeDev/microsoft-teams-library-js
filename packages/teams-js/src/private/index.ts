@@ -1,10 +1,11 @@
-export { bot } from './bot';
 export { logs } from './logs';
 export {
+  ChatMembersInformation,
   FilePreviewParameters,
   NotificationTypes,
   ShowNotificationParameters,
   TeamInstanceParameters,
+  ThreadMember,
   UserJoinedTeamsInformation,
   ViewerActionTypes,
   UserSettingTypes,
@@ -16,7 +17,7 @@ export {
   uploadCustomApp,
   registerUserSettingsChangeHandler,
 } from './privateAPIs';
-export { chat } from './chat';
+export { conversations } from './conversations';
 export { files } from './files';
 export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';

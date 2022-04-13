@@ -1,6 +1,34 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
 
 /**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Information about all members in a chat
+ *
+ * @alpha
+ */
+export interface ChatMembersInformation {
+  members: ThreadMember[];
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Information about a chat member
+ *
+ * @alpha
+ */
+export interface ThreadMember {
+  /**
+   * @hidden
+   * The member's user principal name in the current tenant.
+   */
+  upn: string;
+}
+
+/**
  * @alpha
  */
 export enum NotificationTypes {
