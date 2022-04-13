@@ -1,14 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {
-  dialog,
-  DialogInfo,
-  DialogSize,
-  IAppWindow,
-  ParentAppWindow,
-  TaskInfo,
-  tasks,
-  UrlDialogInfo,
-} from '@microsoft/teams-js';
+import { dialog, DialogInfo, DialogSize, IAppWindow, ParentAppWindow, tasks, UrlDialogInfo } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
