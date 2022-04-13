@@ -3,7 +3,7 @@ import { dialog, DialogInfo, DialogSize, IAppWindow, ParentAppWindow, tasks, Url
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
-import { getTestBackCompat } from './utils/getTestBackCompat';
+import { isTestBackCompat } from './utils/isTestBackCompat';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -27,7 +27,7 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (urlDialogInfo, setResult) => {
-          if (getTestBackCompat()) {
+          if (isTestBackCompat()) {
             const taskInfo = urlDialogInfo as DialogInfo;
             const onComplete = (err: string, result: string | object): void => {
               setResult('Error: ' + err + '\nResult: ' + result);
@@ -59,7 +59,7 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (dimensions, setResult) => {
-          if (getTestBackCompat()) {
+          if (isTestBackCompat()) {
             tasks.updateTask(dimensions);
           } else {
             dialog.update.resize(dimensions);
@@ -91,7 +91,7 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          if (getTestBackCompat()) {
+          if (isTestBackCompat()) {
             if (childWindowRef.current && childWindowRef.current !== null) {
               const childWindow = childWindowRef.current;
               const onComplete = (status: boolean, reason?: string): void => {
@@ -127,7 +127,7 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          if (getTestBackCompat()) {
+          if (isTestBackCompat()) {
             const parentWindow = ParentAppWindow.Instance;
             if (parentWindow) {
               const onComplete = (status: boolean, reason?: string): void => {
@@ -159,7 +159,7 @@ const DialogAPIs = (): ReactElement => {
       name: 'registerForParentMessage',
       title: 'registerForParentMessage',
       onClick: async setResult => {
-        if (getTestBackCompat()) {
+        if (isTestBackCompat()) {
           const parentWindow = ParentAppWindow.Instance;
           parentWindow.addEventListener('message', (message: string) => {
             setResult(message);
