@@ -248,8 +248,7 @@ export namespace chat {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw new Error('Not supported');
-          //(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+          throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
         }
         const sendPromise = sendAndHandleError('conversations.openConversation', {
           title: openConversationRequest.title,
