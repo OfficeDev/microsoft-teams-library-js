@@ -58,7 +58,7 @@ describe('chat', () => {
       chat.openChat(chatRequest);
 
       const chatResponse = {
-        members: 'someUPN',
+        members: ['someUPN'],
         message: 'someMessage',
       };
 
@@ -72,7 +72,7 @@ describe('chat', () => {
       utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { chat: {} } });
 
       const chatRequest: OpenSingleChatRequest = {
-        user: ['someUPN'],
+        user: 'someUPN',
         message: 'someMessage',
       };
 
