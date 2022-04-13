@@ -131,6 +131,14 @@ export namespace meeting {
     isAppSharing: boolean;
   }
 
+  export interface ISpeakingState {
+    /**
+     * Indicates whether one or more participants in a meeting are speaking, or
+     * if no participants are speaking
+     */
+    isSpeakingDetected: boolean;
+  }
+
   export interface IAppContentStageSharingCapabilities {
     /**
      * indicates whether app has permission to share contents to meeting stage
@@ -499,7 +507,7 @@ export namespace meeting {
     param1: string | ((error: SdkError | null, result: boolean | null) => void),
     param2?: string,
   ): Promise<boolean> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     let appContentUrl: string;
     let callback: (error: SdkError | null, result: boolean | null) => void;
     if (typeof param1 === 'function') {
@@ -556,7 +564,7 @@ export namespace meeting {
       appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
     ) => void,
   ): Promise<IAppContentStageSharingCapabilities> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IAppContentStageSharingCapabilities>(
       getAppContentStageSharingCapabilitiesHelper,
       callback,
@@ -601,7 +609,7 @@ export namespace meeting {
   export function stopSharingAppContentToStage(
     callback?: (error: SdkError | null, result: boolean | null) => void,
   ): Promise<boolean> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<boolean>(
       stopSharingAppContentToStageHelper,
       callback,
@@ -640,7 +648,7 @@ export namespace meeting {
   export function getAppContentStageSharingState(
     callback?: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
   ): Promise<IAppContentStageSharingState> {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IAppContentStageSharingState>(
       getAppContentStageSharingStateHelper,
       callback,
@@ -651,5 +659,19 @@ export namespace meeting {
     return new Promise<IAppContentStageSharingState>(resolve => {
       resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingState'));
     });
+  }
+
+  /**
+   * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
+   * will be true. If no participants are speaking, isSpeakingDetected will be false. Only one handler can be registered
+   * at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
+   */
+  export function registerSpeakingStateChangeHandler(handler: (speakingState: ISpeakingState) => void): void {
+    if (!handler) {
+      throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.speakingStateChanged', handler);
   }
 }
