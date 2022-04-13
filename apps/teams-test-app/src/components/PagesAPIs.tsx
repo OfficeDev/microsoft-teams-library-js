@@ -9,6 +9,7 @@ import {
   setFrameContext,
   settings,
   shareDeepLink,
+  ShareDeepLinkParameters,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -83,13 +84,13 @@ const NavigateToApp = (): React.ReactElement =>
   });
 
 const ShareDeepLink = (): ReactElement =>
-  ApiWithTextInput<DeepLinkParameters>({
+  ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
     name: 'core.shareDeepLink',
     title: 'Share Deeplink',
     onClick: {
       validateInput: input => {
-        if (!input.subEntityId || !input.subEntityLabel) {
-          throw new Error('subEntityId and subEntityLabel are required.');
+        if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {
+          throw new Error('subPageId and subPageLabel OR subEntityId and subEntityLabel are required.');
         }
       },
       submit: {
