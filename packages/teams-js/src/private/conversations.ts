@@ -99,7 +99,7 @@ export interface ConversationResponse {
  *
  * @alpha
  */
-export namespace conversation {
+export namespace conversations {
   /**
    * @hidden
    * Hide from docs

@@ -1,4 +1,4 @@
-import { conversation, OpenConversationRequest } from '../../src/private/conversation';
+import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
@@ -27,7 +27,7 @@ describe('conversation', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      return expect(conversation.openConversation(conversationRequest)).rejects.toThrowError(
+      return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -40,7 +40,7 @@ describe('conversation', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      return expect(conversation.openConversation(conversationRequest)).rejects.toThrowError(
+      return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
@@ -53,7 +53,7 @@ describe('conversation', () => {
         entityId: 'someEntityId',
       };
 
-      conversation.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -69,7 +69,7 @@ describe('conversation', () => {
         entityId: 'someEntityId',
       };
 
-      conversation.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -84,7 +84,7 @@ describe('conversation', () => {
         entityId: '',
       };
 
-      conversation.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -94,12 +94,12 @@ describe('conversation', () => {
 
   describe('closeConversation', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => conversation.closeConversation()).toThrowError('The library has not yet been initialized');
+      expect(() => conversations.closeConversation()).toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => conversation.closeConversation()).toThrowError(
+      expect(() => conversations.closeConversation()).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
@@ -107,13 +107,13 @@ describe('conversation', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      return expect(conversation.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+      return expect(conversations.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
     });
 
     it('should successfully get chat members', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = conversation.getChatMembers();
+      const promise = conversations.getChatMembers();
 
       const getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
       expect(getChatMembersMessage).not.toBeNull();
