@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft Teams",
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "scripts": {
     "build": "yarn build:bundle",
     "build:bundle": "yarn lint && webpack",

@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "gitmagic additions to 2.0-preview for April 7, 2022. Changes merged in from V1 include: adding surfaceHub to hostClientType interface, added ISpeakingState interface and function registerSpeakingStateChangeHandler to meeting.ts and added appropriate unit tests to meeting.spec.ts\"",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "patch"
-}

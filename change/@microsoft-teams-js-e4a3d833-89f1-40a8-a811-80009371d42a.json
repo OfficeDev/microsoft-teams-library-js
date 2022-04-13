@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "gitmagic additions to 2.0-preview for March 29, 2022. Changes merged in from V1 include: enabling the following APIs in meeting stage: shareAppContentToStage, getAppContentStageSharingCapabilities, stopSharingAppContentToStage, and getAppContentStageSharingState",
-  "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
-  "dependentChangeType": "patch"
-}
