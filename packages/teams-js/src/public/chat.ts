@@ -3,6 +3,7 @@ import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ErrorCode } from './interfaces';
 
 /**
  * Describes information needed to start a chat
@@ -62,15 +63,26 @@ export namespace chat {
    *
    * @returns Promise resolved upon completion
    */
-  export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+  export function openChat(
+    openChatRequest: OpenSingleChatRequest
+  ): Promise<void> {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(
+          JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM })
+        );
+      }
       if (runtime.isLegacyTeams) {
         resolve(
           sendAndHandleError(
             'executeDeepLink',
-            createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
-          ),
+            createTeamsDeepLinkForChat(
+              [openChatRequest.user],
+              undefined /*topic*/,
+              openChatRequest.message
+            )
+          )
         );
       } else {
         const sendPromise = sendAndHandleError('chat.openChat', {
@@ -90,8 +102,10 @@ export namespace chat {
    *
    * @returns Promise resolved upon completion
    */
-  export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+  export function openGroupChat(
+    openChatRequest: OpenGroupChatRequest
+  ): Promise<void> {
+    return new Promise<void>((resolve) => {
       if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
       }
@@ -103,12 +117,21 @@ export namespace chat {
         openChat(chatRequest);
       } else {
         ensureInitialized(FrameContexts.content);
+        if (!isSupported()) {
+          throw new Error(
+            JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM })
+          );
+        }
         if (runtime.isLegacyTeams) {
           resolve(
             sendAndHandleError(
               'executeDeepLink',
-              createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
-            ),
+              createTeamsDeepLinkForChat(
+                openChatRequest.users,
+                openChatRequest.topic,
+                openChatRequest.message
+              )
+            )
           );
         } else {
           const sendPromise = sendAndHandleError('chat.openChat', {

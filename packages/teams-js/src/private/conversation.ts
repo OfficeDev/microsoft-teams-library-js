@@ -7,6 +7,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ErrorCode } from '../public/interfaces';
 import { ChatMembersInformation } from './interfaces';
 
 /**
@@ -108,9 +109,16 @@ export namespace conversation {
    *
    * @returns Promise resolved upon completion
    */
-  export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+  export function openConversation(
+    openConversationRequest: OpenConversationRequest
+  ): Promise<void> {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(
+          JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM })
+        );
+      }
       const sendPromise = sendAndHandleError('conversations.openConversation', {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
@@ -121,25 +129,35 @@ export namespace conversation {
       if (openConversationRequest.onStartConversation) {
         registerHandler(
           'startConversation',
-          (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
+          (
+            subEntityId: string,
+            conversationId: string,
+            channelId: string,
+            entityId: string
+          ) =>
             openConversationRequest.onStartConversation({
               subEntityId,
               conversationId,
               channelId,
               entityId,
-            }),
+            })
         );
       }
       if (openConversationRequest.onCloseConversation) {
         registerHandler(
           'closeConversation',
-          (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
+          (
+            subEntityId: string,
+            conversationId?: string,
+            channelId?: string,
+            entityId?: string
+          ) =>
             openConversationRequest.onCloseConversation({
               subEntityId,
               conversationId,
               channelId,
               entityId,
-            }),
+            })
         );
       }
       resolve(sendPromise);
@@ -154,6 +172,11 @@ export namespace conversation {
    */
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error(
+        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM })
+      );
+    }
     sendMessageToParent('conversations.closeConversation');
     removeHandler('startConversation');
     removeHandler('closeConversation');
@@ -172,13 +195,18 @@ export namespace conversation {
    * @internal
    */
   export function getChatMembers(): Promise<ChatMembersInformation> {
-    return new Promise<ChatMembersInformation>(resolve => {
+    return new Promise<ChatMembersInformation>((resolve) => {
       ensureInitialized();
+      if (!isSupported()) {
+        throw new Error(
+          JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM })
+        );
+      }
       resolve(sendAndUnwrap('getChatMembers'));
     });
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.chat.conversation ? true : false;
+    return runtime.supports.chat.conversations ? true : false;
   }
 }
