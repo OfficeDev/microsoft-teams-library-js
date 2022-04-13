@@ -80,7 +80,7 @@ describe('Testing pages module', () => {
     Object.values(FrameContexts).forEach(context => {
       it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
-        pages.registerFocusEnterHandler((x: boolean) => {
+        pages.registerFocusEnterHandler(() => {
           return true;
         });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
@@ -93,7 +93,7 @@ describe('Testing pages module', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = false;
-        pages.registerFocusEnterHandler((x: boolean) => {
+        pages.registerFocusEnterHandler(() => {
           handlerInvoked = true;
           return true;
         });
@@ -106,7 +106,7 @@ describe('Testing pages module', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = true;
-        pages.registerFocusEnterHandler((x: boolean) => {
+        pages.registerFocusEnterHandler(() => {
           handlerInvoked = false;
           return false;
         });
@@ -119,7 +119,7 @@ describe('Testing pages module', () => {
 
   describe('Testing pages.setCurrentFrame function', () => {
     const allowedContexts = [FrameContexts.content];
-    let frameContext: FrameInfo = {
+    const frameContext: FrameInfo = {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
@@ -133,7 +133,7 @@ describe('Testing pages module', () => {
         it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           pages.setCurrentFrame(frameContext);
-          let message = utils.findMessageByFunc('setFrameContext');
+          const message = utils.findMessageByFunc('setFrameContext');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toBe(frameContext);
@@ -153,7 +153,7 @@ describe('Testing pages module', () => {
 
   describe('Testing pages.initializeWithFrameContext function', () => {
     const allowedContexts = [FrameContexts.content];
-    let frameContext: FrameInfo = {
+    const frameContext: FrameInfo = {
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
     };
@@ -166,13 +166,13 @@ describe('Testing pages module', () => {
           expect(utils.processMessage).toBeDefined();
           expect(utils.messages.length).toBe(2);
 
-          let initMessage = utils.findMessageByFunc('initialize');
+          const initMessage = utils.findMessageByFunc('initialize');
           expect(initMessage).not.toBeNull();
           expect(initMessage.id).toBe(0);
           expect(initMessage.func).toBe('initialize');
           expect(initMessage.args.length).toEqual(1);
           expect(initMessage.args[0]).toEqual(version);
-          let message = utils.findMessageByFunc('setFrameContext');
+          const message = utils.findMessageByFunc('setFrameContext');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toBe(frameContext);
@@ -197,7 +197,7 @@ describe('Testing pages module', () => {
       FrameContexts.remove,
       FrameContexts.sidePanel,
     ];
-    let expectedSettings: pages.InstanceConfig = {
+    const expectedSettings: pages.InstanceConfig = {
       suggestedDisplayName: 'someSuggestedDisplayName',
       contentUrl: 'someContentUrl',
       websiteUrl: 'someWebsiteUrl',
@@ -209,7 +209,7 @@ describe('Testing pages module', () => {
         it(`pages.getConfig should successfully get settings when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.getConfig();
-          let message = utils.findMessageByFunc('settings.getSettings');
+          const message = utils.findMessageByFunc('settings.getSettings');
           expect(message).not.toBeNull();
           utils.respondToMessage(message, expectedSettings);
           return expect(promise).resolves.toBe(expectedSettings);
@@ -390,6 +390,13 @@ describe('Testing pages module', () => {
 
         it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({
+            apiVersion: 1,
+            isLegacyTeams: true,
+            supports: {
+              pages: {},
+            },
+          });
 
           const promise = pages.navigateToApp(navigateToAppParams);
 
@@ -418,7 +425,7 @@ describe('Testing pages module', () => {
 
   describe('Testing pages.shareDeepLink function', () => {
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-    let deepLinkParameters: DeepLinkParameters = {
+    const deepLinkParameters: DeepLinkParameters = {
       subEntityId: 'someSubEntityId',
       subEntityLabel: 'someSubEntityLabel',
       subEntityWebUrl: 'someSubEntityWebUrl',
@@ -439,7 +446,7 @@ describe('Testing pages module', () => {
             subEntityWebUrl: 'someSubEntityWebUrl',
           });
 
-          let message = utils.findMessageByFunc('shareDeepLink');
+          const message = utils.findMessageByFunc('shareDeepLink');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(3);
           expect(message.args[0]).toBe('someSubEntityId');
@@ -468,7 +475,7 @@ describe('Testing pages module', () => {
     Object.values(FrameContexts).forEach(context => {
       it(`pages.registerFullScreenHandler should successfully register a full screen handler when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
-        pages.registerFullScreenHandler((x: boolean) => {
+        pages.registerFullScreenHandler(() => {
           return true;
         });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
@@ -481,7 +488,7 @@ describe('Testing pages module', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = false;
-        pages.registerFullScreenHandler((x: boolean) => {
+        pages.registerFullScreenHandler(() => {
           handlerInvoked = true;
           return true;
         });
@@ -494,7 +501,7 @@ describe('Testing pages module', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = true;
-        pages.registerFullScreenHandler((x: boolean) => {
+        pages.registerFullScreenHandler(() => {
           handlerInvoked = false;
           return false;
         });
@@ -548,6 +555,18 @@ describe('Testing pages module', () => {
           expect(navigateToTabMsg).not.toBeNull();
           expect(navigateToTabMsg.args[0]).toBe(tabInstance);
         });
+
+        it(`pages.tabs.navigateToTab should throw error when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const promise = pages.tabs.navigateToTab(null);
+          const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
+          expect(navigateToTabMsg).not.toBeNull();
+          utils.respondToMessage(navigateToTabMsg, false);
+          await promise.catch(e =>
+            expect(e).toMatchObject(new Error('Invalid internalTabInstanceId and/or channelId were/was provided')),
+          );
+        });
+
         it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context - success case`, async () => {
           await utils.initializeWithContext(context);
           pages.tabs.navigateToTab(null);
@@ -561,7 +580,7 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.tabs.getTabInstances function', () => {
-      let expectedTabInstanceParameters: TabInstanceParameters = {
+      const expectedTabInstanceParameters: TabInstanceParameters = {
         favoriteChannelsOnly: true,
         favoriteTeamsOnly: true,
       };
@@ -575,27 +594,27 @@ describe('Testing pages module', () => {
         it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getTabInstances();
-          let message = utils.findMessageByFunc('getTabInstances');
+          const message = utils.findMessageByFunc('getTabInstances');
 
           utils.respondToMessage(message, expectedTabInstanceParameters);
           expect(message).not.toBeNull();
           expect(promise).resolves.toBe(expectedTabInstanceParameters);
         });
 
-        it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
+        it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
-          let message = utils.findMessageByFunc('getTabInstances');
+          const message = utils.findMessageByFunc('getTabInstances');
 
-          utils.respondToMessage(message, expectedTabInstanceParameters);
+          utils.respondToMessage(message);
           expect(message).not.toBeNull();
-          expect(promise).resolves.toBe(expectedTabInstanceParameters);
+          expect(promise).resolves.toBeUndefined();
         });
 
         it(`pages.tabs.getTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getTabInstances();
-          let message = utils.findMessageByFunc('getTabInstances');
+          const message = utils.findMessageByFunc('getTabInstances');
 
           utils.respondToMessage(message);
           expect(message).not.toBeNull();
@@ -605,7 +624,7 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.tabs.getMruTabInstances function', () => {
-      let expectedTabInstanceParameters: TabInstanceParameters = {
+      const expectedTabInstanceParameters: TabInstanceParameters = {
         favoriteChannelsOnly: true,
         favoriteTeamsOnly: true,
       };
@@ -620,27 +639,27 @@ describe('Testing pages module', () => {
         it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getMruTabInstances();
-          let message = utils.findMessageByFunc('getMruTabInstances');
+          const message = utils.findMessageByFunc('getMruTabInstances');
 
           utils.respondToMessage(message, expectedTabInstanceParameters);
           expect(message).not.toBeNull();
           expect(promise).resolves.toBe(expectedTabInstanceParameters);
         });
 
-        it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
+        it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
-          let message = utils.findMessageByFunc('getMruTabInstances');
+          const message = utils.findMessageByFunc('getMruTabInstances');
 
-          utils.respondToMessage(message, expectedTabInstanceParameters);
+          utils.respondToMessage(message);
           expect(message).not.toBeNull();
-          expect(promise).resolves.toBe(expectedTabInstanceParameters);
+          expect(promise).resolves.toBeUndefined();
         });
 
         it(`pages.tabs.getMruTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const promise = pages.tabs.getMruTabInstances();
-          let message = utils.findMessageByFunc('getMruTabInstances');
+          const message = utils.findMessageByFunc('getMruTabInstances');
 
           utils.respondToMessage(message);
           expect(message).not.toBeNull();
@@ -650,6 +669,11 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.tabs.isSupported function', () => {
+      it('pages.tabs.isSupported should return false if the runtime says pages is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(pages.tabs.isSupported()).toBeFalsy();
+      });
+
       it('pages.tabs.isSupported should return false if the runtime says pages.tabs is not supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.tabs.isSupported()).not.toBeTruthy();
@@ -666,16 +690,6 @@ describe('Testing pages module', () => {
   });
 
   describe('Testing pages.config namespace', () => {
-    describe('Testing pages.config.initialize function', () => {
-      it('pages.config.initialize should successfully register settings.save and settings.remove handler', async () => {
-        pages.config.initialize();
-        const messageForSettingeSaveHandler = utils.findMessageByFunc('settings.save');
-        const messageForSettingeRemoveHandler = utils.findMessageByFunc('settings.remove');
-        expect(messageForSettingeSaveHandler).toBeNull();
-        expect(messageForSettingeRemoveHandler).toBeNull();
-      });
-    });
-
     describe('Testing pages.config.setValidityState function', () => {
       const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
 
@@ -721,7 +735,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.config.setConfig function', () => {
       const allowedContexts = [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel];
 
-      let settingsObj: pages.InstanceConfig = {
+      const settingsObj: pages.InstanceConfig = {
         suggestedDisplayName: 'someSuggestedDisplayName',
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
@@ -739,7 +753,7 @@ describe('Testing pages module', () => {
           it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             pages.config.setConfig(settingsObj);
-            let message = utils.findMessageByFunc('settings.setSettings');
+            const message = utils.findMessageByFunc('settings.setSettings');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe(settingsObj);
@@ -820,7 +834,7 @@ describe('Testing pages module', () => {
             });
             utils.sendMessage('settings.save');
             expect(handlerCalled).toBe(true);
-            let message = utils.findMessageByFunc('settings.save.success');
+            const message = utils.findMessageByFunc('settings.save.success');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(0);
           });
@@ -834,7 +848,7 @@ describe('Testing pages module', () => {
             });
             utils.sendMessage('settings.save');
             expect(handlerCalled).toBe(true);
-            let message = utils.findMessageByFunc('settings.save.failure');
+            const message = utils.findMessageByFunc('settings.save.failure');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe('someReason');
@@ -855,7 +869,7 @@ describe('Testing pages module', () => {
             });
             utils.sendMessage('settings.save');
             expect(handlerCalled).toBe(true);
-            let message = utils.findMessageByFunc('settings.save.success');
+            const message = utils.findMessageByFunc('settings.save.success');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(0);
           });
@@ -908,7 +922,7 @@ describe('Testing pages module', () => {
             utils.sendMessage('settings.remove');
 
             expect(handlerCalled).toBe(true);
-            let message = utils.findMessageByFunc('settings.remove.success');
+            const message = utils.findMessageByFunc('settings.remove.success');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(0);
           });
@@ -925,7 +939,7 @@ describe('Testing pages module', () => {
             utils.sendMessage('settings.remove');
 
             expect(handlerCalled).toBe(true);
-            let message = utils.findMessageByFunc('settings.remove.failure');
+            const message = utils.findMessageByFunc('settings.remove.failure');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe('someReason');
@@ -979,6 +993,10 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.config.isSupported function', () => {
+      it('pages.config.isSupported should return false if the runtime says its not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(pages.config.isSupported()).not.toBeTruthy();
+      });
       it('pages.config.isSupported should return false if the runtime says pages.config is not supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.config.isSupported()).not.toBeTruthy();
@@ -1031,7 +1049,7 @@ describe('Testing pages module', () => {
 
           utils.sendMessage('backButtonPress');
 
-          let navigateBackMessage = utils.findMessageByFunc('navigateBack');
+          const navigateBackMessage = utils.findMessageByFunc('navigateBack');
           expect(navigateBackMessage).toBeNull();
           expect(handlerInvoked).toBe(true);
         });
@@ -1047,7 +1065,7 @@ describe('Testing pages module', () => {
 
           utils.sendMessage('backButtonPress');
 
-          let navigateBackMessage = utils.findMessageByFunc('navigateBack');
+          const navigateBackMessage = utils.findMessageByFunc('navigateBack');
           expect(navigateBackMessage).not.toBeNull();
           expect(handlerInvoked).toBe(true);
         });
@@ -1055,6 +1073,10 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.backStack.isSupported function', () => {
+      it('pages.backStack.isSupported should return false if the runtime says its not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(pages.backStack.isSupported()).not.toBeTruthy();
+      });
       it('pages.backStack.isSupported should return false if the runtime says pages.backStack is not supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.backStack.isSupported()).not.toBeTruthy();
@@ -1125,6 +1147,10 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.fullTrust.isSupported function', () => {
+      it('pages.fullTrust.isSupported should return false if the runtime says its not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(pages.fullTrust.isSupported()).not.toBeTruthy();
+      });
       it('pages.fullTrust.isSupported should return false if the runtime says pages.fullTrust is not supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.fullTrust.isSupported()).not.toBeTruthy();
@@ -1234,6 +1260,10 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.appButton.isSupported function', () => {
+      it('pages.appButton.isSupported should return false if the runtime says its not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(pages.appButton.isSupported()).not.toBeTruthy();
+      });
       it('pages.appButton.isSupported should return false if the runtime says pages.appButton is not supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.appButton.isSupported()).not.toBeTruthy();
