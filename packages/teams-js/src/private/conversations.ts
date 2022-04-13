@@ -99,7 +99,7 @@ export interface ConversationResponse {
  *
  * @alpha
  */
-export namespace conversation {
+export namespace conversations {
   /**
    * @hidden
    * Hide from docs
@@ -179,6 +179,6 @@ export namespace conversation {
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.chat.conversation ? true : false;
+    return runtime.supports.chat.conversations ? true : false;
   }
 }
