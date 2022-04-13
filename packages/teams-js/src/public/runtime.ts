@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { deepFreeze } from '../internal/utils';
+import { GlobalVars } from '../internal/globalVars';
+import { compareSDKVersions, deepFreeze } from '../internal/utils';
+import { HostClientType } from './constants';
 export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
-    readonly bot?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {
@@ -51,7 +52,6 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
-    bot: undefined,
     calendar: undefined,
     call: undefined,
     chat: {
@@ -96,7 +96,6 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
-    bot: {},
     call: {},
     chat: {
       conversation: {},
@@ -106,7 +105,6 @@ export const teamsRuntimeConfig: IRuntime = {
       update: {},
     },
     files: {},
-    location: {},
     logs: {},
     media: {},
     meeting: {},
@@ -121,18 +119,93 @@ export const teamsRuntimeConfig: IRuntime = {
       backStack: {},
       fullTrust: {},
     },
-    people: {},
     remoteCamera: {},
     sharing: {},
     teams: {
-      fullTrust: {
-        joinedTeams: {},
-      },
+      fullTrust: {},
     },
     teamsCore: {},
     video: {},
   },
 };
+
+interface ICapabilityReqs {
+  readonly capability: object;
+  readonly hostClientTypes: Array<string>;
+}
+
+const v1HostClientTypes = [
+  HostClientType.desktop,
+  HostClientType.web,
+  HostClientType.android,
+  HostClientType.ios,
+  HostClientType.rigel,
+  HostClientType.surfaceHub,
+  HostClientType.teamsRoomsWindows,
+  HostClientType.teamsRoomsAndroid,
+  HostClientType.teamsPhones,
+  HostClientType.teamsDisplays,
+];
+
+export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
+  '1.9.0': [
+    {
+      capability: { location: {} },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
+  '2.0.0': [
+    {
+      capability: { people: {} },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
+  '2.0.1': [
+    {
+      capability: { teams: { fullTrust: { joinedTeams: {} } } },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
+};
+
+/**
+ * @internal
+ *
+ * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
+ * and do not provide their own runtime config. Their supported capabilities are based on the highest
+ * client SDK version that they can support.
+ *
+ * @param highestSupportedVersion - The highest client SDK version that the host client can support.
+ * @returns runtime which describes the APIs supported by the legacy host client.
+ */
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+  let newSupports = { ...teamsRuntimeConfig.supports };
+
+  Object.keys(versionConstants).forEach(versionNumber => {
+    if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
+      versionConstants[versionNumber].forEach(capabilityReqs => {
+        if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
+          newSupports = {
+            ...newSupports,
+            ...capabilityReqs.capability,
+          };
+        }
+      });
+    }
+  });
+
+  const backCompatRuntimeConfig: IRuntime = {
+    apiVersion: 1,
+    isLegacyTeams: true,
+    supports: newSupports,
+  };
+  return backCompatRuntimeConfig;
+}
 
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
   runtime = deepFreeze(runtimeConfig);
