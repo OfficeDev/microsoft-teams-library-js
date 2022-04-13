@@ -3,6 +3,7 @@ import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ErrorCode } from './interfaces';
 
 /**
  * Describes information needed to start a chat
@@ -65,6 +66,9 @@ export namespace chat {
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      }
       if (runtime.isLegacyTeams) {
         resolve(
           sendAndHandleError(
@@ -103,6 +107,9 @@ export namespace chat {
         openChat(chatRequest);
       } else {
         ensureInitialized(FrameContexts.content);
+        if (!isSupported()) {
+          throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        }
         if (runtime.isLegacyTeams) {
           resolve(
             sendAndHandleError(
