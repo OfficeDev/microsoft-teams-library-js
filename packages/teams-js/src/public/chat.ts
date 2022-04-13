@@ -112,7 +112,7 @@ export namespace chat {
           );
         } else {
           const sendPromise = sendAndHandleError('chat.openChat', {
-            members: [openChatRequest.users],
+            members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,
           });
