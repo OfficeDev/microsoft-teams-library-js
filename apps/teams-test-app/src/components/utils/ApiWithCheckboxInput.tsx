@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
-import { getTestBackCompat } from './getTestBackCompat';
+import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithCheckboxInputProps {
   title: string;
@@ -30,7 +30,7 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
         const result = await onClick(value);
         setResult(result);
       } else {
-        if (getTestBackCompat()) {
+        if (isTestBackCompat()) {
           const result = onClick.withCallback(value);
           setResult(result);
         } else {

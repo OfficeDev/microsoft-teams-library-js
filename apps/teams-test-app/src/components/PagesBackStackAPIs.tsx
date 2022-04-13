@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
 import { ApiContainer } from './utils/ApiContainer';
-import { getTestBackCompat } from './utils/getTestBackCompat';
+import { isTestBackCompat } from './utils/isTestBackCompat';
 
 const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
@@ -73,7 +73,7 @@ const PagesBackStackAPIs = (): ReactElement => {
       return false;
     };
 
-    if (getTestBackCompat()) {
+    if (isTestBackCompat()) {
       registerBackButtonHandler((): boolean => {
         return registerBackButtonHandlerHelper();
       });
