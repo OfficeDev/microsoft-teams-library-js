@@ -120,7 +120,7 @@ const DialogAPIs = (): ReactElement => {
             }
             return '';
           } else {
-            setResult('A post call to child is initiated');
+            setResult('Message sent to child');
             dialog.sendMessageToDialog(message);
             return '';
           }
@@ -155,7 +155,7 @@ const DialogAPIs = (): ReactElement => {
               setResult("parentWindow doesn't exist");
             }
           } else {
-            setResult('A post call to parent is initiated');
+            setResult('Message sent to parent');
             dialog.sendMessageToParentFromDialog(message);
           }
           return '';
