@@ -34,10 +34,11 @@ Wed, 13 Apr 2022 21:40:51 GMT
 
 ### Patches
 
-- Adds office365 Outlook to domain whitelist
+- Adds office365 Outlook to domain allowlist
 - Update comment for initializePrivateApis() explaining that this function needs to stay for backwards compatibility purposes
 - In `appWindow.ts` file, `ChildAppWindow` and `ParentAppWindow` are converted back to synchronous calls because the promise was never being resolved.
 - promisify stageView
+- Validated media architecture
 - Fixed default back compat host client runtime config to not contain location or people capability since those are not guaranteed to be supported. Added new function to dynamically generate back compat host client runtime config during initialization.
 - Added `ensureInitialized` call to `registerOnMessageFromParent` function in dialog.ts and `addEventListener` function in appWindow.ts
 - Remove the duplicate property of StageLayoutControls type in meetingRoom capability
