@@ -55,9 +55,9 @@ describe('chat', () => {
         entityId: 'someEntityId',
       };
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
-      expect(chat.conversation.openConversation(conversationRequest)).rejects.toThrowError(
-        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
-      );
+      expect(() => chat.conversation.openConversation(conversationRequest)).rejects.toThrowError('Not supported');
+      //   JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
+      // );
     });
 
     it('should successfully pass conversationRequest', async () => {

@@ -6,8 +6,8 @@ import {
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { runtime } from '../public/runtime';
 import { ErrorCode } from '../public/interfaces';
+import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
@@ -248,7 +248,8 @@ export namespace chat {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+          throw new Error('Not supported');
+          //(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
         }
         const sendPromise = sendAndHandleError('conversations.openConversation', {
           title: openConversationRequest.title,
@@ -302,7 +303,7 @@ export namespace chat {
     }
 
     export function isSupported(): boolean {
-      return runtime.supports.chat.conversation ? true : false;
+      return runtime.supports.chat.conversations ? true : false;
     }
   }
 }
