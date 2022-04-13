@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Add utility function for creating a chat deeplink; not used yet beyond validation.",
-  "packageName": "@microsoft/teams-js",
-  "email": "aaroner@microsoft.com",
-  "dependentChangeType": "none"
-}

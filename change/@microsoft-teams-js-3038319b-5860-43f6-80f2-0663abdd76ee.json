@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Update documentation on newly public chat capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "aaroner@microsoft.com",
-  "dependentChangeType": "none"
-}
