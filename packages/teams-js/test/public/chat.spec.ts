@@ -1,5 +1,11 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
+import {
+  validateChatDeepLinkMessage,
+  validateChatDeepLinkPrefix,
+  validateChatDeepLinkTopic,
+  validateChatDeepLinkUsers,
+} from '../internal/chatUtilities.spec';
 import { Utils } from '../utils';
 
 describe('chat', () => {
@@ -40,8 +46,10 @@ describe('chat', () => {
       );
     });
 
-    it('should successfully pass chatRequest', async () => {
+    it('should successfully pass chatRequest to non-legacy Teams host', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { chat: {} } });
+
       const chatRequest: OpenSingleChatRequest = {
         user: 'someUPN',
         message: 'someMessage',
@@ -57,6 +65,30 @@ describe('chat', () => {
       const openChatMessage = utils.findMessageByFunc('chat.openChat');
       expect(openChatMessage).not.toBeNull();
       expect(openChatMessage.args).toEqual([chatResponse]);
+    });
+
+    it('should successfully pass chatRequest to legacy Teams host', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { chat: {} } });
+
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
+        message: 'someMessage',
+      };
+
+      const promise: Promise<void> = chat.openChat(chatRequest);
+
+      const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
+      expect(executeDeepLinkMessage).not.toBeNull();
+      expect(executeDeepLinkMessage.args).toHaveLength(1);
+
+      const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      validateChatDeepLinkPrefix(chatDeepLink);
+      validateChatDeepLinkUsers(chatDeepLink, [chatRequest.user]);
+      validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
+
+      utils.respondToMessage(executeDeepLinkMessage, true);
+      await expect(promise).resolves.not.toThrow();
     });
   });
 
@@ -88,8 +120,10 @@ describe('chat', () => {
       );
     });
 
-    it('should successfully pass chatRequest', async () => {
+    it('should successfully pass chatRequest to non-legacy Teams host', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { chat: {} } });
+
       const chatRequest: OpenGroupChatRequest = {
         users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
@@ -107,6 +141,32 @@ describe('chat', () => {
       const openChatMessage = utils.findMessageByFunc('chat.openChat');
       expect(openChatMessage).not.toBeNull();
       expect(openChatMessage.args).toEqual([chatResponse]);
+    });
+
+    it('should successfully pass chatRequest to legacy Teams host', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { chat: {} } });
+
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+        topic: 'someTopic',
+      };
+
+      const promise: Promise<void> = chat.openGroupChat(chatRequest);
+
+      const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
+      expect(executeDeepLinkMessage).not.toBeNull();
+      expect(executeDeepLinkMessage.args).toHaveLength(1);
+
+      const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      validateChatDeepLinkPrefix(chatDeepLink);
+      validateChatDeepLinkUsers(chatDeepLink, chatRequest.users);
+      validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
+      validateChatDeepLinkTopic(chatDeepLink, chatRequest.topic);
+
+      utils.respondToMessage(executeDeepLinkMessage, true);
+      await expect(promise).resolves.not.toThrow();
     });
   });
 });

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "When hosting app will not understand standard chat requests, send them as deep links.",
+  "packageName": "@microsoft/teams-js",
+  "email": "aaroner@microsoft.com",
+  "dependentChangeType": "patch"
+}
