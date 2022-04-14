@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed default back compat host client runtime config to not contain location or people capability since those are not guaranteed to be supported. Added new function to dynamically generate back compat host client runtime config during initialization.",
-  "packageName": "@microsoft/teams-js",
-  "email": "aeun@microsoft.com",
-  "dependentChangeType": "patch"
-}
