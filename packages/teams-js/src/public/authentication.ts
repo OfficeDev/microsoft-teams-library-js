@@ -369,8 +369,10 @@ export namespace authentication {
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-  export function notifySuccess(result?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'result', result);
+  export function notifySuccess(result?: string | object, callbackUrl?: string): void {
+    if (typeof result === 'undefined' || typeof result === 'string') {
+      redirectIfWin32Outlook(callbackUrl, 'result', result);
+    }
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
@@ -387,8 +389,10 @@ export namespace authentication {
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-  export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'reason', reason);
+  export function notifyFailure(reason?: string | object, callbackUrl?: string): void {
+    if (typeof reason === 'string') {
+      redirectIfWin32Outlook(callbackUrl, 'reason', reason);
+    }
     ensureInitialized(FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window

@@ -687,6 +687,21 @@ describe('Testing authentication module', () => {
           expect(message.args[0]).toBe(mockResult);
         });
 
+        it(`authentication.notifySuccess should successfully notify auth success with object type result from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const mockObjectResult = {
+            id: 'mockId',
+            data: {
+              resource: 'test',
+            },
+          };
+          authentication.notifySuccess(mockObjectResult);
+          const message = utils.findMessageByFunc('authentication.authenticate.success');
+          expect(message).not.toBeNull();
+          expect(message.args[0]).toBe(mockObjectResult);
+        });
+
         it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook with ${context} context`, async () => {
           expect.assertions(2);
           let windowAssignSpyCalled = false;
@@ -815,6 +830,21 @@ describe('Testing authentication module', () => {
           expect(message.args[0]).toBe(errorMessage);
         });
 
+        it(`authentication.notifyFailure should successfully notify auth failure with object type reason from ${context} context`, async () => {
+          await utils.initializeWithContext('authentication');
+
+          const mockObjectError = {
+            id: 'mockId',
+            data: {
+              resource: 'test',
+            },
+          };
+          authentication.notifyFailure(mockObjectError);
+
+          const message = utils.findMessageByFunc('authentication.authenticate.failure');
+          expect(message).not.toBeNull();
+          expect(message.args[0]).toBe(mockObjectError);
+        });
         it(`authentication.notifyFailure should do window redirect if callbackUrl is for win32 Outlook and auth failure happens from ${context} context`, async () => {
           expect.assertions(2);
           let windowAssignSpyCalled = false;
