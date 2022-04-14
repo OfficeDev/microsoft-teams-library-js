@@ -2,7 +2,7 @@ import { app, appInitialization } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
-import { getTestBackCompat } from './utils/getTestBackCompat';
+import { isTestBackCompat } from './utils/isTestBackCompat';
 
 const NotifyLoaded = (): React.ReactElement =>
   ApiWithoutInput({
@@ -46,7 +46,7 @@ const NotifyFailure = (): React.ReactElement =>
           // this API actually allow for the input not to be provided
           return;
         }
-        const acceptableValues = getTestBackCompat()
+        const acceptableValues = isTestBackCompat()
           ? Object.values(appInitialization.FailedReason)
           : Object.values(app.FailedReason);
         if (!acceptableValues.includes(input)) {
@@ -74,7 +74,7 @@ const NotifyExpectedFailure = (): React.ReactElement =>
     title: 'appInitialization.expectedFailure',
     onClick: {
       validateInput: input => {
-        const acceptableValues = getTestBackCompat()
+        const acceptableValues = isTestBackCompat()
           ? Object.values(appInitialization.ExpectedFailureReason)
           : Object.values(app.ExpectedFailureReason);
         if (!acceptableValues.includes(input)) {

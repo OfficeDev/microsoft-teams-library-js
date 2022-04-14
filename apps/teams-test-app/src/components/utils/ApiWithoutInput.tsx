@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
-import { getTestBackCompat } from './getTestBackCompat';
+import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithoutInputProps {
   title: string;
@@ -24,7 +24,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
       if (typeof onClick === 'function') {
         setResult(await onClick(setResult));
       } else {
-        if (getTestBackCompat()) {
+        if (isTestBackCompat()) {
           onClick.withCallback(setResult);
         } else {
           setResult(await onClick.withPromise(setResult));
