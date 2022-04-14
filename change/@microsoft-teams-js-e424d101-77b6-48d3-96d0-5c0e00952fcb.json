@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Remove bot capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
-  "dependentChangeType": "none"
-}
