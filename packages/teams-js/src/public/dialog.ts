@@ -180,19 +180,6 @@ export namespace dialog {
     }
 
     /**
-     *  Send message to the dialog from the parent
-     *
-     * @param message - The message to send
-     */
-    export function sendMessageToDialog(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      message: any,
-    ): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('messageForChild', [message]);
-    }
-
-    /**
      * Checks if dialog.bot capability is supported by the host
      *
      * @returns boolean to represent whether dialog.bot is supported

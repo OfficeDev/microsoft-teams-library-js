@@ -345,7 +345,7 @@ describe('Dialog', () => {
         it(`FRAMED: should initiate the post message to dialog. context: ${context}`, async () => {
           await framedMock.initializeWithContext(context);
           dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
-          dialog.bot.sendMessageToDialog('exampleMessage');
+          dialog.sendMessageToDialog('exampleMessage');
           const message = framedMock.findMessageByFunc('messageForChild');
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
@@ -354,7 +354,7 @@ describe('Dialog', () => {
         it(`FRAMELESS: should initiate the post message to dialog. context: ${context}`, async () => {
           await framelessMock.initializeWithContext(context);
           dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
-          dialog.bot.sendMessageToDialog('exampleMessage');
+          dialog.sendMessageToDialog('exampleMessage');
           const message = framelessMock.findMessageByFunc('messageForChild');
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
