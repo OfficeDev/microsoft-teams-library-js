@@ -24,7 +24,7 @@ export namespace barcode {
       }
 
       // Decided not to use the old message format here and totally break from media.ts
-      resolve(sendAndHandleSdkError('barcode.scanBarCode', barcodeConfig));
+      resolve(sendAndHandleSdkError('barcode.scan', barcodeConfig));
     });
   }
 
