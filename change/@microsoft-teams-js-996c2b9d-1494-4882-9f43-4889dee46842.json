@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Renamed conversation to conversations for consistency",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "patch"
-}
