@@ -1,5 +1,5 @@
 {
-  "type": "none",
+  "type": "Major",
   "comment": "Adding isSupported work for chat and conversations",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
