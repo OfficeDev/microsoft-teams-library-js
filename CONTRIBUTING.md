@@ -38,6 +38,55 @@ times in N different commits. If there was some accidental reformatting or white
 changes during the course of your commits, please rebase them away before submitting
 the PR.
 
+### Adding an API that utilizes version checks for compatibility
+
+Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
+
+1. Add the API as a new capability or subcapability rather than adding to an existing capability.
+2. In [runtime.ts](packages/teams/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`.
+
+Exa)
+
+```
+// Object key is type string, value is type Array<ICapabilityReqs>
+'1.9.0': [
+    {
+      capability: { anAndroidCapability: {} },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
+```
+
+If you're adding a capability onto an already existing version requirement, simply add your object into the existing array.
+
+Exa2)
+
+```
+// Object key is type string, value is type Array<ICapabilityReqs>
+'1.9.0': [
+    {
+      capability: { anAndroidCapability: {} },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+    {
+      capability: { aSecondCapability: {} },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
+```
+
+3. And that's it! Our unit tests are designed to automatically integrate the new capability, so if the unit tests pass, you're good to go.
+
 ### CHANGELOG using Beachball
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.

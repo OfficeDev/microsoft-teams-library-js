@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Moved conversations out of chat sub-capability and into their own top level capability in runtime.ts",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}

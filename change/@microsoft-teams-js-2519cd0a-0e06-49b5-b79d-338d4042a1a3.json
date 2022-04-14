@@ -1,6 +1,0 @@
-{
-  "type": "patch",
-  "packageName": "@microsoft/teams-js",
-  "email": "jekoch@microsoft.com",
-  "dependentChangeType": "patch"
-}
