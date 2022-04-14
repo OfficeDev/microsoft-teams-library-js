@@ -179,6 +179,6 @@ export namespace conversations {
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.chat.conversations ? true : false;
+    return runtime.supports.conversations ? true : false;
   }
 }
