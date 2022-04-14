@@ -64,7 +64,7 @@ const DialogAPIs = (): ReactElement => {
           } else {
             dialog.update.resize(dimensions);
           }
-          setResult('Teams client SDK call dailog.update.resize was called');
+          setResult('Teams client SDK call dialog.update.resize was called');
           return '';
         },
       },
