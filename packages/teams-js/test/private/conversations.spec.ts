@@ -1,5 +1,7 @@
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
+import { FrameContexts } from '../../src/public/constants';
+import { ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
 describe('conversations', () => {
@@ -29,6 +31,19 @@ describe('conversations', () => {
       };
       return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
         'The library has not yet been initialized',
+      );
+    });
+
+    it('should throw error if not supported in runtime config', async () => {
+      await utils.initializeWithContext('content');
+      const conversationRequest: OpenConversationRequest = {
+        subEntityId: 'someEntityId',
+        title: 'someTitle',
+        entityId: 'someEntityId',
+      };
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
+      expect(() => conversations.openConversation(conversationRequest)).rejects.toThrowError(
+        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
       );
     });
 
@@ -97,6 +112,14 @@ describe('conversations', () => {
       expect(() => conversations.closeConversation()).toThrowError('The library has not yet been initialized');
     });
 
+    it('should throw error if not supported in runtime config', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
+      expect(() => conversations.closeConversation()).toThrowError(
+        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
+      );
+    });
+
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
       expect(() => conversations.closeConversation()).toThrowError(
@@ -108,6 +131,13 @@ describe('conversations', () => {
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
       return expect(conversations.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should throw error if it is not supported in runtime config', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = conversations.getChatMembers();
+      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
     });
 
     it('should successfully get chat members', async () => {

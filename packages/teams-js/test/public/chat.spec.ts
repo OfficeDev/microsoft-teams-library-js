@@ -1,5 +1,6 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
+import { ErrorCode } from '../../src/public/interfaces';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
@@ -33,6 +34,17 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should throw error if it is not supported in runtime config', async () => {
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
+        message: 'someMessage',
+      };
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = chat.openChat(chatRequest);
+      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
     });
 
     it('should not allow calls from settings context', async () => {
@@ -99,6 +111,17 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('should throw error if it is not supported in runtime config', async () => {
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+      };
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = chat.openGroupChat(chatRequest);
+      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
     });
 
     it('should not allow calls when no members are provided', () => {
