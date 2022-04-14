@@ -93,7 +93,7 @@ describe('Dialog', () => {
           expect(handlerMessage.args).toStrictEqual(['messageForParent']);
         });
 
-        it(`FRAMED: should initiate the post message to dialog using returned function. context: ${context}`, async () => {
+        it(`FRAMED: should initiate the post message to dialog. context: ${context}`, async () => {
           await framedMock.initializeWithContext(context);
           dialog.open(dialogInfo, emptyCallback, emptyCallback);
           dialog.sendMessageToDialog('exampleMessage');
@@ -102,7 +102,7 @@ describe('Dialog', () => {
           expect(message.args).toStrictEqual(['exampleMessage']);
         });
 
-        it(`FRAMELESS: should initiate the post message to dialog using returned function. context: ${context}`, async () => {
+        it(`FRAMELESS: should initiate the post message to dialog. context: ${context}`, async () => {
           await framelessMock.initializeWithContext(context);
           dialog.open(dialogInfo, emptyCallback, emptyCallback);
           dialog.sendMessageToDialog('exampleMessage');
