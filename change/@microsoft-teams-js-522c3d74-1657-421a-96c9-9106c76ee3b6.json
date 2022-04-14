@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "In dialogs, `messageForParent` handler is unregistered when the dialog is closed or cancelled.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "none"
-}
