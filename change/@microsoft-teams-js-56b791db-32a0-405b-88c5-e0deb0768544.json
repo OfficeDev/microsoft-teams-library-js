@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "Split chat capability into a private (conversation) and a public (chat) partition",
-  "packageName": "@microsoft/teams-js",
-  "email": "aaroner@microsoft.com",
-  "dependentChangeType": "patch"
-}
