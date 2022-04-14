@@ -1,7 +1,6 @@
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
 describe('conversations', () => {

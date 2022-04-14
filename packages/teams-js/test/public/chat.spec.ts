@@ -1,6 +1,6 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
-import { ErrorCode } from '../../src/public/interfaces';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
@@ -44,7 +44,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openChat(chatRequest);
-      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -121,7 +121,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openGroupChat(chatRequest);
-      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls when no members are provided', () => {

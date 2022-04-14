@@ -3,7 +3,6 @@ import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { ErrorCode } from './interfaces';
 
 /**
  * Describes information needed to start a chat

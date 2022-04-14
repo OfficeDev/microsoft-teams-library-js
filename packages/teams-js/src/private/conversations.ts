@@ -6,7 +6,6 @@ import {
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
-import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
