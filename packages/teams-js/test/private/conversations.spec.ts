@@ -1,6 +1,6 @@
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
@@ -34,7 +34,7 @@ describe('conversations', () => {
       );
     });
 
-    it('should throw error if not supported in runtime config', async () => {
+    it('conversation capability is not supported', async () => {
       await utils.initializeWithContext('content');
       const conversationRequest: OpenConversationRequest = {
         subEntityId: 'someEntityId',
@@ -43,7 +43,7 @@ describe('conversations', () => {
       };
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
       expect(() => conversations.openConversation(conversationRequest)).rejects.toThrowError(
-        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
+        errorNotSupportedOnPlatform,
       );
     });
 
@@ -115,9 +115,7 @@ describe('conversations', () => {
     it('should throw error if not supported in runtime config', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
-      expect(() => conversations.closeConversation()).toThrowError(
-        JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }),
-      );
+      expect(() => conversations.closeConversation()).toThrowError(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -137,7 +135,7 @@ describe('conversations', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = conversations.getChatMembers();
-      expect(promise).rejects.toThrowError(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
     });
 
     it('should successfully get chat members', async () => {

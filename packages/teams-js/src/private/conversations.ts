@@ -5,7 +5,7 @@ import {
 } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
@@ -113,7 +113,7 @@ export namespace conversations {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
       const sendPromise = sendAndHandleError('conversations.openConversation', {
         title: openConversationRequest.title,
@@ -159,7 +159,7 @@ export namespace conversations {
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      throw new Error(errorNotSupportedOnPlatform);
     }
     sendMessageToParent('conversations.closeConversation');
     removeHandler('startConversation');
@@ -182,7 +182,7 @@ export namespace conversations {
     return new Promise<ChatMembersInformation>(resolve => {
       ensureInitialized();
       if (!isSupported()) {
-        throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
       resolve(sendAndUnwrap('getChatMembers'));
     });
