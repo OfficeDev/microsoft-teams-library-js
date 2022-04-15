@@ -1,8 +1,9 @@
 import { app } from '../../src/public/app';
 import { ErrorCode } from '../../src/public/interfaces';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
+import { util } from 'prettier';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
@@ -55,6 +56,22 @@ describe('sharing_v1', () => {
             );
           });
         } else {
+          it(`sharing.shareWebContent should throw error when sharing is not supported. context: ${frameContext}`, async () => {
+            const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
+              content: [
+                {
+                  type: 'URL',
+                  url: 'https://www.microsoft.com',
+                  preview: true,
+                  message: 'Test',
+                },
+              ],
+            };
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(sharing.shareWebContent(shareRequest)).rejects.toThrowError(errorNotSupportedOnPlatform);
+          });
+
           it(`sharing.shareWebContent should successfully call the callback function when given the share web content in correct format when initialized with ${frameContext} context- success scenario`, done => {
             utils.initializeWithContext(frameContext).then(() => {
               // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
