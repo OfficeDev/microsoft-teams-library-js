@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Force another commit for testing purposes",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@microsoft.com",
+  "dependentChangeType": "none"
+}
