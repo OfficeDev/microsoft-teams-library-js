@@ -576,6 +576,10 @@ export interface DialogSize {
 export interface UrlDialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
+   *
+   * @remarks
+   * The domain of the url must match at least one of the
+   * valid domains specified in the validDomains block of the manifest
    */
   url: string;
 
@@ -610,6 +614,10 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
 export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
+   *
+   * @remarks
+   * The domain of the url must match at least one of the
+   * valid domains specified in the validDomains block of the manifest
    */
   url?: string;
 
