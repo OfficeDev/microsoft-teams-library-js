@@ -5,7 +5,7 @@ import {
   callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise,
   callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
 } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 /**
@@ -66,6 +66,7 @@ export namespace location {
     callback?: (error: SdkError, location: Location) => void,
   ): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Location>(getLocationHelper, callback, props);
   }
 
@@ -76,6 +77,9 @@ export namespace location {
       }
       if (!props) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
       }
       resolve(sendAndHandleError('location.getLocation', props));
     });
@@ -111,6 +115,9 @@ export namespace location {
       }
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
       }
       resolve(sendAndHandleError('location.showLocation', location));
     });
