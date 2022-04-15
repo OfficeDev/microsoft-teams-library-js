@@ -93,19 +93,17 @@ describe('Dialog', () => {
           expect(handlerMessage.args).toStrictEqual(['messageForParent']);
         });
 
-        it(`FRAMED: should initiate the post message to dialog using returned function. context: ${context}`, async () => {
+        it(`FRAMED: should initiate the post message to dialog. context: ${context}`, async () => {
           await framedMock.initializeWithContext(context);
-          const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-          sendMessageToDialogHandler('exampleMessage');
+          dialog.sendMessageToDialog('exampleMessage');
           const message = framedMock.findMessageByFunc('messageForChild');
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
         });
 
-        it(`FRAMELESS: should initiate the post message to dialog using returned function. context: ${context}`, async () => {
+        it(`FRAMELESS: should initiate the post message to dialog. context: ${context}`, async () => {
           await framelessMock.initializeWithContext(context);
-          const sendMessageToDialogHandler = dialog.open(dialogInfo, emptyCallback, emptyCallback);
-          sendMessageToDialogHandler('exampleMessage');
+          dialog.sendMessageToDialog('exampleMessage');
           const message = framelessMock.findMessageByFunc('messageForChild');
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
@@ -341,24 +339,6 @@ describe('Dialog', () => {
           expect(handlerMessage).not.toBeNull();
           expect(handlerMessage.args).toStrictEqual(['messageForParent']);
         });
-
-        it(`FRAMED: should initiate the post message to dialog. context: ${context}`, async () => {
-          await framedMock.initializeWithContext(context);
-          const sendMessageToDialogHandler = dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
-          sendMessageToDialogHandler('exampleMessage');
-          const message = framedMock.findMessageByFunc('messageForChild');
-          expect(message).not.toBeUndefined();
-          expect(message.args).toStrictEqual(['exampleMessage']);
-        });
-
-        it(`FRAMELESS: should initiate the post message to dialog. context: ${context}`, async () => {
-          await framelessMock.initializeWithContext(context);
-          const sendMessageToDialogHandler = dialog.bot.open(dialogInfo, emptyCallback, emptyCallback);
-          sendMessageToDialogHandler('exampleMessage');
-          const message = framelessMock.findMessageByFunc('messageForChild');
-          expect(message).not.toBeUndefined();
-          expect(message.args).toStrictEqual(['exampleMessage']);
-        });
       } else {
         it(`FRAMED: should not allow calls from context ${context}`, async () => {
           await framedMock.initializeWithContext(context);
@@ -440,6 +420,56 @@ describe('Dialog', () => {
           it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
             await framelessMock.initializeWithContext(frameContext);
             expect(() => dialog.sendMessageToParentFromDialog('message')).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            );
+          });
+        }
+      });
+  });
+  describe('registerOnMessageFromParent', () => {
+    const allowedContexts = [FrameContexts.task];
+
+    it('should not allow calls before initialization', () => {
+      expect.assertions(1);
+      expect(() => dialog.registerOnMessageFromParent(emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    Object.keys(FrameContexts)
+      .map(k => FrameContexts[k])
+      .forEach(frameContext => {
+        if (frameContext === FrameContexts.task) {
+          it(`FRAMED: should initiate the registration call: ${frameContext}`, async () => {
+            await framedMock.initializeWithContext(frameContext);
+            dialog.registerOnMessageFromParent(emptyCallback);
+            const message = framedMock.findMessageByFunc('registerHandler');
+            expect(message).not.toBeUndefined();
+            expect(message.args).toStrictEqual(['messageForChild']);
+          });
+
+          it(`FRAMELESS: should initiate the registration call: ${frameContext}`, async () => {
+            await framelessMock.initializeWithContext(frameContext);
+            dialog.registerOnMessageFromParent(emptyCallback);
+            const message = framelessMock.findMessageByFunc('registerHandler');
+            expect(message).not.toBeUndefined();
+            expect(message.args).toStrictEqual(['messageForChild']);
+          });
+        } else {
+          it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+            await framedMock.initializeWithContext(frameContext);
+            expect(() => dialog.registerOnMessageFromParent(emptyCallback)).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            );
+          });
+
+          it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
+            await framelessMock.initializeWithContext(frameContext);
+            expect(() => dialog.registerOnMessageFromParent(emptyCallback)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${frameContext}".`,

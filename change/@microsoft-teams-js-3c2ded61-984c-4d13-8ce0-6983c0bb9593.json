@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "The type `PostMessageChannel` and `sendMessageToParentFromDialog` function in dialogs capability have been updated to not take callbacks in.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}

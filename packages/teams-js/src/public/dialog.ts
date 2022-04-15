@@ -50,23 +50,16 @@ export namespace dialog {
     urlDialogInfo: UrlDialogInfo,
     submitHandler?: DialogSubmitHandler,
     messageFromChildHandler?: PostMessageChannel,
-  ): PostMessageChannel {
+  ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
     if (messageFromChildHandler) {
       registerHandler('messageForParent', messageFromChildHandler);
     }
-
     sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
       removeHandler('messageForParent');
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sendMessageToDialog = (message: any): void => {
-      sendMessageToParent('messageForChild', [message]);
-    };
-    return sendMessageToDialog;
   }
 
   /**
@@ -99,6 +92,19 @@ export namespace dialog {
   }
 
   /**
+   *  Send message to the dialog from the parent
+   *
+   * @param message - The message to send
+   */
+  export function sendMessageToDialog(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message: any,
+  ): void {
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('messageForChild', [message]);
+  }
+
+  /**
    * Register a listener that will be triggered when a message is received from the app that opened the dialog.
    *
    * @remarks
@@ -107,7 +113,7 @@ export namespace dialog {
    * @param listener - The listener that will be triggered.
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
-    ensureInitialized();
+    ensureInitialized(FrameContexts.task);
     registerHandler('messageForChild', listener);
   }
 
@@ -161,23 +167,16 @@ export namespace dialog {
       botUrlDialogInfo: BotUrlDialogInfo,
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
-    ): PostMessageChannel {
+    ): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
       }
-
       sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
         removeHandler('messageForParent');
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sendMessageToDialog = (message: any): void => {
-        sendMessageToParent('messageForChild', [message]);
-      };
-      return sendMessageToDialog;
     }
 
     /**

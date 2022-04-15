@@ -1,4 +1,10 @@
-import { chat, OpenConversationRequest, OpenGroupChatRequest, OpenSingleChatRequest } from '@microsoft/teams-js';
+import {
+  chat,
+  conversations,
+  OpenConversationRequest,
+  OpenGroupChatRequest,
+  OpenSingleChatRequest,
+} from '@microsoft/teams-js';
 import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -81,7 +87,7 @@ const OpenConversation = (): React.ReactElement =>
           );
         };
 
-        await chat.conversation.openConversation(input);
+        await conversations.openConversation(input);
         return 'conversations.openConversation()' + noHostSdkMsg;
       },
     },
@@ -92,7 +98,7 @@ const CloseConversation = (): React.ReactElement =>
     name: 'closeConversation',
     title: 'Close Conversation',
     onClick: async () => {
-      chat.conversation.closeConversation();
+      conversations.closeConversation();
       return 'Conversation Closed!';
     },
   });
@@ -102,7 +108,7 @@ const GetChatMembers = (): React.ReactElement =>
     name: 'getChatMembers',
     title: 'Get Chat Members',
     onClick: async () => {
-      const result = await chat.getChatMembers();
+      const result = await conversations.getChatMembers();
       return JSON.stringify(result);
     },
   });

@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Remove the duplicate property of StageLayoutControls type in meetingRoom capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
-  "dependentChangeType": "patch"
-}
