@@ -27,8 +27,10 @@ describe('appEntity', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      expect(appEntity.selectAppEntity('', [], '', () => {})).toThrow(errorNotSupportedOnPlatform);
+      expect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        appEntity.selectAppEntity('threadID', [], '', () => {});
+      }).toThrow(errorNotSupportedOnPlatform);
     });
   });
 });

@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 /**
@@ -73,8 +74,8 @@ export namespace appEntity {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!isSupported) {
-      throw { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+    if (!isSupported()) {
+      throw new Error(errorNotSupportedOnPlatform);
     }
 
     if (!threadId || threadId.length == 0) {
