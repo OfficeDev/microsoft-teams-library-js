@@ -52,7 +52,7 @@ const CheckLegacyFullTrustGetUserJoinedCapability = (): React.ReactElement =>
     name: 'CheckLegacyFullTrustGetUserJoinedCapability',
     title: 'Check Legacy FullTrust Joined Teams isSupported Capability',
     onClick: async () =>
-      `Legacy Fulltrust module ${legacy.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
+      `Legacy Fulltrust Joined Teams module ${legacy.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetConfigSetting = (): React.ReactElement =>

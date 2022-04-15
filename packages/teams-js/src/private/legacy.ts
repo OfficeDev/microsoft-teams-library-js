@@ -77,4 +77,11 @@ export namespace legacy {
       return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;
     }
   }
+
+  /**
+   * Checks if teams capability is supported currently
+   */
+  export function isSupported(): boolean {
+    return runtime.supports.teams ? true : false;
+  }
 }
