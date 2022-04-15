@@ -71,4 +71,4 @@ The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Team
 
 ## Contributing
 
-Please be sure to check out the [Contributor's guide](../../CONTRIBUTING.md) for crucial steps.
+Please be sure to check out the [Contributor's guide](../../CONTRIBUTING.md) for crucial steps
