@@ -5,7 +5,7 @@ import {
 } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
-import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
