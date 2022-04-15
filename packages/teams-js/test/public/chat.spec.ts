@@ -36,7 +36,7 @@ describe('chat', () => {
       return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should throw error if it is not supported in runtime config', async () => {
+    it('openChat should throw error if chat capability is not supported in runtime config', async () => {
       const chatRequest: OpenSingleChatRequest = {
         user: 'someUPN',
         message: 'someMessage',
@@ -113,7 +113,7 @@ describe('chat', () => {
       return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    it('should throw error if it is not supported in runtime config', async () => {
+    it('openGroupChat should throw error if chat capability is not supported in runtime config', async () => {
       const chatRequest: OpenGroupChatRequest = {
         users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
