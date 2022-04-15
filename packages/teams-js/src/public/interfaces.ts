@@ -534,7 +534,7 @@ export interface ShareDeepLinkParameters {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link ShareDeepLinkParameters} instead.
+ * As of 2.0.0-beta.5, please use {@link ShareDeepLinkParameters} instead.
  */
 export interface DeepLinkParameters {
   /**
