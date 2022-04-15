@@ -3,10 +3,11 @@ import { FramelessPostMocks } from '../framelessPostMocks';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 
 describe('meetingRoom', () => {
-  const mobilePlatformMock = new FramelessPostMocks();
-  const desktopPlatformMock = new Utils();
+  const framelessPlatformMock = new FramelessPostMocks();
+  const framedPlatformMock = new Utils();
   const meetingRoomInfo: meetingRoom.MeetingRoomInfo = {
     endpointId: '123-456',
     deviceName: 'conference room 001',
@@ -28,11 +29,11 @@ describe('meetingRoom', () => {
   const errorMessage = 'error occurs';
 
   beforeEach(() => {
-    mobilePlatformMock.messages = [];
-    desktopPlatformMock.messages = [];
+    framelessPlatformMock.messages = [];
+    framedPlatformMock.messages = [];
 
     // Set a mock window for testing
-    app._initialize(mobilePlatformMock.mockWindow);
+    app._initialize(framelessPlatformMock.mockWindow);
   });
 
   afterEach(() => {
@@ -52,17 +53,23 @@ describe('meetingRoom', () => {
       );
     });
 
+    it('getPairedMeetingRoomInfo should throw error when meetingRoom is not supported.', async () => {
+      await framelessPlatformMock.initializeWithContext('content');
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(errorNotSupportedOnPlatform);
+    });
+
     it('should successfully get meeting room info on mobile', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
 
       const promise = meetingRoom.getPairedMeetingRoomInfo();
 
-      const message = mobilePlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
+      const message = framelessPlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
 
       const callbackId = message.id;
-      mobilePlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, meetingRoomInfo],
@@ -77,16 +84,16 @@ describe('meetingRoom', () => {
     });
 
     it('pass sdkError while get meeting room info on mobile', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
 
       const promise = meetingRoom.getPairedMeetingRoomInfo();
 
-      const message = mobilePlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
+      const message = framelessPlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
 
       const callbackId = message.id;
-      mobilePlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: 500, message: errorMessage }],
@@ -97,11 +104,11 @@ describe('meetingRoom', () => {
     });
 
     it('should allow getPairedMeetingRoomInfo calls on desktop', async () => {
-      await desktopPlatformMock.initializeWithContext('content');
+      await framedPlatformMock.initializeWithContext('content');
 
       meetingRoom.getPairedMeetingRoomInfo();
 
-      const message = desktopPlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
+      const message = framedPlatformMock.findMessageByFunc('meetingRoom.getPairedMeetingRoomInfo');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
     });
@@ -114,32 +121,38 @@ describe('meetingRoom', () => {
       );
     });
 
+    it('sendCommandToPairedMeetingRoom should throw error when meetingRoom is not supported.', async () => {
+      await framelessPlatformMock.initializeWithContext('content');
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toThrowError(errorNotSupportedOnPlatform);
+    });
+
     it('should not allow calls with null command name', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
       return expect(meetingRoom.sendCommandToPairedMeetingRoom(null)).rejects.toThrowError(
         '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
     it('should not allow calls with empty command name', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
       return expect(meetingRoom.sendCommandToPairedMeetingRoom('')).rejects.toThrowError(
         '[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty',
       );
     });
 
     it('should successfully send commands on mobile', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
 
       const promise = meetingRoom.sendCommandToPairedMeetingRoom('mute');
 
-      const message = mobilePlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
+      const message = framelessPlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe('mute');
 
       const callbackId = message.id;
-      mobilePlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [{ errorCode: 1, message: 'command failed' }],
@@ -150,11 +163,11 @@ describe('meetingRoom', () => {
     });
 
     it('should successfully send commands on desktop', async () => {
-      await desktopPlatformMock.initializeWithContext('content');
+      await framedPlatformMock.initializeWithContext('content');
 
       meetingRoom.sendCommandToPairedMeetingRoom('mute');
 
-      const message = desktopPlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
+      const message = framedPlatformMock.findMessageByFunc('meetingRoom.sendCommandToPairedMeetingRoom');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toBe('mute');
@@ -174,8 +187,17 @@ describe('meetingRoom', () => {
       );
     });
 
+    it('registerMeetingRoomCapabilitiesUpdateHandler should throw error when meetingRoom is not supported.', async () => {
+      await framelessPlatformMock.initializeWithContext('content');
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      try {
+        meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler);
+      } catch (e) {
+        expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+      }
+    });
     it('should successful register capabilities update handler on mobile', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedCapabilities;
@@ -184,12 +206,12 @@ describe('meetingRoom', () => {
         returnedCapabilities = capabilities;
       });
 
-      const messageForRegister = mobilePlatformMock.findMessageByFunc('registerHandler');
+      const messageForRegister = framelessPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
       expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomCapabilitiesUpdate');
 
-      mobilePlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           func: 'meetingRoom.meetingRoomCapabilitiesUpdate',
           args: [meetingRoomCapability],
@@ -203,11 +225,11 @@ describe('meetingRoom', () => {
     });
 
     it('should successful register capabilities update handler on desktop', async () => {
-      await desktopPlatformMock.initializeWithContext('content');
+      await framedPlatformMock.initializeWithContext('content');
 
       meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler);
 
-      const messageForRegister = desktopPlatformMock.findMessageByFunc('registerHandler');
+      const messageForRegister = framedPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
       expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomCapabilitiesUpdate');
@@ -226,9 +248,18 @@ describe('meetingRoom', () => {
         'The library has not yet been initialized',
       );
     });
+    it('registerMeetingRoomStatesUpdateHandler should throw error when meetingRoom is not supported.', async () => {
+      await framelessPlatformMock.initializeWithContext('content');
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      try {
+        meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler);
+      } catch (e) {
+        expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+      }
+    });
 
     it('should successful register states update handler on mobile', async () => {
-      await mobilePlatformMock.initializeWithContext('content');
+      await framelessPlatformMock.initializeWithContext('content');
 
       let handlerInvoked = false;
       let returnedStates;
@@ -237,12 +268,12 @@ describe('meetingRoom', () => {
         returnedStates = states;
       });
 
-      const messageForRegister = mobilePlatformMock.findMessageByFunc('registerHandler');
+      const messageForRegister = framelessPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
       expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomStatesUpdate');
 
-      mobilePlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           func: 'meetingRoom.meetingRoomStatesUpdate',
           args: [meetingRoomState],
@@ -258,11 +289,11 @@ describe('meetingRoom', () => {
     });
 
     it('should successful register states update handler on desktop', async () => {
-      await desktopPlatformMock.initializeWithContext('content');
+      await framedPlatformMock.initializeWithContext('content');
 
       meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler);
 
-      const messageForRegister = desktopPlatformMock.findMessageByFunc('registerHandler');
+      const messageForRegister = framedPlatformMock.findMessageByFunc('registerHandler');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister.args.length).toBe(1);
       expect(messageForRegister.args[0]).toBe('meetingRoom.meetingRoomStatesUpdate');
