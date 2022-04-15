@@ -1,17 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {
-  dialog,
-  DialogInfo,
-  DialogSize,
-  IAppWindow,
-  ParentAppWindow,
-  TaskInfo,
-  tasks,
-  UrlDialogInfo,
-} from '@microsoft/teams-js';
+import { dialog, DialogInfo, DialogSize, IAppWindow, ParentAppWindow, tasks, UrlDialogInfo } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { isTestBackCompat } from './utils/isTestBackCompat';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -24,29 +16,9 @@ const DialogAPIs = (): ReactElement => {
     childWindowRef.current = childWindow;
   };
 
-  const StartTask = (): ReactElement =>
-    ApiWithTextInput<DialogInfo | TaskInfo>({
-      name: 'dialogOpen',
-      title: 'Start Task',
-      onClick: {
-        validateInput: input => {
-          if (input.url === undefined) {
-            throw new Error('Url undefined');
-          }
-        },
-        submit: async (taskInfo, setResult) => {
-          const onComplete = (err: string, result: string | object): void => {
-            setResult('Error: ' + err + '\nResult: ' + result);
-          };
-          openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
-          return '';
-        },
-      },
-    });
-
   const OpenDialog = (): ReactElement =>
-    ApiWithTextInput<UrlDialogInfo>({
-      name: 'dialogOpen_v2',
+    ApiWithTextInput<UrlDialogInfo | DialogInfo>({
+      name: 'dialogOpen',
       title: 'Dialog Open',
       onClick: {
         validateInput: input => {
@@ -55,6 +27,14 @@ const DialogAPIs = (): ReactElement => {
           }
         },
         submit: async (urlDialogInfo, setResult) => {
+          if (isTestBackCompat()) {
+            const taskInfo = urlDialogInfo as DialogInfo;
+            const onComplete = (err: string, result: string | object): void => {
+              setResult('Error: ' + err + '\nResult: ' + result);
+            };
+            openDialogHelper(tasks.startTask(taskInfo, onComplete), setResult);
+            return '';
+          }
           const onComplete = (resultObj: dialog.ISdkResponse): void => {
             setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
           };
@@ -62,7 +42,7 @@ const DialogAPIs = (): ReactElement => {
             // Message from parent
             setResult(message);
           };
-          dialog.open(urlDialogInfo, onComplete, messageFromChildHandler);
+          dialog.open(urlDialogInfo as UrlDialogInfo, onComplete, messageFromChildHandler);
           return '';
         },
       },
@@ -78,17 +58,14 @@ const DialogAPIs = (): ReactElement => {
             throw new Error('input is undefined');
           }
         },
-        submit: {
-          withPromise: async (dimensions, setResult) => {
+        submit: async (dimensions, setResult) => {
+          if (isTestBackCompat()) {
+            tasks.updateTask(dimensions);
+          } else {
             dialog.update.resize(dimensions);
-            setResult('Teams client SDK call dailog.update.resize was called');
-            return '';
-          },
-          //For V1 back compatibility
-          withCallback: (taskInfo, setResult) => {
-            tasks.updateTask(taskInfo);
-            setResult('Teams client SDK call tasks.updateTask was called');
-          },
+          }
+          setResult('Teams client SDK call dialog.update.resize was called');
+          return '';
         },
       },
     });
@@ -114,47 +91,30 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          if (childWindowRef.current && childWindowRef.current !== null) {
-            const childWindow = childWindowRef.current;
-            const onComplete = (status: boolean, reason?: string): void => {
-              if (!status) {
-                if (reason) {
-                  setResult(JSON.stringify(reason));
+          if (isTestBackCompat()) {
+            if (childWindowRef.current && childWindowRef.current !== null) {
+              const childWindow = childWindowRef.current;
+              const onComplete = (status: boolean, reason?: string): void => {
+                if (!status) {
+                  if (reason) {
+                    setResult(JSON.stringify(reason));
+                  } else {
+                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  }
                 } else {
-                  setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  setResult('Message sent to child');
                 }
-              } else {
-                setResult('Message sent to child');
-              }
-            };
-            childWindow.postMessage(message, onComplete);
+              };
+              childWindow.postMessage(message, onComplete);
+            } else {
+              setResult("childWindow doesn't exist");
+            }
+            return '';
           } else {
-            setResult("childWindow doesn't exist");
+            setResult('Message sent to child');
+            dialog.sendMessageToDialog(message);
+            return '';
           }
-          return '';
-        },
-      },
-    });
-
-  const SendMessageToChild_v2 = (): ReactElement =>
-    ApiWithTextInput<string>({
-      name: 'sendMessageToChild_v2',
-      title: 'sendMessageToChild_v2',
-      onClick: {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        validateInput: () => {},
-        submit: async (message, setResult) => {
-          setResult('A post call to child is initiated');
-          const dialogInfo = {
-            url: 'someUrl',
-            size: {
-              height: 5,
-              width: 5,
-            },
-          };
-          const sendMessageToDialogHandler = dialog.open(dialogInfo);
-          sendMessageToDialogHandler(message);
-          return '';
         },
       },
     });
@@ -167,38 +127,28 @@ const DialogAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
-          const parentWindow = ParentAppWindow.Instance;
-          if (parentWindow) {
-            const onComplete = (status: boolean, reason?: string): void => {
-              if (!status) {
-                if (reason) {
-                  setResult(JSON.stringify(reason));
+          if (isTestBackCompat()) {
+            const parentWindow = ParentAppWindow.Instance;
+            if (parentWindow) {
+              const onComplete = (status: boolean, reason?: string): void => {
+                if (!status) {
+                  if (reason) {
+                    setResult(JSON.stringify(reason));
+                  } else {
+                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  }
                 } else {
-                  setResult("Status is false but there's no reason?! This shouldn't happen.");
+                  setResult('Message sent to parent');
                 }
-              } else {
-                setResult('Message sent to parent');
-              }
-            };
-            parentWindow.postMessage(message, onComplete);
+              };
+              parentWindow.postMessage(message, onComplete);
+            } else {
+              setResult("parentWindow doesn't exist");
+            }
           } else {
-            setResult("parentWindow doesn't exist");
+            setResult('Message sent to parent');
+            dialog.sendMessageToParentFromDialog(message);
           }
-          return '';
-        },
-      },
-    });
-
-  const SendMessageToParent_v2 = (): ReactElement =>
-    ApiWithTextInput<string>({
-      name: 'sendMessageToParent_v2',
-      title: 'sendMessageToParent_v2',
-      onClick: {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        validateInput: () => {},
-        submit: async (message, setResult) => {
-          setResult('A post call to parent is initiated');
-          dialog.sendMessageToParentFromDialog(message);
           return '';
         },
       },
@@ -209,22 +159,16 @@ const DialogAPIs = (): ReactElement => {
       name: 'registerForParentMessage',
       title: 'registerForParentMessage',
       onClick: async setResult => {
-        const parentWindow = ParentAppWindow.Instance;
-        parentWindow.addEventListener('message', (message: string) => {
-          setResult(message);
-        });
-        return 'Completed';
-      },
-    });
-
-  const RegisterForParentMessage_v2 = (): ReactElement =>
-    ApiWithoutInput({
-      name: 'registerForParentMessage_v2',
-      title: 'registerForParentMessage_v2',
-      onClick: async setResult => {
-        dialog.registerOnMessageFromParent((message: string) => {
-          setResult(message);
-        });
+        if (isTestBackCompat()) {
+          const parentWindow = ParentAppWindow.Instance;
+          parentWindow.addEventListener('message', (message: string) => {
+            setResult(message);
+          });
+        } else {
+          dialog.registerOnMessageFromParent((message: string) => {
+            setResult(message);
+          });
+        }
         return 'Completed';
       },
     });
@@ -268,17 +212,13 @@ const DialogAPIs = (): ReactElement => {
     <>
       <h1>dialog</h1>
       <CheckDialogCapability />
-      <StartTask />
       <OpenDialog />
       <ResizeDialog />
       <CheckDialogResizeCapability />
       <SubmitDialogWithInput />
       <SendMessageToChild />
-      <SendMessageToChild_v2 />
       <SendMessageToParent />
-      <SendMessageToParent_v2 />
       <RegisterForParentMessage />
-      <RegisterForParentMessage_v2 />
     </>
   );
 };
