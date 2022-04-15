@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Adding in `runtime.isLegacy` handler for the following deep link capabilities: `appInstallDialog`, `calendar`, `call`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
