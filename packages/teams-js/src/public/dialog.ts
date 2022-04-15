@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -33,6 +34,15 @@ export namespace dialog {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
+  const storedMessages: string[] = [];
+
+  export function initialize(): void {
+    ensureInitialized(FrameContexts.task);
+    const dialogMessageHandler = (message: string): void => {
+      storedMessages.push(message);
+    };
+    registerHandler('messageForChild', dialogMessageHandler, false);
+  }
 
   /**
    * Allows app to open a url based dialog.
@@ -114,7 +124,13 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
+    removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
+    storedMessages.reverse();
+    while (storedMessages.length > 0) {
+      const message = storedMessages.pop();
+      listener(message);
+    }
   }
 
   /**
