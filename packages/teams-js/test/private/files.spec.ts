@@ -2,7 +2,7 @@ import { files } from '../../src/private/files';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { ErrorCode, FileOpenPreference } from '../../src/public/interfaces';
+import { FileOpenPreference } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
 describe('files', () => {
