@@ -2,7 +2,6 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 /**
  * @hidden
