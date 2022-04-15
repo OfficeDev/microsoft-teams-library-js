@@ -1,5 +1,5 @@
 {
-  "type": "minor",
+  "type": "none",
   "comment": "dialog.submit sends an empty array to host instead of `[undefined]` in case there is no appIds specified",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
