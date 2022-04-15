@@ -251,6 +251,25 @@ describe('Dialog', () => {
           expect(submitMessage).not.toBeNull();
           expect(submitMessage.args).toEqual(['someResult', ['someAppId']]);
         });
+        it(`FRAMED: should successfully pass results when no appIds parameters are provided ${JSON.stringify(
+          context,
+        )}`, async () => {
+          await framedMock.initializeWithContext(context);
+          dialog.submit('someResult');
+          const submitMessage = framedMock.findMessageByFunc('tasks.completeTask');
+          expect(submitMessage).not.toBeNull();
+          expect(submitMessage.args).toEqual(['someResult', []]);
+        });
+
+        it(`FRAMELESS: should successfully pass results when no appIds parameters are provided ${JSON.stringify(
+          context,
+        )}`, async () => {
+          await framelessMock.initializeWithContext(context);
+          dialog.submit('someResult');
+          const submitMessage = framelessMock.findMessageByFunc('tasks.completeTask');
+          expect(submitMessage).not.toBeNull();
+          expect(submitMessage.args).toEqual(['someResult', []]);
+        });
       } else {
         it(`FRAMED: should not allow calls from context context: ${JSON.stringify(context)}`, async () => {
           await framedMock.initializeWithContext(context);
