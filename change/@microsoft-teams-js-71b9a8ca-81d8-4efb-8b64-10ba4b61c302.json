@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Removed PostMessageChannel return from dialog.open, added in separate function sendMessageToDialog to make up for missing functionality\"",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
