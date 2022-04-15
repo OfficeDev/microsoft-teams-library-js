@@ -64,6 +64,7 @@ export enum DialogDimension {
   Small = 'small',
 }
 
+import { ErrorCode } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0-beta.1, please use {@link DialogDimension} instead.
@@ -79,3 +80,5 @@ export enum ChannelType {
   Private = 'Private',
   Shared = 'Shared',
 }
+
+export const errorNotSupportedOnPlatform = JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM });
