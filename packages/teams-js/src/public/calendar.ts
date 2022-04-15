@@ -1,4 +1,5 @@
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -27,8 +28,11 @@ export namespace calendar {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-
-      resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
+      if (runtime.isLegacyTeams) {
+        resolve(sendAndHandleError('executeDeepLink', createTeamsDeepLinkForCalendar(composeMeetingParams)));
+      } else {
+        resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
+      }
     });
   }
   export function isSupported(): boolean {
@@ -46,4 +50,37 @@ export namespace calendar {
     subject?: string;
     content?: string;
   }
+}
+
+export function createTeamsDeepLinkForCalendar(composeMeetingParams: calendar.ComposeMeetingParams): string {
+  const teamsDeepLinkUrlPathForCalendar = '/l/meeting/new';
+  const teamsDeepLinkAttendeesUrlParameterName = 'attendees';
+  const teamsDeepLinkStartTimeUrlParameterName = 'startTime';
+  const teamsDeepLinkEndTimeUrlParameterName = 'endTime';
+  const teamsDeepLinkSubjectUrlParameterName = 'subject';
+  const teamsDeepLinkContentUrlParameterName = 'content';
+
+  const attendeeSearchParameter =
+    composeMeetingParams.attendees === undefined
+      ? ''
+      : `${teamsDeepLinkAttendeesUrlParameterName}=` +
+        composeMeetingParams.attendees.map(attendee => encodeURIComponent(attendee)).join(',');
+  const startTimeSearchParameter =
+    composeMeetingParams.startTime === undefined
+      ? ''
+      : `&${teamsDeepLinkStartTimeUrlParameterName}=${encodeURIComponent(composeMeetingParams.startTime)}`;
+  const endTimeSearchParameter =
+    composeMeetingParams.endTime === undefined
+      ? ''
+      : `&${teamsDeepLinkEndTimeUrlParameterName}=${encodeURIComponent(composeMeetingParams.endTime)}`;
+  const subjectSearchParameter =
+    composeMeetingParams.subject === undefined
+      ? ''
+      : `&${teamsDeepLinkSubjectUrlParameterName}=${encodeURIComponent(composeMeetingParams.subject)}`;
+  const contentSearchParameter =
+    composeMeetingParams.content === undefined
+      ? ''
+      : `&${teamsDeepLinkContentUrlParameterName}=${encodeURIComponent(composeMeetingParams.content)}`;
+
+  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}${startTimeSearchParameter}${endTimeSearchParameter}${subjectSearchParameter}${contentSearchParameter}`;
 }

@@ -1,7 +1,11 @@
 import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+const teamsDeepLinkUrlPathForAppInstall = '/l/app/';
 
 /**
  * @alpha
@@ -24,8 +28,19 @@ export namespace appInstallDialog {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-      sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
-      resolve();
+      if (runtime.isLegacyTeams) {
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForAppInstall}?${encodeURIComponent(
+              openAPPInstallDialogParams.appId,
+            )}`,
+          ),
+        );
+      } else {
+        sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+        resolve();
+      }
     });
   }
 

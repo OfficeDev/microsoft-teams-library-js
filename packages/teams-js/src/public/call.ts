@@ -1,4 +1,7 @@
+import { teamsDeepLinkUsersUrlParameterName } from '../internal/chatConstants';
 import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -39,11 +42,36 @@ export namespace call {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-      return sendMessageToParent('call.startCall', [startCallParams], resolve);
+      if (runtime.isLegacyTeams) {
+        resolve(sendAndHandleError('executeDeepLink', createTeamsDeepLinkForCall(startCallParams)));
+      } else {
+        return sendMessageToParent('call.startCall', [startCallParams], resolve);
+      }
     });
   }
 
   export function isSupported(): boolean {
     return runtime.supports.call ? true : false;
   }
+}
+
+export function createTeamsDeepLinkForCall(startCallParams: call.StartCallParams): string {
+  const teamsDeepLinkUrlPathForCall = '/l/call/0/0';
+  const teamsDeepLinkSourceUrlParameterName = 'source';
+  const teamsDeepLinkWithVideoUrlParameterName = 'withVideo';
+
+  const usersSearchParameter =
+    `${teamsDeepLinkUsersUrlParameterName}=` + startCallParams.targets.map(user => encodeURIComponent(user)).join(',');
+  const withVideoSearchParameter =
+    startCallParams.requestedModalities === undefined
+      ? ''
+      : `&${teamsDeepLinkWithVideoUrlParameterName}=${encodeURIComponent(
+          startCallParams.requestedModalities.includes(call.CallModalities.Video),
+        )}`;
+  const sourceSearchParameter =
+    startCallParams.source === undefined
+      ? ''
+      : `&${teamsDeepLinkSourceUrlParameterName}=${encodeURIComponent(startCallParams.source)}`;
+
+  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCall}?${usersSearchParameter}${withVideoSearchParameter}${sourceSearchParameter}`;
 }
