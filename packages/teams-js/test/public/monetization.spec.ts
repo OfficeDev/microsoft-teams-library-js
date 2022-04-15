@@ -1,17 +1,20 @@
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
 import { monetization } from '../../src/public/monetization';
 import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
 
 const allowedContexts = [FrameContexts.content];
 describe('monetization_v1', () => {
-  const desktopPlatformMock = new FramelessPostMocks();
+  const framelessPlatformMock = new FramelessPostMocks();
+  const utils = new Utils();
 
   beforeEach(() => {
-    desktopPlatformMock.messages = [];
-    app._initialize(desktopPlatformMock.mockWindow);
+    framelessPlatformMock.messages = [];
+    app._initialize(framelessPlatformMock.mockWindow);
   });
 
   afterEach(() => {
@@ -32,8 +35,18 @@ describe('monetization_v1', () => {
 
     Object.values(FrameContexts).forEach(context => {
       if (!allowedContexts.some(allowedContext => allowedContext == context)) {
+        it(`openPurchaseExperience should throw error when monetization is not supported. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext('content');
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
+            monetization.openPurchaseExperience(() => {});
+          } catch (e) {
+            expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+          }
+        });
+
         it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
-          await desktopPlatformMock.initializeWithContext(context);
+          await framelessPlatformMock.initializeWithContext(context);
           expect(() => {
             monetization.openPurchaseExperience((error: SdkError | null) => {
               expect(error).toBeNull();
@@ -48,15 +61,15 @@ describe('monetization_v1', () => {
     });
 
     it('should successfully execute callback and sdkError should be null', async () => {
-      await desktopPlatformMock.initializeWithContext(FrameContexts.content);
+      await framelessPlatformMock.initializeWithContext(FrameContexts.content);
       monetization.openPurchaseExperience((error: SdkError | null) => {
         expect(error).toBeNull();
       });
-      const message = desktopPlatformMock.findMessageByFunc('monetization.openPurchaseExperience');
+      const message = framelessPlatformMock.findMessageByFunc('monetization.openPurchaseExperience');
       expect(message).not.toBeNull();
 
       const callbackId = message.id;
-      desktopPlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, undefined],
@@ -67,12 +80,12 @@ describe('monetization_v1', () => {
 });
 
 describe('monetization_v2', () => {
-  const desktopPlatformMock = new FramelessPostMocks();
+  const framelessPlatformMock = new FramelessPostMocks();
 
   beforeEach(() => {
-    desktopPlatformMock.messages = [];
+    framelessPlatformMock.messages = [];
     // Set a mock window for testing
-    app._initialize(desktopPlatformMock.mockWindow);
+    app._initialize(framelessPlatformMock.mockWindow);
   });
 
   afterEach(() => {
@@ -92,7 +105,7 @@ describe('monetization_v2', () => {
     Object.values(FrameContexts).forEach(context => {
       if (!allowedContexts.some(allowedContext => allowedContext == context)) {
         it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
-          await desktopPlatformMock.initializeWithContext(context);
+          await framelessPlatformMock.initializeWithContext(context);
           expect(() => monetization.openPurchaseExperience()).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
@@ -103,13 +116,13 @@ describe('monetization_v2', () => {
     });
 
     it('should successfully execute and not throw any error', async () => {
-      await desktopPlatformMock.initializeWithContext(FrameContexts.content);
+      await framelessPlatformMock.initializeWithContext(FrameContexts.content);
       const promise = monetization.openPurchaseExperience();
-      const message = desktopPlatformMock.findMessageByFunc('monetization.openPurchaseExperience');
+      const message = framelessPlatformMock.findMessageByFunc('monetization.openPurchaseExperience');
       expect(message).not.toBeNull();
 
       const callbackId = message.id;
-      desktopPlatformMock.respondToMessage({
+      framelessPlatformMock.respondToMessage({
         data: {
           id: callbackId,
           args: [null, true],
