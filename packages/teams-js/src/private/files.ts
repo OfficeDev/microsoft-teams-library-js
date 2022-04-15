@@ -6,6 +6,7 @@ import {
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
 
@@ -315,7 +316,7 @@ export namespace files {
     return new Promise<CloudStorageFolder[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
 
       if (!channelId || channelId.length === 0) {
@@ -337,7 +338,7 @@ export namespace files {
     return new Promise<[SdkError, boolean, CloudStorageFolder[]]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
 
       if (!channelId || channelId.length === 0) {
@@ -367,7 +368,7 @@ export namespace files {
     return new Promise<boolean>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
 
       if (!channelId) {
@@ -397,7 +398,7 @@ export namespace files {
     return new Promise<CloudStorageFolderItem[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
 
       if (!folder || !providerCode) {
@@ -429,7 +430,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      throw new Error(errorNotSupportedOnPlatform);
     }
 
     if (!file || !providerCode) {
@@ -454,7 +455,7 @@ export namespace files {
   export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      throw new Error(errorNotSupportedOnPlatform);
     }
 
     const params = [
@@ -488,7 +489,7 @@ export namespace files {
     return new Promise<IExternalProvider[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
 
       resolve(sendAndHandleError('files.getExternalProviders', excludeAddedProviders));
@@ -510,7 +511,7 @@ export namespace files {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+        throw new Error(errorNotSupportedOnPlatform);
       }
       if (!selectedFiles || selectedFiles.length === 0) {
         throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
@@ -564,7 +565,7 @@ export namespace files {
   export function getFileDownloads(callback?: (error?: SdkError, files?: IFileItem[]) => void): Promise<IFileItem[]> {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      throw new Error(errorNotSupportedOnPlatform);
     }
 
     const wrappedFunction = (): Promise<IFileItem[]> =>
@@ -584,7 +585,7 @@ export namespace files {
   export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw Error(JSON.stringify({ errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM }));
+      throw new Error(errorNotSupportedOnPlatform);
     }
 
     if (!callback) {
