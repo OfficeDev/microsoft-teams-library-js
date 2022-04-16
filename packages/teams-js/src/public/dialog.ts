@@ -35,6 +35,14 @@ export namespace dialog {
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
   const storedMessages: string[] = [];
 
+  /**
+   * @hidden
+   * Hide from docs because this function is only used during initialization
+   * ------------------
+   * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
+   * Function is called in {@link app.initializeHelper}
+   * @internal
+   */
   export function initialize(): void {
     ensureInitialized(FrameContexts.task);
     const dialogMessageHandler = (message: string): void => {
