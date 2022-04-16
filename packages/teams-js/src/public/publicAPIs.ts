@@ -279,7 +279,11 @@ export function getMruTabInstances(
  * @param deepLinkParameters - ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  pages.shareDeepLink(deepLinkParameters);
+  pages.shareDeepLink({
+    subPageId: deepLinkParameters.subEntityId,
+    subPageLabel: deepLinkParameters.subEntityLabel,
+    subPageWebUrl: deepLinkParameters.subEntityWebUrl,
+  });
 }
 
 /**

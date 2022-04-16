@@ -266,9 +266,9 @@ describe('AppSDK-TeamsAPIs', () => {
       await utils.initializeWithContext('content');
 
       pages.shareDeepLink({
-        subEntityId: 'someSubEntityId',
-        subEntityLabel: 'someSubEntityLabel',
-        subEntityWebUrl: 'someSubEntityWebUrl',
+        subPageId: 'someSubEntityId',
+        subPageLabel: 'someSubEntityLabel',
+        subPageWebUrl: 'someSubEntityWebUrl',
       });
 
       let message = utils.findMessageByFunc('shareDeepLink');
@@ -283,9 +283,9 @@ describe('AppSDK-TeamsAPIs', () => {
       await utils.initializeWithContext('sidePanel');
 
       pages.shareDeepLink({
-        subEntityId: 'someSubEntityId',
-        subEntityLabel: 'someSubEntityLabel',
-        subEntityWebUrl: 'someSubEntityWebUrl',
+        subPageId: 'someSubEntityId',
+        subPageLabel: 'someSubEntityLabel',
+        subPageWebUrl: 'someSubEntityWebUrl',
       });
 
       let message = utils.findMessageByFunc('shareDeepLink');
