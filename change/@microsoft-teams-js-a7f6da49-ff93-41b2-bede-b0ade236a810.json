@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Temporary version bump, will remove",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@microsoft.com",
+  "dependentChangeType": "patch"
+}
