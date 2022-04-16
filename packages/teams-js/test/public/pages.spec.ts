@@ -3,12 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
-import {
-  DeepLinkParameters,
-  FrameInfo,
-  TabInstance,
-  TabInstanceParameters,
-} from '../../src/public/interfaces';
+import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -39,15 +34,11 @@ describe('Testing pages module', () => {
     describe('Testing pages.returnFocus function', () => {
       const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
-        expect(() => pages.returnFocus()).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
@@ -74,8 +65,8 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             expect(() => pages.returnFocus()).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -84,11 +75,11 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.registerFocusEnterHandler function', () => {
       it('pages.registerFocusEnterHandler should not allow calls before initialization', () => {
-        expect(() =>
-          pages.registerFocusEnterHandler(emptyCallback)
-        ).toThrowError('The library has not yet been initialized');
+        expect(() => pages.registerFocusEnterHandler(emptyCallback)).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
-      Object.values(FrameContexts).forEach((context) => {
+      Object.values(FrameContexts).forEach(context => {
         it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           pages.registerFocusEnterHandler(() => {
@@ -136,15 +127,11 @@ describe('Testing pages module', () => {
       };
 
       it('pages.setCurrentFrame should not allow calls before initialization', () => {
-        expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
@@ -158,8 +145,8 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -173,10 +160,8 @@ describe('Testing pages module', () => {
         websiteUrl: 'someWebsiteUrl',
       };
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
             await utils.initializeWithContext(context);
             pages.initializeWithFrameContext(frameContext);
@@ -197,12 +182,10 @@ describe('Testing pages module', () => {
         } else {
           it(`pages.initializeWithFrameContext should not allow calls from ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            expect(() =>
-              pages.initializeWithFrameContext(frameContext)
-            ).toThrowError(
+            expect(() => pages.initializeWithFrameContext(frameContext)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -223,10 +206,8 @@ describe('Testing pages module', () => {
         entityId: 'someEntityId',
       };
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.getConfig should successfully get settings when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.getConfig();
@@ -240,8 +221,8 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             expect(() => pages.getConfig()).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -260,9 +241,9 @@ describe('Testing pages module', () => {
       ];
 
       it('pages.navigateCrossDomain should not allow calls before initialization', async () => {
-        await expect(
-          pages.navigateCrossDomain('https://valid.origin.com')
-        ).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
       // Commenting out these tests as url validation is not implemented
@@ -300,21 +281,15 @@ describe('Testing pages module', () => {
       });
       */
 
-      Object.keys(FrameContexts).forEach((k) => {
+      Object.keys(FrameContexts).forEach(k => {
         const context = FrameContexts[k];
-        if (
-          allowedContexts.some((allowedContext) => allowedContext === context)
-        ) {
+        if (allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
 
-            const promise = pages.navigateCrossDomain(
-              'https://valid.origin.com'
-            );
-            const navigateCrossDomainMessage = utils.findMessageByFunc(
-              'navigateCrossDomain'
-            );
+            const promise = pages.navigateCrossDomain('https://valid.origin.com');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             utils.respondToMessage(navigateCrossDomainMessage, true);
 
             await expect(promise).resolves.not.toThrow();
@@ -324,12 +299,10 @@ describe('Testing pages module', () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
 
-            await expect(
-              pages.navigateCrossDomain('https://valid.origin.com')
-            ).rejects.toThrowError(
+            await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -340,14 +313,10 @@ describe('Testing pages module', () => {
 
         pages.navigateCrossDomain('https://valid.origin.com');
 
-        const navigateCrossDomainMessage = utils.findMessageByFunc(
-          'navigateCrossDomain'
-        );
+        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
         expect(navigateCrossDomainMessage).not.toBeNull();
         expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe(
-          'https://valid.origin.com'
-        );
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
       });
 
       it('pages.navigateCrossDomain should throw on invalid cross-origin navigation request', async () => {
@@ -355,19 +324,15 @@ describe('Testing pages module', () => {
 
         const promise = pages.navigateCrossDomain('https://invalid.origin.com');
 
-        const navigateCrossDomainMessage = utils.findMessageByFunc(
-          'navigateCrossDomain'
-        );
+        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
         expect(navigateCrossDomainMessage).not.toBeNull();
         expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe(
-          'https://invalid.origin.com'
-        );
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
 
         utils.respondToMessage(navigateCrossDomainMessage, false);
 
         await expect(promise).rejects.toThrowError(
-          'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.'
+          'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
         );
       });
     });
@@ -382,9 +347,9 @@ describe('Testing pages module', () => {
       };
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
-        await expect(
-          pages.navigateToApp(navigateToAppParams)
-        ).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
       const allowedContexts = [
@@ -396,10 +361,8 @@ describe('Testing pages module', () => {
         FrameContexts.meetingStage,
       ];
 
-      Object.keys(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContext) => allowedContext === context)
-        ) {
+      Object.keys(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`pages.navigateToApp should allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
@@ -407,9 +370,7 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const navigateToAppMessage = utils.findMessageByFunc(
-              'pages.navigateToApp'
-            );
+            const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
             utils.respondToMessage(navigateToAppMessage, true);
 
             await expect(promise).resolves.toBe(undefined);
@@ -421,16 +382,12 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const navigateToAppMessage = utils.findMessageByFunc(
-              'pages.navigateToApp'
-            );
+            const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
             utils.respondToMessage(navigateToAppMessage, true);
             await promise;
 
             expect(navigateToAppMessage).not.toBeNull();
-            expect(navigateToAppMessage.args[0]).toStrictEqual(
-              navigateToAppParams
-            );
+            expect(navigateToAppMessage.args[0]).toStrictEqual(navigateToAppParams);
           });
 
           it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
@@ -445,26 +402,23 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const executeDeepLinkMessage =
-              utils.findMessageByFunc('executeDeepLink');
+            const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
             utils.respondToMessage(executeDeepLinkMessage, true);
             await promise;
 
             expect(executeDeepLinkMessage).not.toBeNull();
             expect(executeDeepLinkMessage.args[0]).toBe(
-              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D'
+              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
             );
           });
         } else {
           it(`pages.navigateToApp should not allow calls from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
-            await expect(
-              pages.navigateToApp(navigateToAppParams)
-            ).rejects.toThrowError(
+            await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -472,34 +426,26 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.shareDeepLink function', () => {
-      const allowedContexts = [
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.meetingStage,
-      ];
-      const deepLinkParameters: DeepLinkParameters = {
-        subEntityId: 'someSubEntityId',
-        subEntityLabel: 'someSubEntityLabel',
-        subEntityWebUrl: 'someSubEntityWebUrl',
+      const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+      const deepLinkParameters: ShareDeepLinkParameters = {
+        subPageId: 'someSubEntityId',
+        subPageLabel: 'someSubEntityLabel',
+        subPageWebUrl: 'someSubEntityWebUrl',
       };
 
       it('pages.shareDeepLink should not allow calls before initialization', () => {
-        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it('pages.shareDeepLink should successfully share a deep link in content context', async () => {
             await utils.initializeWithContext(context);
 
             pages.shareDeepLink({
-              subEntityId: 'someSubEntityId',
-              subEntityLabel: 'someSubEntityLabel',
-              subEntityWebUrl: 'someSubEntityWebUrl',
+              subPageId: 'someSubEntityId',
+              subPageLabel: 'someSubEntityLabel',
+              subPageWebUrl: 'someSubEntityWebUrl',
             });
 
             const message = utils.findMessageByFunc('shareDeepLink');
@@ -514,8 +460,8 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -524,11 +470,11 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.registerFullScreenHandler function', () => {
       it('pages.registerFullScreenHandler should not allow calls before initialization', () => {
-        expect(() =>
-          pages.registerFullScreenHandler(emptyCallback)
-        ).toThrowError('The library has not yet been initialized');
+        expect(() => pages.registerFullScreenHandler(emptyCallback)).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
-      Object.values(FrameContexts).forEach((context) => {
+      Object.values(FrameContexts).forEach(context => {
         it(`pages.registerFullScreenHandler should successfully register a full screen handler when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           pages.registerFullScreenHandler(() => {
@@ -598,12 +544,12 @@ describe('Testing pages module', () => {
           websiteUrl: 'http://some-valid-website-url.com',
         };
         it('pages.tabs.navigateToTab should not allow calls before initialization', async () => {
-          await expect(() =>
-            pages.tabs.navigateToTab(null)
-          ).rejects.toThrowError('The library has not yet been initialized');
+          await expect(() => pages.tabs.navigateToTab(null)).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             pages.tabs.navigateToTab(tabInstance);
@@ -618,12 +564,8 @@ describe('Testing pages module', () => {
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             expect(navigateToTabMsg).not.toBeNull();
             utils.respondToMessage(navigateToTabMsg, false);
-            await promise.catch((e) =>
-              expect(e).toMatchObject(
-                new Error(
-                  'Invalid internalTabInstanceId and/or channelId were/was provided'
-                )
-              )
+            await promise.catch(e =>
+              expect(e).toMatchObject(new Error('Invalid internalTabInstanceId and/or channelId were/was provided')),
             );
           });
 
@@ -646,11 +588,11 @@ describe('Testing pages module', () => {
         };
         it('pages.tabs.getTabInstances should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized'
+            'The library has not yet been initialized',
           );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
@@ -663,9 +605,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            const promise = pages.tabs.getTabInstances(
-              expectedTabInstanceParameters
-            );
+            const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getTabInstances');
 
             utils.respondToMessage(message);
@@ -692,12 +632,12 @@ describe('Testing pages module', () => {
         };
 
         it('pages.tabs.getMruTabInstances should not allow calls before initialization', async () => {
-          await expect(() =>
-            pages.tabs.getMruTabInstances()
-          ).rejects.toThrowError('The library has not yet been initialized');
+          await expect(() => pages.tabs.getMruTabInstances()).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
@@ -710,9 +650,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            const promise = pages.tabs.getMruTabInstances(
-              expectedTabInstanceParameters
-            );
+            const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getMruTabInstances');
 
             utils.respondToMessage(message);
@@ -758,27 +696,17 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
 
         it('pages.config.setValidityState should not allow calls before initialization', () => {
-          expect(() => pages.config.setValidityState(true)).toThrowError(
-            'The library has not yet been initialized'
-          );
-          expect(() => pages.config.setValidityState(false)).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.config.setValidityState(true)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.setValidityState should successfully set validity state to true when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.config.setValidityState(true);
 
-              const message = utils.findMessageByFunc(
-                'settings.setValidityState'
-              );
+              const message = utils.findMessageByFunc('settings.setValidityState');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe(true);
@@ -788,9 +716,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               pages.config.setValidityState(false);
 
-              const message = utils.findMessageByFunc(
-                'settings.setValidityState'
-              );
+              const message = utils.findMessageByFunc('settings.setValidityState');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe(false);
@@ -800,8 +726,8 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               expect(() => pages.config.setValidityState(true)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -809,11 +735,7 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.config.setConfig function', () => {
-        const allowedContexts = [
-          FrameContexts.content,
-          FrameContexts.settings,
-          FrameContexts.sidePanel,
-        ];
+        const allowedContexts = [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel];
 
         const settingsObj: pages.InstanceConfig = {
           suggestedDisplayName: 'someSuggestedDisplayName',
@@ -823,17 +745,13 @@ describe('Testing pages module', () => {
         };
 
         it('pages.config.setConfig should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.setConfig({} as pages.InstanceConfig)
-          ).rejects.toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setConfig({} as pages.InstanceConfig)).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
@@ -845,12 +763,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.setConfig does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(
-                pages.config.setConfig(settingsObj)
-              ).rejects.toThrowError(
+              await expect(pages.config.setConfig(settingsObj)).rejects.toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -861,17 +777,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings];
 
         it('pages.config.registerOnSaveHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerOnSaveHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerOnSaveHandler should successfully register a save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -885,7 +797,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully add webhookUrl to save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
@@ -918,7 +830,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify success from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -932,7 +844,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify failure from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -947,13 +859,13 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should not allow multiple notifies from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifySuccess();
                 expect(() => saveEvent.notifySuccess()).toThrowError(
-                  'The SaveEvent may only notify success or failure once.'
+                  'The SaveEvent may only notify success or failure once.',
                 );
                 expect(() => saveEvent.notifyFailure()).toThrowError(
-                  'The SaveEvent may only notify success or failure once.'
+                  'The SaveEvent may only notify success or failure once.',
                 );
                 handlerCalled = true;
               });
@@ -966,12 +878,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerOnSaveHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -982,17 +892,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
 
         it('pages.config.registerOnRemoveHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerOnRemoveHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerOnRemoveHandler should successfully register a remove handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
 
@@ -1010,7 +916,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler((removeEvent) => {
+              pages.config.registerOnRemoveHandler(removeEvent => {
                 removeEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -1018,9 +924,7 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBe(true);
-              const message = utils.findMessageByFunc(
-                'settings.remove.success'
-              );
+              const message = utils.findMessageByFunc('settings.remove.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -1029,7 +933,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler((removeEvent) => {
+              pages.config.registerOnRemoveHandler(removeEvent => {
                 removeEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -1037,9 +941,7 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBe(true);
-              const message = utils.findMessageByFunc(
-                'settings.remove.failure'
-              );
+              const message = utils.findMessageByFunc('settings.remove.failure');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe('someReason');
@@ -1047,12 +949,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerOnRemoveHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1063,17 +963,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.content];
 
         it('pages.config.registerChangeConfigHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerChangeConfigHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerChangeConfigHandler should successfully register a change settings handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1088,12 +984,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.registerChangeConfigHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerChangeConfigHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1131,12 +1025,10 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.backStack.navigateBack function', () => {
         it('pages.backStack.navigateBack should not allow calls before initialization', async () => {
-          await expect(pages.backStack.navigateBack()).rejects.toThrowError(
-            'The library has not yet been initialized'
-          );
+          await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
             utils.initializeWithContext(context);
             pages.backStack.navigateBack();
@@ -1147,7 +1039,7 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it('pages.backStack.registerBackButtonHandler should successfully register a back button handler and not call navigateBack if it returns true', async () => {
             await utils.initializeWithContext(context);
 
@@ -1206,22 +1098,15 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.fullTrust.enterFullScreen function', () => {
         it('pages.fullTrust.enterFullScreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.fullTrust.enterFullScreen should successfully enter fullscreen when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.fullTrust.enterFullscreen();
-              const enterFullscreenMessage =
-                utils.findMessageByFunc('enterFullscreen');
+              const enterFullscreenMessage = utils.findMessageByFunc('enterFullscreen');
               expect(enterFullscreenMessage).not.toBeNull();
             });
           } else {
@@ -1229,8 +1114,8 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1239,22 +1124,15 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.fullTrust.exitFullscreen function', () => {
         it('pages.fullTrust.exitFullscreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.fullTrust.exitFullscreen should successfully exit fullscreen when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.fullTrust.exitFullscreen();
-              const enterFullscreenMessage =
-                utils.findMessageByFunc('exitFullscreen');
+              const enterFullscreenMessage = utils.findMessageByFunc('exitFullscreen');
               expect(enterFullscreenMessage).not.toBeNull();
             });
           } else {
@@ -1262,8 +1140,8 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1294,17 +1172,11 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.appButton.onClick function', () => {
         it('pages.appButton.onClick should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1319,8 +1191,8 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1329,17 +1201,13 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverEnter function', () => {
         it('pages.appButton.onHoverEnter should not allow calls before initialization', () => {
-          expect(() =>
-            pages.appButton.onHoverEnter(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1352,12 +1220,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverEnter does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              expect(() =>
-                pages.appButton.onHoverEnter(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1366,17 +1232,13 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverLeave function', () => {
         it('pages.appButton.onHoverLeave should not allow calls before initialization', () => {
-          expect(() =>
-            pages.appButton.onHoverLeave(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1389,12 +1251,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverLeave does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              expect(() =>
-                pages.appButton.onHoverLeave(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -1442,22 +1302,17 @@ describe('Testing pages module', () => {
     describe('Testing pages.returnFocus function', () => {
       const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
-        expect(() => pages.returnFocus()).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
 
             pages.returnFocus(true);
 
-            const returnFocusMessage =
-              framelessPostMocks.findMessageByFunc('returnFocus');
+            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
             expect(returnFocusMessage).not.toBeNull();
             expect(returnFocusMessage.args.length).toBe(1);
             expect(returnFocusMessage.args[0]).toBe(true);
@@ -1468,8 +1323,7 @@ describe('Testing pages module', () => {
 
             pages.returnFocus(false);
 
-            const returnFocusMessage =
-              framelessPostMocks.findMessageByFunc('returnFocus');
+            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
             expect(returnFocusMessage).not.toBeNull();
             expect(returnFocusMessage.args.length).toBe(1);
             expect(returnFocusMessage.args[0]).toBe(false);
@@ -1479,8 +1333,8 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
             expect(() => pages.returnFocus()).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1489,18 +1343,17 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.registerFocusEnterHandler function', () => {
       it('pages.registerFocusEnterHandler should not allow calls before initialization', () => {
-        expect(() =>
-          pages.registerFocusEnterHandler(emptyCallback)
-        ).toThrowError('The library has not yet been initialized');
+        expect(() => pages.registerFocusEnterHandler(emptyCallback)).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
-      Object.values(FrameContexts).forEach((context) => {
+      Object.values(FrameContexts).forEach(context => {
         it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           pages.registerFocusEnterHandler((x: boolean) => {
             return true;
           });
-          const messageForRegister =
-            framelessPostMocks.findMessageByFunc('registerHandler');
+          const messageForRegister = framelessPostMocks.findMessageByFunc('registerHandler');
           expect(messageForRegister).not.toBeNull();
           expect(messageForRegister.args.length).toBe(1);
           expect(messageForRegister.args[0]).toBe('focusEnter');
@@ -1551,20 +1404,15 @@ describe('Testing pages module', () => {
       };
 
       it('pages.setCurrentFrame should not allow calls before initialization', () => {
-        expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
-            let message =
-              framelessPostMocks.findMessageByFunc('setFrameContext');
+            let message = framelessPostMocks.findMessageByFunc('setFrameContext');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toStrictEqual(frameContext);
@@ -1574,8 +1422,8 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
             expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1589,24 +1437,20 @@ describe('Testing pages module', () => {
         websiteUrl: 'someWebsiteUrl',
       };
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.initializeWithFrameContext(frameContext);
             expect(framelessPostMocks.messages.length).toBe(2);
 
-            let initMessage =
-              framelessPostMocks.findMessageByFunc('initialize');
+            let initMessage = framelessPostMocks.findMessageByFunc('initialize');
             expect(initMessage).not.toBeNull();
             expect(initMessage.id).toBe(0);
             expect(initMessage.func).toBe('initialize');
             expect(initMessage.args.length).toEqual(1);
             expect(initMessage.args[0]).toEqual(version);
-            let message =
-              framelessPostMocks.findMessageByFunc('setFrameContext');
+            let message = framelessPostMocks.findMessageByFunc('setFrameContext');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toStrictEqual(frameContext);
@@ -1614,12 +1458,10 @@ describe('Testing pages module', () => {
         } else {
           it(`pages.initializeWithFrameContext should not allow calls from ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
-            expect(() =>
-              pages.initializeWithFrameContext(frameContext)
-            ).toThrowError(
+            expect(() => pages.initializeWithFrameContext(frameContext)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1640,16 +1482,12 @@ describe('Testing pages module', () => {
         entityId: 'someEntityId',
       };
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`pages.getConfig should successfully get settings when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.getConfig();
-            const message = framelessPostMocks.findMessageByFunc(
-              'settings.getSettings'
-            );
+            const message = framelessPostMocks.findMessageByFunc('settings.getSettings');
             framelessPostMocks.respondToMessage({
               data: {
                 id: message.id,
@@ -1664,8 +1502,8 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
             expect(() => pages.getConfig()).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1684,25 +1522,20 @@ describe('Testing pages module', () => {
       ];
 
       it('pages.navigateCrossDomain should not allow calls before initialization', async () => {
-        await expect(
-          pages.navigateCrossDomain('https://valid.origin.com')
-        ).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
-      Object.keys(FrameContexts).forEach((k) => {
+      Object.keys(FrameContexts).forEach(k => {
         const context = FrameContexts[k];
-        if (
-          allowedContexts.some((allowedContext) => allowedContext === context)
-        ) {
+        if (allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
             expect.assertions(6);
             await framelessPostMocks.initializeWithContext(context);
 
-            const promise = pages.navigateCrossDomain(
-              'https://valid.origin.com'
-            );
-            const navigateCrossDomainMessage =
-              framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            const promise = pages.navigateCrossDomain('https://valid.origin.com');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
             framelessPostMocks.respondToMessage({
               data: {
@@ -1719,12 +1552,10 @@ describe('Testing pages module', () => {
             expect.assertions(4);
             await framelessPostMocks.initializeWithContext(context);
 
-            await expect(
-              pages.navigateCrossDomain('https://valid.origin.com')
-            ).rejects.toThrowError(
+            await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1735,14 +1566,10 @@ describe('Testing pages module', () => {
 
         pages.navigateCrossDomain('https://valid.origin.com');
 
-        const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc(
-          'navigateCrossDomain'
-        );
+        const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
         expect(navigateCrossDomainMessage).not.toBeNull();
         expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe(
-          'https://valid.origin.com'
-        );
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
       });
 
       it('pages.navigateCrossDomain should throw on invalid cross-origin navigation request', async () => {
@@ -1750,14 +1577,10 @@ describe('Testing pages module', () => {
 
         const promise = pages.navigateCrossDomain('https://invalid.origin.com');
 
-        const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc(
-          'navigateCrossDomain'
-        );
+        const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
         expect(navigateCrossDomainMessage).not.toBeNull();
         expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe(
-          'https://invalid.origin.com'
-        );
+        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
 
         expect(navigateCrossDomainMessage).not.toBeNull();
         framelessPostMocks.respondToMessage({
@@ -1768,7 +1591,7 @@ describe('Testing pages module', () => {
         } as DOMMessageEvent);
 
         await expect(promise).rejects.toThrowError(
-          'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.'
+          'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
         );
       });
     });
@@ -1792,15 +1615,13 @@ describe('Testing pages module', () => {
       ];
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
-        await expect(
-          pages.navigateToApp(navigateToAppParams)
-        ).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
       });
 
-      Object.keys(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContext) => allowedContext === context)
-        ) {
+      Object.keys(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`pages.navigateToApp should allow calls from ${context} context`, async () => {
             expect.assertions(4);
             await framelessPostMocks.initializeWithContext(context);
@@ -1808,9 +1629,7 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const navigateToAppMessage = framelessPostMocks.findMessageByFunc(
-              'pages.navigateToApp'
-            );
+            const navigateToAppMessage = framelessPostMocks.findMessageByFunc('pages.navigateToApp');
             framelessPostMocks.respondToMessage({
               data: { id: navigateToAppMessage.id, args: [true] },
             } as DOMMessageEvent);
@@ -1824,9 +1643,7 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const navigateToAppMessage = framelessPostMocks.findMessageByFunc(
-              'pages.navigateToApp'
-            );
+            const navigateToAppMessage = framelessPostMocks.findMessageByFunc('pages.navigateToApp');
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToAppMessage.id,
@@ -1837,9 +1654,7 @@ describe('Testing pages module', () => {
             await promise;
 
             expect(navigateToAppMessage).not.toBeNull();
-            expect(navigateToAppMessage.args[0]).toStrictEqual(
-              navigateToAppParams
-            );
+            expect(navigateToAppMessage.args[0]).toStrictEqual(navigateToAppParams);
           });
 
           it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
@@ -1847,8 +1662,7 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateToApp(navigateToAppParams);
 
-            const executeDeepLinkMessage =
-              framelessPostMocks.findMessageByFunc('executeDeepLink');
+            const executeDeepLinkMessage = framelessPostMocks.findMessageByFunc('executeDeepLink');
             framelessPostMocks.respondToMessage({
               data: { id: executeDeepLinkMessage.id, args: [true] },
             } as DOMMessageEvent);
@@ -1856,19 +1670,17 @@ describe('Testing pages module', () => {
 
             expect(executeDeepLinkMessage).not.toBeNull();
             expect(executeDeepLinkMessage.args[0]).toBe(
-              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D'
+              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
             );
           });
         } else {
           it(`pages.navigateToApp should not allow calls from ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
 
-            await expect(
-              pages.navigateToApp(navigateToAppParams)
-            ).rejects.toThrowError(
+            await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1876,37 +1688,29 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.shareDeepLink function', () => {
-      const allowedContexts = [
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.meetingStage,
-      ];
-      let deepLinkParameters: DeepLinkParameters = {
-        subEntityId: 'someSubEntityId',
-        subEntityLabel: 'someSubEntityLabel',
-        subEntityWebUrl: 'someSubEntityWebUrl',
+      const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+      const deepLinkParameters: ShareDeepLinkParameters = {
+        subPageId: 'someSubEntityId',
+        subPageLabel: 'someSubEntityLabel',
+        subPageWebUrl: 'someSubEntityWebUrl',
       };
 
       it('pages.shareDeepLink should not allow calls before initialization', () => {
-        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(
-          'The library has not yet been initialized'
-        );
+        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (
-          allowedContexts.some((allowedContexts) => allowedContexts === context)
-        ) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it('pages.shareDeepLink should successfully share a deep link in content context', async () => {
             await framelessPostMocks.initializeWithContext(context);
 
             pages.shareDeepLink({
-              subEntityId: 'someSubEntityId',
-              subEntityLabel: 'someSubEntityLabel',
-              subEntityWebUrl: 'someSubEntityWebUrl',
+              subPageId: 'someSubEntityId',
+              subPageLabel: 'someSubEntityLabel',
+              subPageWebUrl: 'someSubEntityWebUrl',
             });
 
-            let message = framelessPostMocks.findMessageByFunc('shareDeepLink');
+            const message = framelessPostMocks.findMessageByFunc('shareDeepLink');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(3);
             expect(message.args[0]).toBe('someSubEntityId');
@@ -1918,8 +1722,8 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
             expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts
-              )}. Current context: "${context}".`
+                allowedContexts,
+              )}. Current context: "${context}".`,
             );
           });
         }
@@ -1928,18 +1732,17 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.registerFullScreenHandler function', () => {
       it('pages.registerFullScreenHandler should not allow calls before initialization', () => {
-        expect(() =>
-          pages.registerFullScreenHandler(emptyCallback)
-        ).toThrowError('The library has not yet been initialized');
+        expect(() => pages.registerFullScreenHandler(emptyCallback)).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
-      Object.values(FrameContexts).forEach((context) => {
+      Object.values(FrameContexts).forEach(context => {
         it(`pages.registerFullScreenHandler should successfully register a full screen handler when initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           pages.registerFullScreenHandler((x: boolean) => {
             return true;
           });
-          const messageForRegister =
-            framelessPostMocks.findMessageByFunc('registerHandler');
+          const messageForRegister = framelessPostMocks.findMessageByFunc('registerHandler');
           expect(messageForRegister).not.toBeNull();
           expect(messageForRegister.args.length).toBe(1);
           expect(messageForRegister.args[0]).toBe('fullScreenChange');
@@ -1996,17 +1799,16 @@ describe('Testing pages module', () => {
         };
 
         it('pages.tabs.navigateToTab should not allow calls before initialization', async () => {
-          await expect(() =>
-            pages.tabs.navigateToTab(null)
-          ).rejects.toThrowError('The library has not yet been initialized');
+          await expect(() => pages.tabs.navigateToTab(null)).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.tabs.navigateToTab(tabInstance);
-            const navigateToTabMsg =
-              framelessPostMocks.findMessageByFunc('navigateToTab');
+            const navigateToTabMsg = framelessPostMocks.findMessageByFunc('navigateToTab');
             expect(navigateToTabMsg).not.toBeNull();
             expect(navigateToTabMsg.args[0]).toStrictEqual(tabInstance);
           });
@@ -2015,8 +1817,7 @@ describe('Testing pages module', () => {
             pages.tabs.navigateToTab(null);
             const onComplete = getGenericOnCompleteHandler();
             onComplete(true);
-            const navigateToTabMsg =
-              framelessPostMocks.findMessageByFunc('navigateToTab');
+            const navigateToTabMsg = framelessPostMocks.findMessageByFunc('navigateToTab');
             expect(navigateToTabMsg).not.toBeNull();
             expect(navigateToTabMsg.args[0]).toBe(null);
           });
@@ -2030,16 +1831,15 @@ describe('Testing pages module', () => {
         };
         it('pages.tabs.getTabInstances should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized'
+            'The library has not yet been initialized',
           );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
-            let message =
-              framelessPostMocks.findMessageByFunc('getTabInstances');
+            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -2050,11 +1850,8 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
-            const promise = pages.tabs.getTabInstances(
-              expectedTabInstanceParameters
-            );
-            let message =
-              framelessPostMocks.findMessageByFunc('getTabInstances');
+            const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
+            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -2066,8 +1863,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
-            let message =
-              framelessPostMocks.findMessageByFunc('getTabInstances');
+            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [undefined] },
@@ -2085,17 +1881,16 @@ describe('Testing pages module', () => {
         };
 
         it('pages.tabs.getMruTabInstances should not allow calls before initialization', async () => {
-          await expect(() =>
-            pages.tabs.getMruTabInstances()
-          ).rejects.toThrowError('The library has not yet been initialized');
+          await expect(() => pages.tabs.getMruTabInstances()).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
-            let message =
-              framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
@@ -2105,11 +1900,8 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
-            const promise = pages.tabs.getMruTabInstances(
-              expectedTabInstanceParameters
-            );
-            let message =
-              framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
+            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -2121,8 +1913,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getMruTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
-            let message =
-              framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [undefined] },
@@ -2138,10 +1929,8 @@ describe('Testing pages module', () => {
       describe('Testing pages.config.initialize function', () => {
         it('pages.config.initialize should successfully register settings.save and settings.remove handler', async () => {
           pages.config.initialize();
-          const messageForSettingeSaveHandler =
-            framelessPostMocks.findMessageByFunc('settings.save');
-          const messageForSettingeRemoveHandler =
-            framelessPostMocks.findMessageByFunc('settings.remove');
+          const messageForSettingeSaveHandler = framelessPostMocks.findMessageByFunc('settings.save');
+          const messageForSettingeRemoveHandler = framelessPostMocks.findMessageByFunc('settings.remove');
           expect(messageForSettingeSaveHandler).toBeNull();
           expect(messageForSettingeRemoveHandler).toBeNull();
         });
@@ -2151,27 +1940,17 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
 
         it('pages.config.setValidityState should not allow calls before initialization', () => {
-          expect(() => pages.config.setValidityState(true)).toThrowError(
-            'The library has not yet been initialized'
-          );
-          expect(() => pages.config.setValidityState(false)).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.config.setValidityState(true)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.setValidityState should successfully set validity state to true when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setValidityState(true);
 
-              const message = framelessPostMocks.findMessageByFunc(
-                'settings.setValidityState'
-              );
+              const message = framelessPostMocks.findMessageByFunc('settings.setValidityState');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe(true);
@@ -2181,9 +1960,7 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setValidityState(false);
 
-              const message = framelessPostMocks.findMessageByFunc(
-                'settings.setValidityState'
-              );
+              const message = framelessPostMocks.findMessageByFunc('settings.setValidityState');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe(false);
@@ -2193,8 +1970,8 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
               expect(() => pages.config.setValidityState(true)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2202,11 +1979,7 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.config.setConfig function', () => {
-        const allowedContexts = [
-          FrameContexts.content,
-          FrameContexts.settings,
-          FrameContexts.sidePanel,
-        ];
+        const allowedContexts = [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel];
 
         let settingsObj: pages.InstanceConfig = {
           suggestedDisplayName: 'someSuggestedDisplayName',
@@ -2216,23 +1989,17 @@ describe('Testing pages module', () => {
         };
 
         it('pages.config.setConfig should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.setConfig({} as pages.InstanceConfig)
-          ).rejects.toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setConfig({} as pages.InstanceConfig)).rejects.toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.setSettings'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.setSettings');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toStrictEqual(settingsObj);
@@ -2240,12 +2007,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.setConfig does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              await expect(
-                pages.config.setConfig(settingsObj)
-              ).rejects.toThrowError(
+              await expect(pages.config.setConfig(settingsObj)).rejects.toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2256,17 +2021,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings];
 
         it('pages.config.registerOnSaveHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerOnSaveHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerOnSaveHandler should successfully register a save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2282,7 +2043,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully add webhookUrl to save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
@@ -2318,7 +2079,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify success from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -2328,9 +2089,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.save.success'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.save.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -2338,7 +2097,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify failure from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -2347,9 +2106,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.save.failure'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.save.failure');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe('someReason');
@@ -2358,13 +2115,13 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should not allow multiple notifies from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
+              pages.config.registerOnSaveHandler(saveEvent => {
                 saveEvent.notifySuccess();
                 expect(() => saveEvent.notifySuccess()).toThrowError(
-                  'The SaveEvent may only notify success or failure once.'
+                  'The SaveEvent may only notify success or failure once.',
                 );
                 expect(() => saveEvent.notifyFailure()).toThrowError(
-                  'The SaveEvent may only notify success or failure once.'
+                  'The SaveEvent may only notify success or failure once.',
                 );
                 handlerCalled = true;
               });
@@ -2374,21 +2131,17 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.save.success'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.save.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
           } else {
             it(`pages.config.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerOnSaveHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2399,17 +2152,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
 
         it('pages.config.registerOnRemoveHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerOnRemoveHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerOnRemoveHandler should successfully register a remove handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
 
@@ -2429,7 +2178,7 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler((removeEvent) => {
+              pages.config.registerOnRemoveHandler(removeEvent => {
                 removeEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -2439,9 +2188,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.remove.success'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.remove.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -2450,7 +2197,7 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler((removeEvent) => {
+              pages.config.registerOnRemoveHandler(removeEvent => {
                 removeEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -2460,9 +2207,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc(
-                'settings.remove.failure'
-              );
+              let message = framelessPostMocks.findMessageByFunc('settings.remove.failure');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe('someReason');
@@ -2470,12 +2215,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerOnRemoveHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2486,17 +2229,13 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.content];
 
         it('pages.config.registerChangeConfigHandler should not allow calls before initialization', () => {
-          expect(() =>
-            pages.config.registerChangeConfigHandler(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.config.registerChangeConfigHandler should successfully register a change settings handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2513,12 +2252,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.config.registerChangeConfigHandler does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              expect(() =>
-                pages.config.registerChangeConfigHandler(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2530,32 +2267,28 @@ describe('Testing pages module', () => {
       describe('Testing pages.backStack._initialize function', () => {
         it('pages.backStack._initialize should successfully register backButtonPress handler', () => {
           pages.backStack._initialize();
-          const message =
-            framelessPostMocks.findMessageByFunc('backButtonPress');
+          const message = framelessPostMocks.findMessageByFunc('backButtonPress');
           expect(message).toBeNull();
         });
       });
 
       describe('Testing pages.backStack.navigateBack function', () => {
         it('pages.backStack.navigateBack should not allow calls before initialization', async () => {
-          await expect(pages.backStack.navigateBack()).rejects.toThrowError(
-            'The library has not yet been initialized'
-          );
+          await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
             framelessPostMocks.initializeWithContext(context);
             pages.backStack.navigateBack();
-            const navigateBackMessage =
-              framelessPostMocks.findMessageByFunc('navigateBack');
+            const navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();
           });
         });
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
-        Object.values(FrameContexts).forEach((context) => {
+        Object.values(FrameContexts).forEach(context => {
           it('pages.backStack.registerBackButtonHandler should successfully register a back button handler and not call navigateBack if it returns true', async () => {
             await framelessPostMocks.initializeWithContext(context);
 
@@ -2569,8 +2302,7 @@ describe('Testing pages module', () => {
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
-            let navigateBackMessage =
-              framelessPostMocks.findMessageByFunc('navigateBack');
+            let navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).toBeNull();
             expect(handlerInvoked).toBe(true);
           });
@@ -2588,8 +2320,7 @@ describe('Testing pages module', () => {
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
-            let navigateBackMessage =
-              framelessPostMocks.findMessageByFunc('navigateBack');
+            let navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();
             expect(handlerInvoked).toBe(true);
           });
@@ -2601,22 +2332,15 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.fullTrust.enterFullScreen function', () => {
         it('pages.fullTrust.enterFullScreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.fullTrust.enterFullScreen should successfully enter fullscreen when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.fullTrust.enterFullscreen();
-              const enterFullscreenMessage =
-                framelessPostMocks.findMessageByFunc('enterFullscreen');
+              const enterFullscreenMessage = framelessPostMocks.findMessageByFunc('enterFullscreen');
               expect(enterFullscreenMessage).not.toBeNull();
             });
           } else {
@@ -2624,8 +2348,8 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
               expect(() => pages.fullTrust.enterFullscreen()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2634,22 +2358,15 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.fullTrust.exitFullscreen function', () => {
         it('pages.fullTrust.exitFullscreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.fullTrust.exitFullscreen should successfully exit fullscreen when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.fullTrust.exitFullscreen();
-              const enterFullscreenMessage =
-                framelessPostMocks.findMessageByFunc('exitFullscreen');
+              const enterFullscreenMessage = framelessPostMocks.findMessageByFunc('exitFullscreen');
               expect(enterFullscreenMessage).not.toBeNull();
             });
           } else {
@@ -2657,8 +2374,8 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
               expect(() => pages.fullTrust.exitFullscreen()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2670,17 +2387,11 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.appButton.onClick function', () => {
         it('pages.appButton.onClick should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
-            'The library has not yet been initialized'
-          );
+          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2697,8 +2408,8 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
               expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2707,17 +2418,13 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverEnter function', () => {
         it('pages.appButton.onHoverEnter should not allow calls before initialization', () => {
-          expect(() =>
-            pages.appButton.onHoverEnter(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2734,12 +2441,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverEnter does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              expect(() =>
-                pages.appButton.onHoverEnter(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
@@ -2748,17 +2453,13 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverLeave function', () => {
         it('pages.appButton.onHoverLeave should not allow calls before initialization', () => {
-          expect(() =>
-            pages.appButton.onHoverLeave(emptyCallback)
-          ).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
+            'The library has not yet been initialized',
+          );
         });
 
-        Object.values(FrameContexts).forEach((context) => {
-          if (
-            allowedContexts.some(
-              (allowedContexts) => allowedContexts === context
-            )
-          ) {
+        Object.values(FrameContexts).forEach(context => {
+          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2774,12 +2475,10 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverLeave does not allow calls from ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
-              expect(() =>
-                pages.appButton.onHoverLeave(emptyCallback)
-              ).toThrowError(
+              expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts
-                )}. Current context: "${context}".`
+                  allowedContexts,
+                )}. Current context: "${context}".`,
               );
             });
           }
