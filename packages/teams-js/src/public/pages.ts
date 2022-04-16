@@ -32,8 +32,6 @@ export namespace pages {
   /**
    * @hidden
    *
-   * Hide from docs because this function is only used during initialization
-   * ------------------
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
    *
    * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
@@ -291,7 +289,8 @@ export namespace pages {
 
     /**
      * @hidden
-     *
+     * Hide from docs because this function is only used during initialization
+     * ------------------
      * Adds register handlers for settings.save and settings.remove upon initialization. Function is called in {@link app.initializeHelper}
      * @internal
      */
