@@ -40,7 +40,7 @@ export namespace dialog {
    * Hide from docs because this function is only used during initialization
    * ------------------
    * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
-   * Function is called in {@link app.initializeHelper}
+   * Function is called during app intitialization
    * @internal
    */
   export function initialize(): void {
@@ -131,6 +131,9 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
+    //We need to remove the original 'messageForChild'
+    //handler since the original does not allow for post messages.
+    //It is replaced by the user specified listener that is pased in.
     removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
     storedMessages.reverse();
