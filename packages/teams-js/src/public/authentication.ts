@@ -466,6 +466,8 @@ export namespace authentication {
   /**
    * @deprecated
    * As of 2.0.0-beta.1.
+   *-------------------------
+   * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
   export interface LegacyCallBacks {
     /**
@@ -482,6 +484,9 @@ export namespace authentication {
     failureCallback?: (reason: string) => void;
   }
 
+  /**
+   * An interface that describes the Authentication pop up's parameters
+   */
   export interface AuthenticatePopUpParameters {
     /**
      * The URL for the authentication pop-up.
@@ -507,6 +512,9 @@ export namespace authentication {
    */
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
+  /**
+   * An interface that describes the Authentication Token's Request Parameters
+   */
   export interface AuthTokenRequestParameters {
     /**
      * An optional list of resource for which to acquire the access token; only used for full trust apps.
