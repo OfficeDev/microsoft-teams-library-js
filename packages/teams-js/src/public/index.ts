@@ -24,6 +24,7 @@ export {
   FileOpenPreference,
   LocaleInfo,
   FrameInfo,
+  ShareDeepLinkParameters,
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';

@@ -9,7 +9,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
-import { DeepLinkParameters, FrameInfo, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -169,13 +169,13 @@ export namespace pages {
    *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
-  export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
+  export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
     sendMessageToParent('shareDeepLink', [
-      deepLinkParameters.subEntityId,
-      deepLinkParameters.subEntityLabel,
-      deepLinkParameters.subEntityWebUrl,
+      deepLinkParameters.subPageId,
+      deepLinkParameters.subPageLabel,
+      deepLinkParameters.subPageWebUrl,
     ]);
   }
 
