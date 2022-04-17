@@ -513,6 +513,29 @@ export interface Context {
   mySitePath?: string;
 }
 
+export interface ShareDeepLinkParameters {
+  /**
+   * The developer-defined unique ID for the sub-page to which this deep link points in the current page.
+   * This field should be used to restore to a specific state within a page, such as scrolling to or activating a specific piece of content.
+   */
+  subPageId: string;
+
+  /**
+   * The label for the sub-page that should be displayed when the deep link is rendered in a client.
+   */
+  subPageLabel: string;
+
+  /**
+   * The fallback URL to which to navigate the user if the client cannot render the page.
+   * This URL should lead directly to the sub-entity.
+   */
+  subPageWebUrl?: string;
+}
+
+/**
+ * @deprecated
+ * As of 2.0.0-beta.5, please use {@link ShareDeepLinkParameters} instead.
+ */
 export interface DeepLinkParameters {
   /**
    * The developer-defined unique ID for the sub-entity to which this deep link points in the current entity.
