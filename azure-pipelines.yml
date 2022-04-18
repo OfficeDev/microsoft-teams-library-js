@@ -136,7 +136,7 @@ jobs:
         condition: succeededOrFailed()
 
   - job: E2ETestCDN
-    displayName: 'E2E Test - CDN'
+    displayName: 'E2E Test - CDN (only runs on release builds)'
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
     # This check will run on the PR to merge the release branch back into 2.0-preview
     condition: and(
