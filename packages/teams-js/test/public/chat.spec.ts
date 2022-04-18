@@ -5,8 +5,8 @@ import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
   validateChatDeepLinkTopic,
-  validateChatDeepLinkUsers,
-} from '../internal/chatUtilities.spec';
+  validateDeepLinkUsers,
+} from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
 describe('chat', () => {
@@ -96,7 +96,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, [chatRequest.user]);
+      validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
 
       utils.respondToMessage(executeDeepLinkMessage, true);
@@ -184,7 +184,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, chatRequest.users);
+      validateDeepLinkUsers(chatDeepLink, chatRequest.users);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
       validateChatDeepLinkTopic(chatDeepLink, chatRequest.topic);
 

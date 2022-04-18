@@ -1,7 +1,6 @@
-import { teamsDeepLinkUsersUrlParameterName } from '../internal/chatConstants';
 import { sendMessageToParent } from '../internal/communication';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
-import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../internal/constants';
+import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -43,7 +42,16 @@ export namespace call {
         throw new Error('Not supported');
       }
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleError('executeDeepLink', createTeamsDeepLinkForCall(startCallParams)));
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            createTeamsDeepLinkForCall(
+              startCallParams.targets,
+              startCallParams.requestedModalities?.includes(CallModalities.Video),
+              startCallParams.source,
+            ),
+          ),
+        );
       } else {
         return sendMessageToParent('call.startCall', [startCallParams], resolve);
       }
@@ -53,25 +61,4 @@ export namespace call {
   export function isSupported(): boolean {
     return runtime.supports.call ? true : false;
   }
-}
-
-export function createTeamsDeepLinkForCall(startCallParams: call.StartCallParams): string {
-  const teamsDeepLinkUrlPathForCall = '/l/call/0/0';
-  const teamsDeepLinkSourceUrlParameterName = 'source';
-  const teamsDeepLinkWithVideoUrlParameterName = 'withVideo';
-
-  const usersSearchParameter =
-    `${teamsDeepLinkUsersUrlParameterName}=` + startCallParams.targets.map(user => encodeURIComponent(user)).join(',');
-  const withVideoSearchParameter =
-    startCallParams.requestedModalities === undefined
-      ? ''
-      : `&${teamsDeepLinkWithVideoUrlParameterName}=${encodeURIComponent(
-          startCallParams.requestedModalities.includes(call.CallModalities.Video),
-        )}`;
-  const sourceSearchParameter =
-    startCallParams.source === undefined
-      ? ''
-      : `&${teamsDeepLinkSourceUrlParameterName}=${encodeURIComponent(startCallParams.source)}`;
-
-  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCall}?${usersSearchParameter}${withVideoSearchParameter}${sourceSearchParameter}`;
 }
