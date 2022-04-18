@@ -50,14 +50,14 @@ export namespace dialog {
 
   function handleDialogMessage(message: string): void {
     if (!GlobalVars.frameContext) {
-      //GlobalVars.frameContext is currently not set
+      // GlobalVars.frameContext is currently not set
       return;
     }
 
     if (GlobalVars.frameContext === FrameContexts.task) {
       storedMessages.push(message);
     } else {
-      //Not in task FrameContext, remove 'messageForChild' handler
+      // Not in task FrameContext, remove 'messageForChild' handler
       removeHandler('messageForChild');
     }
   }
@@ -142,9 +142,9 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
-    //We need to remove the original 'messageForChild'
-    //handler since the original does not allow for post messages.
-    //It is replaced by the user specified listener that is passed in.
+    // We need to remove the original 'messageForChild'
+    // handler since the original does not allow for post messages.
+    // It is replaced by the user specified listener that is passed in.
     removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
     storedMessages.reverse();
