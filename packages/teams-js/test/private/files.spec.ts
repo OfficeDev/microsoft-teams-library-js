@@ -396,6 +396,7 @@ describe('files', () => {
     });
 
     it('openCloudStorageFile should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -412,6 +413,7 @@ describe('files', () => {
   });
   describe('openFilePreview', () => {
     it('openFilePreview should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
@@ -573,6 +575,7 @@ describe('files', () => {
       expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
     });
     it('getFileDownloads should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       try {
@@ -626,6 +629,7 @@ describe('files', () => {
 
       it('getFileDownloadsV2 should throw error when files capability is not supported', async () => {
         await utils.initializeWithContext('content');
+        expect.assertions(1);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         try {
           files.getFileDownloads();
@@ -664,6 +668,7 @@ describe('files', () => {
 
     it('openDownloadFolder should throw error when files capability is not supported', async () => {
       await utils.initializeWithContext('content');
+      expect.assertions(1);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       try {
         files.openDownloadFolder(null, emptyCallback);
