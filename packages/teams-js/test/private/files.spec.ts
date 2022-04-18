@@ -1,3 +1,4 @@
+import { errorMonitor } from 'events';
 import { files } from '../../src/private/files';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
@@ -38,7 +39,7 @@ describe('files', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(errorNotSupportedOnPlatform);
+      await expect(files.getCloudStorageFolders('channelId')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -123,7 +124,7 @@ describe('files', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError(errorNotSupportedOnPlatform);
+      await expect(files.addCloudStorageFolder('channelId')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should resolve promise correctly', async () => {
@@ -210,7 +211,7 @@ describe('files', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
+      await expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toEqual(
         errorNotSupportedOnPlatform,
       );
     });
@@ -301,7 +302,7 @@ describe('files', () => {
 
       await expect(
         files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
-      ).rejects.toThrowError(errorNotSupportedOnPlatform);
+      ).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should resolve promise correctly for cloud storage item', async () => {
@@ -395,24 +396,28 @@ describe('files', () => {
     });
 
     it('openCloudStorageFile should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      expect(() =>
+      try {
         files.openCloudStorageFile(
           mockCloudStorageFolderItem,
           files.CloudStorageProvider.Box,
           FileOpenPreference.Inline,
-        ),
-      ).toThrowError(errorNotSupportedOnPlatform);
+        );
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
   });
   describe('openFilePreview', () => {
     it('openFilePreview should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      expect(() =>
+      try {
         files.openFilePreview({
           entityId: 'someEntityId',
           title: 'someTitle',
@@ -428,8 +433,10 @@ describe('files', () => {
           viewerAction: ViewerActionTypes.view,
           fileOpenPreference: FileOpenPreference.Web,
           conversationId: 'someConversationId',
-        }),
-      ).toThrowError(errorNotSupportedOnPlatform);
+        });
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
     it('should successfully open a file preview', async () => {
       await utils.initializeWithContext('content');
@@ -476,7 +483,7 @@ describe('files', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await expect(files.getExternalProviders(false)).rejects.toThrowError(errorNotSupportedOnPlatform);
+      await expect(files.getExternalProviders(false)).rejects.toEqual(errorNotSupportedOnPlatform);
     });
     it('should resolve promise correctly for getExternalProviders', async () => {
       await utils.initializeWithContext('content');
@@ -542,7 +549,7 @@ describe('files', () => {
 
       await expect(
         files.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false),
-      ).rejects.toThrowError(errorNotSupportedOnPlatform);
+      ).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should resolve promise correctly for copyMoveFiles', async () => {
@@ -568,10 +575,14 @@ describe('files', () => {
       expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
     });
     it('getFileDownloads should throw error when files capability is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(errorNotSupportedOnPlatform);
+      try {
+        files.getFileDownloads(emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
     describe('v1', () => {
       it('should not allow calls without frame context initialization', async () => {
@@ -618,8 +629,13 @@ describe('files', () => {
 
       it('getFileDownloadsV2 should throw error when files capability is not supported', async () => {
         await utils.initializeWithContext('content');
+        expect.assertions(1);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-        expect(() => files.getFileDownloads()).toThrowError(errorNotSupportedOnPlatform);
+        try {
+          files.getFileDownloads();
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
       });
 
       it('should send the message to parent correctly', async () => {
@@ -652,9 +668,13 @@ describe('files', () => {
 
     it('openDownloadFolder should throw error when files capability is not supported', async () => {
       await utils.initializeWithContext('content');
+      expect.assertions(1);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(errorNotSupportedOnPlatform);
+      try {
+        files.openDownloadFolder(null, emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     it('should not allow calls with empty callback', () => {
