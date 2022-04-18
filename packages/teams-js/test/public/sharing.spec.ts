@@ -69,7 +69,7 @@ describe('sharing_v1', () => {
             };
             await utils.initializeWithContext(frameContext);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect(sharing.shareWebContent(shareRequest)).rejects.toThrowError(errorNotSupportedOnPlatform);
+            expect(sharing.shareWebContent(shareRequest)).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
           it(`sharing.shareWebContent should successfully call the callback function when given the share web content in correct format when initialized with ${frameContext} context- success scenario`, done => {

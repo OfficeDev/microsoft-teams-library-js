@@ -95,7 +95,7 @@ export namespace sharing {
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
     return new Promise<void>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
