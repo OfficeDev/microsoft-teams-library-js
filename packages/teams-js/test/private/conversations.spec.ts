@@ -111,6 +111,7 @@ describe('conversations', () => {
 
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      expect.assertions(1);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
       try {
         conversations.closeConversation();
