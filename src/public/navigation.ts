@@ -13,7 +13,10 @@ import { sendMessageToParent } from '../internal/communication';
  * @param navigateForward Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  ensureInitialized(FrameContexts.content);
+  ensureInitialized(
+    FrameContexts.content,
+    FrameContexts.meetingStage
+  );
 
   sendMessageToParent('returnFocus', [navigateForward]);
 }
