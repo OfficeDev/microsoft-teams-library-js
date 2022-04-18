@@ -1,5 +1,5 @@
-import { createTeamsDeepLinkForChat } from '../internal/chatUtilities';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
