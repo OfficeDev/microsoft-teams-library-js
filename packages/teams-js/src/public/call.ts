@@ -1,4 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -39,7 +41,20 @@ export namespace call {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-      return sendMessageToParent('call.startCall', [startCallParams], resolve);
+      if (runtime.isLegacyTeams) {
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            createTeamsDeepLinkForCall(
+              startCallParams.targets,
+              startCallParams.requestedModalities?.includes(CallModalities.Video),
+              startCallParams.source,
+            ),
+          ),
+        );
+      } else {
+        return sendMessageToParent('call.startCall', [startCallParams], resolve);
+      }
     });
   }
 
