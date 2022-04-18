@@ -8,6 +8,7 @@ import {
   teamsDeepLinkStartTimeUrlParameterName,
   teamsDeepLinkSubjectUrlParameterName,
   teamsDeepLinkTopicUrlParameterName,
+  teamsDeepLinkUrlPathForAppInstall,
   teamsDeepLinkUrlPathForCalendar,
   teamsDeepLinkUrlPathForCall,
   teamsDeepLinkUrlPathForChat,
@@ -66,4 +67,13 @@ export function createTeamsDeepLinkForCalendar(
     content === undefined ? '' : `&${teamsDeepLinkContentUrlParameterName}=${encodeURIComponent(content)}`;
 
   return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}${startTimeSearchParameter}${endTimeSearchParameter}${subjectSearchParameter}${contentSearchParameter}`;
+}
+
+export function createTeamsDeepLinkForAppInstallDialog(appId: string): string {
+  if (!appId) {
+    throw new Error('App ID must be set when creating an app install dialog deep link');
+  }
+  return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForAppInstall}${encodeURIComponent(
+    appId,
+  )}/`;
 }

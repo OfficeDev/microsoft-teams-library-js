@@ -1,7 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
-import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../internal/constants';
-import { teamsDeepLinkUrlPathForAppInstall } from '../internal/deepLinkConstants';
+import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -31,9 +30,7 @@ export namespace appInstallDialog {
         resolve(
           sendAndHandleError(
             'executeDeepLink',
-            `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForAppInstall}${encodeURIComponent(
-              openAPPInstallDialogParams.appId,
-            )}/`,
+            createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
           ),
         );
       } else {
