@@ -31,6 +31,27 @@ describe('location', () => {
     }
   });
 
+  it('should allow showLocation calls in desktop', async () => {
+    await framedPlatform.initializeWithContext(FrameContexts.content);
+    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+    framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+    location.showLocation(defaultLocation);
+    const message = framedPlatform.findMessageByFunc('location.showLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(defaultLocation);
+  });
+  it('should allow getLocation calls in desktop', async () => {
+    await framedPlatform.initializeWithContext(FrameContexts.content);
+    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+    framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+    location.getLocation(defaultLocationProps);
+    const message = framedPlatform.findMessageByFunc('location.getLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(defaultLocationProps);
+  });
+
   it('getLocation call in default version of platform support fails', async () => {
     await framelessPlatform.initializeWithContext(FrameContexts.task);
     framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
@@ -40,16 +61,6 @@ describe('location', () => {
     await framedPlatform.initializeWithContext(FrameContexts.content);
     framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
     await expect(location.getLocation(undefined)).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
-  });
-  it('should allow getLocation calls in desktop', async () => {
-    await framedPlatform.initializeWithContext(FrameContexts.content);
-    framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
-    location.getLocation(defaultLocationProps);
-    const message = framedPlatform.findMessageByFunc('location.getLocation');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toEqual(defaultLocationProps);
   });
   it('getLocation call in task frameContext works', async () => {
     await framelessPlatform.initializeWithContext(FrameContexts.task);
@@ -125,16 +136,7 @@ describe('location', () => {
     framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
     await expect(location.showLocation(null)).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
   });
-  it('should allow showLocation calls in desktop', async () => {
-    await framedPlatform.initializeWithContext(FrameContexts.content);
-    framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
-    location.showLocation(defaultLocation);
-    const message = framedPlatform.findMessageByFunc('location.showLocation');
-    expect(message).not.toBeNull();
-    expect(message.args.length).toBe(1);
-    expect(message.args[0]).toEqual(defaultLocation);
-  });
+
   it('showLocation call in task frameContext works', async () => {
     await framelessPlatform.initializeWithContext(FrameContexts.task);
     framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -200,21 +202,59 @@ describe('location', () => {
   it('Frameless - getLocation should throw error when not supported in the runtime config', async () => {
     await framelessPlatform.initializeWithContext(FrameContexts.task);
     framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(errorNotSupportedOnPlatform);
+    const promise = location.getLocation(defaultLocationProps);
+    const message = framelessPlatform.findMessageByFunc('location.getLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(errorNotSupportedOnPlatform);
+    const callbackId = message.id;
+    framelessPlatform.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [errorNotSupportedOnPlatform],
+      },
+    } as DOMMessageEvent);
+    await expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
   });
-  it('Framed - getLocation should throw error when not supported in the runtime config', async () => {
-    await framedPlatform.initializeWithContext(FrameContexts.task);
-    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    expect(location.getLocation(defaultLocationProps)).rejects.toThrowError(errorNotSupportedOnPlatform);
-  });
-  it('Frameless - showLocation call in default version of platform support fails', async () => {
+  it('Frameless - showLocation should throw error when location is not supported', async () => {
     await framelessPlatform.initializeWithContext(FrameContexts.task);
     framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(errorNotSupportedOnPlatform);
+    const promise = location.showLocation(defaultLocation);
+    const message = framelessPlatform.findMessageByFunc('location.showLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(errorNotSupportedOnPlatform);
+    const callbackId = message.id;
+    framelessPlatform.respondToMessage({
+      data: {
+        id: callbackId,
+        args: [errorNotSupportedOnPlatform],
+      },
+    } as DOMMessageEvent);
+    await expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
   });
-  it('Framed - showLocation call in default version of platform support fails', async () => {
+
+  it('Framed - getLocation should throw error when location is not supported in the runtime config', async () => {
     await framedPlatform.initializeWithContext(FrameContexts.task);
     framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    await expect(location.showLocation(defaultLocation)).rejects.toThrowError(errorNotSupportedOnPlatform);
+    const promise = location.getLocation(defaultLocationProps);
+    const message = framedPlatform.findMessageByFunc('location.getLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(defaultLocationProps);
+    framedPlatform.respondToMessage(message, errorNotSupportedOnPlatform);
+    await expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
+  });
+
+  it('Framed - showLocation should throw error when location is not supported', async () => {
+    await framedPlatform.initializeWithContext(FrameContexts.task);
+    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    const promise = location.showLocation(defaultLocation);
+    const message = framedPlatform.findMessageByFunc('location.showLocation');
+    expect(message).not.toBeNull();
+    expect(message.args.length).toBe(1);
+    expect(message.args[0]).toEqual(defaultLocation);
+    framedPlatform.respondToMessage(message, errorNotSupportedOnPlatform);
+    await expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
   });
 });

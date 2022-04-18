@@ -79,7 +79,7 @@ export namespace location {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        resolve(sendAndHandleError('location.getLocation', errorNotSupportedOnPlatform));
       }
       resolve(sendAndHandleError('location.getLocation', props));
     });
@@ -117,7 +117,7 @@ export namespace location {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        resolve(sendAndHandleError('location.showLocation', errorNotSupportedOnPlatform));
       }
       resolve(sendAndHandleError('location.showLocation', location));
     });
