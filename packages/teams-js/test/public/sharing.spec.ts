@@ -3,7 +3,6 @@ import { ErrorCode } from '../../src/public/interfaces';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
-import { util } from 'prettier';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
