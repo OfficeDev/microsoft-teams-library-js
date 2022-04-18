@@ -44,7 +44,6 @@ export namespace dialog {
    * @internal
    */
   export function initialize(): void {
-    ensureInitialized(FrameContexts.task);
     const dialogMessageHandler = (message: string): void => {
       storedMessages.push(message);
     };
@@ -133,7 +132,7 @@ export namespace dialog {
     ensureInitialized(FrameContexts.task);
     //We need to remove the original 'messageForChild'
     //handler since the original does not allow for post messages.
-    //It is replaced by the user specified listener that is pased in.
+    //It is replaced by the user specified listener that is passed in.
     removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
     storedMessages.reverse();
