@@ -147,7 +147,7 @@ export namespace meetingRoom {
     return new Promise<MeetingRoomInfo>(resolve => {
       ensureInitialized();
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
     });
@@ -169,7 +169,7 @@ export namespace meetingRoom {
       }
       ensureInitialized();
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meetingRoom.sendCommandToPairedMeetingRoom', commandName));
     });
@@ -192,7 +192,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
       ensureInitialized();
@@ -214,7 +214,7 @@ export namespace meetingRoom {
     }
     ensureInitialized();
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized();

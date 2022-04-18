@@ -56,7 +56,7 @@ describe('meetingRoom', () => {
     it('getPairedMeetingRoomInfo should throw error when meetingRoom is not supported.', async () => {
       await framelessPlatformMock.initializeWithContext('content');
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should successfully get meeting room info on mobile', async () => {
@@ -124,7 +124,7 @@ describe('meetingRoom', () => {
     it('sendCommandToPairedMeetingRoom should throw error when meetingRoom is not supported.', async () => {
       await framelessPlatformMock.initializeWithContext('content');
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls with null command name', async () => {
@@ -189,11 +189,12 @@ describe('meetingRoom', () => {
 
     it('registerMeetingRoomCapabilitiesUpdateHandler should throw error when meetingRoom is not supported.', async () => {
       await framelessPlatformMock.initializeWithContext('content');
+      expect.assertions(4);
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       try {
         meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler);
       } catch (e) {
-        expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+        expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
     it('should successful register capabilities update handler on mobile', async () => {
@@ -250,11 +251,12 @@ describe('meetingRoom', () => {
     });
     it('registerMeetingRoomStatesUpdateHandler should throw error when meetingRoom is not supported.', async () => {
       await framelessPlatformMock.initializeWithContext('content');
+      expect.assertions(4);
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       try {
         meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler);
       } catch (e) {
-        expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+        expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
 
