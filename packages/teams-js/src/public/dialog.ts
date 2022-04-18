@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -44,10 +45,18 @@ export namespace dialog {
    * @internal
    */
   export function initialize(): void {
-    const dialogMessageHandler = (message: string): void => {
-      storedMessages.push(message);
-    };
-    registerHandler('messageForChild', dialogMessageHandler, false);
+    registerHandler('messageForChild', handleDialogMessage, false);
+  }
+
+  function handleDialogMessage(message: string): void {
+    if (GlobalVars.frameContext) {
+      if (GlobalVars.frameContext === FrameContexts.task) {
+        storedMessages.push(message);
+      } else {
+        //Not in task FrameContext, remove 'messageForChild' handler
+        removeHandler('messageForChild');
+      }
+    }
   }
 
   /**
