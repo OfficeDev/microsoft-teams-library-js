@@ -44,7 +44,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openChat(chatRequest);
-      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -121,7 +121,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openGroupChat(chatRequest);
-      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls when no members are provided', () => {

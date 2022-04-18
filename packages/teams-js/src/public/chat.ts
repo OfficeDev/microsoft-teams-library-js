@@ -66,7 +66,7 @@ export namespace chat {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
         resolve(
@@ -107,7 +107,7 @@ export namespace chat {
       } else {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw new Error(errorNotSupportedOnPlatform);
+          throw errorNotSupportedOnPlatform;
         }
         if (runtime.isLegacyTeams) {
           resolve(
