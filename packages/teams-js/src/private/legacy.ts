@@ -28,7 +28,7 @@ export namespace legacy {
         return new Promise<UserJoinedTeamsInformation>(resolve => {
           ensureInitialized();
           if (!isSupported()) {
-            throw new Error(errorNotSupportedOnPlatform);
+            throw errorNotSupportedOnPlatform;
           }
 
           if (
@@ -70,7 +70,7 @@ export namespace legacy {
       return new Promise<string>(resolve => {
         ensureInitialized();
         if (!isSupported()) {
-          throw new Error(errorNotSupportedOnPlatform);
+          throw errorNotSupportedOnPlatform;
         }
         resolve(sendAndUnwrap('getConfigSetting', key));
       });

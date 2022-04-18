@@ -36,19 +36,19 @@ describe('AppSDK-privateAPIs', () => {
     it('should throw error when fullTrust.joinedTeams is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
-      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should throw error when fullTrust is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
-      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should throw error when teams is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should allow a valid optional parameter set to true', async () => {
@@ -154,13 +154,13 @@ describe('AppSDK-privateAPIs', () => {
     it('should throw error when fullTrust is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
-      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should throw error when teams is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should allow a valid parameter', async () => {
