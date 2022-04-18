@@ -35,11 +35,12 @@ describe('notifications', () => {
       if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`showNotification should throw error if notifications capability is not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          expect.assertions(1);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           try {
             notifications.showNotification(showNotificationParameters);
           } catch (e) {
-            expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+            expect(e).toEqual(errorNotSupportedOnPlatform);
           }
         });
 

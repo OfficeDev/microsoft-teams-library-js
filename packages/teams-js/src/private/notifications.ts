@@ -19,7 +19,7 @@ export namespace notifications {
   export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     sendMessageToParent('notifications.showNotification', [showNotificationParameters]);
