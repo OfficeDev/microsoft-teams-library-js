@@ -49,13 +49,16 @@ export namespace dialog {
   }
 
   function handleDialogMessage(message: string): void {
-    if (GlobalVars.frameContext) {
-      if (GlobalVars.frameContext === FrameContexts.task) {
-        storedMessages.push(message);
-      } else {
-        //Not in task FrameContext, remove 'messageForChild' handler
-        removeHandler('messageForChild');
-      }
+    if (!GlobalVars.frameContext) {
+      //GlobalVars.frameContext is currently not set
+      return;
+    }
+
+    if (GlobalVars.frameContext === FrameContexts.task) {
+      storedMessages.push(message);
+    } else {
+      //Not in task FrameContext, remove 'messageForChild' handler
+      removeHandler('messageForChild');
     }
   }
 
