@@ -6,6 +6,7 @@ import {
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters } from './interfaces';
 
@@ -314,6 +315,9 @@ export namespace files {
   export function getCloudStorageFolders(channelId: string): Promise<CloudStorageFolder[]> {
     return new Promise<CloudStorageFolder[]>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
 
       if (!channelId || channelId.length === 0) {
         throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
@@ -333,6 +337,9 @@ export namespace files {
   export function addCloudStorageFolder(channelId: string): Promise<[boolean, CloudStorageFolder[]]> {
     return new Promise<[SdkError, boolean, CloudStorageFolder[]]>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
 
       if (!channelId || channelId.length === 0) {
         throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
@@ -360,6 +367,9 @@ export namespace files {
   export function deleteCloudStorageFolder(channelId: string, folderToDelete: CloudStorageFolder): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
 
       if (!channelId) {
         throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
@@ -387,6 +397,9 @@ export namespace files {
   ): Promise<CloudStorageFolderItem[]> {
     return new Promise<CloudStorageFolderItem[]>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
 
       if (!folder || !providerCode) {
         throw new Error('[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty');
@@ -416,6 +429,9 @@ export namespace files {
     fileOpenPreference?: FileOpenPreference.Web | FileOpenPreference.Inline,
   ): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error(errorNotSupportedOnPlatform);
+    }
 
     if (!file || !providerCode) {
       throw new Error('[files.openCloudStorageFile] file/providerCode cannot be null or empty');
@@ -438,6 +454,9 @@ export namespace files {
    */
   export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error(errorNotSupportedOnPlatform);
+    }
 
     const params = [
       filePreviewParameters.entityId,
@@ -469,6 +488,9 @@ export namespace files {
   export function getExternalProviders(excludeAddedProviders = false): Promise<IExternalProvider[]> {
     return new Promise<IExternalProvider[]>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
 
       resolve(sendAndHandleError('files.getExternalProviders', excludeAddedProviders));
     });
@@ -488,6 +510,9 @@ export namespace files {
   ): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error(errorNotSupportedOnPlatform);
+      }
       if (!selectedFiles || selectedFiles.length === 0) {
         throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
       }
@@ -539,6 +564,9 @@ export namespace files {
   export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void;
   export function getFileDownloads(callback?: (error?: SdkError, files?: IFileItem[]) => void): Promise<IFileItem[]> {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error(errorNotSupportedOnPlatform);
+    }
 
     const wrappedFunction = (): Promise<IFileItem[]> =>
       new Promise(resolve => resolve(sendAndHandleError('files.getFileDownloads', [])));
@@ -556,6 +584,9 @@ export namespace files {
    */
   export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error(errorNotSupportedOnPlatform);
+    }
 
     if (!callback) {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
