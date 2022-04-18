@@ -41,9 +41,7 @@ describe('conversations', () => {
         entityId: 'someEntityId',
       };
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
-      expect(() => conversations.openConversation(conversationRequest)).rejects.toThrowError(
-        errorNotSupportedOnPlatform,
-      );
+      expect(() => conversations.openConversation(conversationRequest)).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -114,7 +112,12 @@ describe('conversations', () => {
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
-      expect(() => conversations.closeConversation()).toThrowError(errorNotSupportedOnPlatform);
+      try {
+        conversations.closeConversation();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+      // expect().toMatchObject(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -134,7 +137,7 @@ describe('conversations', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = conversations.getChatMembers();
-      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should successfully get chat members', async () => {

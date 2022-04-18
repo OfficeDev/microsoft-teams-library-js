@@ -316,7 +316,7 @@ export namespace files {
     return new Promise<CloudStorageFolder[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
 
       if (!channelId || channelId.length === 0) {
@@ -338,7 +338,7 @@ export namespace files {
     return new Promise<[SdkError, boolean, CloudStorageFolder[]]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
 
       if (!channelId || channelId.length === 0) {
@@ -368,7 +368,7 @@ export namespace files {
     return new Promise<boolean>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
 
       if (!channelId) {
@@ -398,7 +398,7 @@ export namespace files {
     return new Promise<CloudStorageFolderItem[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
 
       if (!folder || !providerCode) {
@@ -430,7 +430,7 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     if (!file || !providerCode) {
@@ -455,7 +455,7 @@ export namespace files {
   export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     const params = [
@@ -489,7 +489,7 @@ export namespace files {
     return new Promise<IExternalProvider[]>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
 
       resolve(sendAndHandleError('files.getExternalProviders', excludeAddedProviders));
@@ -511,7 +511,7 @@ export namespace files {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       if (!selectedFiles || selectedFiles.length === 0) {
         throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
@@ -565,7 +565,7 @@ export namespace files {
   export function getFileDownloads(callback?: (error?: SdkError, files?: IFileItem[]) => void): Promise<IFileItem[]> {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     const wrappedFunction = (): Promise<IFileItem[]> =>
@@ -585,7 +585,7 @@ export namespace files {
   export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     if (!callback) {
