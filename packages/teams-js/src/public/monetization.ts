@@ -80,7 +80,7 @@ export namespace monetization {
     const wrappedFunction: InputFunction<void> = () => {
       return new Promise<void>(resolve => {
         if (!isSupported()) {
-          throw new Error(errorNotSupportedOnPlatform);
+          throw errorNotSupportedOnPlatform;
         }
         resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', planInfo));
       });

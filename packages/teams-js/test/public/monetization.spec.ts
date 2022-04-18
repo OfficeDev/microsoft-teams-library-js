@@ -37,11 +37,12 @@ describe('monetization_v1', () => {
       if (!allowedContexts.some(allowedContext => allowedContext == context)) {
         it(`openPurchaseExperience should throw error when monetization is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext('content');
+          expect.assertions(3);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           try {
             monetization.openPurchaseExperience(() => {});
           } catch (e) {
-            expect(e).toEqual(new Error(errorNotSupportedOnPlatform));
+            expect(e).toEqual(errorNotSupportedOnPlatform);
           }
         });
 
