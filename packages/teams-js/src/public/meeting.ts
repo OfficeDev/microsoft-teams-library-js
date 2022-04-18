@@ -190,7 +190,7 @@ export namespace meeting {
   function getIncomingClientAudioStateHelper(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('getIncomingClientAudioState'));
     });
@@ -229,7 +229,7 @@ export namespace meeting {
   function toggleIncomingClientAudioHelper(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('toggleIncomingClientAudio'));
     });
@@ -282,7 +282,7 @@ export namespace meeting {
   function getMeetingDetailsHelper(): Promise<IMeetingDetails> {
     return new Promise<IMeetingDetails>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.getMeetingDetails'));
     });
@@ -327,7 +327,7 @@ export namespace meeting {
   function getAuthenticationTokenForAnonymousUserHelper(): Promise<string> {
     return new Promise<string>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.getAuthenticationTokenForAnonymousUser'));
     });
@@ -369,7 +369,7 @@ export namespace meeting {
   function getLiveStreamStateHelper(): Promise<LiveStreamState> {
     return new Promise<LiveStreamState>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.getLiveStreamState'));
     });
@@ -439,7 +439,7 @@ export namespace meeting {
   function requestStartLiveStreamingHelper(streamUrl: string, streamKey?: string): Promise<void> {
     return new Promise<void>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.requestStartLiveStreaming', streamUrl, streamKey));
     });
@@ -472,7 +472,7 @@ export namespace meeting {
   function requestStopLiveStreamingHelper(): Promise<void> {
     return new Promise<void>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.requestStopLiveStreaming'));
     });
@@ -493,7 +493,7 @@ export namespace meeting {
 
     ensureInitialized(FrameContexts.sidePanel);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
     registerHandler('meeting.liveStreamChanged', handler);
   }
@@ -557,7 +557,7 @@ export namespace meeting {
   function shareAppContentToStageHelper(appContentUrl: string): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.shareAppContentToStage', appContentUrl));
     });
@@ -606,7 +606,7 @@ export namespace meeting {
   function getAppContentStageSharingCapabilitiesHelper(): Promise<IAppContentStageSharingCapabilities> {
     return new Promise<IAppContentStageSharingCapabilities>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingCapabilities'));
     });
@@ -654,7 +654,7 @@ export namespace meeting {
   function stopSharingAppContentToStageHelper(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.stopSharingAppContentToStage'));
     });
@@ -692,7 +692,7 @@ export namespace meeting {
   function getAppContentStageSharingStateHelper(): Promise<IAppContentStageSharingState> {
     return new Promise<IAppContentStageSharingState>(resolve => {
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       resolve(sendAndHandleSdkError('meeting.getAppContentStageSharingState'));
     });
@@ -710,7 +710,7 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
     registerHandler('meeting.speakingStateChanged', handler);
   }

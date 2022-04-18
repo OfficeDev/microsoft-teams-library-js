@@ -34,7 +34,7 @@ describe('meeting', () => {
         it(`toggleIncomingClientAudio should throw error if meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(() => meeting.toggleIncomingClientAudio()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(() => meeting.toggleIncomingClientAudio()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it(`should successfully send the toggleIncomingClientAudio message. context: ${context}`, async () => {
@@ -102,7 +102,7 @@ describe('meeting', () => {
         it(`getIncomingClientAudio should throw error if meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(() => meeting.getIncomingClientAudioState()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(() => meeting.getIncomingClientAudioState()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it(`should successfully send the getIncomingClientAudio message. context: ${context}`, async () => {
@@ -174,7 +174,7 @@ describe('meeting', () => {
         it(`getMeetingDetails should throw error if meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(() => meeting.getMeetingDetails()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(() => meeting.getMeetingDetails()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it(`should successfully send the getMeetingDetailsMessage message. context: ${context}`, async () => {
@@ -265,7 +265,7 @@ describe('meeting', () => {
         it(`getAuthenticationTokenForAnonymousUser should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.getAuthenticationTokenForAnonymousUser()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.getAuthenticationTokenForAnonymousUser()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it(`should successfully send the getAuthenticationTokenForAnonymousUser message. context: ${context}`, async () => {
@@ -338,7 +338,7 @@ describe('meeting', () => {
       it(`getLiveStreamState should throw error if meeting is not supported. context: ${context}`, async () => {
         await framelessPlatformMock.initializeWithContext(context);
         framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-        expect(meeting.getLiveStreamState()).rejects.toThrowError(errorNotSupportedOnPlatform);
+        expect(meeting.getLiveStreamState()).rejects.toEqual(errorNotSupportedOnPlatform);
       });
       it(`should successfully send the getLiveStreamState message. context: ${context}`, async () => {
         await framelessPlatformMock.initializeWithContext(context);
@@ -399,7 +399,7 @@ describe('meeting', () => {
         it(`requestStartLiveStreaming should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.requestStartLiveStreaming('streamurl', 'streamkey')).rejects.toThrowError(
+          expect(meeting.requestStartLiveStreaming('streamurl', 'streamkey')).rejects.toEqual(
             errorNotSupportedOnPlatform,
           );
         });
@@ -480,7 +480,7 @@ describe('meeting', () => {
         it(`requestStopLiveStreaming should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.requestStopLiveStreaming()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.requestStopLiveStreaming()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it('should successfully send the requestStartLiveStreaming message.', async () => {
@@ -564,10 +564,15 @@ describe('meeting', () => {
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        it('registerLiveStreamChangedHandler should throw error when meeting is not supportec', async () => {
+        it('registerLiveStreamChangedHandler should throw error when meeting is not supported', async () => {
           await framedPlatformMock.initializeWithContext(context);
+          expect.assertions(1);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(() => meeting.registerLiveStreamChangedHandler(() => {})).toThrowError(errorNotSupportedOnPlatform);
+          try {
+            meeting.registerLiveStreamChangedHandler(() => {});
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
         });
 
         it('should successfully register a handler for when live stream is changed', async () => {
@@ -613,7 +618,7 @@ describe('meeting', () => {
         it(`shareAppContentToStage should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.shareAppContentToStage('')).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.shareAppContentToStage('')).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it('should successfully send the shareAppContentToStage message.', async () => {
@@ -697,7 +702,7 @@ describe('meeting', () => {
         it(`getAppContentStageSharingCapabilities should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.getAppContentStageSharingCapabilities()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.getAppContentStageSharingCapabilities()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it('should successfully send the getAppContentStageSharingCapabilities message.', async () => {
@@ -779,7 +784,7 @@ describe('meeting', () => {
         it(`stopSharingAppContentToStage should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.stopSharingAppContentToStage()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.stopSharingAppContentToStage()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it('should successfully send the stopSharingAppContentToStage message.', async () => {
@@ -854,7 +859,7 @@ describe('meeting', () => {
         it(`requestStartLiveStreaming should throw error when meeting is not supported. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect(meeting.getAppContentStageSharingState()).rejects.toThrowError(errorNotSupportedOnPlatform);
+          expect(meeting.getAppContentStageSharingState()).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
         it('should successfully send the getAppContentStageSharingState message.', async () => {
