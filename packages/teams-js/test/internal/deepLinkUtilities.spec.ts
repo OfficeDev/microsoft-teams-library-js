@@ -1,20 +1,34 @@
+import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../../src/internal/constants';
 import {
   teamsDeepLinkMessageUrlParameterName,
   teamsDeepLinkTopicUrlParameterName,
+  teamsDeepLinkUrlPathForCalendar,
+  teamsDeepLinkUrlPathForCall,
   teamsDeepLinkUrlPathForChat,
   teamsDeepLinkUsersUrlParameterName,
-} from '../../src/internal/chatConstants';
-import { createTeamsDeepLinkForChat } from '../../src/internal/chatUtilities';
-import { teamsDeepLinkHost, teamsDeepLinkProtocol } from '../../src/internal/constants';
+} from '../../src/internal/deepLinkConstants';
+import { createTeamsDeepLinkForChat } from '../../src/internal/deepLinkUtilities';
 
-export function validateChatDeepLinkPrefix(chatDeepLink: URL): void {
-  expect(chatDeepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
-  expect(chatDeepLink.host.toLowerCase() === teamsDeepLinkHost);
-  expect(chatDeepLink.pathname.toLowerCase() === teamsDeepLinkUrlPathForChat);
+export function validateDeepLinkPrefix(deepLink: URL, expectedPathName: string): void {
+  expect(deepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
+  expect(deepLink.host.toLowerCase() === teamsDeepLinkHost);
+  expect(deepLink.pathname.toLowerCase() === expectedPathName);
 }
 
-export function validateChatDeepLinkUsers(chatDeepLink: URL, expectedUsers: string[]): void {
-  const searchParams = chatDeepLink.searchParams;
+export function validateCalendarDeepLinkPrefix(calendarDeepLink: URL): void {
+  validateDeepLinkPrefix(calendarDeepLink, teamsDeepLinkUrlPathForCalendar);
+}
+
+export function validateCallDeepLinkPrefix(callDeepLink: URL): void {
+  validateDeepLinkPrefix(callDeepLink, teamsDeepLinkUrlPathForCall);
+}
+
+export function validateChatDeepLinkPrefix(chatDeepLink: URL): void {
+  validateDeepLinkPrefix(chatDeepLink, teamsDeepLinkUrlPathForChat);
+}
+
+export function validateDeepLinkUsers(deepLink: URL, expectedUsers: string[]): void {
+  const searchParams = deepLink.searchParams;
   const userUrlValues: string[] = searchParams.getAll(teamsDeepLinkUsersUrlParameterName);
   expect(userUrlValues).toHaveLength(1);
 
@@ -65,17 +79,17 @@ describe('chatUtilities', () => {
       const generatedChatDeepLinkUrl = new URL(createTeamsDeepLinkForChat(userList));
 
       validateChatDeepLinkPrefix(generatedChatDeepLinkUrl);
-      validateChatDeepLinkUsers(generatedChatDeepLinkUrl, userList);
+      validateDeepLinkUsers(generatedChatDeepLinkUrl, userList);
       validateChatDeepLinkTopic(generatedChatDeepLinkUrl, undefined);
       validateChatDeepLinkMessage(generatedChatDeepLinkUrl, undefined);
     });
 
-    it('should create a deep link for a multiple users with no topic and no message', () => {
+    it('should create a deep link for multiple users with no topic and no message', () => {
       const userList: string[] = [user1, user2, user3];
       const generatedChatDeepLinkUrl = new URL(createTeamsDeepLinkForChat(userList));
 
       validateChatDeepLinkPrefix(generatedChatDeepLinkUrl);
-      validateChatDeepLinkUsers(generatedChatDeepLinkUrl, userList);
+      validateDeepLinkUsers(generatedChatDeepLinkUrl, userList);
       validateChatDeepLinkTopic(generatedChatDeepLinkUrl, undefined);
       validateChatDeepLinkMessage(generatedChatDeepLinkUrl, undefined);
     });
@@ -85,7 +99,7 @@ describe('chatUtilities', () => {
       const generatedChatDeepLinkUrl = new URL(createTeamsDeepLinkForChat(userList, undefined, message));
 
       validateChatDeepLinkPrefix(generatedChatDeepLinkUrl);
-      validateChatDeepLinkUsers(generatedChatDeepLinkUrl, userList);
+      validateDeepLinkUsers(generatedChatDeepLinkUrl, userList);
       validateChatDeepLinkTopic(generatedChatDeepLinkUrl, undefined);
       validateChatDeepLinkMessage(generatedChatDeepLinkUrl, message);
     });
@@ -95,7 +109,7 @@ describe('chatUtilities', () => {
       const generatedChatDeepLinkUrl = new URL(createTeamsDeepLinkForChat(userList, topic, undefined));
 
       validateChatDeepLinkPrefix(generatedChatDeepLinkUrl);
-      validateChatDeepLinkUsers(generatedChatDeepLinkUrl, userList);
+      validateDeepLinkUsers(generatedChatDeepLinkUrl, userList);
       validateChatDeepLinkTopic(generatedChatDeepLinkUrl, topic);
       validateChatDeepLinkMessage(generatedChatDeepLinkUrl, undefined);
     });
@@ -105,7 +119,7 @@ describe('chatUtilities', () => {
       const generatedChatDeepLinkUrl = new URL(createTeamsDeepLinkForChat(userList, topic, message));
 
       validateChatDeepLinkPrefix(generatedChatDeepLinkUrl);
-      validateChatDeepLinkUsers(generatedChatDeepLinkUrl, userList);
+      validateDeepLinkUsers(generatedChatDeepLinkUrl, userList);
       validateChatDeepLinkTopic(generatedChatDeepLinkUrl, topic);
       validateChatDeepLinkMessage(generatedChatDeepLinkUrl, message);
     });

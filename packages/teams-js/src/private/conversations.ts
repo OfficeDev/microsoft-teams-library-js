@@ -5,7 +5,7 @@ import {
 } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
@@ -111,6 +111,9 @@ export namespace conversations {
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       const sendPromise = sendAndHandleError('conversations.openConversation', {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
@@ -154,6 +157,9 @@ export namespace conversations {
    */
   export function closeConversation(): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('conversations.closeConversation');
     removeHandler('startConversation');
     removeHandler('closeConversation');
@@ -174,6 +180,9 @@ export namespace conversations {
   export function getChatMembers(): Promise<ChatMembersInformation> {
     return new Promise<ChatMembersInformation>(resolve => {
       ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndUnwrap('getChatMembers'));
     });
   }

@@ -1,11 +1,12 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
   validateChatDeepLinkTopic,
-  validateChatDeepLinkUsers,
-} from '../internal/chatUtilities.spec';
+  validateDeepLinkUsers,
+} from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
 describe('chat', () => {
@@ -33,6 +34,17 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('openChat should throw error if chat capability is not supported in runtime config', async () => {
+      const chatRequest: OpenSingleChatRequest = {
+        user: 'someUPN',
+        message: 'someMessage',
+      };
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = chat.openChat(chatRequest);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -84,7 +96,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, [chatRequest.user]);
+      validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
 
       utils.respondToMessage(executeDeepLinkMessage, true);
@@ -99,6 +111,17 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('openGroupChat should throw error if chat capability is not supported in runtime config', async () => {
+      const chatRequest: OpenGroupChatRequest = {
+        users: ['someUPN', 'someUPN2'],
+        message: 'someMessage',
+      };
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = chat.openGroupChat(chatRequest);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls when no members are provided', () => {
@@ -161,7 +184,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, chatRequest.users);
+      validateDeepLinkUsers(chatDeepLink, chatRequest.users);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
       validateChatDeepLinkTopic(chatDeepLink, chatRequest.topic);
 
