@@ -117,7 +117,6 @@ describe('conversations', () => {
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
-      // expect().toMatchObject(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
