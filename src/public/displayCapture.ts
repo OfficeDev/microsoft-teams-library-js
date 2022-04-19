@@ -10,25 +10,6 @@ export namespace displayCapture {
     video?: boolean | MediaTrackConstraints;
   }
 
-  export interface Location {
-    /**
-    Latitude of the location
-    */
-    latitude: number;
-    /**
-    Longitude of the location
-    */
-    longitude: number;
-    /**
-    Accuracy of the coordinates captured
-    */
-    accuracy?: number;
-    /**
-    Time stamp when the location was captured
-    */
-    timestamp?: number;
-  }
-
   /**
    * Fetches current user coordinates or allows user to choose location on map
    * @param callback Callback to invoke when the stream of selected display is fetched
