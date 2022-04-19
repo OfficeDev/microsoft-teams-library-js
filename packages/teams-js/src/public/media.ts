@@ -31,6 +31,8 @@ import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
 /**
+ * @deprecated
+ *
  * @alpha
  */
 export namespace media {
