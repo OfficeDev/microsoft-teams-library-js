@@ -957,7 +957,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   describe('returnFocus', () => {
     it('should successfully returnFocus', () => {
-      utils.initializeWithContext();
+      utils.initializeWithContext(undefined);
 
       returnFocus(true);
 
