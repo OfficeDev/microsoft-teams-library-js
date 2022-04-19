@@ -1,6 +1,7 @@
 import { app } from '../../src/public';
 import { Utils } from '../utils';
 import { legacy, TeamInstanceParameters } from '../../src/private';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 
 describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -32,9 +33,27 @@ describe('AppSDK-privateAPIs', () => {
         'The library has not yet been initialized',
       );
     });
+    it('should throw error when fullTrust.joinedTeams is not supported', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
+    });
+
+    it('should throw error when fullTrust is not supported', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
+    });
+
+    it('should throw error when teams is not supported', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(() => legacy.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toEqual(errorNotSupportedOnPlatform);
+    });
 
     it('should allow a valid optional parameter set to true', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
 
       const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
         favoriteTeamsOnly: true,
@@ -48,6 +67,7 @@ describe('AppSDK-privateAPIs', () => {
 
     it('should allow a valid optional parameter set to false', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
 
       const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({
         favoriteTeamsOnly: false,
@@ -61,6 +81,7 @@ describe('AppSDK-privateAPIs', () => {
 
     it('should allow a missing optional parameter', async () => {
       await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
 
       const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams();
 
@@ -72,7 +93,7 @@ describe('AppSDK-privateAPIs', () => {
 
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext('content');
-
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
       const promise = legacy.fullTrust.joinedTeams.getUserJoinedTeams({} as TeamInstanceParameters);
 
       const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
@@ -128,6 +149,18 @@ describe('AppSDK-privateAPIs', () => {
       return expect(legacy.fullTrust.getConfigSetting('key')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
+    });
+
+    it('should throw error when fullTrust is not supported', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toEqual(errorNotSupportedOnPlatform);
+    });
+
+    it('should throw error when teams is not supported', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(() => legacy.fullTrust.getConfigSetting('key')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should allow a valid parameter', async () => {
