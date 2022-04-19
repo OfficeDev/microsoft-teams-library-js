@@ -267,6 +267,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
     - `applyRuntimeConfig` is added
 
 - Promises introduced
+
   - The following APIs that took in a callback function as a parameter now instead return a Promise.
     - app APIs:
       - app.initialize
@@ -331,3 +332,5 @@ Tue, 01 Mar 2022 19:50:49 GMT
       - core.executeDeepLink
       - appInstallDialog.openAppInstallDialog
       - call.startCall
+
+- Changed TypeScript to output ES6 modules instead of CommonJS
