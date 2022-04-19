@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Revert media.ts to v1 state and made necessary changes in unit tests and test-app",
+  "comment": "Reverted media.ts to v1 state and made necessary changes in unit tests and test-app",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
