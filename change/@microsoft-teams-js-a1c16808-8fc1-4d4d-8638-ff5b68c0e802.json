@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Changed topic parameter name to `topicName` for `executeDeepLink` call in `chat.ts`",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "patch"
-}
