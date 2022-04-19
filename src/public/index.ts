@@ -44,6 +44,7 @@ export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { menus } from './menus';
 export { media } from './media';
 export { location } from './location';
+export { displayCapture } from './displayCapture';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
 export { people } from './people';
