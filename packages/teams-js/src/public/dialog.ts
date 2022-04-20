@@ -6,7 +6,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { DialogDimension, FrameContexts } from './constants';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
@@ -240,8 +240,8 @@ export namespace dialog {
   export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {
       url: urlDialogInfo.url,
-      height: urlDialogInfo.size.height,
-      width: urlDialogInfo.size.width,
+      height: urlDialogInfo.size ? urlDialogInfo.size.height : DialogDimension.Small,
+      width: urlDialogInfo.size ? urlDialogInfo.size.width : DialogDimension.Small,
       title: urlDialogInfo.title,
       fallbackUrl: urlDialogInfo.fallbackUrl,
     };
@@ -259,8 +259,8 @@ export namespace dialog {
   export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {
       url: botUrlDialogInfo.url,
-      height: botUrlDialogInfo.size.height,
-      width: botUrlDialogInfo.size.width,
+      height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
+      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
       title: botUrlDialogInfo.title,
       fallbackUrl: botUrlDialogInfo.fallbackUrl,
       completionBotId: botUrlDialogInfo.completionBotId,
