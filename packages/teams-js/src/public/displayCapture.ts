@@ -1,8 +1,8 @@
-import { SdkError, ErrorCode } from './interfaces';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
 import { sendMessageToParent } from '../internal/communication';
 import { displayCaptureAPIRequiredVersion } from '../internal/constants';
+import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { FrameContexts } from './constants';
+import { ErrorCode, SdkError } from './interfaces';
 
 export namespace displayCapture {
   export interface DisplayCaptureProps {

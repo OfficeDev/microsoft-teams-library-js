@@ -88,7 +88,7 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 /**
  * This is the client version when displayCapture API are supported.
  */
- export const displayCaptureAPIRequiredVersion = '2.0.0';
+export const displayCaptureAPIRequiredVersion = '2.0.0';
 
 /**
  * @hidden
