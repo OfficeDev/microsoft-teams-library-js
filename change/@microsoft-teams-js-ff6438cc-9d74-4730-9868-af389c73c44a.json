@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Add displayCapture namespace and getDisplayCapture API",
+  "comment": "Add displayCapture namespace and getDisplayMedia API",
   "packageName": "@microsoft/teams-js",
   "email": "yujin1@microsoft.com",
   "dependentChangeType": "patch"
