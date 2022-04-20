@@ -32,8 +32,6 @@ import { ErrorCode, SdkError } from './interfaces';
 
 /**
  * @deprecated
- *
- * @alpha
  */
 export namespace media {
   /**
