@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Reverted meeting.ts to v1 state and made necessary changes in test-app and unit tests",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
