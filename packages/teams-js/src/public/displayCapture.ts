@@ -1,24 +1,17 @@
 import { sendMessageToParent } from '../internal/communication';
 import { displayCaptureAPIRequiredVersion } from '../internal/constants';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
 export namespace displayCapture {
-  export interface DisplayCaptureProps {
-    audio?: boolean | MediaTrackConstraints;
-    video?: boolean | MediaTrackConstraints;
-  }
-
   /**
    * @param callback Callback to invoke when the stream of selected display is fetched
    */
-  export function getDisplayCapture(
-    props: DisplayCaptureProps,
-    callback: (error: SdkError, displayCapture: MediaStream) => void,
-  ): void {
+  export function getDisplayMedia(callback: (error: SdkError, displayStream: MediaStream) => void): void {
     if (!callback) {
-      throw new Error('[displayCapture.getDisplayCapture] Callback cannot be null');
+      throw new Error('[displayCapture.getDisplayMedia] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
 
@@ -27,11 +20,24 @@ export namespace displayCapture {
       callback(oldPlatformError, undefined);
       return;
     }
-    if (!props) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, undefined);
-      return;
-    }
-    sendMessageToParent('displayCapture.getDisplayCapture', [props], callback);
+
+    registerHandler('displayCapture.displayIdPicked', (displayId: string) => {
+      const mediaDevices = navigator.mediaDevices as any;
+      mediaDevices
+        .getUserMedia({
+          audio: false,
+          video: {
+            mandatory: {
+              chromeMediaSource: 'desktop',
+              chromeMediaSourceId: displayId,
+            },
+          },
+        })
+        .then((mediaStream: MediaStream) => {
+          callback(undefined, mediaStream);
+        });
+    });
+
+    sendMessageToParent('displayCapture.showDisplayPicker');
   }
 }
