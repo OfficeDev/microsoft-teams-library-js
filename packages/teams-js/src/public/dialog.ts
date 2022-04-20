@@ -233,7 +233,7 @@ export namespace dialog {
    * @hidden
    * Hide from docs
    * --------
-   * Convert UrlDialogInfo to DilogInfo to send the information to host in {@linkcode open} API.
+   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
    *
    * @internal
    */
@@ -252,7 +252,7 @@ export namespace dialog {
    * @hidden
    * Hide from docs
    * --------
-   * Convert BotUrlDialogInfo to DilogInfo to send the information to host in {@linkcode bot.open} API.
+   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
    *
    * @internal
    */
