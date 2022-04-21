@@ -260,7 +260,7 @@ export namespace dialog {
     const dialogInfo: DialogInfo = {
       url: botUrlDialogInfo.url,
       height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
-      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
+      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.width : DialogDimension.Small,
       title: botUrlDialogInfo.title,
       fallbackUrl: botUrlDialogInfo.fallbackUrl,
       completionBotId: botUrlDialogInfo.completionBotId,
