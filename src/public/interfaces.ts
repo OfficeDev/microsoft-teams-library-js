@@ -340,6 +340,11 @@ export interface Context {
   hostClientType?: HostClientType;
 
   /**
+   * The application version of the host client.
+   */
+  hostClientVersion?: string;
+
+  /**
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext?: FrameContexts;
