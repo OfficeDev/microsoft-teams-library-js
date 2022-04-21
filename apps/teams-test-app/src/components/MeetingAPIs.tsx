@@ -182,13 +182,6 @@ const ShareAppContentToStage = (): React.ReactElement =>
     },
   });
 
-const MeetingCapabilityCheck = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkMeetingCapability',
-    title: 'Check Meeting Capability',
-    onClick: async () => `Meeting module ${meeting.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAppContentStageSharingCapabilities',
@@ -260,7 +253,6 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
     <ShareAppContentToStage />
-    <MeetingCapabilityCheck />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />

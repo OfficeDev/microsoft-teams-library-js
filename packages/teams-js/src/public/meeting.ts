@@ -3,7 +3,6 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
-import { runtime } from './runtime';
 
 export namespace meeting {
   /**
@@ -172,6 +171,7 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
    * Allows an app to get the incoming audio speaker setting for the meeting user
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -191,6 +191,7 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
    * Allows an app to toggle the incoming audio speaker setting for the meeting user from mute to unmute or vice-versa
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -207,6 +208,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * @hidden
    * Hide from docs
    *
@@ -234,6 +237,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * @hidden
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
    *
@@ -254,6 +259,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Allows an app to get the state of the live stream in the current meeting
    *
    * @param callback - Callback contains 2 parameters: error and liveStreamState.
@@ -271,6 +278,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Allows an app to request the live streaming be started at the given streaming url
    *
    * @remarks
@@ -293,6 +302,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Allows an app to request the live streaming be stopped at the given streaming url
    *
    * @remarks
@@ -309,6 +320,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Registers a handler for changes to the live stream.
    *
    * @remarks
@@ -325,6 +338,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Allows an app to share contents in the meeting
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -344,6 +359,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Provides information related app's in-meeting sharing capabilities
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -365,6 +382,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * @hidden
    * Hide from docs.
    * Terminates current stage sharing session in meeting
@@ -384,6 +403,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Provides information related to current stage sharing state for app
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -402,6 +423,8 @@ export namespace meeting {
   }
 
   /**
+   * @deprecated
+   *
    * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
    * will be true. If no participants are speaking, isSpeakingDetected will be false. Only one handler can be registered
    * at a time. A subsequent registration replaces an existing registration.
@@ -414,9 +437,5 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
-  }
-
-  export function isSupported(): boolean {
-    return runtime.supports.meeting ? true : false;
   }
 }
