@@ -47,7 +47,7 @@ export namespace pages {
    * Sets/Updates the current frame with new information
    *
    * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
-   * user clicks 'Go To Website' {@link FrameInfo}
+   * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
     ensureInitialized(FrameContexts.content);
@@ -58,9 +58,9 @@ export namespace pages {
    * Initializes the library with context information for the frame
    *
    * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
-   *  user clicks 'Go To Website' {@link FrameInfo}
-   * @param callback - A optional user set callback that is executed once the app has finished initialization.
-   * @param validMessageOrigins - An optional list of cross frame message origins. They must have
+   *  user clicks 'Go To Website'
+   * @param callback - An optional user-set callback that is executed once the app has finished initialization.
+   * @param validMessageOrigins - An optional list of cross-frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
    */
   export function initializeWithFrameContext(
@@ -73,7 +73,7 @@ export namespace pages {
   }
 
   /**
-   * Interface that defines the donfiguration of the current or desired instance
+   * Defines the configuration of the current or desired instance
    */
   export interface InstanceConfig {
     /**
@@ -248,8 +248,8 @@ export namespace pages {
     /**
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-     * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels. {@link TabInstanceParameters}
-     * @returns Promise that resolves with the {@link TabInformation}.
+     * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+     * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
@@ -260,8 +260,8 @@ export namespace pages {
 
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
-     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use {@link TabInstanceParameters}
-     * @returns Promise that resolves with the {@link TabInformation}.
+     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use.
+     * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
@@ -271,7 +271,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.tabs capability is supported currently
+     * Checks if the current application host supports the pages.tab capability
      * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
      * false if it is disabled
      */
@@ -312,7 +312,7 @@ export namespace pages {
     /**
      * Sets the config for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
-     * @param instanceConfig The desired config for this instance. {@link InstanceConfig}
+     * @param instanceConfig The desired config for this instance.
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
@@ -368,12 +368,12 @@ export namespace pages {
     }
 
     /**
-     * Interface describing the results of the settings.save event. Includes result, notifySuccess, and notifyFailure
+     * Describes the results of the settings.save event. Includes result, notifySuccess, and notifyFailure
      * to indicate the return object (result) and the status of whether the settings.save call succeeded or not and why.
      */
     export interface SaveEvent {
       /**
-       * Object containing properties passed as arguments to the settings.save event. {@link SaveParameters}
+       * Object containing properties passed as arguments to the settings.save event.
        */
       result: SaveParameters;
       /**
@@ -388,7 +388,7 @@ export namespace pages {
     }
 
     /**
-     * Interface describing the results of the settings.remove event. Includes notifySuccess, and notifyFailure
+     * Describes the results of the settings.remove event. Includes notifySuccess, and notifyFailure
      * to indicate the status of whether the settings.save call succeeded or not and why.
      */
     export interface RemoveEvent {
@@ -477,7 +477,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.config capability is supported currently
+     * Checks if the current application host supports the pages.config capability
      * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
      * false if it is disabled
      */
@@ -528,7 +528,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.backStack capability is supported currently
+     * Checks if the current application host supports the pages.backStack capability
      * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
      * false if it is disabled
      */
@@ -538,7 +538,10 @@ export namespace pages {
   }
 
   /**
-   * Namespace to interact with the full-trust part of the SDK
+   * @hidden
+   * Hide from docs
+   * ------
+   * Namespace to interact with the full-trust part of the SDK. Limited to 1P apps
    */
   export namespace fullTrust {
     /**
@@ -563,7 +566,10 @@ export namespace pages {
       sendMessageToParent('exitFullscreen', []);
     }
     /**
-     * Checks if pages.fullTrust capability is supported currently
+     * @hidden
+     * Hide from docs
+     * ------
+     * Checks if the current application host supports the pages.fullTrust capability
      * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
      * false if it is disabled
      */
