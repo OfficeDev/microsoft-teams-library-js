@@ -2,12 +2,12 @@ import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import { profile } from '../../src/public/profile';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
 
 describe('profile', () => {
   describe('showProfile', () => {
     const allowedContexts = [FrameContexts.content];
-    const desktopPlatformMock = new FramelessPostMocks();
+    const desktopPlatformMock = new Utils();
 
     beforeEach(() => {
       desktopPlatformMock.messages = [];
