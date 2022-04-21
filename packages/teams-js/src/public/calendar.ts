@@ -1,4 +1,5 @@
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -27,8 +28,22 @@ export namespace calendar {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-
-      resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
+      if (runtime.isLegacyTeams) {
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            createTeamsDeepLinkForCalendar(
+              composeMeetingParams.attendees,
+              composeMeetingParams.startTime,
+              composeMeetingParams.endTime,
+              composeMeetingParams.subject,
+              composeMeetingParams.content,
+            ),
+          ),
+        );
+      } else {
+        resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
+      }
     });
   }
   export function isSupported(): boolean {

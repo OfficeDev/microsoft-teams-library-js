@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -33,6 +34,33 @@ export namespace dialog {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
+  const storedMessages: string[] = [];
+
+  /**
+   * @hidden
+   * Hide from docs because this function is only used during initialization
+   * ------------------
+   * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
+   * Function is called during app intitialization
+   * @internal
+   */
+  export function initialize(): void {
+    registerHandler('messageForChild', handleDialogMessage, false);
+  }
+
+  function handleDialogMessage(message: string): void {
+    if (!GlobalVars.frameContext) {
+      // GlobalVars.frameContext is currently not set
+      return;
+    }
+
+    if (GlobalVars.frameContext === FrameContexts.task) {
+      storedMessages.push(message);
+    } else {
+      // Not in task FrameContext, remove 'messageForChild' handler
+      removeHandler('messageForChild');
+    }
+  }
 
   /**
    * Allows app to open a url based dialog.
@@ -72,7 +100,7 @@ export namespace dialog {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+    sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
   }
 
   /**
@@ -114,7 +142,16 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
+    // We need to remove the original 'messageForChild'
+    // handler since the original does not allow for post messages.
+    // It is replaced by the user specified listener that is passed in.
+    removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
+    storedMessages.reverse();
+    while (storedMessages.length > 0) {
+      const message = storedMessages.pop();
+      listener(message);
+    }
   }
 
   /**
