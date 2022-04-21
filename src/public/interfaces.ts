@@ -341,6 +341,7 @@ export interface Context {
 
   /**
    * The application version of the host client.
+   * This property should be used along with hostClientType as versioning would be different across the various host client types.
    */
   hostClientVersion?: string;
 
