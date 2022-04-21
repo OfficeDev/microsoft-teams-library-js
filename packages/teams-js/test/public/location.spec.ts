@@ -1,7 +1,7 @@
 import { locationAPIsRequiredVersion } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts, minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import { ErrorCode, location } from '../../src/public/index';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -27,6 +27,7 @@ describe('location', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      framedPlatform.setRuntimeConfig(minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

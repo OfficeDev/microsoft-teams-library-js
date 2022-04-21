@@ -2,7 +2,7 @@ import { version } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
+import { FrameContexts, minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { FramelessPostMocks } from '../framelessPostMocks';
@@ -27,6 +27,7 @@ describe('Testing pages module', () => {
     afterEach(() => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
+        utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
         app._uninitialize();
       }
     });
@@ -1295,6 +1296,7 @@ describe('Testing pages module', () => {
     afterEach(() => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
+        utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
         app._uninitialize();
       }
     });

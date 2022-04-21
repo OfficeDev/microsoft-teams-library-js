@@ -1,4 +1,3 @@
-import { util } from 'prettier';
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { app } from '../../src/public/app';
@@ -7,6 +6,7 @@ import {
   FrameContexts,
   HostClientType,
   HostName,
+  minRuntimeConfigToUninitialize,
   TeamType,
   UserTeamRole,
 } from '../../src/public/constants';
@@ -34,6 +34,7 @@ describe('AppSDK-app', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

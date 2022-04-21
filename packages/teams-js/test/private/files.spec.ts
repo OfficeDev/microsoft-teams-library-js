@@ -2,7 +2,7 @@ import { errorMonitor } from 'events';
 import { files } from '../../src/private/files';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import { FileOpenPreference } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
@@ -24,6 +24,7 @@ describe('files', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -299,7 +300,6 @@ describe('files', () => {
     it('getCloudStorageFolderContents should throw error when files capability is not supported', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
       await expect(
         files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
       ).rejects.toEqual(errorNotSupportedOnPlatform);
@@ -690,8 +690,8 @@ describe('files', () => {
     });
 
     // null file path value is interpreted as opening cofigured download preference folder
-    it('should send the message to parent correctly with file path as null', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly with file path as null', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn(err => {
         expect(err).toBeFalsy();
@@ -706,8 +706,8 @@ describe('files', () => {
     });
 
     // non-null file path value is interpreted as opening containing folder for the given file path
-    it('should send the message to parent correctly with non-null file path', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly with non-null file path', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn(err => {
         expect(err).toBeFalsy();

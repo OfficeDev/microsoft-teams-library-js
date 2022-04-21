@@ -1,6 +1,6 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
-import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
@@ -23,6 +23,7 @@ describe('chat', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

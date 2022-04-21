@@ -2,6 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
+import { minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -23,6 +24,8 @@ describe('calendar', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+
       app._uninitialize();
     }
   });
