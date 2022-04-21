@@ -26,7 +26,6 @@ import {
   validateViewImagesInput,
 } from '../internal/mediaUtil';
 import { generateGUID } from '../internal/utils';
-import { runtime } from '../public/runtime';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
@@ -726,8 +725,5 @@ export namespace media {
     }
 
     sendMessageToParent('media.scanBarCode', [config], callback);
-  }
-  export function isSupported(): boolean {
-    return runtime.supports.media ? true : false;
   }
 }

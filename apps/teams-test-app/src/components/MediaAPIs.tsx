@@ -219,13 +219,6 @@ const ViewImagesWithUrls = (): React.ReactElement =>
     },
   });
 
-const CheckMediaCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkMediaCapability',
-    title: 'Check Media Call',
-    onClick: async () => `Media module ${media.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const MediaAPIs = (): ReactElement => (
   <>
     <h1>media</h1>
@@ -235,7 +228,6 @@ const MediaAPIs = (): ReactElement => (
     <ViewImagesWithId />
     <ViewImagesWithUrls />
     <ScanBarCode />
-    <CheckMediaCapability />
   </>
 );
 
