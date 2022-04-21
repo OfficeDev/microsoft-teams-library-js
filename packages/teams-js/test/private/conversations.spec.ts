@@ -1,26 +1,11 @@
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts, minRuntimeConfigToUninitialize } from '../../src/public/constants';
 import { Utils } from '../utils';
 
 describe('conversations', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
-  const runtimeConfigMinToUninitialize = {
-    apiVersion: 1,
-    supports: {
-      chat: {},
-      pages: {
-        appButton: {},
-        tabs: {},
-        config: {},
-        backStack: {},
-        fullTrust: {},
-      },
-      teamsCore: {},
-      logs: {},
-    },
-  };
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -32,6 +17,8 @@ describe('conversations', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+
       app._uninitialize();
     }
   });
@@ -55,7 +42,7 @@ describe('conversations', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      utils.setRuntimeConfig(runtimeConfigMinToUninitialize);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(() => conversations.openConversation(conversationRequest)).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
@@ -127,7 +114,7 @@ describe('conversations', () => {
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       expect.assertions(1);
-      utils.setRuntimeConfig(runtimeConfigMinToUninitialize);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       try {
         conversations.closeConversation();
       } catch (e) {
@@ -150,7 +137,7 @@ describe('conversations', () => {
 
     it('getChatMembers should throw error if conversations capability is not supported in runtime config', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig(runtimeConfigMinToUninitialize);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = conversations.getChatMembers();
       await expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
