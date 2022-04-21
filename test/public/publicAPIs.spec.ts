@@ -957,7 +957,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
   describe('returnFocus', () => {
     it('should successfully returnFocus', () => {
-      utils.initializeWithContext('content');
+      utils.initializeWithContext(undefined);
 
       returnFocus(true);
 
@@ -966,6 +966,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       expect(returnFocusMessage.args.length).toBe(1);
       expect(returnFocusMessage.args[0]).toBe(true);
     });
+    
   });
 
   it('should successfully frame context', () => {

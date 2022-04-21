@@ -8,13 +8,13 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
-   * Data structure to represent a meeting details.
+   * Data structure to represent a meeting details
    */
-  export interface IMeetingDetails {
+  export interface IMeetingDetailsResponse {
     /**
      * details object
      */
-    details: IDetails;
+    details: IMeetingDetails | ICallDetails;
     /**
      * conversation object
      */
@@ -24,32 +24,50 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+
   /**
    * @private
    * Hide from docs
-   * Data structure to represent details.
+   * Base data structure to represent a meeting or call detail
    */
-  export interface IDetails {
+  export interface IMeetingOrCallDetailsBase<T> {
     /**
-     * Scheduled start time of the meeting
+     * Scheduled start time of the meeting or start time of the call
      */
     scheduledStartTime: string;
+
+    /**
+     * url to join the current meeting or call
+     */
+    joinUrl?: string;
+
+    /**
+     * type of the meeting or call
+     */
+    type?: T;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent call details
+   */
+  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent meeting details.
+   */
+  export interface IMeetingDetails extends IMeetingOrCallDetailsBase<MeetingType> {
     /**
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
     /**
-     * url to join the current meeting
-     */
-    joinUrl?: string;
-    /**
      * meeting title name of the meeting
      */
     title?: string;
-    /**
-     * type of the meeting
-     */
-    type?: MeetingType;
   }
 
   /**
@@ -127,6 +145,11 @@ export namespace meeting {
     MeetNow = 'MeetNow',
   }
 
+  export enum CallType {
+    OneOnOneCall = 'oneOnOneCall',
+    GroupCall = 'groupCall',
+  }
+
   /**
    * Allows an app to get the incoming audio speaker setting for the meeting user
    * @param callback Callback contains 2 parameters, error and result.
@@ -163,12 +186,12 @@ export namespace meeting {
    * @private
    * Hide from docs
    * Allows an app to get the meeting details for the meeting
-   * @param callback Callback contains 2 parameters, error and meetingDetails.
+   * @param callback Callback contains 2 parameters, error and meetingDetailsResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a IMeetingDetails value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetailsResponse value, incase of a successful get or null when the get fails
    */
   export function getMeetingDetails(
-    callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
+    callback: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
   ): void {
     if (!callback) {
       throw new Error('[get meeting details] Callback cannot be null');
