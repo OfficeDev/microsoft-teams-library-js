@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Adding isSupport check for files module",
+  "comment": "Adding isSupported check to meetingRoom capability",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
