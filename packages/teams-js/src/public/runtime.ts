@@ -17,7 +17,6 @@ export interface IRuntime {
       readonly bot?: {};
       readonly update?: {};
     };
-    readonly files?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -99,7 +98,6 @@ export const teamsRuntimeConfig: IRuntime = {
       bot: {},
       update: {},
     },
-    files: {},
     logs: {},
     media: {},
     meetingRoom: {},
