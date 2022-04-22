@@ -21,7 +21,6 @@ export interface IRuntime {
     readonly logs?: {};
     readonly mail?: {};
     readonly media?: {};
-    readonly meeting?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
     readonly monetization?: {};
@@ -62,7 +61,6 @@ export let runtime: IRuntime = {
     logs: undefined,
     mail: undefined,
     media: undefined,
-    meeting: undefined,
     meetingRoom: undefined,
     menus: undefined,
     monetization: undefined,
@@ -102,7 +100,6 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     logs: {},
     media: {},
-    meeting: {},
     meetingRoom: {},
     menus: {},
     monetization: {},
