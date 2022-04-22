@@ -53,25 +53,27 @@ export namespace meeting {
     scheduledStartTime: string;
 
     /**
+     * @hidden
      * url to join the current meeting or call
      */
     joinUrl?: string;
 
     /**
+     * @hidden
      * type of the meeting or call
      */
     type?: T;
   }
 
   /**
-   * @private
+   * @hidden
    * Hide from docs
    * Data structure to represent call details
    */
   export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
 
   /**
-   * @private
+   * @hidden
    * Hide from docs
    * Data structure to represent meeting details.
    */
