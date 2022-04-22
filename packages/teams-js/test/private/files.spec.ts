@@ -14,7 +14,6 @@ import { MessageRequest, MessageResponse, Utils } from '../utils';
 import { FileOpenPreference } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { Utils } from '../utils';
 
 describe('AppSDK-privateAPIs', () => {
   const utils = new Utils();

@@ -39,6 +39,6 @@ export namespace logs {
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.log ? true : false;
+    return runtime.supports.logs ? true : false;
   }
 }

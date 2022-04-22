@@ -20,6 +20,7 @@ export interface IRuntime {
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
+    readonly media?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
     readonly monetization?: {};
@@ -59,6 +60,7 @@ export let runtime: IRuntime = {
     location: undefined,
     logs: undefined,
     mail: undefined,
+    media: undefined,
     meetingRoom: undefined,
     menus: undefined,
     monetization: undefined,
