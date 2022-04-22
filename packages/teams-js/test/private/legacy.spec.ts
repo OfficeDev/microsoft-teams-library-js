@@ -1,7 +1,8 @@
 import { app } from '../../src/public';
 import { Utils } from '../utils';
 import { legacy, TeamInstanceParameters } from '../../src/private';
-import { errorNotSupportedOnPlatform, minRuntimeConfigToUninitialize } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 
 describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -21,7 +22,7 @@ describe('AppSDK-privateAPIs', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

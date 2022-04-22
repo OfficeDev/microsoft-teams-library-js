@@ -82,18 +82,3 @@ export enum ChannelType {
 }
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-
-export const minRuntimeConfigToUninitialize = {
-  apiVersion: 1,
-  supports: {
-    pages: {
-      appButton: {},
-      tabs: {},
-      config: {},
-      backStack: {},
-      fullTrust: {},
-    },
-    teamsCore: {},
-    log: {},
-  },
-};

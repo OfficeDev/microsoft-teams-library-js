@@ -1,7 +1,8 @@
 import { NotificationTypes, ShowNotificationParameters } from '../../src/private/interfaces';
 import { notifications } from '../../src/private/notifications';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform, FrameContexts, minRuntimeConfigToUninitialize } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 const allowedContexts = [FrameContexts.content];
@@ -17,7 +18,7 @@ describe('notifications', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

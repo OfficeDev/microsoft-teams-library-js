@@ -1,6 +1,6 @@
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
-import { minRuntimeConfigToUninitialize } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('appInstallDialog', () => {
@@ -18,7 +18,7 @@ describe('appInstallDialog', () => {
 
   afterEach(() => {
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

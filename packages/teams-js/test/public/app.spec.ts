@@ -6,12 +6,11 @@ import {
   FrameContexts,
   HostClientType,
   HostName,
-  minRuntimeConfigToUninitialize,
   TeamType,
   UserTeamRole,
 } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {
@@ -34,7 +33,7 @@ describe('AppSDK-app', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

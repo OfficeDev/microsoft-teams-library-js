@@ -1,9 +1,9 @@
-import { errorMonitor } from 'events';
 import { files } from '../../src/private/files';
 import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform, minRuntimeConfigToUninitialize } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { FileOpenPreference } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('files', () => {
@@ -24,7 +24,7 @@ describe('files', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

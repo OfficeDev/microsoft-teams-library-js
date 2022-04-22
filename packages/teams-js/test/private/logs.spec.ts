@@ -2,7 +2,8 @@ import { logs } from '../../src/private/logs';
 import { Utils } from '../utils';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public';
-import { minRuntimeConfigToUninitialize, errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 
 describe('logs', () => {
   // Use to send a mock message from the app.
@@ -17,7 +18,7 @@ describe('logs', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(minRuntimeConfigToUninitialize);
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
