@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "Adding isSupported check to sharing capability and unit test case",
-  "packageName": "@microsoft/teams-js",
-  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
