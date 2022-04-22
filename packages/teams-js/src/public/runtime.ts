@@ -100,7 +100,7 @@ export const teamsRuntimeConfig: IRuntime = {
       bot: {},
       update: {},
     },
-    files: {},
+    // files: {},
     log: {},
     media: {},
     meeting: {},
