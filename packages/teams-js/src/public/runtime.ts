@@ -17,7 +17,6 @@ export interface IRuntime {
       readonly bot?: {};
       readonly update?: {};
     };
-    readonly files?: {};
     readonly location?: {};
     readonly log?: {};
     readonly mail?: {};
