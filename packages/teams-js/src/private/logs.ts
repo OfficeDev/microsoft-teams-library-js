@@ -13,7 +13,7 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  */
-export namespace log {
+export namespace logs {
   /**
    * @hidden
    * Hide from docs

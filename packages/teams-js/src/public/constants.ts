@@ -94,6 +94,6 @@ export const minRuntimeConfigToUninitialize = {
       fullTrust: {},
     },
     teamsCore: {},
-    logs: {},
+    log: {},
   },
 };
