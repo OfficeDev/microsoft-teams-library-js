@@ -91,7 +91,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([tasks.getBotUrlDialogInfoFromTaskInfo(taskInfo)]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
         it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
@@ -111,7 +111,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([tasks.getUrlDialogInfoFromTaskInfo(taskInfo)]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
         it(`should Provide default Size if taskInfo doesn't have length or width. ${context} context`, async () => {

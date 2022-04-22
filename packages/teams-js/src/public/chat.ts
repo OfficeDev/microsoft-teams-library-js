@@ -1,5 +1,5 @@
-import { createTeamsDeepLinkForChat } from '../internal/chatUtilities';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -66,7 +66,7 @@ export namespace chat {
     return new Promise<void>(resolve => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
-        throw new Error(errorNotSupportedOnPlatform);
+        throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
         resolve(
@@ -107,7 +107,7 @@ export namespace chat {
       } else {
         ensureInitialized(FrameContexts.content);
         if (!isSupported()) {
-          throw new Error(errorNotSupportedOnPlatform);
+          throw errorNotSupportedOnPlatform;
         }
         if (runtime.isLegacyTeams) {
           resolve(

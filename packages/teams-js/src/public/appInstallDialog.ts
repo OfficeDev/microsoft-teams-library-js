@@ -1,4 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -24,8 +26,17 @@ export namespace appInstallDialog {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-      sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
-      resolve();
+      if (runtime.isLegacyTeams) {
+        resolve(
+          sendAndHandleError(
+            'executeDeepLink',
+            createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
+          ),
+        );
+      } else {
+        sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+        resolve();
+      }
     });
   }
 
