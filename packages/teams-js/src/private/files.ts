@@ -3,9 +3,6 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FileOpenPreference, FrameContexts, SdkError } from '../public';
 
 /**
- * @deprecated
- * As of 2.0.0-beta.6, use files namespace only for backwards compatibility of existing code.
- *
  * @hidden
  * Hide from docs
  * ------
