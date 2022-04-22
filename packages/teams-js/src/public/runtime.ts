@@ -19,7 +19,7 @@ export interface IRuntime {
     };
     readonly files?: {};
     readonly location?: {};
-    readonly logs?: {};
+    readonly log?: {};
     readonly mail?: {};
     readonly media?: {};
     readonly meeting?: {};
@@ -60,7 +60,7 @@ export let runtime: IRuntime = {
       update: undefined,
     },
     location: undefined,
-    logs: undefined,
+    log: undefined,
     mail: undefined,
     media: undefined,
     meeting: undefined,
@@ -102,7 +102,7 @@ export const teamsRuntimeConfig: IRuntime = {
       update: {},
     },
     files: {},
-    logs: {},
+    log: {},
     media: {},
     meeting: {},
     meetingRoom: {},

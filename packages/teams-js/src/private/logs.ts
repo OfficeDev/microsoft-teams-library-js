@@ -13,7 +13,7 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  */
-export namespace logs {
+export namespace log {
   /**
    * @hidden
    * Hide from docs
@@ -39,6 +39,6 @@ export namespace logs {
   }
 
   export function isSupported(): boolean {
-    return runtime.supports.logs ? true : false;
+    return runtime.supports.log ? true : false;
   }
 }

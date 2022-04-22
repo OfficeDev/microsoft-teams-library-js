@@ -15,7 +15,7 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
-import { logs } from '../private/logs';
+import { log } from '../private/logs';
 import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
@@ -563,7 +563,7 @@ export namespace app {
       pages.registerFullScreenHandler(null);
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null);
+      log.registerGetLogHandler(null);
     }
 
     if (GlobalVars.frameContext === FrameContexts.settings) {
