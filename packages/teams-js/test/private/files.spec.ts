@@ -1,6 +1,7 @@
 import { files } from '../../src/private/files';
 import { FileOpenPreference } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('files', () => {
@@ -23,6 +24,7 @@ describe('files', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (_uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       _uninitialize();
     }
   });
