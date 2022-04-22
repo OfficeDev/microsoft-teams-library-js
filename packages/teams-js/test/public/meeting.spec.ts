@@ -175,7 +175,7 @@ describe('meeting', () => {
 
           const getMeetingDetailsMessage = framelessPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
           const callbackId = getMeetingDetailsMessage.id;
-          const details: meeting.IDetails = {
+          const details: meeting.IMeetingDetails = {
             scheduledStartTime: '2020-12-21T21:30:00+00:00',
             scheduledEndTime: '2020-12-21T22:00:00+00:00',
             joinUrl:
@@ -190,7 +190,7 @@ describe('meeting', () => {
           const conversation: meeting.IConversation = {
             id: 'convId',
           };
-          const meetingDetails: meeting.IMeetingDetails = {
+          const meetingDetails: meeting.IMeetingDetailsResponse = {
             details,
             conversation,
             organizer,

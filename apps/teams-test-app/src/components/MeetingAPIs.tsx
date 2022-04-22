@@ -58,7 +58,7 @@ const GetMeetingDetails = (): React.ReactElement =>
         return JSON.stringify(result);
       },
       withCallback: setResult => {
-        const callback = (error: SdkError | null, meetingDetails: meeting.IMeetingDetails | null): void => {
+        const callback = (error: SdkError | null, meetingDetails: meeting.IMeetingDetailsResponse | null): void => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {

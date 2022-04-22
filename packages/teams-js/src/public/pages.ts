@@ -24,7 +24,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized();
 
     sendMessageToParent('returnFocus', [navigateForward]);
   }

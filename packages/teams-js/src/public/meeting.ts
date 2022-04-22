@@ -16,16 +16,16 @@ export namespace meeting {
   /**
    * @hidden
    * Hide from docs
-   * Data structure to represent a meeting details.
+   * Data structure to represent a meeting details
    *
    * @internal
    */
-  export interface IMeetingDetails {
+  export interface IMeetingDetailsResponse {
     /**
      * @hidden
      * details object
      */
-    details: IDetails;
+    details: IMeetingDetails | ICallDetails;
     /**
      * @hidden
      * conversation object
@@ -37,19 +37,45 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+
   /**
    * @hidden
    * Hide from docs
-   * Data structure to represent details.
+   * Base data structure to represent a meeting or call detail
    *
    * @internal
    */
-  export interface IDetails {
+  export interface IMeetingOrCallDetailsBase<T> {
     /**
      * @hidden
-     * Scheduled start time of the meeting
+     * Scheduled start time of the meeting or start time of the call
      */
     scheduledStartTime: string;
+
+    /**
+     * url to join the current meeting or call
+     */
+    joinUrl?: string;
+
+    /**
+     * type of the meeting or call
+     */
+    type?: T;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent call details
+   */
+  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent meeting details.
+   */
+  export interface IMeetingDetails extends IMeetingOrCallDetailsBase<MeetingType> {
     /**
      * @hidden
      * Scheduled end time of the meeting
@@ -57,19 +83,9 @@ export namespace meeting {
     scheduledEndTime: string;
     /**
      * @hidden
-     * url to join the current meeting
-     */
-    joinUrl?: string;
-    /**
-     * @hidden
      * meeting title name of the meeting
      */
     title?: string;
-    /**
-     * @hidden
-     * type of the meeting
-     */
-    type?: MeetingType;
   }
 
   /**
@@ -153,6 +169,11 @@ export namespace meeting {
     Recurring = 'Recurring',
     Broadcast = 'Broadcast',
     MeetNow = 'MeetNow',
+  }
+
+  export enum CallType {
+    OneOnOneCall = 'oneOnOneCall',
+    GroupCall = 'groupCall',
   }
 
   /**
@@ -239,7 +260,7 @@ export namespace meeting {
    *
    * @internal
    */
-  export function getMeetingDetails(): Promise<IMeetingDetails>;
+  export function getMeetingDetails(): Promise<IMeetingDetailsResponse>;
   /**
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link meeting.getMeetingDetails meeting.getMeetingDetails(): Promise\<IMeetingDetails\>} instead.
@@ -249,32 +270,32 @@ export namespace meeting {
    *
    * Allows an app to get the meeting details for the meeting
    *
-   * @param callback - Callback contains 2 parameters, error and meetingDetails.
+   * @param callback - Callback contains 2 parameters, error and meetingDetailsResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a IMeetingDetails value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetailsResponse value, in case of a successful get or null when the get fails
    *
    * @internal
    */
   export function getMeetingDetails(
-    callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
+    callback: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
   ): void;
   export function getMeetingDetails(
-    callback?: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
-  ): Promise<IMeetingDetails> {
+    callback?: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
+  ): Promise<IMeetingDetailsResponse> {
     ensureInitialized(
       FrameContexts.sidePanel,
       FrameContexts.meetingStage,
       FrameContexts.settings,
       FrameContexts.content,
     );
-    return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IMeetingDetails>(
+    return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<IMeetingDetailsResponse>(
       getMeetingDetailsHelper,
       callback,
     );
   }
 
-  function getMeetingDetailsHelper(): Promise<IMeetingDetails> {
-    return new Promise<IMeetingDetails>(resolve => {
+  function getMeetingDetailsHelper(): Promise<IMeetingDetailsResponse> {
+    return new Promise<IMeetingDetailsResponse>(resolve => {
       resolve(sendAndHandleSdkError('meeting.getMeetingDetails'));
     });
   }

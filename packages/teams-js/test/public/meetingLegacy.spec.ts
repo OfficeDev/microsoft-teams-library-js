@@ -135,7 +135,7 @@ describe('meeting_V1', () => {
 
     it('should successfully get the meeting details', done => {
       desktopPlatformMock.initializeWithContext('content').then(() => {
-        meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
+        meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetailsResponse) => {
           expect(error).toBeNull();
           expect(meetingDetails).toStrictEqual(meetingDetails);
           done();
@@ -144,7 +144,7 @@ describe('meeting_V1', () => {
         const getMeetingDetailsMessage = desktopPlatformMock.findMessageByFunc('meeting.getMeetingDetails');
         expect(getMeetingDetailsMessage).not.toBeNull();
         const callbackId = getMeetingDetailsMessage.id;
-        const details: meeting.IDetails = {
+        const details: meeting.IMeetingDetails = {
           scheduledStartTime: '2020-12-21T21:30:00+00:00',
           scheduledEndTime: '2020-12-21T22:00:00+00:00',
           joinUrl:
@@ -157,9 +157,9 @@ describe('meeting_V1', () => {
           tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
         };
         const conversation: meeting.IConversation = {
-          id: `convId`,
+          id: 'convId',
         };
-        const meetingDetails: meeting.IMeetingDetails = {
+        const meetingDetails: meeting.IMeetingDetailsResponse = {
           details,
           conversation,
           organizer,
@@ -175,7 +175,7 @@ describe('meeting_V1', () => {
 
     it('should return error code 500', done => {
       desktopPlatformMock.initializeWithContext('meetingStage').then(() => {
-        meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetails) => {
+        meeting.getMeetingDetails((error: SdkError, meetingDetails: meeting.IMeetingDetailsResponse) => {
           expect(error).not.toBeNull();
           expect(error).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
           expect(meetingDetails).toBe(null);
