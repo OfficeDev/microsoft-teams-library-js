@@ -78,7 +78,7 @@ export function exitFullscreen(): void {
  * @param file The file to preview.
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(FrameContexts.content);
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
 
   const params = [
     filePreviewParameters.entityId,
