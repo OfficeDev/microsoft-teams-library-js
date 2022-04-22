@@ -1,14 +1,13 @@
-import { errorMonitor } from 'events';
 import { files } from '../../src/private/files';
-import { ViewerActionTypes } from '../../src/private/interfaces';
-import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { FileOpenPreference } from '../../src/public/interfaces';
+import { FileOpenPreference } from '../../src/public';
+import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
 
 describe('files', () => {
   const utils = new Utils();
-  const emptyCallback = () => {};
+  const emptyCallback = (): void => {
+    return;
+  };
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -18,59 +17,43 @@ describe('files', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    app._initialize(utils.mockWindow);
+    _initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (app._uninitialize) {
-      app._uninitialize();
+    if (_uninitialize) {
+      _uninitialize();
     }
   });
 
   describe('getCloudStorageFolders', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
+      await expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
-    it('getCloudStorageFolders should throw error when files capability is not supported', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(files.getCloudStorageFolders('channelId')).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(files.getCloudStorageFolders('channelId')).rejects.toThrowError(
+      expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.getCloudStorageFolders(null)).rejects.toThrowError(
+      expect(() => files.getCloudStorageFolders(null, emptyCallback)).toThrowError(
         '[files.getCloudStorageFolders] channelId name cannot be null or empty',
       );
     });
 
-    it('should not allow calls with undefined channelId', async () => {
+    it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.getCloudStorageFolders(undefined)).rejects.toThrowError(
-        '[files.getCloudStorageFolders] channelId name cannot be null or empty',
-      );
+      expect(() => files.getCloudStorageFolders('channelId', null)).toThrowError();
     });
 
-    it('should not allow calls with empty channelId', async () => {
-      await utils.initializeWithContext('content');
-      await expect(files.getCloudStorageFolders('')).rejects.toThrowError(
-        '[files.getCloudStorageFolders] channelId name cannot be null or empty',
-      );
-    });
-
-    it('should resolve promise correctly', async () => {
+    it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
       const mockCloudStorageFolders: files.CloudStorageFolder[] = [
         {
@@ -83,51 +66,45 @@ describe('files', () => {
         },
       ];
 
-      const promise = files.getCloudStorageFolders('channelId');
+      const callback = jest.fn((err, folders) => {
+        expect(err).toBeFalsy();
+        expect(folders).toEqual(mockCloudStorageFolders);
+      });
+
+      files.getCloudStorageFolders('channelId', callback);
 
       const getCloudStorageFoldersMessage = utils.findMessageByFunc('files.getCloudStorageFolders');
       expect(getCloudStorageFoldersMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFoldersMessage, false, mockCloudStorageFolders);
-      await expect(promise).resolves.toEqual(mockCloudStorageFolders);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
   describe('addCloudStorageFolder', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError(
+      await expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls without frame context initialization', async () => {
-      await utils.initializeWithContext('settings');
-      await expect(files.addCloudStorageFolder('channelId')).rejects.toThrowError(
+      await await utils.initializeWithContext('settings');
+      expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.addCloudStorageFolder(null)).rejects.toThrowError(
-        '[files.addCloudStorageFolder] channelId name cannot be null or empty',
-      );
+      expect(() => files.addCloudStorageFolder(null, emptyCallback)).toThrowError();
     });
 
-    it('should not allow calls with empty channelId', async () => {
+    it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.addCloudStorageFolder('')).rejects.toThrowError(
-        '[files.addCloudStorageFolder] channelId name cannot be null or empty',
-      );
+      expect(() => files.addCloudStorageFolder('channelId', null)).toThrowError();
     });
 
-    it('addCloudStorageFolder should throw error when files capability is not supported', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(files.addCloudStorageFolder('channelId')).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
-    it('should resolve promise correctly', async () => {
+    it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
       const mockCloudStorageFolders: files.CloudStorageFolder[] = [
         {
@@ -140,15 +117,18 @@ describe('files', () => {
         },
       ];
 
-      const promise = files.addCloudStorageFolder('channelId');
+      const callback = jest.fn((err, isFolderAdded, folders) => {
+        expect(err).toBeFalsy();
+        expect(isFolderAdded).toEqual(true);
+        expect(folders).toEqual(mockCloudStorageFolders);
+      });
+
+      files.addCloudStorageFolder('channelId', callback);
 
       const addCloudStorageFolderMessage = utils.findMessageByFunc('files.addCloudStorageFolder');
       expect(addCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(addCloudStorageFolderMessage, false, true, mockCloudStorageFolders);
-
-      const [isFolderAdded, folders] = await promise;
-      expect(isFolderAdded).toBe(true);
-      expect(folders).toEqual(mockCloudStorageFolders);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -163,57 +143,47 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', async () => {
-      await expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
+      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toThrowError(
+      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
 
     it('should not allow calls with null channelId', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.deleteCloudStorageFolder(null, mockCloudStorageFolder)).rejects.toThrowError(
-        '[files.deleteCloudStorageFolder] channelId name cannot be null or empty',
-      );
-    });
-
-    it('should not allow calls with empty channelId', async () => {
-      await utils.initializeWithContext('content');
-      await expect(files.deleteCloudStorageFolder('', mockCloudStorageFolder)).rejects.toThrowError(
-        '[files.deleteCloudStorageFolder] channelId name cannot be null or empty',
-      );
+      expect(() => files.deleteCloudStorageFolder(null, mockCloudStorageFolder, emptyCallback)).toThrowError();
     });
 
     it('should not allow calls with null folderToDelete', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.deleteCloudStorageFolder('channelId', null)).rejects.toThrowError(
-        '[files.deleteCloudStorageFolder] folderToDelete cannot be null or empty',
-      );
+      expect(() => files.deleteCloudStorageFolder('channelId', null, emptyCallback)).toThrowError();
     });
 
-    it('should resolve promise correctly', async () => {
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, null)).toThrowError();
+    });
+
+    it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder);
+      const callback = jest.fn((err, isFolderDeleted) => {
+        expect(err).toBeFalsy();
+        expect(isFolderDeleted).toEqual(true);
+      });
+
+      files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, callback);
 
       const deleteCloudStorageFolderMessage = utils.findMessageByFunc('files.deleteCloudStorageFolder');
       expect(deleteCloudStorageFolderMessage).not.toBeNull();
       utils.respondToMessage(deleteCloudStorageFolderMessage, false, true);
-      await expect(promise).resolves.toBe(true);
-    });
-
-    it('deleteCloudStorageFolder should throw error when files capability is not supported', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder)).rejects.toEqual(
-        errorNotSupportedOnPlatform,
-      );
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -249,64 +219,68 @@ describe('files', () => {
     ];
 
     it('should not allow calls before initialization', async () => {
-      await expect(
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
-      ).rejects.toThrowError('The library has not yet been initialized');
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
-      ).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
-      );
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError('This call is only allowed in following contexts: ["content"]. Current context: "settings".');
     });
 
     it('should not allow calls with null folder', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box)).rejects.toThrowError(
-        '[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty',
-      );
+      expect(() =>
+        files.getCloudStorageFolderContents(null, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError();
     });
 
     it('should not allow calls for a file item', async () => {
       await utils.initializeWithContext('content');
       const mockFileItem = mockCloudStorageFolderItems[0];
-      await expect(
-        files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box),
-      ).rejects.toThrowError('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
+      expect(() =>
+        files.getCloudStorageFolderContents(mockFileItem, files.CloudStorageProvider.Box, emptyCallback),
+      ).toThrowError();
     });
 
     it('should not allow calls without providerCode', async () => {
       await utils.initializeWithContext('content');
-      await expect(files.getCloudStorageFolderContents(mockCloudStorageFolder, null)).rejects.toThrowError(
-        '[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty',
-      );
+      expect(() => files.getCloudStorageFolderContents(mockCloudStorageFolder, null, emptyCallback)).toThrowError();
     });
 
-    it('should resolve promise correctly for cloud storage folder', async () => {
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, null),
+      ).toThrowError();
+    });
+
+    it('should trigger callback correctly for cloud storage folder', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box);
+      const callback = jest.fn((err, contents) => {
+        expect(err).toBeFalsy();
+        expect(contents).toEqual(mockCloudStorageFolderItems);
+      });
+
+      files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, callback);
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
-      await expect(promise).resolves.toEqual(mockCloudStorageFolderItems);
+      expect(callback).toHaveBeenCalled();
     });
 
-    it('getCloudStorageFolderContents should throw error when files capability is not supported', async () => {
+    it('should trigger callback correctly for cloud storage item', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      await expect(
-        files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box),
-      ).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
-    it('should resolve promise correctly for cloud storage item', async () => {
-      await utils.initializeWithContext('content');
+      const callback = jest.fn((err, isFolderDeleted) => {
+        expect(err).toBeFalsy();
+        expect(isFolderDeleted).toEqual(mockCloudStorageFolderItems);
+      });
 
       const mockCloudStorageFolderItem: files.CloudStorageFolderItem = {
         id: 'test1',
@@ -317,12 +291,12 @@ describe('files', () => {
         objectUrl: 'https://api.com/test',
         lastModifiedTime: '2021-04-14T15:08:35Z',
       };
-      const promise = files.getCloudStorageFolderContents(mockCloudStorageFolderItem, files.CloudStorageProvider.Box);
+      files.getCloudStorageFolderContents(mockCloudStorageFolderItem, files.CloudStorageProvider.Box, callback);
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
       utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
-      await expect(promise).resolves.toEqual(mockCloudStorageFolderItems);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -352,16 +326,12 @@ describe('files', () => {
 
     it('should not allow calls without file', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.openCloudStorageFile(null, files.CloudStorageProvider.Box)).toThrowError(
-        '[files.openCloudStorageFile] file/providerCode cannot be null or empty',
-      );
+      expect(() => files.openCloudStorageFile(null, files.CloudStorageProvider.Box)).toThrowError();
     });
 
     it('should not allow calls without providerCode', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.openCloudStorageFile(mockCloudStorageFolderItem, null)).toThrowError(
-        '[files.openCloudStorageFile] file/providerCode cannot be null or empty',
-      );
+      expect(() => files.openCloudStorageFile(mockCloudStorageFolderItem, null)).toThrowError();
     });
 
     it('should not allow calls for folder items', async () => {
@@ -376,9 +346,9 @@ describe('files', () => {
         lastModifiedTime: '2021-04-14T15:08:35Z',
       };
 
-      expect(() => files.openCloudStorageFile(mockFolderCloudStorageItem, files.CloudStorageProvider.Box)).toThrowError(
-        '[files.openCloudStorageFile] provided file is a subDirectory',
-      );
+      expect(() =>
+        files.openCloudStorageFile(mockFolderCloudStorageItem, files.CloudStorageProvider.Box),
+      ).toThrowError();
     });
 
     it('should send the message to parent if file is provided correctly', async () => {
@@ -394,98 +364,10 @@ describe('files', () => {
         FileOpenPreference.Inline,
       ]);
     });
-
-    it('openCloudStorageFile should throw error when files capability is not supported', async () => {
-      expect.assertions(1);
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      try {
-        files.openCloudStorageFile(
-          mockCloudStorageFolderItem,
-          files.CloudStorageProvider.Box,
-          FileOpenPreference.Inline,
-        );
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
-    });
-  });
-  describe('openFilePreview', () => {
-    it('openFilePreview should throw error when files capability is not supported', async () => {
-      expect.assertions(1);
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      try {
-        files.openFilePreview({
-          entityId: 'someEntityId',
-          title: 'someTitle',
-          description: 'someDescription',
-          type: 'someType',
-          objectUrl: 'someObjectUrl',
-          downloadUrl: 'someDownloadUrl',
-          webPreviewUrl: 'someWebPreviewUrl',
-          webEditUrl: 'someWebEditUrl',
-          baseUrl: 'someBaseUrl',
-          editFile: true,
-          subEntityId: 'someSubEntityId',
-          viewerAction: ViewerActionTypes.view,
-          fileOpenPreference: FileOpenPreference.Web,
-          conversationId: 'someConversationId',
-        });
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
-    });
-    it('should successfully open a file preview', async () => {
-      await utils.initializeWithContext('content');
-
-      files.openFilePreview({
-        entityId: 'someEntityId',
-        title: 'someTitle',
-        description: 'someDescription',
-        type: 'someType',
-        objectUrl: 'someObjectUrl',
-        downloadUrl: 'someDownloadUrl',
-        webPreviewUrl: 'someWebPreviewUrl',
-        webEditUrl: 'someWebEditUrl',
-        baseUrl: 'someBaseUrl',
-        editFile: true,
-        subEntityId: 'someSubEntityId',
-        viewerAction: ViewerActionTypes.view,
-        fileOpenPreference: FileOpenPreference.Web,
-        conversationId: 'someConversationId',
-      });
-
-      const message = utils.findMessageByFunc('openFilePreview');
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(14);
-      expect(message.args[0]).toBe('someEntityId');
-      expect(message.args[1]).toBe('someTitle');
-      expect(message.args[2]).toBe('someDescription');
-      expect(message.args[3]).toBe('someType');
-      expect(message.args[4]).toBe('someObjectUrl');
-      expect(message.args[5]).toBe('someDownloadUrl');
-      expect(message.args[6]).toBe('someWebPreviewUrl');
-      expect(message.args[7]).toBe('someWebEditUrl');
-      expect(message.args[8]).toBe('someBaseUrl');
-      expect(message.args[9]).toBe(true);
-      expect(message.args[10]).toBe('someSubEntityId');
-      expect(message.args[11]).toBe('view');
-      expect(message.args[12]).toBe(FileOpenPreference.Web);
-      expect(message.args[13]).toBe('someConversationId');
-    });
   });
 
   describe('getExternalProviders', () => {
-    it('getExternalProviders should throw error when files capability is not supported', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(files.getExternalProviders(false)).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-    it('should resolve promise correctly for getExternalProviders', async () => {
+    it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
       const mockExternalProviders: files.IExternalProvider[] = [
         {
@@ -502,12 +384,17 @@ describe('files', () => {
         },
       ];
 
-      const promise = files.getExternalProviders(false);
+      const callback = jest.fn((err, providers) => {
+        expect(err).toBeFalsy();
+        expect(providers).toEqual(mockExternalProviders);
+      });
+
+      files.getExternalProviders(false, callback);
 
       const getExternalProviders = utils.findMessageByFunc('files.getExternalProviders');
       expect(getExternalProviders).not.toBeNull();
       utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
-      await expect(promise).resolves.toEqual(mockExternalProviders);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -537,36 +424,38 @@ describe('files', () => {
     const mockProviderCode = files.CloudStorageProvider.Dropbox;
     const destinationProviderCode = files.CloudStorageProvider.GoogleDrive;
 
-    it('should not allow calls before initialization', async () => {
-      await expect(() =>
-        files.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false),
-      ).rejects.toThrowError('The library has not yet been initialized');
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        files.copyMoveFiles(
+          mockSelectedFiles,
+          mockProviderCode,
+          mockDestinationFolder,
+          destinationProviderCode,
+          false,
+          emptyCallback,
+        ),
+      ).toThrowError('The library has not yet been initialized');
     });
 
-    it('copyMoveFiles should throw error when files capability is not supported', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(
-        files.copyMoveFiles(mockSelectedFiles, mockProviderCode, mockDestinationFolder, destinationProviderCode, false),
-      ).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
-    it('should resolve promise correctly for copyMoveFiles', async () => {
+    it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = files.copyMoveFiles(
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.copyMoveFiles(
         mockSelectedFiles,
         mockProviderCode,
         mockDestinationFolder,
         destinationProviderCode,
         false,
+        callback,
       );
-
       const copyMoveFilesMessage = utils.findMessageByFunc('files.copyMoveFiles');
       expect(copyMoveFilesMessage).not.toBeNull();
       utils.respondToMessage(copyMoveFilesMessage, false);
-      await expect(promise).resolves.toEqual(undefined);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -574,88 +463,40 @@ describe('files', () => {
     it('should not allow calls before initialization', () => {
       expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
     });
-    it('getFileDownloads should throw error when files capability is not supported', async () => {
-      expect.assertions(1);
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      try {
-        files.getFileDownloads(emptyCallback);
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
+      expect(() => files.getFileDownloads(null)).toThrowError();
     });
-    describe('v1', () => {
-      it('should not allow calls without frame context initialization', async () => {
-        await utils.initializeWithContext('settings');
-        expect(() => files.getFileDownloads(emptyCallback)).toThrowError(
-          'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
-        );
+
+    it('should trigger callback correctly', async () => {
+      await utils.initializeWithContext('content');
+      const mockFileDownloads: files.IFileItem[] = [
+        {
+          timestamp: new Date(),
+          title: 'title',
+          extension: 'docx',
+        },
+      ];
+
+      const callback = jest.fn((err, fileList) => {
+        expect(err).toBeFalsy();
+        expect(fileList).toEqual(mockFileDownloads);
       });
 
-      it('should trigger callback correctly', async () => {
-        expect.assertions(3);
+      files.getFileDownloads(callback);
 
-        await utils.initializeWithContext('content');
-
-        const mockFileDownloads: files.IFileItem[] = [
-          {
-            timestamp: new Date(),
-            title: 'title',
-            extension: 'docx',
-          },
-        ];
-
-        const callback = jest.fn((err, fileList) => {
-          expect(err).toBeFalsy();
-          expect(fileList).toEqual(mockFileDownloads);
-        });
-
-        files.getFileDownloads(callback);
-
-        const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
-
-        expect(getFileDownloadsMessage).not.toBeNull();
-
-        utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
-      });
-    });
-    describe('v2', () => {
-      it('should not allow calls without frame context initialization', async () => {
-        await utils.initializeWithContext('settings');
-        expect(() => files.getFileDownloads()).toThrowError(
-          'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
-        );
-      });
-
-      it('getFileDownloadsV2 should throw error when files capability is not supported', async () => {
-        await utils.initializeWithContext('content');
-        expect.assertions(1);
-        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-        try {
-          files.getFileDownloads();
-        } catch (e) {
-          expect(e).toEqual(errorNotSupportedOnPlatform);
-        }
-      });
-
-      it('should send the message to parent correctly', async () => {
-        await utils.initializeWithContext('content');
-
-        const mockFileDownloads: files.IFileItem[] = [
-          {
-            timestamp: new Date(),
-            title: 'title',
-            extension: 'docx',
-          },
-        ];
-        const promise = files.getFileDownloads();
-
-        const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
-
-        expect(getFileDownloadsMessage).not.toBeNull();
-        utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
-        await expect(promise).resolves.not.toThrowError();
-      });
+      const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
+      expect(getFileDownloadsMessage).not.toBeNull();
+      utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -666,19 +507,8 @@ describe('files', () => {
       );
     });
 
-    it('openDownloadFolder should throw error when files capability is not supported', async () => {
+    it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect.assertions(1);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      try {
-        files.openDownloadFolder(null, emptyCallback);
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
-    });
-
-    it('should not allow calls with empty callback', () => {
-      utils.initializeWithContext('content');
       expect(() => files.openDownloadFolder(null, null)).toThrowError();
     });
 
