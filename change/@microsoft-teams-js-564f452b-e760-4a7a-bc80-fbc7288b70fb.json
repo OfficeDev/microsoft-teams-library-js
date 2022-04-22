@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "meeting.getMeetingDetails() now returns Promise<IMeetingDetailsResponse> rather than Promise<IMeetingDetails>",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
