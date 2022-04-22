@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Initial commit to reset runtimeConfig to minimum for isSupported work",
+  "comment": "Initial commit to reset runtimeConfig to minimum for isSupported work and adding isSupported check to logs capability",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
