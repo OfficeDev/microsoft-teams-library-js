@@ -207,3 +207,27 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
   runtime = deepFreeze(runtimeConfig);
 }
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ * Constant used to set minimum runtime configuration
+ * while un-initializing an app in unit test case.
+ *
+ * @internal
+ */
+export const _minRuntimeConfigToUninitialize = {
+  apiVersion: 1,
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
