@@ -31,6 +31,7 @@ import { ErrorCode, SdkError } from './interfaces';
 
 /**
  * @deprecated
+ * As of 2.0.0-beta.6, use media only for backwards compatibility of existing code.
  */
 export namespace media {
   /**
@@ -74,6 +75,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * Launch camera, capture image or choose image from gallery and return the images as a File[] object to the callback.
    *
    * @params callback - Callback will be called with an @see SdkError if there are any.
@@ -584,6 +588,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * Select an attachment using camera/gallery
    *
    * @param mediaInputs - The input params to customize the media to be selected
@@ -647,6 +654,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * View images using native image viewer
    * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
    * @param callback - returns back error if encountered, returns null in case of success
@@ -685,6 +695,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * Scan Barcode/QRcode using camera
    * @remarks
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
