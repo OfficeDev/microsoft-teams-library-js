@@ -388,7 +388,7 @@ describe('meeting', () => {
 
   describe('getLiveStreamState', () => {
     const allowedContexts = [FrameContexts.sidePanel];
-    it('should fail when called without a callback', () => {
+    it('should fail when called with a null callback', () => {
       expect(() => meeting.getLiveStreamState(null)).toThrowError('[get live stream state] Callback cannot be null');
     });
     it('should fail when called before app is initialized', () => {
@@ -471,7 +471,7 @@ describe('meeting', () => {
   });
 
   describe('requestStartLiveStreaming', () => {
-    it('should fail when called without a callback', () => {
+    it('should fail when called with a null callback', () => {
       expect(() => meeting.requestStartLiveStreaming(null, 'streamurl', 'streamkey')).toThrowError(
         '[request start live streaming] Callback cannot be null',
       );
@@ -564,7 +564,7 @@ describe('meeting', () => {
   });
 
   describe('requestStopLiveStreaming', () => {
-    it('should fail when called without a callback', () => {
+    it('should fail when called with a null callback', () => {
       expect(() => meeting.requestStopLiveStreaming(null)).toThrowError(
         '[request stop live streaming] Callback cannot be null',
       );

@@ -4,6 +4,10 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 
+/**
+ * @deprecated
+ * As of 2.0.0-beta.6, use meeting only for backwards compatibility of existing code.
+ */
 export namespace meeting {
   /**
    * @hidden
@@ -172,6 +176,8 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * Allows an app to get the incoming audio speaker setting for the meeting user
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -192,6 +198,8 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
+   *
    * Allows an app to toggle the incoming audio speaker setting for the meeting user from mute to unmute or vice-versa
    *
    * @param callback - Callback contains 2 parameters, error and result.
@@ -209,6 +217,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * @hidden
    * Hide from docs
@@ -238,6 +247,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * @hidden
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
@@ -260,6 +270,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Allows an app to get the state of the live stream in the current meeting
    *
@@ -279,6 +290,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Allows an app to request the live streaming be started at the given streaming url
    *
@@ -303,6 +315,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Allows an app to request the live streaming be stopped at the given streaming url
    *
@@ -321,6 +334,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Registers a handler for changes to the live stream.
    *
@@ -339,6 +353,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Allows an app to share contents in the meeting
    *
@@ -360,6 +375,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Provides information related app's in-meeting sharing capabilities
    *
@@ -383,6 +399,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * @hidden
    * Hide from docs.
@@ -404,6 +421,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Provides information related to current stage sharing state for app
    *
@@ -424,6 +442,7 @@ export namespace meeting {
 
   /**
    * @deprecated
+   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
    *
    * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
    * will be true. If no participants are speaking, isSpeakingDetected will be false. Only one handler can be registered
