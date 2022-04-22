@@ -517,7 +517,7 @@ export namespace files {
    * Hide from docs
    *
    * Open download preference folder if fileObjectId value is undefined else open folder containing the file with id fileObjectId
-   * @param fileObjectId: Id of the file whose containing folder should be opened
+   * @param fileObjectId - Id of the file whose containing folder should be opened
    * @param callback Callback that will be triggered post open download folder/path
    */
   export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
