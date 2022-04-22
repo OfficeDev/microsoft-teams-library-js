@@ -1,4 +1,4 @@
-import { TeamInstanceParameters, UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
+import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
   registerCustomHandler,
   registerUserSettingsChangeHandler,
@@ -8,12 +8,15 @@ import {
 } from '../../src/private/privateAPIs';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { Context } from '../../src/public/interfaces';
 import { MessageRequest, MessageResponse, Utils } from '../utils';
+// Use to send a mock message from the app.
+import { FileOpenPreference } from '../../src/public';
+import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { Utils } from '../utils';
 
 describe('AppSDK-privateAPIs', () => {
-  // Use to send a mock message from the app.
-
   const utils = new Utils();
 
   beforeEach(() => {
@@ -29,8 +32,9 @@ describe('AppSDK-privateAPIs', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (app._uninitialize) {
-      app._uninitialize();
+    if (_uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      _uninitialize();
     }
   });
 

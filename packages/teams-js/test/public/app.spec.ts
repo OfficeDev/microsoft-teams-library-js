@@ -10,7 +10,7 @@ import {
   UserTeamRole,
 } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { runtime, teamsRuntimeConfig, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {

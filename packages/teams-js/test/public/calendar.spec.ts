@@ -25,7 +25,6 @@ describe('calendar', () => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-
       app._uninitialize();
     }
   });
