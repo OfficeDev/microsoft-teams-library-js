@@ -18,9 +18,8 @@ export interface IRuntime {
       readonly update?: {};
     };
     readonly location?: {};
-    readonly log?: {};
+    readonly logs?: {};
     readonly mail?: {};
-    readonly media?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
     readonly monetization?: {};
@@ -58,9 +57,8 @@ export let runtime: IRuntime = {
       update: undefined,
     },
     location: undefined,
-    log: undefined,
+    logs: undefined,
     mail: undefined,
-    media: undefined,
     meetingRoom: undefined,
     menus: undefined,
     monetization: undefined,
@@ -98,8 +96,9 @@ export const teamsRuntimeConfig: IRuntime = {
       bot: {},
       update: {},
     },
+
     // files: {},
-    log: {},
+    logs: {},
     media: {},
     meetingRoom: {},
     menus: {},
@@ -224,6 +223,6 @@ export const _minRuntimeConfigToUninitialize = {
       fullTrust: {},
     },
     teamsCore: {},
-    log: {},
+    logs: {},
   },
 };
