@@ -303,9 +303,6 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * Gets a list of cloud storage folders added to the channel
    * @param channelId - ID of the channel whose cloud storage folders should be retrieved
    * @param callback - Callback that will be triggered post folders load
@@ -327,9 +324,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    * ------
@@ -355,9 +349,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    * ------
@@ -389,9 +380,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    * ------
@@ -425,9 +413,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    * ------
@@ -457,9 +442,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Allow 1st party apps to call this function to get the external
    * third party cloud storage accounts that the tenant supports
@@ -480,9 +462,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Allow 1st party apps to call this function to move files
    * among SharePoint and third party cloud storages.
@@ -519,9 +498,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    *  ------
@@ -540,9 +516,6 @@ export namespace files {
   }
 
   /**
-   * @deprecated
-   * As of 2.0.0-beta.6, use only for backwards compatibility of existing code.
-   *
    * @hidden
    * Hide from docs
    *
