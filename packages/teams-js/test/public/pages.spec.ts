@@ -5,6 +5,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -27,6 +28,8 @@ describe('Testing pages module', () => {
     afterEach(() => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+
         app._uninitialize();
       }
     });
@@ -1877,6 +1880,8 @@ describe('Testing pages module', () => {
     afterEach(() => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+
         app._uninitialize();
       }
     });

@@ -3,6 +3,7 @@ import { ErrorCode } from '../../src/public/interfaces';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
@@ -27,6 +28,7 @@ describe('sharing_v1', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
