@@ -159,17 +159,20 @@ const DialogAPIs = (): ReactElement => {
       name: 'registerForParentMessage',
       title: 'registerForParentMessage',
       onClick: async setResult => {
+        let msg = 'Completed';
         if (isTestBackCompat()) {
           const parentWindow = ParentAppWindow.Instance;
           parentWindow.addEventListener('message', (message: string) => {
             setResult(message);
           });
         } else {
-          dialog.registerOnMessageFromParent((message: string) => {
+          const callback = (message: string): void => {
+            msg = message;
             setResult(message);
-          });
+          };
+          dialog.registerOnMessageFromParent(callback);
         }
-        return 'Completed';
+        return msg;
       },
     });
 

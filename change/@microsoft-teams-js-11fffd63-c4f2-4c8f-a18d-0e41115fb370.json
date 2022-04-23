@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated `dialog.open` and `dialog.bot.open` to send `DialogInfo` type over to the host instead of `UrlDialogInfo` or `BotUrlDialogInfo` type",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
