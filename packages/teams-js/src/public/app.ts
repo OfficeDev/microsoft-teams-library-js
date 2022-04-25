@@ -41,7 +41,7 @@ export namespace app {
   };
 
   /**
-   * Failed reason enum that describe the errors that caused app intiialization to fail
+   * Describes errors that caused app intiialization to fail
    */
   export enum FailedReason {
     /**
@@ -59,8 +59,8 @@ export namespace app {
   }
 
   /**
-   * Expected failure reason enum that describe expected errors that occurred during an
-   * otherwise successful app initialization
+   * Describes expected errors that occurred during an otherwise successful
+   * app initialization
    */
   export enum ExpectedFailureReason {
     /**
@@ -114,7 +114,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Application infromation.
+   * Represents application information.
    */
   export interface AppInfo {
     /**
@@ -172,7 +172,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents information about the applicaation's host.
+   * Represents information about the applicaation's host.
    */
   export interface AppHostInfo {
     /**
@@ -197,7 +197,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Channel information.
+   * Represents Channel information.
    */
   export interface ChannelInfo {
     /**
@@ -237,7 +237,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Chat information.
+   * Represents Chat information.
    */
   export interface ChatInfo {
     /**
@@ -247,7 +247,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Meeting information.
+   * Represents Meeting information.
    */
   export interface MeetingInfo {
     /**
@@ -257,7 +257,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Page information.
+   * Represents Page information.
    */
   export interface PageInfo {
     /**
@@ -294,7 +294,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents Team information.
+   * Represents Team information.
    */
   export interface TeamInfo {
     /**
@@ -338,7 +338,7 @@ export namespace app {
   }
 
   /**
-   * An interface that represents User information.
+   * Represents User information.
    */
   export interface UserInfo {
     /**
@@ -391,6 +391,9 @@ export namespace app {
     tenant?: TenantInfo;
   }
 
+  /**
+   * Represents Tenant information.
+   */
   export interface TenantInfo {
     /**
      * The Azure AD tenant ID of the current user.
@@ -439,7 +442,7 @@ export namespace app {
   }
 
   /**
-   * Represents structure of the context message received
+   * Represents structure of the received context message.
    */
   export interface Context {
     /**
@@ -497,7 +500,7 @@ export namespace app {
   }
 
   /**
-   * Gets the Frame Context that the App is running in. {@link FrameContexts} for the list of possible values.
+   * Gets the Frame Context that the App is running in. See {@link FrameContexts} for the list of possible values.
    * @returns the Frame Context.
    */
   export function getFrameContext(): FrameContexts {
