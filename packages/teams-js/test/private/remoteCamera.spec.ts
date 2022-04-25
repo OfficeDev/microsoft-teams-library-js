@@ -116,7 +116,7 @@ describe('remoteCamera', () => {
             returnedSdkError = sdkError;
           };
           remoteCamera.getCapableParticipants(callback);
-          let message = utils.findMessageByFunc('remoteCamera.getCapableParticipants');
+          const message = utils.findMessageByFunc('remoteCamera.getCapableParticipants');
           expect(message).not.toBeUndefined();
 
           // simulate response
@@ -314,7 +314,7 @@ describe('remoteCamera', () => {
             returnedSdkError = sdkError;
           };
           remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
-          let message = utils.findMessageByFunc('remoteCamera.sendControlCommand');
+          const message = utils.findMessageByFunc('remoteCamera.sendControlCommand');
           expect(message).not.toBeUndefined();
 
           // simulate response
@@ -443,9 +443,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let CapableParticipants: remoteCamera.Participant[];
+          let capableParticipants: remoteCamera.Participant[];
           const handlerMock = (participantChange: remoteCamera.Participant[]): void => {
-            CapableParticipants = participantChange;
+            capableParticipants = participantChange;
           };
           expect.assertions(1);
           try {
@@ -459,17 +459,17 @@ describe('remoteCamera', () => {
           await utils.initializeWithContext(context);
 
           let handlerInvoked = false;
-          let CapableParticipants: remoteCamera.Participant[];
+          let capableParticipants: remoteCamera.Participant[];
           const handlerMock = (participantChange: remoteCamera.Participant[]): void => {
             handlerInvoked = true;
-            CapableParticipants = participantChange;
+            capableParticipants = participantChange;
           };
           remoteCamera.registerOnCapableParticipantsChangeHandler(handlerMock);
 
           utils.sendMessage('remoteCamera.capableParticipantsChange', capableParticipantsMock);
 
           expect(handlerInvoked).toEqual(true);
-          expect(CapableParticipants).toEqual(capableParticipantsMock);
+          expect(capableParticipants).toEqual(capableParticipantsMock);
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {
