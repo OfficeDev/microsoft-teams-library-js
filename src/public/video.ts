@@ -121,7 +121,7 @@ export namespace video {
   type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => void;
 
   /**
-   * register to read the video frames in Permissions section.
+   * Register to read the video frames in Permissions section.
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
