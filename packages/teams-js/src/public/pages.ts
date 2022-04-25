@@ -523,6 +523,7 @@ export namespace pages {
      * @param handler The handler to invoke when the user presses their Team client's back button.
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
+      ensureInitialized();
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
