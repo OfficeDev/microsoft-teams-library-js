@@ -51,7 +51,7 @@ export namespace video {
    */
   export interface VideoFrameConfig {
     /**
-     * video format
+     * Video format
      */
     format: VideoFrameFormat;
     /**
@@ -59,7 +59,10 @@ export namespace video {
      */
     requireCameraStream?: boolean;
     /**
-     * onnx model for audio inference
+     * @private
+     * Hide from docs
+     * --------
+     * Machine learning model for audio inference
      */
     audioInferenceModel?: ArrayBuffer;
   }
@@ -69,30 +72,36 @@ export namespace video {
    */
   export enum EffectChangeType {
     /**
-     * current video effect changed.
+     * Current video effect changed.
      */
     EffectChanged,
     /**
-     * disable the video effect
+     * Disable the video effect
      */
     EffectDisabled,
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * ------------
+   * Personalized video effect
+   */
   export interface PersonalizedEffect {
     /**
-     * personalized effect id
+     * Personalized effect id
      */
     id: string;
     /**
-     * display name
+     * Display name
      */
     name: string;
     /**
-     * effect type defined by app
+     * Effect type defined by app
      */
     type: string;
     /**
-     * URL of the thumbnail
+     * Base64 encoded data URI of the thumbnail content
      */
     thumbnail: string;
   }
@@ -109,7 +118,7 @@ export namespace video {
   /**
    *  Video effect change call back function definition
    */
-  type VideoEffectCallBack = (effect: string | undefined, effectParam?: string) => void;
+  type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => void;
 
   /**
    * register to read the video frames in Permissions section.
@@ -136,7 +145,7 @@ export namespace video {
   export function notifySelectedVideoEffectChanged(
     effectChangeType: EffectChangeType,
     effectId: string | undefined,
-    effectParam: string | undefined,
+    effectParam?: string,
   ): void {
     ensureInitialized(FrameContexts.sidePanel);
     sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId, effectParam]);
@@ -152,6 +161,9 @@ export namespace video {
   }
 
   /**
+   * @private
+   * Hide from docs
+   * ---------
    * Send personalized effects to Teams client
    */
   export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
@@ -160,7 +172,7 @@ export namespace video {
   }
 
   /**
-   * sending notification to Teams client finished the video frame processing, now Teams client can render this video frame
+   * Sending notification to Teams client finished the video frame processing, now Teams client can render this video frame
    * or pass the video frame to next one in video pipeline.
    */
   function notifyVideoFrameProcessed(): void {
@@ -168,7 +180,7 @@ export namespace video {
   }
 
   /**
-   * sending error notification to Teams client.
+   * Sending error notification to Teams client.
    */
   function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);
