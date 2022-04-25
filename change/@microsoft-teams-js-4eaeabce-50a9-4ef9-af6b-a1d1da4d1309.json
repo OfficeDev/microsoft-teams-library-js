@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "In adaptive card based dialogs, height will not be set to small (default value) if not provided. It will fit all card content on a dialog. ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
