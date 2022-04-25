@@ -1,8 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public/constants';
-import { errorNotSupportedOnPlatform } from '../public/constants';
-import { runtime } from '../public/runtime';
 
 export namespace interactive {
   /**
@@ -51,7 +49,14 @@ export namespace interactive {
    * The global time servers current timestamp.
    */
   export interface NtpTimeInfo {
+    /**
+     * ISO 8601 formatted server time. For example: '2019-09-07T15:50-04:00'
+     */
     ntpTime: string;
+
+    /**
+     * Server time expressed as the number of milliseconds since the ECMAScript epoch.
+     */
     ntpTimeInUTC: number;
   }
 
@@ -76,9 +81,6 @@ export namespace interactive {
   export function getFluidTenantInfo(): Promise<FluidTenantInfo> {
     return new Promise<FluidTenantInfo>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
@@ -96,9 +98,6 @@ export namespace interactive {
   export function getFluidToken(containerId?: string): Promise<string> {
     return new Promise<string>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
     });
@@ -113,9 +112,6 @@ export namespace interactive {
   export function getFluidContainerId(): Promise<FluidContainerInfo> {
     return new Promise<FluidContainerInfo>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
@@ -136,9 +132,6 @@ export namespace interactive {
   export function setFluidContainerId(containerId: string): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
@@ -153,9 +146,6 @@ export namespace interactive {
   export function getNtpTime(): Promise<NtpTimeInfo> {
     return new Promise<NtpTimeInfo>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
@@ -173,9 +163,6 @@ export namespace interactive {
   export function registerClientId(clientId: string): Promise<UserMeetingRole[]> {
     return new Promise<UserMeetingRole[]>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
@@ -193,15 +180,8 @@ export namespace interactive {
   export function getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
     return new Promise<UserMeetingRole[] | undefined>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
 
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
-  }
-
-  export function isSupported(): boolean {
-    return runtime.supports.meeting ? true : false;
   }
 }

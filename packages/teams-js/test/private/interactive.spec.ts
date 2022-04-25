@@ -34,13 +34,6 @@ describe('interactive', () => {
       );
     });
 
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.getFluidTenantInfo()).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       await expect(interactive.getFluidTenantInfo()).rejects.toThrowError(
@@ -72,13 +65,6 @@ describe('interactive', () => {
       );
     });
 
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.getFluidToken('test-container')).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       await expect(interactive.getFluidToken('test-container')).rejects.toThrowError(
@@ -104,13 +90,6 @@ describe('interactive', () => {
       await expect(interactive.getFluidContainerId()).rejects.toThrowError(
         'The library has not yet been initialized',
       );
-    });
-
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.getFluidContainerId()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -145,13 +124,6 @@ describe('interactive', () => {
       );
     });
 
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.setFluidContainerId('test-container')).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       await expect(interactive.setFluidContainerId('test-container')).rejects.toThrowError(
@@ -177,13 +149,6 @@ describe('interactive', () => {
       await expect(interactive.getNtpTime()).rejects.toThrowError(
         'The library has not yet been initialized',
       );
-    });
-
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.getNtpTime()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -216,13 +181,6 @@ describe('interactive', () => {
       );
     });
 
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.registerClientId('test-client')).rejects.toEqual(errorNotSupportedOnPlatform);
-    });
-
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
       await expect(interactive.registerClientId('test-client')).rejects.toThrowError(
@@ -248,13 +206,6 @@ describe('interactive', () => {
       await expect(interactive.getClientRoles('test-client')).rejects.toThrowError(
         'The library has not yet been initialized',
       );
-    });
-
-    it('should throw error when meetings capability is not supported', async () => {
-      await utils.initializeWithContext('meetingStage');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-
-      await expect(interactive.getClientRoles('test-client')).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls without frame context initialization', async () => {
