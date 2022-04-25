@@ -19,6 +19,7 @@ import { logs } from '../private/logs';
 import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import { dialog } from './dialog';
 import { Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
@@ -594,6 +595,7 @@ export namespace app {
         authentication.initialize();
         menus.initialize();
         pages.config.initialize();
+        dialog.initialize();
         initializePrivateApis();
       }
 

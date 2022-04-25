@@ -3,10 +3,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { DialogDimension, FrameContexts } from './constants';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -33,6 +34,33 @@ export namespace dialog {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
+  const storedMessages: string[] = [];
+
+  /**
+   * @hidden
+   * Hide from docs because this function is only used during initialization
+   * ------------------
+   * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
+   * Function is called during app intitialization
+   * @internal
+   */
+  export function initialize(): void {
+    registerHandler('messageForChild', handleDialogMessage, false);
+  }
+
+  function handleDialogMessage(message: string): void {
+    if (!GlobalVars.frameContext) {
+      // GlobalVars.frameContext is currently not set
+      return;
+    }
+
+    if (GlobalVars.frameContext === FrameContexts.task) {
+      storedMessages.push(message);
+    } else {
+      // Not in task FrameContext, remove 'messageForChild' handler
+      removeHandler('messageForChild');
+    }
+  }
 
   /**
    * Allows app to open a url based dialog.
@@ -56,7 +84,8 @@ export namespace dialog {
     if (messageFromChildHandler) {
       registerHandler('messageForParent', messageFromChildHandler);
     }
-    sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
+    const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
       removeHandler('messageForParent');
     });
@@ -72,7 +101,7 @@ export namespace dialog {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageToParent('tasks.completeTask', [result, Array.isArray(appIds) ? appIds : [appIds]]);
+    sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
   }
 
   /**
@@ -114,7 +143,16 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
+    // We need to remove the original 'messageForChild'
+    // handler since the original does not allow for post messages.
+    // It is replaced by the user specified listener that is passed in.
+    removeHandler('messageForChild');
     registerHandler('messageForChild', listener);
+    storedMessages.reverse();
+    while (storedMessages.length > 0) {
+      const message = storedMessages.pop();
+      listener(message);
+    }
   }
 
   /**
@@ -173,7 +211,9 @@ export namespace dialog {
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
       }
-      sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
+      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
+
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
         removeHandler('messageForParent');
       });
@@ -187,5 +227,44 @@ export namespace dialog {
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: urlDialogInfo.url,
+      height: urlDialogInfo.size ? urlDialogInfo.size.height : DialogDimension.Small,
+      width: urlDialogInfo.size ? urlDialogInfo.size.width : DialogDimension.Small,
+      title: urlDialogInfo.title,
+      fallbackUrl: urlDialogInfo.fallbackUrl,
+    };
+    return dialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: botUrlDialogInfo.url,
+      height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
+      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.width : DialogDimension.Small,
+      title: botUrlDialogInfo.title,
+      fallbackUrl: botUrlDialogInfo.fallbackUrl,
+      completionBotId: botUrlDialogInfo.completionBotId,
+    };
+    return dialogInfo;
   }
 }

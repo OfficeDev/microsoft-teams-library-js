@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
