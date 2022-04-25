@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -91,6 +91,10 @@ export namespace video {
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
       if (videoFrame !== undefined) {
         frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
@@ -112,6 +116,9 @@ export namespace video {
     effectId: string | undefined,
   ): void {
     ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId]);
   }
 
@@ -120,6 +127,9 @@ export namespace video {
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('video.effectParameterChange', callback);
   }
 
