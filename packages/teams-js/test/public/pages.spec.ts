@@ -1287,6 +1287,36 @@ describe('Testing pages module', () => {
       }
     });
 
+    describe('Testing pages.returnFocus function', () => {
+      it('pages.returnFocus should not allow calls before initialization', () => {
+        expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
+      });
+
+      Object.values(FrameContexts).forEach(context => {
+        it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+
+          pages.returnFocus(true);
+
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(true);
+        });
+
+        it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+
+          pages.returnFocus(false);
+
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(false);
+        });
+      });
+    });
+
     describe('Testing pages.registerFocusEnterHandler function', () => {
       it('pages.registerFocusEnterHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFocusEnterHandler(emptyCallback)).toThrowError(

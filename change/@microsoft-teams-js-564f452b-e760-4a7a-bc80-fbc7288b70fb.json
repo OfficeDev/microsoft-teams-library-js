@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Git magic week of 4/18/2022 \n1. IMeetingDetails has been renamed to IMeetingDetailsResponse and IDetails has been replaced with IMeetingOrCallDetailsBase<T>. As such, meeting.getMeetingDetails() now returns Promise<IMeetingDetailsResponse> rather than Promise<IMeetingDetails>. The deprecated version also takes in a callback which takes in IMeetingDetailsResponse rather than IMeetingDetails. \n2. pages.returnFocus() now works in any FrameContext rather than just with content.",
+  "comment": "Git magic week of 4/18/2022 \n1. IMeetingDetails has been renamed to IMeetingDetailsResponse and IDetails has been replaced with IMeetingOrCallDetailsBase<T>. As such, meeting.getMeetingDetails() now takes in a callback which takes in IMeetingDetailsResponse rather than IMeetingDetails. \n2. pages.returnFocus() now works in any FrameContext rather than just with content.",
   "packageName": "@microsoft/teams-js",
   "email": "aeun@microsoft.com",
   "dependentChangeType": "patch"
