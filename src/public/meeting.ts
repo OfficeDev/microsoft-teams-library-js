@@ -8,13 +8,13 @@ export namespace meeting {
   /**
    * @private
    * Hide from docs
-   * Data structure to represent a meeting details.
+   * Data structure to represent a meeting details
    */
-  export interface IMeetingDetails {
+  export interface IMeetingDetailsResponse {
     /**
      * details object
      */
-    details: IDetails;
+    details: IMeetingDetails | ICallDetails;
     /**
      * conversation object
      */
@@ -24,32 +24,50 @@ export namespace meeting {
      */
     organizer: IOrganizer;
   }
+
   /**
    * @private
    * Hide from docs
-   * Data structure to represent details.
+   * Base data structure to represent a meeting or call detail
    */
-  export interface IDetails {
+  export interface IMeetingOrCallDetailsBase<T> {
     /**
-     * Scheduled start time of the meeting
+     * Scheduled start time of the meeting or start time of the call
      */
     scheduledStartTime: string;
+
+    /**
+     * url to join the current meeting or call
+     */
+    joinUrl?: string;
+
+    /**
+     * type of the meeting or call
+     */
+    type?: T;
+  }
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent call details
+   */
+  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+
+  /**
+   * @private
+   * Hide from docs
+   * Data structure to represent meeting details.
+   */
+  export interface IMeetingDetails extends IMeetingOrCallDetailsBase<MeetingType> {
     /**
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
     /**
-     * url to join the current meeting
-     */
-    joinUrl?: string;
-    /**
      * meeting title name of the meeting
      */
     title?: string;
-    /**
-     * type of the meeting
-     */
-    type?: MeetingType;
   }
 
   /**
@@ -110,6 +128,13 @@ export namespace meeting {
      */
     isAppSharing: boolean;
   }
+  export interface ISpeakingState {
+    /**
+     * Indicates whether one or more participants in a meeting are speaking, or
+     * if no participants are speaking
+     */
+    isSpeakingDetected: boolean;
+  }
 
   export enum MeetingType {
     Unknown = 'Unknown',
@@ -118,6 +143,11 @@ export namespace meeting {
     Recurring = 'Recurring',
     Broadcast = 'Broadcast',
     MeetNow = 'MeetNow',
+  }
+
+  export enum CallType {
+    OneOnOneCall = 'oneOnOneCall',
+    GroupCall = 'groupCall',
   }
 
   /**
@@ -156,12 +186,12 @@ export namespace meeting {
    * @private
    * Hide from docs
    * Allows an app to get the meeting details for the meeting
-   * @param callback Callback contains 2 parameters, error and meetingDetails.
+   * @param callback Callback contains 2 parameters, error and meetingDetailsResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a IMeetingDetails value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetailsResponse value, incase of a successful get or null when the get fails
    */
   export function getMeetingDetails(
-    callback: (error: SdkError | null, meetingDetails: IMeetingDetails | null) => void,
+    callback: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
   ): void {
     if (!callback) {
       throw new Error('[get meeting details] Callback cannot be null');
@@ -254,8 +284,6 @@ export namespace meeting {
   }
 
   /**
-   * @private
-   * Hide from docs
    * Allows an app to share contents in the meeting
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError, incase of an error, or null when share is successful
@@ -269,13 +297,11 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
   }
 
   /**
-   * @private
-   * Hide from docs
    * Provides information related app's in-meeting sharing capabilities
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
@@ -291,7 +317,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
 
@@ -309,13 +335,11 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 
   /**
-   * @private
-   * Hide from docs
    * Provides information related to current stage sharing state for app
    * @param callback Callback contains 2 parameters, error and result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
@@ -328,7 +352,21 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
+  }
+
+  /**
+   * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
+   * will be true. If no participants are speaking, isSpeakingDetected will be false. Only one handler can be registered
+   * at a time. A subsequent registration replaces an existing registration.
+   * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
+   */
+  export function registerSpeakingStateChangeHandler(handler: (speakingState: ISpeakingState) => void): void {
+    if (!handler) {
+      throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.speakingStateChanged', handler);
   }
 }
