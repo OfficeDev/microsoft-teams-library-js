@@ -101,7 +101,7 @@ export namespace video {
      */
     type: string;
     /**
-     * Base64 encoded data URI of the thumbnail content
+     * Data URI of the thumbnail image content encoded in ASCII format using the base64 scheme
      */
     thumbnail: string;
   }
