@@ -1,10 +1,10 @@
-import { Utils } from '../utils';
 import { remoteCamera } from '../../src/private/remoteCamera';
-import { app } from '../../src/public/app';
-import { SdkError } from '../../src/public/interfaces';
 import { FrameContexts } from '../../src/public';
-import { ObjectExpression } from 'jscodeshift';
+import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { SdkError } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { Utils } from '../utils';
 
 describe('remoteCamera', () => {
   const utils = new Utils();
@@ -44,6 +44,7 @@ describe('remoteCamera', () => {
 
   afterEach(() => {
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
