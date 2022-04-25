@@ -55,7 +55,8 @@ export namespace video {
      */
     format: VideoFrameFormat;
     /**
-     * Synthesizing video frame based on raw frame or not
+     * Flag to indicate use camera stream to synthesize video video frame or not.
+     * Default value is true.
      */
     requireCameraStream?: boolean;
     /**
