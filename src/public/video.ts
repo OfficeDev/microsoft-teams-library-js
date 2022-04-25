@@ -125,11 +125,15 @@ export namespace video {
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
-    registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
-      if (videoFrame !== undefined) {
-        frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
-      }
-    });
+    registerHandler(
+      'video.newVideoFrame',
+      (videoFrame: VideoFrame) => {
+        if (videoFrame !== undefined) {
+          frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
+        }
+      },
+      false,
+    );
 
     sendMessageToParent('video.registerForVideoFrame', [config]);
   }
