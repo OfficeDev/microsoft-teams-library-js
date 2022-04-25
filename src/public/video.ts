@@ -58,6 +58,9 @@ export namespace video {
      */
     format: VideoFrameFormat;
     /**
+     * @private
+     * Hide from docs
+     * --------
      * Flag to indicate use camera stream to synthesize video video frame or not.
      * Default value is true.
      */
