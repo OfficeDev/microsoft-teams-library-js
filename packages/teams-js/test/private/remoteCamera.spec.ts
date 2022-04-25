@@ -2,7 +2,7 @@ import { Utils } from '../utils';
 import { remoteCamera } from '../../src/private/remoteCamera';
 import { app } from '../../src/public/app';
 import { SdkError } from '../../src/public/interfaces';
-import { call, FrameContexts } from '../../src/public';
+import { FrameContexts } from '../../src/public';
 import { ObjectExpression } from 'jscodeshift';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 
