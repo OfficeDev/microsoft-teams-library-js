@@ -1,6 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
@@ -38,6 +38,10 @@ export namespace teams {
   export function getTeamChannels(groupId: string, callback: (error: SdkError, channels: ChannelInfo[]) => void): void {
     ensureInitialized(FrameContexts.content);
 
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     if (!groupId) {
       throw new Error('[teams.getTeamChannels] groupId cannot be null or empty');
     }
@@ -59,6 +63,10 @@ export namespace teams {
    */
   export function refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void {
     ensureInitialized();
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     if (!threadId) {
       throw new Error('[teams.refreshSiteUrl] threadId cannot be null or empty');
