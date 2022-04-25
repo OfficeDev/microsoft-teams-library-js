@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Adding isSupported Check to logs capability",
+  "comment": "Adding isSupported check to logs capability",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
