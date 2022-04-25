@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
@@ -23,6 +24,9 @@ export namespace logs {
    */
   export function registerGetLogHandler(handler: () => string): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     if (handler) {
       registerHandler('log.request', () => {
