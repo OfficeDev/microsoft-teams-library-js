@@ -36,6 +36,9 @@ export namespace video {
      */
     stride?: number;
     /**
+     * @private
+     * Hide from docs
+     * --------
      * Audio inference result
      */
     audioInferenceResult?: Uint8Array;
