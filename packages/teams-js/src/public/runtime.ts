@@ -17,12 +17,9 @@ export interface IRuntime {
       readonly bot?: {};
       readonly update?: {};
     };
-    readonly files?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
-    readonly media?: {};
-    readonly meeting?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
     readonly monetization?: {};
@@ -62,8 +59,6 @@ export let runtime: IRuntime = {
     location: undefined,
     logs: undefined,
     mail: undefined,
-    media: undefined,
-    meeting: undefined,
     meetingRoom: undefined,
     menus: undefined,
     monetization: undefined,
@@ -101,10 +96,7 @@ export const teamsRuntimeConfig: IRuntime = {
       bot: {},
       update: {},
     },
-    files: {},
     logs: {},
-    media: {},
-    meeting: {},
     meetingRoom: {},
     menus: {},
     monetization: {},
@@ -207,3 +199,27 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
   runtime = deepFreeze(runtimeConfig);
 }
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ * Constant used to set minimum runtime configuration
+ * while un-initializing an app in unit test case.
+ *
+ * @internal
+ */
+export const _minRuntimeConfigToUninitialize = {
+  apiVersion: 1,
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
