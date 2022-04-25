@@ -10,14 +10,14 @@ import {
 } from './interfaces';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { Communication, sendMessageToParent, sendMessageEventToChild } from '../internal/communication';
-import { menus } from './menus';
+
 import { registerHandler } from '../internal/handlers';
 import { GlobalVars } from '../internal/globalVars';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 
 export function initializePrivateApis(): void {
-  menus.initialize();
+  //Keeping this API for any future usage, wherein privateAPIs need to be initialized
 }
 
 /**
@@ -78,7 +78,7 @@ export function exitFullscreen(): void {
  * @param file The file to preview.
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(FrameContexts.content);
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
 
   const params = [
     filePreviewParameters.entityId,

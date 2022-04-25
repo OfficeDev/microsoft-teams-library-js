@@ -335,7 +335,7 @@ export interface Context {
 
   /**
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
-   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
+   * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
@@ -434,6 +434,16 @@ export interface Context {
    * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
+
+  /**
+   * The SharePoint my site domain associated with the user.
+   */
+  mySiteDomain?: string;
+
+  /**
+   * The SharePoint relative path to the current users mysite
+   */
+  mySitePath?: string;
 }
 
 export interface DeepLinkParameters {
