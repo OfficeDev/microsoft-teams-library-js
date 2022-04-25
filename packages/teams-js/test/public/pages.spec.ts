@@ -1417,6 +1417,16 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
         Object.values(FrameContexts).forEach(context => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
@@ -3239,6 +3249,17 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+
         Object.values(FrameContexts).forEach(context => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
