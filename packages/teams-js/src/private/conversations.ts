@@ -96,8 +96,6 @@ export interface ConversationResponse {
 /**
  * @hidden
  * Namespace to interact with the conversational subEntities inside the tab
- *
- * @alpha
  */
 export namespace conversations {
   /**

@@ -5,8 +5,6 @@ import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
- *
- * @alpha
  */
 export interface TabInformation {
   teamTabs: TabInstance[];

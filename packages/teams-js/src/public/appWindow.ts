@@ -7,9 +7,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-/**
- * @alpha
- */
+
 export interface IAppWindow {
   /**
    * Send a message to the AppWindow.
