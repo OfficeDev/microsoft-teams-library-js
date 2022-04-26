@@ -135,6 +135,10 @@ export namespace meeting {
      */
     isSpeakingDetected: boolean;
   }
+  export interface IRaiseHandState {
+    /** Indicates whether the selfParticipant's hand is raised or not*/
+    isHandRaised: boolean;
+  }
 
   export enum MeetingType {
     Unknown = 'Unknown',
@@ -368,5 +372,14 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
+  }
+
+  export function registerRaiseHandStateChangedHandler(handler: (raiseHandState: IRaiseHandState) => void): void {
+    if (!handler) {
+      throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
+    }
+    // TODO: check what context 2d avatars loads in
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.raiseHandStateChanged', handler);
   }
 }
