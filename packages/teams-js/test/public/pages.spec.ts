@@ -35,44 +35,32 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.returnFocus function', () => {
-      const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+        it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-            pages.returnFocus(true);
+          pages.returnFocus(true);
 
-            const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(true);
-          });
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(true);
+        });
 
-          it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+        it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-            pages.returnFocus(false);
+          pages.returnFocus(false);
 
-            const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(false);
-          });
-        } else {
-          it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => pages.returnFocus()).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(false);
+        });
       });
     });
 
@@ -94,7 +82,7 @@ describe('Testing pages module', () => {
           expect(messageForRegister.args[0]).toBe('focusEnter');
         });
 
-        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when set to true and  initialized with ${context} context`, async () => {
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when set to true and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
           let handlerInvoked = false;
@@ -1305,44 +1293,32 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.returnFocus function', () => {
-      const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+        it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
 
-            pages.returnFocus(true);
+          pages.returnFocus(true);
 
-            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(true);
-          });
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(true);
+        });
 
-          it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+        it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
 
-            pages.returnFocus(false);
+          pages.returnFocus(false);
 
-            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(false);
-          });
-        } else {
-          it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect(() => pages.returnFocus()).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(false);
+        });
       });
     });
 
@@ -1403,7 +1379,7 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.setCurrentFrame function', () => {
       const allowedContexts = [FrameContexts.content];
-      let frameContext: FrameInfo = {
+      const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
       };
@@ -1417,7 +1393,7 @@ describe('Testing pages module', () => {
           it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
-            let message = framelessPostMocks.findMessageByFunc('setFrameContext');
+            const message = framelessPostMocks.findMessageByFunc('setFrameContext');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toStrictEqual(frameContext);
@@ -1437,7 +1413,7 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.initializeWithFrameContext function', () => {
       const allowedContexts = [FrameContexts.content];
-      let frameContext: FrameInfo = {
+      const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
       };
@@ -1449,13 +1425,13 @@ describe('Testing pages module', () => {
             pages.initializeWithFrameContext(frameContext);
             expect(framelessPostMocks.messages.length).toBe(2);
 
-            let initMessage = framelessPostMocks.findMessageByFunc('initialize');
+            const initMessage = framelessPostMocks.findMessageByFunc('initialize');
             expect(initMessage).not.toBeNull();
             expect(initMessage.id).toBe(0);
             expect(initMessage.func).toBe('initialize');
             expect(initMessage.args.length).toEqual(1);
             expect(initMessage.args[0]).toEqual(version);
-            let message = framelessPostMocks.findMessageByFunc('setFrameContext');
+            const message = framelessPostMocks.findMessageByFunc('setFrameContext');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toStrictEqual(frameContext);
@@ -1480,7 +1456,7 @@ describe('Testing pages module', () => {
         FrameContexts.remove,
         FrameContexts.sidePanel,
       ];
-      let expectedSettings: pages.InstanceConfig = {
+      const expectedSettings: pages.InstanceConfig = {
         suggestedDisplayName: 'someSuggestedDisplayName',
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
@@ -1830,7 +1806,7 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.tabs.getTabInstances function', () => {
-        let expectedTabInstanceParameters: TabInstanceParameters = {
+        const expectedTabInstanceParameters: TabInstanceParameters = {
           favoriteChannelsOnly: true,
           favoriteTeamsOnly: true,
         };
@@ -1844,7 +1820,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
-            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -1856,7 +1832,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
-            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -1868,7 +1844,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
-            let message = framelessPostMocks.findMessageByFunc('getTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [undefined] },
@@ -1880,7 +1856,7 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.tabs.getMruTabInstances function', () => {
-        let expectedTabInstanceParameters: TabInstanceParameters = {
+        const expectedTabInstanceParameters: TabInstanceParameters = {
           favoriteChannelsOnly: true,
           favoriteTeamsOnly: true,
         };
@@ -1895,7 +1871,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
-            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
@@ -1906,7 +1882,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
-            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
@@ -1918,7 +1894,7 @@ describe('Testing pages module', () => {
           it(`pages.tabs.getMruTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
-            let message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
+            const message = framelessPostMocks.findMessageByFunc('getMruTabInstances');
 
             framelessPostMocks.respondToMessage({
               data: { id: message.id, args: [undefined] },
@@ -1986,7 +1962,7 @@ describe('Testing pages module', () => {
       describe('Testing pages.config.setConfig function', () => {
         const allowedContexts = [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel];
 
-        let settingsObj: pages.InstanceConfig = {
+        const settingsObj: pages.InstanceConfig = {
           suggestedDisplayName: 'someSuggestedDisplayName',
           contentUrl: 'someContentUrl',
           websiteUrl: 'someWebsiteUrl',
@@ -2004,7 +1980,7 @@ describe('Testing pages module', () => {
             it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
-              let message = framelessPostMocks.findMessageByFunc('settings.setSettings');
+              const message = framelessPostMocks.findMessageByFunc('settings.setSettings');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toStrictEqual(settingsObj);
@@ -2094,7 +2070,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc('settings.save.success');
+              const message = framelessPostMocks.findMessageByFunc('settings.save.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -2111,7 +2087,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc('settings.save.failure');
+              const message = framelessPostMocks.findMessageByFunc('settings.save.failure');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe('someReason');
@@ -2136,7 +2112,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc('settings.save.success');
+              const message = framelessPostMocks.findMessageByFunc('settings.save.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -2193,7 +2169,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc('settings.remove.success');
+              const message = framelessPostMocks.findMessageByFunc('settings.remove.success');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
@@ -2212,7 +2188,7 @@ describe('Testing pages module', () => {
               } as DOMMessageEvent);
 
               expect(handlerCalled).toBe(true);
-              let message = framelessPostMocks.findMessageByFunc('settings.remove.failure');
+              const message = framelessPostMocks.findMessageByFunc('settings.remove.failure');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
               expect(message.args[0]).toBe('someReason');
@@ -2307,7 +2283,7 @@ describe('Testing pages module', () => {
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
-            let navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
+            const navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).toBeNull();
             expect(handlerInvoked).toBe(true);
           });
@@ -2325,7 +2301,7 @@ describe('Testing pages module', () => {
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
-            let navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
+            const navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();
             expect(handlerInvoked).toBe(true);
           });
