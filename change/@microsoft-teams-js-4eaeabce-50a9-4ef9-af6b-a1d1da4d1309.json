@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "In adaptive card based task modules, if the height is not provided in `taskInfo`, it wil not be set to a default small size. Instead the card content will be fit on a Task Module. ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}

@@ -30,7 +30,6 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
@@ -82,8 +81,8 @@ export namespace tasks {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: taskInfo.height,
-        width: taskInfo.width,
+        height: taskInfo.height ? taskInfo.height : TaskModuleDimension.Small,
+        width: taskInfo.width ? taskInfo.width : TaskModuleDimension.Small,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
@@ -95,8 +94,8 @@ export namespace tasks {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: taskInfo.height,
-        width: taskInfo.width,
+        height: taskInfo.height ? taskInfo.height : TaskModuleDimension.Small,
+        width: taskInfo.width ? taskInfo.width : TaskModuleDimension.Small,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
