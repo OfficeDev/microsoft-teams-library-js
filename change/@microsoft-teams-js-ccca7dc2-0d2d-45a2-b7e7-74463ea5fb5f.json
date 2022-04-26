@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed @alpha tags as they are not supported in the SDK reference doc generation system",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@microsoft.com",
+  "dependentChangeType": "patch"
+}
