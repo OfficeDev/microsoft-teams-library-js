@@ -8,7 +8,7 @@ export namespace meeting {
   /**
    * @hidden
    * Hide from docs
-   * Data structure to represent a meeting details.
+   * Data structure to represent a meeting details
    *
    * @internal
    */
@@ -213,7 +213,7 @@ export namespace meeting {
    *
    * @param callback - Callback contains 2 parameters, error and meetingDetailsResponse.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
-   * result can either contain a IMeetingDetailsResponse value, incase of a successful get or null when the get fails
+   * result can either contain a IMeetingDetailsResponse value, in case of a successful get or null when the get fails
    *
    * @internal
    */
