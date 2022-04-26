@@ -5,9 +5,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace monetization {
   /**
    * @hidden
