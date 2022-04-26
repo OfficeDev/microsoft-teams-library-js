@@ -1,4 +1,5 @@
 import exp from 'constants';
+
 import * as utilFunc from '../../src/internal/utils';
 import { FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
@@ -24,61 +25,39 @@ describe('MicrosoftTeams-Navigation', () => {
   });
 
   describe('Testing navigation.returnFocus function', () => {
-    const allowedContexts = [FrameContexts.content];
-
     it('navigation.returnFocus should not allow calls before initialization', () => {
       expect(() => returnFocus(true)).toThrowError('The library has not yet been initialized');
     });
 
     Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-        it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
-          await utils.initializeWithContext(context);
-          const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
-          returnFocus(true);
-          expect(pagesReturnFocus).toHaveBeenCalled();
-        });
+      it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
+        returnFocus(true);
+        expect(pagesReturnFocus).toHaveBeenCalled();
+      });
 
-        it(`navigation.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
-          await utils.initializeWithContext(context);
+      it(`navigation.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
 
-          returnFocus(true);
+        returnFocus(true);
 
-          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(1);
-          expect(returnFocusMessage.args[0]).toBe(true);
-        });
+        const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+        expect(returnFocusMessage).not.toBeNull();
+        expect(returnFocusMessage.args.length).toBe(1);
+        expect(returnFocusMessage.args[0]).toBe(true);
+      });
 
-        it(`navigation.returnFocus should successfully returnFocus when set to false and initialized with ${context} context`, async () => {
-          await utils.initializeWithContext(context);
+      it(`navigation.returnFocus should successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
 
-          returnFocus(false);
+        returnFocus(false);
 
-          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(1);
-          expect(returnFocusMessage.args[0]).toBe(false);
-        });
-      } else {
-        it(`navigation.returnFocus should not allow calls when set to true and initialized with ${context} context`, async () => {
-          await utils.initializeWithContext(context);
-          expect(() => returnFocus(true)).toThrow(
-            `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContexts,
-            )}. Current context: "${context}".`,
-          );
-        });
-
-        it(`navigation.returnFocus should not allow calls when set to false and initialized with ${context} context`, async () => {
-          await utils.initializeWithContext(context);
-          expect(() => returnFocus(false)).toThrow(
-            `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContexts,
-            )}. Current context: "${context}".`,
-          );
-        });
-      }
+        const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+        expect(returnFocusMessage).not.toBeNull();
+        expect(returnFocusMessage.args.length).toBe(1);
+        expect(returnFocusMessage.args[0]).toBe(false);
+      });
     });
   });
 
