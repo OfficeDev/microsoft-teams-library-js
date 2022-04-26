@@ -5,8 +5,6 @@ import { FileOpenPreference, TeamInformation } from '../public/interfaces';
  * Hide from docs
  * --------
  * Information about all members in a chat
- *
- * @alpha
  */
 export interface ChatMembersInformation {
   members: ThreadMember[];
@@ -17,8 +15,6 @@ export interface ChatMembersInformation {
  * Hide from docs
  * --------
  * Information about a chat member
- *
- * @alpha
  */
 export interface ThreadMember {
   /**
@@ -28,17 +24,11 @@ export interface ThreadMember {
   upn: string;
 }
 
-/**
- * @alpha
- */
 export enum NotificationTypes {
   fileDownloadStart = 'fileDownloadStart',
   fileDownloadComplete = 'fileDownloadComplete',
 }
 
-/**
- * @alpha
- */
 export interface ShowNotificationParameters {
   message: string;
   notificationType: NotificationTypes;
@@ -47,8 +37,6 @@ export interface ShowNotificationParameters {
 /**
  * @hidden
  * Hide from docs.
- * ------
- * @alpha
  */
 export enum ViewerActionTypes {
   view = 'view',
@@ -60,8 +48,7 @@ export enum ViewerActionTypes {
  * @hidden
  * Hide from docs.
  * ------
- * User setting changes that can be subscribed to,
- * @alpha
+ * User setting changes that can be subscribed to
  */
 export enum UserSettingTypes {
   /**
@@ -79,8 +66,6 @@ export enum UserSettingTypes {
 /**
  * @hidden
  * Hide from docs.
- * ------
- * @alpha
  */
 export interface FilePreviewParameters {
   /**
@@ -174,7 +159,6 @@ export interface FilePreviewParameters {
  * Hide from docs
  * --------
  * Query parameters used when fetching team information
- * @alpha
  */
 export interface TeamInstanceParameters {
   /**
@@ -189,7 +173,6 @@ export interface TeamInstanceParameters {
  * Hide from docs
  * --------
  * Information on userJoined Teams
- * @alpha
  */
 export interface UserJoinedTeamsInformation {
   /**
