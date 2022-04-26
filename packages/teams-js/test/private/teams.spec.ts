@@ -150,5 +150,16 @@ describe('Testing teams capabillity', () => {
         });
       });
     });
+
+    describe('Testing teams.isSupported function', () => {
+      it('teams.isSupported should return false if the runtime says teams is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(teams.isSupported()).not.toBeTruthy();
+      });
+      it('teams.isSupported should return true if the runtime says teams is supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
+        expect(teams.isSupported()).toBeTruthy();
+      });
+    });
   });
 });
