@@ -3,7 +3,7 @@ import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -75,6 +75,9 @@ export namespace people {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleError('people.selectPeople', peoplePickerInputs));
     });
   }
