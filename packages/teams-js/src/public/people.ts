@@ -7,9 +7,6 @@ import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace people {
   /**
    * Launches a people picker and allows the user to select one or more people from the list

@@ -5,22 +5,19 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Namespace to video extensibility of the SDK.
- *
- * @alpha
- *
+ * Namespace to video extensibility of the SDK
  */
 export namespace video {
   /**
-   * Represents a video frame.
+   * Represents a video frame
    */
   export interface VideoFrame {
     /**
-     * Video frame width.
+     * Video frame width
      */
     width: number;
     /**
-     * Video frame height.
+     * Video frame height
      */
     height: number;
     /**
@@ -49,7 +46,7 @@ export namespace video {
   }
 
   /**
-   * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format.
+   * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format
    */
   export interface VideoFrameConfig {
     /**
@@ -63,7 +60,7 @@ export namespace video {
    */
   export enum EffectChangeType {
     /**
-     * current video effect changed.
+     * current video effect changed
      */
     EffectChanged,
     /**
@@ -87,7 +84,7 @@ export namespace video {
   export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
-   * register to read the video frames in Permissions section.
+   * Register to read the video frames in Permissions section
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
@@ -123,7 +120,7 @@ export namespace video {
   }
 
   /**
-   * Register the video effect callback, Teams client uses this to notify the video extension the new video effect will by applied.
+   * Register the video effect callback, Teams client uses this to notify the video extension the new video effect will by applied
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
@@ -134,15 +131,15 @@ export namespace video {
   }
 
   /**
-   * sending notification to Teams client finished the video frame processing, now Teams client can render this video frame
-   * or pass the video frame to next one in video pipeline.
+   * Sending notification to Teams client finished the video frame processing, now Teams client can render this video frame
+   * or pass the video frame to next one in video pipeline
    */
   function notifyVideoFrameProcessed(): void {
     sendMessageToParent('video.videoFrameProcessed');
   }
 
   /**
-   * sending error notification to Teams client.
+   * Sending error notification to Teams client
    */
   function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);

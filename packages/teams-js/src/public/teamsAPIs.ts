@@ -6,8 +6,6 @@ import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
- *
- * @alpha
  */
 
 export namespace teamsCore {
