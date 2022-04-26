@@ -5,9 +5,6 @@ import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
-/**
- * @alpha
- */
 export namespace remoteCamera {
   /**
    * @hidden
