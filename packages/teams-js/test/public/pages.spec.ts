@@ -40,21 +40,19 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect.assertions(1);
-            try {
-              pages.returnFocus();
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
+        it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
+          try {
+            pages.returnFocus();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
 
         it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
-
 
           pages.returnFocus(true);
 
@@ -1708,21 +1706,19 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect.assertions(4);
-            try {
-              pages.returnFocus();
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
+        it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(4);
+          try {
+            pages.returnFocus();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
 
         it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
-
 
           pages.returnFocus(true);
 
