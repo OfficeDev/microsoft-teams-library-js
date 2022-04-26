@@ -35,7 +35,6 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.returnFocus function', () => {
-      const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
@@ -53,37 +52,28 @@ describe('Testing pages module', () => {
             }
           });
 
-          it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+        it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-            pages.returnFocus(true);
 
-            const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(true);
-          });
+          pages.returnFocus(true);
 
-          it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(true);
+        });
 
-            pages.returnFocus(false);
+        it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-            const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(false);
-          });
-        } else {
-          it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => pages.returnFocus()).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          pages.returnFocus(false);
+
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(false);
+        });
       });
     });
 
@@ -116,7 +106,7 @@ describe('Testing pages module', () => {
           expect(messageForRegister.args[0]).toBe('focusEnter');
         });
 
-        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when set to true and  initialized with ${context} context`, async () => {
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when set to true and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
           let handlerInvoked = false;
@@ -1713,7 +1703,6 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.returnFocus function', () => {
-      const allowedContexts = [FrameContexts.content];
       it('pages.returnFocus should not allow calls before initialization', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
@@ -1731,37 +1720,28 @@ describe('Testing pages module', () => {
             }
           });
 
-          it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+        it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
 
-            pages.returnFocus(true);
 
-            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(true);
-          });
+          pages.returnFocus(true);
 
-          it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(true);
+        });
 
-            pages.returnFocus(false);
+        it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
 
-            const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
-            expect(returnFocusMessage).not.toBeNull();
-            expect(returnFocusMessage.args.length).toBe(1);
-            expect(returnFocusMessage.args[0]).toBe(false);
-          });
-        } else {
-          it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect(() => pages.returnFocus()).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          pages.returnFocus(false);
+
+          const returnFocusMessage = framelessPostMocks.findMessageByFunc('returnFocus');
+          expect(returnFocusMessage).not.toBeNull();
+          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args[0]).toBe(false);
+        });
       });
     });
 
