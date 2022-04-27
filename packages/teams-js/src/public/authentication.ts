@@ -485,7 +485,7 @@ export namespace authentication {
   }
 
   /**
-   * An interface that describes the Authentication pop up's parameters
+   * Describes the authentication pop-up parameters
    */
   export interface AuthenticatePopUpParameters {
     /**
@@ -513,7 +513,7 @@ export namespace authentication {
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
   /**
-   * An interface that describes the Authentication Token's Request Parameters
+   * Describes authentication token request parameters
    */
   export interface AuthTokenRequestParameters {
     /**

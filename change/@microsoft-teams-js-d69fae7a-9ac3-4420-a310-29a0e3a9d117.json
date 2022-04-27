@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added in missing comments for authentication",
+  "comment": "Added missing comments for authentication",
   "packageName": "@microsoft/teams-js",
   "email": "jdahiya8719@outlook.com",
   "dependentChangeType": "none"
