@@ -8,7 +8,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
@@ -24,8 +24,10 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized(FrameContexts.content);
-
+    ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('returnFocus', [navigateForward]);
   }
 
@@ -40,6 +42,9 @@ export namespace pages {
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('focusEnter', handler);
   }
 
@@ -51,6 +56,9 @@ export namespace pages {
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('setFrameContext', [frameInfo]);
   }
 
@@ -106,6 +114,9 @@ export namespace pages {
   export function getConfig(): Promise<InstanceConfig> {
     return new Promise<InstanceConfig>(resolve => {
       ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndUnwrap('settings.getSettings'));
     });
   }
@@ -130,7 +141,9 @@ export namespace pages {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       const errorMessage =
         'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
       resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
@@ -156,6 +169,9 @@ export namespace pages {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       if (runtime.isLegacyTeams) {
         resolve(send('executeDeepLink', createTeamsAppLink(params)));
       } else {
@@ -171,7 +187,9 @@ export namespace pages {
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('shareDeepLink', [
       deepLinkParameters.subPageId,
       deepLinkParameters.subPageLabel,
@@ -186,6 +204,9 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('fullScreenChange', handler);
   }
 
@@ -241,6 +262,9 @@ export namespace pages {
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
         resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
       });
@@ -254,6 +278,9 @@ export namespace pages {
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
       });
     }
@@ -266,6 +293,9 @@ export namespace pages {
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
       });
     }
@@ -306,6 +336,9 @@ export namespace pages {
      */
     export function setValidityState(validityState: boolean): void {
       ensureInitialized(FrameContexts.settings, FrameContexts.remove);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('settings.setValidityState', [validityState]);
     }
 
@@ -318,6 +351,9 @@ export namespace pages {
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(send('settings.setSettings', instanceConfig));
       });
     }
@@ -331,6 +367,9 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       ensureInitialized(FrameContexts.settings);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       saveHandler = handler;
       handler && sendMessageToParent('registerHandler', ['save']);
     }
@@ -344,6 +383,9 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       ensureInitialized(FrameContexts.remove, FrameContexts.settings);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       removeHandler = handler;
       handler && sendMessageToParent('registerHandler', ['remove']);
     }
@@ -364,6 +406,9 @@ export namespace pages {
      */
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('changeSettings', handler);
     }
 
@@ -504,6 +549,9 @@ export namespace pages {
     export function navigateBack(): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         const errorMessage = 'Back navigation is not supported in the current client or context.';
         resolve(sendAndDefaultError('navigateBack', errorMessage));
       });
@@ -517,6 +565,10 @@ export namespace pages {
      * @param handler The handler to invoke when the user presses their Team client's back button.
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
+      ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       backButtonPressHandler = handler;
       handler && sendMessageToParent('registerHandler', ['backButton']);
     }
@@ -552,6 +604,9 @@ export namespace pages {
      */
     export function enterFullscreen(): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('enterFullscreen', []);
     }
 
@@ -563,6 +618,9 @@ export namespace pages {
      */
     export function exitFullscreen(): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('exitFullscreen', []);
     }
     /**
@@ -589,6 +647,9 @@ export namespace pages {
      */
     export function onClick(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonClick', handler);
     }
 
@@ -599,6 +660,9 @@ export namespace pages {
      */
     export function onHoverEnter(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonHoverEnter', handler);
     }
 
@@ -609,6 +673,9 @@ export namespace pages {
      */
     export function onHoverLeave(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonHoverLeave', handler);
     }
 

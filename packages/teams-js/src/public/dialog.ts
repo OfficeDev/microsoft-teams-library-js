@@ -6,8 +6,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -80,11 +80,15 @@ export namespace dialog {
     messageFromChildHandler?: PostMessageChannel,
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     if (messageFromChildHandler) {
       registerHandler('messageForParent', messageFromChildHandler);
     }
-    sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
+    const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
       removeHandler('messageForParent');
     });
@@ -98,6 +102,9 @@ export namespace dialog {
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
     sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
@@ -116,6 +123,10 @@ export namespace dialog {
     message: any,
   ): void {
     ensureInitialized(FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     sendMessageToParent('messageForParent', [message]);
   }
 
@@ -129,6 +140,10 @@ export namespace dialog {
     message: any,
   ): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     sendMessageToParent('messageForChild', [message]);
   }
 
@@ -142,6 +157,10 @@ export namespace dialog {
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     // We need to remove the original 'messageForChild'
     // handler since the original does not allow for post messages.
     // It is replaced by the user specified listener that is passed in.
@@ -174,6 +193,9 @@ export namespace dialog {
      */
     export function resize(dimensions: DialogSize): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('tasks.updateTask', [dimensions]);
     }
 
@@ -206,11 +228,15 @@ export namespace dialog {
       messageFromChildHandler?: PostMessageChannel,
     ): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
       }
-      sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
+      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
+
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
         removeHandler('messageForParent');
       });
@@ -224,5 +250,44 @@ export namespace dialog {
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: urlDialogInfo.url,
+      height: urlDialogInfo.size ? urlDialogInfo.size.height : DialogDimension.Small,
+      width: urlDialogInfo.size ? urlDialogInfo.size.width : DialogDimension.Small,
+      title: urlDialogInfo.title,
+      fallbackUrl: urlDialogInfo.fallbackUrl,
+    };
+    return dialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: botUrlDialogInfo.url,
+      height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
+      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.width : DialogDimension.Small,
+      title: botUrlDialogInfo.title,
+      fallbackUrl: botUrlDialogInfo.fallbackUrl,
+      completionBotId: botUrlDialogInfo.completionBotId,
+    };
+    return dialogInfo;
   }
 }

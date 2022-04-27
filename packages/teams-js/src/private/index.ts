@@ -16,6 +16,7 @@ export {
   registerCustomHandler,
   uploadCustomApp,
   registerUserSettingsChangeHandler,
+  openFilePreview,
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { files } from './files';

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Adding minRuntimeConfig to uninitialize for various capabilities",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

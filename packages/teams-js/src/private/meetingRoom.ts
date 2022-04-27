@@ -4,9 +4,6 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
-/**
- * @alpha
- */
 export namespace meetingRoom {
   /**
    * @hidden
