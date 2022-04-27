@@ -2,7 +2,7 @@ import { version } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
@@ -40,6 +40,17 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
+          try {
+            pages.returnFocus();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -70,7 +81,18 @@ describe('Testing pages module', () => {
           'The library has not yet been initialized',
         );
       });
+
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.registerFocusEnterHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          expect.assertions(1);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
+            pages.registerFocusEnterHandler(emptyCallback);
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
         it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           pages.registerFocusEnterHandler(() => {
@@ -123,6 +145,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            expect.assertions(1);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.setCurrentFrame(frameContext);
+            } catch (e) {
+              expect(e).toMatchObject(errorNotSupportedOnPlatform);
+            }
+          });
+
           it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
@@ -153,6 +186,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            expect.assertions(1);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.initializeWithFrameContext(frameContext);
+            } catch (e) {
+              expect(e).toMatchObject(errorNotSupportedOnPlatform);
+            }
+          });
+
           it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
             await utils.initializeWithContext(context);
             pages.initializeWithFrameContext(frameContext);
@@ -199,6 +243,12 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.getConfig should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.getConfig()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.getConfig should successfully get settings when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.getConfig();
@@ -275,6 +325,12 @@ describe('Testing pages module', () => {
       Object.keys(FrameContexts).forEach(k => {
         const context = FrameContexts[k];
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
+          it(`pages.navigateCrossDomain should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
@@ -354,6 +410,12 @@ describe('Testing pages module', () => {
 
       Object.keys(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
+          it(`pages.navigateToApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.navigateToApp(navigateToAppParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.navigateToApp should allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
@@ -430,6 +492,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.shareDeepLink should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            expect.assertions(1);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.shareDeepLink(deepLinkParameters);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
           it('pages.shareDeepLink should successfully share a deep link in content context', async () => {
             await utils.initializeWithContext(context);
 
@@ -466,6 +539,16 @@ describe('Testing pages module', () => {
         );
       });
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
+          try {
+            pages.registerFullScreenHandler(() => true);
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
         it(`pages.registerFullScreenHandler should successfully register a full screen handler when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           pages.registerFullScreenHandler(() => {
@@ -541,6 +624,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.navigateToTab should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.navigateToTab(tabInstance)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.navigateToTab should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.navigateToTab(tabInstance)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             pages.tabs.navigateToTab(tabInstance);
@@ -584,6 +677,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.getTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.getTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.getTabInstances should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.getTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
@@ -629,6 +732,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.getMruTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.getMruTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.getMruTabInstances should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.getMruTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
@@ -693,6 +806,50 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.config.setValidityState(true);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.config.setValidityState(true);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context} when set to false`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.config.setValidityState(false);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages.tabs is not supported when initialized with ${context} when set to false`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.config.setValidityState(false);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.setValidityState should successfully set validity state to true when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.config.setValidityState(true);
@@ -743,6 +900,18 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.setConfig should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect(pages.config.setConfig(settingsObj)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it(`pages.config.setConfig should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect(pages.config.setConfig(settingsObj)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
             it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
@@ -775,6 +944,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerOnSaveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.config.registerOnSaveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerOnSaveHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.config.registerOnSaveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerOnSaveHandler should successfully register a save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -890,6 +1081,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerOnRemoveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.config.registerOnRemoveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerOnRemoveHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.config.registerOnRemoveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerOnRemoveHandler should successfully register a remove handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
 
@@ -961,6 +1174,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerChangeConfigHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.config.registerChangeConfigHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerChangeConfigHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.config.registerChangeConfigHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerChangeConfigHandler should successfully register a change settings handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1020,6 +1255,18 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.backStack.navigateBack should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.backStack.navigateBack should throw error when pages.backStack is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
             utils.initializeWithContext(context);
             pages.backStack.navigateBack();
@@ -1030,7 +1277,58 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect.assertions(1);
+            try {
+              pages.backStack.registerBackButtonHandler(() => true);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages.backStack is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect.assertions(1);
+            try {
+              pages.backStack.registerBackButtonHandler(() => true);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context} when set to false.`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect.assertions(1);
+            try {
+              pages.backStack.registerBackButtonHandler(() => false);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages.backStack is not supported when initialized with ${context} when set to false.`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect.assertions(1);
+            try {
+              pages.backStack.registerBackButtonHandler(() => false);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
           it('pages.backStack.registerBackButtonHandler should successfully register a back button handler and not call navigateBack if it returns true', async () => {
             await utils.initializeWithContext(context);
 
@@ -1094,6 +1392,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.fullTrust.enterFullScreen should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.fullTrust.enterFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.fullTrust.enterFullScreen should throw error when pages.fullTrust is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.fullTrust.enterFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.fullTrust.enterFullScreen should successfully enter fullscreen when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.fullTrust.enterFullscreen();
@@ -1120,6 +1440,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.fullTrust.exitFullscreen should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.fullTrust.exitFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.fullTrust.exitFullscreen should throw error when pages.fullTrust is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.fullTrust.exitFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.fullTrust.exitFullscreen should successfully exit fullscreen when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               pages.fullTrust.exitFullscreen();
@@ -1168,6 +1510,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onClick should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.appButton.onClick(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onClick should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.appButton.onClick(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1199,6 +1563,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onHoverEnter should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.appButton.onHoverEnter(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onHoverEnter should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.appButton.onHoverEnter(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1230,6 +1616,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onHoverLeave should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.appButton.onHoverLeave(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onHoverLeave should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.appButton.onHoverLeave(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
@@ -1298,6 +1706,17 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(4);
+          try {
+            pages.returnFocus();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it(`pages.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
 
@@ -1329,6 +1748,16 @@ describe('Testing pages module', () => {
         );
       });
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.registerFocusEnterHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          expect.assertions(4);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
+            pages.registerFocusEnterHandler(emptyCallback);
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
         it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           pages.registerFocusEnterHandler((x: boolean) => {
@@ -1390,6 +1819,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            expect.assertions(4);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.setCurrentFrame(frameContext);
+            } catch (e) {
+              expect(e).toMatchObject(errorNotSupportedOnPlatform);
+            }
+          });
+
           it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
@@ -1420,6 +1860,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            expect.assertions(4);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.initializeWithFrameContext(frameContext);
+            } catch (e) {
+              expect(e).toMatchObject(errorNotSupportedOnPlatform);
+            }
+          });
+
           it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.initializeWithFrameContext(frameContext);
@@ -1465,6 +1916,12 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.getConfig should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.getConfig()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.getConfig should successfully get settings when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.getConfig();
@@ -1511,6 +1968,12 @@ describe('Testing pages module', () => {
       Object.keys(FrameContexts).forEach(k => {
         const context = FrameContexts[k];
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
+          it(`pages.navigateCrossDomain should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
             expect.assertions(6);
             await framelessPostMocks.initializeWithContext(context);
@@ -1603,8 +2066,13 @@ describe('Testing pages module', () => {
 
       Object.keys(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
+          it(`pages.navigateToApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.navigateToApp(navigateToAppParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
           it(`pages.navigateToApp should allow calls from ${context} context`, async () => {
-            expect.assertions(4);
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
 
@@ -1621,7 +2089,6 @@ describe('Testing pages module', () => {
           it('pages.navigateToApp should successfully send the navigateToApp message', async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
-
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const navigateToAppMessage = framelessPostMocks.findMessageByFunc('pages.navigateToApp');
@@ -1640,7 +2107,6 @@ describe('Testing pages module', () => {
 
           it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
             await framelessPostMocks.initializeWithContext(context);
-
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const executeDeepLinkMessage = framelessPostMocks.findMessageByFunc('executeDeepLink');
@@ -1682,6 +2148,17 @@ describe('Testing pages module', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+          it(`pages.shareDeepLink should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            expect.assertions(4);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            try {
+              pages.shareDeepLink(deepLinkParameters);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
           it('pages.shareDeepLink should successfully share a deep link in content context', async () => {
             await framelessPostMocks.initializeWithContext(context);
 
@@ -1718,11 +2195,19 @@ describe('Testing pages module', () => {
         );
       });
       Object.values(FrameContexts).forEach(context => {
+        it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(4);
+          try {
+            pages.registerFullScreenHandler(() => true);
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
         it(`pages.registerFullScreenHandler should successfully register a full screen handler when initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
-          pages.registerFullScreenHandler((x: boolean) => {
-            return true;
-          });
+          pages.registerFullScreenHandler(() => true);
           const messageForRegister = framelessPostMocks.findMessageByFunc('registerHandler');
           expect(messageForRegister).not.toBeNull();
           expect(messageForRegister.args.length).toBe(1);
@@ -1786,6 +2271,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.navigateToTab should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.navigateToTab(tabInstance)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.navigateToTab should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.navigateToTab(tabInstance)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             pages.tabs.navigateToTab(tabInstance);
@@ -1817,6 +2312,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.getTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.getTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.getTabInstances should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.getTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
@@ -1868,6 +2373,16 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.tabs.getMruTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.tabs.getMruTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+          it(`pages.tabs.getMruTabInstances should throw error when pages.tabs is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.tabs.getMruTabInstances()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
@@ -1927,6 +2442,50 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.config.setValidityState(true);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.config.setValidityState(true);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context} when set to false`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.config.setValidityState(false);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.setValidityState should throw error when pages.tabs is not supported when initialized with ${context} when set to false`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.config.setValidityState(false);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.setValidityState should successfully set validity state to true when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setValidityState(true);
@@ -1977,6 +2536,17 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.setConfig should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect(pages.config.setConfig(settingsObj)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it(`pages.config.setConfig should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect(pages.config.setConfig(settingsObj)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
             it(`pages.config.setConfig should successfully set settings when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
@@ -2009,6 +2579,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerOnSaveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.config.registerOnSaveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerOnSaveHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.config.registerOnSaveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerOnSaveHandler should successfully register a save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2140,6 +2732,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerOnRemoveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.config.registerOnRemoveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerOnRemoveHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.config.registerOnRemoveHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerOnRemoveHandler should successfully register a remove handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
 
@@ -2217,6 +2831,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.config.registerChangeConfigHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.config.registerChangeConfigHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.config.registerChangeConfigHandler should throw error when pages.config is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.config.registerChangeConfigHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.config.registerChangeConfigHandler should successfully register a change settings handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2259,6 +2895,17 @@ describe('Testing pages module', () => {
         });
 
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.backStack.navigateBack should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.backStack.navigateBack should throw error when pages.backStack is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
           it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
             framelessPostMocks.initializeWithContext(context);
             pages.backStack.navigateBack();
@@ -2269,7 +2916,59 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+        it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
+            'The library has not yet been initialized',
+          );
+        });
+
         Object.values(FrameContexts).forEach(context => {
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect.assertions(4);
+            try {
+              pages.backStack.registerBackButtonHandler(() => true);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages.backStack is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect.assertions(4);
+            try {
+              pages.backStack.registerBackButtonHandler(() => true);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context} when set to false.`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect.assertions(4);
+            try {
+              pages.backStack.registerBackButtonHandler(() => false);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+          it(`pages.backStack.registerBackButtonHandler should throw error when pages.backStack is not supported when initialized with ${context} when set to false.`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+            expect.assertions(4);
+            try {
+              pages.backStack.registerBackButtonHandler(() => false);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
           it('pages.backStack.registerBackButtonHandler should successfully register a back button handler and not call navigateBack if it returns true', async () => {
             await framelessPostMocks.initializeWithContext(context);
 
@@ -2318,6 +3017,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.fullTrust.enterFullScreen should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.fullTrust.enterFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.fullTrust.enterFullScreen should throw error when pages.fullTrust is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.fullTrust.enterFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.fullTrust.enterFullScreen should successfully enter fullscreen when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.fullTrust.enterFullscreen();
@@ -2344,6 +3065,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.fullTrust.exitFullscreen should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.fullTrust.exitFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.fullTrust.exitFullscreen should throw error when pages.fullTrust is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.fullTrust.exitFullscreen();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.fullTrust.exitFullscreen should successfully exit fullscreen when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               pages.fullTrust.exitFullscreen();
@@ -2373,6 +3116,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onClick should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.appButton.onClick(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onClick should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.appButton.onClick(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2406,6 +3171,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onHoverEnter should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.appButton.onHoverEnter(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onHoverEnter should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.appButton.onHoverEnter(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
@@ -2441,6 +3228,28 @@ describe('Testing pages module', () => {
 
         Object.values(FrameContexts).forEach(context => {
           if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+            it(`pages.appButton.onHoverLeave should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(4);
+              try {
+                pages.appButton.onHoverLeave(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.appButton.onHoverLeave should throw error when pages.appButton is not supported when initialized with ${context}`, async () => {
+              await framelessPostMocks.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(4);
+              try {
+                pages.appButton.onHoverLeave(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
