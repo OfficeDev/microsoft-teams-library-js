@@ -190,7 +190,7 @@ export namespace pages {
   }
 
   /**
-   * Checks if pages capability is supported currently
+   * Checks if the current application host supports the pages capability
    * @returns true if the pages capability is enabled in runtime.supports.pages and
    * false if it is disabled
    */
