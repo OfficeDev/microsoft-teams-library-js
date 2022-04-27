@@ -1,14 +1,15 @@
-import { app } from '../../src/public/app';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { TeamInstanceParameters, ViewerActionTypes, UserSettingTypes } from '../../src/private/interfaces';
-import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
-import { Utils, MessageResponse, MessageRequest } from '../utils';
+import { TeamInstanceParameters, UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
-  sendCustomMessage,
   registerCustomHandler,
-  sendCustomEvent,
   registerUserSettingsChangeHandler,
+  sendCustomEvent,
+  sendCustomMessage,
+  openFilePreview,
 } from '../../src/private/privateAPIs';
+import { app } from '../../src/public/app';
+import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
+import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { MessageRequest, MessageResponse, Utils } from '../utils';
 
 describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -521,6 +522,62 @@ describe('AppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
+    });
+  });
+
+  describe('openFilePreview', () => {
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
+    const openFilePreviewParams = {
+      entityId: 'someEntityId',
+      title: 'someTitle',
+      description: 'someDescription',
+      type: 'someType',
+      objectUrl: 'someObjectUrl',
+      downloadUrl: 'someDownloadUrl',
+      webPreviewUrl: 'someWebPreviewUrl',
+      webEditUrl: 'someWebEditUrl',
+      baseUrl: 'someBaseUrl',
+      editFile: true,
+      subEntityId: 'someSubEntityId',
+      viewerAction: ViewerActionTypes.view,
+      fileOpenPreference: FileOpenPreference.Web,
+      conversationId: 'someConversationId',
+    };
+    Object.values(FrameContexts).forEach(context => {
+      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it('should successfully open a file preview with content frameContext', async () => {
+          await utils.initializeWithContext(context);
+
+          openFilePreview(openFilePreviewParams);
+
+          const message = utils.findMessageByFunc('openFilePreview');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(14);
+          expect(message.args[0]).toBe('someEntityId');
+          expect(message.args[1]).toBe('someTitle');
+          expect(message.args[2]).toBe('someDescription');
+          expect(message.args[3]).toBe('someType');
+          expect(message.args[4]).toBe('someObjectUrl');
+          expect(message.args[5]).toBe('someDownloadUrl');
+          expect(message.args[6]).toBe('someWebPreviewUrl');
+          expect(message.args[7]).toBe('someWebEditUrl');
+          expect(message.args[8]).toBe('someBaseUrl');
+          expect(message.args[9]).toBe(true);
+          expect(message.args[10]).toBe('someSubEntityId');
+          expect(message.args[11]).toBe('view');
+          expect(message.args[12]).toBe(FileOpenPreference.Web);
+          expect(message.args[13]).toBe('someConversationId');
+        });
+      } else {
+        it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => openFilePreview(openFilePreviewParams)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
   });
 });

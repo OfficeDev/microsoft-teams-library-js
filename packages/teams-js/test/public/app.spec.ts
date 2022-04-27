@@ -11,7 +11,7 @@ import {
   UserTeamRole,
 } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { runtime, teamsRuntimeConfig, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {
@@ -34,6 +34,7 @@ describe('AppSDK-app', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

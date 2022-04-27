@@ -5,9 +5,6 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace appInstallDialog {
   export interface OpenAppInstallDialogParams {
     appId: string;

@@ -1,9 +1,10 @@
-import { FramelessPostMocks } from '../framelessPostMocks';
-import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
-import { video } from '../../src/public/video';
-import { Utils } from '../utils';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { video } from '../../src/public/video';
+import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
 
 /**
  * Test cases for selectPeople API
@@ -20,6 +21,7 @@ describe('video', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      framedPlatformMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -35,29 +37,50 @@ describe('video', () => {
 
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        return;
+      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+        it('FRAMED - should not allow registerForVideoFrame calls from the wrong context', async () => {
+          await framedPlatformMock.initializeWithContext(context);
+
+          expect(() => video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+
+        it('FRAMELESS - should not allow registerForVideoFrame calls from the wrong context', async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          expect(() => video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       }
+    });
 
-      it('FRAMED - should not allow registerForVideoFrame calls from the wrong context', async () => {
-        await framedPlatformMock.initializeWithContext(context);
+    it('FRAMED - should throw error when video is not supported in runtime config', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(1);
+      try {
+        video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
 
-        expect(() => video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
+    it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      it('FRAMELESS - should not allow registerForVideoFrame calls from the wrong context', async () => {
-        await framelessPlatformMock.initializeWithContext(context);
-
-        expect(() => video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(4);
+      try {
+        video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     it('FRAMED - should successfully send registerForVideoFrame message', async () => {
@@ -311,28 +334,50 @@ describe('video', () => {
 
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        return;
+      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+        it('FRAMED - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
+          await framedPlatformMock.initializeWithContext(context);
+
+          expect(() => video.notifySelectedVideoEffectChanged(effectChangeType, effectId)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+
+        it('FRAMELESS - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          expect(() => video.notifySelectedVideoEffectChanged(effectChangeType, effectId)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       }
+    });
 
-      it('FRAMED - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
-        await framedPlatformMock.initializeWithContext(context);
+    it('FRAMED - should throw error when video is not supported in runtime config', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(1);
+      try {
+        video.notifySelectedVideoEffectChanged(effectChangeType, effectId);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
 
-        expect(() => video.notifySelectedVideoEffectChanged(effectChangeType, effectId)).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
-      it('FRAMELESS - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
-        await framelessPlatformMock.initializeWithContext(context);
+    it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-        expect(() => video.notifySelectedVideoEffectChanged(effectChangeType, effectId)).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(4);
+      try {
+        video.notifySelectedVideoEffectChanged(effectChangeType, effectId);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     it('FRAMED - should successfully send notifySelectedVideoEffectChanged message', async () => {
@@ -357,31 +402,52 @@ describe('video', () => {
   describe('registerForVideoEffect', () => {
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        return;
+      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+        it('FRAMED - should not allow registerForVideoEffect calls from the wrong context', async () => {
+          await framedPlatformMock.initializeWithContext(context);
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          expect(() => video.registerForVideoEffect(() => {})).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+
+        it('FRAMELESS - should not allow registerForVideoEffect calls from the wrong context', async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          expect(() => video.registerForVideoEffect(() => {})).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       }
+    });
 
-      it('FRAMED - should not allow registerForVideoEffect calls from the wrong context', async () => {
-        await framedPlatformMock.initializeWithContext(context);
+    it('FRAMED - should throw error when video is not supported in runtime config', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(1);
+      try {
+        video.registerForVideoEffect(() => {});
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => video.registerForVideoEffect(() => {})).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
+    it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
-      it('FRAMELESS - should not allow registerForVideoEffect calls from the wrong context', async () => {
-        await framelessPlatformMock.initializeWithContext(context);
-
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => video.registerForVideoEffect(() => {})).toThrowError(
-          `This call is only allowed in following contexts: ${JSON.stringify(
-            allowedContexts,
-          )}. Current context: "${context}".`,
-        );
-      });
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(4);
+      try {
+        video.registerForVideoEffect(() => {});
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     it('FRAMED - should successfully register effectParameterChange', async () => {
