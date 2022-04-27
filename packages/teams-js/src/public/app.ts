@@ -42,7 +42,7 @@ export namespace app {
   };
 
   /**
-   * Describes errors that caused app intiialization to fail
+   * Describes errors that caused app initialization to fail
    */
   export enum FailedReason {
     /**
@@ -173,7 +173,7 @@ export namespace app {
   }
 
   /**
-   * Represents information about the applicaation's host.
+   * Represents information about the application's host.
    */
   export interface AppHostInfo {
     /**
