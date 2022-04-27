@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
+import { errorNotSupportedOnPlatform } from './constants';
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.
@@ -149,6 +150,9 @@ export namespace menus {
    */
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     viewConfigItemPressHandler = handler;
     sendMessageToParent('setUpViews', [viewConfig]);
   }
@@ -169,6 +173,9 @@ export namespace menus {
    */
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     navBarMenuItemPressHandler = handler;
     sendMessageToParent('setNavBarMenu', [items]);
   }
@@ -202,6 +209,9 @@ export namespace menus {
    */
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     actionMenuItemPressHandler = handler;
     sendMessageToParent('showActionMenu', [params]);
   }
