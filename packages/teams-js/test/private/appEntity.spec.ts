@@ -2,6 +2,7 @@ import { appEntity } from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('appEntity', () => {
@@ -18,6 +19,7 @@ describe('appEntity', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -33,8 +35,8 @@ describe('appEntity', () => {
 
     Object.values(FrameContexts).forEach(context => {
       if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-        it('should throw not supported on platform error if appEntity capability is not supported', async () => {
-          await utils.initializeWithContext(FrameContexts.content);
+        it('appEntity.selectAppEntity should throw not supported on platform error if appEntity capability is not supported', async () => {
+          await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(1);
           try {
@@ -44,7 +46,7 @@ describe('appEntity', () => {
           }
         });
       } else {
-        it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
+        it(`appEntity.selectAppEntity should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
