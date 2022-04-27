@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Adding isSupported check to appEntity capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
