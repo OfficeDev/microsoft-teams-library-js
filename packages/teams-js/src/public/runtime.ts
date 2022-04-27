@@ -123,7 +123,7 @@ interface ICapabilityReqs {
   readonly hostClientTypes: Array<string>;
 }
 
-const v1HostClientTypes = [
+export const v1HostClientTypes = [
   HostClientType.desktop,
   HostClientType.web,
   HostClientType.android,
