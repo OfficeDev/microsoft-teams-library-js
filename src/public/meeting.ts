@@ -374,11 +374,12 @@ export namespace meeting {
     registerHandler('meeting.speakingStateChanged', handler);
   }
 
-  export function registerRaiseHandStateChangedHandler(handler: (raiseHandState: IRaiseHandState) => void): void {
+  export function registerRaiseHandStateChangedHandler(
+    handler: (raiseHandState: IRaiseHandState, error: SdkError) => void,
+  ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
-    // TODO: check what context 2d avatars loads in
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.raiseHandStateChanged', handler);
   }
