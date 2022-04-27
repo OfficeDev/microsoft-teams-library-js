@@ -74,7 +74,7 @@ export namespace appEntity {
     ensureInitialized(FrameContexts.content);
 
     if (!isSupported()) {
-      throw new Error(errorNotSupportedOnPlatform);
+      throw errorNotSupportedOnPlatform;
     }
 
     if (!threadId || threadId.length == 0) {

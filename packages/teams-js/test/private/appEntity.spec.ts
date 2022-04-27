@@ -23,14 +23,36 @@ describe('appEntity', () => {
   });
 
   describe('selectAppEntity', () => {
-    it('should throw not supported on platform error if appEntity capability is not supported', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    const allowedContexts = [FrameContexts.content];
 
-      expect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        appEntity.selectAppEntity('threadID', [], '', () => {});
-      }).toThrow(errorNotSupportedOnPlatform);
+    it('appEntity.selectAppEntity should not allow calls before initialization', () => {
+      expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    Object.values(FrameContexts).forEach(context => {
+      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it('should throw not supported on platform error if appEntity capability is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
+          try {
+            appEntity.selectAppEntity('threadID', [], '', () => {});
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+      } else {
+        it(`pages.returnFocus should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
   });
 });
