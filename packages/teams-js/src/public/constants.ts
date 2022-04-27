@@ -3,6 +3,7 @@ export enum HostClientType {
   web = 'web',
   android = 'android',
   ios = 'ios',
+  ipados = 'ipados',
   /**
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link teamsRoomsWindows} instead.
