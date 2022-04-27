@@ -36,9 +36,28 @@ export namespace interactive {
    * Information about the meetings backing fluid container.
    */
   export interface FluidContainerInfo {
+    /**
+     * State of the containerId mapping.
+     */
     containerState: ContainerState;
+
+    /**
+     * ID of the container to join for the meeting. Undefined if the container hasn't been 
+     * created yet.
+     */
     containerId: string | undefined;
+
+    /**
+     * If true, the local client should create the container and then save the created containers
+     * ID to the mapping service.
+     */
     shouldCreate: boolean;
+
+    /**
+     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but 
+     * another client is creating it. The local client should wait the specified amount of time and
+     * then ask for the container info again.
+     */
     retryAfter: number;
   }
 
@@ -67,8 +86,19 @@ export namespace interactive {
    * Information about the fluid service to connect to.
    */
   export interface FluidTenantInfo {
+    /**
+     * ID of the Fluid Relay Service tenant to use.
+     */
     tenantId: string;
+
+    /**
+     * Endpoint to configure for the orderer.
+     */
     ordererEndpoint: string;
+
+    /**
+     * Endpoint to configure for storage.
+     */
     storageEndpoint: string;
   }
 
