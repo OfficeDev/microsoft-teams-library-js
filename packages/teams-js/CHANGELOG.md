@@ -1,8 +1,30 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 13 Apr 2022 21:40:51 GMT and should not be manually modified.
+This log was last generated on Tue, 19 Apr 2022 16:08:56 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.5
+
+Tue, 19 Apr 2022 16:08:56 GMT
+
+### Major changes
+
+- Removed PostMessageChannel return from dialog.open, added in separate function sendMessageToDialog to make up for missing functionality"
+- Adding isSupported Check and unit test cases
+- Change DeepLinkParameters not to use subEntity* anymore
+- Adding isSupported work for chat and conversations
+- Adding isSupport check for files module
+
+### Minor changes
+
+- Adding in `runtime.isLegacy` handler for the following deep link capabilities: `appInstallDialog`, `calendar`, `call`.
+- Changed topic parameter name to `topicName` for `executeDeepLink` call in `chat.ts`
+
+### Patches
+
+- Moved conversations out of chat sub-capability and into their own top level capability in runtime.ts
+- Add legacy capability support check
 
 ## 2.0.0-beta.4
 
@@ -245,6 +267,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
     - `applyRuntimeConfig` is added
 
 - Promises introduced
+
   - The following APIs that took in a callback function as a parameter now instead return a Promise.
     - app APIs:
       - app.initialize
@@ -309,3 +332,5 @@ Tue, 01 Mar 2022 19:50:49 GMT
       - core.executeDeepLink
       - appInstallDialog.openAppInstallDialog
       - call.startCall
+
+- Changed TypeScript to output ES6 modules instead of CommonJS

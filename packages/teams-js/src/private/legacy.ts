@@ -2,7 +2,7 @@ import { sendAndUnwrap } from '../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import { HostClientType } from '../public/constants';
+import { errorNotSupportedOnPlatform, HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
@@ -27,6 +27,9 @@ export namespace legacy {
       ): Promise<UserJoinedTeamsInformation> {
         return new Promise<UserJoinedTeamsInformation>(resolve => {
           ensureInitialized();
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
 
           if (
             (GlobalVars.hostClientType === HostClientType.android ||
@@ -66,6 +69,9 @@ export namespace legacy {
     export function getConfigSetting(key: string): Promise<string> {
       return new Promise<string>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndUnwrap('getConfigSetting', key));
       });
     }

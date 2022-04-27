@@ -1,12 +1,13 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
   validateChatDeepLinkTopic,
-  validateChatDeepLinkUsers,
-} from '../internal/chatUtilities.spec';
+  validateDeepLinkUsers,
+} from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
 describe('chat', () => {
@@ -23,6 +24,7 @@ describe('chat', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -44,7 +46,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openChat(chatRequest);
-      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -96,7 +98,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, [chatRequest.user]);
+      validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
 
       utils.respondToMessage(executeDeepLinkMessage, true);
@@ -121,7 +123,7 @@ describe('chat', () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       const promise = chat.openGroupChat(chatRequest);
-      expect(promise).rejects.toThrowError(errorNotSupportedOnPlatform);
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls when no members are provided', () => {
@@ -184,7 +186,7 @@ describe('chat', () => {
 
       const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
       validateChatDeepLinkPrefix(chatDeepLink);
-      validateChatDeepLinkUsers(chatDeepLink, chatRequest.users);
+      validateDeepLinkUsers(chatDeepLink, chatRequest.users);
       validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
       validateChatDeepLinkTopic(chatDeepLink, chatRequest.topic);
 

@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Adding isSupported work for chat and conversations",
+  "comment": "Adding isSupported check to meetingRoom capability",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "patch"

@@ -1,13 +1,10 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
@@ -94,6 +91,9 @@ export namespace sharing {
 
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
     return new Promise<void>(resolve => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
   }

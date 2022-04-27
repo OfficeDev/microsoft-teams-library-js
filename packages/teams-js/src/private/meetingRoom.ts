@@ -1,11 +1,9 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
-/**
- * @alpha
- */
 export namespace meetingRoom {
   /**
    * @hidden
@@ -145,6 +143,9 @@ export namespace meetingRoom {
   export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
     return new Promise<MeetingRoomInfo>(resolve => {
       ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
     });
   }
@@ -164,6 +165,9 @@ export namespace meetingRoom {
         throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
       }
       ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleSdkError('meetingRoom.sendCommandToPairedMeetingRoom', commandName));
     });
   }
@@ -184,6 +188,9 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
       ensureInitialized();
       handler(capabilities);
@@ -203,6 +210,9 @@ export namespace meetingRoom {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized();
       handler(states);
