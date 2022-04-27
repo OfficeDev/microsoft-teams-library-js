@@ -1,4 +1,10 @@
-import { registerUserSettingsChangeHandler, uploadCustomApp, UserSettingTypes } from '@microsoft/teams-js';
+import {
+  FilePreviewParameters,
+  openFilePreview,
+  registerUserSettingsChangeHandler,
+  uploadCustomApp,
+  UserSettingTypes,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -80,11 +86,29 @@ const PrivateAPIs = (): ReactElement => {
     }
   };
 
+  const OpenFilePreview = (): React.ReactElement =>
+    ApiWithTextInput<FilePreviewParameters>({
+      name: 'openFilePreview',
+      title: 'Open File Preview',
+      onClick: {
+        validateInput: input => {
+          if (!input.entityId || !input.title || !input.type || !input.objectUrl) {
+            throw new Error('entityId, title, type and objectUrl are all required on the input object.');
+          }
+        },
+        submit: async input => {
+          openFilePreview(input);
+          return 'Called';
+        },
+      },
+    });
+
   return (
     <>
       <h1>privateAPIs</h1>
       <RegisterUserSettingsChangeHandler />
       <UploadCustomApp />
+      <OpenFilePreview />
       <input id="fileid" type="file" onChange={e => acceptFile(e.target.files)} hidden />
     </>
   );

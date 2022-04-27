@@ -16,9 +16,11 @@ export {
   registerCustomHandler,
   uploadCustomApp,
   registerUserSettingsChangeHandler,
+  openFilePreview,
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { files } from './files';
+export { interactive } from './interactive';
 export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';

@@ -4,6 +4,7 @@ import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 
 describe('meetingRoom', () => {
   const framelessPlatformMock = new FramelessPostMocks();
@@ -39,6 +40,7 @@ describe('meetingRoom', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      framedPlatformMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });

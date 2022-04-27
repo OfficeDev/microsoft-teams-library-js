@@ -6,8 +6,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { DialogDimension, FrameContexts } from './constants';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -84,7 +84,8 @@ export namespace dialog {
     if (messageFromChildHandler) {
       registerHandler('messageForParent', messageFromChildHandler);
     }
-    sendMessageToParent('tasks.startTask', [urlDialogInfo], (err: string, result: string | object) => {
+    const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
       submitHandler({ err, result });
       removeHandler('messageForParent');
     });
@@ -210,7 +211,9 @@ export namespace dialog {
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
       }
-      sendMessageToParent('tasks.startTask', [botUrlDialogInfo], (err: string, result: string | object) => {
+      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
+
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
         submitHandler({ err, result });
         removeHandler('messageForParent');
       });
@@ -224,5 +227,44 @@ export namespace dialog {
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: urlDialogInfo.url,
+      height: urlDialogInfo.size ? urlDialogInfo.size.height : DialogDimension.Small,
+      width: urlDialogInfo.size ? urlDialogInfo.size.width : DialogDimension.Small,
+      title: urlDialogInfo.title,
+      fallbackUrl: urlDialogInfo.fallbackUrl,
+    };
+    return dialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      url: botUrlDialogInfo.url,
+      height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
+      width: botUrlDialogInfo.size ? botUrlDialogInfo.size.width : DialogDimension.Small,
+      title: botUrlDialogInfo.title,
+      fallbackUrl: botUrlDialogInfo.fallbackUrl,
+      completionBotId: botUrlDialogInfo.completionBotId,
+    };
+    return dialogInfo;
   }
 }
