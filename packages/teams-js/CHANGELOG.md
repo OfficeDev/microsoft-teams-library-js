@@ -36,7 +36,9 @@ Thu, 28 Apr 2022 18:25:41 GMT
 
 ### Minor changes
 
-- - Added `dialog.initialize` function. - `dialog.initialize` is called during app intialization. - Modified `registerOnMessageFromParent` in `DialogAPI.tsx` for the Teams Test App to account for this new functionality.
+- Added `dialog.initialize` function.
+    - `dialog.initialize` is called during app intialization.
+    - Modified `registerOnMessageFromParent` in `DialogAPI.tsx` for the Teams Test App to account for this new functionality.
 
 ### Patches
 
