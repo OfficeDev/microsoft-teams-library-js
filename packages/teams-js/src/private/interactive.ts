@@ -42,7 +42,7 @@ export namespace interactive {
     containerState: ContainerState;
 
     /**
-     * ID of the container to join for the meeting. Undefined if the container hasn't been 
+     * ID of the container to join for the meeting. Undefined if the container hasn't been
      * created yet.
      */
     containerId: string | undefined;
@@ -54,7 +54,7 @@ export namespace interactive {
     shouldCreate: boolean;
 
     /**
-     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but 
+     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but
      * another client is creating it. The local client should wait the specified amount of time and
      * then ask for the container info again.
      */
@@ -157,10 +157,10 @@ export namespace interactive {
    * If this returns false, the client should delete the container they created and then call
    * `getFluidContainerId()` to get the ID of the container being used.
    * @param containerId ID of the fluid container the client created.
-   * @returns True if the client created the container that's being used.
+   * @returns A data structure with a `containerState` indicating the success or failure of the request.
    */
-  export function setFluidContainerId(containerId: string): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
+  export function setFluidContainerId(containerId: string): Promise<FluidContainerInfo> {
+    return new Promise<FluidContainerInfo>(resolve => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));

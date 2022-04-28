@@ -133,14 +133,20 @@ describe('interactive', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const created = true;
+      const mockContainerInfo: interactive.FluidContainerInfo = {
+        containerState: interactive.ContainerState.added,
+        containerId: '1234',
+        shouldCreate: false,
+        retryAfter: 0
+      };
+
       const promise = interactive.setFluidContainerId('test-container');
 
       const setFluidContainerIdMessage = utils.findMessageByFunc('interactive.setFluidContainerId');
       expect(setFluidContainerIdMessage).not.toBeNull();
       expect(setFluidContainerIdMessage.args).toStrictEqual(['test-container'])
-      utils.respondToMessage(setFluidContainerIdMessage, false, created);
-      await expect(promise).resolves.toStrictEqual(created);
+      utils.respondToMessage(setFluidContainerIdMessage, false, mockContainerInfo);
+      await expect(promise).resolves.toStrictEqual(mockContainerInfo);
     });
   });
 
