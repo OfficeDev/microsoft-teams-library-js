@@ -1,7 +1,9 @@
 import { logs } from '../../src/private/logs';
-import { Utils } from '../utils';
-import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public';
+import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { Utils } from '../utils';
 
 describe('logs', () => {
   // Use to send a mock message from the app.
@@ -17,6 +19,8 @@ describe('logs', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+
       app._uninitialize();
     }
   });
@@ -31,6 +35,18 @@ describe('logs', () => {
     });
 
     Object.values(FrameContexts).forEach(context => {
+      it('logs.registerGetLogHandler should throw error when logs is not supported.', async () => {
+        await utils.initializeWithContext(context);
+        expect.assertions(1);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+        try {
+          logs.registerGetLogHandler(() => '');
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
       it(`logs.registerGetLogHandler should successfully register a get log handler when initialized with ${context} content`, async () => {
         await utils.initializeWithContext(context);
 

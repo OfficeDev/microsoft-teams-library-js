@@ -110,6 +110,8 @@ export const validOrigins = [
   '*.sharepointonline.com',
   'outlook.office.com',
   'outlook-sdf.office.com',
+  'outlook.office365.com',
+  'outlook-sdf.office365.com',
   '*.teams.microsoft.com',
   'www.office.com',
   'word.office.com',
@@ -126,3 +128,19 @@ export const validOrigins = [
  * @internal
  */
 export const userOriginUrlValidationRegExp = /^https:\/\//;
+
+/**
+ * @hidden
+ * The protocol used for deep links into Teams
+ *
+ * @internal
+ */
+export const teamsDeepLinkProtocol = 'https';
+
+/**
+ * @hidden
+ * The host used for deep links into Teams
+ *
+ * @internal
+ */
+export const teamsDeepLinkHost = 'teams.microsoft.com';

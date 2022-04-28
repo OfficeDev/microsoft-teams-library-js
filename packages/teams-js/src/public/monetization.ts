@@ -1,13 +1,10 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace monetization {
   /**
    * @hidden
@@ -79,6 +76,9 @@ export namespace monetization {
     }
     const wrappedFunction: InputFunction<void> = () => {
       return new Promise<void>(resolve => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', planInfo));
       });
     };

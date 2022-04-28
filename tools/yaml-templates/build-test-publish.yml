@@ -80,6 +80,7 @@ steps:
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
     displayName: 'Post bundle analysis result as PR comment on GitHub'
+    enabled: false
 
   - task: PublishBuildArtifacts@1
     condition: and(

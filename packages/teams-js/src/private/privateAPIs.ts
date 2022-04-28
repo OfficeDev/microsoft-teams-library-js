@@ -4,16 +4,15 @@ import { Communication, sendMessageEventToChild, sendMessageToParent } from '../
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { UserSettingTypes } from './interfaces';
-import { menus } from './menus';
+import { FrameContexts } from '../public/constants';
+import { FilePreviewParameters, UserSettingTypes } from './interfaces';
 
 /**
  * @internal
  */
 export function initializePrivateApis(): void {
-  menus.initialize();
+  // To maintain backwards compatability, this function cannot be deleted as it is callable
 }
-
 /**
  * @hidden
  * Hide from docs.
@@ -118,4 +117,35 @@ export function registerUserSettingsChangeHandler(
   ensureInitialized();
 
   registerHandler('userSettingsChange', handler, true, [settingTypes]);
+}
+
+/**
+ * @hidden
+ * Hide from docs.
+ * ------
+ * Opens a client-friendly preview of the specified file.
+ *
+ * @param file - The file to preview.
+ */
+export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
+  ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+  const params = [
+    filePreviewParameters.entityId,
+    filePreviewParameters.title,
+    filePreviewParameters.description,
+    filePreviewParameters.type,
+    filePreviewParameters.objectUrl,
+    filePreviewParameters.downloadUrl,
+    filePreviewParameters.webPreviewUrl,
+    filePreviewParameters.webEditUrl,
+    filePreviewParameters.baseUrl,
+    filePreviewParameters.editFile,
+    filePreviewParameters.subEntityId,
+    filePreviewParameters.viewerAction,
+    filePreviewParameters.fileOpenPreference,
+    filePreviewParameters.conversationId,
+  ];
+
+  sendMessageToParent('openFilePreview', params);
 }

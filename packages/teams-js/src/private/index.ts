@@ -1,5 +1,3 @@
-export { bot } from './bot';
-export { menus } from './menus';
 export { logs } from './logs';
 export {
   ChatMembersInformation,
@@ -18,8 +16,9 @@ export {
   registerCustomHandler,
   uploadCustomApp,
   registerUserSettingsChangeHandler,
+  openFilePreview,
 } from './privateAPIs';
-export { chat } from './chat';
+export { conversations } from './conversations';
 export { files } from './files';
 export { legacy } from './legacy';
 export { meetingRoom } from './meetingRoom';
