@@ -14,24 +14,25 @@ Thu, 28 Apr 2022 18:25:41 GMT
 - Adding isSupported check to people capability
 - Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
 - Updated `files` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
-- Adding isSupported check and missing unit test cases for notifications capability
 - Git magic week of 4/18/2022 
 1. IMeetingDetails has been renamed to IMeetingDetailsResponse and IDetails has been replaced with IMeetingOrCallDetailsBase<T>. As such, meeting.getMeetingDetails() now takes in a callback which takes in IMeetingDetailsResponse rather than IMeetingDetails. 
 2. pages.returnFocus() now works in any FrameContext rather than just with content. 
 3. We have added the HostClientType `ipados`.
-- Adding isSupported check to appEntity capability
-- Adding isSupported check to dialog capability
-- Adding isSupported check to meetingRoom capability
-- Adding isSupported check for monetization capability
-- Adding isSupported check to teams capability
-- Adding isSupported check to sharing capability and unit test case
-- Adding isSupported check to video capability
-- Adding isSupported check to remoteCamera capability
-- Adding isSupported check to pages capability
-- Adding isSupported check to menus capability
-- Adding isSupported check to logs capability
-- Adding isSupported check for legacy capability
-- Adding isSupported check to teamsCore capability
+- Adding isSupported checks to all functions in the following capabilities:
+    - appEntity
+    - dialog
+    - meetingRoom
+    - monetization
+    - teams
+    - sharing (along with additional unit test case)
+    - notifications (along with additional unit test cases)
+    - video
+    - remoteCamera
+    - pages
+    - menus
+    - logs
+    - legacy
+    - teamsCore
 
 ### Minor changes
 
