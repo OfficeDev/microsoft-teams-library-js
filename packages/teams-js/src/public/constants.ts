@@ -3,6 +3,7 @@ export enum HostClientType {
   web = 'web',
   android = 'android',
   ios = 'ios',
+  ipados = 'ipados',
   /**
    * @deprecated
    * As of 2.0.0-beta.1, please use {@link teamsRoomsWindows} instead.
@@ -64,6 +65,7 @@ export enum DialogDimension {
   Small = 'small',
 }
 
+import { ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0-beta.1, please use {@link DialogDimension} instead.
@@ -79,3 +81,5 @@ export enum ChannelType {
   Private = 'Private',
   Shared = 'Shared',
 }
+
+export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };

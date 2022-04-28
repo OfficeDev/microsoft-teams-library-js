@@ -1,31 +1,7 @@
-import { FileOpenPreference, FilePreviewParameters, files } from '@microsoft/teams-js';
+import { FileOpenPreference, files, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
-
-const CheckFilesCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkCapabilityFiles',
-    title: 'Check Files Capability',
-    onClick: async () => `Files module ${files.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
-const OpenFilePreview = (): React.ReactElement =>
-  ApiWithTextInput<FilePreviewParameters>({
-    name: 'openFilePreview',
-    title: 'Open File Preview',
-    onClick: {
-      validateInput: input => {
-        if (!input.entityId || !input.title || !input.type || !input.objectUrl) {
-          throw new Error('entityId, title, type and objectUrl are all required on the input object.');
-        }
-      },
-      submit: async input => {
-        files.openFilePreview(input);
-        return 'Called';
-      },
-    },
-  });
 
 const GetCloudStorageFolders = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -37,9 +13,16 @@ const GetCloudStorageFolders = (): React.ReactElement =>
           throw new Error('input is required and it has be a string.');
         }
       },
-      submit: async input => {
-        const results = await files.getCloudStorageFolders(input);
-        return JSON.stringify(results);
+      submit: async (input, setResult) => {
+        const callback = (error: SdkError, folders: files.CloudStorageFolder[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(folders));
+          }
+        };
+        await files.getCloudStorageFolders(input, callback);
+        return '';
       },
     },
   });
@@ -54,9 +37,17 @@ const AddCloudStorageFolder = (): React.ReactElement =>
           throw new Error('input is required and it has be a string.');
         }
       },
-      submit: async input => {
-        const [isFolderAdded, folders] = await files.addCloudStorageFolder(input);
-        return JSON.stringify({ isFolderAdded, folders });
+      submit: async (input, setResult) => {
+        const callback = (error: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify({ isFolderAdded, folders }));
+          }
+        };
+
+        await files.addCloudStorageFolder(input, callback);
+        return '';
       },
     },
   });
@@ -76,9 +67,17 @@ const DeleteCloudStorageFolder = (): React.ReactElement =>
           throw new Error('channelId and folderToDelete are required.');
         }
       },
-      submit: async input => {
-        const result = await files.deleteCloudStorageFolder(input.channelId, input.folderToDelete);
-        return JSON.stringify(result);
+      submit: async (input, setResult) => {
+        const callback = (error: SdkError, isFolderDeleted: boolean): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(isFolderDeleted));
+          }
+        };
+
+        await files.deleteCloudStorageFolder(input.channelId, input.folderToDelete, callback);
+        return '';
       },
     },
   });
@@ -95,9 +94,16 @@ const GetCloudStorageFolderContents = (): React.ReactElement =>
     onClick: {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
-      submit: async input => {
-        const result = await files.getCloudStorageFolderContents(input.folder, input.providerCode);
-        return JSON.stringify(result);
+      submit: async (input, setResult) => {
+        const callback = (error: SdkError, items: files.CloudStorageFolderItem[]): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(items));
+          }
+        };
+        await files.getCloudStorageFolderContents(input.folder, input.providerCode, callback);
+        return '';
       },
     },
   });
@@ -128,8 +134,16 @@ const GetExternalProviders = (): React.ReactElement =>
     title: 'Get External Providers',
     label: 'excludeAddedProviders',
     onClick: async (excludeAddedProviders: boolean) => {
-      const result = await files.getExternalProviders(excludeAddedProviders);
-      return JSON.stringify(result);
+      let result;
+      const callback = (error: SdkError, providers: files.IExternalProvider[]): void => {
+        if (error) {
+          result = JSON.stringify(error);
+        } else {
+          result = JSON.stringify(providers);
+        }
+      };
+      await files.getExternalProviders(excludeAddedProviders, callback);
+      return result;
     },
   });
 
@@ -145,14 +159,23 @@ const CopyMoveFiles = (): ReactElement =>
     name: 'copyMoveFiles',
     title: 'Copy Move Files',
     onClick: {
-      submit: async input => {
+      submit: async (input, setResult) => {
+        const callback = (error?: SdkError): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('Completed');
+          }
+        };
         await files.copyMoveFiles(
           input.selectedFiles,
           input.providerCode,
           input.destinationFolder,
           input.destinationProviderCode,
+          false,
+          callback,
         );
-        return 'Completed';
+        return '';
       },
       validateInput: x => {
         if (!x.selectedFiles || !x.providerCode || !x.destinationFolder || !x.destinationProviderCode) {
@@ -164,18 +187,47 @@ const CopyMoveFiles = (): ReactElement =>
     },
   });
 
+const GetFileDownloads = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'getFileDownloads',
+    title: 'Get File Downloads',
+    onClick: async setResult => {
+      const callback = (error?: SdkError, files?: files.IFileItem[]): void => {
+        if (error) {
+          setResult(JSON.stringify(error));
+        } else {
+          setResult(JSON.stringify(files));
+        }
+      };
+
+      files.getFileDownloads(callback);
+      return '';
+    },
+  });
+
+const OpenDownloadFolder = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'openDownloadFolder',
+    title: 'Open Download Folder',
+    onClick: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      files.openDownloadFolder('fileObjectId', () => {});
+      return 'Opened download folder';
+    },
+  });
+
 const FilesAPIs = (): ReactElement => (
   <>
     <h1>files</h1>
-    <OpenFilePreview />
     <GetCloudStorageFolders />
     <AddCloudStorageFolder />
     <DeleteCloudStorageFolder />
     <GetCloudStorageFolderContents />
     <OpenCloudStorageFile />
-    <CheckFilesCapability />
     <GetExternalProviders />
     <CopyMoveFiles />
+    <GetFileDownloads />
+    <OpenDownloadFolder />
   </>
 );
 

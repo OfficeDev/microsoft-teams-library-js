@@ -22,15 +22,17 @@ export {
   DialogInfo,
   TeamInformation,
   FileOpenPreference,
-  OpenConversationRequest,
   LocaleInfo,
   FrameInfo,
+  ShareDeepLinkParameters,
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
+export { chat } from './chat';
 export { dialog } from './dialog';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
+export { menus } from './menus';
 export { media } from './media';
 export { location } from './location';
 export { meeting } from './meeting';
@@ -41,6 +43,7 @@ export { teamsCore } from './teamsAPIs';
 export { people } from './people';
 export { video } from './video';
 export { sharing } from './sharing';
+export { stageView } from './stageView';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
 export {

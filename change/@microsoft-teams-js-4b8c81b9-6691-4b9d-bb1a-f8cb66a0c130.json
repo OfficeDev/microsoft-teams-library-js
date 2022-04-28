@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Adding isSupported check and missing unit test cases for notifications capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

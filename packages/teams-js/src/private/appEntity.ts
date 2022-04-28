@@ -1,12 +1,11 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 /**
  * @hidden
  * Namespace to interact with the application entities specific part of the SDK.
- *
- * @alpha
  */
 export namespace appEntity {
   /**
@@ -14,8 +13,6 @@ export namespace appEntity {
    * Hide from docs
    * --------
    * Information on an app entity
-   *
-   * @alpha
    */
   export interface AppEntity {
     /**
@@ -61,8 +58,6 @@ export namespace appEntity {
    * @param callback Callback that will be triggered once the app entity information is available.
    *                 The callback takes two arguments: an SdkError in case something happened (i.e.
    *                 no permissions to execute the API) and the app entity configuration, if available
-   *
-   * @alpha
    */
   export function selectAppEntity(
     threadId: string,
@@ -71,6 +66,10 @@ export namespace appEntity {
     callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     if (!threadId || threadId.length == 0) {
       throw new Error('[appEntity.selectAppEntity] threadId name cannot be null or empty');
