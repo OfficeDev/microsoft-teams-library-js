@@ -169,6 +169,11 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
+/**
+ * @deprecated
+ * As of 2.0.0-beta.1, please use {@link app.Context} instead.
+ * Represents structure of the received context message.
+ */
 export interface Context {
   /**
    * @hidden
