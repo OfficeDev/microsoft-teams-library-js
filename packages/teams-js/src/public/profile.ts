@@ -41,21 +41,20 @@ export namespace profile {
   }
 
   /**
-   * The type of the persona to resolve.
-   *  - User: An organization or consumer user.
-   *  - External: A user external to the current organization.
-   *  - NotResolved: A user with unknown type.
+   * The type of modalities that are supported when showing a profile.
+   * Can be provided as an optional hint with the request and will be
+   * respected if the hosting M365 application supports it.
    */
-  export type PersonaType = 'User' | 'External' | 'NotResolved';
+  export type Modality = 'Card' | 'Expanded';
 
   /**
-   * The type of the card trigger.
+   * The type of the profile trigger.
    *  - MouseHover: The user hovered a target.
    *  - MouseClick: The user clicked a target.
-   *  - KeyboardPress: The user initiated the card with their keyboard (typically pressing enter or space while focusing a target).
-   *  - HostAppRequest: The card is being opened programmatically. TODO: Rename this
+   *  - KeyboardPress: The user initiated the show profile request with their keyboard.
+   *  - AppRequest: The show profile request is happening programmatically, without direct user interaction.
    */
-  export type TriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'HostAppRequest';
+  export type TriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'AppRequest';
 
   /**
    * The set of identifiers that are supported for resolving the persona.
@@ -80,11 +79,6 @@ export namespace profile {
      * The user principle name.
      */
     readonly Upn?: string;
-
-    /**
-     * The type of the persona.
-     */
-    readonly PersonaType: PersonaType;
   };
 
   /**
@@ -106,6 +100,11 @@ export namespace profile {
    * Input parameters provided to the showProfile API.
    */
   export interface ShowProfileRequest {
+    /**
+     * An optional hint to the hosting M365 application about which modality of the profile you want to show.
+     */
+    modality?: Modality;
+
     /**
      * The information about the persona to show the profile for.
      */

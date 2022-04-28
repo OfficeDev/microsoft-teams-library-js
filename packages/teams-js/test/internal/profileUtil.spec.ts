@@ -3,13 +3,18 @@ import { profile } from '../../src/public/profile';
 
 describe('validateShowProfileRequest', () => {
   const validInput: profile.ShowProfileRequest = {
-    persona: { identifiers: { PersonaType: 'User', Smtp: 'test@microsoft.com' }, displayName: 'test' },
+    persona: { identifiers: { Smtp: 'test@microsoft.com' }, displayName: 'test' },
     targetElementBoundingRect: { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0 } as DOMRect,
     triggerType: 'MouseHover',
   };
 
   it('should return false for empty input', () => {
     expect(validateShowProfileRequest(null)).toBeFalsy();
+  });
+
+  it('should return false if modality is not a string', () => {
+    const invalidModality = { ...validInput, modality: 1 as unknown } as profile.ShowProfileRequest;
+    expect(validateShowProfileRequest(invalidModality)).toBeFalsy();
   });
 
   it('should return false if persona property is missing', () => {
@@ -20,7 +25,7 @@ describe('validateShowProfileRequest', () => {
   it('should return false if persona display name is not a string', () => {
     const invalidDisplayName = {
       ...validInput,
-      persona: { ...validInput.persona, displayName: (1 as unknown) as unknown },
+      persona: { ...validInput.persona, displayName: 1 as unknown },
     } as profile.ShowProfileRequest;
     expect(validateShowProfileRequest(invalidDisplayName)).toBeFalsy();
   });
@@ -36,7 +41,7 @@ describe('validateShowProfileRequest', () => {
   it('should return false if persona identifiers property is not an object', () => {
     const invalidIdentifiers = {
       ...validInput,
-      persona: { ...validInput.persona, identifiers: (1 as unknown) as unknown },
+      persona: { ...validInput.persona, identifiers: 1 as unknown },
     } as profile.ShowProfileRequest;
     expect(validateShowProfileRequest(invalidIdentifiers)).toBeFalsy();
   });
@@ -67,36 +72,12 @@ describe('validateShowProfileRequest', () => {
     expect(validateShowProfileRequest(invalidTriggerType)).toBeFalsy();
   });
 
-  it('should return false if persona type property is missing', () => {
-    const missingPersonaType = {
-      ...validInput,
-      persona: {
-        ...validInput.persona,
-        identifiers: { ...validInput.persona.identifiers, PersonaType: undefined },
-      },
-    } as profile.ShowProfileRequest;
-
-    expect(validateShowProfileRequest(missingPersonaType)).toBeFalsy();
-  });
-
-  it('should return false if persona type property is not a string', () => {
-    const invalidPersonaType = {
-      ...validInput,
-      persona: {
-        ...validInput.persona,
-        identifiers: { ...validInput.persona.identifiers, PersonaType: 1 as unknown },
-      },
-    } as profile.ShowProfileRequest;
-
-    expect(validateShowProfileRequest(invalidPersonaType)).toBeFalsy();
-  });
-
   it('should return false if no identifiers were passed', () => {
     const noIdentifiers = {
       ...validInput,
       persona: {
         ...validInput.persona,
-        identifiers: { PersonaType: validInput.persona.identifiers.PersonaType },
+        identifiers: {},
       },
     } as profile.ShowProfileRequest;
 
@@ -108,7 +89,7 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: {
         ...validInput.persona,
-        identifiers: { AadObjectId: 1 as unknown, PersonaType: validInput.persona.identifiers.PersonaType },
+        identifiers: { AadObjectId: 1 as unknown },
       },
     } as profile.ShowProfileRequest;
 
@@ -116,7 +97,7 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: {
         ...validInput.persona,
-        identifiers: { Smtp: 1 as unknown, PersonaType: validInput.persona.identifiers.PersonaType },
+        identifiers: { Smtp: 1 as unknown },
       },
     } as profile.ShowProfileRequest;
 
@@ -124,7 +105,7 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: {
         ...validInput.persona,
-        identifiers: { TeamsMri: 1 as unknown, PersonaType: validInput.persona.identifiers.PersonaType },
+        identifiers: { TeamsMri: 1 as unknown },
       },
     } as profile.ShowProfileRequest;
 
@@ -132,7 +113,7 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: {
         ...validInput.persona,
-        identifiers: { Upn: 1 as unknown, PersonaType: validInput.persona.identifiers.PersonaType },
+        identifiers: { Upn: 1 as unknown },
       },
     } as profile.ShowProfileRequest;
 

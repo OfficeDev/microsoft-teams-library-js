@@ -36,7 +36,7 @@ describe('profile', () => {
           await desktopPlatformMock.initializeWithContext(context);
 
           const request: profile.ShowProfileRequest = {
-            persona: { identifiers: { PersonaType: 'User', Smtp: 'test@microsoft.com' }, displayName: 'test' },
+            persona: { identifiers: { Smtp: 'test@microsoft.com' }, displayName: 'test' },
             targetElementBoundingRect: {
               top: 0,
               left: 0,

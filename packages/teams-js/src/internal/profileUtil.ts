@@ -13,6 +13,11 @@ export function validateShowProfileRequest(showProfileRequest: profile.ShowProfi
     return false;
   }
 
+  // Validate modality
+  if (showProfileRequest.modality && typeof showProfileRequest.modality !== 'string') {
+    return false;
+  }
+
   // Validate persona
   if (
     !showProfileRequest.persona ||
@@ -40,10 +45,6 @@ export function validateShowProfileRequest(showProfileRequest: profile.ShowProfi
 
 function validatePersonaIdentifiers(identifiers: profile.PersonaIdentifiers): boolean {
   if (!identifiers || typeof identifiers !== 'object') {
-    return false;
-  }
-
-  if (!identifiers.PersonaType || typeof identifiers.PersonaType !== 'string') {
     return false;
   }
 
