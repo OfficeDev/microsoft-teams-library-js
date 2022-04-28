@@ -14,7 +14,7 @@ const postbump = (packagePath, packageName, packageVersion) => {
 const customRenderEntry = ChangelogEntry => new Promise(res => res(`- ${ChangelogEntry.comment}`));
 
 module.exports = {
-  branch: 'origin/2.0-preview',
+  branch: 'origin/main',
   bumpDeps: false,
   disallowedChangeTypes: ['prerelease'],
   generateChangelog: true,
