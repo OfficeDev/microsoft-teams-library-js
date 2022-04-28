@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "- Added `dialog.initialize` function. - `dialog.initialize` is called during app intialization. - Modified `registerOnMessageFromParent` in `DialogAPI.tsx` for the Teams Test App to account for this new functionality.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "patch"
-}
