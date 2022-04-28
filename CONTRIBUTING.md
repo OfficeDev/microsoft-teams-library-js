@@ -1,4 +1,4 @@
-# How to Contribute in 2.0-preview
+# How to Contribute
 
 One of the best ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
 
@@ -6,10 +6,10 @@ One of the best ways to contribute is to participate in discussions and discuss 
 
 1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
 2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
-3. Create a branch off the `2.0-preview` branch in your fork. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
+3. Create a branch off the `main` branch in your fork. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
 4. Commit your changes.
 5. Run `yarn changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Changelog section.
-6. Create a [pull request against the upstream's `2.0-preview` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
+6. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
 7. A user with write access to the upstream repo will need to trigger the checks that run on pull requests in the repo.
 8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch and/or fork.
 
@@ -91,7 +91,7 @@ Exa2)
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.
 
-The TeamsJS Client SDK `2.0-preview` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `yarn changefile` from the monorepo root to generate change files.
+The TeamsJS Client SDK `main` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `yarn changefile` from the monorepo root to generate change files.
 
 Beachball generates JSON change files based on a few simple answers from you:
 
