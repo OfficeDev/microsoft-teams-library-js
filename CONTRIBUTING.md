@@ -42,10 +42,19 @@ the PR.
 
 Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
 
-1. Add the API as a new capability or subcapability rather than adding to an existing capability.
-2. In [runtime.ts](packages/teams/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`.
+1. Add the API as a new capability or subcapability rather than adding to an existing capability. Please look at other capabilities such as [calendar.ts](packages/teams-js/src/public/calendar.ts) for examples of how to structure a capability. There must be an isSupported() function with every capability which is a simple boolean check for seeing if `runtime.supports` contains the capability.
 
-Exa)
+e.g.
+
+```
+export function isSupported(): boolean {
+  return runtime.supports.newCapability? true : false;
+}
+```
+
+2. In [runtime.ts](packages/teams-js/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`.
+
+e.g.
 
 ```
 // Object key is type string, value is type Array<ICapabilityReqs>
@@ -64,7 +73,7 @@ Exa)
 
 If you're adding a capability onto an already existing version requirement, simply add your object into the existing array.
 
-Exa2)
+e.g.
 
 ```
 // Object key is type string, value is type Array<ICapabilityReqs>
