@@ -8,12 +8,12 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Navigation specific part of the SDK.
+ * Navigation-specific part of the SDK.
  *
  * @beta
  */
@@ -24,13 +24,16 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized(FrameContexts.content);
-
+    ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('returnFocus', [navigateForward]);
   }
 
   /**
    * @hidden
+   *
    * Registers a handler when focus needs to be passed from teams to the place of choice on app.
    *
    * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
@@ -39,14 +42,35 @@ export namespace pages {
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('focusEnter', handler);
   }
 
+  /**
+   * Sets/Updates the current frame with new information
+   *
+   * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
+   * user clicks 'Go To Website'
+   */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
     ensureInitialized(FrameContexts.content);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('setFrameContext', [frameInfo]);
   }
 
+  /**
+   * Initializes the library with context information for the frame
+   *
+   * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
+   *  user clicks 'Go To Website'
+   * @param callback - An optional user-set callback that is executed once the app has finished initialization.
+   * @param validMessageOrigins - An optional list of cross-frame message origins. They must have
+   * https: protocol otherwise they will be ignored. Example: https:www.example.com
+   */
   export function initializeWithFrameContext(
     frameInfo: FrameInfo,
     callback?: () => void,
@@ -56,6 +80,9 @@ export namespace pages {
     setCurrentFrame(frameInfo);
   }
 
+  /**
+   * Defines the configuration of the current or desired instance
+   */
   export interface InstanceConfig {
     /**
      * A suggested display name for the new content.
@@ -87,6 +114,9 @@ export namespace pages {
   export function getConfig(): Promise<InstanceConfig> {
     return new Promise<InstanceConfig>(resolve => {
       ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndUnwrap('settings.getSettings'));
     });
   }
@@ -111,7 +141,9 @@ export namespace pages {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       const errorMessage =
         'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
       resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
@@ -137,6 +169,9 @@ export namespace pages {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       if (runtime.isLegacyTeams) {
         resolve(send('executeDeepLink', createTeamsAppLink(params)));
       } else {
@@ -152,7 +187,9 @@ export namespace pages {
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('shareDeepLink', [
       deepLinkParameters.subPageId,
       deepLinkParameters.subPageLabel,
@@ -167,11 +204,16 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     registerHandler('fullScreenChange', handler);
   }
 
   /**
-   * Checks if page capability is supported currently
+   * Checks if the current application host supports the pages capability
+   * @returns true if the pages capability is enabled in runtime.supports.pages and
+   * false if it is disabled
    */
   export function isSupported(): boolean {
     return runtime.supports.pages ? true : false;
@@ -220,6 +262,9 @@ export namespace pages {
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
         resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
       });
@@ -228,29 +273,37 @@ export namespace pages {
      * Allows an app to retrieve for this user tabs that are owned by this app.
      * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
      * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
-     * @returns Promise that resolves with the {@link TabInformation}.
+     * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
       });
     }
 
     /**
      * Allows an app to retrieve the most recently used tabs for this user.
-     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use
-     * @returns Promise that resolves with the {@link TabInformation}.
+     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use.
+     * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
       });
     }
 
     /**
-     * Checks if pages.tabs capability is supported currently
+     * Checks if the current application host supports the pages.tab capability
+     * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
@@ -264,6 +317,13 @@ export namespace pages {
     let saveHandler: (evt: SaveEvent) => void;
     let removeHandler: (evt: RemoveEvent) => void;
 
+    /**
+     * @hidden
+     * Hide from docs because this function is only used during initialization
+     * ------------------
+     * Adds register handlers for settings.save and settings.remove upon initialization. Function is called in {@link app.initializeHelper}
+     * @internal
+     */
     export function initialize(): void {
       registerHandler('settings.save', handleSave, false);
       registerHandler('settings.remove', handleRemove, false);
@@ -276,6 +336,9 @@ export namespace pages {
      */
     export function setValidityState(validityState: boolean): void {
       ensureInitialized(FrameContexts.settings, FrameContexts.remove);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('settings.setValidityState', [validityState]);
     }
 
@@ -288,6 +351,9 @@ export namespace pages {
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         resolve(send('settings.setSettings', instanceConfig));
       });
     }
@@ -301,6 +367,9 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       ensureInitialized(FrameContexts.settings);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       saveHandler = handler;
       handler && sendMessageToParent('registerHandler', ['save']);
     }
@@ -314,6 +383,9 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       ensureInitialized(FrameContexts.remove, FrameContexts.settings);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       removeHandler = handler;
       handler && sendMessageToParent('registerHandler', ['remove']);
     }
@@ -329,14 +401,21 @@ export namespace pages {
     }
 
     /**
-     * Registers a handler for when the user reconfigurated tab
+     * Registers a handler for when the tab configuration is changed by the user
      * @param handler The handler to invoke when the user click on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('changeSettings', handler);
     }
 
+    /**
+     * Describes the results of the settings.save event. Includes result, notifySuccess, and notifyFailure
+     * to indicate the return object (result) and the status of whether the settings.save call succeeded or not and why.
+     */
     export interface SaveEvent {
       /**
        * Object containing properties passed as arguments to the settings.save event.
@@ -353,6 +432,10 @@ export namespace pages {
       notifyFailure(reason?: string): void;
     }
 
+    /**
+     * Describes the results of the settings.remove event. Includes notifySuccess, and notifyFailure
+     * to indicate the status of whether the settings.save call succeeded or not and why.
+     */
     export interface RemoveEvent {
       /**
        * Indicates that the underlying resource has been removed and the content can be removed.
@@ -365,6 +448,9 @@ export namespace pages {
       notifyFailure(reason?: string): void;
     }
 
+    /**
+     * Parameters used in the settings.save event
+     */
     export interface SaveParameters {
       /**
        * Connector's webhook Url returned as arguments to settings.save event as part of user clicking on Save
@@ -436,7 +522,9 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.config capability is supported currently
+     * Checks if the current application host supports the pages.config capability
+     * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
@@ -461,6 +549,9 @@ export namespace pages {
     export function navigateBack(): Promise<void> {
       return new Promise<void>(resolve => {
         ensureInitialized();
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
         const errorMessage = 'Back navigation is not supported in the current client or context.';
         resolve(sendAndDefaultError('navigateBack', errorMessage));
       });
@@ -474,6 +565,10 @@ export namespace pages {
      * @param handler The handler to invoke when the user presses their Team client's back button.
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
+      ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       backButtonPressHandler = handler;
       handler && sendMessageToParent('registerHandler', ['backButton']);
     }
@@ -485,13 +580,21 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.backStack capability is supported currently
+     * Checks if the current application host supports the pages.backStack capability
+     * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
     }
   }
 
+  /**
+   * @hidden
+   * Hide from docs
+   * ------
+   * Namespace to interact with the full-trust part of the SDK. Limited to 1P apps
+   */
   export namespace fullTrust {
     /**
      * @hidden
@@ -501,6 +604,9 @@ export namespace pages {
      */
     export function enterFullscreen(): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('enterFullscreen', []);
     }
 
@@ -512,10 +618,18 @@ export namespace pages {
      */
     export function exitFullscreen(): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent('exitFullscreen', []);
     }
     /**
-     * Checks if pages.fullTrust capability is supported currently
+     * @hidden
+     * Hide from docs
+     * ------
+     * Checks if the current application host supports the pages.fullTrust capability
+     * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
@@ -533,6 +647,9 @@ export namespace pages {
      */
     export function onClick(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonClick', handler);
     }
 
@@ -543,6 +660,9 @@ export namespace pages {
      */
     export function onHoverEnter(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonHoverEnter', handler);
     }
 
@@ -553,11 +673,16 @@ export namespace pages {
      */
     export function onHoverLeave(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       registerHandler('appButtonHoverLeave', handler);
     }
 
     /**
      * Checks if pages.appButton capability is supported currently
+     * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
