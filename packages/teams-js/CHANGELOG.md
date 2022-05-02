@@ -1,8 +1,53 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 19 Apr 2022 16:08:56 GMT and should not be manually modified.
+This log was last generated on Thu, 28 Apr 2022 18:25:41 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.6
+
+Thu, 28 Apr 2022 18:25:41 GMT
+
+### Major changes
+
+- Updated `media` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Adding isSupported check to people capability
+- Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Updated `files` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Git magic week of 4/18/2022 
+1. IMeetingDetails has been renamed to IMeetingDetailsResponse and IDetails has been replaced with IMeetingOrCallDetailsBase<T>. As such, meeting.getMeetingDetails() now takes in a callback which takes in IMeetingDetailsResponse rather than IMeetingDetails. 
+2. pages.returnFocus() now works in any FrameContext rather than just with content. 
+3. We have added the HostClientType `ipados`.
+- Adding isSupported checks to all functions in the following capabilities:
+    - appEntity
+    - dialog
+    - meetingRoom
+    - monetization
+    - teams
+    - sharing (along with additional unit test case)
+    - notifications (along with additional unit test cases)
+    - video
+    - remoteCamera
+    - pages
+    - menus
+    - logs
+    - legacy
+    - teamsCore
+
+### Minor changes
+
+- Added `dialog.initialize` function.
+    - `dialog.initialize` is called during app intialization.
+    - Modified `registerOnMessageFromParent` in `DialogAPI.tsx` for the Teams Test App to account for this new functionality.
+
+### Patches
+
+- Updated `dialog.open` and `dialog.bot.open` to send `DialogInfo` type over to the host instead of `UrlDialogInfo` or `BotUrlDialogInfo` type
+- Adding minRuntimeConfig to uninitialize for various capabilities
+- Updated README.md to reflect branch rename
+- In adaptive card based task modules, if the height is not provided in `taskInfo`, it wil not be set to a default small size. Instead the card content will be fit on a Task Module. 
+- Removed `@deprecated` tags from meeting.ts and media.ts
+- Removed @alpha tags as they are not supported in the SDK reference doc generation system
 
 ## 2.0.0-beta.5
 

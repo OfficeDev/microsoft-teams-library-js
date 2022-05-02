@@ -1,13 +1,12 @@
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform } from './constants';
 import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
- *
- * @alpha
  */
 
 export namespace teamsCore {
@@ -16,8 +15,11 @@ export namespace teamsCore {
    */
   export function enablePrintCapability(): void {
     if (!GlobalVars.printCapabilityEnabled) {
-      GlobalVars.printCapabilityEnabled = true;
       ensureInitialized();
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      GlobalVars.printCapabilityEnabled = true;
       // adding ctrl+P and cmd+P handler
       document.addEventListener('keydown', (event: KeyboardEvent) => {
         if ((event.ctrlKey || event.metaKey) && event.keyCode === 80) {
@@ -47,6 +49,11 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     ensureInitialized();
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
     Handlers.registerOnLoadHandler(handler);
   }
 
@@ -61,6 +68,9 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     Handlers.registerBeforeUnloadHandler(handler);
   }
 
