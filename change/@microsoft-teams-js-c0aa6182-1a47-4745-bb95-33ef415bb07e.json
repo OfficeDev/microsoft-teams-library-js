@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed `@deprecated` tags from meeting.ts and media.ts",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@microsoft.com",
-  "dependentChangeType": "patch"
-}
