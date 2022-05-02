@@ -71,7 +71,7 @@ e.g.
   ],
 ```
 
-If you're adding a capability onto an already existing version requirement, simply add your object into the existing array.
+If you're adding a capability to an already existing version requirement, simply add your object to the existing array.
 
 e.g.
 
