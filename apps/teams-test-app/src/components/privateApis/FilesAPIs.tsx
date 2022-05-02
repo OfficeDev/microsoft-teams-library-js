@@ -103,7 +103,7 @@ const GetCloudStorageFolderContents = (): React.ReactElement =>
           }
         };
         await files.getCloudStorageFolderContents(input.folder, input.providerCode, callback);
-        return '';
+        return 'getCloudStorageFolderContents called';
       },
     },
   });
@@ -143,7 +143,7 @@ const GetExternalProviders = (): React.ReactElement =>
         }
       };
       await files.getExternalProviders(excludeAddedProviders, callback);
-      return result;
+      return `getExternalProviders called with result: ${JSON.stringify(result)}`;
     },
   });
 
