@@ -41,30 +41,82 @@ export namespace app {
     ExpectedFailure: 'appInitialization.expectedFailure',
   };
 
+  /**
+   * Describes errors that caused app initialization to fail
+   */
   export enum FailedReason {
+    /**
+     * Authentication failed
+     */
     AuthFailed = 'AuthFailed',
+    /**
+     * The application timed out
+     */
     Timeout = 'Timeout',
+    /**
+     * The app failed for a different reason
+     */
     Other = 'Other',
   }
 
+  /**
+   * Describes expected errors that occurred during an otherwise successful
+   * app initialization
+   */
   export enum ExpectedFailureReason {
+    /**
+     * There was a permission error
+     */
     PermissionError = 'PermissionError',
+    /**
+     * The item was not found
+     */
     NotFound = 'NotFound',
+    /**
+     * The network is currently throttled
+     */
     Throttling = 'Throttling',
+    /**
+     * The application is currently offline
+     */
     Offline = 'Offline',
+    /**
+     * The app failed for a different reason
+     */
     Other = 'Other',
   }
 
+  /**
+   * Represents the failed request sent during a failed app initialization.
+   */
   export interface IFailedRequest {
+    /**
+     * The reason for the failure
+     */
     reason: FailedReason;
+    /**
+     * A message that describes the failure
+     */
     message?: string;
   }
 
+  /**
+   * Represents the failure request sent during an erroneous app initialization.
+   */
   export interface IExpectedFailureRequest {
+    /**
+     * The reason for the failure
+     */
     reason: ExpectedFailureReason;
+    /**
+     * A message that describes the failure
+     */
     message?: string;
   }
 
+  /**
+   * Represents application information.
+   */
   export interface AppInfo {
     /**
      * The current locale that the user has configured for the app formatted as
@@ -120,6 +172,9 @@ export namespace app {
     appLaunchId?: string;
   }
 
+  /**
+   * Represents information about the application's host.
+   */
   export interface AppHostInfo {
     /**
      * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
@@ -142,6 +197,9 @@ export namespace app {
     ringId?: string;
   }
 
+  /**
+   * Represents Channel information.
+   */
   export interface ChannelInfo {
     /**
      * The Microsoft Teams ID for the channel with which the content is associated.
@@ -179,6 +237,9 @@ export namespace app {
     ownerGroupId?: string;
   }
 
+  /**
+   * Represents Chat information.
+   */
   export interface ChatInfo {
     /**
      * The Microsoft Teams ID for the chat with which the content is associated.
@@ -186,6 +247,9 @@ export namespace app {
     id: string;
   }
 
+  /**
+   * Represents Meeting information.
+   */
   export interface MeetingInfo {
     /**
      * Meeting Id used by tab when running in meeting context
@@ -193,6 +257,9 @@ export namespace app {
     id: string;
   }
 
+  /**
+   * Represents Page information.
+   */
   export interface PageInfo {
     /**
      * The developer-defined unique ID for the page this content points to.
@@ -227,6 +294,9 @@ export namespace app {
     sourceOrigin?: string;
   }
 
+  /**
+   * Represents Team information.
+   */
   export interface TeamInfo {
     /**
      * The Microsoft Teams ID for the team with which the content is associated.
@@ -268,6 +338,9 @@ export namespace app {
     userRole?: UserTeamRole;
   }
 
+  /**
+   * Represents User information.
+   */
   export interface UserInfo {
     /**
      * The Azure AD object id of the current user.
@@ -319,6 +392,9 @@ export namespace app {
     tenant?: TenantInfo;
   }
 
+  /**
+   * Represents Tenant information.
+   */
   export interface TenantInfo {
     /**
      * The Azure AD tenant ID of the current user.
@@ -367,7 +443,7 @@ export namespace app {
   }
 
   /**
-   * Represents structure of the context message received
+   * Represents structure of the received context message.
    */
   export interface Context {
     /**
@@ -425,7 +501,7 @@ export namespace app {
   }
 
   /**
-   * Gets the Frame Context that the App is running in. {@see FrameContexts} for the list of possible values.
+   * Gets the Frame Context that the App is running in. See {@link FrameContexts} for the list of possible values.
    * @returns the Frame Context.
    */
   export function getFrameContext(): FrameContexts {
@@ -588,7 +664,7 @@ export namespace app {
   /**
    * Retrieves the current context the frame is running in.
    *
-   * @returns Promise that will resolve with the {@link Context} object.
+   * @returns Promise that will resolve with the {@link app.Context} object.
    */
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>(resolve => {
@@ -615,6 +691,9 @@ export namespace app {
 
   /**
    * Notifies the frame that app initialization has failed and to show an error page in its place.
+   *
+   * @param appInitializationFailedRequest - The failure request containing the reason for why the app failed
+   * during initialization as well as an optional message.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitialized();
@@ -626,6 +705,8 @@ export namespace app {
 
   /**
    * Notifies the frame that app initialized with some expected errors.
+   *
+   * @param expectedFailureRequest - The expected failure request containing the reason and an optional message
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitialized();
