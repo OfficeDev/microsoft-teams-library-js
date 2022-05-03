@@ -40,6 +40,11 @@ the PR.
 
 ### Adding an API that utilizes version checks for compatibility
 
+This option should only be used for work that meets ALL of the below requirements:
+
+- Work which has already been discussed with the TeamsJS devs as using this approach
+- Functionality implementations that may run in host clients that have not onboarded to the new declarative capabiity support architecture
+
 Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
 
 1. Add the API as a new capability or subcapability rather than adding to an existing capability. Please look at other capabilities such as [calendar.ts](packages/teams-js/src/public/calendar.ts) for examples of how to structure a capability. There must be an isSupported() function with every capability which is a simple boolean check for seeing if `runtime.supports` contains the capability.
