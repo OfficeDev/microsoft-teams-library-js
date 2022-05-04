@@ -40,7 +40,7 @@ export namespace monetization {
   export function openPurchaseExperience(planInfo?: PlanInfo): Promise<void>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
    *
    * @hidden
    * Hide from docs

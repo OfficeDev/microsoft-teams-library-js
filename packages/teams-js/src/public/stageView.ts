@@ -57,7 +57,7 @@ export namespace stageView {
    * Feature is under development
    *
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link stageView.open stageView.open(): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link stageView.open stageView.open(): Promise\<void\>} instead.
    *
    * Opens a stage view to display a Teams app
    * @param stageViewParams The parameters to pass into the stage view.
