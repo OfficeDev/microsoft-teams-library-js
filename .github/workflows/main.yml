@@ -7,9 +7,9 @@ name: Microsoft Teams Library JS CI
 on:
   # Triggers the workflow on push or pull request events but only for the master and release-* branch
   push:
-    branches: [ master, release-* ]
+    branches: [ archive/v1, release-* ]
   pull_request:
-    branches: [ master, release-* ]
+    branches: [ archive/v1, release-* ]
 
 jobs:
   build:
