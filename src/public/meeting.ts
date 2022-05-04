@@ -150,7 +150,7 @@ export namespace meeting {
      * error object in case there is a failure
      */
     error?: {
-      /** error code from the streaming service, e.g. IngestionFailure */
+      /** error code that corresponds to JsSdkErrorCode */
       code: string;
       /** detailed error message string */
       message?: string;
