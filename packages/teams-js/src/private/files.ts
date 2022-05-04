@@ -1,6 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
 
 /**
  * @hidden
@@ -296,6 +296,70 @@ export namespace files {
     extension: string;
   }
 
+  export enum CloudStorageProviderFileAction {
+    New = 'NEW',
+    Rename = 'RENAME',
+    Download = 'DOWNLOAD',
+    Upload = 'UPLOAD',
+    Delete = 'DELETE',
+    Logout = 'LOGOUT',
+  }
+
+  export interface I3PCloudStorageProviderRequest<T> {
+    content: T;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Base interface for 3P cloud storage provider action request content
+   */
+  interface IBase3PCloudStorageProviderContent {
+    action: CloudStorageProviderFileAction;
+    providerCode: CloudStorageProvider;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider logout action
+   */
+  interface I3PCloudStorageProviderLogoutContent extends IBase3PCloudStorageProviderContent {
+    action: CloudStorageProviderFileAction.Logout;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface for 3P cloud storage provider action specific request content
+   */
+  interface I3PCloudStorageProviderActionContent extends IBase3PCloudStorageProviderContent {
+    itemList?: CloudStorageFolderItem[] | ISharePointFile[];
+    existingFileName?: string;
+    existingFileType?: string;
+    newFileName?: string;
+    newFileType?: string;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider logout action request content type
+   */
+  export type I3PCloudStorageProviderLogoutRequestContentType = I3PCloudStorageProviderLogoutContent;
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider actions (NEW / RENAME / UPLOAD / DOWNLOAD / DELETE) request content type
+   */
+  export type I3PCloudStorageProviderActionRequestContentType = I3PCloudStorageProviderActionContent;
+
   /**
    * @hidden
    * Hide from docs
@@ -528,5 +592,207 @@ export namespace files {
     }
 
     sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates add 3P cloud storage provider flow
+   *
+   * @param callback Callback that will be triggered post add 3P cloud storage provider action
+   */
+  export function add3PCloudStorageProvider(callback: (error?: SdkError) => void): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw new Error('[files.add3PCloudStorageProvider] callback cannot be null');
+    }
+
+    sendMessageToParent('files.add3PCloudStorageProvider', [], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates signout of 3P cloud storage provider flow
+   *
+   * @param callback Callback that will be triggered post signout of 3P cloud storage provider action
+   */
+  export function remove3PCloudStorageProvider(
+    logoutRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderLogoutRequestContentType>,
+    callback: (error?: SdkError) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!validateNonEmptyContent(logoutRequest, callback)) {
+      return;
+    }
+    if (!validateArgumentConsistency(logoutRequest, callback)) {
+      return;
+    }
+    if (!callback) {
+      throw new Error('[files.remove3PCloudStorageProvider] callback cannot be null');
+    }
+
+    sendMessageToParent('files.remove3PCloudStorageProvider', [logoutRequest], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates the 3P cloud storage provider file action (New / Rename / Upload / Download / Delete)
+   *
+   * @param cloudStorageProviderFileActionRequest 3P cloud storage provider request info
+   * @param callback Callback that will be triggered post 3P cloud storage action
+   */
+  export function perform3PCloudStorageProviderFileAction(
+    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
+      I3PCloudStorageProviderActionRequestContentType
+    >,
+    callback: (error?: SdkError) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!validateNonEmptyContent(cloudStorageProviderFileActionRequest, callback)) {
+      return;
+    }
+    if (!validateArgumentConsistency(cloudStorageProviderFileActionRequest, callback)) {
+      return;
+    }
+    if (!validateContentForSupportedActions(cloudStorageProviderFileActionRequest, callback)) {
+      return;
+    }
+
+    if (!callback) {
+      throw new Error('[files.perform3PCloudStorageProviderFileAction] callback cannot be null');
+    }
+
+    sendMessageToParent(
+      'files.perform3PCloudStorageProviderFileAction',
+      [cloudStorageProviderFileActionRequest],
+      callback,
+    );
+  }
+
+  function validateNonEmptyContent(
+    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
+      I3PCloudStorageProviderActionRequestContentType
+    >,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    if (!(cloudStorageProviderFileActionRequest && cloudStorageProviderFileActionRequest.content)) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: '3P cloud storage provider request content is missing',
+        });
+      }
+      return false;
+    }
+    return true;
+  }
+
+  function validateArgumentConsistency(
+    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
+      I3PCloudStorageProviderActionRequestContentType
+    >,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    if (!cloudStorageProviderFileActionRequest.content.action) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: '3P cloud storage provider action cannot be undefined',
+        });
+      }
+      return false;
+    }
+
+    if (!cloudStorageProviderFileActionRequest.content.providerCode) {
+      if (callback) {
+        callback({
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: '3P cloud storage provider code cannot be undefined',
+        });
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  function validateContentForSupportedActions(
+    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
+      I3PCloudStorageProviderActionRequestContentType
+    >,
+    callback?: (err?: SdkError) => void,
+  ): boolean {
+    switch (cloudStorageProviderFileActionRequest.content.action) {
+      case 'NEW':
+        if (!cloudStorageProviderFileActionRequest.content.newFileName) {
+          if (callback) {
+            callback({
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'New file name is required for NEW action',
+            });
+          }
+          return false;
+        }
+        if (!cloudStorageProviderFileActionRequest.content.newFileType) {
+          if (callback) {
+            callback({
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'File type is required for NEW action',
+            });
+          }
+          return false;
+        }
+        break;
+      case 'RENAME':
+        if (!cloudStorageProviderFileActionRequest.content.existingFileName) {
+          if (callback) {
+            callback({
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'Existing filename is required for RENAME action',
+            });
+          }
+          return false;
+        }
+        if (!cloudStorageProviderFileActionRequest.content.newFileName) {
+          if (callback) {
+            callback({
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'New filename is required for NEW action',
+            });
+          }
+          return false;
+        }
+        break;
+      case 'UPLOAD':
+      case 'DOWNLOAD':
+      case 'RENAME':
+        if (!cloudStorageProviderFileActionRequest.content.itemList) {
+          if (callback) {
+            callback({
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'Item list is required for UPLOAD / DOWNLOAD / DELETE action',
+            });
+          }
+          return false;
+        }
+        break;
+      default:
+        if (callback) {
+          callback({
+            errorCode: ErrorCode.INVALID_ARGUMENTS,
+            message: 'Content type is unsupported',
+          });
+        }
+        return false;
+    }
+    return true;
   }
 }

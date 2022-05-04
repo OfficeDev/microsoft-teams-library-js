@@ -1,5 +1,5 @@
 import { files } from '../../src/private/files';
-import { FileOpenPreference } from '../../src/public';
+import { FileOpenPreference, ErrorCode } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -552,5 +552,265 @@ describe('files', () => {
       utils.respondToMessage(openDownloadFolderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
+  });
+
+  describe('add3PCloudStorageProvider', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.add3PCloudStorageProvider(emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.add3PCloudStorageProvider(null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.add3PCloudStorageProvider(emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.add3PCloudStorageProvider(callback);
+
+      const add3PCloudStorageProviderMessage = utils.findMessageByFunc('files.add3PCloudStorageProvider');
+      expect(add3PCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(add3PCloudStorageProviderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('remove3PCloudStorageProvider', () => {
+    const logoutRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderLogoutRequestContentType> = {
+      content: {
+        action: files.CloudStorageProviderFileAction.Logout,
+        providerCode: files.CloudStorageProvider.Box
+      }
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.remove3PCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.remove3PCloudStorageProvider(logoutRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.remove3PCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.remove3PCloudStorageProvider(logoutRequest, callback);
+
+      const remove3PCloudStorageProviderMessage = utils.findMessageByFunc('files.remove3PCloudStorageProvider');
+      expect(remove3PCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(remove3PCloudStorageProviderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('perform3PCloudStorageProviderFileAction', () => {
+    const cloudStorageProviderFileActionRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderActionRequestContentType> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        action: files.CloudStorageProviderFileAction.New,
+        newFileName: "testFile",
+        newFileType: "pdf"
+      }
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
+
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      expect(perform3PCloudStorageProviderFileActionMessage).not.toBeNull();
+      utils.respondToMessage(perform3PCloudStorageProviderFileActionMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action in success scenario', () => {
+      utils.initializeWithContext('content');
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+  
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).not.toBeNull();
+      expect(perform3PCloudStorageProviderFileActionMessage.args.length).toBe(1);
+      expect(perform3PCloudStorageProviderFileActionMessage.args[0]).toEqual(cloudStorageProviderFileActionRequest);
+      utils.respondToMessage(perform3PCloudStorageProviderFileActionMessage);
+      expect(callback).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when content data is missing', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1 = {content: undefined};
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: '3P cloud storage provider request content is missing'
+      };
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+      expect(response).toEqual(error);
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when new file name field is missing for New action from content', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderActionRequestContentType> = {
+        content: {
+          providerCode: files.CloudStorageProvider.Box,
+          action: files.CloudStorageProviderFileAction.New
+        }
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'New file name is required for NEW action'
+      };
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+      expect(response).toEqual(error);
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when existing file name field is missing for Rename action from content', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderActionRequestContentType> = {
+        content: {
+          providerCode: files.CloudStorageProvider.Box,
+          action: files.CloudStorageProviderFileAction.Rename,
+          newFileName: "testFile",
+          newFileType: "pdf"
+        }
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Existing filename is required for RENAME action'
+      };
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+      expect(response).toEqual(error);
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when item list field is missing for Upload action from content', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderActionRequestContentType> = {
+        content: {
+          providerCode: files.CloudStorageProvider.Box,
+          action: files.CloudStorageProviderFileAction.Upload
+        }
+      };
+      const error = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'Item list is required for UPLOAD / DOWNLOAD / DELETE action'
+      };
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+      expect(response).toEqual(error);
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when request is null', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1 = null;
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+    });
+
+    it('should handle perform 3P Cloud Storage Provider File Action when request is undefined', () => {
+      utils.initializeWithContext('content');
+      const cloudStorageProviderFileActionRequest1 = undefined;
+      let response: any;
+
+      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest1, (res) => {
+        response = res;
+      });
+      
+      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
+      
+      expect(perform3PCloudStorageProviderFileActionMessage).toBeNull();
+    });
+
   });
 });
