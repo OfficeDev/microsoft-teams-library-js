@@ -42,8 +42,8 @@ the PR.
 
 This option should only be used for work that meets ALL of the below requirements:
 
-- Work which has already been discussed with the TeamsJS devs as using this approach
-- Functionality implementations that may run in host clients that have not onboarded to the new declarative capabiity support architecture
+- Features which have already been discussed with the TeamsJS owners and for which approval to use this approach has been granted,
+- Feature implementation that has a requirement of running in host clients that have not onboarded to the new declarative capability support architecture
 
 Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
 
@@ -57,7 +57,7 @@ export function isSupported(): boolean {
 }
 ```
 
-2. In [runtime.ts](packages/teams-js/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`.
+2. In [runtime.ts](packages/teams-js/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`. The version number your new capability should go under
 
 e.g.
 
