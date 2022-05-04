@@ -9,7 +9,7 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link dialog} namespace instead.
+ * As of 2.0.0, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -18,7 +18,7 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for url based dialogs
+   * As of 2.0.0, please use {@link dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for url based dialogs
    * and {@link dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for bot based dialogs.
    *
    * Allows an app to open the task module.
@@ -47,7 +47,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
+   * As of 2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
@@ -66,7 +66,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
+   * As of 2.0.0, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
    *
    * Submit the task module.
    *

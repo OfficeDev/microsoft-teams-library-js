@@ -6,7 +6,7 @@ export enum HostClientType {
   ipados = 'ipados',
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link teamsRoomsWindows} instead.
+   * As of 2.0.0, please use {@link teamsRoomsWindows} instead.
    */
   rigel = 'rigel',
   surfaceHub = 'surfaceHub',
@@ -68,7 +68,7 @@ export enum DialogDimension {
 import { ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link DialogDimension} instead.
+ * As of 2.0.0, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;
