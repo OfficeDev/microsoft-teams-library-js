@@ -5,7 +5,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from '../public/constants';
-import { FilePreviewParameters, UserSettingTypes } from './interfaces';
+import { CloudStorageProvider3PScenario, FilePreviewParameters, UserSettingTypes } from './interfaces';
 
 /**
  * @internal
@@ -117,6 +117,24 @@ export function registerUserSettingsChangeHandler(
   ensureInitialized();
 
   registerHandler('userSettingsChange', handler, true, [settingTypes]);
+}
+
+/**
+ * @hidden
+ * register a handler to be called when a user's 3P cloud storage provider details changes. The changed setting type & value is provided in the callback.
+ *
+ * @param settingTypes - List of user setting changes to subscribe
+ * @param handler - When a subscribed setting is updated this handler is called
+ *
+ * @internal
+ */
+export function register3PCloudStorageProviderChangeHandler(
+  scenarioTypes: CloudStorageProvider3PScenario[],
+  handler: () => void,
+): void {
+  ensureInitialized();
+
+  registerHandler('cloudStorageProvider3PChange', handler, true, [scenarioTypes]);
 }
 
 /**
