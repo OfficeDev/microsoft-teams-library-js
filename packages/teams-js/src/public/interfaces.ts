@@ -175,7 +175,7 @@ export enum FileOpenPreference {
  *
  * @remarks
  * For more details on the updated {@link app.Context} interface, visit
- * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk}.
+ * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface}.
  *
  * Represents the structure of the received context message.
  */
