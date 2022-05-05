@@ -49,7 +49,7 @@ export namespace stageView {
    *
    * Opens a stage view to display a Teams application
    * @param stageViewParams - The parameters to pass into the stage view.
-   * @returns Promise that resolves when open has completed.
+   * @returns Promise that resolves once the stage view is closed.
    */
   export function open(stageViewParams: StageViewParams): Promise<void>;
   /**
