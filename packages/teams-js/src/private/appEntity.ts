@@ -17,7 +17,7 @@ export namespace appEntity {
   export interface AppEntity {
     /**
      * @hidden
-     * Application ID of the application
+     * ID of the application
      */
     appId: string;
 
