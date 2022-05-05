@@ -267,7 +267,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * Registers a handler for when the user reconfigurated tab
  * @param handler The handler to invoke when the user click on Settings.
  */
-export function registerEnterSettingsHandler(handler: () => void): void {
+export function registerChangeSettingsHandler(handler: () => void): void {
   ensureInitialized(FrameContexts.content);
   Handlers.registerHandler('changeSettings', handler);
 }
