@@ -13,7 +13,7 @@ export namespace stageView {
    */
   export interface StageViewParams {
     /**
-     * The application ID of the hosted application to be opened.
+     * The ID of the Teams application to be opened.
      */
     appId: string;
 
@@ -33,12 +33,12 @@ export namespace stageView {
     title: string;
 
     /**
-     * The hosted application website URL.
+     * The Teams application website URL.
      */
     websiteUrl?: string;
 
     /**
-     * The entity ID of the hosted application content being opened.
+     * The entity ID of the Teams application content being opened.
      */
     entityId?: string;
   }
@@ -47,7 +47,7 @@ export namespace stageView {
    * @hidden
    * Feature is under development
    *
-   * Opens a stage view to display a hosted application
+   * Opens a stage view to display a Teams application
    * @param stageViewParams - The parameters to pass into the stage view.
    * @returns Promise that resolves when open has completed.
    */
@@ -59,7 +59,7 @@ export namespace stageView {
    * @deprecated
    * As of 2.0.0, please use {@link stageView.open stageView.open(): Promise\<void\>} instead.
    *
-   * Opens a stage view to display a hosted application
+   * Opens a stage view to display a Teams application
    * @param stageViewParams - The parameters to pass into the stage view.
    * @param callback - Optional callback that will be triggered once the stage view is closed.
    *                 The callback takes as an argument an SdkError in case something happened (i.e.
