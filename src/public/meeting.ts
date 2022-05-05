@@ -140,23 +140,6 @@ export namespace meeting {
     isHandRaised: boolean;
   }
 
-  export interface IRaiseHandStateChangedEvent {
-    /**
-     * raiseHandState for the selfParticipant
-     */
-    raiseHandState: IRaiseHandState;
-
-    /**
-     * error object in case there is a failure
-     */
-    error?: {
-      /** error code that corresponds to JsSdkErrorCode */
-      code: string;
-      /** detailed error message string */
-      message?: string;
-    };
-  }
-
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -392,7 +375,7 @@ export namespace meeting {
   }
 
   export function registerRaiseHandStateChangedHandler(
-    handler: (raiseHandState: IRaiseHandStateChangedEvent) => void,
+    handler: (raiseHandState: IRaiseHandState | SdkError | null) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
