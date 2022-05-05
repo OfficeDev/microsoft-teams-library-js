@@ -34,9 +34,9 @@ export namespace pages {
   /**
    * @hidden
    *
-   * Registers a handler when focus needs to be passed from the host to the place of choice on application.
+   * Registers a handler when focus passes from the host to a specified part of the application.
    *
-   * @param handler - The handler to invoked by the application when they want the focus to be in the place of their choice.
+   * @param handler - The handler for placing focus within the application.
    *
    * @internal
    */
@@ -251,13 +251,13 @@ export namespace pages {
   }
 
   /**
-   * Provides APIs for querying and navigating between an application's "tabs", which are pages associated
-   * with a specific context like a channel or a chat (as opposed to "personal tabs").
+   * Provides APIs for querying and navigating between contextual tabs of an application. Unlike personal tabs,
+   * contextual tabs are pages associated with a specific context, such as channel or chat.
    */
   export namespace tabs {
     /**
      * Navigates the hosted application to the specified tab instance.
-     * @param tabInstance - The tab instance to navigate to.
+     * @param tabInstance - The destination tab instance.
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
@@ -271,7 +271,7 @@ export namespace pages {
       });
     }
     /**
-     * Allows an application to retrieve for this user tabs that are owned by this application.
+     * Retrieves application tabs for the current user.
      * If no TabInstanceParameters are passed, the application defaults to favorite teams and favorite channels.
      * @param tabInstanceParameters - An optional set of flags that specify whether to scope call to favorite teams or channels.
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
@@ -287,7 +287,7 @@ export namespace pages {
     }
 
     /**
-     * Allows an application to retrieve the most recently used tabs for this user.
+     * Retrieves the most recently used application tabs for the current user.
      * @param tabInstanceParameters - An optional set of flags. Note this is currently ignored and kept for future use.
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
@@ -311,8 +311,8 @@ export namespace pages {
     }
   }
   /**
-   * Provides APIs to interact with the config-specific part of the SDK.
-   * This object is usable only on the config frame.
+   * Provides APIs to interact with the configuration-specific part of the SDK.
+   * This object is usable only on the configuration frame.
    */
   export namespace config {
     let saveHandler: (evt: SaveEvent) => void;
@@ -331,8 +331,8 @@ export namespace pages {
     }
 
     /**
-     * Sets the validity state for the config.
-     * The initial value is false, so the user cannot save the config until this is called with true.
+     * Sets the validity state for the configuration.
+     * The initial value is false, so the user cannot save the configuration until this is called with true.
      * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
@@ -344,9 +344,9 @@ export namespace pages {
     }
 
     /**
-     * Sets the config for the current instance.
+     * Sets the configuration for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
-     * @param instanceConfig - The desired config for this instance.
+     * @param instanceConfig - The desired configuration for this instance.
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
@@ -360,11 +360,11 @@ export namespace pages {
     }
 
     /**
-     * Registers a handler for when the user attempts to save the settings. This handler should be used
+     * Registers a handler for when the user attempts to save the configuration. This handler should be used
      * to create or update the underlying resource powering the content.
      * The object passed to the handler must be used to notify whether to proceed with the save.
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-     * @param handler - The handler to invoke when the user selects the save button.
+     * @param handler - The handler to invoke when the user selects the Save button.
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       ensureInitialized(FrameContexts.settings);
@@ -380,7 +380,7 @@ export namespace pages {
      * to remove the underlying resource powering the content.
      * The object passed to the handler must be used to indicate whether to proceed with the removal.
      * Only one handler may be registered at a time. Subsequent registrations will override the first.
-     * @param handler - The handler to invoke when the user selects the remove button.
+     * @param handler - The handler to invoke when the user selects the Remove button.
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       ensureInitialized(FrameContexts.remove, FrameContexts.settings);
@@ -403,7 +403,7 @@ export namespace pages {
 
     /**
      * Registers a handler for when the tab configuration is changed by the user
-     * @param handler - The handler to invoke when the user click on Settings.
+     * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
@@ -533,7 +533,7 @@ export namespace pages {
   }
 
   /**
-   * Provides APIs to interact with the back-stack part of the SDK.
+   * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
     let backButtonPressHandler: () => boolean;
@@ -543,8 +543,7 @@ export namespace pages {
     }
 
     /**
-     * Navigates back in the hosted application. See registerBackButtonHandler for more information on when
-     * it's appropriate to use this method.
+     * Navigates back in the hosted application. See {@link pages.backStack.registerBackButtonHandler} for notes on usage.
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
