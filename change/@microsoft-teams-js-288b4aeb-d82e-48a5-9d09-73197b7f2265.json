@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "remove legacy namespace",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}
