@@ -773,7 +773,7 @@ export namespace files {
         break;
       case 'UPLOAD':
       case 'DOWNLOAD':
-      case 'RENAME':
+      case 'DELETE':
         if (!cloudStorageProviderFileActionRequest.content.itemList) {
           if (callback) {
             callback({
