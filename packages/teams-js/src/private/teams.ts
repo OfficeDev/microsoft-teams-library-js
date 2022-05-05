@@ -81,7 +81,7 @@ export namespace teams {
 
   /**
    * @hidden
-   * Checks if teams capability is supported currently
+   * Checks if teams capability is supported by the host
    * @returns true if the teams capability is enabled in runtime.supports.teams and
    * false if it is disabled
    */

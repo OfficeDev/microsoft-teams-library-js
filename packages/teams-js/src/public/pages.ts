@@ -20,7 +20,7 @@ import { runtime } from './runtime';
 export namespace pages {
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
-   * the F6/Tab accessiblity loop in the host.
+   * the F6/tab order in the host.
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
@@ -67,7 +67,7 @@ export namespace pages {
    *
    * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
    *  user clicks 'Go To Website'
-   * @param callback - An optional user-set callback that is executed once the application has finished initialization.
+   * @param callback - An optional callback that is executed once the application has finished initialization.
    * @param validMessageOrigins - An optional list of cross-frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
    */
@@ -211,7 +211,7 @@ export namespace pages {
   }
 
   /**
-   * Checks if the current application host supports the pages capability
+   * Checks if the pages capability is supported by the host
    * @returns true if the pages capability is enabled in runtime.supports.pages and
    * false if it is disabled
    */
@@ -302,7 +302,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.tab capability
+     * Checks if the pages.tab capability is supported by the host
      * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
      * false if it is disabled
      */
@@ -523,7 +523,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.config capability
+     * Checks if the pages.config capability is supported by the host
      * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
      * false if it is disabled
      */
@@ -581,7 +581,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.backStack capability
+     * Checks if the pages.backStack capability is supported by the host
      * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
      * false if it is disabled
      */
@@ -628,7 +628,7 @@ export namespace pages {
      * @hidden
      * Hide from docs
      * ------
-     * Checks if the current application host supports the pages.fullTrust capability
+     * Checks if the pages.fullTrust capability is supported by the host
      * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
      * false if it is disabled
      */
@@ -681,7 +681,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.appButton capability is supported currently
+     * Checks if pages.appButton capability is supported by the host
      * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
      * false if it is disabled
      */

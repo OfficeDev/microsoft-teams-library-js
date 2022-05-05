@@ -53,7 +53,7 @@ export namespace legacy {
        * @hidden
        * Hide from docs
        * ------
-       * Checks if teams.fullTrust.joinedTeams capability is supported currently
+       * Checks if teams.fullTrust.joinedTeams capability is supported by the host
        * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
        * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
        */
@@ -91,7 +91,7 @@ export namespace legacy {
      * @hidden
      * Hide from docs
      * ------
-     * Checks if teams.fullTrust capability is supported currently
+     * Checks if teams.fullTrust capability is supported by the host
      * @returns true if the teams.fullTrust capability is enabled in runtime.supports.teams.fullTrust and
      * false if it is disabled
      */
@@ -104,7 +104,7 @@ export namespace legacy {
    * @hidden
    * Hide from docs
    * ------
-   * Checks if teams capability is supported currently
+   * Checks if teams capability is supported by the host
    * @returns true if the teams capability is enabled in runtime.supports.teams and
    * false if it is disabled
    */

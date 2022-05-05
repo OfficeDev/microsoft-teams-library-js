@@ -75,7 +75,7 @@ export namespace teamsCore {
   }
 
   /**
-   * Checks if teamsCore capability is supported currently
+   * Checks if teamsCore capability is supported by the host
    * @returns true if the teamsCore capability is enabled in runtime.supports.teamsCore and
    * false if it is disabled
    */

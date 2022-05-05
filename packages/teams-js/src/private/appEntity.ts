@@ -83,7 +83,7 @@ export namespace appEntity {
   }
 
   /**
-   * Checks if appEntity capability is supported currently
+   * Checks if appEntity capability is supported by the host
    * @returns true if the appEntity capability is enabled in runtime.supports.appEntity and
    * false if it is disabled
    */
