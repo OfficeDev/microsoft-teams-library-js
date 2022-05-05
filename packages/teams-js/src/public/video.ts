@@ -46,7 +46,7 @@ export namespace video {
   }
 
   /**
-   * Video frame configuration supplied to Teams to customize the generated video frame parameters, like format
+   * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
    */
   export interface VideoFrameConfig {
     /**
@@ -85,6 +85,8 @@ export namespace video {
 
   /**
    * Register to read the video frames in Permissions section
+   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
+   * @param config - VideoFrameConfig to customize generated video frame parameters
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(FrameContexts.sidePanel);
@@ -101,9 +103,9 @@ export namespace video {
   }
 
   /**
-   * video extension should call this to notify Teams Client current selected effect parameter changed.
-   * If it's pre-meeting, Teams client will call videoEffectCallback immediately then use the videoEffect.
-   * in-meeting scenario, we will call videoEffectCallback when apply button clicked.
+   * video extension should call this to notify host client that the current selected effect parameter changed.
+   * If it's pre-meeting, host client will call videoEffectCallback immediately then use the videoEffect.
+   * If it's the in-meeting scenario, we will call videoEffectCallback when apply button clicked.
    *
    * @param effectChangeType - the effect change type.
    * @param effectId - Newly selected effect id.
@@ -120,7 +122,8 @@ export namespace video {
   }
 
   /**
-   * Register the video effect callback, Teams client uses this to notify the video extension the new video effect will by applied
+   * Register the video effect callback, host client uses this to notify the video extension the new video effect will by applied
+   * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
@@ -131,7 +134,7 @@ export namespace video {
   }
 
   /**
-   * Sending notification to Teams client finished the video frame processing, now Teams client can render this video frame
+   * Sending notification to host client finished the video frame processing, now host client can render this video frame
    * or pass the video frame to next one in video pipeline
    */
   function notifyVideoFrameProcessed(): void {
@@ -139,12 +142,18 @@ export namespace video {
   }
 
   /**
-   * Sending error notification to Teams client
+   * Sending error notification to host client
+   * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);
   }
 
+  /**
+   * Checks if video capability is supported currently
+   * @returns true if the video capability is enabled in runtime.supports.video and
+   * false if it is disabled
+   */
   export function isSupported(): boolean {
     return runtime.supports.video ? true : false;
   }

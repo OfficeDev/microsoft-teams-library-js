@@ -31,7 +31,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 /**
  * @hidden
  * Internal use only
- * Sends a custom action MessageRequest to Teams or parent window
+ * Sends a custom action MessageRequest to host or parent window
  *
  * @param actionName - Specifies name of the custom action to be sent
  * @param args - Specifies additional arguments passed to the action
