@@ -5,7 +5,7 @@ import { pages } from './pages';
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.config} namespace instead.
+ * As of 2.0.0, please use {@link pages.config} namespace instead.
  *
  * Namespace to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
@@ -13,7 +13,7 @@ import { pages } from './pages';
 export namespace settings {
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.Config} instead.
+   * As of 2.0.0, please use {@link pages.config.Config} instead.
    * @remarks
    * Renamed to config in pages.Config
    */
@@ -21,7 +21,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.SaveEvent} instead.
+   * As of 2.0.0, please use {@link pages.config.SaveEvent} instead.
    * @remarks
    * See pages.SaveEvent
    */
@@ -29,7 +29,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.RemoveEvent} instead.
+   * As of 2.0.0, please use {@link pages.config.RemoveEvent} instead.
    * @remarks
    * See pages.RemoveEvent
    */
@@ -37,7 +37,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.SaveParameters} instead.
+   * As of 2.0.0, please use {@link pages.config.SaveParameters} instead.
    * @remarks
    * See pages.SaveParameters
    */
@@ -46,7 +46,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.setValidityState pages.config.setValidityState(validityState: boolean): void} instead.
+   * As of 2.0.0, please use {@link pages.config.setValidityState pages.config.setValidityState(validityState: boolean): void} instead.
    *
    * Sets the validity state for the settings.
    * The initial value is false, so the user cannot save the settings until this is called with true.
@@ -59,7 +59,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.getConfig pages.config.getConfig(): Promise\<Config\>} instead.
+   * As of 2.0.0, please use {@link pages.config.getConfig pages.config.getConfig(): Promise\<Config\>} instead.
    *
    * Gets the settings for the current instance.
    *
@@ -74,7 +74,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.setConfig pages.config.setConfig(instanceSettings: Config): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link pages.config.setConfig pages.config.setConfig(instanceSettings: Config): Promise\<void\>} instead.
    *
    * Sets the settings for the current instance.
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
@@ -99,7 +99,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void} instead.
+   * As of 2.0.0, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void} instead.
    *
    * Registers a handler for when the user attempts to save the settings. This handler should be used
    * to create or update the underlying resource powering the content.
@@ -114,7 +114,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void} instead.
+   * As of 2.0.0, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void} instead.
    *
    * Registers a handler for user attempts to remove content. This handler should be used
    * to remove the underlying resource powering the content.

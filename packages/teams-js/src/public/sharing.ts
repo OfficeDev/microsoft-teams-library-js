@@ -53,7 +53,7 @@ export namespace sharing {
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
    *
    * Feature is under development
    * Opens a share dialog for web content
