@@ -478,7 +478,7 @@ export namespace files {
    * Hide from docs
    * ------
    *
-   * Open a cloud storage file in teams
+   * Open a cloud storage file in Teams
    *
    * @param file - cloud storage file that should be opened
    * @param providerCode - Code of the cloud storage folder provider

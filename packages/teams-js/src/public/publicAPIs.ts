@@ -346,7 +346,9 @@ export function initializeWithFrameContext(
 }
 
 /**
- * Transforms the app.Context object received to TeamsJS Context
+ * Transforms the app.Context object received to the legacy global Context object
+ * @param appContext - The app.Context object to be transformed
+ * @returns The transformed legacy global Context object
  */
 function transformAppContextToLegacyContext(appContext: app.Context): Context {
   const context: Context = {
