@@ -91,10 +91,11 @@ export namespace teams {
   export function isSupported(): boolean {
     return runtime.supports.teams ? true : false;
   }
+
   /**
    * @hidden
-   *
-   * hide from docs
+   * Hide from docs
+   * ------
    *
    * @internal
    */
