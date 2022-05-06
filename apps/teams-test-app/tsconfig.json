@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.common.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "sourceMap": true
+  },
+  "include": ["src"],
+  "exclude": [
+    "**/build/*",
+    "build",
+    "node_modules",
+    "**/*.test.*",
+    "webpack.config.js",
+    "webpack.cdn.config.js",
+    "webpack.cdnV1.config.js",
+    "webpack.local.config.js"
+  ]
+}

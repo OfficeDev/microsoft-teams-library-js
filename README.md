@@ -1,64 +1,53 @@
 # Microsoft Teams JavaScript client SDK
 
-This SDK is part of the [Microsoft Teams developer platform](https://developer.microsoft.com/microsoft-teams). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client).
+[![Microsoft Teams Library JS CI](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
+[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
+[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js)
 
-[![Build Status](https://travis-ci.org/OfficeDev/microsoft-teams-library-js.svg?branch=master)](https://travis-ci.org/OfficeDev/microsoft-teams-library-js)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg?branch=master)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js?branch=master)
+Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory of the `main` branch. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
 ## Getting Started
 
-1.  Clone the repo
-2.  Navigate to the repo root
-3.  `yarn install`
-4.  `yarn build`
-5.  to run Unit test `yarn test`
+1. Clone the repo
+2. Run `yarn install` from repo root
+3. Run `yarn build` from repo root
+4. To run Unit tests, run `yarn test`
 
-### Installation
+TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
 
-To install the stable version:
+This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
 
-#### npm
+# Packages
 
-`npm install --save @microsoft/teams-js`
+Contain the core exports for the repository.
 
-#### yarn
+### [teams-js](./packages/teams-js)
 
-`yarn add @microsoft/teams-js`
+Used to integrate custom services and applications with Teams, Outlook, and Office.
 
-#### Production
+---
 
-You can access [these files on unpkg](https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+# Apps
 
-## Usage
+The apps folder contains applications used to test various aspects of the SDK.
 
-### As a package
+### [Teams Perf Test App](./apps/teams-perf-test-app/README.md)
 
-Install either using npm or yarn.
+React application used to locally test the loading times of the SDK.
 
-**If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
+### [Teams Test App](./apps/teams-test-app/README.md)
 
-```typescript
-import * as microsoftTeams from "@microsoft/teams-js";
-```
+Application used to test the functionality of the various SDK APIs.
 
-### As a script tag
+---
 
-Reference the SDK inside of your `.html` page using:
+### Locally generating reference documentation
 
-```html
-<!-- Microsoft Teams JavaScript API (via CDN) -->
-<script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js" integrity="sha384-SCVF3m7OvDKnfAilUzYn2yozEvBeP8n/Oq0yTH8VUI70J4AzrqR70jzjdQ6DI8s2" crossorigin="anonymous"></script>
-
-<!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@1.11.0/dist/MicrosoftTeams.min.js"></script>
-
-<!-- Microsoft Teams JavaScript API (via local) -->
-<script src="MicrosoftTeams.min.js"></script>
-```
+If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `yarn docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
 
 ## Contributing
 
-We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md).
+We strongly welcome and encourage contributions to this project. Please read the [contributor's guide](CONTRIBUTING.md) which contains important information.
 
 ---
 

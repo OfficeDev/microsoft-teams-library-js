@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.common.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src/",
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "types": [
+      "webpack",
+      "node"
+    ],
+    "esModuleInterop": true,
+    "typeRoots": [
+      "types",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../../node_modules/@types/webpack/index.d.ts"
+  ]
+}

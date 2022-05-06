@@ -1,0 +1,29 @@
+{
+  "name": "teams-test-app",
+  "private": true,
+  "author": "Microsoft Teams",
+  "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
+  "version": "2.0.0-beta.6",
+  "scripts": {
+    "build": "yarn build:bundle",
+    "build:bundle": "yarn lint && webpack",
+    "build:CDN": "yarn lint && webpack --config webpack.cdn.config.js",
+    "build:CDNV1": "yarn lint && webpack --config webpack.cdnV1.config.js",
+    "build:local": "yarn lint && webpack --config webpack.local.config.js && yarn copy",
+    "clean": "rimraf ./build",
+    "copy": "shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js ./build/ && shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js.map ./build/",
+    "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .tsx",
+    "start": "yarn start:bundle",
+    "start:bundle": "webpack serve",
+    "start:CDN": "webpack serve --config webpack.cdn.config.js",
+    "start:CDNV1": "webpack serve --config webpack.cdnV1.config.js",
+    "start:local": "webpack serve --config webpack.local.config.js"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@microsoft/teams-js": "file:../../packages/teams-js"
+  }
+}

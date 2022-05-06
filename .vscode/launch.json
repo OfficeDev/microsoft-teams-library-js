@@ -2,17 +2,50 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Jest Tests",
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug compare bundle analysis",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}\\tools\\cli\\compareBundleAnalysis.js",
+      "outFiles": [
+        "${workspaceFolder}/tools/**/*.js"
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
+      "name": "Run current file",
+      "program": "${file}",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch yarn command",
+      "runtimeExecutable": "yarn",
+      "cwd": "${workspaceFolder}",
       "runtimeArgs": [
-        "--inspect-brk",
-        "${workspaceRoot}/node_modules/jest/bin/jest.js",
-        "--runInBand"
-      ],
+        "build-sdk"
+      ]
+    },
+    {
+      "type": "node",
+      "name": "vscode-jest-tests",
+      "request": "launch",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "port": 9229
-    }
+      "disableOptimisticBPs": true,
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "yarn",
+      "args": [
+        "test",
+        "--",
+        "--",
+        "--runInBand",
+        "--watchAll=false"
+      ]
+    },
   ]
 }

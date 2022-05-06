@@ -1,0 +1,20 @@
+{
+  "name": "bundle-size-tools",
+  "version": "0.0.6",
+  "description": "Utility for analyzing bundle size regressions",
+  "license": "MIT",
+  "author": "Microsoft",
+  "main": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "yarn clean && yarn lint && yarn tsc",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "lint": "yarn eslint --max-warnings 0 --fix --ext .tsx"
+  },
+  "dependencies": {
+    "azure-devops-node-api": "^10.2.2",
+    "jszip": "^3.2.2",
+    "msgpack-lite": "^0.1.26",
+    "pako": "^2.0.2"
+  }
+}

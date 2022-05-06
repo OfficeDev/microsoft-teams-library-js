@@ -1,0 +1,10 @@
+{
+  "short_name": "Teams Test App",
+  "name": "Teams Test App",
+  "icons": [
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

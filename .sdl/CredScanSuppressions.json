@@ -1,4 +1,9 @@
 {
   "tool": "Credential Scanner",
-  "suppressions": []
+  "suppressions": [
+    {
+      "file": ["\\test\\ssl-cert-snakeoil.key", "\\test\\fixtures\\server.key"],
+      "_justification": "Self-signed certificates used by dependent packages for testing"
+    }
+  ]
 }
