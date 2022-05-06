@@ -85,7 +85,13 @@ export namespace teams {
   export function isSupported(): boolean {
     return runtime.supports.teams ? true : false;
   }
-
+  /**
+   * @hidden
+   *
+   * hide from docs
+   *
+   * @internal
+   */
   export namespace fullTrust {
     export namespace joinedTeams {
       /**
@@ -94,8 +100,8 @@ export namespace teams {
        * ------
        * Allows an app to retrieve information of all user joined teams
        *
-       * @param teamInstanceParameters - OPTIONAL Flags that specify whether to scope call to favorite teams
-       * @returns Promise resolved containing information about the user joined teams or rejected with error
+       * @param teamInstanceParameters - Optional flags that specify whether to scope call to favorite teams
+       * @returns Promise that resolves with information about the user joined teams or rejects with an error when the operation has completed
        */
       export function getUserJoinedTeams(
         teamInstanceParameters?: TeamInstanceParameters,
@@ -120,7 +126,14 @@ export namespace teams {
           resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
         });
       }
-
+      /**
+       * @hidden
+       * Hide from docs
+       * ------
+       * Checks if teams.fullTrust.joinedTeams capability is supported by the host
+       * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
+       * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
+       */
       export function isSupported(): boolean {
         return runtime.supports.teams
           ? runtime.supports.teams.fullTrust
@@ -139,7 +152,7 @@ export namespace teams {
      * Allows an app to get the configuration setting value
      *
      * @param key - The key for the config setting
-     * @returns Promise resolved containing the value for the provided config setting or rejected with error
+     * @returns Promise that resolves with the value for the provided configuration setting or rejects with an error when the operation has completed
      */
     export function getConfigSetting(key: string): Promise<string> {
       return new Promise<string>(resolve => {
@@ -152,7 +165,12 @@ export namespace teams {
     }
 
     /**
-     * Checks if teams.fullTrust capability is supported currently
+     * @hidden
+     * Hide from docs
+     * ------
+     * Checks if teams.fullTrust capability is supported by the host
+     * @returns true if the teams.fullTrust capability is enabled in runtime.supports.teams.fullTrust and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;
