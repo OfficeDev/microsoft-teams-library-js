@@ -1,5 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -8,6 +10,10 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace search {
+  const onChangeHandlerName = 'search.queryChange';
+  const onClosedHandlerName = 'search.queryClosed';
+  const onExecutedHandlerName = 'search.queryExecute';
+
   /**
    * This interface contains information pertaining to the search term in the host search experience
    */
@@ -15,7 +21,7 @@ export namespace search {
     /** The current search term in the host search experience */
     searchTerm: string;
 
-    // may need some sort of timestamp or sequence value to
+    // TODO: may need some sort of timestamp or sequence value to
     // ensure messages are processed in correct order / combine them
     // having any sort of logic around combining messages or sorting them
     // would make sense to go into the teamsjs-sdk layer
@@ -28,6 +34,9 @@ export namespace search {
    * Allows the caller to register for various events fired by the host search experience.
    * Calling this function will cause the host search experience to set its default scope to
    * the name of your application.
+   * 
+   * Your application should *not* re-render inside of these callbacks, there may be a large number
+   * of onChangeHandler calls if the user is changing the searchQuery rapidly.
    *
    * @param onChangeHandler - This handler will be called when the user begins searching and every
    * time the user changes the contents of the query. The value of the query is the current term
@@ -46,26 +55,41 @@ export namespace search {
    * ``` ts
    * search.registerHandlers(
       query => {
-        alert(`Update your application to render a change to the search query: ${query.searchTerm}`);
+        console.log(`Update your application to render a change to the search query: ${query.searchTerm}`);
       },
       () => {
-        alert('Update your application to handle the search experience being closed');
+        console.log('Update your application to handle the search experience being closed');
       },
       query => {
-        alert(`Update your application to render an executed search result: ${query.searchTerm}`);
+        console.log(`Update your application to render an executed search result: ${query.searchTerm}`);
       },
      );
    * ```
    */
   export function registerHandlers(
     onChangeHandler: SearchQueryHandler,
-    onClosedHandler: () => SearchQueryHandler,
+    onClosedHandler: SearchQueryHandler,
     onExecuteHandler?: SearchQueryHandler,
   ): void {
-    registerHandler('searchQueryChange', onChangeHandler);
-    registerHandler('searchQueryClosed', onClosedHandler);
+    // TODO: figure out what frame contexts you want to support this in
+    // This is just a guess that I made and should be something you make
+    // an explicit decision about.
+    ensureInitialized(
+      FrameContexts.content,
+      FrameContexts.task,
+      FrameContexts.sidePanel,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler(onChangeHandlerName, onChangeHandler);
+    registerHandler(onClosedHandlerName, onClosedHandler);
     if (onExecuteHandler) {
-      registerHandler('searchQueryExecute', onExecuteHandler);
+      registerHandler(onExecutedHandlerName, onExecuteHandler);
     }
   }
 
@@ -74,13 +98,33 @@ export namespace search {
    * this function will cause your app to stop appearing in the set of search scopes in the host.s
    */
   export function unregisterHandlers(): void {
+    // TODO: figure out what frame contexts you want to support this in
+    // This is just a guess that I made and should be something you make
+    // an explicit decision about.
+    ensureInitialized(
+      FrameContexts.content,
+      FrameContexts.task,
+      FrameContexts.sidePanel,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     // This should let the host know to stop making the app scope show up in the search experience
+    // Can also be used to clean up handlers on the host if desired
     sendMessageToParent('search.unregister');
-    removeHandler('searchQueryChange');
-    removeHandler('searchQueryClosed');
-    removeHandler('searchQueryExecute');
+    removeHandler(onChangeHandlerName);
+    removeHandler(onClosedHandlerName);
+    removeHandler(onExecutedHandlerName);
   }
 
+  /**
+   * Checks if search capability is supported by the host
+   * @returns true if the search capability is enabled in runtime.supports.search and
+   * false if it is disabled
+   */
   export function isSupported(): boolean {
     return runtime.supports.search ? true : false;
   }
