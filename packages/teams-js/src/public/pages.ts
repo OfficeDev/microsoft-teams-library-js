@@ -19,8 +19,8 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /**
-   * Return focus to the host. Will move focus forward or backward based on where the app container falls in
-   * the F6/Tab accessiblity loop in the host.
+   * Return focus to the host. Will move focus forward or backward based on where the application container falls in
+   * the F6/tab order in the host.
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
@@ -34,9 +34,9 @@ export namespace pages {
   /**
    * @hidden
    *
-   * Registers a handler when focus needs to be passed from teams to the place of choice on app.
+   * Registers a handler for specifying focus when it passes from the host to the application.
    *
-   * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
+   * @param handler - The handler for placing focus within the application.
    *
    * @internal
    */
@@ -67,7 +67,7 @@ export namespace pages {
    *
    * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
    *  user clicks 'Go To Website'
-   * @param callback - An optional user-set callback that is executed once the app has finished initialization.
+   * @param callback - An optional callback that is executed once the application has finished initialization.
    * @param validMessageOrigins - An optional list of cross-frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
    */
@@ -125,7 +125,7 @@ export namespace pages {
    * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
    * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
    * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
-   * than the current one in a way that keeps the app informed of the change and allows the SDK to
+   * than the current one in a way that keeps the application informed of the change and allows the SDK to
    * continue working.
    * @param url - The URL to navigate the frame to.
    * @returns Promise that resolves when the navigation has completed.
@@ -151,12 +151,12 @@ export namespace pages {
   }
 
   /**
-   * Navigate to the given App ID and Page ID, with optional parameters for a WebURL (if the app cannot
-   * be navigated to, such as if it is not installed), Channel ID (for apps installed as a channel tab), and
-   * Sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
-   * a deep link with the above data, but does not require the app to build a URL or worry about different
+   * Navigate to the given application ID and page ID, with optional parameters for a WebURL (if the application
+   * cannot be navigated to, such as if it is not installed), Channel ID (for applications installed as a channel tab),
+   * and sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
+   * a deep link with the above data, but does not require the application to build a URL or worry about different
    * deep link formats for different hosts.
-   * @param params Parameters for the navigation
+   * @param params - Parameters for the navigation
    * @returns a promise that will resolve if the navigation was successful
    */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
@@ -211,7 +211,7 @@ export namespace pages {
   }
 
   /**
-   * Checks if the current application host supports the pages capability
+   * Checks if the pages capability is supported by the host
    * @returns true if the pages capability is enabled in runtime.supports.pages and
    * false if it is disabled
    */
@@ -224,12 +224,12 @@ export namespace pages {
    */
   export interface NavigateToAppParams {
     /**
-     * ID of the App to navigate to
+     * ID of the application to navigate to
      */
     appId: string;
 
     /**
-     * Developer-defined ID of the Page to navigate to within the app (Formerly EntityID)
+     * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
      */
     pageId: string;
 
@@ -240,23 +240,24 @@ export namespace pages {
 
     /**
      * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
-     * back to the App via the Context object.
+     * back to the application via the Context object.
      */
     subPageId?: string;
 
     /**
-     * Optional ID of the Teams Channel where the app should be opened
+     * Optional ID of the Teams Channel where the application should be opened
      */
     channelId?: string;
   }
 
   /**
-   * Namespace to interact with the teams specific part of the SDK.
+   * Provides APIs for querying and navigating between contextual tabs of an application. Unlike personal tabs,
+   * contextual tabs are pages associated with a specific context, such as channel or chat.
    */
   export namespace tabs {
     /**
-     * Navigates the hosted app to the specified tab instance.
-     * @param tabInstance The tab instance to navigate to.
+     * Navigates the hosted application to the specified tab instance.
+     * @param tabInstance - The destination tab instance.
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
@@ -270,9 +271,9 @@ export namespace pages {
       });
     }
     /**
-     * Allows an app to retrieve for this user tabs that are owned by this app.
-     * If no TabInstanceParameters are passed, the app defaults to favorite teams and favorite channels.
-     * @param tabInstanceParameters OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
+     * Retrieves application tabs for the current user.
+     * If no TabInstanceParameters are passed, the application defaults to favorite teams and favorite channels.
+     * @param tabInstanceParameters - An optional set of flags that specify whether to scope call to favorite teams or channels.
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
@@ -286,8 +287,8 @@ export namespace pages {
     }
 
     /**
-     * Allows an app to retrieve the most recently used tabs for this user.
-     * @param tabInstanceParameters OPTIONAL Ignored, kept for future use.
+     * Retrieves the most recently used application tabs for the current user.
+     * @param tabInstanceParameters - An optional set of flags. Note this is currently ignored and kept for future use.
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
@@ -301,7 +302,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.tab capability
+     * Checks if the pages.tab capability is supported by the host
      * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
      * false if it is disabled
      */
@@ -310,8 +311,8 @@ export namespace pages {
     }
   }
   /**
-   * Namespace to interact with the config-specific part of the SDK.
-   * This object is usable only on the config frame.
+   * Provides APIs to interact with the configuration-specific part of the SDK.
+   * This object is usable only on the configuration frame.
    */
   export namespace config {
     let saveHandler: (evt: SaveEvent) => void;
@@ -330,9 +331,9 @@ export namespace pages {
     }
 
     /**
-     * Sets the validity state for the config.
-     * The initial value is false, so the user cannot save the config until this is called with true.
-     * @param validityState Indicates whether the save or remove button is enabled for the user.
+     * Sets the validity state for the configuration.
+     * The initial value is false, so the user cannot save the configuration until this is called with true.
+     * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
       ensureInitialized(FrameContexts.settings, FrameContexts.remove);
@@ -343,9 +344,9 @@ export namespace pages {
     }
 
     /**
-     * Sets the config for the current instance.
+     * Sets the configuration for the current instance.
      * This is an asynchronous operation; calls to getConfig are not guaranteed to reflect the changed state.
-     * @param instanceConfig The desired config for this instance.
+     * @param instanceConfig - The desired configuration for this instance.
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
@@ -359,11 +360,11 @@ export namespace pages {
     }
 
     /**
-     * Registers a handler for when the user attempts to save the settings. This handler should be used
+     * Registers a handler for when the user attempts to save the configuration. This handler should be used
      * to create or update the underlying resource powering the content.
      * The object passed to the handler must be used to notify whether to proceed with the save.
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
-     * @param handler The handler to invoke when the user selects the save button.
+     * @param handler - The handler to invoke when the user selects the Save button.
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       ensureInitialized(FrameContexts.settings);
@@ -379,7 +380,7 @@ export namespace pages {
      * to remove the underlying resource powering the content.
      * The object passed to the handler must be used to indicate whether to proceed with the removal.
      * Only one handler may be registered at a time. Subsequent registrations will override the first.
-     * @param handler The handler to invoke when the user selects the remove button.
+     * @param handler - The handler to invoke when the user selects the Remove button.
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       ensureInitialized(FrameContexts.remove, FrameContexts.settings);
@@ -402,7 +403,7 @@ export namespace pages {
 
     /**
      * Registers a handler for when the tab configuration is changed by the user
-     * @param handler The handler to invoke when the user click on Settings.
+     * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
       ensureInitialized(FrameContexts.content);
@@ -427,7 +428,7 @@ export namespace pages {
       notifySuccess(): void;
       /**
        * Indicates that creation of the underlying resource failed and that the config cannot be saved.
-       * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+       * @param reason - Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
        */
       notifyFailure(reason?: string): void;
     }
@@ -443,7 +444,7 @@ export namespace pages {
       notifySuccess(): void;
       /**
        * Indicates that removal of the underlying resource failed and that the content cannot be removed.
-       * @param reason Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+       * @param reason - Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
        */
       notifyFailure(reason?: string): void;
     }
@@ -522,7 +523,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.config capability
+     * Checks if the pages.config capability is supported by the host
      * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
      * false if it is disabled
      */
@@ -532,7 +533,7 @@ export namespace pages {
   }
 
   /**
-   * Namespace to interact with the back-stack part of the SDK.
+   * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
     let backButtonPressHandler: () => boolean;
@@ -542,8 +543,7 @@ export namespace pages {
     }
 
     /**
-     * Navigates back in the hosted app. See registerBackButtonHandler for more information on when
-     * it's appropriate to use this method.
+     * Navigates back in the hosted application. See {@link pages.backStack.registerBackButtonHandler} for notes on usage.
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
@@ -558,11 +558,11 @@ export namespace pages {
     }
 
     /**
-     * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
-     * navigation stack should use this handler to navigate the user back within their frame. If an app finds
+     * Registers a handler for user presses of the host client's back button. Experiences that maintain an internal
+     * navigation stack should use this handler to navigate the user back within their frame. If an application finds
      * that after running its back button handler it cannot handle the event it should call the navigateBack
-     * method to ask the Teams client to handle it instead.
-     * @param handler The handler to invoke when the user presses their Team client's back button.
+     * method to ask the host client to handle it instead.
+     * @param handler - The handler to invoke when the user presses the host client's back button.
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
       ensureInitialized();
@@ -580,7 +580,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if the current application host supports the pages.backStack capability
+     * Checks if the pages.backStack capability is supported by the host
      * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
      * false if it is disabled
      */
@@ -593,7 +593,7 @@ export namespace pages {
    * @hidden
    * Hide from docs
    * ------
-   * Namespace to interact with the full-trust part of the SDK. Limited to 1P apps
+   * Provides APIs to interact with the full-trust part of the SDK. Limited to 1P applications
    */
   export namespace fullTrust {
     /**
@@ -627,7 +627,7 @@ export namespace pages {
      * @hidden
      * Hide from docs
      * ------
-     * Checks if the current application host supports the pages.fullTrust capability
+     * Checks if the pages.fullTrust capability is supported by the host
      * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
      * false if it is disabled
      */
@@ -637,7 +637,7 @@ export namespace pages {
   }
 
   /**
-   * Namespace to interact with the app button part of the SDK.
+   * Provides APIs to interact with the app button part of the SDK.
    */
   export namespace appButton {
     /**
@@ -680,7 +680,7 @@ export namespace pages {
     }
 
     /**
-     * Checks if pages.appButton capability is supported currently
+     * Checks if pages.appButton capability is supported by the host
      * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
      * false if it is disabled
      */
