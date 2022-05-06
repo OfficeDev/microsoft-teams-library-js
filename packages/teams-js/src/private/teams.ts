@@ -131,6 +131,7 @@ export namespace teams {
        * Hide from docs
        * ------
        * Checks if teams.fullTrust.joinedTeams capability is supported by the host
+       *
        * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
        * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
        */
