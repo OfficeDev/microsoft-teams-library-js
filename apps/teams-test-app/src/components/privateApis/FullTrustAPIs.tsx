@@ -10,6 +10,13 @@ const CheckTeamsFullTrustCapability = (): React.ReactElement =>
     onClick: async () => `Teams Fulltrust module ${teams.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
   });
 
+const CheckLegacyFullTrustCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkLegacyFulltrustCapability',
+    title: 'Check Legacy Fullrust Capability',
+    onClick: async () => `Legacy Fulltrust module ${teams.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const CheckPagesFullTrustCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkPagesFulltrustCapability',
@@ -55,6 +62,14 @@ const CheckTeamsFullTrustGetUserJoinedCapability = (): React.ReactElement =>
       `Teams Fulltrust Joined Teams module ${teams.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
   });
 
+const CheckLegacyFullTrustGetUserJoinedCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'CheckLegacyFullTrustGetUserJoinedCapability',
+    title: 'Check Legacy FullTrust Joined Teams isSupported Capability',
+    onClick: async () =>
+      `Legacy Fulltrust Joined Teams module ${teams.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const GetConfigSetting = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'getConfigSetting2',
@@ -80,7 +95,9 @@ const FullTrustAPIs = (): ReactElement => (
     <EnterFullScreen />
     <ExitFullScreen />
     <CheckTeamsFullTrustGetUserJoinedCapability />
+    <CheckLegacyFullTrustGetUserJoinedCapability />
     <CheckTeamsFullTrustCapability />
+    <CheckLegacyFullTrustCapability />
     <CheckPagesFullTrustCapability />
   </>
 );
