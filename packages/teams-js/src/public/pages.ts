@@ -34,7 +34,7 @@ export namespace pages {
   /**
    * @hidden
    *
-   * Registers a handler when focus passes from the host to a specified part of the application.
+   * Registers a handler for specifying focus when it passes from the host to the application.
    *
    * @param handler - The handler for placing focus within the application.
    *
