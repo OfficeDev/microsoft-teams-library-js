@@ -19,6 +19,7 @@ export interface IRuntime {
     };
     readonly files?: {};
     readonly location?: {};
+    readonly displayCapture?: {};
     readonly logs?: {};
     readonly mail?: {};
     readonly media?: {};

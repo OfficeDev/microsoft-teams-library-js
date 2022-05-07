@@ -1,21 +1,18 @@
-import { sendMessageToParent } from '../internal/communication';
-import { displayCaptureAPIRequiredVersion } from '../internal/constants';
-import { registerHandler } from '../internal/handlers';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
-
+import { sendMessageToParentAsync } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { runtime } from './runtime';
 export namespace displayCapture {
   export function getDisplayMedia(): Promise<MediaStream> {
-    return new Promise<MediaStream>((resolve, reject) => {
+    return new Promise<MediaStream>(resolve => {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
 
-      if (!isCurrentSDKVersionAtLeast(displayCaptureAPIRequiredVersion)) {
-        const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        reject(oldPlatformError);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
       }
 
-      registerHandler('displayCapture.displayIdPicked', (displayId: string) => {
+      sendMessageToParentAsync('displayCapture.showDisplayPicker').then((displayId: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mediaDevices = navigator.mediaDevices as any;
         mediaDevices
           .getUserMedia({
@@ -31,8 +28,10 @@ export namespace displayCapture {
             resolve(mediaStream);
           });
       });
-
-      sendMessageToParent('displayCapture.showDisplayPicker');
     });
+  }
+
+  export function isSupported(): boolean {
+    return runtime.supports.displayCapture ? true : false;
   }
 }
