@@ -61,6 +61,7 @@ export let runtime: IRuntime = {
       update: undefined,
     },
     location: undefined,
+    displayCapture: undefined,
     logs: undefined,
     mail: undefined,
     media: undefined,
