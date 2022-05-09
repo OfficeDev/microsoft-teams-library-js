@@ -41,7 +41,7 @@ export namespace search {
    * @param onChangeHandler - This handler will be called when the user begins searching and every
    * time the user changes the contents of the query. The value of the query is the current term
    * the user is searching for. Should be used to put your application into whatever state is used
-   * to handle searching. This handler will be called once with an empty {@link SearchQuery.searchTerm}
+   * to handle searching. This handler will be called with an empty {@link SearchQuery.searchTerm}
    * when search is beginning. 
    * @param onClosedHandler - This handler will be called when the user finishes searching. Should be
    * used to return your application to its default, non-search state. The value of {@link SearchQuery.searchTerm}
@@ -55,13 +55,13 @@ export namespace search {
    * ``` ts
    * search.registerHandlers(
       query => {
-        console.log(`Update your application to render a change to the search query: ${query.searchTerm}`);
+        console.log(`Update your application with the changed search query: ${query.searchTerm}`);
       },
       () => {
         console.log('Update your application to handle the search experience being closed');
       },
       query => {
-        console.log(`Update your application to render an executed search result: ${query.searchTerm}`);
+        console.log(`Update your application to handle an executed search result: ${query.searchTerm}`);
       },
      );
    * ```
@@ -95,7 +95,7 @@ export namespace search {
 
   /**
    * Allows the caller to unregister for all events fired by the host search experience. Calling
-   * this function will cause your app to stop appearing in the set of search scopes in the host.s
+   * this function will cause your app to stop appearing in the set of search scopes in the hosts
    */
   export function unregisterHandlers(): void {
     // TODO: figure out what frame contexts you want to support this in
