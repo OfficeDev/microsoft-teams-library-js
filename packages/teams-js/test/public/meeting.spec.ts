@@ -1099,4 +1099,48 @@ describe('meeting', () => {
       expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
     });
   });
+
+  describe('registerRaiseHandStateChangedHandler', () => {
+    it('should fail when called without a handler', () => {
+      expect(() => meeting.registerRaiseHandStateChangedHandler(null)).toThrowError(
+        '[registerRaiseHandStateChangedHandler] Handler cannot be null',
+      );
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() =>
+        meeting.registerRaiseHandStateChangedHandler(() => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully register a handler for when the raiseHandStateChanges', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+      const raiseHandState: meeting.IRaiseHandState = { isHandRaised: true };
+
+      let handlerCalled = false;
+      let response: meeting.IRaiseHandState | SdkError | null;
+
+      meeting.registerRaiseHandStateChangedHandler((raiseHandState: meeting.IRaiseHandState | SdkError | null) => {
+        handlerCalled = true;
+        response = raiseHandState;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.raiseHandStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.raiseHandStateChanged',
+          args: [raiseHandState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(raiseHandState);
+    });
+  });
 });
