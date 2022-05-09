@@ -29,8 +29,7 @@ export namespace authentication {
   let authParams: AuthenticateParameters;
   /**
    * @deprecated
-   * As of 2.0.0-beta.1.
-   *
+   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern.
    * Registers the authentication Communication.handlers
    *
    * @param authenticateParameters - A set of values that configure the authentication pop-up.
@@ -52,7 +51,7 @@ export namespace authentication {
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
+   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
@@ -156,7 +155,7 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequestParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
+   * As of 2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
    *
    * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
    * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
@@ -215,7 +214,7 @@ export namespace authentication {
   export function getUser(): Promise<UserProfile>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
+   * As of 2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
    * Hide from docs.
@@ -465,23 +464,28 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1.
+   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+   *-------------------------
+   * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
   export interface LegacyCallBacks {
     /**
      * @deprecated
-     * As of 2.0.0-beta.1.
+     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      * A function that is called if the request succeeds.
      */
     successCallback?: (result: string) => void;
     /**
      * @deprecated
-     * As of 2.0.0-beta.1.
+     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      * A function that is called if the request fails, with the reason for the failure.
      */
     failureCallback?: (reason: string) => void;
   }
 
+  /**
+   * Describes the authentication pop-up parameters
+   */
   export interface AuthenticatePopUpParameters {
     /**
      * The URL for the authentication pop-up.
@@ -503,10 +507,13 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link AuthenticatePopUpParameters} instead.
+   * As of 2.0.0, please use {@link AuthenticatePopUpParameters} instead.
    */
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
+  /**
+   * Describes authentication token request parameters
+   */
   export interface AuthTokenRequestParameters {
     /**
      * An optional list of resource for which to acquire the access token; only used for full trust apps.
@@ -524,7 +531,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link AuthTokenRequestParameters} instead.
+   * As of 2.0.0, please use {@link AuthTokenRequestParameters} instead.
    */
   export type AuthTokenRequest = AuthTokenRequestParameters & LegacyCallBacks;
 
@@ -626,10 +633,12 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1.
+   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
    * @hidden
    * Hide from docs.
    * ------
+   * Describes the UserRequest. Success callback describes how a successful request is handled.
+   * Failure callback describes how a failed request is handled.
    * @internal
    */
   export interface UserRequest {

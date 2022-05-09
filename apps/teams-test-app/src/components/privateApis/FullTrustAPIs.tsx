@@ -1,13 +1,20 @@
-import { legacy, pages, TeamInstanceParameters } from '@microsoft/teams-js';
+import { pages, TeamInstanceParameters, teams } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+
+const CheckTeamsFullTrustCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkTeamsFulltrustCapability',
+    title: 'Check Teams Fullrust Capability',
+    onClick: async () => `Teams Fulltrust module ${teams.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
+  });
 
 const CheckLegacyFullTrustCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkLegacyFulltrustCapability',
     title: 'Check Legacy Fullrust Capability',
-    onClick: async () => `Legacy Fulltrust module ${legacy.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `Legacy Fulltrust module ${teams.fullTrust.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const CheckPagesFullTrustCapability = (): React.ReactElement =>
@@ -42,9 +49,25 @@ const GetUserJoinedTeams = (): React.ReactElement =>
     name: 'getUserJoinedTeams',
     title: 'Get User Joined Teams',
     onClick: async input => {
-      const result = await legacy.fullTrust.getUserJoinedTeams(input);
+      const result = await teams.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
+  });
+
+const CheckTeamsFullTrustGetUserJoinedCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'CheckTeamsFullTrustGetUserJoinedCapability',
+    title: 'Check Teams FullTrust Joined Teams isSupported Capability',
+    onClick: async () =>
+      `Teams Fulltrust Joined Teams module ${teams.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
+const CheckLegacyFullTrustGetUserJoinedCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'CheckLegacyFullTrustGetUserJoinedCapability',
+    title: 'Check Legacy FullTrust Joined Teams isSupported Capability',
+    onClick: async () =>
+      `Legacy Fulltrust Joined Teams module ${teams.fullTrust.joinedTeams.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetConfigSetting = (): React.ReactElement =>
@@ -58,7 +81,7 @@ const GetConfigSetting = (): React.ReactElement =>
         }
       },
       submit: async input => {
-        const result = await legacy.fullTrust.getConfigSetting(input);
+        const result = await teams.fullTrust.getConfigSetting(input);
         return result;
       },
     },
@@ -71,6 +94,9 @@ const FullTrustAPIs = (): ReactElement => (
     <GetConfigSetting />
     <EnterFullScreen />
     <ExitFullScreen />
+    <CheckTeamsFullTrustGetUserJoinedCapability />
+    <CheckLegacyFullTrustGetUserJoinedCapability />
+    <CheckTeamsFullTrustCapability />
     <CheckLegacyFullTrustCapability />
     <CheckPagesFullTrustCapability />
   </>

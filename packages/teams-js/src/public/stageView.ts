@@ -13,7 +13,7 @@ export namespace stageView {
    */
   export interface StageViewParams {
     /**
-     * The application ID of the Teams application to be opened.
+     * The ID of the Teams application to be opened.
      */
     appId: string;
 
@@ -33,12 +33,12 @@ export namespace stageView {
     title: string;
 
     /**
-     * The Teams app website URL.
+     * The Teams application website URL.
      */
     websiteUrl?: string;
 
     /**
-     * The entity ID of the Teams app content being opened.
+     * The entity ID of the Teams application content being opened.
      */
     entityId?: string;
   }
@@ -47,9 +47,9 @@ export namespace stageView {
    * @hidden
    * Feature is under development
    *
-   * Opens a stage view to display a Teams app
-   * @param stageViewParams The parameters to pass into the stage view.
-   *
+   * Opens a stage view to display a Teams application
+   * @param stageViewParams - The parameters to pass into the stage view.
+   * @returns Promise that resolves once the stage view is closed.
    */
   export function open(stageViewParams: StageViewParams): Promise<void>;
   /**
@@ -57,11 +57,11 @@ export namespace stageView {
    * Feature is under development
    *
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link stageView.open stageView.open(): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link stageView.open stageView.open(): Promise\<void\>} instead.
    *
-   * Opens a stage view to display a Teams app
-   * @param stageViewParams The parameters to pass into the stage view.
-   * Optional; @param callback Callback that will be triggered once the stage view is closed.
+   * Opens a stage view to display a Teams application
+   * @param stageViewParams - The parameters to pass into the stage view.
+   * @param callback - Optional callback that will be triggered once the stage view is closed.
    *                 The callback takes as an argument an SdkError in case something happened (i.e.
    *                 no permissions to execute the API)
    */

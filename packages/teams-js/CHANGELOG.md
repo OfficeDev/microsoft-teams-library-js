@@ -1,8 +1,115 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 01 Mar 2022 19:50:49 GMT and should not be manually modified.
+This log was last generated on Thu, 28 Apr 2022 18:25:41 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.6
+
+Thu, 28 Apr 2022 18:25:41 GMT
+
+### Major changes
+
+- Updated `media` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Adding isSupported check to people capability
+- Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Updated `files` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Git magic week of 4/18/2022 
+1. IMeetingDetails has been renamed to IMeetingDetailsResponse and IDetails has been replaced with IMeetingOrCallDetailsBase<T>. As such, meeting.getMeetingDetails() now takes in a callback which takes in IMeetingDetailsResponse rather than IMeetingDetails. 
+2. pages.returnFocus() now works in any FrameContext rather than just with content. 
+3. We have added the HostClientType `ipados`.
+- Adding isSupported checks to all functions in the following capabilities:
+    - appEntity
+    - dialog
+    - meetingRoom
+    - monetization
+    - teams
+    - sharing (along with additional unit test case)
+    - notifications (along with additional unit test cases)
+    - video
+    - remoteCamera
+    - pages
+    - menus
+    - logs
+    - legacy
+    - teamsCore
+
+### Minor changes
+
+- Added `dialog.initialize` function.
+    - `dialog.initialize` is called during app intialization.
+    - Modified `registerOnMessageFromParent` in `DialogAPI.tsx` for the Teams Test App to account for this new functionality.
+
+### Patches
+
+- Updated `dialog.open` and `dialog.bot.open` to send `DialogInfo` type over to the host instead of `UrlDialogInfo` or `BotUrlDialogInfo` type
+- Adding minRuntimeConfig to uninitialize for various capabilities
+- Updated README.md to reflect branch rename
+- In adaptive card based task modules, if the height is not provided in `taskInfo`, it wil not be set to a default small size. Instead the card content will be fit on a Task Module. 
+- Removed `@deprecated` tags from meeting.ts and media.ts
+- Removed @alpha tags as they are not supported in the SDK reference doc generation system
+
+## 2.0.0-beta.5
+
+Tue, 19 Apr 2022 16:08:56 GMT
+
+### Major changes
+
+- Removed PostMessageChannel return from dialog.open, added in separate function sendMessageToDialog to make up for missing functionality"
+- Adding isSupported Check and unit test cases
+- Change DeepLinkParameters not to use subEntity* anymore
+- Adding isSupported work for chat and conversations
+- Adding isSupport check for files module
+
+### Minor changes
+
+- Adding in `runtime.isLegacy` handler for the following deep link capabilities: `appInstallDialog`, `calendar`, `call`.
+- Changed topic parameter name to `topicName` for `executeDeepLink` call in `chat.ts`
+
+### Patches
+
+- Moved conversations out of chat sub-capability and into their own top level capability in runtime.ts
+- Add legacy capability support check
+
+## 2.0.0-beta.4
+
+Wed, 13 Apr 2022 21:40:51 GMT
+
+### Major changes
+
+- legacy.fullTrust.getUserJoinedTeams() has been moved into its own subcapability called joinedTeams and is now legacy.fullTrust.joinedTeams.getUserJoinedTeams().
+- The type `PostMessageChannel` and `sendMessageToParentFromDialog` function in dialogs capability have been updated to not take callbacks in.
+- Split chat capability into a private (conversation) and a public (chat) partition
+- 1. Dialog capability has been split into a main capability (dialog) for supporting HTML-based dialogs and a subcapability dialog.bot for bot based dialogs. For now, dialog capability does not support adaptive card based dialogs,
+  2. dialog.open takes a UrlDialogInfo instead of DialogInfo to enforce only HTML based dialogs,
+  3. callback submitHandler takes a single object parameter containing both error and result,
+  4. dialog.open takes one more optional parameter named messageFromChildHandler which is triggered if dialog sends a message to the app,
+  5. dialog.open returns a function that can be used to send messages to the dialog instead of returning a ChildAppWindow,
+  6. dialog.bot.open has the same function signature except it takes BotUrlDialogInfo instead of UrlDialogInfo
+- Moving chat.openConversation and chat.closeConversation into a subcategory chat.conversation. Added in new APIs chat.openChat and chat.openGroupChat as a replacement to open Teams chats with one or more user
+- dialog.resize() function has been moved to a new dialog subcapability and is now dialog.update.resize(). The parameter has been changed to DialogSize type
+
+### Minor changes
+
+- gitmagic additions to 2.0-preview for April 7, 2022. Changes merged in from V1 include: adding surfaceHub to hostClientType interface, added ISpeakingState interface and function registerSpeakingStateChangeHandler to meeting.ts and added appropriate unit tests to meeting.spec.ts"
+- gitmagic additions to 2.0-preview for March 09, 2022. Changes merged in from V1 include removing private tag for sharing, making Menu APIs Public, and adding new features for files API (enum FileDownloadStatus, interface IFileItem, getFileDownloads(), openDownloadFolder())
+- Copied ParentAppWindow functionality into dialog capability. In Dialogs, ParentAppWindow.postMessage becomes dialog.sendMessageToParent(message: any): void. And ParentAppWindow.addEventListener becomes dialog.registerOnMessageFromParent.
+- Renamed conversation to conversations for consistency
+- gitmagic additions to 2.0-preview for March 29, 2022. Changes merged in from V1 include: enabling the following APIs in meeting stage: shareAppContentToStage, getAppContentStageSharingCapabilities, stopSharingAppContentToStage, and getAppContentStageSharingState
+- When hosting app will not understand standard chat requests, send them as deep links.
+- gitmagic additions to 2.0-preview for February 28, 2022. Changes merged in from V1 include stageView implementation and modifying dialog.resize() and dialog.submit() to also work in FrameContexts sidePanel, content, meetingStage, and task rather than just task.
+
+### Patches
+
+- Adds office365 Outlook to domain allowlist
+- Update comment for initializePrivateApis() explaining that this function needs to stay for backwards compatibility purposes
+- In `appWindow.ts` file, `ChildAppWindow` and `ParentAppWindow` are converted back to synchronous calls because the promise was never being resolved.
+- promisify stageView
+- Validated media architecture
+- Fixed default back compat host client runtime config to not contain location or people capability since those are not guaranteed to be supported. Added new function to dynamically generate back compat host client runtime config during initialization.
+- Added `ensureInitialized` call to `registerOnMessageFromParent` function in dialog.ts and `addEventListener` function in appWindow.ts
+- Remove the duplicate property of StageLayoutControls type in meetingRoom capability
+- added promisified files.getFileDownloads
 
 ## 2.0.0-beta.3
 
@@ -16,7 +123,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 ### Minor changes
 
-- Change the constructor function to make the `onRecordingStarted` callback mandatory, make `onRecordingStopped` an optional property that can be passed to the constructor.  This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
+- Change the `VideoControllerCallback` constructor function to make the `onRecordingStarted` callback mandatory and make `onRecordingStopped` an optional property that can be passed to the constructor. This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
 
 ### Patches
 
@@ -205,6 +312,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
     - `applyRuntimeConfig` is added
 
 - Promises introduced
+
   - The following APIs that took in a callback function as a parameter now instead return a Promise.
     - app APIs:
       - app.initialize
@@ -269,3 +377,5 @@ Tue, 01 Mar 2022 19:50:49 GMT
       - core.executeDeepLink
       - appInstallDialog.openAppInstallDialog
       - call.startCall
+
+- Changed TypeScript to output ES6 modules instead of CommonJS

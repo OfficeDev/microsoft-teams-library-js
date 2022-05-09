@@ -128,3 +128,19 @@ export const validOrigins = [
  * @internal
  */
 export const userOriginUrlValidationRegExp = /^https:\/\//;
+
+/**
+ * @hidden
+ * The protocol used for deep links into Teams
+ *
+ * @internal
+ */
+export const teamsDeepLinkProtocol = 'https';
+
+/**
+ * @hidden
+ * The host used for deep links into Teams
+ *
+ * @internal
+ */
+export const teamsDeepLinkHost = 'teams.microsoft.com';

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Update all deprecated tags to reference version 2.0.0",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@microsoft.com",
+  "dependentChangeType": "patch"
+}

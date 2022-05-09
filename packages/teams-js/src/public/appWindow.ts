@@ -7,9 +7,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-/**
- * @alpha
- */
+
 export interface IAppWindow {
   /**
    * Send a message to the AppWindow.
@@ -46,6 +44,7 @@ export class ChildAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
+    ensureInitialized();
     if (type === 'message') {
       registerHandler('messageForParent', listener);
     }
@@ -77,6 +76,7 @@ export class ParentAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
+    ensureInitialized(FrameContexts.task);
     if (type === 'message') {
       registerHandler('messageForChild', listener);
     }

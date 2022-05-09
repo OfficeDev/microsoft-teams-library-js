@@ -3,13 +3,10 @@ import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace people {
   /**
    * Launches a people picker and allows the user to select one or more people from the list
@@ -22,7 +19,7 @@ export namespace people {
   export function selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link people.selectPeople people.selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise\<PeoplePickerResult[]\>} instead.
+   * As of 2.0.0, please use {@link people.selectPeople people.selectPeople(peoplePickerInputs?: PeoplePickerInputs): Promise\<PeoplePickerResult[]\>} instead.
    *
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
@@ -75,6 +72,9 @@ export namespace people {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleError('people.selectPeople', peoplePickerInputs));
     });
   }

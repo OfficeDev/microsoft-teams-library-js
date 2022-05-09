@@ -2,6 +2,8 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
 describe('calendar', () => {
@@ -22,6 +24,7 @@ describe('calendar', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -225,9 +228,9 @@ describe('calendar', () => {
       await composeMeetingPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
-    it('should successfully send the composeMeeting message', async () => {
+    it('should successfully send the composeMeeting message: Non-legacy host', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { calendar: {} } });
 
       const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
       const composeMeetingMessage = utils.findMessageByFunc('calendar.composeMeeting');
@@ -244,9 +247,26 @@ describe('calendar', () => {
       expect(composeMeetingMessage.args[0]).toStrictEqual(composeMeetingParams);
     });
 
-    it('should resolve promise after successfully sending the composeMeeting message', async () => {
+    it('should successfully send the composeMeeting message: Legacy host', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { calendar: {} } });
+
+      const promise = calendar.composeMeeting(composeMeetingParams);
+      const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
+
+      expect(executeDeepLinkMessage).not.toBeNull();
+      expect(executeDeepLinkMessage.args).toHaveLength(1);
+
+      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      validateCalendarDeepLinkPrefix(calendarDeepLink);
+
+      utils.respondToMessage(executeDeepLinkMessage, true);
+      await expect(promise).resolves.not.toThrow();
+    });
+
+    it('should resolve promise after successfully sending the composeMeeting message: Non-legacy host', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { calendar: {} } });
 
       const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
 
@@ -259,8 +279,23 @@ describe('calendar', () => {
       utils.respondToMessage(composeMeetingMessage, data.success);
       await expect(composeMeetingPromise).resolves.not.toThrow();
     });
-  });
 
+    it('should resolve promise after successfully sending the composeMeeting message: Legacy host', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { calendar: {} } });
+
+      const composeMeetingPromise = calendar.composeMeeting(composeMeetingParams);
+
+      const composeMeetingMessage = utils.findMessageByFunc('executeDeepLink');
+
+      const data = {
+        success: true,
+      };
+
+      utils.respondToMessage(composeMeetingMessage, data.success);
+      await expect(composeMeetingPromise).resolves.not.toThrow();
+    });
+  });
   describe('isSupported', () => {
     it('should return false if the runtime says calendar is not supported', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });

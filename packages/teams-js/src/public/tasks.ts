@@ -4,12 +4,12 @@ import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
-import { dialog, SdkResponse } from './dialog';
-import { BotUrlDialogInfo, DialogInfo, TaskInfo, UrlDialogInfo } from './interfaces';
+import { dialog } from './dialog';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link dialog} namespace instead.
+ * As of 2.0.0, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -18,7 +18,8 @@ import { BotUrlDialogInfo, DialogInfo, TaskInfo, UrlDialogInfo } from './interfa
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link dialog.open(dialogInfo: DialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} instead.
+   * As of 2.0.0, please use {@link dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for url based dialogs
+   * and {@link dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for bot based dialogs.
    *
    * Allows an app to open the task module.
    *
@@ -29,16 +30,15 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
-    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: SdkResponse) =>
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
         submitHandler(sdkResponse.err, sdkResponse.result),
       );
     }
@@ -47,19 +47,26 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.resize dialog.resize(dialogInfo: DialogInfo): void} instead.
+   * As of 2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
    * @param taskInfo - An object containing width and height properties
    */
   export function updateTask(taskInfo: TaskInfo): void {
-    dialog.resize(taskInfo);
+    taskInfo = getDefaultSizeIfNotProvided(taskInfo);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { width, height, ...extra } = taskInfo;
+
+    if (Object.keys(extra).length) {
+      throw new Error('resize requires a TaskInfo argument containing only width and height');
+    }
+    dialog.update.resize(taskInfo as DialogSize);
   }
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
+   * As of 2.0.0, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
    *
    * Submit the task module.
    *
@@ -74,8 +81,8 @@ export namespace tasks {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: taskInfo.height,
-        width: taskInfo.width,
+        height: taskInfo.height ? taskInfo.height : TaskModuleDimension.Small,
+        width: taskInfo.width ? taskInfo.width : TaskModuleDimension.Small,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,
@@ -87,8 +94,8 @@ export namespace tasks {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {
-        height: taskInfo.height,
-        width: taskInfo.width,
+        height: taskInfo.height ? taskInfo.height : TaskModuleDimension.Small,
+        width: taskInfo.width ? taskInfo.width : TaskModuleDimension.Small,
       },
       title: taskInfo.title,
       fallbackUrl: taskInfo.fallbackUrl,

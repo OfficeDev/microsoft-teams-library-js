@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added a link to info about the updated Context",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@microsoft.com",
+  "dependentChangeType": "patch"
+}
