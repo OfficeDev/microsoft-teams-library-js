@@ -170,6 +170,13 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       ],
     },
   ],
+  // TODO: Not sure which version it will go under, 2.0.4 is used as a placeholder here.
+  '2.0.4': [
+    {
+      capability: { displayCapture: {} },
+      hostClientTypes: [HostClientType.desktop, HostClientType.web],
+    },
+  ],
 };
 
 /**
