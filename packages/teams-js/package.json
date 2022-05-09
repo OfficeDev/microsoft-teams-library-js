@@ -5,7 +5,8 @@
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
+    "url": "https://github.com/OfficeDev/microsoft-teams-library-js",
+    "directory": "packages/teams-js"
   },
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
