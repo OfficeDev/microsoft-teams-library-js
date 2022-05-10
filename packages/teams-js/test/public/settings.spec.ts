@@ -163,10 +163,8 @@ describe('settings', () => {
 
     it('settings.registerOnSaveHandler should not allow calls before initialization', () => {
       expect(() => {
-        let handlerCalled = false;
-        settings.registerOnSaveHandler(() => {
-          handlerCalled = true;
-        });
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        settings.registerOnSaveHandler(() => {});
       }).toThrowError('The library has not yet been initialized');
     });
 
@@ -174,8 +172,8 @@ describe('settings', () => {
       if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is called`, async () => {
           await utils.initializeWithContext(context);
-          let handlerCalled = false;
-          expect(() => settings.registerOnSaveHandler(() => (handlerCalled = true))).toThrowError(
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          expect(() => settings.registerOnSaveHandler(() => {})).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
@@ -188,8 +186,8 @@ describe('settings', () => {
       if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is not called`, async () => {
           await utils.initializeWithContext(context);
-          let handlerCalled = true;
-          expect(() => settings.registerOnSaveHandler(() => (handlerCalled = false))).toThrowError(
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          expect(() => settings.registerOnSaveHandler(() => {})).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
