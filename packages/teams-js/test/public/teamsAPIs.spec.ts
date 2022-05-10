@@ -54,10 +54,10 @@ describe('Testing TeamsCore Capability', () => {
             handlerCalled = true;
           });
           const printEvent = new Event('keydown');
-          // tslint:disable:no-any
+          /* eslint-disable @typescript-eslint/no-explicit-any */
           (printEvent as any).keyCode = 80;
           (printEvent as any).ctrlKey = true;
-          // tslint:enable:no-any
+          /* eslint-enable @typescript-eslint/no-explicit-any */
 
           document.dispatchEvent(printEvent);
           expect(handlerCalled).toBeFalsy();
@@ -70,10 +70,10 @@ describe('Testing TeamsCore Capability', () => {
             handlerCalled = true;
           });
           const printEvent = new Event('keydown');
-          // tslint:disable:no-any
+          /* eslint-disable @typescript-eslint/no-explicit-any */
           (printEvent as any).keyCode = 80;
           (printEvent as any).metaKey = true;
-          // tslint:enable:no-any
+          /* eslint-enable @typescript-eslint/no-explicit-any */
 
           document.dispatchEvent(printEvent);
           expect(handlerCalled).toBeFalsy();
@@ -100,10 +100,10 @@ describe('Testing TeamsCore Capability', () => {
             handlerCalled = true;
           });
           const printEvent = new Event('keydown');
-          // tslint:disable:no-any
+          /* eslint-disable @typescript-eslint/no-explicit-any */
           (printEvent as any).keyCode = 80;
           (printEvent as any).ctrlKey = true;
-          // tslint:enable:no-any
+          /* eslint-enable @typescript-eslint/no-explicit-any */
 
           document.dispatchEvent(printEvent);
           expect(handlerCalled).toBeTruthy();
@@ -117,10 +117,10 @@ describe('Testing TeamsCore Capability', () => {
             handlerCalled = true;
           });
           const printEvent = new Event('keydown');
-          // tslint:disable:no-any
+          /* eslint-disable @typescript-eslint/no-explicit-any */
           (printEvent as any).keyCode = 80;
           (printEvent as any).metaKey = true;
-          // tslint:enable:no-any
+          /* eslint-enable @typescript-eslint/no-explicit-any */
 
           document.dispatchEvent(printEvent);
           expect(handlerCalled).toBe(true);
