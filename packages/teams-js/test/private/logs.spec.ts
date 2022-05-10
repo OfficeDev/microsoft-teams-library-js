@@ -65,7 +65,7 @@ describe('logs', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = false;
-        const log: string = '1/1/2019 Info - App initialized';
+        const log = '1/1/2019 Info - App initialized';
         logs.registerGetLogHandler(() => {
           handlerInvoked = true;
           return log;
