@@ -1,10 +1,10 @@
-import { Utils } from '../utils';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
 
 describe('meetingRoom', () => {
   const framelessPlatformMock = new FramelessPostMocks();
