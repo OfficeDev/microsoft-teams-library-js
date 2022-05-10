@@ -128,7 +128,7 @@ export class ADOSizeComparator {
       }
 
       // Baseline build failed
-      // TODO (erinha): When the CG task stops failing the CI builds, remove the comparison with PartiallySucceeded build result
+      // TODO (erinha): When the CG task stops failing on the CI builds, remove the comparison with PartiallySucceeded build result
       if (baselineBuild.result !== BuildResult.Succeeded && baselineBuild.result !== BuildResult.PartiallySucceeded) {
         const message = getSimpleComment(
           'Baseline CI build failed, cannot generate bundle analysis at this time',
