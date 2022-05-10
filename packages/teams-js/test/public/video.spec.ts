@@ -26,11 +26,12 @@ describe('video', () => {
     }
   });
   describe('registerForVideoFrame', () => {
-    let emptyVideoFrameCallback = (
-      _frame: video.VideoFrame,
-      _notifyVideoFrameProcessed: () => void,
-      _notifyError: (errorMessage: string) => void,
-    ): void => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const emptyVideoFrameCallback = (): void => {};
+    // _frame: video.VideoFrame,
+    // _notifyVideoFrameProcessed: () => void,
+    // _notifyError: (errorMessage: string) => void,
+    // ): void => {};
     const videoFrameConfig: video.VideoFrameConfig = {
       format: video.VideoFrameFormat.NV12,
     };
@@ -128,11 +129,7 @@ describe('video', () => {
       let returnedVideoFrame: video.VideoFrame;
       let handlerInvoked = false;
 
-      let videoFrameCallback = (
-        _frame: video.VideoFrame,
-        _notifyVideoFrameProcessed: () => void,
-        _notifyError: (errorMessage: string) => void,
-      ): void => {
+      const videoFrameCallback = (_frame: video.VideoFrame): void => {
         handlerInvoked = true;
         returnedVideoFrame = _frame;
       };
@@ -153,11 +150,7 @@ describe('video', () => {
       let returnedVideoFrame: video.VideoFrame;
       let handlerInvoked = false;
       //callback
-      const videoFrameCallback = (
-        _frame: video.VideoFrame,
-        _notifyVideoFrameProcessed: () => void,
-        _notifyError: (errorMessage: string) => void,
-      ): void => {
+      const videoFrameCallback = (_frame: video.VideoFrame): void => {
         handlerInvoked = true;
         returnedVideoFrame = _frame;
       };
@@ -295,11 +288,7 @@ describe('video', () => {
     it('FRAMED - should not invoke video frame event handler when videoFrame is undefined', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
-      let videoFrameCallback = (
-        _frame: video.VideoFrame,
-        _notifyVideoFrameProcessed: () => void,
-        _notifyError: (errorMessage: string) => void,
-      ): void => {
+      const videoFrameCallback = (): void => {
         handlerInvoked = true;
       };
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
@@ -310,11 +299,7 @@ describe('video', () => {
     it('FRAMELESS - should not invoke video frame event handler when videoFrame is undefined', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
-      let videoFrameCallback = (
-        _frame: video.VideoFrame,
-        _notifyVideoFrameProcessed: () => void,
-        _notifyError: (errorMessage: string) => void,
-      ): void => {
+      const videoFrameCallback = (): void => {
         handlerInvoked = true;
       };
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
@@ -432,6 +417,7 @@ describe('video', () => {
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(1);
       try {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         video.registerForVideoEffect(() => {});
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
@@ -444,6 +430,7 @@ describe('video', () => {
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(4);
       try {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         video.registerForVideoEffect(() => {});
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
