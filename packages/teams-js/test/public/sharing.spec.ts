@@ -1,9 +1,9 @@
 import { app } from '../../src/public/app';
-import { ErrorCode } from '../../src/public/interfaces';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { ErrorCode } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 
 describe('sharing_v1', () => {
   const utils = new Utils();
@@ -144,6 +144,7 @@ describe('sharing_v1', () => {
                     message: 'Test',
                   },
                 ],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any) as sharing.IShareRequest<sharing.IURLContent>;
               const error = {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
@@ -180,6 +181,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content must be of the same type',
               };
 
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               sharing.shareWebContent(shareRequest as any, response => {
                 expect(response).toEqual(error);
                 done();
@@ -204,6 +206,7 @@ describe('sharing_v1', () => {
                 message: 'URLs are required for URL content types',
               };
 
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               sharing.shareWebContent(shareRequest as any, response => {
                 expect(response).toEqual(error);
                 done();
@@ -227,6 +230,7 @@ describe('sharing_v1', () => {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
                 message: 'Content type is unsupported',
               };
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               sharing.shareWebContent(shareRequest as any, response => {
                 expect(response).toEqual(error);
                 done();
@@ -303,6 +307,7 @@ describe('sharing_v1', () => {
               const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
                 first: 1,
                 second: 2,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any) as sharing.IShareRequest<sharing.IURLContent>;
 
               const error = {
@@ -439,6 +444,7 @@ describe('sharing_v2', () => {
               message: 'Shared content type cannot be undefined',
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const promise = sharing.shareWebContent(shareRequest as any);
             const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
             expect(shareMessage).toBeNull();
@@ -466,6 +472,7 @@ describe('sharing_v2', () => {
               message: 'Shared content must be of the same type',
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const promise = sharing.shareWebContent(shareRequest as any);
             const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
             expect(shareMessage).toBeNull();
@@ -487,6 +494,7 @@ describe('sharing_v2', () => {
               message: 'URLs are required for URL content types',
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const promise = sharing.shareWebContent(shareRequest as any);
             const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
             expect(shareMessage).toBeNull();
@@ -508,6 +516,7 @@ describe('sharing_v2', () => {
               message: 'Content type is unsupported',
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const promise = sharing.shareWebContent(shareRequest as any);
             const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
             expect(shareMessage).toBeNull();
@@ -572,6 +581,7 @@ describe('sharing_v2', () => {
             const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
               first: 1,
               second: 2,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any) as sharing.IShareRequest<sharing.IURLContent>;
             const error = {
               errorCode: ErrorCode.INVALID_ARGUMENTS,
