@@ -84,6 +84,11 @@ export namespace video {
   export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
+   *  Video effect change call back function definition
+   */
+  type PreviewStatusCallback = (inPreview: boolean) => void;
+
+  /**
    * Register to read the video frames in Permissions section
    * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
    * @param config - VideoFrameConfig to customize generated video frame parameters
@@ -131,6 +136,14 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('video.effectParameterChange', callback);
+  }
+
+  /**
+   * Register the preview status callback, host client uses this to notify the video extension if the video is shown in a preview.
+   */
+  export function registerForPreviewStatus(callback: PreviewStatusCallback): void {
+    ensureInitialized(FrameContexts.sidePanel);
+    registerHandler('video.previewStatusChanged', callback);
   }
 
   /**
