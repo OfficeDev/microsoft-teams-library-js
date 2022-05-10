@@ -9,7 +9,8 @@ import { Utils } from '../utils';
 describe('remoteCamera', () => {
   const utils = new Utils();
   const allowedContexts = [FrameContexts.sidePanel];
-  const emptyCallback = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const emptyCallback = (): void => {};
   const capableParticipantsMock: remoteCamera.Participant[] = [
     {
       id: '1',
@@ -66,15 +67,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.getCapableParticipants should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let returnedParticipant: remoteCamera.Participant[] | null = null;
-          let returnedSdkError: SdkError | null = null;
-          const callback = (sdkError: SdkError | null, participants: remoteCamera.Participant[] | null): void => {
-            returnedParticipant = participants;
-            returnedSdkError = sdkError;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.getCapableParticipants(callback);
+            remoteCamera.getCapableParticipants(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -168,15 +163,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.requestControl should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let returnedRequestResponse: boolean | null = null;
-          let returnedSdkError: SdkError | null = null;
-          const callbackMock = (sdkError: SdkError | null, requestResult: boolean | null): void => {
-            returnedRequestResponse = requestResult;
-            returnedSdkError = sdkError;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.requestControl(participantMock, callbackMock);
+            remoteCamera.requestControl(participantMock, emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -271,13 +260,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.sendControlCommand should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let returnedSdkError: SdkError | null;
-          const callbackMock = (sdkError: SdkError | null): void => {
-            returnedSdkError = sdkError;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.sendControlCommand(controlCommandMock, callbackMock);
+            remoteCamera.sendControlCommand(controlCommandMock, emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -358,13 +343,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.terminateSession should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let returnedSdkError: SdkError | null;
-          const callback = (sdkError: SdkError | null): void => {
-            returnedSdkError = sdkError;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.terminateSession(callback);
+            remoteCamera.terminateSession(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -444,13 +425,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let capableParticipants: remoteCamera.Participant[];
-          const handlerMock = (participantChange: remoteCamera.Participant[]): void => {
-            capableParticipants = participantChange;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.registerOnCapableParticipantsChangeHandler(handlerMock);
+            remoteCamera.registerOnCapableParticipantsChangeHandler(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -504,13 +481,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.registerOnErrorHandler should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let handlerError: remoteCamera.ErrorReason;
-          const handlerMock = (error: remoteCamera.ErrorReason): void => {
-            handlerError = error;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.registerOnErrorHandler(handlerMock);
+            remoteCamera.registerOnErrorHandler(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -564,13 +537,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.registerOnDeviceStateChangeHandler should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let deviceState: remoteCamera.DeviceState;
-          const handlerMock = (deviceStateChange: remoteCamera.DeviceState): void => {
-            deviceState = deviceStateChange;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.registerOnDeviceStateChangeHandler(handlerMock);
+            remoteCamera.registerOnDeviceStateChangeHandler(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -624,13 +593,9 @@ describe('remoteCamera', () => {
         it(`remoteCamera.registerOnSessionStatusChangeHandler should throw error when remoteCamera is not supported. context : ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let sessionStatus: remoteCamera.SessionStatus;
-          const handlerMock = (sessionStatusChange: remoteCamera.SessionStatus): void => {
-            sessionStatus = sessionStatusChange;
-          };
           expect.assertions(1);
           try {
-            remoteCamera.registerOnSessionStatusChangeHandler(handlerMock);
+            remoteCamera.registerOnSessionStatusChangeHandler(emptyCallback);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
