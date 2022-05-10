@@ -1,4 +1,3 @@
-import { util } from 'prettier';
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { app } from '../../src/public/app';
@@ -11,7 +10,7 @@ import {
   UserTeamRole,
 } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { runtime, teamsRuntimeConfig, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('AppSDK-app', () => {
@@ -498,6 +497,7 @@ describe('AppSDK-app', () => {
 
   describe('Testing app.registerOnThemeChangeHandler function', () => {
     it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError('The library has not yet been initialized');
     });
 
