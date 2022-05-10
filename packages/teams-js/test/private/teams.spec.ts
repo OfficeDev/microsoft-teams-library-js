@@ -8,7 +8,8 @@ describe('Testing teams capabillity', () => {
   describe('FRAMED - teams capability tests', () => {
     // Use to send a mock message from the app.
     const utils = new Utils();
-    const emptyCallback = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const emptyCallback = (): void => {};
 
     beforeEach(() => {
       utils.processMessage = null;
