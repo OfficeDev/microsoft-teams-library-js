@@ -1,5 +1,3 @@
-import exp from 'constants';
-
 import * as utilFunc from '../../src/internal/utils';
 import { FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
