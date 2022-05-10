@@ -19,7 +19,7 @@ import { Utils } from '../utils';
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
-  describe('Framed - Testing app capbility', () => {
+  describe('Framed - Testing app capability', () => {
     // Use to send a mock message from the app.
     const utils = new Utils();
 
@@ -63,7 +63,7 @@ describe('Testing app capability', () => {
     });
 
     describe('Testing app.initialize function', () => {
-      it('app.initialize should successfully initialize', () => {
+      it('app.initialize message contains all necessary data', () => {
         app.initialize();
 
         expect(utils.processMessage).toBeDefined();
@@ -79,7 +79,7 @@ describe('Testing app capability', () => {
       });
 
       it('app.initialize should allow multiple initialize calls', () => {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 2; i++) {
           app.initialize();
         }
 
