@@ -1,9 +1,16 @@
-import { validateSelectMediaInputs, validateGetMediaInputs, validateViewImagesInput, decodeAttachment, createFile, validatePeoplePickerInput, isMediaCallForImageOutputFormats } from '../../src/internal/mediaUtil';
-import { people } from '../../src/public/people';
+import {
+  createFile,
+  decodeAttachment,
+  isMediaCallForImageOutputFormats,
+  validateGetMediaInputs,
+  validatePeoplePickerInput,
+  validateSelectMediaInputs,
+  validateViewImagesInput,
+} from '../../src/internal/mediaUtil';
 import { media } from '../../src/public/media';
+import { people } from '../../src/public/people';
 
 describe('mediaUtil', () => {
-
   /**
    * Create FIle test cases
    */
@@ -13,28 +20,34 @@ describe('mediaUtil', () => {
   });
 
   it('test createFile failure with null assembleAttachment', () => {
-    const result = createFile(null, "image/jpeg");
+    const result = createFile(null, 'image/jpeg');
     expect(result).toBeNull();
   });
 
   it('test createFile failure with invalid params', () => {
-    const result = createFile([], "image/jpeg");
+    const result = createFile([], 'image/jpeg');
     expect(result).toBeNull();
   });
 
   it('test createFile success', () => {
-    const assemble1: media.AssembleAttachment = decodeAttachment({
-      chunk: btoa("abc"),
-      chunkSequence: 1
-    }, "image/jpeg");
-    const assemble2: media.AssembleAttachment = decodeAttachment({
-      chunk: btoa("xyz"),
-      chunkSequence: 2
-    }, "image/jpeg");
+    const assemble1: media.AssembleAttachment = decodeAttachment(
+      {
+        chunk: btoa('abc'),
+        chunkSequence: 1,
+      },
+      'image/jpeg',
+    );
+    const assemble2: media.AssembleAttachment = decodeAttachment(
+      {
+        chunk: btoa('xyz'),
+        chunkSequence: 2,
+      },
+      'image/jpeg',
+    );
     const assembleAttachment: media.AssembleAttachment[] = [];
     assembleAttachment.push(assemble1);
     assembleAttachment.push(assemble2);
-    const result = createFile(assembleAttachment, "image/jpeg");
+    const result = createFile(assembleAttachment, 'image/jpeg');
     expect(result).not.toBeNull();
   });
 
@@ -47,14 +60,14 @@ describe('mediaUtil', () => {
   });
 
   it('test decodeAttachment failure with null attachment', () => {
-    const result = decodeAttachment(null, "image/jpeg");
+    const result = decodeAttachment(null, 'image/jpeg');
     expect(result).toBeNull();
   });
 
   it('test decodeAttachment failure with null mimetype', () => {
     const chunk: media.MediaChunk = {
-      chunk: "abc",
-      chunkSequence: 1
+      chunk: 'abc',
+      chunkSequence: 1,
     };
     const result = decodeAttachment(chunk, null);
     expect(result).toBeNull();
@@ -62,10 +75,10 @@ describe('mediaUtil', () => {
 
   it('test decodeAttachment success', () => {
     const chunk: media.MediaChunk = {
-      chunk: btoa("abc"),
-      chunkSequence: 1
+      chunk: btoa('abc'),
+      chunkSequence: 1,
     };
-    const result = decodeAttachment(chunk, "image/jpeg");
+    const result = decodeAttachment(chunk, 'image/jpeg');
     expect(result).not.toBeNull();
   });
 
@@ -98,22 +111,22 @@ describe('mediaUtil', () => {
   });
 
   it('test validateGetMediaInputs with null format and content', () => {
-    const result = validateGetMediaInputs("image/jpeg", null, null);
+    const result = validateGetMediaInputs('image/jpeg', null, null);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with null content', () => {
-    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.ID, null);
+    const result = validateGetMediaInputs('image/jpeg', media.FileFormat.ID, null);
     expect(result).toBeFalsy();
   });
 
   it('test validateGetMediaInputs with invalid params', () => {
-    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.Base64, "Something not null");
+    const result = validateGetMediaInputs('image/jpeg', media.FileFormat.Base64, 'Something not null');
     expect(result).toBeFalsy();
   });
 
   it('test success case for validate get media input function', () => {
-    const result = validateGetMediaInputs("image/jpeg", media.FileFormat.ID, "Something not null");
+    const result = validateGetMediaInputs('image/jpeg', media.FileFormat.ID, 'Something not null');
     expect(result).toBeTruthy();
   });
 
@@ -134,14 +147,14 @@ describe('mediaUtil', () => {
     const uriList: media.ImageUri[] = [];
     const imageUri: media.ImageUri = {
       type: media.ImageUriType.ID,
-      value: "Something not null"
-    }
+      value: 'Something not null',
+    };
     uriList.push(imageUri);
     const result = validateViewImagesInput(uriList);
     expect(result).toBeTruthy();
   });
 
- /**
+  /**
    * Validate People Picker selectPeople Input
    */
   it('test selectPeople success with null param', () => {
@@ -155,24 +168,28 @@ describe('mediaUtil', () => {
   });
 
   it('test success case for selectPeople with valid input params', () => {
-    const peoplePickerInputs : people.PeoplePickerInputs = {
-      title: "Hello World",
-      setSelected: ["12345678"],
+    const peoplePickerInputs: people.PeoplePickerInputs = {
+      title: 'Hello World',
+      setSelected: ['12345678'],
       openOrgWideSearchInChatOrChannel: true,
-      singleSelect: true
-    }
+      singleSelect: true,
+    };
     const result = validatePeoplePickerInput(peoplePickerInputs);
     expect(result).toBeTruthy();
   });
 
   it('test isMediaCallForImageOutputFormats success with valid params', () => {
-    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]}, maxMediaCount: 10 };
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
+      imageProps: { imageOutputFormats: [media.ImageOutputFormats.PDF] },
+      maxMediaCount: 10,
+    };
     const result = isMediaCallForImageOutputFormats(mediaInput);
     expect(result).toBeTruthy();
   });
 
   it('test isMediaCallForImageOutputFormats with null imageOutputParams', () => {
-    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image , maxMediaCount: 10 };
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, maxMediaCount: 10 };
     const result = isMediaCallForImageOutputFormats(mediaInput);
     expect(result).toBeFalsy();
   });
@@ -183,7 +200,11 @@ describe('mediaUtil', () => {
   });
 
   it('test isMediaCallForImageOutputFormats invalid params', () => {
-    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Video , imageProps : { imageOutputFormats : [media.ImageOutputFormats.PDF]}, maxMediaCount: 10 };
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      imageProps: { imageOutputFormats: [media.ImageOutputFormats.PDF] },
+      maxMediaCount: 10,
+    };
     const result = isMediaCallForImageOutputFormats(mediaInput);
     expect(result).toBeFalsy();
   });
