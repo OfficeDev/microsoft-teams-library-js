@@ -9,7 +9,8 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
-const emptyCallback = () => {};
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const emptyCallback = (): void => {};
 describe('Testing pages module', () => {
   describe('Framed - Testing pages module', () => {
     // Use to send a mock message from the app.
@@ -1760,7 +1761,7 @@ describe('Testing pages module', () => {
         });
         it(`pages.registerFocusEnterHandler should successfully register a focus enter handler when initialized with ${context} context`, async () => {
           await framelessPostMocks.initializeWithContext(context);
-          pages.registerFocusEnterHandler((x: boolean) => {
+          pages.registerFocusEnterHandler(() => {
             return true;
           });
           const messageForRegister = framelessPostMocks.findMessageByFunc('registerHandler');
@@ -1773,7 +1774,7 @@ describe('Testing pages module', () => {
           await framelessPostMocks.initializeWithContext(context);
 
           let handlerInvoked = false;
-          pages.registerFocusEnterHandler((x: boolean) => {
+          pages.registerFocusEnterHandler(() => {
             handlerInvoked = true;
             return true;
           });
@@ -1790,7 +1791,7 @@ describe('Testing pages module', () => {
           await framelessPostMocks.initializeWithContext(context);
 
           let handlerInvoked = true;
-          pages.registerFocusEnterHandler((x: boolean) => {
+          pages.registerFocusEnterHandler(() => {
             handlerInvoked = false;
             return false;
           });
@@ -2218,7 +2219,7 @@ describe('Testing pages module', () => {
           await framelessPostMocks.initializeWithContext(context);
 
           let handlerInvoked = false;
-          pages.registerFullScreenHandler((x: boolean) => {
+          pages.registerFullScreenHandler(() => {
             handlerInvoked = true;
             return true;
           });
@@ -2233,7 +2234,7 @@ describe('Testing pages module', () => {
           await framelessPostMocks.initializeWithContext(context);
 
           let handlerInvoked = true;
-          pages.registerFullScreenHandler((x: boolean) => {
+          pages.registerFullScreenHandler(() => {
             handlerInvoked = false;
             return false;
           });
