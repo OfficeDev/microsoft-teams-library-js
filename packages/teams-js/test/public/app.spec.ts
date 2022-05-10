@@ -1,6 +1,8 @@
 import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import * as privateAPIs from '../../src/private/privateAPIs';
+import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
@@ -226,6 +228,85 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).toEqual(teamsRuntimeConfig);
+      });
+
+      Object.values(HostClientType).forEach(hostClientType => {
+        it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
+          const initPromise = app.initialize();
+
+          const initMessage = utils.findMessageByFunc('initialize');
+          utils.respondToMessage(initMessage, FrameContexts.content, hostClientType, '', '1.6.0');
+          await initPromise;
+
+          expect(GlobalVars.hostClientType).toBe(hostClientType);
+        });
+      });
+
+      it('app.initialize should call authentication.initialize', async () => {
+        const spy = jest.spyOn(authentication, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call menus.initialize', async () => {
+        const spy = jest.spyOn(menus, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call pages.config.initialize', async () => {
+        const spy = jest.spyOn(pages.config, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call dialog.initialize', async () => {
+        const spy = jest.spyOn(dialog, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call initializePrivateApis', async () => {
+        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should assign additionalValidOrigins when supplied', async () => {
+        const validOrigin = 'https://www.mydomain.com';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(1);
+        expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
       });
     });
 
@@ -499,6 +580,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
           'The library has not yet been initialized',
         );
@@ -834,6 +916,120 @@ describe('Testing app capability', () => {
 
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
+
+      Object.values(HostClientType).forEach(hostClientType => {
+        it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
+          const initPromise = app.initialize();
+
+          const initMessage = framelessPostMock.findMessageByFunc('initialize');
+          framelessPostMock.respondToMessage({
+            data: {
+              id: initMessage.id,
+              args: [FrameContexts.content, hostClientType, '', '1.6.0'],
+            },
+          } as DOMMessageEvent);
+          await initPromise;
+
+          expect(GlobalVars.hostClientType).toBe(hostClientType);
+        });
+      });
+
+      it('app.initialize should call authentication.initialize', async () => {
+        const spy = jest.spyOn(authentication, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call menus.initialize', async () => {
+        const spy = jest.spyOn(menus, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call pages.config.initialize', async () => {
+        const spy = jest.spyOn(pages.config, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call dialog.initialize', async () => {
+        const spy = jest.spyOn(dialog, 'initialize');
+
+        const initPromise = app.initialize();
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should call initializePrivateApis', async () => {
+        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
+
+        const initPromise = app.initialize();
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('app.initialize should assign additionalValidOrigins when supplied', async () => {
+        const validOrigin = 'https://www.mydomain.com';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(1);
+        expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
     });
 
     describe('Testing app.getContext function', () => {
@@ -1117,6 +1313,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
           'The library has not yet been initialized',
         );
