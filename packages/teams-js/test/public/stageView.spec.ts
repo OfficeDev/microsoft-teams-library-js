@@ -34,8 +34,8 @@ describe('stageView', () => {
   };
 
   describe('open', () => {
-    it('should not allow calls before initialization', () => {
-      expect(() => stageView.open(stageViewParams)).toThrowError('The library has not yet been initialized');
+    it('should not allow calls before initialization', async () => {
+      await expect(stageView.open(stageViewParams)).rejects.toThrowError('The library has not yet been initialized');
     });
 
     Object.keys(FrameContexts)
@@ -48,69 +48,64 @@ describe('stageView', () => {
 
           await utils.initializeWithContext(frameContext);
 
-          expect(() => stageView.open(stageViewParams)).toThrowError(
+          await expect(() => stageView.open(stageViewParams)).rejects.toThrowError(
             `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
           );
         });
       });
 
     it('should not allow a null StageViewParams parameter', () => {
-      utils.initializeWithContext('content');
-
-      expect(() => stageView.open(null)).toThrowError('[stageView.open] Stage view params cannot be null');
+      expect.assertions(1);
+      utils.initializeWithContext('content').then(() => {
+        expect(() => stageView.open(null)).rejects.toThrowError('[stageView.open] Stage view params cannot be null');
+      });
     });
 
     describe('v1', () => {
-      it('should pass along entire StageViewParams parameter in content context', () => {
-        utils.initializeWithContext('content');
+      it('should pass along entire StageViewParams parameter in content context', done => {
+        utils.initializeWithContext('content').then(() => {
+          stageView.open(stageViewParams);
 
-        stageView.open(stageViewParams, () => {
-          return;
+          const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+          expect(openStageViewMessage).not.toBeNull();
+          expect(openStageViewMessage.args).toEqual([stageViewParams]);
+          done();
         });
-
-        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-        expect(openStageViewMessage).not.toBeNull();
-        expect(openStageViewMessage.args).toEqual([stageViewParams]);
       });
 
       it('should invoke callback with result', done => {
-        utils.initializeWithContext('content');
+        utils.initializeWithContext('content').then(() => {
+          let callbackCalled = false;
+          stageView.open(stageViewParams).then(err => {
+            try {
+              callbackCalled = true;
+              expect(callbackCalled).toBe(true);
+              expect(err).toBeUndefined();
+              done(err);
+            } catch (err) {
+              done(err);
+            }
+          });
 
-        let callbackCalled = false;
-        stageView.open(stageViewParams, err => {
-          try {
-            callbackCalled = true;
-            expect(callbackCalled).toBe(true);
-            expect(err).toBeUndefined();
-            done(err);
-          } catch (err) {
-            done(err);
-          }
+          const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+          expect(openStageViewMessage).not.toBeNull();
+          utils.respondToMessage(openStageViewMessage, null);
         });
-
-        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-        expect(openStageViewMessage).not.toBeNull();
-        utils.respondToMessage(openStageViewMessage, null);
       });
 
       it('should invoke callback with error', done => {
-        utils.initializeWithContext('content');
-
-        let callbackCalled = false;
-        stageView.open(stageViewParams, () => {
-          try {
-            callbackCalled = true;
-            done();
-          } catch (error) {
-            expect(callbackCalled).toBe(true);
+        expect.assertions(2);
+        utils.initializeWithContext('content').then(() => {
+          const callback = (error): void => {
             expect(error).toBe('someError');
-            done(error);
-          }
-        });
+            done();
+          };
+          stageView.open(stageViewParams).catch(error => callback(error));
 
-        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-        expect(openStageViewMessage).not.toBeNull();
-        utils.respondToMessage(openStageViewMessage, 'someError');
+          const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+          expect(openStageViewMessage).not.toBeNull();
+          utils.respondToMessage(openStageViewMessage, 'someError');
+        });
       });
     });
 
