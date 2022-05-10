@@ -8,31 +8,37 @@ describe('communication', () => {
     await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
   });
   it('processMessage fail if message has a missing data property', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({ badData: '' } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
   });
   it('processMessage fail if message is empty', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({} as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
   });
   it('processMessage fail if data property is not an object', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({ data: '' } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
   });
   it('processMessage fail if message has random data', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({ badData: '', notAnOrigin: 'blah' } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
   });
   it('processMessage fail if data is undefined', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({ data: undefined } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
   });
   it('processMessage fail if data is null', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const event = ({ data: null } as any) as DOMMessageEvent;
     const result = communication.processMessage(event);
     expect(result).toBeUndefined();
