@@ -28,6 +28,7 @@ describe('appEntity', () => {
     const allowedContexts = [FrameContexts.content];
 
     it('appEntity.selectAppEntity should not allow calls before initialization', () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
         'The library has not yet been initialized',
       );
@@ -40,6 +41,7 @@ describe('appEntity', () => {
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(1);
           try {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             appEntity.selectAppEntity('threadID', [], '', () => {});
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
@@ -48,6 +50,7 @@ describe('appEntity', () => {
       } else {
         it(`appEntity.selectAppEntity should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
