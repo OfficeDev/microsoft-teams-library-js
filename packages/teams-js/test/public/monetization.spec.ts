@@ -56,6 +56,7 @@ describe('Testing monetization capability', () => {
         it('openPurchaseExperience should throw error when monetization is not supported. context: content', async () => {
           await framedPlatformMock.initializeWithContext('content');
           framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           expect(() => monetization.openPurchaseExperience(() => {})).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
@@ -186,6 +187,7 @@ describe('Testing monetization capability', () => {
         it('openPurchaseExperience should throw error when monetization is not supported. context: content', async () => {
           await framelessPlatformMock.initializeWithContext('content');
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           expect(() => monetization.openPurchaseExperience(() => {})).rejects.toEqual(errorNotSupportedOnPlatform);
         });
 
