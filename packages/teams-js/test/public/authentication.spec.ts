@@ -1,3 +1,4 @@
+import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts, HostClientType } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -54,11 +55,11 @@ describe('Testing authenticaton capability', () => {
 
     describe('Testing authentication.initialize function', () => {
       it('authentication.initialize should successfully register authentication.authenticate.success/failure handler', async () => {
+        const spy = jest.spyOn(handlers, 'registerHandler');
+
         authentication.initialize();
-        const messageForAuthenticationSuccess = utils.findMessageByFunc('authentication.authenticate.success');
-        const messageForAuthenticationFailure = utils.findMessageByFunc('authentication.authenticate.failure');
-        expect(messageForAuthenticationSuccess).toBeNull();
-        expect(messageForAuthenticationFailure).toBeNull();
+
+        expect(spy).toBeCalledTimes(2);
       });
     });
 
@@ -69,7 +70,8 @@ describe('Testing authenticaton capability', () => {
             await utils.initializeWithContext(context);
             let windowOpenCalled = false;
             jest.spyOn(utils.mockWindow, 'open').mockImplementation(
-              (url: string, name: string, specs: string): Window => {
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
                 expect(url).toEqual('https://someurl/');
                 expect(name).toEqual('_blank');
                 expect(specs.indexOf('width=100')).not.toBe(-1);
@@ -151,7 +153,8 @@ describe('Testing authenticaton capability', () => {
 
             let windowOpenCalled = false;
             jest.spyOn(utils.mockWindow, 'open').mockImplementation(
-              (url: string, name: string, specs: string): Window => {
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
                 expect(url).toEqual('https://someurl/');
                 expect(name).toEqual('_blank');
                 expect(specs.indexOf('width=100')).not.toBe(-1);
@@ -176,7 +179,8 @@ describe('Testing authenticaton capability', () => {
 
             let windowOpenCalled = false;
             jest.spyOn(utils.mockWindow, 'open').mockImplementation(
-              (url: string, name: string, specs: string): Window => {
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
                 expect(url).toEqual('https://someurl/');
                 expect(name).toEqual('_blank');
                 expect(specs.indexOf('width=100')).not.toBe(-1);
@@ -189,7 +193,7 @@ describe('Testing authenticaton capability', () => {
               url: 'https://someurl/',
               width: 100,
               height: 200,
-              successCallback: (result: string) => {
+              successCallback: () => {
                 expect(true).toBe(false);
               },
               failureCallback: (reason: string) => {
@@ -212,11 +216,11 @@ describe('Testing authenticaton capability', () => {
                   expect(result).toEqual(mockResult);
                   done();
                 },
-                failureCallback: (reason: string) => {
+                failureCallback: () => {
                   done();
                 },
               };
-              const promise = authentication.authenticate(authenticationParams);
+              authentication.authenticate(authenticationParams);
 
               utils.processMessage({
                 origin: utils.tabOrigin,
@@ -236,7 +240,8 @@ describe('Testing authenticaton capability', () => {
 
             let windowOpenCalled = false;
             jest.spyOn(utils.mockWindow, 'open').mockImplementation(
-              (url: string, name: string, specs: string): Window => {
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
                 expect(url).toEqual('https://someurl/');
                 expect(name).toEqual('_blank');
                 expect(specs.indexOf('width=100')).not.toBe(-1);
@@ -364,7 +369,7 @@ describe('Testing authenticaton capability', () => {
                     expect(result).toEqual(mockResult);
                     done();
                   },
-                  failureCallback: (reason: string) => {
+                  failureCallback: () => {
                     expect(true).toBe(false);
                     done();
                   },
@@ -384,7 +389,7 @@ describe('Testing authenticaton capability', () => {
                   url: 'https://someUrl',
                   width: 100,
                   height: 200,
-                  successCallback: (result: string) => {
+                  successCallback: () => {
                     expect(true).toBe(false);
                     done();
                   },
@@ -580,7 +585,7 @@ describe('Testing authenticaton capability', () => {
               expect(user).toEqual(mockResult);
               done();
             };
-            const failureCallback = (reason: string): void => {
+            const failureCallback = (): void => {
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -598,7 +603,7 @@ describe('Testing authenticaton capability', () => {
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, done => {
           utils.initializeWithContext(context).then(() => {
-            const successCallback = (user: authentication.UserProfile): void => {
+            const successCallback = (): void => {
               done();
             };
             const failureCallback = (reason: string): void => {
@@ -691,7 +696,7 @@ describe('Testing authenticaton capability', () => {
           it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook with ${context} context`, async () => {
             expect.assertions(2);
             let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
+            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
               windowAssignSpyCalled = true;
               expect(url).toEqual(
                 'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess',
@@ -710,7 +715,7 @@ describe('Testing authenticaton capability', () => {
           it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook and no result param specified from ${context} context`, async () => {
             expect.assertions(2);
             let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
+            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
               windowAssignSpyCalled = true;
               expect(url).toEqual(
                 'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess',
@@ -729,7 +734,7 @@ describe('Testing authenticaton capability', () => {
           it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments from ${context} context`, async () => {
             expect.assertions(2);
             let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
+            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
               windowAssignSpyCalled = true;
               expect(url).toEqual(
                 'https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess',
@@ -819,7 +824,7 @@ describe('Testing authenticaton capability', () => {
           it(`authentication.notifyFailure should do window redirect if callbackUrl is for win32 Outlook and auth failure happens from ${context} context`, async () => {
             expect.assertions(2);
             let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url: string): void => {
+            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
               windowAssignSpyCalled = true;
               expect(url).toEqual(
                 `https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=${errorMessage}&authFailure`,
@@ -897,7 +902,6 @@ describe('Testing authenticaton capability', () => {
   describe('FRAMELESS - authentication tests', () => {
     beforeEach(() => {
       // Use to send a mock message from the app.
-
       framelessPostMock.messages = [];
       // Set a mock window for testing
       app._initialize(framelessPostMock.mockWindow);
@@ -1128,7 +1132,7 @@ describe('Testing authenticaton capability', () => {
               expect(user).toEqual(mockResult);
               done();
             };
-            const failureCallback = (reason: string): void => {
+            const failureCallback = (): void => {
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -1151,7 +1155,7 @@ describe('Testing authenticaton capability', () => {
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, done => {
           framelessPostMock.initializeWithContext(context).then(() => {
-            const successCallback = (user: authentication.UserProfile): void => {
+            const successCallback = (): void => {
               done();
             };
             const failureCallback = (reason: string): void => {
