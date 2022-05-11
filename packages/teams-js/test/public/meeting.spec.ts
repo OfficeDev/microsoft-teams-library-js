@@ -1117,15 +1117,20 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the raiseHandStateChanges', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
-      const raiseHandState: meeting.IRaiseHandState = { isHandRaised: true };
+      const raiseHandState: meeting.IRaiseHandStateChangedEvent = {
+        raiseHandState: { isHandRaised: true },
+        error: null,
+      };
 
       let handlerCalled = false;
-      let response: meeting.IRaiseHandState | SdkError | null;
+      let response: meeting.IRaiseHandStateChangedEvent;
 
-      meeting.registerRaiseHandStateChangedHandler((raiseHandState: meeting.IRaiseHandState | SdkError | null) => {
-        handlerCalled = true;
-        response = raiseHandState;
-      });
+      meeting.registerRaiseHandStateChangedHandler(
+        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEvent) => {
+          handlerCalled = true;
+          response = raiseHandStateChangedEvent;
+        },
+      );
 
       const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
       expect(registerHandlerMessage).not.toBeNull();
