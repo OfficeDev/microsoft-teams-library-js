@@ -141,7 +141,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 ### Major changes
 
-- The API registerFocusEnterHandler has been moved from teamsCore namespace to Pages
+- Moved `registerFocusEnterHandler` from `teamsCore` namespace to `pages`
 - `core.shareDeepLink` has been moved to `pages.shareDeepLink`
 - `core.executeDeepLink` has been renamed and moved to `app.openLink`
 
@@ -151,19 +151,16 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 ### Patches
 
-- Source code will now throw errors instead of throwing strings across the repo.
+- Functions will now throw errors instead of throwing strings across the repo.
 - `null` runtimeConfig is no longer allowed during initialization. This will now throw a "Received runtime config is invalid" error.
 
 ## 2.0.0-beta.2
 
 ### Patches
 
-- Update TSDoc @deprecated comments to include links to replaced APIs.
-
+- Update TSDoc `@deprecated comments` to include links to replaced APIs.
 - Update webpack-dev-server types to match webpack 5 versions and stop generating module wrappers in MicrosoftTeams.d.ts.
-
 - Fix warnings produced during documentation generation, including exporting additional existing interfaces.
-
 - Update repository URLs to reference `2.0-preview` branch.
 
 ## 2.0.0-beta.1
