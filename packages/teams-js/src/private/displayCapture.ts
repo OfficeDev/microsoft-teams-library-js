@@ -6,8 +6,8 @@ import { runtime } from '../public/runtime';
 export interface DisplaySource {
   id: string;
   name: string;
-  thumbnaiel: string;
-  icon: string;
+  thumbnail: string;
+  appIcon: string;
   deviceId: string;
 }
 
