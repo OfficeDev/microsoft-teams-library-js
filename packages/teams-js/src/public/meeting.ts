@@ -160,6 +160,18 @@ export namespace meeting {
     isHandRaised: boolean;
   }
 
+  export interface IRaiseHandStateChangedEvent {
+    /**
+     * entire raiseHandState object for the selfParticipant
+     */
+    raiseHandState: IRaiseHandState;
+
+    /**
+     * error object in case there is a failure
+     */
+    error: SdkError | null;
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -419,8 +431,15 @@ export namespace meeting {
     registerHandler('meeting.speakingStateChanged', handler);
   }
 
+  /**
+   * Registers a handler for changes to the selfParticipant raiseHand state. If the selfParticipant raises their hand, isHandRaised
+   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. Only one handler can be registered
+   * at a time. A subsequent registration replaces an existing registration.
+   *
+   * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
+   */
   export function registerRaiseHandStateChangedHandler(
-    handler: (raiseHandState: IRaiseHandState | SdkError | null) => void,
+    handler: (raiseHandStateChangedEvent: IRaiseHandStateChangedEvent) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
