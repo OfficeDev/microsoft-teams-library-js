@@ -19,6 +19,7 @@ export interface IRuntime {
     };
     readonly files?: {};
     readonly location?: {};
+    readonly displayCapture?: {};
     readonly logs?: {};
     readonly mail?: {};
     readonly media?: {};
@@ -60,6 +61,7 @@ export let runtime: IRuntime = {
       update: undefined,
     },
     location: undefined,
+    displayCapture: undefined,
     logs: undefined,
     mail: undefined,
     media: undefined,
@@ -166,6 +168,13 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
       ],
+    },
+  ],
+  // TODO: Not sure which version it will go under, 2.0.4 is used as a placeholder here.
+  '2.0.4': [
+    {
+      capability: { displayCapture: {} },
+      hostClientTypes: [HostClientType.desktop, HostClientType.web],
     },
   ],
 };
