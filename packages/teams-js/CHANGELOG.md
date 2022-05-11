@@ -13,39 +13,39 @@ Thu, 28 Apr 2022 18:25:41 GMT
 - Updated `files` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
 - Updated `media` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
 - Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
-- Integrated changes from v1, week of 4/18/2022 
-  - `IMeetingDetails` has been renamed to `IMeetingDetailsResponse` and `IDetails` has been replaced with `IMeetingOrCallDetailsBase<T>`. As such, `meeting.getMeetingDetails()` now takes in a callback which takes in `IMeetingDetailsResponse` rather than `IMeetingDetails`. 
-  - `pages.returnFocus()` now works in any `FrameContext` rather than just with `FrameContext.content`. 
+- Integrated changes from v1, week of 4/18/2022
+  - `IMeetingDetails` has been renamed to `IMeetingDetailsResponse` and `IDetails` has been replaced with `IMeetingOrCallDetailsBase<T>`. As such, `meeting.getMeetingDetails()` now takes in a callback which takes in `IMeetingDetailsResponse` rather than `IMeetingDetails`.
+  - `pages.returnFocus()` now works in any `FrameContext` rather than just with `FrameContext.content`.
   - Added `HostClientType.ipados`.
 - Added `isSupported` checks to all functions in the following capabilities:
-    - `appEntity`
-    - `dialog`
-    - `legacy`
-    - `logs`
-    - `menus`
-    - `meetingRoom`
-    - `monetization`
-    - `notifications` (along with additional unit test cases)
-    - `pages`
-    - `people`
-    - `remoteCamera`
-    - `sharing` (along with additional unit test case)
-    - `teams`
-    - `teamsCore`
-    - `video`
-    
+  - `appEntity`
+  - `dialog`
+  - `legacy`
+  - `logs`
+  - `menus`
+  - `meetingRoom`
+  - `monetization`
+  - `notifications` (along with additional unit test cases)
+  - `pages`
+  - `people`
+  - `remoteCamera`
+  - `sharing` (along with additional unit test case)
+  - `teams`
+  - `teamsCore`
+  - `video`
+
 ### Minor changes
 
 - Added `dialog.initialize` function.
-    - `dialog.initialize` is called during app intialization.
-    - Modified `registerOnMessageFromParent` in DialogAPI.tsx for the Teams Test App to account for this new functionality.
+  - `dialog.initialize` is called during app intialization.
+  - Modified `registerOnMessageFromParent` in DialogAPI.tsx for the Teams Test App to account for this new functionality.
 
 ### Patches
 
 - Updated `dialog.open` and `dialog.bot.open` to send `DialogInfo` type over to the host instead of `UrlDialogInfo` or `BotUrlDialogInfo` types
 - Added `minRuntimeConfig` to `uninitialize` for various capabilities
 - Updated README.md to reflect branch rename
-- In adaptive card based task modules, if the height is not provided in `taskInfo`, it will not be set to a default small size. Instead the card content will be set to fit on a Task Module. 
+- In adaptive card based task modules, if the height is not provided in `taskInfo`, it will not be set to a default small size. Instead the card content will be set to fit on a Task Module.
 - Removed `@deprecated` tags from meeting.ts and media.ts
 - Removed `@alpha` tags as they are not supported in the SDK reference doc generation system
 
@@ -61,7 +61,7 @@ Tue, 19 Apr 2022 16:08:56 GMT
   - `chat`
   - `conversations`
   - `files`
-  - `location` 
+  - `location`
 
 ### Minor changes
 
@@ -86,7 +86,7 @@ Wed, 13 Apr 2022 21:40:51 GMT
 - The type `PostMessageChannel` and `sendMessageToParentFromDialog` function in `dialog` capability have been updated to no longer take callback parameters.
 - Split `chat` capability into a private (`conversation`) and a public (`chat`) partition
 - Updated `dialog` capability as follows:
-  - The top-level `dialog` capability supports HTML-based dialogs and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not  support adaptive card-based dialogs,
+  - The top-level `dialog` capability supports HTML-based dialogs and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not support adaptive card-based dialogs,
   - `dialog.open` takes a `UrlDialogInfo` parameter instead of `DialogInfo` to enforce only HTML based dialogs,
   - `submitHandler` callback takes a single object parameter containing both error and result,
   - `dialog.open` takes one more optional parameter named `messageFromChildHandler` which is triggered if dialog sends a message to the app,
@@ -110,7 +110,7 @@ Wed, 13 Apr 2022 21:40:51 GMT
 - Copied `ParentAppWindow` functionality into `dialog` capability. In `dialog`, `ParentAppWindow.postMessage` was renamed to `dialog.sendMessageToParent(message: any): void`. `ParentAppWindow.addEventListener` was renamed to `dialog.registerOnMessageFromParent`.
 - Renamed `conversation` namespace to `conversations` for consistency
 - Integrated changes from v1, week of 3/29/2022
-  - The following APIs in meeting.ts will now work in the `FrameContext.meetingStage` context: 
+  - The following APIs in meeting.ts will now work in the `FrameContext.meetingStage` context:
     - `shareAppContentToStage`
     - `getAppContentStageSharingCapabilities`
     - `stopSharingAppContentToStage`
@@ -334,7 +334,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 - Promises introduced
 
-  - The following APIs that took in a callback function as a parameter now instead return a Promise.
+  - The following APIs that took in a callback function as a parameter now instead return a `Promise`.
     - app APIs:
       - app.initialize
       - app.getContext
