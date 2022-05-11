@@ -33,6 +33,7 @@ Thu, 28 Apr 2022 18:25:41 GMT
   - `teams`
   - `teamsCore`
   - `video`
+- Modified `enablePrintCapability` to correctly require the library be initialized before using it
 
 ### Minor changes
 
