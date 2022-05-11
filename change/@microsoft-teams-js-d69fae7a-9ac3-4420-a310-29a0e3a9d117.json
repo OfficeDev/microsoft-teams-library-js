@@ -1,6 +1,6 @@
 {
-  "type": "none",
-  "comment": "Added missing comments for authentication",
+  "type": "patch",
+  "comment": "Added missing reference documentation comments to the `authentication` capability",
   "packageName": "@microsoft/teams-js",
   "email": "jdahiya8719@outlook.com",
   "dependentChangeType": "none"
