@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "`stageView.open` now returns a Promise instead of taking a callback",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
