@@ -33,7 +33,11 @@ const OpenStageView = (): ReactElement =>
               setResult(JSON.stringify(error));
             }
           };
-          stageView.open(input, callback);
+          // remove after updating e2e tests
+          stageView
+            .open(input)
+            .then()
+            .catch(error => callback(error));
         },
       },
     },
