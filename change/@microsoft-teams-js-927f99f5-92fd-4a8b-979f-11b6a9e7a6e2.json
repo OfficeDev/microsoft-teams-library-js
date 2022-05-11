@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add directory to repository info in package.json",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
