@@ -227,7 +227,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  *
  * @param handler - The handler to invoke when the user click on Settings.
  */
-export function registerEnterSettingsHandler(handler: () => void): void {
+export function registerChangeSettingsHandler(handler: () => void): void {
   pages.config.registerChangeConfigHandler(handler);
 }
 
