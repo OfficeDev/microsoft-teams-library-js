@@ -1,13 +1,10 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
-/**
- * @alpha
- */
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
@@ -47,28 +44,22 @@ export namespace sharing {
   }
 
   /**
-   * @hidden
    * Feature is under development
    * Opens a share dialog for web content
    *
    * @param shareWebContentRequest - web content info
    * @returns Promise that will be fulfilled when the operation has completed
-   *
-   * @internal
    */
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   /**
    * @deprecated
-   * As of 2.0.0-beta.3, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
+   * As of 2.0.0, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
    *
-   * @hidden
    * Feature is under development
    * Opens a share dialog for web content
    *
    * @param shareWebContentRequest - web content info
    * @param callback - optional callback
-   *
-   * @internal
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
@@ -100,6 +91,9 @@ export namespace sharing {
 
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
     return new Promise<void>(resolve => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
   }

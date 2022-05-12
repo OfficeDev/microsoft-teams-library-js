@@ -5,8 +5,6 @@ import { FrameContexts } from './constants';
 
 /**
  * Represents information about tabs for an app
- *
- * @alpha
  */
 export interface TabInformation {
   teamTabs: TabInstance[];
@@ -171,6 +169,16 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
+/**
+ * @deprecated
+ * As of 2.0.0, please use {@link app.Context} instead.
+ *
+ * @remarks
+ * For more details on the updated {@link app.Context} interface, visit
+ * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface}.
+ *
+ * Represents the structure of the received context message.
+ */
 export interface Context {
   /**
    * @hidden
@@ -241,7 +249,7 @@ export interface Context {
   /**
    * @hidden
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link loginHint} or {@link userPrincipalName} instead.
+   * As of 2.0.0, please use {@link loginHint} or {@link userPrincipalName} instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -374,8 +382,8 @@ export interface Context {
 
   /**
    * @hidden
-   * The type of the host client. Possible values are : android, ios, web, desktop, rigel (deprecated, use teamsRoomsWindows instead),
-   * teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
+   * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
+   * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
@@ -513,6 +521,29 @@ export interface Context {
   mySitePath?: string;
 }
 
+export interface ShareDeepLinkParameters {
+  /**
+   * The developer-defined unique ID for the sub-page to which this deep link points in the current page.
+   * This field should be used to restore to a specific state within a page, such as scrolling to or activating a specific piece of content.
+   */
+  subPageId: string;
+
+  /**
+   * The label for the sub-page that should be displayed when the deep link is rendered in a client.
+   */
+  subPageLabel: string;
+
+  /**
+   * The fallback URL to which to navigate the user if the client cannot render the page.
+   * This URL should lead directly to the sub-entity.
+   */
+  subPageWebUrl?: string;
+}
+
+/**
+ * @deprecated
+ * As of 2.0.0, please use {@link ShareDeepLinkParameters} instead.
+ */
 export interface DeepLinkParameters {
   /**
    * The developer-defined unique ID for the sub-entity to which this deep link points in the current entity.
@@ -532,9 +563,69 @@ export interface DeepLinkParameters {
   subEntityWebUrl?: string;
 }
 
+/**
+ * Data structure to represent the size of a dialog
+ */
+export interface DialogSize {
+  /**
+   * The requested height of the webview/iframe.
+   */
+  height: DialogDimension | number;
+
+  /**
+   * The requested width of the webview/iframe.
+   */
+  width: DialogDimension | number;
+}
+
+/**
+ * Data structure to describe dialog information needed to open a url based dialog.
+ */
+export interface UrlDialogInfo {
+  /**
+   * The url to be rendered in the webview/iframe.
+   *
+   * @remarks
+   * The domain of the url must match at least one of the
+   * valid domains specified in the validDomains block of the manifest
+   */
+  url: string;
+
+  /*
+   * The requested size of the dialog
+   */
+  size: DialogSize;
+
+  /**
+   * Title of the task module.
+   */
+  title?: string;
+
+  /**
+   * If client doesnt support the URL, the URL that needs to be opened in the browser.
+   */
+  fallbackUrl?: string;
+}
+
+/**
+ * Data structure to describe dialog information needed to open a bot based dialog.
+ */
+export interface BotUrlDialogInfo extends UrlDialogInfo {
+  /**
+   * Specifies a bot ID to send the result of the user's interaction with the task module.
+   * The bot will receive a task/complete invoke event with a JSON object
+   * in the event payload.
+   */
+  completionBotId: string;
+}
+
 export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.
+   *
+   * @remarks
+   * The domain of the url must match at least one of the
+   * valid domains specified in the validDomains block of the manifest
    */
   url?: string;
 
@@ -573,94 +664,14 @@ export interface DialogInfo {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link DialogInfo} instead.
+ * As of 2.0.0, please use {@link DialogInfo} instead.
  */
 export type TaskInfo = DialogInfo;
 
-/**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
- */
-export interface OpenConversationRequest {
-  /**
-   * @hidden
-   * The Id of the subEntity where the conversation is taking place
-   */
-  subEntityId: string;
-
-  /**
-   * @hidden
-   * The title of the conversation
-   */
-  title: string;
-
-  /**
-   * @hidden
-   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-   */
-  conversationId?: string;
-
-  /**
-   * @hidden
-   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
-   */
-  channelId?: string;
-
-  /**
-   * @hidden
-   * The entity Id of the tab
-   */
-  entityId: string;
-
-  /**
-   * @hidden
-   * A function that is called once the conversation Id has been created
-   */
-  onStartConversation?: (conversationResponse: ConversationResponse) => void;
-
-  /**
-   * @hidden
-   * A function that is called if the pane is closed
-   */
-  onCloseConversation?: (conversationResponse: ConversationResponse) => void;
+export interface DialogSize {
+  height: DialogDimension | number;
+  width: DialogDimension | number;
 }
-
-/**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
- */
-export interface ConversationResponse {
-  /**
-   * @hidden
-   * The Id of the subEntity where the conversation is taking place
-   */
-  subEntityId: string;
-
-  /**
-   * @hidden
-   * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
-   */
-  conversationId?: string;
-
-  /**
-   * @hidden
-   * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
-   */
-  channelId?: string;
-
-  /**
-   * @hidden
-   * The entity Id of the tab
-   */
-  entityId?: string;
-}
-
 /**
  * @hidden
  * Hide from docs.
@@ -695,7 +706,7 @@ export interface FrameInfo {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link FrameInfo} instead.
+ * As of 2.0.0, please use {@link FrameInfo} instead.
  */
 export type FrameContext = FrameInfo;
 

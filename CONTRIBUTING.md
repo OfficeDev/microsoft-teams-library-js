@@ -1,15 +1,17 @@
-# How to Contribute in 2.0-preview
+# How to Contribute
 
 One of the best ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
 
 ## General Contributing Guide
 
 1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
-2. Create a fork in GitHub
-3. Create a branch off the `2.0-preview` branch. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the origin.
-4. Commit your changes
+2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
+3. Create a branch off the `main` branch in your fork. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
+4. Commit your changes.
 5. Run `yarn changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Changelog section.
-6. Create a pull request against the origin's `2.0-preview` branch. If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
+6. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
+7. A user with write access to the upstream repo will need to trigger the checks that run on pull requests in the repo.
+8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch and/or fork.
 
 Before submitting a feature or substantial code contribution please discuss it with the team and ensure it follows the product roadmap. You might also read these two blogs posts on contributing code: [Open Source Contribution Etiquette](http://tirania.org/blog/archive/2010/Dec-31.html) by Miguel de Icaza and [Don't "Push" Your Pull Requests](http://www.igvita.com/2011/12/19/dont-push-your-pull-requests/) by Ilya Grigorik.
 
@@ -36,11 +38,74 @@ times in N different commits. If there was some accidental reformatting or white
 changes during the course of your commits, please rebase them away before submitting
 the PR.
 
+### Adding an API that utilizes version checks for compatibility
+
+This option should only be used for work that meets ALL of the below requirements:
+
+- Features which have already been discussed with the TeamsJS owners and for which approval to use this approach has been granted,
+- Feature implementation that has a requirement of running in host clients that have not onboarded to the new declarative capability support architecture
+
+Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
+
+1. Add the API as a new capability or subcapability rather than adding to an existing capability. Please look at other capabilities such as [calendar.ts](packages/teams-js/src/public/calendar.ts) for examples of how to structure a capability. There must be an isSupported() function with every capability which is a simple boolean check for seeing if `runtime.supports` contains the capability.
+
+e.g.
+
+```
+export function isSupported(): boolean {
+  return runtime.supports.newCapability? true : false;
+}
+```
+
+2. In [runtime.ts](packages/teams-js/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`. The version number your new capability should go under
+
+e.g.
+
+```
+// Object key is type string, value is type Array<ICapabilityReqs>
+'1.9.0': [
+    {
+      capability: { anAndroidCapability: {} },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+  ],
+```
+
+If you're adding a capability to an already existing version requirement, simply add your object to the existing array.
+
+e.g.
+
+```
+// Object key is type string, value is type Array<ICapabilityReqs>
+'1.9.0': [
+    {
+      capability: { anAndroidCapability: {} },
+      hostClientTypes: [
+        HostClientType.android,
+        HostClientType.teamsRoomsAndroid,
+        HostClientType.teamsPhones,
+        HostClientType.teamsDisplays,
+      ],
+    },
+    {
+      capability: { aSecondCapability: {} },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
+```
+
+3. And that's it! Our unit tests are designed to automatically integrate the new capability, so if the unit tests pass, you're good to go.
+
 ### CHANGELOG using Beachball
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.
 
-The TeamsJS Client SDK `2.0-preview` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`), you must run `yarn changefile` from the monorepo root to generate change files.
+The TeamsJS Client SDK `main` branch contains a [changelog](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `yarn changefile` from the monorepo root to generate change files.
 
 Beachball generates JSON change files based on a few simple answers from you:
 

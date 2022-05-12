@@ -1,4 +1,5 @@
 import { app, call, FrameContexts } from '../../src/public';
+import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
 describe('call', () => {
@@ -31,10 +32,11 @@ describe('call', () => {
     await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('Not supported');
   });
 
-  it('startCall should be called if supported', async () => {
+  it('startCall should be called if supported: Non-legacy host', async () => {
     utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,
+      isLegacyTeams: false,
       supports: {
         call: {},
       },
@@ -46,5 +48,27 @@ describe('call', () => {
     utils.respondToMessage(msg, true);
     const response = await promise;
     expect(response).toBe(true);
+  });
+
+  it('startCall should be called if supported: Legacy host', async () => {
+    utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({
+      apiVersion: 1,
+      isLegacyTeams: true,
+      supports: {
+        call: {},
+      },
+    });
+    const promise = call.startCall(mockStartCallParams);
+    const executeDeepLinkMsg = utils.findMessageByFunc('executeDeepLink');
+    expect(executeDeepLinkMsg).toBeTruthy();
+    expect(executeDeepLinkMsg.args).toHaveLength(1);
+
+    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
+    validateCallDeepLinkPrefix(callDeepLink);
+    validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
+
+    utils.respondToMessage(executeDeepLinkMsg, false, true);
+    await expect(promise).resolves.toBe(true);
   });
 });

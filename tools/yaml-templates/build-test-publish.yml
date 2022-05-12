@@ -31,7 +31,7 @@ steps:
     displayName: 'node prepNextDevRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/2.0-preview'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       ne(variables['Build.Reason'], 'PullRequest')
       )
@@ -57,7 +57,7 @@ steps:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'
 
-  # Bundle analysis comparison : should trigger only by PR against 2.0-preview
+  # Bundle analysis comparison : should trigger only by PR against main
   # Adding comment for a commit that should queue the pipeline with a PR trigger
   - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
     env:
@@ -65,15 +65,15 @@ steps:
     condition: and(
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+      eq(variables['System.PullRequest.TargetBranch'], 'main'))
     name: bundleAnalysisTask
-    displayName: 'Analyze bundles against 2.0-preview and output result'
+    displayName: 'Analyze bundles against main and output result'
 
   - task: GitHubComment@0
     condition: and(
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
       eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], '2.0-preview'))
+      eq(variables['System.PullRequest.TargetBranch'], 'main'))
     inputs:
       gitHubConnection: '$(RepoGitHubConnection)'
       repositoryName: '$(Build.Repository.Name)'

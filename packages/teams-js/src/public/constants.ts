@@ -3,9 +3,10 @@ export enum HostClientType {
   web = 'web',
   android = 'android',
   ios = 'ios',
+  ipados = 'ipados',
   /**
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link teamsRoomsWindows} instead.
+   * As of 2.0.0, please use {@link teamsRoomsWindows} instead.
    */
   rigel = 'rigel',
   surfaceHub = 'surfaceHub',
@@ -64,9 +65,10 @@ export enum DialogDimension {
   Small = 'small',
 }
 
+import { ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link DialogDimension} instead.
+ * As of 2.0.0, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;
@@ -79,3 +81,5 @@ export enum ChannelType {
   Private = 'Private',
   Shared = 'Shared',
 }
+
+export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };

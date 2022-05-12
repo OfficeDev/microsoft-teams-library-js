@@ -1,9 +1,10 @@
-import { OpenConversationRequest } from '../../src/public/interfaces';
-import { chat } from '../../src/private/chat';
-import { Utils } from '../utils';
+import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { Utils } from '../utils';
 
-describe('chat', () => {
+describe('conversations', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
@@ -17,6 +18,7 @@ describe('chat', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -28,9 +30,20 @@ describe('chat', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      return expect(chat.openConversation(conversationRequest)).rejects.toThrowError(
+      return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
         'The library has not yet been initialized',
       );
+    });
+
+    it('openConversation should throw error when conversation capability is not supported', async () => {
+      await utils.initializeWithContext('content');
+      const conversationRequest: OpenConversationRequest = {
+        subEntityId: 'someEntityId',
+        title: 'someTitle',
+        entityId: 'someEntityId',
+      };
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
+      expect(() => conversations.openConversation(conversationRequest)).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -41,7 +54,7 @@ describe('chat', () => {
         title: 'someTitle',
         entityId: 'someEntityId',
       };
-      return expect(chat.openConversation(conversationRequest)).rejects.toThrowError(
+      return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
@@ -54,7 +67,7 @@ describe('chat', () => {
         entityId: 'someEntityId',
       };
 
-      chat.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -70,7 +83,7 @@ describe('chat', () => {
         entityId: 'someEntityId',
       };
 
-      chat.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -85,7 +98,7 @@ describe('chat', () => {
         entityId: '',
       };
 
-      chat.openConversation(conversationRequest);
+      conversations.openConversation(conversationRequest);
 
       const openConversationMessage = utils.findMessageByFunc('conversations.openConversation');
       expect(openConversationMessage).not.toBeNull();
@@ -95,12 +108,23 @@ describe('chat', () => {
 
   describe('closeConversation', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => chat.closeConversation()).toThrowError('The library has not yet been initialized');
+      expect(() => conversations.closeConversation()).toThrowError('The library has not yet been initialized');
+    });
+
+    it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      expect.assertions(1);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { chat: {} } });
+      try {
+        conversations.closeConversation();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => chat.closeConversation()).toThrowError(
+      expect(() => conversations.closeConversation()).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
       );
     });
@@ -108,13 +132,20 @@ describe('chat', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      return expect(chat.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+      return expect(conversations.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+    });
+
+    it('getChatMembers should throw error if conversations capability is not supported in runtime config', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      const promise = conversations.getChatMembers();
+      expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
     });
 
     it('should successfully get chat members', async () => {
       await utils.initializeWithContext('content');
 
-      const promise = chat.getChatMembers();
+      const promise = conversations.getChatMembers();
 
       const getChatMembersMessage = utils.findMessageByFunc('getChatMembers');
       expect(getChatMembersMessage).not.toBeNull();

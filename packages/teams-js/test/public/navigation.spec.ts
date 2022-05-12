@@ -1,4 +1,7 @@
+import exp from 'constants';
+
 import * as utilFunc from '../../src/internal/utils';
+import { FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
@@ -21,134 +24,215 @@ describe('MicrosoftTeams-Navigation', () => {
     }
   });
 
-  describe('returnFocus', () => {
-    it('should successfully returnFocus', async () => {
-      await utils.initializeWithContext('content');
+  describe('Testing navigation.returnFocus function', () => {
+    it('navigation.returnFocus should not allow calls before initialization', () => {
+      expect(() => returnFocus(true)).toThrowError('The library has not yet been initialized');
+    });
 
-      returnFocus(true);
+    Object.values(FrameContexts).forEach(context => {
+      it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
+        returnFocus(true);
+        expect(pagesReturnFocus).toHaveBeenCalled();
+      });
 
-      const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-      expect(returnFocusMessage).not.toBeNull();
-      expect(returnFocusMessage.args.length).toBe(1);
-      expect(returnFocusMessage.args[0]).toBe(true);
+      it(`navigation.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+
+        returnFocus(true);
+
+        const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+        expect(returnFocusMessage).not.toBeNull();
+        expect(returnFocusMessage.args.length).toBe(1);
+        expect(returnFocusMessage.args[0]).toBe(true);
+      });
+
+      it(`navigation.returnFocus should successfully returnFocus when set to false and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+
+        returnFocus(false);
+
+        const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+        expect(returnFocusMessage).not.toBeNull();
+        expect(returnFocusMessage.args.length).toBe(1);
+        expect(returnFocusMessage.args[0]).toBe(false);
+      });
     });
   });
-  describe('navigateCrossDomain', () => {
-    it('should not allow calls before initialization', () => {
+
+  describe('Testing navigation.navigateToTab function', () => {
+    it('navigation.navigateToTab should not allow calls before initialization', () => {
+      expect(() => navigateToTab(null)).toThrowError('The library has not yet been initialized');
+    });
+
+    Object.values(FrameContexts).forEach(context => {
+      it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
+        navigateToTab(null);
+        expect(pagesNavigateToTabs).toHaveBeenCalled();
+      });
+
+      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, () => {
+        utils.initializeWithContext(context);
+        navigateToTab(null);
+        const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
+        expect(navigateToTabMsg).not.toBeNull();
+      });
+
+      it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+          return (success: boolean, reason: string): void => {
+            if (!success) {
+              expect(reason).toBe('Invalid internalTabInstanceId and/or channelId were/was provided');
+            }
+          };
+        });
+        navigateToTab(null);
+
+        const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
+        expect(navigateToTabMsg).not.toBeNull();
+        expect(navigateToTabMsg.args.length).toBe(1);
+        expect(navigateToTabMsg.args[0]).toBe(null);
+
+        utils.respondToMessage(navigateToTabMsg, false);
+      });
+    });
+  });
+
+  describe('Testing navigation.navigateCrossDomain function', () => {
+    const allowedContexts = [
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    ];
+
+    it('navigation.navigateCrossDomain should not allow calls before initialization', () => {
       expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
-    it('should not allow calls from authentication context', async () => {
-      await utils.initializeWithContext('authentication');
-
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
-        'This call is only allowed in following contexts: ["content","sidePanel","settings","remove","task","stage","meetingStage"]. Current context: "authentication".',
-      );
-    });
-
-    it('should allow calls from content context', async () => {
-      await utils.initializeWithContext('content');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from settings context', async () => {
-      await utils.initializeWithContext('settings');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from remove context', async () => {
-      await utils.initializeWithContext('remove');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from task context', async () => {
-      await utils.initializeWithContext('task');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should allow calls from stage context', async () => {
-      await utils.initializeWithContext('stage');
-
-      navigateCrossDomain('https://valid.origin.com');
-    });
-
-    it('should successfully navigate cross-origin', async () => {
-      await utils.initializeWithContext('content');
-
-      navigateCrossDomain('https://valid.origin.com');
-
-      const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-      expect(navigateCrossDomainMessage).not.toBeNull();
-      expect(navigateCrossDomainMessage.args.length).toBe(1);
-      expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
-    });
-
-    it('should throw on invalid cross-origin navigation request', done => {
-      utils.initializeWithContext('settings').then(() => {
-        navigateCrossDomain('https://invalid.origin.com', (success, reason) => {
-          expect(success).toBeFalsy();
-          expect(reason).toBe(
-            'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
-          );
-          done();
+    Object.values(FrameContexts).forEach(context => {
+      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`navigation.navigateCrossDomain should successfully call pages.navigateCrossDomain when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const pagesNavigateCrossDomain = jest.spyOn(pages, 'navigateCrossDomain');
+          navigateCrossDomain('https://valid.origin.com');
+          expect(pagesNavigateCrossDomain).toHaveBeenCalled();
         });
 
-        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-        expect(navigateCrossDomainMessage).not.toBeNull();
-        expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+        it(`navigation.navigateCrossDomain should allow calls when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-        utils.respondToMessage(navigateCrossDomainMessage, false);
-      });
+          navigateCrossDomain('https://valid.origin.com');
+        });
+
+        it(`navigation.navigateCrossDomain should successfully navigate cross-origin when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          navigateCrossDomain('https://valid.origin.com');
+
+          const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+          expect(navigateCrossDomainMessage).not.toBeNull();
+          expect(navigateCrossDomainMessage.args.length).toBe(1);
+          expect(navigateCrossDomainMessage.args[0]).toBe('https://valid.origin.com');
+        });
+
+        it(`navigation.navigateCrossDomain should throw on invalid cross-origin navigation request when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          navigateCrossDomain('https://invalid.origin.com', (success, reason) => {
+            expect(success).toBeFalsy();
+            expect(reason).toBe(
+              'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+            );
+          });
+
+          const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+          expect(navigateCrossDomainMessage).not.toBeNull();
+          expect(navigateCrossDomainMessage.args.length).toBe(1);
+          expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+
+          utils.respondToMessage(navigateCrossDomainMessage, false);
+        });
+
+        it(`navigation.navigateCrossDomain should call getGenericOnCompleteHandler when no callback is provided when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
+            return (success: boolean, reason: string): void => {
+              if (!success) {
+                expect(reason).toBe(
+                  'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+                );
+              }
+            };
+          });
+          navigateCrossDomain('https://invalid.origin.com');
+
+          const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+          expect(navigateCrossDomainMessage).not.toBeNull();
+          expect(navigateCrossDomainMessage.args.length).toBe(1);
+          expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+
+          utils.respondToMessage(navigateCrossDomainMessage, false);
+        });
+      } else {
+        it(`navigation.navigateCrossDomain should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+  });
+
+  describe('Testing navigate.navigateBack function', () => {
+    it('navigation.navigateBack should not allow calls before initialization', () => {
+      expect(() => navigateBack()).toThrowError('The library has not yet been initialized');
     });
 
-    it('should call getGenericOnCompleteHandler when no callback is provided.', done => {
-      utils.initializeWithContext('settings').then(() => {
+    Object.values(FrameContexts).forEach(context => {
+      it(`navigation.navigateBack should successfully call pages.backStack.navigateBack when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        const pagesBackStackNavigateBack = jest.spyOn(pages.backStack, 'navigateBack');
+        navigateBack();
+        expect(pagesBackStackNavigateBack).toHaveBeenCalled();
+      });
+      it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
+        utils.initializeWithContext(context);
+        navigateBack();
+        const navigateBackMessage = utils.findMessageByFunc('navigateBack');
+        expect(navigateBackMessage).not.toBeNull();
+      });
+
+      it(`navigation.navigateBack should call getGenericOnCompleteHandler when no callback is provided when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
             if (!success) {
-              expect(reason).toBe(
-                'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
-              );
-              done();
+              expect(reason).toBe('Back navigation is not supported in the current client or context.');
             }
           };
         });
-        navigateCrossDomain('https://invalid.origin.com');
+        navigateBack();
 
-        const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-        expect(navigateCrossDomainMessage).not.toBeNull();
-        expect(navigateCrossDomainMessage.args.length).toBe(1);
-        expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
+        const navigateBackMessage = utils.findMessageByFunc('navigateBack');
+        expect(navigateBackMessage).not.toBeNull();
+        expect(navigateBackMessage.args.length).toBe(0);
 
-        utils.respondToMessage(navigateCrossDomainMessage, false);
+        utils.respondToMessage(navigateBackMessage, false);
       });
-    });
-
-    it('should register the navigateBack action', () => {
-      utils.initializeWithContext('content');
-      navigateBack();
-      const navigateBackMessage = utils.findMessageByFunc('navigateBack');
-      expect(navigateBackMessage).not.toBeNull();
-    });
-
-    it('should register the navigateToTab action', () => {
-      utils.initializeWithContext('content');
-      navigateToTab(null);
-      const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
-      expect(navigateToTabMsg).not.toBeNull();
     });
   });
 });

@@ -1,8 +1,160 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 01 Mar 2022 19:50:49 GMT and should not be manually modified.
+This log was last generated on Thu, 12 May 2022 21:34:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.7
+
+Thu, 12 May 2022 21:34:49 GMT
+
+### Major changes
+
+- Moved sub-capabilities and APIs within `legacy` namespace to `teams` namespace
+- Reverted `registerEnterSettingsHandler` back to its original name `registerChangeSettingsHandler`
+- Removed deprecated `stageView.open` function that took a callback as a parameter
+
+### Patches
+
+- Added missing reference documentation comments to the `pages` capability
+- Added a link to information about the updated `Context` in the reference documentation comments
+- Updated all `@deprecated` tags to reference version 2.0.0
+- Added missing reference documentation comments to interfaces, functions, and enums in app.ts and appInitialization.ts
+- Added directory field to repository info in package.json
+- Added missing reference documentation comments to the `authentication` capability
+- Updated reference documentation comments to rationalize 'Teams' vs 'host' occurrences and other minor edits
+
+## 2.0.0-beta.6
+
+Thu, 28 Apr 2022 18:25:41 GMT
+
+### Major changes
+
+- Updated `files` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Updated `media` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Updated `meeting` namespace to work as it did in v1 along with necessary changes to unit tests and teams-test-app
+- Integrated changes from v1, week of 4/18/2022
+  - `IMeetingDetails` has been renamed to `IMeetingDetailsResponse` and `IDetails` has been replaced with `IMeetingOrCallDetailsBase<T>`. As such, `meeting.getMeetingDetails()` now takes in a callback which takes in `IMeetingDetailsResponse` rather than `IMeetingDetails`.
+  - `pages.returnFocus()` now works in any `FrameContext` rather than just with `FrameContext.content`.
+  - Added `HostClientType.ipados`.
+- Added `isSupported` checks to all functions in the following capabilities:
+  - `appEntity`
+  - `dialog`
+  - `legacy`
+  - `logs`
+  - `menus`
+  - `meetingRoom`
+  - `monetization`
+  - `notifications` (along with additional unit test cases)
+  - `pages`
+  - `people`
+  - `remoteCamera`
+  - `sharing` (along with additional unit test case)
+  - `teams`
+  - `teamsCore`
+  - `video`
+- Modified `enablePrintCapability` to correctly require the library be initialized before using it
+
+### Minor changes
+
+- Added `dialog.initialize` function.
+  - `dialog.initialize` is called during app intialization.
+  - Modified `registerOnMessageFromParent` in DialogAPI.tsx for the Teams Test App to account for this new functionality.
+
+### Patches
+
+- Updated `dialog.open` and `dialog.bot.open` to send `DialogInfo` type over to the host instead of `UrlDialogInfo` or `BotUrlDialogInfo` types
+- Added `minRuntimeConfig` to `uninitialize` for various capabilities
+- Updated README.md to reflect branch rename
+- In adaptive card based task modules, if the height is not provided in `taskInfo`, it will not be set to a default small size. Instead the card content will be set to fit on a Task Module.
+- Removed `@deprecated` tags from meeting.ts and media.ts
+- Removed `@alpha` tags as they are not supported in the SDK reference doc generation system
+
+## 2.0.0-beta.5
+
+Tue, 19 Apr 2022 16:08:56 GMT
+
+### Major changes
+
+- Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
+- Change DeepLinkParameters not to use subEntity* anymore
+- Added `isSupported` checks to all functions and unit test cases in the following capabilities:
+  - `chat`
+  - `conversations`
+  - `files`
+  - `location`
+
+### Minor changes
+
+- Added `runtime.isLegacy` handler for the following deep link capabilities:
+  - `appInstallDialog`
+  - `calendar`
+  - `call`
+- Changed topic parameter name to `topicName` for `executeDeepLink` call in chat.ts
+
+### Patches
+
+- Moved `conversations` sub-capability out of `chat` capability and into its own top level capability in runtime.ts
+- Added `isSupported` to `legacy` capability
+
+## 2.0.0-beta.4
+
+Wed, 13 Apr 2022 21:40:51 GMT
+
+### Major changes
+
+- `legacy.fullTrust.getUserJoinedTeams()` has been moved into its own sub-capability called `joinedTeams` and is now `legacy.fullTrust.joinedTeams.getUserJoinedTeams()`.
+- The type `PostMessageChannel` and `sendMessageToParentFromDialog` function in `dialog` capability have been updated to no longer take callback parameters.
+- Split `chat` capability into a private (`conversation`) and a public (`chat`) partition
+- Updated `dialog` capability as follows:
+  - The top-level `dialog` capability supports HTML-based dialogs and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not support adaptive card-based dialogs,
+  - `dialog.open` takes a `UrlDialogInfo` parameter instead of `DialogInfo` to enforce only HTML based dialogs,
+  - `submitHandler` callback takes a single object parameter containing both error and result,
+  - `dialog.open` takes one more optional parameter named `messageFromChildHandler` which is triggered if dialog sends a message to the app,
+  - `dialog.open` returns a function that can be used to send messages to the dialog instead of returning a `ChildAppWindow`,
+  - `dialog.bot.open` has the same function signature except it takes `BotUrlDialogInfo` instead of `UrlDialogInfo`
+- Moved `chat.openConversation` and `chat.closeConversation` into `chat.conversation` sub-capability. Added new APIs `chat.openChat` and `chat.openGroupChat` as a replacement to open Teams chats with one or more user
+- Moved `dialog.resize()` function to a new `update` sub-capability and is now `dialog.update.resize()`. The parameter has been changed to `DialogSize` type
+
+### Minor changes
+
+- Integrated changes from v1, week of 4/7/2022
+  - Added `surfaceHub` to `HostClientType` interface
+  - Added `ISpeakingState` interface and `registerSpeakingStateChangeHandler` function to meeting.ts and added appropriate unit tests to meeting.spec.ts
+- Integrated changes from v1, week of 4/9/2022
+  - Removed private tag for `sharing`
+  - Moved `menu` APIs from private to public directories
+  - Added new `files` APIs
+    - `FileDownloadStatus` enum
+    - `IFileItem` interface
+    - `getFileDownloads` and `openDownloadFolder` functions
+- Copied `ParentAppWindow` functionality into `dialog` capability. In `dialog`, `ParentAppWindow.postMessage` was renamed to `dialog.sendMessageToParent(message: any): void`. `ParentAppWindow.addEventListener` was renamed to `dialog.registerOnMessageFromParent`.
+- Renamed `conversation` namespace to `conversations` for consistency
+- Integrated changes from v1, week of 3/29/2022
+  - The following APIs in meeting.ts will now work in the `FrameContext.meetingStage` context:
+    - `shareAppContentToStage`
+    - `getAppContentStageSharingCapabilities`
+    - `stopSharingAppContentToStage`
+    - `getAppContentStageSharingState`
+- When the application host will not understand standard chat requests, added logic to send them as deep links.
+- Integrated changes from v1, week of 2/28/2022
+  - Added `stageView` implementation
+  - Modified `dialog.resize` and `dialog.submit` to work in the following `FrameContexts` in addition to `FrameContexts.task`:
+    - `sidePanel`
+    - `content`
+    - `meetingStage`
+
+### Patches
+
+- Added office365 Outlook to domain allowlist
+- Updated comment for `initializePrivateApis` explaining that this function needs to stay for backwards compatibility purposes
+- In appWindow.ts file, converted `ChildAppWindow` and `ParentAppWindow` back to synchronous calls because the promise was never being resolved.
+- Deprecated `stageView.open` function signature that takes a callback parameter in favor of `stageView.open` function signature that returns a `Promise`
+- Validated `media` architecture
+- Fixed `teamsRuntimeConfig` (default backwards compatible host client runtime config) to not contain `location` or `people` capabilities since those are not guaranteed to be supported. Added new function to dynamically generate backwards compatible host client runtime config during initialization.
+- Added `ensureInitialized` call to `registerOnMessageFromParent` function in dialog.ts and `addEventListener` function in appWindow.ts
+- Removed the duplicate property of `StageLayoutControls` type in `meetingRoom` capability
+- Deprecated `files.getFileDownloads` function signature that takes a callback parameter in favor or `files.getFileDownloads` function signature that returns a `Promise`
 
 ## 2.0.0-beta.3
 
@@ -10,29 +162,26 @@ Tue, 01 Mar 2022 19:50:49 GMT
 
 ### Major changes
 
-- The API registerFocusEnterHandler has been moved from teamsCore namespace to Pages
+- Moved `registerFocusEnterHandler` from `teamsCore` namespace to `pages`
 - `core.shareDeepLink` has been moved to `pages.shareDeepLink`
 - `core.executeDeepLink` has been renamed and moved to `app.openLink`
 
 ### Minor changes
 
-- Change the constructor function to make the `onRecordingStarted` callback mandatory, make `onRecordingStopped` an optional property that can be passed to the constructor.  This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
+- Change the `VideoControllerCallback` constructor function to make the `onRecordingStarted` callback mandatory and make `onRecordingStopped` an optional property that can be passed to the constructor. This is because without the `onRecordingStopped`, the `VideoController` doesn't do anything.
 
 ### Patches
 
-- Source code will now throw errors instead of throwing strings across the repo.
+- Functions will now throw errors instead of throwing strings across the repo.
 - `null` runtimeConfig is no longer allowed during initialization. This will now throw a "Received runtime config is invalid" error.
 
 ## 2.0.0-beta.2
 
 ### Patches
 
-- Update TSDoc @deprecated comments to include links to replaced APIs.
-
+- Update TSDoc `@deprecated comments` to include links to replaced APIs.
 - Update webpack-dev-server types to match webpack 5 versions and stop generating module wrappers in MicrosoftTeams.d.ts.
-
 - Fix warnings produced during documentation generation, including exporting additional existing interfaces.
-
 - Update repository URLs to reference `2.0-preview` branch.
 
 ## 2.0.0-beta.1
@@ -205,7 +354,8 @@ Tue, 01 Mar 2022 19:50:49 GMT
     - `applyRuntimeConfig` is added
 
 - Promises introduced
-  - The following APIs that took in a callback function as a parameter now instead return a Promise.
+
+  - The following APIs that took in a callback function as a parameter now instead return a `Promise`.
     - app APIs:
       - app.initialize
       - app.getContext
@@ -269,3 +419,5 @@ Tue, 01 Mar 2022 19:50:49 GMT
       - core.executeDeepLink
       - appInstallDialog.openAppInstallDialog
       - call.startCall
+
+- Changed TypeScript to output ES6 modules instead of CommonJS
