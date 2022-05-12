@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Reverted `registerEnterSettingsHandler` back to original name `registerChangeSettingsHandler`",
+  "comment": "Reverted `registerEnterSettingsHandler` back to its original name `registerChangeSettingsHandler`",
   "packageName": "@microsoft/teams-js",
   "email": "erinha@users.noreply.github.com",
   "dependentChangeType": "patch"
