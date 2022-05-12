@@ -1,8 +1,28 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 28 Apr 2022 18:25:41 GMT and should not be manually modified.
+This log was last generated on Thu, 12 May 2022 21:34:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0-beta.7
+
+Thu, 12 May 2022 21:34:49 GMT
+
+### Major changes
+
+- Moved sub-capabilities and APIs within `legacy` namespace to `teams` namespace
+- Reverted `registerEnterSettingsHandler` back to its original name `registerChangeSettingsHandler`
+- Removed deprecated `stageView.open` function that took a callback as a parameter
+
+### Patches
+
+- Added missing reference documentation comments to the `pages` capability
+- Added a link to information about the updated `Context` in the reference documentation comments
+- Updated all `@deprecated` tags to reference version 2.0.0
+- Added missing reference documentation comments to interfaces, functions, and enums in app.ts and appInitialization.ts
+- Added directory field to repository info in package.json
+- Added missing reference documentation comments to the `authentication` capability
+- Updated reference documentation comments to rationalize 'Teams' vs 'host' occurrences and other minor edits
 
 ## 2.0.0-beta.6
 

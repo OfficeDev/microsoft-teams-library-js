@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added missing reference documentation comments to the `pages` capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "none"
-}
