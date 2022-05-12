@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "create raiseHandStateChangedHandler",
+  "comment": "Added meeting.registerRaiseHandStateChangedHandler",
   "packageName": "@microsoft/teams-js",
   "email": "joeugeni@microsoft.com",
   "dependentChangeType": "patch"

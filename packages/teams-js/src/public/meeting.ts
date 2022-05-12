@@ -433,8 +433,9 @@ export namespace meeting {
 
   /**
    * Registers a handler for changes to the selfParticipant raiseHand state. If the selfParticipant raises their hand, isHandRaised
-   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. Only one handler can be registered
-   * at a time. A subsequent registration replaces an existing registration.
+   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link IRaiseHandStateChangedEvent}
+   * that will have the raiseHand state or an error object. Only one handler can be registered at a time. A subsequent registration
+   * replaces an existing registration.
    *
    * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
    */
