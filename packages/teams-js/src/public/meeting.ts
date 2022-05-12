@@ -156,6 +156,38 @@ export namespace meeting {
     isSpeakingDetected: boolean;
   }
 
+  export interface IMeetingReactionData {
+    /**
+     * Indicates whether one or more participants in a meeting are speaking, or
+     * if no participants are speaking
+     */
+    participantId: string;
+    /**
+     * Indicates the type of MeetingReaction received
+     */
+    meetingReactionType: MeetingReactionType;
+  }
+
+  export interface IMeetingReactionReceivedEvent {
+    /**
+     * Indicates whether one or more participants in a meeting are speaking, or
+     * if no participants are speaking
+     */
+    meetingReaction: IMeetingReactionData;
+    /**
+     * Indicates the type of MeetingReaction received
+     */
+    error: SdkError | null;
+  }
+
+  export enum MeetingReactionType {
+    like = 'like',
+    heart = 'heart',
+    laugh = 'laugh',
+    surprised = 'surprised',
+    applause = 'applause',
+  }
+
   export enum MeetingType {
     Unknown = 'Unknown',
     Adhoc = 'Adhoc',
@@ -413,5 +445,23 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
+  }
+
+  /**
+   * Registers a handler for receiving meetingReactions. If any participant sends a meetingReaction, the participantId
+   * and meetingReactionTypw will be populated. Only one handler can be registered
+   * at a time. A subsequent registration replaces an existing registration.
+   *
+   * @param handler The handler to invoke when a meetingReaction is received
+   */
+  export function registerMeetingReactionReceivedHandler(
+    handler: (meetingReactionReceivedEvent: IMeetingReactionReceivedEvent) => void,
+  ): void {
+    if (!handler) {
+      throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
+    }
+    console.log('test: inside SDK registerMeetingReactionReceivedHandler');
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.meetingReactionReceived', handler);
   }
 }
