@@ -1,4 +1,4 @@
-import { pages, registerEnterSettingsHandler, settings } from '@microsoft/teams-js';
+import { pages, registerChangeSettingsHandler, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -118,7 +118,7 @@ const RegisterOChangeConfigHandler = (): React.ReactElement =>
         return 'pages.config.registerChangeConfigHandler()' + noHostSdkMsg;
       },
       withCallback: setResult => {
-        registerEnterSettingsHandler((): void => {
+        registerChangeSettingsHandler((): void => {
           setResult('successfully called');
         });
       },
