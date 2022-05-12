@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated reference documentation comments to rationalize 'Teams' vs 'host' occurrences and other minor edits",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
