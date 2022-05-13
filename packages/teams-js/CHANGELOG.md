@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 12 May 2022 21:34:49 GMT and should not be manually modified.
+This log was last generated on Fri, 13 May 2022 22:32:13 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.0.0
+
+Fri, 13 May 2022 22:32:13 GMT
+
+### Major changes
+
+- Promote 2.0.0 beta changes to stable. TeamsJS can be used to write applications with support in multiple Microsoft 365 hosts, including Teams, Outlook, and Office.
 
 ## 2.0.0-beta.7
 
