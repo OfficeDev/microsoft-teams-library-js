@@ -19,7 +19,7 @@ import {
   registerAppButtonHoverLeaveHandler,
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
-  registerEnterSettingsHandler,
+  registerChangeSettingsHandler,
   registerFocusEnterHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
@@ -132,7 +132,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
 
-    registerEnterSettingsHandler(() => {
+    registerChangeSettingsHandler(() => {
       handlerCalled = true;
     });
 
