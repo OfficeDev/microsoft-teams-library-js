@@ -11,12 +11,14 @@ const vaultUri = argv.vaultUri;
 const secretName = argv.vaultSecretName;
 
 function getConnectionString() {
+  console.log('Getting connection string.');
   const authenticator = function(challenge, callback) {
     const context = new AuthenticationContext(challenge.authorization);
     return context.acquireTokenWithClientCredentials(challenge.resource, clientId, clientSecret, function(
       err,
       tokenResponse,
     ) {
+      console.error('Failed to acquire token w/ error: ' + JSON.stringify(err));
       if (err) throw err;
       const authorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
       return callback(null, authorizationValue);
@@ -38,10 +40,11 @@ function getConnectionString() {
   const files = await fs.listAsync('./dist');
   files.forEach(file => {
     filePaths.push({path: path.resolve(__dirname, 'dist', file)});
-  })
+  });
   const logger = console.log;
 
   getConnectionString().then(connectionString => {
+    console.log('Deploying to CDN.');
     const opts = {
       serviceOptions: [connectionString], // custom arguments to azure.createBlobService
       containerName: 'sdk', // container name in blob
@@ -55,6 +58,7 @@ function getConnectionString() {
     };
 
     deploy(opts, filePaths, logger, function(err) {
+      console.error('Failed to deploy w/ error: ' + JSON.stringify(err));
       if (err) throw err;
       console.log('Deployment Successful.');
     });
