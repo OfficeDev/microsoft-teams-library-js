@@ -1117,16 +1117,15 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const raiseHandState: meeting.IRaiseHandStateChangedEvent = {
+      const raiseHandState: meeting.IRaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
-        error: null,
       };
 
       let handlerCalled = false;
-      let response: meeting.IRaiseHandStateChangedEvent;
+      let response: meeting.IRaiseHandStateChangedEventData;
 
       meeting.registerRaiseHandStateChangedHandler(
-        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEvent) => {
+        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEventData) => {
           handlerCalled = true;
           response = raiseHandStateChangedEvent;
         },
@@ -1150,16 +1149,15 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
-      const raiseHandState: meeting.IRaiseHandStateChangedEvent = {
+      const raiseHandState: meeting.IRaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
-        error: null,
       };
 
       let handlerCalled = false;
-      let response: meeting.IRaiseHandStateChangedEvent;
+      let response: meeting.IRaiseHandStateChangedEventData;
 
       meeting.registerRaiseHandStateChangedHandler(
-        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEvent) => {
+        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEventData) => {
           handlerCalled = true;
           response = raiseHandStateChangedEvent;
         },

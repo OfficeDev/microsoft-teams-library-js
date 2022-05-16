@@ -148,6 +148,7 @@ export namespace meeting {
      */
     isAppSharing: boolean;
   }
+
   export interface ISpeakingState {
     /**
      * Indicates whether one or more participants in a meeting are speaking, or
@@ -155,12 +156,13 @@ export namespace meeting {
      */
     isSpeakingDetected: boolean;
   }
+
   export interface IRaiseHandState {
     /** Indicates whether the selfParticipant's hand is raised or not*/
     isHandRaised: boolean;
   }
 
-  export interface IRaiseHandStateChangedEvent {
+  export interface IRaiseHandStateChangedEventData {
     /**
      * entire raiseHandState object for the selfParticipant
      */
@@ -169,7 +171,7 @@ export namespace meeting {
     /**
      * error object in case there is a failure
      */
-    error: SdkError | null;
+    error?: SdkError;
   }
 
   export enum MeetingType {
@@ -440,7 +442,7 @@ export namespace meeting {
    * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
    */
   export function registerRaiseHandStateChangedHandler(
-    handler: (raiseHandStateChangedEvent: IRaiseHandStateChangedEvent) => void,
+    handler: (raiseHandStateChangedEvent: IRaiseHandStateChangedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
