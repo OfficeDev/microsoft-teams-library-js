@@ -164,12 +164,12 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
     name: 'registerRaiseHandStateChangedHandler',
     title: 'Register RaiseHandState Changed Handler',
     onClick: async setResult => {
-      const handler = (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEvent): void => {
+      const handler = (raiseHandStateChangedEventData: meeting.IRaiseHandStateChangedEventData): void => {
         let res;
-        if (raiseHandStateChangedEvent.error) {
-          res = `Receieved error ${JSON.stringify(raiseHandStateChangedEvent.error)}`;
+        if (raiseHandStateChangedEventData.error) {
+          res = `Receieved error ${JSON.stringify(raiseHandStateChangedEventData.error)}`;
         } else {
-          res = `RaiseHand state changed to ${JSON.stringify(raiseHandStateChangedEvent.raiseHandState)}`;
+          res = `RaiseHand state changed to ${JSON.stringify(raiseHandStateChangedEventData.raiseHandState)}`;
         }
         setResult(res);
       };
