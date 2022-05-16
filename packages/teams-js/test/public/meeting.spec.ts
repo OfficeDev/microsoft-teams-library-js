@@ -1115,8 +1115,41 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a handler for when the raiseHandStateChanges', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      const raiseHandState: meeting.IRaiseHandStateChangedEvent = {
+        raiseHandState: { isHandRaised: true },
+        error: null,
+      };
+
+      let handlerCalled = false;
+      let response: meeting.IRaiseHandStateChangedEvent;
+
+      meeting.registerRaiseHandStateChangedHandler(
+        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEvent) => {
+          handlerCalled = true;
+          response = raiseHandStateChangedEvent;
+        },
+      );
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.raiseHandStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.raiseHandStateChanged',
+          args: [raiseHandState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(raiseHandState);
+    });
+
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const raiseHandState: meeting.IRaiseHandStateChangedEvent = {
         raiseHandState: { isHandRaised: true },
         error: null,
