@@ -173,7 +173,7 @@ export namespace meeting {
      * Indicates whether one or more participants in a meeting are speaking, or
      * if no participants are speaking
      */
-    meetingReaction: IMeetingReactionData;
+    meetingReaction: IMeetingReactionData | null;
     /**
      * Indicates the type of MeetingReaction received
      */
