@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updating authentication.notifySuccess/Failure logic to throw error in Frameless context",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
