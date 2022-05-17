@@ -1320,6 +1320,12 @@ describe('Testing authentication capability', () => {
               )}. Current context: "${context}".`,
             );
           });
+        } else {
+          it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
+            await framelessPostMock.initializeWithContext(context);
+
+            expect(() => authentication.notifySuccess(mockResult)).toThrowError('Not Allowed in Frameless Window');
+          });
         }
       });
     });
@@ -1339,6 +1345,11 @@ describe('Testing authentication capability', () => {
                 allowedContexts,
               )}. Current context: "${context}".`,
             );
+          });
+        } else {
+          it(`authentication.failure should successfully notify auth failure from ${context} context`, async () => {
+            await framelessPostMock.initializeWithContext(context);
+            expect(() => authentication.notifyFailure(mockResult)).toThrowError('Not Allowed in Frameless Window');
           });
         }
       });
