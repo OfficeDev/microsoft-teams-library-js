@@ -1322,9 +1322,13 @@ describe('Testing authentication capability', () => {
           });
         } else {
           it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context);
+            await framelessPostMock.initializeWithContext(context, HostClientType.android);
 
-            expect(() => authentication.notifySuccess(mockResult)).toThrowError('Not Allowed in Frameless Window');
+            authentication.notifySuccess(mockResult);
+            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.success');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe(mockResult);
           });
         }
       });
@@ -1347,9 +1351,14 @@ describe('Testing authentication capability', () => {
             );
           });
         } else {
-          it(`authentication.failure should successfully notify auth failure from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context);
-            expect(() => authentication.notifyFailure(mockResult)).toThrowError('Not Allowed in Frameless Window');
+          it(`authentication.notifyFailure should successfully notify auth failure from ${context} context`, async () => {
+            await framelessPostMock.initializeWithContext(context, HostClientType.android);
+
+            authentication.notifyFailure(mockResult);
+            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.failure');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe(mockResult);
           });
         }
       });

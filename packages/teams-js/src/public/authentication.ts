@@ -371,9 +371,6 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(FrameContexts.authentication);
-    if (GlobalVars.isFramelessWindow) {
-      throw new Error('Not Allowed in Frameless Window');
-    }
     sendMessageToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
@@ -392,9 +389,6 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(FrameContexts.authentication);
-    if (GlobalVars.isFramelessWindow) {
-      throw new Error('Not Allowed in Frameless Window');
-    }
     sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
