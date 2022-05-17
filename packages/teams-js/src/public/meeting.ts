@@ -168,16 +168,16 @@ export namespace meeting {
     meetingReactionType: MeetingReactionType;
   }
 
-  export interface IMeetingReactionReceivedEvent {
+  export interface IMeetingReactionReceivedEventData {
     /**
      * Indicates whether one or more participants in a meeting are speaking, or
      * if no participants are speaking
      */
-    meetingReaction: IMeetingReactionData | null;
+    meetingReaction?: IMeetingReactionData;
     /**
      * Indicates the type of MeetingReaction received
      */
-    error: SdkError | null;
+    error?: SdkError;
   }
 
   export enum MeetingReactionType {
@@ -455,7 +455,7 @@ export namespace meeting {
    * @param handler The handler to invoke when a meetingReaction is received
    */
   export function registerMeetingReactionReceivedHandler(
-    handler: (meetingReactionReceivedEvent: IMeetingReactionReceivedEvent) => void,
+    handler: (meetingReactionReceivedEventData: IMeetingReactionReceivedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
