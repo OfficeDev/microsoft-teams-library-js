@@ -296,6 +296,12 @@ export namespace files {
     extension: string;
   }
 
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Actions specific to 3P cloud storage provider file and / or account
+   */
   export enum CloudStorageProviderFileAction {
     New = 'NEW',
     Rename = 'RENAME',
@@ -303,16 +309,21 @@ export namespace files {
     Upload = 'UPLOAD',
     Delete = 'DELETE',
     Logout = 'LOGOUT',
-  }
-
-  export interface I3PCloudStorageProviderRequest<T> {
-    content: T;
+    Move = 'MOVE',
+    Copy = 'COPY',
   }
 
   /**
    * @hidden
    * Hide from docs
    *
+   * Interface for 3P cloud storage provider request content type
+   */
+  export interface I3PCloudStorageProviderRequest<T> {
+    content: T;
+  }
+
+  /**
    * Base interface for 3P cloud storage provider action request content
    */
   interface IBase3PCloudStorageProviderContent {
@@ -321,9 +332,6 @@ export namespace files {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   *
    * Interface representing 3P cloud storage provider logout action
    */
   interface I3PCloudStorageProviderLogoutContent extends IBase3PCloudStorageProviderContent {
@@ -331,17 +339,28 @@ export namespace files {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   *
-   * Interface for 3P cloud storage provider action specific request content
+   * Interface representing 3P cloud storage provider add new file action
+   */
+  interface I3PCloudStorageProviderNewFileContent extends IBase3PCloudStorageProviderContent {
+    action: CloudStorageProviderFileAction.New;
+    newFileName: string;
+    newFileType: string;
+  }
+
+  /**
+   * Interface representing 3P cloud storage provider rename existing file action
+   */
+  interface I3PCloudStorageProviderRenameFileContent extends IBase3PCloudStorageProviderContent {
+    action: CloudStorageProviderFileAction.Rename;
+    existingFile: CloudStorageFolderItem | ISharePointFile;
+    newFile: CloudStorageFolderItem | ISharePointFile;
+  }
+
+  /**
+   * Interface representing 3P cloud storage provider actions like Upload / Download / Delete file(s)
    */
   interface I3PCloudStorageProviderActionContent extends IBase3PCloudStorageProviderContent {
-    itemList?: CloudStorageFolderItem[] | ISharePointFile[];
-    existingFileName?: string;
-    existingFileType?: string;
-    newFileName?: string;
-    newFileType?: string;
+    itemList: CloudStorageFolderItem[] | ISharePointFile[];
   }
 
   /**
@@ -356,7 +375,23 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Interface representing 3P cloud storage provider actions (NEW / RENAME / UPLOAD / DOWNLOAD / DELETE) request content type
+   * Interface representing 3P cloud storage provider add new file action request content type
+   */
+  export type I3PCloudStorageProviderNewFileRequestContentType = I3PCloudStorageProviderNewFileContent;
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider rename existing file action request content type
+   */
+  export type I3PCloudStorageProviderRenameFileRequestContentType = I3PCloudStorageProviderRenameFileContent;
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider actions (UPLOAD / DOWNLOAD / DELETE File(s)) request content type
    */
   export type I3PCloudStorageProviderActionRequestContentType = I3PCloudStorageProviderActionContent;
 
@@ -598,7 +633,9 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates add 3P cloud storage provider flow
+   * Initiates add 3P cloud storage provider flow, where a pop up window opens for user to select required
+   * 3P provider from the configured policy supported 3P provider list, following which user authentication
+   * for selected 3P provider is performed on success of which the selected 3P provider support is added for user
    *
    * @param callback Callback that will be triggered post add 3P cloud storage provider action
    */
@@ -606,7 +643,7 @@ export namespace files {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
-      throw new Error('[files.add3PCloudStorageProvider] callback cannot be null');
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.add3PCloudStorageProvider] callback cannot be null');
     }
 
     sendMessageToParent('files.add3PCloudStorageProvider', [], callback);
@@ -616,8 +653,11 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates signout of 3P cloud storage provider flow
+   * Initiates signout of 3P cloud storage provider flow, which will remove the selected
+   * 3P cloud storage provider from the list of added providers. No other user input and / or action
+   * is required except the 3P cloud storage provider to signout from
    *
+   * @param logoutRequest 3P cloud storage provider remove action request content
    * @param callback Callback that will be triggered post signout of 3P cloud storage provider action
    */
   export function remove3PCloudStorageProvider(
@@ -626,14 +666,15 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!validateNonEmptyContent(logoutRequest, callback)) {
-      return;
-    }
-    if (!validateArgumentConsistency(logoutRequest, callback)) {
-      return;
-    }
     if (!callback) {
-      throw new Error('[files.remove3PCloudStorageProvider] callback cannot be null');
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.remove3PCloudStorageProvider] callback cannot be null');
+    }
+
+    if (!(logoutRequest && logoutRequest.content)) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.remove3PCloudStorageProvider] 3P cloud storage provider request content is missing',
+      );
     }
 
     sendMessageToParent('files.remove3PCloudStorageProvider', [logoutRequest], callback);
@@ -643,9 +684,74 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates the 3P cloud storage provider file action (New / Rename / Upload / Download / Delete)
+   * Initiates the add 3P cloud storage file flow, which will add a new file for the given 3P provider
    *
-   * @param cloudStorageProviderFileActionRequest 3P cloud storage provider request info
+   * @param addNewFileRequest 3P cloud storage provider add action request content
+   * @param callback Callback that will be triggered post adding a new file flow is finished
+   */
+  export function add3PCloudStorageProviderFile(
+    addNewFileRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderNewFileRequestContentType>,
+    callback: (error?: SdkError) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.add3PCloudStorageProviderFile] callback cannot be null');
+    }
+
+    if (!(addNewFileRequest && addNewFileRequest.content)) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.add3PCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+      );
+    }
+
+    sendMessageToParent('files.add3PCloudStorageProviderFile', [addNewFileRequest], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates the rename 3P cloud storage file flow, which will rename an existing file in the given 3P provider
+   *
+   * @param renameFileRequest 3P cloud storage provider rename action request content
+   * @param callback Callback that will be triggered post renaming an existing file flow is finished
+   */
+  export function rename3PCloudStorageProviderFile(
+    renameFileRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderRenameFileRequestContentType>,
+    callback: (error?: SdkError) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.rename3PCloudStorageProviderFile] callback cannot be null',
+      );
+    }
+
+    if (!(renameFileRequest && renameFileRequest.content)) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.rename3PCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+      );
+    }
+
+    sendMessageToParent('files.rename3PCloudStorageProviderFile', [renameFileRequest], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates the 3P cloud storage provider file action (Upload / Download / Delete) flow
+   *
+   * Upload Action : Allows uploading file(s) to the given 3P cloud storage provider
+   * Download Action : Allows downloading file(s) from the given 3P cloud storage provider
+   * Delete Action : Allows deleting file(s) from the given 3P cloud storage provider
+   *
+   * @param cloudStorageProviderFileActionRequest 3P cloud storage provider file action (Upload / Download / Delete) request content
    * @param callback Callback that will be triggered post 3P cloud storage action
    */
   export function perform3PCloudStorageProviderFileAction(
@@ -656,18 +762,18 @@ export namespace files {
   ): void {
     ensureInitialized(FrameContexts.content);
 
-    if (!validateNonEmptyContent(cloudStorageProviderFileActionRequest, callback)) {
-      return;
-    }
-    if (!validateArgumentConsistency(cloudStorageProviderFileActionRequest, callback)) {
-      return;
-    }
-    if (!validateContentForSupportedActions(cloudStorageProviderFileActionRequest, callback)) {
-      return;
+    if (!callback) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.perform3PCloudStorageProviderFileAction] callback cannot be null',
+      );
     }
 
-    if (!callback) {
-      throw new Error('[files.perform3PCloudStorageProviderFileAction] callback cannot be null');
+    if (!(cloudStorageProviderFileActionRequest && cloudStorageProviderFileActionRequest.content)) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.perform3PCloudStorageProviderFileAction] 3P cloud storage provider request content is missing',
+      );
     }
 
     sendMessageToParent(
@@ -677,122 +783,11 @@ export namespace files {
     );
   }
 
-  function validateNonEmptyContent(
-    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
-      I3PCloudStorageProviderActionRequestContentType
-    >,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    if (!(cloudStorageProviderFileActionRequest && cloudStorageProviderFileActionRequest.content)) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: '3P cloud storage provider request content is missing',
-        });
-      }
-      return false;
-    }
-    return true;
-  }
-
-  function validateArgumentConsistency(
-    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
-      I3PCloudStorageProviderActionRequestContentType
-    >,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    if (!cloudStorageProviderFileActionRequest.content.action) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: '3P cloud storage provider action cannot be undefined',
-        });
-      }
-      return false;
-    }
-
-    if (!cloudStorageProviderFileActionRequest.content.providerCode) {
-      if (callback) {
-        callback({
-          errorCode: ErrorCode.INVALID_ARGUMENTS,
-          message: '3P cloud storage provider code cannot be undefined',
-        });
-      }
-      return false;
-    }
-
-    return true;
-  }
-
-  function validateContentForSupportedActions(
-    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
-      I3PCloudStorageProviderActionRequestContentType
-    >,
-    callback?: (err?: SdkError) => void,
-  ): boolean {
-    switch (cloudStorageProviderFileActionRequest.content.action) {
-      case 'NEW':
-        if (!cloudStorageProviderFileActionRequest.content.newFileName) {
-          if (callback) {
-            callback({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'New file name is required for NEW action',
-            });
-          }
-          return false;
-        }
-        if (!cloudStorageProviderFileActionRequest.content.newFileType) {
-          if (callback) {
-            callback({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'File type is required for NEW action',
-            });
-          }
-          return false;
-        }
-        break;
-      case 'RENAME':
-        if (!cloudStorageProviderFileActionRequest.content.existingFileName) {
-          if (callback) {
-            callback({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'Existing filename is required for RENAME action',
-            });
-          }
-          return false;
-        }
-        if (!cloudStorageProviderFileActionRequest.content.newFileName) {
-          if (callback) {
-            callback({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'New filename is required for NEW action',
-            });
-          }
-          return false;
-        }
-        break;
-      case 'UPLOAD':
-      case 'DOWNLOAD':
-      case 'DELETE':
-        if (!cloudStorageProviderFileActionRequest.content.itemList) {
-          if (callback) {
-            callback({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'Item list is required for UPLOAD / DOWNLOAD / DELETE action',
-            });
-          }
-          return false;
-        }
-        break;
-      default:
-        if (callback) {
-          callback({
-            errorCode: ErrorCode.INVALID_ARGUMENTS,
-            message: 'Content type is unsupported',
-          });
-        }
-        return false;
-    }
-    return true;
+  function getSdkError(errorCode: ErrorCode, message: string): SdkError {
+    const sdkError: SdkError = {
+      errorCode: errorCode,
+      message: message,
+    };
+    return sdkError;
   }
 }
