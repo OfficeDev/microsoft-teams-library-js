@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Consolidate change log entries across beta versions",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
