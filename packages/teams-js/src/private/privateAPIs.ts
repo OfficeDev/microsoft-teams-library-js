@@ -123,14 +123,14 @@ export function registerUserSettingsChangeHandler(
  * @hidden
  * register a handler to be called when a user's 3P cloud storage provider details changes. The changed setting type & value is provided in the callback.
  *
- * @param settingTypes - List of user setting changes to subscribe
+ * @param scenarioTypes - List of 3P cloud storage provider scenario changes to subscribe
  * @param handler - When a subscribed setting is updated this handler is called
  *
  * @internal
  */
 export function register3PCloudStorageProviderChangeHandler(
   scenarioTypes: CloudStorageProvider3PScenario[],
-  handler: () => void,
+  handler: (scenarioType: CloudStorageProvider3PScenario, value: any) => void,
 ): void {
   ensureInitialized();
 
