@@ -290,7 +290,7 @@ Tue, 19 Apr 2022 16:08:56 GMT
 ### Major changes
 
 - Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
-- Change DeepLinkParameters not to use subEntity\* anymore
+- Change DeepLinkParameters not to use subEntity* anymore
 - Added `isSupported` checks to all functions and unit test cases in the following capabilities:
   - `chat`
   - `conversations`
