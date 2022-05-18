@@ -74,6 +74,11 @@ export namespace teamsCore {
     Handlers.registerBeforeUnloadHandler(handler);
   }
 
+  /**
+   * Checks if teamsCore capability is supported by the host
+   * @returns true if the teamsCore capability is enabled in runtime.supports.teamsCore and
+   * false if it is disabled
+   */
   export function isSupported(): boolean {
     return runtime.supports.teamsCore ? true : false;
   }

@@ -8,6 +8,9 @@ import { runtime } from '../public/runtime';
 import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
 
 /**
+ * @hidden
+ * Hide from docs
+ * ------
  * @internal
  */
 export namespace legacy {
@@ -46,6 +49,14 @@ export namespace legacy {
         });
       }
 
+      /**
+       * @hidden
+       * Hide from docs
+       * ------
+       * Checks if teams.fullTrust.joinedTeams capability is supported by the host
+       * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
+       * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
+       */
       export function isSupported(): boolean {
         return runtime.supports.teams
           ? runtime.supports.teams.fullTrust
@@ -77,7 +88,12 @@ export namespace legacy {
     }
 
     /**
-     * Checks if teams.fullTrust capability is supported currently
+     * @hidden
+     * Hide from docs
+     * ------
+     * Checks if teams.fullTrust capability is supported by the host
+     * @returns true if the teams.fullTrust capability is enabled in runtime.supports.teams.fullTrust and
+     * false if it is disabled
      */
     export function isSupported(): boolean {
       return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;
@@ -85,7 +101,12 @@ export namespace legacy {
   }
 
   /**
-   * Checks if teams capability is supported currently
+   * @hidden
+   * Hide from docs
+   * ------
+   * Checks if teams capability is supported by the host
+   * @returns true if the teams capability is enabled in runtime.supports.teams and
+   * false if it is disabled
    */
   export function isSupported(): boolean {
     return runtime.supports.teams ? true : false;
