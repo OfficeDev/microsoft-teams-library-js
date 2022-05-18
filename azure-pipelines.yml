@@ -51,7 +51,7 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --targetClientSdkCheckpoint=2.0.0'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -77,7 +77,7 @@ jobs:
           Arguments: 'build-test-app-local'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag --targetClientSdkCheckpoint=2.0.0'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
