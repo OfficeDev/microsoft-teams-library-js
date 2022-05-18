@@ -181,9 +181,7 @@ The change log comments for v2.0.0 are a consolidated summary of the comments fo
 
 ### Minor changes
 
-- Added `dialog.initialize` function.
-  - `dialog.initialize` is called during app intialization.
-  - Modified `registerOnMessageFromParent` in DialogAPI.tsx for the Teams Test App to account for this new functionality.
+- Updated `app.initialize` to automatically listen for messages that an application is sending to a dialog. Modified `registerOnMessageFromParent` in DialogAPI.tsx for the Teams Test App to account for this new functionality.
 - Copied `ParentAppWindow` functionality into `dialog` capability. In `dialog`, `ParentAppWindow.postMessage` was renamed to `dialog.sendMessageToParent(message: any): void`. `ParentAppWindow.addEventListener` was renamed to `dialog.registerOnMessageFromParent`.
 - Added `runtime.isLegacy` handler for the following deep link capabilities:
   - `appInstallDialog`
