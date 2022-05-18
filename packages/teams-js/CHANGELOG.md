@@ -15,34 +15,19 @@ Fri, 13 May 2022 22:32:13 GMT
 - Reverted `registerEnterSettingsHandler` back to its original name `registerChangeSettingsHandler`
 - Removed deprecated `stageView.open` function that took a callback as a parameter
 - Modified `enablePrintCapability` to correctly require the library be initialized before using it
+- Removed `bot` namespace and APIs
 
 - The Teams JavaScript client SDK repo has been converted to a monorepo
 
-  - We utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo. <br> The files specific to the Teams client SDK have been moved to an inner directory with the name `teams-js`
+  - Utilized [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) to turn our repo into a monorepo.
+  - The files specific to the Teams client SDK have been moved to an inner directory with the name `teams-js`
   - A new TeamsJS Test App for validating the Teams client SDK has been added in the <root>/apps/teams-test-app location.
 
-- Several API functions have been moved and renamed. For more detailed API organization, please refer to the **Capabilities organization introduced** section below.
+- Added `hostName` property to `Context` interface which contains the name of the host in which the app is running.
 
-- Support for `hostName` added to Context interface. The name of the host the app is running in is now part of the application context in the `hostName` property.
+- The `Context` interface has been updated to group similar properties for better scalability in a multi-host environment.
 
-- Context interface changes <br>
-  The Context interface has been updated to group similar properties for better scalability in a multi-host environment.
-
-- FrameContext changes <br>
-  FrameContext's `user.tenant.sku` has been renamed to `user.tenant.teamsSku` to reflect that it is used by Teams for a different purpose than from the Graph API's user.tenant.sku's.
-  The `FrameContext` interface has been renamed `FrameInfo`.
-
-- Task/Dialog changes <br>
-
-  - The top-level `dialog` capability supports HTML-based dialogs and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not support adaptive card-based dialogs,
-  - `dialog.open` takes a `UrlDialogInfo` parameter instead of `DialogInfo` to enforce only HTML based dialogs,
-  - `submitHandler` callback takes a single object parameter containing both error and result,
-  - `dialog.open` takes one more optional parameter named `messageFromChildHandler` which is triggered if dialog sends a message to the app,
-  - `dialog.open` returns a function that can be used to send messages to the dialog instead of returning a `ChildAppWindow`,
-  - `dialog.bot.open` has the same function signature except it takes `BotUrlDialogInfo` instead of `UrlDialogInfo`
-  - Moved `dialog.resize()` function to a new `update` sub-capability and is now `dialog.update.resize()`. The parameter has been changed to `DialogSize` type
-  - Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
-  - The type `PostMessageChannel` and `sendMessageToParentFromDialog` function in `dialog` capability have been updated to no longer take callback parameters.
+- The `FrameContext` interface has been renamed `FrameInfo`.
 
 - Capabilities organization introduced
 
@@ -61,39 +46,43 @@ Fri, 13 May 2022 22:32:13 GMT
     - The following APIs have been added to `app` namespace:
       - `isInitialized`
       - `getFrameContext`
-  - Several APIs reorganized under new Pages capability:
+  - Added a Pages capability and reorganized several APIs under it:
 
     - The following APIs have been moved to the new `pages` namespace:
-      - `registerFullScreenHandler`
-      - `initializeWithFrameContext`
-      - `navigateCrossDomain`
-      - `returnFocus`
-      - `registerFocusEnterHandler`
-      - `shareDeepLink`
+      - `registerFullScreenHandler` moved from `publicAPIs`
+      - `initializeWithFrameContext` moved from `publicAPIs`
+      - `navigateCrossDomain` moved from `navigation` namespace
+      - `returnFocus` moved from `navigation` namespace
+      - `registerFocusEnterHandler` moved from `publicAPIs`
+      - `shareDeepLink` moved from `publicAPIs`
       - `DeepLinkParameters` has been renamed to `ShareDeepLinkParameters`
-      - `setFrameContext` has been renamed `pages.setCurrentFrame`
+      - `setFrameContext` has been moved from `publicAPIs` and renamed `pages.setCurrentFrame`
+      - `settings.getSettings` has been renamed `pages.getConfig`
+    - Added `pages.navigateToApp` that navigates to the given application ID and page ID, with optional parameters for a WebURL (if the application cannot be navigated to, such as if it is not installed), Channel ID (for applications installed as a channel tab), and sub-page ID (for navigating to specific content within the page).
     - The following APIs have been been renamed and moved from `publicAPIs` to a new Pages.AppButton sub-capability in the new `pages.appButton` namespace:
       - `registerAppButtonClickHandler` has renamed and moved to `pages.appButton.onClick`
       - `registerAppButtonHoverEnterHandler` has renamed and moved to `pages.appButton.onHoverEnter`
       - `regsiterAppButtonHoverLeaveHandler` has renamed and moved to `pages.appButton.onHoverLeave`
     - The following APIs have been moved to a new Pages.BackStack sub-capability in the new `pages.backStack` namespace:
-      - `registerBackButtonHandler`
-      - `navigateBack`
+      - `registerBackButtonHandler` moved from `publicAPIs`
+      - `navigateBack` moved from `navigation` namespace
     - The following APIs have been renamed and moved into the Pages.Config sub-capability in the `pages.config` namespace (formerly the `settings` namespace):
       - `registerEnterSettingsHandler` has renamed and moved to `pages.config.registerChangeConfigHandler`
-      - `getSettings` has been renamed `pages.config.getConfig`
+      - `registerOnSaveHandler`
+      - `registerOnRemoveHandler`
       - `setSettings` has been renamed `pages.config.setConfig`
+      - `setValidityState`
     - The following APIs have been been moved from `privateAPIs` to a new Pages.FullTrust sub-capability in the new `pages.fullTrust` namespace:
       - `enterFullscreen`
       - `exitFullscreen`
     - The following APIs have been been moved to a new Pages.Tabs sub-capability in the new `pages.tabs` namespace:
-      - `getTabInstances`
-      - `getMruTabInstances`
-      - `navigateToTab`
+      - `getTabInstances` moved from `publicAPIs`
+      - `getMruTabInstances` moved from `publicAPIs`
+      - `navigateToTab` moved from `navigation` namespace
 
   - Tasks APIs renamed and reorganized under new Dialog capability:
 
-    - Added `dialog` capability, which has support for HTML-based dialogs and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not support adaptive card-based dialogs.
+    - Added `dialog` capability, which has support for HTML-based dialogs, and a `dialog.bot` sub-capability has been added for bot-based dialogs. At this time, `dialog` does not support adaptive card-based dialogs.
       - The following APIs have been renamed:
         - `startTask` has been renamed `dialog.open`. It takes
           - a `UrlDialogInfo` parameter instead of `DialogInfo` to enforce only HTML based dialogs,
@@ -126,16 +115,14 @@ Fri, 13 May 2022 22:32:13 GMT
     - The following APIs have been added to the new `mail` namespace:
       - `openMailItem` is added
       - `composeMail` is added
-  - Added Chat capability and renamed `conversations` namespace to `chat`
+  - Added Chat capability to new `chat` namespace to represent public chat functionality
+    - Added `openChat` and `openGroupChat` to open Teams chats with one or more users
+  - Added Conversations capability from existing `conversations` namespace to represent private chat functionality
 
-    - `openConversation` and `closeConversation` have been moved to `chat` namespace
-    - `getChatMembers` has been moved to `chat` namespace
-    - Split `chat` capability into a private (`conversation`) and a public (`chat`) partition
-    - Moved `chat.openConversation` and `chat.closeConversation` into `chat.conversation` sub-capability. Added new APIs `chat.openChat` and `chat.openGroupChat` as a replacement to open Teams chats with one or more user
-    - PATCH - Moved `conversations` sub-capability out of `chat` capability and into its own top level capability in runtime.ts
+    - `getChatMembers` has been moved from `privateAPIs` to `conversations` namespace
 
   - Added `fullTrust` and `fullTrust.joinedTeams` sub-capabilities to existing `teams` namespace
-    - The following APIs have been moved from `privateAPIs` to a new `teams.fullTrust` namespace:
+    - The following API has been moved from `privateAPIs` to a new `teams.fullTrust` namespace:
       - `getConfigSetting`
     - The following API has been moved from `privateAPIs` to a new `teams.fullTrust.joinedTeams` namespace:
       - `getUserJoinedTeams`
@@ -143,15 +130,15 @@ Fri, 13 May 2022 22:32:13 GMT
     - `showNotification` has moved from `privateAPIs` to `notifications` namespace
   - Added the following new capabilites from existing namespaces
     - Location
+    - Menus
     - Monetization
     - People
     - Sharing
     - Video
-    - Bot
     - Logs
     - MeetingRoom
-    - Menus
     - RemoteCamera
+    - Teams
   - Added Runtime capability
     - `applyRuntimeConfig` is added
 
@@ -159,45 +146,38 @@ Fri, 13 May 2022 22:32:13 GMT
 
   - The following APIs that took in a callback function as a parameter now instead return a `Promise`.
     - app APIs:
-      - app.initialize
-      - app.getContext
+      - `app.initialize`
+      - `app.getContext`
     - authentication APIs：
-      - authentication.authenticate
-      - authentication.getAuthToken
-      - authentication.getUser
-    - calendar APIs:
-      - calendar.openCalendarItem
-      - calendar.composeMeeting
-    - chat APIs:
-      - chat.getChatMembers
-      - chat.openConversation
+      - `authentication.authenticate`
+      - `authentication.getAuthToken`
+      - `authentication.getUser`
+    - conversations APIs:
+      - `conversations.getChatMembers`
+      - `conversations.openConversation`
     - location APIs:
-      - location.getLocation
-      - location.showLocation
-    - mail APIs:
-      - mail.openMailItem
-      - mail.composeMail
+      - `location.getLocation`
+      - `location.showLocation`
     - meetingRoom APIs:
-      - meetingRoom.getPairedMeetingRoomInfo
-      - meetingRoom.sendCommandToPairedMeetingRoom
+      - `meetingRoom.getPairedMeetingRoomInfo`
+      - `meetingRoom.sendCommandToPairedMeetingRoom`
     - pages APIs：
-      - pages.navigateCrossDomain
-      - pages.tabs.navigateToTab
-      - pages.tabs.getTabInstances
-      - pages.tabs.getMruTabInstances
-      - pages.config.getConfig
-      - pages.config.setConfig
-      - pages.backStack.navigateBack
+      - `pages.navigateCrossDomain`
+      - `pages.tabs.navigateToTab`
+      - `pages.tabs.getTabInstances`
+      - `pages.tabs.getMruTabInstances`
+      - `pages.getConfig`
+      - `pages.config.setConfig`
+      - `pages.backStack.navigateBack`
     - people APIs:
-      - people.selectPeople
+      - `people.selectPeople`
     - teams APIs:
-      - teams.fulltrust.getConfigSetting
-      - teams.fulltrust.getUserJoinedTeams
+      - `teams.fulltrust.getConfigSetting`
+      - `teams.fulltrust.getUserJoinedTeams`
     - others:
-      - ChildAppWindow.postMessage
-      - ParentAppWindow.postMessage
-      - appInstallDialog.openAppInstallDialog
-      - call.startCall
+      - `ChildAppWindow.postMessage`
+      - `ParentAppWindow.postMessage`
+      - `appInstallDialog.openAppInstallDialog`
 
 - Changed TypeScript to output ES6 modules instead of CommonJS
 
@@ -213,30 +193,6 @@ Fri, 13 May 2022 22:32:13 GMT
   - `call`
 - Changed topic parameter name to `topicName` for `executeDeepLink` call in chat.ts
 - When the application host will not understand standard chat requests, added logic to send them as deep links.
-- Integrated changes from v1, week of 4/7/2022
-  - Added `surfaceHub` to `HostClientType` interface
-  - Added `ISpeakingState` interface and `registerSpeakingStateChangeHandler` function to meeting.ts and added appropriate unit tests to meeting.spec.ts
-- Integrated changes from v1, week of 4/9/2022
-
-  - Removed private tag for `sharing`
-  - Moved `menu` APIs from private to public directories
-  - Added new `files` APIs
-    - `FileDownloadStatus` enum
-    - `IFileItem` interface
-    - `getFileDownloads` and `openDownloadFolder` functions
-
-- Integrated changes from v1, week of 3/29/2022
-  - The following APIs in meeting.ts will now work in the `FrameContext.meetingStage` context:
-    - `shareAppContentToStage`
-    - `getAppContentStageSharingCapabilities`
-    - `stopSharingAppContentToStage`
-    - `getAppContentStageSharingState`
-- Integrated changes from v1, week of 2/28/2022
-  - Added `stageView` implementation
-  - Modified `dialog.resize` and `dialog.submit` to work in the following `FrameContexts` in addition to `FrameContexts.task`:
-    - `sidePanel`
-    - `content`
-    - `meetingStage`
 
 ### Patches
 
