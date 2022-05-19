@@ -1,4 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
 
@@ -319,14 +320,14 @@ export namespace files {
    *
    * Interface for 3P cloud storage provider request content type
    */
-  export interface I3PCloudStorageProviderRequest<T> {
+  export interface CloudStorageProviderRequest<T> {
     content: T;
   }
 
   /**
    * Base interface for 3P cloud storage provider action request content
    */
-  interface IBase3PCloudStorageProviderContent {
+  interface BaseCloudStorageProviderContent {
     action: CloudStorageProviderFileAction;
     providerCode: CloudStorageProvider;
   }
@@ -334,14 +335,14 @@ export namespace files {
   /**
    * Interface representing 3P cloud storage provider logout action
    */
-  interface I3PCloudStorageProviderLogoutContent extends IBase3PCloudStorageProviderContent {
+  interface CloudStorageProviderLogoutContent extends BaseCloudStorageProviderContent {
     action: CloudStorageProviderFileAction.Logout;
   }
 
   /**
    * Interface representing 3P cloud storage provider add new file action
    */
-  interface I3PCloudStorageProviderNewFileContent extends IBase3PCloudStorageProviderContent {
+  interface CloudStorageProviderNewFileContent extends BaseCloudStorageProviderContent {
     action: CloudStorageProviderFileAction.New;
     newFileName: string;
     newFileType: string;
@@ -350,7 +351,7 @@ export namespace files {
   /**
    * Interface representing 3P cloud storage provider rename existing file action
    */
-  interface I3PCloudStorageProviderRenameFileContent extends IBase3PCloudStorageProviderContent {
+  interface CloudStorageProviderRenameFileContent extends BaseCloudStorageProviderContent {
     action: CloudStorageProviderFileAction.Rename;
     existingFile: CloudStorageFolderItem | ISharePointFile;
     newFile: CloudStorageFolderItem | ISharePointFile;
@@ -359,7 +360,7 @@ export namespace files {
   /**
    * Interface representing 3P cloud storage provider actions like Upload / Download / Delete file(s)
    */
-  interface I3PCloudStorageProviderActionContent extends IBase3PCloudStorageProviderContent {
+  interface CloudStorageProviderActionContent extends BaseCloudStorageProviderContent {
     itemList: CloudStorageFolderItem[] | ISharePointFile[];
   }
 
@@ -369,7 +370,7 @@ export namespace files {
    *
    * Interface representing 3P cloud storage provider logout action request content type
    */
-  export type I3PCloudStorageProviderLogoutRequestContentType = I3PCloudStorageProviderLogoutContent;
+  export type CloudStorageProviderLogoutRequestContentType = CloudStorageProviderLogoutContent;
 
   /**
    * @hidden
@@ -377,7 +378,7 @@ export namespace files {
    *
    * Interface representing 3P cloud storage provider add new file action request content type
    */
-  export type I3PCloudStorageProviderNewFileRequestContentType = I3PCloudStorageProviderNewFileContent;
+  export type CloudStorageProviderNewFileRequestContentType = CloudStorageProviderNewFileContent;
 
   /**
    * @hidden
@@ -385,7 +386,7 @@ export namespace files {
    *
    * Interface representing 3P cloud storage provider rename existing file action request content type
    */
-  export type I3PCloudStorageProviderRenameFileRequestContentType = I3PCloudStorageProviderRenameFileContent;
+  export type CloudStorageProviderRenameFileRequestContentType = CloudStorageProviderRenameFileContent;
 
   /**
    * @hidden
@@ -393,7 +394,7 @@ export namespace files {
    *
    * Interface representing 3P cloud storage provider actions (UPLOAD / DOWNLOAD / DELETE File(s)) request content type
    */
-  export type I3PCloudStorageProviderActionRequestContentType = I3PCloudStorageProviderActionContent;
+  export type CloudStorageProviderActionRequestContentType = CloudStorageProviderActionContent;
 
   /**
    * @hidden
@@ -639,14 +640,14 @@ export namespace files {
    *
    * @param callback Callback that will be triggered post add 3P cloud storage provider action
    */
-  export function add3PCloudStorageProvider(callback: (error?: SdkError) => void): void {
+  export function addCloudStorageProvider(callback: (error?: SdkError) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
-      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.add3PCloudStorageProvider] callback cannot be null');
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProvider] callback cannot be null');
     }
 
-    sendMessageToParent('files.add3PCloudStorageProvider', [], callback);
+    sendMessageToParent('files.addCloudStorageProvider', [], callback);
   }
 
   /**
@@ -660,24 +661,24 @@ export namespace files {
    * @param logoutRequest 3P cloud storage provider remove action request content
    * @param callback Callback that will be triggered post signout of 3P cloud storage provider action
    */
-  export function remove3PCloudStorageProvider(
-    logoutRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderLogoutRequestContentType>,
+  export function removeCloudStorageProvider(
+    logoutRequest: CloudStorageProviderRequest<CloudStorageProviderLogoutRequestContentType>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
-      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.remove3PCloudStorageProvider] callback cannot be null');
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.removeCloudStorageProvider] callback cannot be null');
     }
 
     if (!(logoutRequest && logoutRequest.content)) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.remove3PCloudStorageProvider] 3P cloud storage provider request content is missing',
+        '[files.removeCloudStorageProvider] 3P cloud storage provider request content is missing',
       );
     }
 
-    sendMessageToParent('files.remove3PCloudStorageProvider', [logoutRequest], callback);
+    sendMessageToParent('files.removeCloudStorageProvider', [logoutRequest], callback);
   }
 
   /**
@@ -689,24 +690,24 @@ export namespace files {
    * @param addNewFileRequest 3P cloud storage provider add action request content
    * @param callback Callback that will be triggered post adding a new file flow is finished
    */
-  export function add3PCloudStorageProviderFile(
-    addNewFileRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderNewFileRequestContentType>,
+  export function addCloudStorageProviderFile(
+    addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileRequestContentType>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
-      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.add3PCloudStorageProviderFile] callback cannot be null');
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProviderFile] callback cannot be null');
     }
 
     if (!(addNewFileRequest && addNewFileRequest.content)) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.add3PCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+        '[files.addCloudStorageProviderFile] 3P cloud storage provider request content is missing',
       );
     }
 
-    sendMessageToParent('files.add3PCloudStorageProviderFile', [addNewFileRequest], callback);
+    sendMessageToParent('files.addCloudStorageProviderFile', [addNewFileRequest], callback);
   }
 
   /**
@@ -718,27 +719,24 @@ export namespace files {
    * @param renameFileRequest 3P cloud storage provider rename action request content
    * @param callback Callback that will be triggered post renaming an existing file flow is finished
    */
-  export function rename3PCloudStorageProviderFile(
-    renameFileRequest: I3PCloudStorageProviderRequest<I3PCloudStorageProviderRenameFileRequestContentType>,
+  export function renameCloudStorageProviderFile(
+    renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileRequestContentType>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
-      throw getSdkError(
-        ErrorCode.INVALID_ARGUMENTS,
-        '[files.rename3PCloudStorageProviderFile] callback cannot be null',
-      );
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.renameCloudStorageProviderFile] callback cannot be null');
     }
 
     if (!(renameFileRequest && renameFileRequest.content)) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.rename3PCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+        '[files.renameCloudStorageProviderFile] 3P cloud storage provider request content is missing',
       );
     }
 
-    sendMessageToParent('files.rename3PCloudStorageProviderFile', [renameFileRequest], callback);
+    sendMessageToParent('files.renameCloudStorageProviderFile', [renameFileRequest], callback);
   }
 
   /**
@@ -754,10 +752,8 @@ export namespace files {
    * @param cloudStorageProviderFileActionRequest 3P cloud storage provider file action (Upload / Download / Delete) request content
    * @param callback Callback that will be triggered post 3P cloud storage action
    */
-  export function perform3PCloudStorageProviderFileAction(
-    cloudStorageProviderFileActionRequest: I3PCloudStorageProviderRequest<
-      I3PCloudStorageProviderActionRequestContentType
-    >,
+  export function performCloudStorageProviderFileAction(
+    cloudStorageProviderFileActionRequest: CloudStorageProviderRequest<CloudStorageProviderActionRequestContentType>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
@@ -765,22 +761,62 @@ export namespace files {
     if (!callback) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.perform3PCloudStorageProviderFileAction] callback cannot be null',
+        '[files.performCloudStorageProviderFileAction] callback cannot be null',
       );
     }
 
     if (!(cloudStorageProviderFileActionRequest && cloudStorageProviderFileActionRequest.content)) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.perform3PCloudStorageProviderFileAction] 3P cloud storage provider request content is missing',
+        '[files.performCloudStorageProviderFileAction] 3P cloud storage provider request content is missing',
       );
     }
 
     sendMessageToParent(
-      'files.perform3PCloudStorageProviderFileAction',
+      'files.performCloudStorageProviderFileAction',
       [cloudStorageProviderFileActionRequest],
       callback,
     );
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Register a handler to be called when a user's 3P cloud storage provider list changes i.e.
+   * post adding / reoving a 3P provider, list is updated
+   *
+   * @param handler - When 3P cloud storage provider list is updated this handler is called
+   *
+   */
+  export function registerCloudStorageProviderListChangeHandler(handler: () => void): void {
+    ensureInitialized();
+
+    if (!handler) {
+      throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
+    }
+
+    registerHandler('files.cloudStorageProviderList', handler);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Register a handler to be called when a user's 3P cloud storage provider content changes i.e.
+   * when file(s) is/are added / renamed / deleted / uploaded, the list of files is updated
+   *
+   * @param handler - When 3P cloud storage provider content is updated this handler is called
+   *
+   */
+  export function registerCloudStorageProviderContentChangeHandler(handler: () => void): void {
+    ensureInitialized();
+
+    if (!handler) {
+      throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
+    }
+
+    registerHandler('files.cloudStorageProviderContent', handler);
   }
 
   function getSdkError(errorCode: ErrorCode, message: string): SdkError {

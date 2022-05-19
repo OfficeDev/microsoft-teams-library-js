@@ -66,27 +66,6 @@ export enum UserSettingTypes {
 /**
  * @hidden
  * Hide from docs.
- * ------
- * 3P cloud storage scenario changes that can be subscribed to
- */
-export enum CloudStorageProvider3PScenario {
-  /**
-   * @hidden
-   * Use this key to subscribe to changes in user's 3P cloud storage provider list i.e.
-   * post adding / reoving a 3P provider, update the list
-   */
-  cloudStorageProvider = 'cloudStorageProvider',
-  /**
-   * @hidden
-   * Use this key to subscribe to cloud storage provider content changes i.e
-   * when file(s) is/are added / renamed / deleted / uploaded, the list of files is updated
-   */
-  cloudStorageProviderContent = 'cloudStorageProviderContent',
-}
-
-/**
- * @hidden
- * Hide from docs.
  */
 export interface FilePreviewParameters {
   /**
