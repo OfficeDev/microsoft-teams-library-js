@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "Promote 2.0.0 beta changes to stable. TeamsJS can be used to write applications with support in multiple Microsoft 365 hosts, including Teams, Outlook, and Office.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "none"
-}
