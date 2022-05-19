@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added frameless unit tests for authentication.notifySuccess and authentication.notifyFailure",
+  "comment": "Added frameless unit tests for `authentication.notifySuccess` and `authentication.notifyFailure`",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
