@@ -554,21 +554,21 @@ describe('files', () => {
     });
   });
 
-  describe('add3PCloudStorageProvider', () => {
+  describe('addCloudStorageProvider', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.add3PCloudStorageProvider(emptyCallback)).toThrowError(
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.add3PCloudStorageProvider(null)).toThrowError();
+      expect(() => files.addCloudStorageProvider(null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.add3PCloudStorageProvider(emptyCallback)).toThrowError(
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
@@ -580,17 +580,17 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.add3PCloudStorageProvider(callback);
+      files.addCloudStorageProvider(callback);
 
-      const add3PCloudStorageProviderMessage = utils.findMessageByFunc('files.add3PCloudStorageProvider');
-      expect(add3PCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(add3PCloudStorageProviderMessage, false);
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
 
-  describe('remove3PCloudStorageProvider', () => {
-    const logoutRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderLogoutRequestContentType> = {
+  describe('removeCloudStorageProvider', () => {
+    const logoutRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderLogoutRequestContentType> = {
       content: {
         action: files.CloudStorageProviderFileAction.Logout,
         providerCode: files.CloudStorageProvider.Box
@@ -598,19 +598,19 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.remove3PCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+      expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.remove3PCloudStorageProvider(logoutRequest, null)).toThrowError();
+      expect(() => files.removeCloudStorageProvider(logoutRequest, null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.remove3PCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+      expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
@@ -622,17 +622,17 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.remove3PCloudStorageProvider(logoutRequest, callback);
+      files.removeCloudStorageProvider(logoutRequest, callback);
 
-      const remove3PCloudStorageProviderMessage = utils.findMessageByFunc('files.remove3PCloudStorageProvider');
-      expect(remove3PCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(remove3PCloudStorageProviderMessage, false);
+      const removeCloudStorageProviderMessage = utils.findMessageByFunc('files.removeCloudStorageProvider');
+      expect(removeCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(removeCloudStorageProviderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
 
-  describe('add3PCloudStorageProviderFile', () => {
-    const addNewFileRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderNewFileRequestContentType> = {
+  describe('addCloudStorageProviderFile', () => {
+    const addNewFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderNewFileRequestContentType> = {
       content: {
         action: files.CloudStorageProviderFileAction.New,
         providerCode: files.CloudStorageProvider.Box,
@@ -642,19 +642,19 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.add3PCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.add3PCloudStorageProviderFile(addNewFileRequest, null)).toThrowError();
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.add3PCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
@@ -666,16 +666,16 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.add3PCloudStorageProviderFile(addNewFileRequest, callback);
+      files.addCloudStorageProviderFile(addNewFileRequest, callback);
 
-      const add3PCloudStorageProviderFileMessage = utils.findMessageByFunc('files.add3PCloudStorageProviderFile');
-      expect(add3PCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(add3PCloudStorageProviderFileMessage, false);
+      const addCloudStorageProviderFileMessage = utils.findMessageByFunc('files.addCloudStorageProviderFile');
+      expect(addCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
   
-  describe('rename3PCloudStorageProviderFile', () => {
+  describe('renameCloudStorageProviderFile', () => {
     const mockExistingFile: files.CloudStorageFolderItem = {
       id: '111',
       lastModifiedTime: '2021-04-14T15:08:35Z',
@@ -694,7 +694,7 @@ describe('files', () => {
       isSubdirectory: false,
       type: 'pdf',
     };
-    const renameFileRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderRenameFileRequestContentType> = {
+    const renameFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderRenameFileRequestContentType> = {
       content: {
         action: files.CloudStorageProviderFileAction.Rename,
         providerCode: files.CloudStorageProvider.Box,
@@ -704,19 +704,19 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.rename3PCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.rename3PCloudStorageProviderFile(renameFileRequest, null)).toThrowError();
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.rename3PCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
@@ -728,16 +728,16 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.rename3PCloudStorageProviderFile(renameFileRequest, callback);
+      files.renameCloudStorageProviderFile(renameFileRequest, callback);
 
-      const rename3PCloudStorageProviderFileMessage = utils.findMessageByFunc('files.rename3PCloudStorageProviderFile');
-      expect(rename3PCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(rename3PCloudStorageProviderFileMessage, false);
+      const renameCloudStorageProviderFileMessage = utils.findMessageByFunc('files.renameCloudStorageProviderFile');
+      expect(renameCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(renameCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
 
-  describe('perform3PCloudStorageProviderFileAction', () => {
+  describe('performCloudStorageProviderFileAction', () => {
     const mockItem: files.CloudStorageFolderItem = {
       id: '111',
       lastModifiedTime: '2021-04-14T15:08:35Z',
@@ -748,7 +748,7 @@ describe('files', () => {
       type: 'pdf',
     };
     
-    const cloudStorageProviderFileActionRequest: files.I3PCloudStorageProviderRequest<files.I3PCloudStorageProviderActionRequestContentType> = {
+    const cloudStorageProviderFileActionRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderActionRequestContentType> = {
       content: {
         action: files.CloudStorageProviderFileAction.Upload,
         providerCode: files.CloudStorageProvider.Box,
@@ -757,19 +757,19 @@ describe('files', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
+      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
         'The library has not yet been initialized',
       );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null)).toThrowError();
+      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
+      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
     });
@@ -781,11 +781,11 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.perform3PCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
+      files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
 
-      const perform3PCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.perform3PCloudStorageProviderFileAction');
-      expect(perform3PCloudStorageProviderFileActionMessage).not.toBeNull();
-      utils.respondToMessage(perform3PCloudStorageProviderFileActionMessage, false);
+      const performCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.performCloudStorageProviderFileAction');
+      expect(performCloudStorageProviderFileActionMessage).not.toBeNull();
+      utils.respondToMessage(performCloudStorageProviderFileActionMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
