@@ -159,21 +159,6 @@ const RegisterLiveStreamChangedHandler = (): React.ReactElement =>
     },
   });
 
-const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'registerSpeakingStateChangedHandler',
-    title: 'Register SpeakingState Changed Handler',
-    onClick: async setResult => {
-      const handler = (speakingState: meeting.ISpeakingState): void => {
-        const res = `Speaking state changed to ${speakingState.isSpeakingDetected}`;
-        setResult(res);
-      };
-      meeting.registerSpeakingStateChangeHandler(handler);
-
-      return generateRegistrationMsg('the speaking state changes');
-    },
-  });
-
 const ShareAppContentToStage = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'shareAppContentToStage',
@@ -267,7 +252,6 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStartLiveStreaming />
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
-    <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
