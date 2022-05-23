@@ -148,6 +148,7 @@ export namespace meeting {
      */
     isAppSharing: boolean;
   }
+
   export interface ISpeakingState {
     /**
      * Indicates whether one or more participants in a meeting are speaking, or
@@ -175,7 +176,24 @@ export namespace meeting {
      */
     meetingReaction?: IMeetingReactionData;
     /**
-     * Indicates the type of MeetingReaction received
+     * error object in case there is a failure
+     */
+    error?: SdkError;
+  }
+
+  export interface IRaiseHandState {
+    /** Indicates whether the selfParticipant's hand is raised or not*/
+    isHandRaised: boolean;
+  }
+
+  export interface IRaiseHandStateChangedEventData {
+    /**
+     * entire raiseHandState object for the selfParticipant
+     */
+    raiseHandState: IRaiseHandState;
+
+    /**
+     * error object in case there is a failure
      */
     error?: SdkError;
   }
@@ -445,6 +463,24 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
+  }
+
+  /**
+   * Registers a handler for changes to the selfParticipant raiseHand state. If the selfParticipant raises their hand, isHandRaised
+   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link IRaiseHandStateChangedEvent}
+   * that will have the raiseHand state or an error object. Only one handler can be registered at a time. A subsequent registration
+   * replaces an existing registration.
+   *
+   * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
+   */
+  export function registerRaiseHandStateChangedHandler(
+    handler: (raiseHandStateChangedEvent: IRaiseHandStateChangedEventData) => void,
+  ): void {
+    if (!handler) {
+      throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.raiseHandStateChanged', handler);
   }
 
   /**

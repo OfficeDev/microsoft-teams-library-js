@@ -159,6 +159,26 @@ const RegisterLiveStreamChangedHandler = (): React.ReactElement =>
     },
   });
 
+const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerRaiseHandStateChangedHandler',
+    title: 'Register RaiseHandState Changed Handler',
+    onClick: async setResult => {
+      const handler = (raiseHandStateChangedEventData: meeting.IRaiseHandStateChangedEventData): void => {
+        let res;
+        if (raiseHandStateChangedEventData.error) {
+          res = `Receieved error ${JSON.stringify(raiseHandStateChangedEventData.error)}`;
+        } else {
+          res = `RaiseHand state changed to ${JSON.stringify(raiseHandStateChangedEventData.raiseHandState)}`;
+        }
+        setResult(res);
+      };
+      meeting.registerRaiseHandStateChangedHandler(handler);
+
+      return generateRegistrationMsg('the raise hand state changes');
+    },
+  });
+
 const ShareAppContentToStage = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'shareAppContentToStage',
@@ -252,6 +272,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStartLiveStreaming />
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
+    <RegisterRaiseHandStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
