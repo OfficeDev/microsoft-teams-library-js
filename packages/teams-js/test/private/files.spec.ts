@@ -590,11 +590,10 @@ describe('files', () => {
   });
 
   describe('removeCloudStorageProvider', () => {
-    const logoutRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderLogoutRequestContentType> = {
+    const logoutRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderContent> = {
       content: {
-        action: files.CloudStorageProviderFileAction.Logout,
-        providerCode: files.CloudStorageProvider.Box
-      }
+        providerCode: files.CloudStorageProvider.Box,
+      },
     };
 
     it('should not allow calls before initialization', () => {
@@ -632,13 +631,12 @@ describe('files', () => {
   });
 
   describe('addCloudStorageProviderFile', () => {
-    const addNewFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderNewFileRequestContentType> = {
+    const addNewFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderNewFileContent> = {
       content: {
-        action: files.CloudStorageProviderFileAction.New,
         providerCode: files.CloudStorageProvider.Box,
         newFileName: 'testFile',
-        newFileType: 'pdf',
-      }
+        newFileExtension: 'docx',
+      },
     };
 
     it('should not allow calls before initialization', () => {
@@ -674,7 +672,7 @@ describe('files', () => {
       expect(callback).toHaveBeenCalled();
     });
   });
-  
+
   describe('renameCloudStorageProviderFile', () => {
     const mockExistingFile: files.CloudStorageFolderItem = {
       id: '111',
@@ -694,13 +692,12 @@ describe('files', () => {
       isSubdirectory: false,
       type: 'pdf',
     };
-    const renameFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderRenameFileRequestContentType> = {
+    const renameFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderRenameFileContent> = {
       content: {
-        action: files.CloudStorageProviderFileAction.Rename,
         providerCode: files.CloudStorageProvider.Box,
         existingFile: mockExistingFile,
         newFile: mockNewFile,
-      }
+      },
     };
 
     it('should not allow calls before initialization', () => {
@@ -747,31 +744,33 @@ describe('files', () => {
       isSubdirectory: false,
       type: 'pdf',
     };
-    
-    const cloudStorageProviderFileActionRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderActionRequestContentType> = {
+
+    const cloudStorageProviderFileActionRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderActionContent> = {
       content: {
         action: files.CloudStorageProviderFileAction.Upload,
         providerCode: files.CloudStorageProvider.Box,
         itemList: [mockItem],
-      }
+      },
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
+      ).toThrowError('The library has not yet been initialized');
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null)).toThrowError();
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null),
+      ).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      expect(() => files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback)).toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
-      );
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
+      ).toThrowError('This call is only allowed in following contexts: ["content"]. Current context: "settings"');
     });
 
     it('should send the message to parent correctly', () => {
@@ -783,7 +782,9 @@ describe('files', () => {
 
       files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
 
-      const performCloudStorageProviderFileActionMessage = utils.findMessageByFunc('files.performCloudStorageProviderFileAction');
+      const performCloudStorageProviderFileActionMessage = utils.findMessageByFunc(
+        'files.performCloudStorageProviderFileAction',
+      );
       expect(performCloudStorageProviderFileActionMessage).not.toBeNull();
       utils.respondToMessage(performCloudStorageProviderFileActionMessage, false);
       expect(callback).toHaveBeenCalled();

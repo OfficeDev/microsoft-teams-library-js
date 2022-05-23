@@ -304,14 +304,9 @@ export namespace files {
    * Actions specific to 3P cloud storage provider file and / or account
    */
   export enum CloudStorageProviderFileAction {
-    New = 'NEW',
-    Rename = 'RENAME',
     Download = 'DOWNLOAD',
     Upload = 'UPLOAD',
     Delete = 'DELETE',
-    Logout = 'LOGOUT',
-    Move = 'MOVE',
-    Copy = 'COPY',
   }
 
   /**
@@ -325,76 +320,48 @@ export namespace files {
   }
 
   /**
+   * @hidden
+   * Hide from docs
+   *
    * Base interface for 3P cloud storage provider action request content
    */
-  interface BaseCloudStorageProviderContent {
-    action: CloudStorageProviderFileAction;
+  export interface CloudStorageProviderContent {
     providerCode: CloudStorageProvider;
   }
 
   /**
-   * Interface representing 3P cloud storage provider logout action
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider add new file action.
+   * The file extension represents type of file e.g. docx, pptx etc. and need not be prefixed with dot(.)
    */
-  interface CloudStorageProviderLogoutContent extends BaseCloudStorageProviderContent {
-    action: CloudStorageProviderFileAction.Logout;
-  }
-
-  /**
-   * Interface representing 3P cloud storage provider add new file action
-   */
-  interface CloudStorageProviderNewFileContent extends BaseCloudStorageProviderContent {
-    action: CloudStorageProviderFileAction.New;
+  export interface CloudStorageProviderNewFileContent extends CloudStorageProviderContent {
     newFileName: string;
-    newFileType: string;
+    newFileExtension: string;
   }
 
   /**
+   * @hidden
+   * Hide from docs
+   *
    * Interface representing 3P cloud storage provider rename existing file action
    */
-  interface CloudStorageProviderRenameFileContent extends BaseCloudStorageProviderContent {
-    action: CloudStorageProviderFileAction.Rename;
+  export interface CloudStorageProviderRenameFileContent extends CloudStorageProviderContent {
     existingFile: CloudStorageFolderItem | ISharePointFile;
     newFile: CloudStorageFolderItem | ISharePointFile;
   }
 
   /**
+   * @hidden
+   * Hide from docs
+   *
    * Interface representing 3P cloud storage provider actions like Upload / Download / Delete file(s)
    */
-  interface CloudStorageProviderActionContent extends BaseCloudStorageProviderContent {
+  export interface CloudStorageProviderActionContent extends CloudStorageProviderContent {
+    action: CloudStorageProviderFileAction;
     itemList: CloudStorageFolderItem[] | ISharePointFile[];
   }
-
-  /**
-   * @hidden
-   * Hide from docs
-   *
-   * Interface representing 3P cloud storage provider logout action request content type
-   */
-  export type CloudStorageProviderLogoutRequestContentType = CloudStorageProviderLogoutContent;
-
-  /**
-   * @hidden
-   * Hide from docs
-   *
-   * Interface representing 3P cloud storage provider add new file action request content type
-   */
-  export type CloudStorageProviderNewFileRequestContentType = CloudStorageProviderNewFileContent;
-
-  /**
-   * @hidden
-   * Hide from docs
-   *
-   * Interface representing 3P cloud storage provider rename existing file action request content type
-   */
-  export type CloudStorageProviderRenameFileRequestContentType = CloudStorageProviderRenameFileContent;
-
-  /**
-   * @hidden
-   * Hide from docs
-   *
-   * Interface representing 3P cloud storage provider actions (UPLOAD / DOWNLOAD / DELETE File(s)) request content type
-   */
-  export type CloudStorageProviderActionRequestContentType = CloudStorageProviderActionContent;
 
   /**
    * @hidden
@@ -662,7 +629,7 @@ export namespace files {
    * @param callback Callback that will be triggered post signout of 3P cloud storage provider action
    */
   export function removeCloudStorageProvider(
-    logoutRequest: CloudStorageProviderRequest<CloudStorageProviderLogoutRequestContentType>,
+    logoutRequest: CloudStorageProviderRequest<CloudStorageProviderContent>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
@@ -691,7 +658,7 @@ export namespace files {
    * @param callback Callback that will be triggered post adding a new file flow is finished
    */
   export function addCloudStorageProviderFile(
-    addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileRequestContentType>,
+    addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileContent>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
@@ -720,7 +687,7 @@ export namespace files {
    * @param callback Callback that will be triggered post renaming an existing file flow is finished
    */
   export function renameCloudStorageProviderFile(
-    renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileRequestContentType>,
+    renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileContent>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
@@ -753,7 +720,7 @@ export namespace files {
    * @param callback Callback that will be triggered post 3P cloud storage action
    */
   export function performCloudStorageProviderFileAction(
-    cloudStorageProviderFileActionRequest: CloudStorageProviderRequest<CloudStorageProviderActionRequestContentType>,
+    cloudStorageProviderFileActionRequest: CloudStorageProviderRequest<CloudStorageProviderActionContent>,
     callback: (error?: SdkError) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
