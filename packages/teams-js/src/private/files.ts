@@ -751,7 +751,7 @@ export namespace files {
    * Hide from docs
    *
    * Register a handler to be called when a user's 3P cloud storage provider list changes i.e.
-   * post adding / reoving a 3P provider, list is updated
+   * post adding / removing a 3P provider, list is updated
    *
    * @param handler - When 3P cloud storage provider list is updated this handler is called
    *
