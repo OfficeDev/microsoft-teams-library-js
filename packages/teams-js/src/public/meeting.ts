@@ -157,7 +157,7 @@ export namespace meeting {
     isSpeakingDetected: boolean;
   }
 
-  export interface IMeetingReactionReceivedEventData {
+  export interface MeetingReactionReceivedEventData {
     /**
      * Indicates the type of MeetingReaction received
      */
@@ -173,7 +173,7 @@ export namespace meeting {
     isHandRaised: boolean;
   }
 
-  export interface IRaiseHandStateChangedEventData {
+  export interface RaiseHandStateChangedEventData {
     /**
      * entire raiseHandState object for the selfParticipant
      */
@@ -461,7 +461,7 @@ export namespace meeting {
    * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
    */
   export function registerRaiseHandStateChangedHandler(
-    handler: (eventData: IRaiseHandStateChangedEventData) => void,
+    handler: (eventData: RaiseHandStateChangedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
@@ -478,7 +478,7 @@ export namespace meeting {
    * @param handler The handler to invoke when a meetingReaction is received
    */
   export function registerMeetingReactionReceivedHandler(
-    handler: (eventData: IMeetingReactionReceivedEventData) => void,
+    handler: (eventData: MeetingReactionReceivedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');

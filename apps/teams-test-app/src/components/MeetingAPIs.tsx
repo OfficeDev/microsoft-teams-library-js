@@ -164,7 +164,7 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
     name: 'registerRaiseHandStateChangedHandler',
     title: 'Register RaiseHandState Changed Handler',
     onClick: async setResult => {
-      const handler = (eventData: meeting.IRaiseHandStateChangedEventData): void => {
+      const handler = (eventData: meeting.RaiseHandStateChangedEventData): void => {
         let res;
         if (eventData.error) {
           res = `Receieved error ${JSON.stringify(eventData.error)}`;
@@ -181,10 +181,10 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
 
 const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'RegisterMeetingReactionReceivedHandler',
+    name: 'registerMeetingReactionReceivedHandler',
     title: 'Register Meeting Reaction Received Handler',
     onClick: async setResult => {
-      const handler = (eventData: meeting.IMeetingReactionReceivedEventData): void => {
+      const handler = (eventData: meeting.MeetingReactionReceivedEventData): void => {
         let res;
         if (eventData.error) {
           res = `Receieved error ${JSON.stringify(eventData.error)}`;
