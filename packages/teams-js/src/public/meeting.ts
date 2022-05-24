@@ -474,7 +474,7 @@ export namespace meeting {
    * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
    */
   export function registerRaiseHandStateChangedHandler(
-    handler: (raiseHandStateChangedEvent: IRaiseHandStateChangedEventData) => void,
+    handler: (eventData: IRaiseHandStateChangedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
@@ -491,12 +491,11 @@ export namespace meeting {
    * @param handler The handler to invoke when a meetingReaction is received
    */
   export function registerMeetingReactionReceivedHandler(
-    handler: (meetingReactionReceivedEventData: IMeetingReactionReceivedEventData) => void,
+    handler: (eventData: IMeetingReactionReceivedEventData) => void,
   ): void {
     if (!handler) {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
-    console.log('test: inside SDK registerMeetingReactionReceivedHandler');
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
