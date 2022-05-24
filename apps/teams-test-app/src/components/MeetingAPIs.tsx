@@ -179,6 +179,7 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
     },
   });
 
+
 const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerMeetingReactionReceivedHandler',
@@ -196,6 +197,21 @@ const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
       meeting.registerMeetingReactionReceivedHandler(handler);
 
       return generateRegistrationMsg('meeting reaction received');
+    },
+  });
+
+const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerSpeakingStateChangedHandler',
+    title: 'Register SpeakingState Changed Handler',
+    onClick: async setResult => {
+      const handler = (speakingState: meeting.ISpeakingState): void => {
+        const res = `Speaking state changed to ${speakingState.isSpeakingDetected}`;
+        setResult(res);
+      };
+      meeting.registerSpeakingStateChangeHandler(handler);
+
+      return generateRegistrationMsg('the speaking state changes');
     },
   });
 
@@ -294,6 +310,7 @@ const MeetingAPIs = (): ReactElement => (
     <RegisterLiveStreamChangedHandler />
     <RegisterRaiseHandStateChangedHandler />
     <RegisterMeetingReactionReceivedHandler />
+    <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
