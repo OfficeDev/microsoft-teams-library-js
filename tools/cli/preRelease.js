@@ -58,43 +58,31 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
   const readme = fs.readFileSync(absolutePath, 'utf8');
   const result = readme
     .replace(/integrity=\".*?\"/, `integrity="${integrityHash}"`)
-    .replace(/2.0.0-beta..*\d/g, version);
+    .replace(
+      /res.cdn.office.net\/teams-js\/.*\/js\/MicrosoftTeams.min.js/g,
+      `res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js`,
+    )
+    .replace(
+      /node_modules\/@microsoft\/teams-js@.*\/dist\/MicrosoftTeams.min.js/g,
+      `node_modules/@microsoft/teams-js@${version}/dist/MicrosoftTeams.min.js`,
+    );
   fs.writeFileSync(absolutePath, result);
 };
 
-const updateChangeLog = async version => {
-  const relativePathToChangelog = '../../packages/teams-js/CHANGELOG.md';
-  const absolutePathToChangelog = path.resolve(__dirname, relativePathToChangelog);
-  if (!fs.existsSync(absolutePathToChangelog)) {
-    throw `ERROR: ${absolutePathToChangelog} was not found.`;
-  }
-  await execShellCommand('yarn beachball bump');
-  const changeLog = fs.readFileSync(absolutePathToChangelog, 'utf8');
-  const newChangeLog = changeLog.replace(/(## 2.0.0)/, `## ${version}`);
-  fs.writeFileSync(absolutePathToChangelog, newChangeLog);
-};
-
 (async () => {
-  const args = process.argv.slice(2);
-  const version = args[0];
-  if (!version) {
-    console.error('No version specified. Please specify version as an argument');
-    process.exit(1);
-  }
   try {
     const relativePathToTeamsJsPackageJson = '../../packages/teams-js/package.json';
     const relativePathToTeamsJsReadme = '../../packages/teams-js/README.md';
     const relativePathToTestAppPackageJson = '../../apps/teams-test-app/package.json';
     const relativePathToTestAppHtml = '../../apps/teams-test-app/index_cdn.html';
 
-    const absolutePathTeamsJsPackageJson = path.resolve(__dirname, relativePathToTeamsJsPackageJson);
     const absolutePathTestAppPackageJson = path.resolve(__dirname, relativePathToTestAppPackageJson);
     const absolutePathToTeamsJsReadme = path.resolve(__dirname, relativePathToTeamsJsReadme);
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
 
-    await updateChangeLog(version);
+    await execShellCommand('yarn beachball bump');
+    const version = require(relativePathToTeamsJsPackageJson).version;
 
-    updatePackageJson(absolutePathTeamsJsPackageJson, version);
     updatePackageJson(absolutePathTestAppPackageJson, version);
     const integrityHash = await buildAndGetIntegrityHash();
     updateVersionAndIntegrity(absolutePathToTeamsJsReadme, version, integrityHash);

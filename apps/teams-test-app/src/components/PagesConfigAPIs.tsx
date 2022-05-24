@@ -1,4 +1,4 @@
-import { pages, registerEnterSettingsHandler, settings } from '@microsoft/teams-js';
+import { pages, registerChangeSettingsHandler, settings } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
@@ -106,7 +106,7 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
     },
   });
 
-const RegisterOChangeConfigHandler = (): React.ReactElement =>
+const RegisterChangeConfigHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerChangeConfigsHandler',
     title: 'Register Change Config Handler',
@@ -118,7 +118,7 @@ const RegisterOChangeConfigHandler = (): React.ReactElement =>
         return 'pages.config.registerChangeConfigHandler()' + noHostSdkMsg;
       },
       withCallback: setResult => {
-        registerEnterSettingsHandler((): void => {
+        registerChangeSettingsHandler((): void => {
           setResult('successfully called');
         });
       },
@@ -140,7 +140,7 @@ const PagesConfigAPIs = (): ReactElement => (
     <SetConfig />
     <SetValidityState />
     <RegisterOnRemoveHandler />
-    <RegisterOChangeConfigHandler />
+    <RegisterChangeConfigHandler />
     <CheckPageConfigCapability />
   </>
 );
