@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "init",
+  "comment": "Added `meeting.registerMeetingReactionReceivedHandler`",
   "packageName": "@microsoft/teams-js",
   "email": "joeugeni@microsoft.com",
   "dependentChangeType": "patch"

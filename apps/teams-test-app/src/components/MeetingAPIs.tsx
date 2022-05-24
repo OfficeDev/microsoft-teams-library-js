@@ -189,7 +189,7 @@ const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
         if (eventData.error) {
           res = `Receieved error ${JSON.stringify(eventData.error)}`;
         } else {
-          res = `Received ${JSON.stringify(eventData.meetingReaction)}`;
+          res = `Received ${JSON.stringify(eventData.meetingReactionType)}`;
         }
         setResult(res);
       };

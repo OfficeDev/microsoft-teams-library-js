@@ -157,24 +157,11 @@ export namespace meeting {
     isSpeakingDetected: boolean;
   }
 
-  export interface IMeetingReactionData {
-    /**
-     * Indicates whether one or more participants in a meeting are speaking, or
-     * if no participants are speaking
-     */
-    participantId: string;
+  export interface IMeetingReactionReceivedEventData {
     /**
      * Indicates the type of MeetingReaction received
      */
-    meetingReactionType: MeetingReactionType;
-  }
-
-  export interface IMeetingReactionReceivedEventData {
-    /**
-     * Indicates whether one or more participants in a meeting are speaking, or
-     * if no participants are speaking
-     */
-    meetingReaction?: IMeetingReactionData;
+    meetingReactionType?: MeetingReactionType;
     /**
      * error object in case there is a failure
      */

@@ -1124,12 +1124,10 @@ describe('meeting', () => {
       let handlerCalled = false;
       let response: meeting.IRaiseHandStateChangedEventData;
 
-      meeting.registerRaiseHandStateChangedHandler(
-        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEventData) => {
-          handlerCalled = true;
-          response = raiseHandStateChangedEvent;
-        },
-      );
+      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.IRaiseHandStateChangedEventData) => {
+        handlerCalled = true;
+        response = eventData;
+      });
 
       const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
       expect(registerHandlerMessage).not.toBeNull();
@@ -1156,12 +1154,10 @@ describe('meeting', () => {
       let handlerCalled = false;
       let response: meeting.IRaiseHandStateChangedEventData;
 
-      meeting.registerRaiseHandStateChangedHandler(
-        (raiseHandStateChangedEvent: meeting.IRaiseHandStateChangedEventData) => {
-          handlerCalled = true;
-          response = raiseHandStateChangedEvent;
-        },
-      );
+      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.IRaiseHandStateChangedEventData) => {
+        handlerCalled = true;
+        response = eventData;
+      });
 
       const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
       expect(registerHandlerMessage).not.toBeNull();
@@ -1177,6 +1173,82 @@ describe('meeting', () => {
 
       expect(handlerCalled).toBeTruthy();
       expect(response).toBe(raiseHandState);
+    });
+  });
+
+  describe('registerRaiseHandStateChangedHandler', () => {
+    it('should fail when called without a handler', () => {
+      expect(() => meeting.registerMeetingReactionReceivedHandler(null)).toThrowError(
+        '[registerMeetingReactionReceivedHandler] Handler cannot be null',
+      );
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() =>
+        meeting.registerMeetingReactionReceivedHandler(() => {
+          return;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      const meetingReaction: meeting.IMeetingReactionReceivedEventData = {
+        meetingReactionType: meeting.MeetingReactionType.like,
+      };
+
+      let handlerCalled = false;
+      let response: meeting.IMeetingReactionReceivedEventData;
+
+      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.IMeetingReactionReceivedEventData) => {
+        handlerCalled = true;
+        response = eventData;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.meetingReactionReceived');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.meetingReactionReceived',
+          args: [meetingReaction],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(meetingReaction);
+    });
+
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+      const meetingReaction: meeting.IMeetingReactionReceivedEventData = {
+        meetingReactionType: meeting.MeetingReactionType.like,
+      };
+
+      let handlerCalled = false;
+      let response: meeting.IMeetingReactionReceivedEventData;
+
+      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.IMeetingReactionReceivedEventData) => {
+        handlerCalled = true;
+        response = eventData;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.meetingReactionReceived');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.meetingReactionReceived',
+          args: [meetingReaction],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(meetingReaction);
     });
   });
 });
