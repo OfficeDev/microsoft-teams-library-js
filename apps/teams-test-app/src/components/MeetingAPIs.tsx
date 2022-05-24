@@ -179,7 +179,6 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
     },
   });
 
-
 const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerMeetingReactionReceivedHandler',

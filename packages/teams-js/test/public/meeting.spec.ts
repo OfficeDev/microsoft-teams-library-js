@@ -1117,14 +1117,14 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const raiseHandState: meeting.IRaiseHandStateChangedEventData = {
+      const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
 
       let handlerCalled = false;
-      let response: meeting.IRaiseHandStateChangedEventData;
+      let response: meeting.RaiseHandStateChangedEventData;
 
-      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.IRaiseHandStateChangedEventData) => {
+      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.RaiseHandStateChangedEventData) => {
         handlerCalled = true;
         response = eventData;
       });
@@ -1147,14 +1147,14 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
-      const raiseHandState: meeting.IRaiseHandStateChangedEventData = {
+      const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
 
       let handlerCalled = false;
-      let response: meeting.IRaiseHandStateChangedEventData;
+      let response: meeting.RaiseHandStateChangedEventData;
 
-      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.IRaiseHandStateChangedEventData) => {
+      meeting.registerRaiseHandStateChangedHandler((eventData: meeting.RaiseHandStateChangedEventData) => {
         handlerCalled = true;
         response = eventData;
       });
@@ -1193,14 +1193,14 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const meetingReaction: meeting.IMeetingReactionReceivedEventData = {
+      const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
 
       let handlerCalled = false;
-      let response: meeting.IMeetingReactionReceivedEventData;
+      let response: meeting.MeetingReactionReceivedEventData;
 
-      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.IMeetingReactionReceivedEventData) => {
+      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.MeetingReactionReceivedEventData) => {
         handlerCalled = true;
         response = eventData;
       });
@@ -1223,14 +1223,14 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
-      const meetingReaction: meeting.IMeetingReactionReceivedEventData = {
+      const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
 
       let handlerCalled = false;
-      let response: meeting.IMeetingReactionReceivedEventData;
+      let response: meeting.MeetingReactionReceivedEventData;
 
-      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.IMeetingReactionReceivedEventData) => {
+      meeting.registerMeetingReactionReceivedHandler((eventData: meeting.MeetingReactionReceivedEventData) => {
         handlerCalled = true;
         response = eventData;
       });
