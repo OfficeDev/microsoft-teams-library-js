@@ -1320,6 +1320,16 @@ describe('Testing authentication capability', () => {
               )}. Current context: "${context}".`,
             );
           });
+        } else {
+          it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
+            await framelessPostMock.initializeWithContext(context, HostClientType.android);
+
+            authentication.notifySuccess(mockResult);
+            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.success');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe(mockResult);
+          });
         }
       });
     });
@@ -1339,6 +1349,16 @@ describe('Testing authentication capability', () => {
                 allowedContexts,
               )}. Current context: "${context}".`,
             );
+          });
+        } else {
+          it(`authentication.notifyFailure should successfully notify auth failure from ${context} context`, async () => {
+            await framelessPostMock.initializeWithContext(context, HostClientType.android);
+
+            authentication.notifyFailure(mockResult);
+            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.failure');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe(mockResult);
           });
         }
       });
