@@ -453,12 +453,14 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for changes to the selfParticipant raiseHand state. If the selfParticipant raises their hand, isHandRaised
+   * Registers a handler for changes to the selfParticipant's (current user's) raiseHandState. If the selfParticipant raises their hand, isHandRaised
    * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link RaiseHandStateChangedEvent}
-   * that will have the raiseHand state or an error object. Only one handler can be registered at a time. A subsequent registration
+   * that will have theraiseHandState or an error object. Only one handler can be registered at a time. A subsequent registration
    * replaces an existing registration.
    *
-   * @param handler The handler to invoke when the selfParticipant's raiseHand state changes.
+   * @param handler The handler to invoke when the selfParticipant's (current user's) raiseHandState changes.
+   *
+   * @beta
    */
   export function registerRaiseHandStateChangedHandler(
     handler: (eventData: RaiseHandStateChangedEventData) => void,
@@ -471,10 +473,12 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for receiving meetingReactions. When the selfParticipant successfully sends a meetingReaction and it is being rendered on the UI, the meetingReactionType will be populated. Only one handler can be registered
+   * Registers a handler for receiving meeting reactions. When the selfParticipant (current user) successfully sends a meeting reaction and it is being rendered on the UI, the meetingReactionType will be populated. Only one handler can be registered
    * at a time. A subsequent registration replaces an existing registration.
    *
-   * @param handler The handler to invoke when the selfParticipant successfully sends a meetingReaction
+   * @param handler The handler to invoke when the selfParticipant (current user) successfully sends a meeting reaction
+   *
+   * @beta
    */
   export function registerMeetingReactionReceivedHandler(
     handler: (eventData: MeetingReactionReceivedEventData) => void,
