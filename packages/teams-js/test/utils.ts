@@ -1,7 +1,7 @@
-import { app } from '../src/public/app';
-import { GlobalVars } from '../src/internal/globalVars';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
+import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 export interface MessageRequest {
   id: number;
