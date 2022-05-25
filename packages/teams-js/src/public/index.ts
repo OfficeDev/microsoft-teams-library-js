@@ -59,7 +59,7 @@ export {
   registerBackButtonHandler,
   registerBeforeUnloadHandler,
   registerFocusEnterHandler,
-  registerEnterSettingsHandler,
+  registerChangeSettingsHandler,
   registerFullScreenHandler,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,

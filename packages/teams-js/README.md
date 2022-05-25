@@ -1,8 +1,8 @@
 # Microsoft Teams JavaScript client SDK
 
-Welcome to the Teams JavaScript client SDK! For breaking changes, please refer to our [changelog](./CHANGELOG.md) in the current `<root>/packages/teams-js` directory of the `main` branch.
+Welcome to the Teams JavaScript client SDK! For breaking changes, please refer to our [changelog](./CHANGELOG.md) in the current `<root>/packages/teams-js` directory.
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
+This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/). See full [SDK reference documentation](https://docs.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 ## Getting Started
 
@@ -12,19 +12,19 @@ Whenever building or testing the Teams client SDK, you can run `yarn build` or `
 
 ## Installation
 
-To install the latest [2.0 preview version](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta):
+To install the stable [version](https://docs.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest):
 
 ### npm
 
-`npm install --save @microsoft/teams-js@next`
+`npm install --save @microsoft/teams-js`
 
 ### yarn
 
-`yarn add @microsoft/teams-js@next`
+`yarn add @microsoft/teams-js`
 
 ### Production
 
-You can access [these files on unpkg](https://res.cdn.office.net/teams-js/2.0.0-beta.6/js/MicrosoftTeams.min.js), download them, or point your package manager to them.
+You can reference these files directly [from here](https://res.cdn.office.net/teams-js/2.0.0/js/MicrosoftTeams.min.js) or point your package manager at them.
 
 ## Usage
 
@@ -45,13 +45,13 @@ Reference the SDK inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script
-  src="https://res.cdn.office.net/teams-js/2.0.0-beta.6/js/MicrosoftTeams.min.js"
-  integrity="sha384-zUXDMKhIVeFW07S2xPrtvwSCnfjFTHafmXXzxnNT0ONpSv4NOmekx15PEdsHDDf4"
+  src="https://res.cdn.office.net/teams-js/2.0.0/js/MicrosoftTeams.min.js"
+  integrity="sha384-QtTBFeFlfRDZBfwHJHYQp7MdLJ2C3sfAEB1Qpy+YblvjavBye+q87TELpTnvlXw4"
   crossorigin="anonymous"
 ></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@2.0.0-beta.6/dist/MicrosoftTeams.min.js"></script>
+<script src="node_modules/@microsoft/teams-js@2.0.0/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>

@@ -171,8 +171,13 @@ export enum FileOpenPreference {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link app.Context} instead.
- * Represents structure of the received context message.
+ * As of 2.0.0, please use {@link app.Context} instead.
+ *
+ * @remarks
+ * For more details on the updated {@link app.Context} interface, visit
+ * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface}.
+ *
+ * Represents the structure of the received context message.
  */
 export interface Context {
   /**
@@ -244,7 +249,7 @@ export interface Context {
   /**
    * @hidden
    * @deprecated
-   * As of 2.0.0-beta.1, please use {@link loginHint} or {@link userPrincipalName} instead.
+   * As of 2.0.0, please use {@link loginHint} or {@link userPrincipalName} instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -537,7 +542,7 @@ export interface ShareDeepLinkParameters {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.5, please use {@link ShareDeepLinkParameters} instead.
+ * As of 2.0.0, please use {@link ShareDeepLinkParameters} instead.
  */
 export interface DeepLinkParameters {
   /**
@@ -659,7 +664,7 @@ export interface DialogInfo {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link DialogInfo} instead.
+ * As of 2.0.0, please use {@link DialogInfo} instead.
  */
 export type TaskInfo = DialogInfo;
 
@@ -701,7 +706,7 @@ export interface FrameInfo {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link FrameInfo} instead.
+ * As of 2.0.0, please use {@link FrameInfo} instead.
  */
 export type FrameContext = FrameInfo;
 

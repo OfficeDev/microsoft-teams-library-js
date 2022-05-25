@@ -9,7 +9,7 @@ import { pages } from './pages';
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
+ * As of 2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
  *
  * Return focus to the main Teams app. Will focus search bar if navigating foward and app bar if navigating back.
  *
@@ -21,7 +21,7 @@ export function returnFocus(navigateForward?: boolean): void {
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.tabs.navigateToTab pages.tabs.navigateToTab(tabInstance: TabInstance): Promise\<void\>} instead.
+ * As of 2.0.0, please use {@link pages.tabs.navigateToTab pages.tabs.navigateToTab(tabInstance: TabInstance): Promise\<void\>} instead.
  *
  * Navigates the Microsoft Teams app to the specified tab instance.
  *
@@ -43,7 +43,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.navigateCrossDomain pages.navigateCrossDomain(url: string): Promise\<void\>} instead.
+ * As of 2.0.0, please use {@link pages.navigateCrossDomain pages.navigateCrossDomain(url: string): Promise\<void\>} instead.
  *
  * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
  * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
@@ -77,7 +77,7 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
 
 /**
  * @deprecated
- * As of 2.0.0-beta.1, please use {@link pages.backStack.navigateBack pages.backStack.navigateBack(): Promise\<void\>} instead.
+ * As of 2.0.0, please use {@link pages.backStack.navigateBack pages.backStack.navigateBack(): Promise\<void\>} instead.
  *
  * Navigates back in the Teams client.
  * See registerBackButtonHandler for more information on when it's appropriate to use this method.
