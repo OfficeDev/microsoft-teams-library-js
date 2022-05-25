@@ -454,7 +454,7 @@ export namespace meeting {
 
   /**
    * Registers a handler for changes to the selfParticipant raiseHand state. If the selfParticipant raises their hand, isHandRaised
-   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link IRaiseHandStateChangedEvent}
+   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link RaiseHandStateChangedEvent}
    * that will have the raiseHand state or an error object. Only one handler can be registered at a time. A subsequent registration
    * replaces an existing registration.
    *
@@ -471,11 +471,10 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for receiving meetingReactions. If any participant sends a meetingReaction, the participantId
-   * and meetingReactionTypw will be populated. Only one handler can be registered
+   * Registers a handler for receiving meetingReactions. When the selfParticipant successfully sends a meetingReaction and it is being rendered on the UI, the meetingReactionType will be populated. Only one handler can be registered
    * at a time. A subsequent registration replaces an existing registration.
    *
-   * @param handler The handler to invoke when a meetingReaction is received
+   * @param handler The handler to invoke when the selfParticipant successfully sends a meetingReaction
    */
   export function registerMeetingReactionReceivedHandler(
     handler: (eventData: MeetingReactionReceivedEventData) => void,
