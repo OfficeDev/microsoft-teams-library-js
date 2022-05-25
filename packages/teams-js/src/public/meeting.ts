@@ -157,9 +157,14 @@ export namespace meeting {
     isSpeakingDetected: boolean;
   }
 
+  /**
+   * Property bag for the meeting reaction received event
+   *
+   * @beta
+   */
   export interface MeetingReactionReceivedEventData {
     /**
-     * Indicates the type of MeetingReaction received
+     * Indicates the type of meeting reaction received
      */
     meetingReactionType?: MeetingReactionType;
     /**
@@ -168,11 +173,21 @@ export namespace meeting {
     error?: SdkError;
   }
 
+  /**
+   * Interface for raiseHandState properties
+   *
+   * @beta
+   */
   export interface IRaiseHandState {
     /** Indicates whether the selfParticipant's hand is raised or not*/
     isHandRaised: boolean;
   }
 
+  /**
+   * Property bag for the raiseHandState changed event
+   *
+   * @beta
+   */
   export interface RaiseHandStateChangedEventData {
     /**
      * entire raiseHandState object for the selfParticipant
@@ -185,6 +200,11 @@ export namespace meeting {
     error?: SdkError;
   }
 
+  /**
+   * Different types of meeting reactions that can be sent/received
+   *
+   * @beta
+   */
   export enum MeetingReactionType {
     like = 'like',
     heart = 'heart',
@@ -455,7 +475,7 @@ export namespace meeting {
   /**
    * Registers a handler for changes to the selfParticipant's (current user's) raiseHandState. If the selfParticipant raises their hand, isHandRaised
    * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link RaiseHandStateChangedEvent}
-   * that will have theraiseHandState or an error object. Only one handler can be registered at a time. A subsequent registration
+   * that will have the raiseHandState or an error object. Only one handler can be registered at a time. A subsequent registration
    * replaces an existing registration.
    *
    * @param handler The handler to invoke when the selfParticipant's (current user's) raiseHandState changes.
