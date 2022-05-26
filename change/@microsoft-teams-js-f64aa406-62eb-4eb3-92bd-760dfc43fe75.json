@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Renamed IRaiseHandStateChangedEvent interface to IRaiseHandStateChangedEventData and changed the error so it can be assigned undefined rather than null",
+  "packageName": "@microsoft/teams-js",
+  "email": "joeugeni@microsoft.com",
+  "dependentChangeType": "patch"
+}

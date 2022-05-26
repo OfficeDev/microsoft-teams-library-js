@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added 3P cloud storage provider API support to files.ts",
+  "packageName": "@microsoft/teams-js",
+  "email": "jainharsh@microsoft.com",
+  "dependentChangeType": "patch"
+}
