@@ -1,14 +1,12 @@
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleSdkError as sendAndHandleError, sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import {
-  callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise,
-  callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
-} from '../internal/utils';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import { FrameContexts } from './constants';
+import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
-
+/**
+ * @alpha
+ */
 export namespace location {
   export interface LocationProps {
     /**
@@ -46,82 +44,107 @@ export namespace location {
   }
 
   /**
-   * Fetches current user coordinates or allows user to choose location on map
-   *
-   * @param props {@link LocationProps} - Specifying how the location request is handled
-   * @returns Promise that will be fulfilled when the operation has completed
+   * Fetches current user coordinates
+   * @returns User's current location
    */
-  export function getLocation(props: LocationProps): Promise<Location>;
-  /**
-   * @deprecated
-   * As of 2.0.0, please use {@link location.getLocation location.getLocation(props: LocationProps): Promise\<Location\>} instead.
-   * @param props {@link LocationProps} - Specifying how the location request is handled
-   * @param callback - Callback to invoke when current user location is fetched
-   */
-  export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void;
-  export function getLocation(
-    props: LocationProps,
-    callback?: (error: SdkError, location: Location) => void,
-  ): Promise<Location> {
+  export function getCurrentLocation(): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<Location>(getLocationHelper, callback, props);
+    return sendAndHandleError('location.getLocation', { allowChooseLocation: false, showMap: false });
   }
 
-  function getLocationHelper(props: LocationProps): Promise<Location> {
-    return new Promise<Location>(resolve => {
-      if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
-      if (!props) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      resolve(sendAndHandleError('location.getLocation', props));
+  export function hasPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [DevicePermission.GeoLocation];
+
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleError('permission.has', permissions));
     });
   }
 
-  /**
-   * Shows the location on map corresponding to the given coordinates
-   *
-   * @param location {@link Location} - which needs to be shown on map
-   * @returns Promise that will be fulfilled when the operation has completed
-   */
-  export function showLocation(location: Location): Promise<void>;
-  /**
-   * @deprecated
-   * As of 2.0.0, please use {@link location.showLocation location.showLocation(location: Location): Promise\<void\>} instead.
-   * Shows the location on map corresponding to the given coordinates
-   * @param location {@link Location} - which needs to be shown on map
-   * @param callback - Callback to invoke when the location is opened on map
-   */
-  export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void;
-  export function showLocation(
-    location: Location,
-    callback?: (error: SdkError, status: boolean) => void,
-  ): Promise<void> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-    return callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<void>(showLocationHelper, callback, location);
-  }
+  export function requestPermission(): Promise<boolean> {
+    const permissions: DevicePermission[] = [DevicePermission.GeoLocation];
 
-  export function showLocationHelper(location: Location): Promise<void> {
-    return new Promise<void>(resolve => {
-      if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
-      }
-      if (!location) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      resolve(sendAndHandleError('location.showLocation', location));
+    return new Promise<boolean>(resolve => {
+      resolve(sendAndHandleError('permission.request', permissions));
     });
   }
 
   export function isSupported(): boolean {
     return runtime.supports.location ? true : false;
+  }
+
+  /**
+   * @deprecated
+   * As of 2.0.0-beta.4, please use one of the following functions:
+   * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>}
+   * - {@link location.map.chooseLocation location.map.chooseLocation(): Promise\<Location\>}
+   *
+   * @param props {@link LocationProps} - Specifying how the location request is handled
+   * @param callback - Callback to invoke when current user location is fetched
+   */
+  export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void {
+    if (!callback) {
+      throw new Error('[location.getLocation] Callback cannot be null');
+    }
+
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
+      throw { errorCode: ErrorCode.OLD_PLATFORM };
+    }
+    if (!props) {
+      throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    }
+
+    sendMessageToParent('location.getLocation', [props], callback);
+  }
+
+  /**
+   * @deprecated
+   * As of 2.0.0-beta.4, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
+   * Shows the location on map corresponding to the given coordinates
+   * @param location {@link Location} - which needs to be shown on map
+   * @param callback - Callback to invoke when the location is opened on map
+   */
+  export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
+    if (!callback) {
+      throw new Error('[location.showLocation] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
+      throw { errorCode: ErrorCode.OLD_PLATFORM };
+    }
+    if (!location) {
+      throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+    }
+
+    sendMessageToParent('location.showLocation', [location], callback);
+  }
+
+  export namespace map {
+    /**
+     * Allows user to choose location on map
+     * @returns The location chosen by the user after closing the map
+     */
+    export function chooseLocation(): Promise<Location> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      return sendAndHandleError('location.getLocation', { allowChooseLocation: true, showMap: true });
+    }
+
+    /**
+     * Shows the location on map corresponding to the given coordinates
+     * @param location {@link Location} - which needs to be shown on map
+     * @returns Promise that resolves when the location dialog has been closed TODO VERIFY
+     */
+    export function showLocation(location: Location): Promise<void> {
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      if (!location) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      return sendAndHandleError('location.showLocation', location);
+    }
+
+    export function isSupported(): boolean {
+      return runtime.supports.location ? true : false;
+    }
   }
 }
