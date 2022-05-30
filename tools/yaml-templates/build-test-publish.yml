@@ -29,8 +29,8 @@ steps:
 
   # Temporarily disable this step until after v2.0.0 is released to avoid having dev releases with inaccurate
   # 2.0.0-beta.x naming
-  # - script: 'node prepNextDevRelease.js'
-  #   displayName: 'node prepNextDevRelease.js'
+  # - script: 'node prepBetaRelease.js'
+  #   displayName: 'node prepBetaRelease.js'
   #   workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
   #   condition: and(
   #     eq(variables['Build.SourceBranch'], 'refs/heads/main'),

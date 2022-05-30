@@ -128,7 +128,9 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
     // If the next-dev beta suffix is not equal to or exactly 1 higher than the package.json beta suffix, throw an error since this does not follow our versioning structure.
     // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.0-dev.0 should throw an error.
   } else if (betaSuffixNumInCurrNextDev !== betaSuffixNumInPkgJsonVer) {
-    throw new Error(`Invalid beta version suffix number ${betaSuffixNumInPkgJsonVer} in package.json version ${currPkgJsonVer}`);
+    throw new Error(
+      `Invalid beta version suffix number ${betaSuffixNumInPkgJsonVer} in package.json version ${currPkgJsonVer}`,
+    );
   }
   return newNextDevVerSuffixNum;
 }
@@ -140,25 +142,33 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
  * @returns the new package.json content in JSON format.
  */
 function getNewPkgJsonContent(currNextDevVer) {
+  console.log(currNextDevVer);
   const packageJson = getPackageJson();
 
   // get package version from package.json
   let currPkgJsonVer = getPkgJsonVersion(packageJson);
+  let currBetaPrefix = getPrefix(currNextDevVer);
 
   console.log('package.json version: ' + currPkgJsonVer);
   console.log('current next-dev tagged version: ' + currNextDevVer);
 
   if (currPkgJsonVer.includes('dev')) {
-    throw new Error(`The given package.json\'s version ${currPkgJsonVer} contains the substring \'dev\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`);
+    throw new Error(
+      `The given package.json\'s version ${currPkgJsonVer} contains the substring \'dev\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`,
+    );
   }
-  const betaVerNum = getSpecificVerSuffixNum('beta', currPkgJsonVer);
+  let betaVerNum = 0;
+  if (currBetaPrefix === currPkgJsonVer) {
+    betaVerNum = getSpecificVerSuffixNum('beta', currPkgJsonVer) + 1;
+  } else {
+    currBetaPrefix = currPkgJsonVer;
+  }
   if (isNaN(betaVerNum)) {
-    throw new Error(`The given package.json\'s version ${currPkgJsonVer} has a non-integer beta version number. Please fix the package.json version first in order to allow for proper version incrementation.`)
+    throw new Error(
+      `The given package.json\'s version ${currPkgJsonVer} has a non-integer beta version number. Please fix the package.json version first in order to allow for proper version incrementation.`,
+    );
   }
-  const v2BetaPrefix = '2.0.0-beta.' + (betaVerNum + 1);
-
-  const newDevSuffix = getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer);
-  const newVersion = v2BetaPrefix + '-dev.' + newDevSuffix;
+  const newVersion = currBetaPrefix + '-beta.' + betaVerNum;
 
   console.log('new version: ' + newVersion);
 
@@ -167,7 +177,7 @@ function getNewPkgJsonContent(currNextDevVer) {
   return packageJson;
 }
 
-function prepNewDevRelease(devStdout) {
+function prepBetaRelease(devStdout) {
   const newPackageJson = getNewPkgJsonContent(devStdout);
   const newVersion = newPackageJson.version;
   saveJsonFile(newPackageJson);
@@ -175,5 +185,9 @@ function prepNewDevRelease(devStdout) {
 }
 
 (() => {
-  exec(`npm view @microsoft/teams-js version --tag next-dev`).then(({ stdout, stderr }) => prepNewDevRelease(stdout.trim()));
+  exec(`yarn beachball bump`).then(
+    exec(`npm view @microsoft/teams-js version --tag beta`).then(({ stdout, stderr }) =>
+      prepBetaRelease(stdout.trim()),
+    ),
+  );
 })();
