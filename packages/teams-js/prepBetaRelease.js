@@ -142,7 +142,6 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
  * @returns the new package.json content in JSON format.
  */
 function getNewPkgJsonContent(currNextDevVer) {
-  console.log(currNextDevVer);
   const packageJson = getPackageJson();
 
   // get package version from package.json
