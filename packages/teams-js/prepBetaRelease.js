@@ -138,18 +138,18 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
 /**
  * Generates the new package.json content with updated next-dev version number. The version number is
  * the only thing that's changed.
- * @param currNextDevVer The current next-dev version to bump the new next-dev version number from. (e.g. 2.0.0-beta.1-dev.0)
+ * @param currBetaVer The current beta version to bump the new next-dev version number from. (e.g. 2.0.0-beta.1-dev.0)
  * @returns the new package.json content in JSON format.
  */
-function getNewPkgJsonContent(currNextDevVer) {
+function getNewPkgJsonContent(currBetaVer) {
   const packageJson = getPackageJson();
 
   // get package version from package.json
   let currPkgJsonVer = getPkgJsonVersion(packageJson);
-  let currBetaPrefix = getPrefix(currNextDevVer);
+  let currBetaPrefix = getPrefix(currBetaVer);
 
   console.log('package.json version: ' + currPkgJsonVer);
-  console.log('current next-dev tagged version: ' + currNextDevVer);
+  console.log('current beta tagged version: ' + currBetaVer);
 
   if (currPkgJsonVer.includes('dev')) {
     throw new Error(
