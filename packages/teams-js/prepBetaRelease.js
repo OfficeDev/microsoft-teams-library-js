@@ -136,9 +136,9 @@ function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
 }
 
 /**
- * Generates the new package.json content with updated next-dev version number. The version number is
+ * Generates the new package.json content with updated beta version number. The version number is
  * the only thing that's changed.
- * @param currBetaVer The current beta version to bump the new next-dev version number from. (e.g. 2.0.0-beta.1-dev.0)
+ * @param currBetaVer The current beta version to bump the new beta version number from. (e.g. 2.0.0-beta.1)
  * @returns the new package.json content in JSON format.
  */
 function getNewPkgJsonContent(currBetaVer) {
