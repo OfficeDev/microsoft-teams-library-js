@@ -151,9 +151,9 @@ function getNewPkgJsonContent(currBetaVer) {
   console.log('package.json version: ' + currPkgJsonVer);
   console.log('current beta tagged version: ' + currBetaVer);
 
-  if (currPkgJsonVer.includes('dev')) {
+  if (currPkgJsonVer.includes('beta')) {
     throw new Error(
-      `The given package.json\'s version ${currPkgJsonVer} contains the substring \'dev\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`,
+      `The given package.json\'s version ${currPkgJsonVer} contains the substring \'beta\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`,
     );
   }
   let betaVerNum = 0;
