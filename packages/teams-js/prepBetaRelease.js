@@ -184,7 +184,7 @@ function prepBetaRelease(devStdout) {
 }
 
 (() => {
-  exec(`yarn beachball bump`).then(
+  exec(`cd ../../ && yarn beachball bump`).then(() =>
     exec(`npm view @microsoft/teams-js version --tag beta`).then(({ stdout, stderr }) =>
       prepBetaRelease(stdout.trim()),
     ),
