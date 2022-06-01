@@ -29,7 +29,10 @@ describe('profile', () => {
       if (allowedContexts.some(allowedContext => allowedContext === context)) {
         it(`should return an error if validation fails. context: ${context}`, async () => {
           await desktopPlatformMock.initializeWithContext(context);
-          await expect(profile.showProfile(undefined)).rejects.toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
+          await expect(profile.showProfile(undefined)).rejects.toEqual({
+            errorCode: ErrorCode.INVALID_ARGUMENTS,
+            message: 'A request object is required',
+          });
         });
 
         it(`sends expected message. context: ${context}`, async () => {
@@ -60,7 +63,12 @@ describe('profile', () => {
           const sentRequest = message.args[0];
           expect(sentRequest.persona).toEqual(request.persona);
           expect(sentRequest.triggerType).toEqual(request.triggerType);
-          expect(sentRequest.targetElementBoundingRect).toEqual(request.targetElementBoundingRect);
+          expect(sentRequest.targetRectangle).toEqual({
+            x: request.targetElementBoundingRect.x,
+            y: request.targetElementBoundingRect.y,
+            width: request.targetElementBoundingRect.width,
+            height: request.targetElementBoundingRect.height,
+          });
         });
       }
     });

@@ -9,17 +9,23 @@ describe('validateShowProfileRequest', () => {
   };
 
   it('should return false for empty input', () => {
-    expect(validateShowProfileRequest(null)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(null);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('A request object is required');
   });
 
   it('should return false if modality is not a string', () => {
     const invalidModality = { ...validInput, modality: 1 as unknown } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(invalidModality)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(invalidModality);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('modality must be a string');
   });
 
   it('should return false if persona property is missing', () => {
     const missingPersona = { ...validInput, persona: undefined } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(missingPersona)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(missingPersona);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('persona object must be provided');
   });
 
   it('should return false if persona display name is not a string', () => {
@@ -27,7 +33,10 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: { ...validInput.persona, displayName: 1 as unknown },
     } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(invalidDisplayName)).toBeFalsy();
+
+    const [isValid, message] = validateShowProfileRequest(invalidDisplayName);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('displayName must be a string');
   });
 
   it('should return false if persona identifiers property is missing', () => {
@@ -35,7 +44,10 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: { ...validInput.persona, identifiers: undefined },
     } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(missingIdentifiers)).toBeFalsy();
+
+    const [isValid, message] = validateShowProfileRequest(missingIdentifiers);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('persona identifiers object must be provided');
   });
 
   it('should return false if persona identifiers property is not an object', () => {
@@ -43,7 +55,10 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       persona: { ...validInput.persona, identifiers: 1 as unknown },
     } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(invalidIdentifiers)).toBeFalsy();
+
+    const [isValid, message] = validateShowProfileRequest(invalidIdentifiers);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('persona identifiers object must be provided');
   });
 
   it('should return false if targetBoundingRect property is missing', () => {
@@ -51,7 +66,10 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       targetElementBoundingRect: undefined,
     } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(missingTargetBoundingRect)).toBeFalsy();
+
+    const [isValid, message] = validateShowProfileRequest(missingTargetBoundingRect);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('targetElementBoundingRect must be a DOMRect');
   });
 
   it('should return false if targetBoundingRect property is not an object', () => {
@@ -59,17 +77,24 @@ describe('validateShowProfileRequest', () => {
       ...validInput,
       targetElementBoundingRect: 1 as unknown,
     } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(invalidTargetBoundingRect)).toBeFalsy();
+
+    const [isValid, message] = validateShowProfileRequest(invalidTargetBoundingRect);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('targetElementBoundingRect must be a DOMRect');
   });
 
   it('should return false if triggerType property is missing', () => {
     const missingTriggerType = { ...validInput, triggerType: undefined } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(missingTriggerType)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(missingTriggerType);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('triggerType must be a valid string');
   });
 
   it('should return false if triggerType property is not a string', () => {
     const invalidTriggerType = { ...validInput, triggerType: 1 as unknown } as profile.ShowProfileRequest;
-    expect(validateShowProfileRequest(invalidTriggerType)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(invalidTriggerType);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('triggerType must be a valid string');
   });
 
   it('should return false if no identifiers were passed', () => {
@@ -81,7 +106,9 @@ describe('validateShowProfileRequest', () => {
       },
     } as profile.ShowProfileRequest;
 
-    expect(validateShowProfileRequest(noIdentifiers)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(noIdentifiers);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('at least one valid identifier must be provided');
   });
 
   it('should return false if any identifiers are invalid', () => {
@@ -93,6 +120,12 @@ describe('validateShowProfileRequest', () => {
       },
     } as profile.ShowProfileRequest;
 
+    const [isValid, message] = validateShowProfileRequest(invalidAadObjectId);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('AadObjectId identifier must be a string');
+  });
+
+  it('should return false if any identifiers are invalid', () => {
     const invalidSmtp = {
       ...validInput,
       persona: {
@@ -101,14 +134,12 @@ describe('validateShowProfileRequest', () => {
       },
     } as profile.ShowProfileRequest;
 
-    const invalidTeamsMri = {
-      ...validInput,
-      persona: {
-        ...validInput.persona,
-        identifiers: { TeamsMri: 1 as unknown },
-      },
-    } as profile.ShowProfileRequest;
+    const [isValid, message] = validateShowProfileRequest(invalidSmtp);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('Smtp identifier must be a string');
+  });
 
+  it('should return false if any identifiers are invalid', () => {
     const invalidUpn = {
       ...validInput,
       persona: {
@@ -117,13 +148,14 @@ describe('validateShowProfileRequest', () => {
       },
     } as profile.ShowProfileRequest;
 
-    expect(validateShowProfileRequest(invalidAadObjectId)).toBeFalsy();
-    expect(validateShowProfileRequest(invalidSmtp)).toBeFalsy();
-    expect(validateShowProfileRequest(invalidTeamsMri)).toBeFalsy();
-    expect(validateShowProfileRequest(invalidUpn)).toBeFalsy();
+    const [isValid, message] = validateShowProfileRequest(invalidUpn);
+    expect(isValid).toBeFalsy();
+    expect(message).toBe('Upn identifier must be a string');
   });
 
   it('should return true for a valid input', () => {
-    expect(validateShowProfileRequest(validInput)).toBeTruthy();
+    const [isValid, message] = validateShowProfileRequest(validInput);
+    expect(isValid).toBeTruthy();
+    expect(message).toBeUndefined();
   });
 });

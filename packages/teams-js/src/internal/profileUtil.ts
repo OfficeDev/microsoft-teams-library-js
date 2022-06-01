@@ -8,23 +8,16 @@ import { profile } from '../public/profile';
  *
  * @internal
  */
-export function validateShowProfileRequest(showProfileRequest: profile.ShowProfileRequest): boolean {
+export function validateShowProfileRequest(
+  showProfileRequest: profile.ShowProfileRequest,
+): [boolean, string | undefined] {
   if (!showProfileRequest) {
-    return false;
+    return [false, 'A request object is required'];
   }
 
   // Validate modality
   if (showProfileRequest.modality && typeof showProfileRequest.modality !== 'string') {
-    return false;
-  }
-
-  // Validate persona
-  if (
-    !showProfileRequest.persona ||
-    (showProfileRequest.persona.displayName && typeof showProfileRequest.persona.displayName !== 'string') ||
-    !validatePersonaIdentifiers(showProfileRequest.persona.identifiers)
-  ) {
-    return false;
+    return [false, 'modality must be a string'];
   }
 
   // Validate targetElementBoundingRect
@@ -32,31 +25,45 @@ export function validateShowProfileRequest(showProfileRequest: profile.ShowProfi
     !showProfileRequest.targetElementBoundingRect ||
     typeof showProfileRequest.targetElementBoundingRect !== 'object'
   ) {
-    return false;
+    return [false, 'targetElementBoundingRect must be a DOMRect'];
   }
 
   // Validate triggerType
   if (!showProfileRequest.triggerType || typeof showProfileRequest.triggerType !== 'string') {
-    return false;
+    return [false, 'triggerType must be a valid string'];
   }
 
-  return true;
+  return validatePersona(showProfileRequest.persona);
 }
 
-function validatePersonaIdentifiers(identifiers: profile.PersonaIdentifiers): boolean {
-  if (!identifiers || typeof identifiers !== 'object') {
-    return false;
+function validatePersona(persona: profile.Persona): [boolean, string | undefined] {
+  if (!persona) {
+    return [false, 'persona object must be provided'];
   }
 
-  // Validate at least one identifier was passed.
-  if (
-    (!identifiers.AadObjectId || typeof identifiers.AadObjectId !== 'string') &&
-    (!identifiers.Smtp || typeof identifiers.Smtp !== 'string') &&
-    (!identifiers.TeamsMri || typeof identifiers.TeamsMri !== 'string') &&
-    (!identifiers.Upn || typeof identifiers.Upn !== 'string')
-  ) {
-    return false;
+  if (persona.displayName && typeof persona.displayName !== 'string') {
+    return [false, 'displayName must be a string'];
   }
 
-  return true;
+  if (!persona.identifiers || typeof persona.identifiers !== 'object') {
+    return [false, 'persona identifiers object must be provided'];
+  }
+
+  if (!persona.identifiers.AadObjectId && !persona.identifiers.Smtp && !persona.identifiers.Upn) {
+    return [false, 'at least one valid identifier must be provided'];
+  }
+
+  if (persona.identifiers.AadObjectId && typeof persona.identifiers.AadObjectId !== 'string') {
+    return [false, 'AadObjectId identifier must be a string'];
+  }
+
+  if (persona.identifiers.Smtp && typeof persona.identifiers.Smtp !== 'string') {
+    return [false, 'Smtp identifier must be a string'];
+  }
+
+  if (persona.identifiers.Upn && typeof persona.identifiers.Upn !== 'string') {
+    return [false, 'Upn identifier must be a string'];
+  }
+
+  return [true, undefined];
 }

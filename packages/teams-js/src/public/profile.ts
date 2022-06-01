@@ -5,6 +5,11 @@ import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace for profile related APIs.
+ *
+ * @beta
+ */
 export namespace profile {
   /**
    * Opens a profile card at a specified position to show profile information about a persona.
@@ -15,28 +20,25 @@ export namespace profile {
     ensureInitialized(FrameContexts.content);
 
     return new Promise<void>(resolve => {
-      if (!validateShowProfileRequest(showProfileRequest)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      const [isValid, message] = validateShowProfileRequest(showProfileRequest);
+      if (!isValid) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message };
       }
 
-      // Passing a DOMRect as part of the request breaks in Electron WebView with
-      // "Uncaught Error: An object could not be cloned.". To work around
-      // this we create a duplicate object of the values from the DOMRect.
-      const newShowProfileRequest = {
-        ...showProfileRequest,
-        targetElementBoundingRect: {
+      // Convert the app provided parameters to the form suitable for postMessage.
+      const requestInternal: ShowProfileRequestInternal = {
+        modality: showProfileRequest.modality,
+        persona: showProfileRequest.persona,
+        triggerType: showProfileRequest.triggerType,
+        targetRectangle: {
           x: showProfileRequest.targetElementBoundingRect.x,
           y: showProfileRequest.targetElementBoundingRect.y,
-          top: showProfileRequest.targetElementBoundingRect.top,
-          left: showProfileRequest.targetElementBoundingRect.left,
-          right: showProfileRequest.targetElementBoundingRect.right,
-          bottom: showProfileRequest.targetElementBoundingRect.bottom,
           width: showProfileRequest.targetElementBoundingRect.width,
           height: showProfileRequest.targetElementBoundingRect.height,
         },
       };
 
-      resolve(sendAndHandleError('profile.showProfile', newShowProfileRequest));
+      resolve(sendAndHandleError('profile.showProfile', requestInternal));
     });
   }
 
@@ -58,15 +60,18 @@ export namespace profile {
 
   /**
    * The set of identifiers that are supported for resolving the persona.
+   *
+   * At least one is required, and if multiple are provided then only the highest
+   * priority one will be used (AadObjectId > Upn > Smtp).
    */
   export type PersonaIdentifiers = {
     /**
-     * The Teams messaging resource identifier.
-     */
-    readonly TeamsMri?: string;
-
-    /**
-     * The AAD object id.
+     * The object id in Azure Active Directory.
+     *
+     * This id is guaranteed to be unique for an object within a tenant,
+     * and so if provided will lead to a more performant lookup. It can
+     * be resolved via MS Graph (see https://docs.microsoft.com/en-us/graph/api/resources/users
+     * for examples).
      */
     readonly AadObjectId?: string;
 
@@ -118,6 +123,27 @@ export namespace profile {
     /**
      * Specifies which user interaction was used to trigger the API call.
      */
+    triggerType: TriggerType;
+  }
+
+  /**
+   * Internal representation of a DOMRect suitable for sending via postMessage.
+   */
+  type Rectangle = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+
+  /**
+   * An internal representation of the showProfile parameters suitable for sending via postMessage.
+   * The hub expects to receive an object of this type.
+   */
+  interface ShowProfileRequestInternal {
+    modality?: Modality;
+    persona: Persona;
+    targetRectangle: Rectangle;
     triggerType: TriggerType;
   }
 
