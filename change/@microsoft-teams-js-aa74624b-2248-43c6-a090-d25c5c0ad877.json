@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Add documentation for how to enable logging",
+  "comment": "Added documentation for enabling logging",
   "packageName": "@microsoft/teams-js",
   "email": "AE-MS@users.noreply.github.com",
   "dependentChangeType": "none"
