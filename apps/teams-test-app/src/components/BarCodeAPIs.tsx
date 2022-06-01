@@ -42,8 +42,8 @@ const RequestPermission = (): React.ReactElement =>
     name: 'RequestPermission',
     title: 'Request Permission',
     onClick: async () => {
-      await barCode.requestPermission();
-      return 'success';
+      const result = await barCode.requestPermission();
+      return JSON.stringify(result);
     },
   });
 
