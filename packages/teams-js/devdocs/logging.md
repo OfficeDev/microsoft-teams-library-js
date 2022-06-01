@@ -1,10 +1,10 @@
 # TeamsJS logging
 
-Enabling logging can be helpful when troubleshooting issues. These instructions are only for enabling local (browser console) logging in the TeamsJS library and will not enable logging within hosts like Teams, Outlook, or Office. However, even TeamsJS logging can be helpful to troubleshoot problems.
+Enabling logging can be helpful when troubleshooting issues. These instructions are only for enabling local (browser console) logging in the TeamsJS library.
 
 ## Enabling logging
 
-TeamsJS logging leverages the popular [debug](https://www.npmjs.com/package/debug) pacakage for logging. If you are already familiar with this package, then you can enable TeamsJS logs by enabling the `teamsJs` logging category. If you are unfamiliar, here are step-by-step instructions:
+TeamsJS logging leverages the popular [debug](https://www.npmjs.com/package/debug) package for logging. If you are already familiar with this package, then you can enable TeamsJS logs by enabling the `teamsJs` logging category. If you are unfamiliar, here are step-by-step instructions:
 
 1. Run your app inside of your chosen web host (e.g., Teams, Outlook, or Office)
 
