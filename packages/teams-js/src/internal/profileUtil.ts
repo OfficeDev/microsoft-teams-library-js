@@ -36,6 +36,14 @@ export function validateShowProfileRequest(
   return validatePersona(showProfileRequest.persona);
 }
 
+/**
+ * @hidden
+ * Validates the persona that is used to resolve the profile target
+ * @param persona The persona object
+ * @returns true if the persona is valid, false otherwise
+ *
+ * @internal
+ */
 function validatePersona(persona: profile.Persona): [boolean, string | undefined] {
   if (!persona) {
     return [false, 'persona object must be provided'];
