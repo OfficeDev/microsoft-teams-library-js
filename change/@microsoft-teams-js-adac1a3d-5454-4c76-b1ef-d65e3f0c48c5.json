@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `profile.showProfile` API and unit tests",
+  "packageName": "@microsoft/teams-js",
+  "email": "grhewitt@microsoft.com",
+  "dependentChangeType": "patch"
+}
