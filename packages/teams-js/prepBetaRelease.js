@@ -1,10 +1,8 @@
 const fs = require('fs');
 const cp = require('child_process');
 const util = require('util');
-const { exit } = require('process');
 
 let packageJsonPath = './package.json';
-let internalConstantsFilePath = './src/internal/constants.ts';
 const EXIT_CODE_FATAL_ERROR = 5;
 
 const exec = util.promisify(cp.exec);
@@ -24,36 +22,11 @@ function getPackageJson() {
 }
 
 /**
- * Gets the file content in string format from the given file path. Exits with the exit code of
- * fatal error without returning a value if the given file path does not show a valid path to a
- * file within the system.
- * @param {string} filePath Path to the desired file.
- * @returns The file content in string format.
- */
-function getFileContent(filePath) {
-  if (fs.existsSync(filePath)) {
-    return fs.readFileSync(filePath, { encoding: 'utf8' });
-  }
-  console.log(`FATAL ERROR: file path ${filePath} could not be found in the file system.`);
-  process.exitCode = EXIT_CODE_FATAL_ERROR;
-  return;
-}
-
-/**
  * Saves the given package.json content to the set package.json path.
  * @param {any} packageJson The package.json content to write into the package.json.
  */
 function saveJsonFile(packageJson) {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
-}
-
-/**
- * Saves the given file content to the given file path.
- * @param {string} filePath Path to the file to save to.
- * @param {any} fileContent Content to save onto the file.
- */
-function saveFile(filePath, fileContent) {
-  fs.writeFileSync(filePath, fileContent);
 }
 
 /**
@@ -87,6 +60,31 @@ function getPrefix(version) {
 }
 
 /**
+ * Gets the prefix of the version that is higher amongst the inputs
+ * @param {string} currBetaVer The version currently tagged beta. (e.g. 2.0.0-beta.1)
+ * @param {string} currPkgJsonVer The version taken from the package.json. (e.g. 2.0.0)
+ * @returns The prefix of the version that is higher
+ */
+function getNextPrefix(currBetaVer, currPkgJsonVer) {
+  const currBetaPrefix = getPrefix(currBetaVer);
+  const currPkgPrefix = getPrefix(currPkgJsonVer);
+  if (currBetaPrefix === currPkgPrefix) {
+    return currBetaPrefix;
+  }
+  const betaParts = currBetaPrefix.split('.');
+  const pkgParts = currPkgPrefix.split('.');
+
+  for (let i = 0; i < betaParts.length; i++) {
+    if (betaParts[i] > pkgParts[i]) {
+      return currBetaPrefix;
+    }
+    if (pkgParts[i] > betaParts[i]) {
+      return currPkgPrefix;
+    }
+  }
+}
+
+/**
  * Takes the given whole version number and gets the suffix number of the version type (e.g. 'beta').
  * @param {string} versionType The type of the version number suffix to get. e.g. beta, dev
  * @param {string} wholeVerNum The entire version number. e.g. 2.0.0-beta.0, 2.0.0-beta.1-dev.0
@@ -102,37 +100,32 @@ function getSpecificVerSuffixNum(versionType, wholeVerNum) {
 }
 
 /**
- * Uses the given current next-dev version and latest production version to generate and return
- * the number of the new next-dev version. The new next-dev version numbers are 0-index based.
- * @param {string} currNextDevVer The version currently tagged next-dev. (e.g. 2.0.0-beta.1-dev.1)
- * @param {string} currPkgJsonVer The version taken from the package.json. (e.g. 2.0.0-beta.0)
- * @returns Just the number of the suffix of the new next-dev version number. (e.g. return 2 if next next-dev version is 2.0.0-beta.1-dev.2)
+ * Uses the given beta version and latest production version to generate and return
+ * the number of the new beta version. The new beta version numbers are 0-index based.
+ * @param {string} currBetaVer The version currently tagged beta. (e.g. 2.0.0-beta.1)
+ * @param {string} currPkgJsonVer The version taken from the package.json. (e.g. 2.0.0)
+ * @param {string} nextPrefix The next prefix version that is determined by which is a higher value. (e.g. beta is 2.1.0-beta.8 and package.json is 2.2.0, the next prefix would be 2.2.0)
+ * @returns Just the number of the suffix of the new beta version number. (e.g. return 2 if next beta version is 2.0.0-beta.2)
  */
-function getNewNextDevSuffixNum(currNextDevVer, currPkgJsonVer) {
-  if (currNextDevVer === undefined || currNextDevVer === '') {
+function getNewBetaSuffixNum(currBetaVer, currPkgJsonVer, nextPrefix) {
+  if (currBetaVer === undefined || currBetaVer === '') {
     return 0;
   }
+  let newBetaSuffixNum = 0;
 
-  const betaSuffixNumInCurrNextDev = getSpecificVerSuffixNum('beta', currNextDevVer);
-  const betaSuffixNumInPkgJsonVer = getSpecificVerSuffixNum('beta', currPkgJsonVer);
-  // The new next-dev suffix number will be 0 if the beta suffixes of both the current next-dev version and package.json version are equal.
-  // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.1-dev.2 means the new next-dev version should be 2.0.0-beta.2-dev.0
-  // and the new next-dev version suffix number is 0.
-  let newNextDevVerSuffixNum = 0;
+  //If current beta versioning is higher or equal to currPkgJsonVer
+  if (getPrefix(currBetaVer) === nextPrefix) {
+    const suffixNumInCurrBeta = getSpecificVerSuffixNum('beta', currBetaVer);
+    if (suffixNumInCurrBeta < 0) {
+      throw new Error(`Invalid beta version suffix number ${suffixNumInCurrBeta} in current beta version`);
+    }
+    const suffixNumInPkgJsonVer = getSpecificVerSuffixNum('beta', currPkgJsonVer);
 
-  // If the beta suffix number in the current next-dev version is already bumped from the beta suffix number of the package.json version,
-  // increment the existing dev suffix number from the next-dev version. e.g. package.json version: 2.0.0-beta.0 and current next-dev version: 2.0.0-beta.1-dev.3
-  // means the new next-dev version will be 2.0.0-beta.1-dev.4 and the new next-dev version suffix number is 4.
-  if (betaSuffixNumInCurrNextDev === betaSuffixNumInPkgJsonVer + 1) {
-    newNextDevVerSuffixNum = getSpecificVerSuffixNum('dev', currNextDevVer) + 1;
-    // If the next-dev beta suffix is not equal to or exactly 1 higher than the package.json beta suffix, throw an error since this does not follow our versioning structure.
-    // e.g. package.json version: 2.0.0-beta.1 and current next-dev version: 2.0.0-beta.0-dev.0 should throw an error.
-  } else if (betaSuffixNumInCurrNextDev !== betaSuffixNumInPkgJsonVer) {
-    throw new Error(
-      `Invalid beta version suffix number ${betaSuffixNumInPkgJsonVer} in package.json version ${currPkgJsonVer}`,
-    );
+    if (suffixNumInCurrBeta >= suffixNumInPkgJsonVer) {
+      newBetaSuffixNum = suffixNumInCurrBeta + 1;
+    }
   }
-  return newNextDevVerSuffixNum;
+  return newBetaSuffixNum;
 }
 
 /**
@@ -146,32 +139,22 @@ function getNewPkgJsonContent(currBetaVer) {
 
   // get package version from package.json
   let currPkgJsonVer = getPkgJsonVersion(packageJson);
-  let currBetaPrefix = getPrefix(currBetaVer);
 
   console.log('package.json version: ' + currPkgJsonVer);
   console.log('current beta tagged version: ' + currBetaVer);
+  const newVersionPrefix = getNextPrefix(currBetaVer, currPkgJsonVer);
 
-  if (currPkgJsonVer.includes('beta')) {
-    throw new Error(
-      `The given package.json\'s version ${currPkgJsonVer} contains the substring \'beta\' which is reserved for non-prod versions. Please fix the package.json version first in order to allow for proper version incrementation.`,
-    );
-  }
-  let betaVerNum = 0;
-  if (currBetaPrefix === currPkgJsonVer) {
-    betaVerNum = getSpecificVerSuffixNum('beta', currPkgJsonVer) + 1;
-  } else {
-    currBetaPrefix = currPkgJsonVer;
-  }
+  const betaVerNum = getNewBetaSuffixNum(currBetaVer, currPkgJsonVer, newVersionPrefix);
   if (isNaN(betaVerNum)) {
     throw new Error(
       `The given package.json\'s version ${currPkgJsonVer} has a non-integer beta version number. Please fix the package.json version first in order to allow for proper version incrementation.`,
     );
   }
-  const newVersion = currBetaPrefix + '-beta.' + betaVerNum;
+  const newVersion = newVersionPrefix + '-beta.' + betaVerNum;
 
   console.log('new version: ' + newVersion);
 
-  // update package.json with the new version
+  //update package.json with the new version
   packageJson.version = newVersion;
   return packageJson;
 }
