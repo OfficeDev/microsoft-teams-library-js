@@ -65,7 +65,7 @@ function getPrefix(version) {
  * @param {string} currPkgJsonVer The version taken from the package.json. (e.g. 2.0.0)
  * @returns The prefix of the version that is higher
  */
-function getNextPrefix(currBetaVer, currPkgJsonVer) {
+function getNewerPrefix(currBetaVer, currPkgJsonVer) {
   const currBetaPrefix = getPrefix(currBetaVer);
   const currPkgPrefix = getPrefix(currPkgJsonVer);
   if (currBetaPrefix === currPkgPrefix) {
@@ -113,17 +113,13 @@ function getNewBetaSuffixNum(currBetaVer, currPkgJsonVer, nextPrefix) {
   }
   let newBetaSuffixNum = 0;
 
-  //If current beta versioning is higher or equal to currPkgJsonVer
+  // If current beta versioning is higher or equal to currPkgJsonVer
   if (getPrefix(currBetaVer) === nextPrefix) {
     const suffixNumInCurrBeta = getSpecificVerSuffixNum('beta', currBetaVer);
     if (suffixNumInCurrBeta < 0) {
       throw new Error(`Invalid beta version suffix number ${suffixNumInCurrBeta} in current beta version`);
     }
-    const suffixNumInPkgJsonVer = getSpecificVerSuffixNum('beta', currPkgJsonVer);
-
-    if (suffixNumInCurrBeta >= suffixNumInPkgJsonVer) {
-      newBetaSuffixNum = suffixNumInCurrBeta + 1;
-    }
+    newBetaSuffixNum = suffixNumInCurrBeta + 1;
   }
   return newBetaSuffixNum;
 }
@@ -145,16 +141,11 @@ function getNewPkgJsonContent(currBetaVer) {
   const newVersionPrefix = getNextPrefix(currBetaVer, currPkgJsonVer);
 
   const betaVerNum = getNewBetaSuffixNum(currBetaVer, currPkgJsonVer, newVersionPrefix);
-  if (isNaN(betaVerNum)) {
-    throw new Error(
-      `The given package.json\'s version ${currPkgJsonVer} has a non-integer beta version number. Please fix the package.json version first in order to allow for proper version incrementation.`,
-    );
-  }
   const newVersion = newVersionPrefix + '-beta.' + betaVerNum;
 
   console.log('new version: ' + newVersion);
 
-  //update package.json with the new version
+  // update package.json with the new version
   packageJson.version = newVersion;
   return packageJson;
 }
