@@ -27,9 +27,9 @@ const ScanBarCode = (): React.ReactElement =>
     },
   });
 
-const HasPermission = (): React.ReactElement =>
+const HasBarCodePermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'HasPermission',
+    name: 'HasBarCodePermission',
     title: 'Has Permission',
     onClick: async () => {
       const result = await barCode.hasPermission();
@@ -37,9 +37,9 @@ const HasPermission = (): React.ReactElement =>
     },
   });
 
-const RequestPermission = (): React.ReactElement =>
+const RequestBarCodePermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'RequestPermission',
+    name: 'RequestBarCodePermission',
     title: 'Request Permission',
     onClick: async () => {
       const result = await barCode.requestPermission();
@@ -51,8 +51,8 @@ const BarCodeAPIs = (): ReactElement => (
   <>
     <h1>barCode</h1>
     <ScanBarCode />
-    <HasPermission />
-    <RequestPermission />
+    <HasBarCodePermission />
+    <RequestBarCodePermission />
     <CheckBarCodeCapability />
   </>
 );
