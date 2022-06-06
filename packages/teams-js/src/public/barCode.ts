@@ -31,7 +31,7 @@ export namespace barCode {
   }
 
   export function requestPermission(): Promise<boolean> {
-    const permissions: DevicePermission[] = [DevicePermission.Media];
+    const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>(resolve => {
       resolve(sendAndHandleSdkError('permissions.request', permissions));
