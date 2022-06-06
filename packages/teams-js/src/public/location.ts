@@ -53,18 +53,18 @@ export namespace location {
   }
 
   export function hasPermission(): Promise<boolean> {
-    const permissions: DevicePermission[] = [DevicePermission.GeoLocation];
+    const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('permission.has', permissions));
+      resolve(sendAndHandleError('permissions.has', permissions));
     });
   }
 
   export function requestPermission(): Promise<boolean> {
-    const permissions: DevicePermission[] = [DevicePermission.GeoLocation];
+    const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('permission.request', permissions));
+      resolve(sendAndHandleError('permissions.request', permissions));
     });
   }
 
@@ -133,7 +133,7 @@ export namespace location {
     /**
      * Shows the location on map corresponding to the given coordinates
      * @param location {@link Location} - which needs to be shown on map
-     * @returns Promise that resolves when the location dialog has been closed TODO VERIFY
+     * @returns Promise that resolves when the location dialog has been closed
      */
     export function showLocation(location: Location): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);

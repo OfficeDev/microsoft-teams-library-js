@@ -16,13 +16,13 @@ const GetLocation = (): React.ReactElement =>
     title: 'Get Location',
     onClick: {
       validateInput: input => {
-        if (input.allowChooseLocation === undefined) {
+        if (input && input.allowChooseLocation === undefined) {
           throw new Error('allowChooseLocation is required');
         }
       },
       submit: {
-        withPromise: async locationProps => {
-          const result = await location.getLocation(locationProps);
+        withPromise: async () => {
+          const result = await location.getCurrentLocation();
           return JSON.stringify(result);
         },
         withCallback: (locationProps, setResult) => {
@@ -51,7 +51,7 @@ const ShowLocation = (): React.ReactElement =>
       },
       submit: {
         withPromise: async locationProps => {
-          await location.showLocation(locationProps);
+          await location.map.showLocation(locationProps);
           return 'Completed';
         },
         withCallback: (locationProps, setResult) => {
@@ -69,11 +69,33 @@ const ShowLocation = (): React.ReactElement =>
     },
   });
 
+const HasGeoLocationPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'HasGeoLocationPermission',
+    title: 'Has Permission',
+    onClick: async () => {
+      const result = await location.hasPermission();
+      return JSON.stringify(result);
+    },
+  });
+
+const RequestGeoLocationPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'RequestGeoLocationPermission',
+    title: 'Request Permission',
+    onClick: async () => {
+      const result = await location.requestPermission();
+      return JSON.stringify(result);
+    },
+  });
+
 const LocationAPIs = (): ReactElement => (
   <>
     <h1>location</h1>
     <GetLocation />
     <ShowLocation />
+    <HasGeoLocationPermission />
+    <RequestGeoLocationPermission />
     <CheckLocationCapability />
   </>
 );

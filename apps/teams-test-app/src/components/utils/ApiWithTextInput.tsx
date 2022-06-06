@@ -55,7 +55,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
         }
       }
     } catch (err) {
-      setResult('Error: ' + err);
+      setResult('Error: ' + JSON.stringify(err));
     }
   }, [inputRef, setResult, onClick]);
 
