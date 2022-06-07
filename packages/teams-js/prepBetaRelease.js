@@ -138,7 +138,7 @@ function getNewPkgJsonContent(currBetaVer) {
 
   console.log('package.json version: ' + currPkgJsonVer);
   console.log('current beta tagged version: ' + currBetaVer);
-  const newVersionPrefix = getNextPrefix(currBetaVer, currPkgJsonVer);
+  const newVersionPrefix = getNewerPrefix(currBetaVer, currPkgJsonVer);
 
   const betaVerNum = getNewBetaSuffixNum(currBetaVer, currPkgJsonVer, newVersionPrefix);
   const newVersion = newVersionPrefix + '-beta.' + betaVerNum;
