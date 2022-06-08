@@ -29,7 +29,6 @@ steps:
 
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
       not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')),
