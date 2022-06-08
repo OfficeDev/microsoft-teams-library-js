@@ -733,6 +733,7 @@ export namespace media {
     } else {
       config = param1;
     }
+    config = config === undefined ? {} : config;
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(barCode.scanBarCode, callback, config);
   }
 }
