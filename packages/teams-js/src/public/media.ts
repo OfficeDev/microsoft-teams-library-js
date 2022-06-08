@@ -6,7 +6,6 @@ import {
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
-  scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -21,12 +20,12 @@ import {
   isVideoControllerRegistered,
   throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
-  validateScanBarCodeInput,
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../internal/mediaUtil';
-import { generateGUID } from '../internal/utils';
-import { FrameContexts, HostClientType } from './constants';
+import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, generateGUID } from '../internal/utils';
+import { barCode } from './barCode';
+import { FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
 export namespace media {
@@ -686,43 +685,54 @@ export namespace media {
    * Scan Barcode/QRcode using camera
    *
    * @remarks
+   * Note: For desktop and web, this API is not supported.
+   *
+   * @param config - input configuration to customize the barcode scanning experience
+   *
+   * @return a scanned code
+   */
+  export function scanBarCode(config: BarCodeConfig): Promise<string>;
+
+  /**
+   * @deprecated
+   * As of 2.0.1, please use {@link barCode.scanBarCode barCode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
+
+   * Scan Barcode/QRcode using camera
+   *
+   * @remarks
    * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
    * @param callback - callback to invoke after scanning the barcode
    * @param config - optional input configuration to customize the barcode scanning experience
    */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
-    if (!callback) {
-      throw new Error('[media.scanBarCode] Callback cannot be null');
-    }
+  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void;
+
+  /**
+   * Scan Barcode/QRcode using camera
+   *
+   * @remarks
+   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
+   *
+   * @hidden
+   * This function is the overloaded implementation of scanBarCode.
+   * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
+   * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
+   * @param param1
+   * @param param2
+   */
+  export function scanBarCode(
+    param1: BarCodeConfig | ((error: SdkError, decodedText: string) => void) | undefined,
+    param2?: BarCodeConfig,
+  ): Promise<string> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+    let callback: (error: SdkError, decodedText: string) => void;
+    let config: BarCodeConfig;
 
-    if (
-      GlobalVars.hostClientType === HostClientType.desktop ||
-      GlobalVars.hostClientType === HostClientType.web ||
-      GlobalVars.hostClientType === HostClientType.rigel ||
-      GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-      GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-      GlobalVars.hostClientType === HostClientType.teamsPhones ||
-      GlobalVars.hostClientType === HostClientType.teamsDisplays
-    ) {
-      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      callback(notSupportedError, null);
-      return;
+    if (typeof param1 === 'function') {
+      [callback, config] = [param1, param2];
+    } else {
+      config = param1;
     }
-
-    if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      callback(oldPlatformError, null);
-      return;
-    }
-
-    if (!validateScanBarCodeInput(config)) {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback(invalidInput, null);
-      return;
-    }
-
-    sendMessageToParent('media.scanBarCode', [config], callback);
+    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(barCode.scanBarCode, callback, config);
   }
 }
