@@ -17,15 +17,13 @@ steps:
     inputs:
       Arguments: 'install'
 
-  - task: Yarn@3
+  - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
       not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')),
       not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/'))
       )
-    inputs:
-      Arguments: 'beachball check'
 
   # Determines what the next beta version will be. E.g 2.0.0-beta.x
    - script: 'node prepBetaRelease.js'
