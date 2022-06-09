@@ -788,6 +788,6 @@ export enum ErrorCode {
 
 /** @hidden */
 export enum DevicePermission {
-  GeoLocation = 'geoLocation',
+  GeoLocation = 'geolocation',
   Media = 'media',
 }

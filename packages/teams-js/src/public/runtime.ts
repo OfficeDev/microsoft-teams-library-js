@@ -166,6 +166,10 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
         HostClientType.teamsDisplays,
       ],
     },
+    {
+      capability: { teams: { location: { map: {} } } },
+      hostClientTypes: v1HostClientTypes,
+    },
   ],
 };
 

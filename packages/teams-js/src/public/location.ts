@@ -1,11 +1,12 @@
 import { sendAndHandleSdkError as sendAndHandleError, sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
 /**
- * @alpha
+ * namespace to get the user location
  */
 export namespace location {
   export interface LocationProps {
@@ -49,10 +50,17 @@ export namespace location {
    */
   export function getCurrentLocation(): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     return sendAndHandleError('location.getLocation', { allowChooseLocation: false, showMap: false });
   }
 
   export function hasPermission(): Promise<boolean> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>(resolve => {
@@ -61,6 +69,10 @@ export namespace location {
   }
 
   export function requestPermission(): Promise<boolean> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>(resolve => {
@@ -74,7 +86,7 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use one of the following functions:
+   * As of 2.0.1, please use one of the following functions:
    * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>}
    * - {@link location.map.chooseLocation location.map.chooseLocation(): Promise\<Location\>}
    *
@@ -94,7 +106,9 @@ export namespace location {
     if (!props) {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
     }
-
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     sendMessageToParent('location.getLocation', [props], callback);
   }
 
@@ -116,6 +130,9 @@ export namespace location {
     if (!location) {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
     }
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     sendMessageToParent('location.showLocation', [location], callback);
   }
@@ -127,6 +144,9 @@ export namespace location {
      */
     export function chooseLocation(): Promise<Location> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       return sendAndHandleError('location.getLocation', { allowChooseLocation: true, showMap: true });
     }
 
@@ -137,6 +157,9 @@ export namespace location {
      */
     export function showLocation(location: Location): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
