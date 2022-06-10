@@ -6,7 +6,7 @@ import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * namespace to get the user location
+ * Namespace to interact with the location module-specific part of the SDK.
  */
 export namespace location {
   export interface LocationProps {
@@ -114,8 +114,9 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.0-beta.4, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
+   * As of 2.0.1, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
    * Shows the location on map corresponding to the given coordinates
+   *
    * @param location {@link Location} - which needs to be shown on map
    * @param callback - Callback to invoke when the location is opened on map
    */
@@ -137,6 +138,9 @@ export namespace location {
     sendMessageToParent('location.showLocation', [location], callback);
   }
 
+  /**
+   * Namespace to interact with the location on map module-specific part of the SDK.
+   */
   export namespace map {
     /**
      * Allows user to choose location on map

@@ -22,28 +22,32 @@ const GetLocation = (): React.ReactElement =>
     name: 'getLocation',
     title: 'Get Location',
     onClick: {
-      validateInput: () => {
-        return;
+      validateInput: locationProps => {
+        if (locationProps.allowChooseLocation === undefined) {
+          throw new Error('allowChooseLocation is required');
+        }
       },
-      submit: {
-        withPromise: async () => {
-          const result = await location.getCurrentLocation();
-          return JSON.stringify(result);
-        },
-        withCallback: (locationProps, setResult) => {
-          if (locationProps.allowChooseLocation === undefined) {
-            throw new Error('allowChooseLocation is required');
+      submit: async (locationProps, setResult) => {
+        const callback = (error: SdkError, location: location.Location): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(location));
           }
-          const callback = (error: SdkError, location: location.Location): void => {
-            if (error) {
-              setResult(JSON.stringify(error));
-            } else {
-              setResult(JSON.stringify(location));
-            }
-          };
-          location.getLocation(locationProps, callback);
-        },
+        };
+        location.getLocation(locationProps, callback);
+        return '';
       },
+    },
+  });
+
+const GetCurrentLocation = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'getCurrentLocation',
+    title: 'Get Current Location',
+    onClick: async () => {
+      const result = await location.getCurrentLocation();
+      return JSON.stringify(result);
     },
   });
 
@@ -111,6 +115,7 @@ const LocationAPIs = (): ReactElement => (
   <>
     <h1>location</h1>
     <GetLocation />
+    <GetCurrentLocation />
     <ChooseLocation />
     <ShowLocation />
     <HasLocationPermission />
