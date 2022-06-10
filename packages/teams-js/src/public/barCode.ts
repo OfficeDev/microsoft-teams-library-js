@@ -6,8 +6,19 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to interact with the scan barCode module-specific part of the SDK.
+ */
 export namespace barCode {
+  /**
+   * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
+   * All properties in BarCodeConfig are optional and have default values in the platform
+   */
   export interface BarCodeConfig {
+    /**
+     * Optional; Lets the developer specify the scan timeout interval in seconds
+     * Default value is 30 seconds and max allowed value is 60 seconds
+     */
     timeOutIntervalInSec?: number;
   }
 
@@ -44,6 +55,10 @@ export namespace barCode {
    * @returns if the media has user permission
    */
   export function hasPermission(): Promise<boolean> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>(resolve => {
@@ -57,6 +72,10 @@ export namespace barCode {
    * @returns if the user conseted permission for media
    */
   export function requestPermission(): Promise<boolean> {
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>(resolve => {
