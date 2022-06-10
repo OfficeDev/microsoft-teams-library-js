@@ -9,6 +9,9 @@ import { runtime } from './runtime';
  * Namespace to interact with the location module-specific part of the SDK.
  */
 export namespace location {
+  /**
+   * Data Structure to set the location properties in {@linkcode getLocation} call.
+   */
   export interface LocationProps {
     /**
     whether user can alter location or not
@@ -25,6 +28,9 @@ export namespace location {
     showMap?: boolean;
   }
 
+  /**
+   * Data struture to represent the location information
+   */
   export interface Location {
     /**
     Latitude of the location
@@ -56,6 +62,11 @@ export namespace location {
     return sendAndHandleError('location.getLocation', { allowChooseLocation: false, showMap: false });
   }
 
+  /**
+   * Checks whether or not location has user permission
+   *
+   * @returns if the location has user permission
+   */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
@@ -68,6 +79,11 @@ export namespace location {
     });
   }
 
+  /**
+   * Request user permission for location
+   *
+   * @returns if the user conseted permission for location
+   */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
@@ -87,9 +103,10 @@ export namespace location {
   /**
    * @deprecated
    * As of 2.0.1, please use one of the following functions:
-   * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>}
-   * - {@link location.map.chooseLocation location.map.chooseLocation(): Promise\<Location\>}
+   * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>} to get the current locaiton.
+   * - {@link location.map.chooseLocation location.map.chooseLocation(): Promise\<Location\>} to choose location on map.
    *
+   * Fetches user location
    * @param props {@link LocationProps} - Specifying how the location request is handled
    * @param callback - Callback to invoke when current user location is fetched
    */
@@ -115,6 +132,7 @@ export namespace location {
   /**
    * @deprecated
    * As of 2.0.1, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
+   *
    * Shows the location on map corresponding to the given coordinates
    *
    * @param location {@link Location} - which needs to be shown on map
@@ -144,6 +162,7 @@ export namespace location {
   export namespace map {
     /**
      * Allows user to choose location on map
+     *
      * @returns The location chosen by the user after closing the map
      */
     export function chooseLocation(): Promise<Location> {
@@ -156,6 +175,7 @@ export namespace location {
 
     /**
      * Shows the location on map corresponding to the given coordinates
+     *
      * @param location {@link Location} - which needs to be shown on map
      * @returns Promise that resolves when the location dialog has been closed
      */
