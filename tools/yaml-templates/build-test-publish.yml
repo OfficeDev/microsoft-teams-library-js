@@ -35,7 +35,7 @@ steps:
        eq(variables['Build.SourceBranch'], 'refs/heads/main'),
        in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
        ne(variables['Build.Reason'], 'PullRequest')
-       )
+      )
 
   - task: Yarn@3
     inputs:
