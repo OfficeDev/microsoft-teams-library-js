@@ -25,7 +25,6 @@ steps:
       not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/'))
       )
 
-  # Determines what the next beta version will be. E.g 2.0.0-beta.x
    - script: 'node prepBetaRelease.js'
      displayName: 'node prepBetaRelease.js'
      workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
