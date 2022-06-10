@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Split the location capability into new set of functions and subcapabilities, and added hasPermission and requestPermission functionality to check permissions",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
