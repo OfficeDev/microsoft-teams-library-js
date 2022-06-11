@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removing unnecessary `/` in `appInstallDialog.openAppInstallDialog()`",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}

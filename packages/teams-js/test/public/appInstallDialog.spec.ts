@@ -71,7 +71,7 @@ describe('appInstallDialog', () => {
 
     const appInstallDialogDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
     expect(appInstallDialogDeepLink.pathname).toMatch(
-      teamsDeepLinkUrlPathForAppInstall + mockOpenAppInstallDialogParams.appId + '/',
+      teamsDeepLinkUrlPathForAppInstall + mockOpenAppInstallDialogParams.appId,
     );
     utils.respondToMessage(executeDeepLinkMsg, true);
     const response = await promise;
