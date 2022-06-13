@@ -70,7 +70,7 @@ describe('appInstallDialog', () => {
     expect(executeDeepLinkMsg.args).toHaveLength(1);
 
     const appInstallDialogDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
-    expect(appInstallDialogDeepLink.pathname).toMatch(
+    expect(appInstallDialogDeepLink.pathname).toEqual(
       teamsDeepLinkUrlPathForAppInstall + mockOpenAppInstallDialogParams.appId,
     );
     utils.respondToMessage(executeDeepLinkMsg, true);
