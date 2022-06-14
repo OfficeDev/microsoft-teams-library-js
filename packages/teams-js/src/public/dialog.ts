@@ -11,7 +11,7 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './inter
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the dialog module-specific part of the SDK.
+ * Namespace to interact with the dialog module-specific part of the SDK
  *
  * @beta
  */
