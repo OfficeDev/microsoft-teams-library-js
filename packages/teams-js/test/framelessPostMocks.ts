@@ -36,6 +36,7 @@ export class FramelessPostMocks {
           return;
         },
       },
+      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as ExtendedWindow;
   }
