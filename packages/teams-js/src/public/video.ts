@@ -6,11 +6,13 @@ import { runtime } from './runtime';
 
 /**
  * @hidden
+ * @beta
  * Namespace to video extensibility of the SDK
  */
 export namespace video {
   /**
    * @hidden
+   * @beta
    * Represents a video frame
    */
   export interface VideoFrame {
@@ -42,6 +44,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Video frame format enum, currently only support NV12
    */
   export enum VideoFrameFormat {
@@ -50,6 +53,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
    */
   export interface VideoFrameConfig {
@@ -61,6 +65,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    *  Video effect change type enum
    */
   export enum EffectChangeType {
@@ -76,6 +81,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    *  Video frame call back function definition
    */
   export type VideoFrameCallback = (
@@ -91,6 +97,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Register to read the video frames in Permissions section
    * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
    * @param config - VideoFrameConfig to customize generated video frame parameters
@@ -111,6 +118,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * video extension should call this to notify host client that the current selected effect parameter changed.
    * If it's pre-meeting, host client will call videoEffectCallback immediately then use the videoEffect.
    * If it's the in-meeting scenario, we will call videoEffectCallback when apply button clicked.
@@ -131,6 +139,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Register the video effect callback, host client uses this to notify the video extension the new video effect will by applied
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
@@ -144,6 +153,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Sending notification to host client finished the video frame processing, now host client can render this video frame
    * or pass the video frame to next one in video pipeline
    */
@@ -153,6 +163,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Sending error notification to host client
    * @param errorMessage - The error message that will be sent to the host
    */
@@ -162,6 +173,7 @@ export namespace video {
 
   /**
    * @hidden
+   * @beta
    * Checks if video capability is supported by the host
    * @returns true if the video capability is enabled in runtime.supports.video and
    * false if it is disabled
