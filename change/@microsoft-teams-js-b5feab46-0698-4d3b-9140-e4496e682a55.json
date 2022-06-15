@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added `@hidden` tag to unreleased public `video` APIs",
+  "packageName": "@microsoft/teams-js",
+  "email": "sagarchkrbrty@gmail.com",
+  "dependentChangeType": "patch"
+}
