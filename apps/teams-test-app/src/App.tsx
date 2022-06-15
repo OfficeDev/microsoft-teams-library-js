@@ -34,6 +34,7 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
+import StorageAPIs from './components/StorageAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 
@@ -131,6 +132,7 @@ const App = (): ReactElement => {
       <PrivateAPIs />
       <RemoteCameraAPIs />
       <SharingAPIs />
+      <StorageAPIs />
       <StageViewAPIs />
       <TeamsCoreAPIs />
       <TeamsAPIs />
