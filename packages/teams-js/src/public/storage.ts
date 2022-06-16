@@ -7,7 +7,7 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace storage {
-  export function isWebStorasgeSupported(): boolean {
+  export function isWebStorageSupported(): boolean {
     ensureInitialized();
     return isSupported();
   }
