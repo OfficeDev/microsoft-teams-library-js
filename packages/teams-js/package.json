@@ -13,7 +13,7 @@
   "scripts": {
     "build": "yarn lint && webpack",
     "clean": "rimraf ./dist",
-    "docs": "yarn typedoc --out docs src/index.ts",
+    "docs": "yarn typedoc --validation.invalidLink --out docs src/index.ts",
     "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
