@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.10/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.10",
+  "version": "0.2",
+  "id": "8142d2d1-4113-411f-868f-8e6e606e8827",
+  "packageName": "basic-app-teams-test-tab",
+  "developer": {
+    "name": "Ananya Barthakur",
+    "websiteUrl": "https://localhost:4002/",
+    "privacyUrl": "https://localhost:4002/",
+    "termsOfUseUrl": "https://localhost:4002/"
+  },
+  "name": {
+    "short": "Basic App"
+  },
+  "description": {
+    "short": "Test tabs.",
+    "full": "No really, test them tabs."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#ff6a00",
+  "staticTabs": [
+    {
+      "entityId": "test-tab",
+      "name": "Test Tab",
+      "contentUrl": "https://localhost:4002/",
+      "websiteUrl": "https://localhost:4002/",
+      "scopes": ["personal"]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://localhost:4002/",
+      "scopes": ["team", "groupchat"],
+      "context": [
+        "channelTab",
+        "privateChatTab",
+        "meetingChatTab",
+        "meetingDetailsTab",
+        "meetingSidePanel",
+        "meetingStage"
+      ]
+    }
+  ],
+  "validDomains": ["localhost:4002"],
+  "permissions": ["identity", "messageTeamMembers"],
+  "devicePermissions": ["media", "geolocation"],
+  "showLoadingIndicator": false
+}

@@ -102,5 +102,8 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@fluentui/react": "^8.75.1",
+    "@fluentui/react-northstar": "^0.63.1"
+  }
 }

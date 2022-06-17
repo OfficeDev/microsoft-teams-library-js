@@ -1,0 +1,22 @@
+{
+  "name": "auth-app",
+  "private": true,
+  "author": "Msft",
+  "description": "auth",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "yarn lint && webpack",
+    "clean": "rimraf ./build",
+    "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .tsx",
+    "start": "webpack serve"
+  },
+  "dependencies": {
+    "@azure/msal-browser": "^2.26.0",
+    "@azure/msal-react": "^1.4.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@microsoft/teams-js": "file:../../packages/teams-js"
+  }
+}
