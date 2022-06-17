@@ -5,7 +5,7 @@
   "validation": {
     "notExported": true,
     "invalidLink": true,
-    "notDocumented": true
+    "notDocumented": false
   },
   "intentionallyNotExported": [
     "src/public/chat.ts:OpenGroupChatRequest",
