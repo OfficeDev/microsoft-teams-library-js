@@ -20,6 +20,7 @@
     "clean:full": "yarn clean && yarn clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
     "docs": "yarn workspace @microsoft/teams-js docs",
+    "docs:validate": "yarn workspace @microsoft/teams-js docs:validate",
     "lint": "lerna run lint",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
