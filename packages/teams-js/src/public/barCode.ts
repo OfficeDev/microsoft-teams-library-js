@@ -1,6 +1,5 @@
 import { sendAndHandleSdkError } from '../internal/communication';
-import { scanBarCodeAPIMobileSupportVersion } from '../internal/constants';
-import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
@@ -25,9 +24,6 @@ export namespace barCode {
   /**
    * Scan Barcode/QRcode using camera
    *
-   * @remarks
-   * Note: For desktop and web, this API is not supported.
-   *
    * @param barCodeConfig - input configuration to customize the barcode scanning experience
    *
    * @return a scanned code
@@ -37,9 +33,6 @@ export namespace barCode {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
-      }
-      if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
-        throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
       if (!validateScanBarCodeInput(barCodeConfig)) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };

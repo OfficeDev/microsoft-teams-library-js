@@ -6,6 +6,7 @@ import {
   getMediaCallbackSupportVersion,
   mediaAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
+  scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -682,18 +683,6 @@ export namespace media {
   }
 
   /**
-   * Scan Barcode/QRcode using camera
-   *
-   * @remarks
-   * Note: For desktop and web, this API is not supported.
-   *
-   * @param config - input configuration to customize the barcode scanning experience
-   *
-   * @return a scanned code
-   */
-  export function scanBarCode(config: BarCodeConfig): Promise<string>;
-
-  /**
    * @deprecated
    * As of 2.0.1, please use {@link barCode.scanBarCode barCode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
 
@@ -705,35 +694,18 @@ export namespace media {
    * @param callback - callback to invoke after scanning the barcode
    * @param config - optional input configuration to customize the barcode scanning experience
    */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void;
-
-  /**
-   * Scan Barcode/QRcode using camera
-   *
-   * @remarks
-   * Note: For desktop and web, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
-   *
-   * @hidden
-   * This function is the overloaded implementation of scanBarCode.
-   * Since the method signatures of the v1 callback and v2 promise differ in the type of the first parameter,
-   * we need to do an extra check to know the typeof the @param1 to set the proper arguments of the utility function.
-   * @param param1
-   * @param param2
-   */
-  export function scanBarCode(
-    param1: BarCodeConfig | ((error: SdkError, decodedText: string) => void) | undefined,
-    param2?: BarCodeConfig,
-  ): Promise<string> {
+  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
+    if (!callback) {
+      throw new Error('[media.scanBarCode] Callback cannot be null');
+    }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
-    let callback: (error: SdkError, decodedText: string) => void;
-    let config: BarCodeConfig;
 
-    if (typeof param1 === 'function') {
-      [callback, config] = [param1, param2];
-    } else {
-      config = param1;
+    if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
+      const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      callback(oldPlatformError, null);
+      return;
     }
     config = config === undefined ? {} : config;
-    return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(barCode.scanBarCode, callback, config);
+    callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(barCode.scanBarCode, callback, config);
   }
 }

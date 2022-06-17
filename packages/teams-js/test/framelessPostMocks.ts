@@ -2,6 +2,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
+import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
@@ -84,5 +85,12 @@ export class FramelessPostMocks {
 
   public respondToMessage = (event: DOMMessageEvent): void => {
     ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(event);
+  };
+
+  /**
+   * To be called after initializeWithContext to set the runtimeConfig
+   */
+  public setRuntimeConfig = (runtime: IRuntime) => {
+    applyRuntimeConfig(runtime);
   };
 }

@@ -91,7 +91,6 @@ export const teamsRuntimeConfig: IRuntime = {
   supports: {
     appInstallDialog: {},
     appEntity: {},
-    barCode: {},
     call: {},
     chat: {},
     conversations: {},
@@ -228,5 +227,6 @@ export const _minRuntimeConfigToUninitialize = {
     },
     teamsCore: {},
     logs: {},
+    barCode: {},
   },
 };
