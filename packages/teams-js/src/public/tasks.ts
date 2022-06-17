@@ -65,7 +65,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
+   * As of 2.0.0, please use {@link dialog.submit} instead.
    *
    * Submit the task module.
    *
@@ -76,6 +76,11 @@ export namespace tasks {
     dialog.submit(result, appIds);
   }
 
+  /**
+   * Converts TaskInfo to UrlDialogInfo
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - Converted UrlDialogInfo object
+   */
   export function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
@@ -89,6 +94,11 @@ export namespace tasks {
     return urldialogInfo;
   }
 
+  /**
+   * Converts TaskInfo to BotUrlDialogInfo
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted BotUrlDialogInfo object
+   */
   export function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
@@ -102,6 +112,13 @@ export namespace tasks {
     };
     return botUrldialogInfo;
   }
+
+  /**
+   * Sets the height and width of the TaskInfo object to the original height and width, if initially specified,
+   * otherwise uses the height and width values corresponding to TaskModuleDimension.Small
+   * @param taskInfo TaskInfo object from which to extract size info, if specified
+   * @returns TaskInfo with height and width specified
+   */
   export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
