@@ -48,12 +48,12 @@ The concept of a "capability" has been defined to organize APIs and provide a ho
 
 A capability is a logical grouping of APIs that provide similar functionality. A host supports a given capability _only if_ it supports all the APIs defined within that capability. Hosts **cannot** partially implement a capability. Capabilities can be feature or content-based, such a `mail`, `calendar`, `chat`, `dialog`, `authentication`, etc., but there may also be capabilities for application types such as `pages` or `bot`, or other potential groups not yet anticipated.
 
-In teams-js, APIs are defined as functions in a JavaScript namespace whose name matches their required capability. If an app is running in a host that supports the `calendar` capability, then the app can safely call APIs such as `calendar.openCalendarItem` (as well as other calendar-related APIs defined in the namespace). Meanwhile, if an app attempts to call an API that's not supported in that hub, the API will throw an exception.
+In teams-js, APIs are defined as functions in a JavaScript namespace whose name matches their required capability. If an app is running in a host that supports the `calendar` capability, then the app can safely call APIs such as `calendar.openCalendarItem` (as well as other calendar-related APIs defined in the namespace). Meanwhile, if an app attempts to call an API that's not supported in that host, the API will throw an exception.
 
 There are two ways for an app to take a dependency on a given capability:
 
 1. The app can declare the capability as required in its manifest. Hosts will only load apps if they support all the capabilities those apps require. The app will not be listed in the hosts's store if any of its required capabilities are unsupported.
-2. If the app doesn't declare a capability as required, then it needs to check for that capability at runtime by calling an `isSupported()` function on that capability and adjust its behavior as appropriate. This allows an app to enable optional UI and functionality in hubs that support it, while continuing to run (and appear in the store) for hubs that don't.
+2. If the app doesn't declare a capability as required, then it needs to check for that capability at runtime by calling an `isSupported()` function on that capability and adjust its behavior as appropriate. This allows an app to enable optional UI and functionality in hostss that support it, while continuing to run (and appear in the store) for hosts that don't.
 
 ### Compatiblity and capabilities under development
 
