@@ -95,7 +95,6 @@ export const teamsRuntimeConfig: IRuntime = {
     appEntity: {},
     call: {},
     chat: {},
-    storage: {},
     conversations: {},
     dialog: {
       bot: {},
