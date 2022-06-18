@@ -124,7 +124,7 @@ jobs:
           Arguments: 'build-test-app-V1'
           ProjectDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=teamsV1 --targetClientSdkCheckpoint=1.11.0 --reportFileName=e2e-tests-report-V1'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=teamsV1 --targetClientSdkCheckpoint=1.12.1 --reportFileName=e2e-tests-report-V1'
         displayName: 'Run E2E integration tests on Teams Test App V1'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
