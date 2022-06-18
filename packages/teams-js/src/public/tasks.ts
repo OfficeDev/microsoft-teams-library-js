@@ -77,7 +77,7 @@ export namespace tasks {
   }
 
   /**
-   * Converts TaskInfo to UrlDialogInfo
+   * Converts {@link TaskInfo} to {@link UrlDialogInfo}
    * @param taskInfo - TaskInfo object to convert
    * @returns - Converted UrlDialogInfo object
    */
@@ -95,7 +95,7 @@ export namespace tasks {
   }
 
   /**
-   * Converts TaskInfo to BotUrlDialogInfo
+   * Converts {@link TaskInfo} to {@link BotUrlDialogInfo}
    * @param taskInfo - TaskInfo object to convert
    * @returns - converted BotUrlDialogInfo object
    */
@@ -114,8 +114,8 @@ export namespace tasks {
   }
 
   /**
-   * Sets the height and width of the TaskInfo object to the original height and width, if initially specified,
-   * otherwise uses the height and width values corresponding to TaskModuleDimension.Small
+   * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
+   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension.Small}
    * @param taskInfo TaskInfo object from which to extract size info, if specified
    * @returns TaskInfo with height and width specified
    */
