@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Making sure submitHandler exists before calling it in dialog.open API.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
