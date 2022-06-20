@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "Removed deprecated `stageView.open` function that took a callback as a parameter",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,7 +1,0 @@
-{
-  "type": "major",
-  "comment": "Moved sub-capabilities and APIs within `legacy` namespace to `teams` namespace",
-  "packageName": "@microsoft/teams-js",
-  "email": "jekoch@microsoft.com",
-  "dependentChangeType": "patch"
-}

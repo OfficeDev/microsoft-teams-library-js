@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated reference documentation comments to rationalize 'Teams' vs 'host' occurrences and other minor edits",
+  "comment": "Fixed formatting of reference documentation for `call.StartCallParams` interface.",
   "packageName": "@microsoft/teams-js",
   "email": "erinha@users.noreply.github.com",
   "dependentChangeType": "patch"
