@@ -33,7 +33,7 @@ export namespace tasks {
   ): IAppWindow {
     const dialogSubmitHandler = submitHandler
       ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
-      : undefined;
+      : null;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
