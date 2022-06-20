@@ -93,7 +93,7 @@ export namespace dialog {
           submitHandler({ err, result });
           removeHandler('messageForParent');
         }
-      : null;
+      : () => removeHandler('messageForParent');
     sendMessageToParent('tasks.startTask', [dialogInfo], submitHandlerHelper);
   }
 
@@ -243,7 +243,8 @@ export namespace dialog {
             submitHandler({ err, result });
             removeHandler('messageForParent');
           }
-        : null;
+        : () => removeHandler('messageForParent');
+
       sendMessageToParent('tasks.startTask', [dialogInfo], submitHandlerHelper);
     }
 
