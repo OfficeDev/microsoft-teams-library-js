@@ -88,13 +88,12 @@ export namespace dialog {
       registerHandler('messageForParent', messageFromChildHandler);
     }
     const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-    const submitHandlerHelper = submitHandler
-      ? (err: string, result: string | object) => {
-          submitHandler({ err, result });
-          removeHandler('messageForParent');
-        }
-      : () => removeHandler('messageForParent');
-    sendMessageToParent('tasks.startTask', [dialogInfo], submitHandlerHelper);
+    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+      if (submitHandler) {
+        submitHandler({ err, result });
+      }
+      removeHandler('messageForParent');
+    });
   }
 
   /**
@@ -238,14 +237,13 @@ export namespace dialog {
         registerHandler('messageForParent', messageFromChildHandler);
       }
       const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
-      const submitHandlerHelper = submitHandler
-        ? (err: string, result: string | object) => {
-            submitHandler({ err, result });
-            removeHandler('messageForParent');
-          }
-        : () => removeHandler('messageForParent');
 
-      sendMessageToParent('tasks.startTask', [dialogInfo], submitHandlerHelper);
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        if (submitHandler) {
+          submitHandler({ err, result });
+        }
+        removeHandler('messageForParent');
+      });
     }
 
     /**
