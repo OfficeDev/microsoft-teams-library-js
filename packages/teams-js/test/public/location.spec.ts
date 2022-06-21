@@ -32,7 +32,7 @@ describe('location', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      framedPlatform.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      framelessPlatform.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -57,10 +57,11 @@ describe('location', () => {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
         });
+
         it(`getCurrentLocation calls with successful result. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-          framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
           const promise = location.getCurrentLocation();
 
           const message = framelessPlatform.findMessageByFunc('location.getLocation');
@@ -82,7 +83,7 @@ describe('location', () => {
         it(`getCurrentLocation calls with error. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-          framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
           const promise = location.getCurrentLocation();
 
           const message = framelessPlatform.findMessageByFunc('location.getLocation');
@@ -275,7 +276,7 @@ describe('location', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
-          it(`should throw error when showLocation is not supported in runtime config. context: ${context}`, async () => {
+          it(`should throw error when location is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
             try {
@@ -284,20 +285,33 @@ describe('location', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
+
+          it(`should throw error when location.map is not supported in runtime config. context: ${context}`, async () => {
+            await framelessPlatform.initializeWithContext(context);
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+            try {
+              location.map.showLocation(defaultLocation);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
           it(`showLocation call in default version of platform support fails. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.task);
             framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
             expect(location.map.showLocation(defaultLocation)).rejects.toEqual(errorNotSupportedOnPlatform);
           });
+
           it(`should not allow showLocation calls without props. context: ${context}`, async () => {
-            await framedPlatform.initializeWithContext(context);
-            framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
+            await framelessPlatform.initializeWithContext(context);
+            framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
             try {
               location.map.showLocation(undefined);
             } catch (e) {
               expect(e).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
             }
           });
+
           it(`showLocation calls with successful result. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -360,7 +374,7 @@ describe('location', () => {
 
       Object.values(FrameContexts).forEach(context => {
         if (allowedContexts.some(allowedContext => allowedContext === context)) {
-          it(`should throw error when chooseLocation is not supported in runtime config. context: ${context}`, async () => {
+          it(`should throw error when location is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
             try {
@@ -369,6 +383,17 @@ describe('location', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
+
+          it(`should throw error when location.map is not supported in runtime config. context: ${context}`, async () => {
+            await framelessPlatform.initializeWithContext(context);
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+            try {
+              location.map.chooseLocation();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
           it(`chooseLocation call in default version of platform support fails. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.task);
             framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
@@ -378,7 +403,7 @@ describe('location', () => {
           it(`chooseLocation calls with successful result. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.content);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-            framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
             const promise = location.map.chooseLocation();
 
             const message = framelessPlatform.findMessageByFunc('location.getLocation');
@@ -400,7 +425,7 @@ describe('location', () => {
           it(`chooseLocation calls with error context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.content);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
-            framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
             const promise = location.map.chooseLocation();
 
             const message = framelessPlatform.findMessageByFunc('location.getLocation');
@@ -448,6 +473,7 @@ describe('location', () => {
         }
       });
     });
+
     it('should not allow getLocation calls for authentication frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.authentication);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -455,6 +481,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
       );
     });
+
     it('should not allow getLocation calls for remove frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.remove);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -462,6 +489,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
       );
     });
+
     it('should not allow getLocation calls for settings frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.settings);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -469,6 +497,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
       );
     });
+
     it('should not allow getLocation calls without props', () => {
       framedPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -479,6 +508,7 @@ describe('location', () => {
         }
       });
     });
+
     it('should allow getLocation calls in desktop', async () => {
       await framedPlatform.initializeWithContext(FrameContexts.content);
       framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -489,6 +519,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocationProps);
     });
+
     it('getLocation call in task frameContext works', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.task);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -499,6 +530,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocationProps);
     });
+
     it('getLocation call in content frameContext works', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.content);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -509,6 +541,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocationProps);
     });
+
     it('getLocation calls with successful result', done => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -538,6 +571,7 @@ describe('location', () => {
         } as DOMMessageEvent);
       });
     });
+
     it('getLocation calls with error', done => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -569,6 +603,7 @@ describe('location', () => {
         'The library has not yet been initialized',
       );
     });
+
     it('showLocation call in default version of platform support fails', () => {
       framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
@@ -579,6 +614,7 @@ describe('location', () => {
         }
       });
     });
+
     it('should not allow showLocation calls for authentication frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.authentication);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -586,6 +622,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
       );
     });
+
     it('should not allow showLocation calls for remove frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.remove);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -593,6 +630,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "remove".',
       );
     });
+
     it('should not allow showLocation calls for settings frame context', async () => {
       await framelessPlatform.initializeWithContext(FrameContexts.settings);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -600,6 +638,7 @@ describe('location', () => {
         'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
       );
     });
+
     it('should not allow showLocation calls without props', () => {
       framedPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -610,6 +649,7 @@ describe('location', () => {
         }
       });
     });
+
     it('should allow showLocation calls in desktop', () => {
       framedPlatform.initializeWithContext(FrameContexts.content);
       framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -620,6 +660,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocation);
     });
+
     it('showLocation call in task frameContext works', () => {
       framelessPlatform.initializeWithContext(FrameContexts.task);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -630,6 +671,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocation);
     });
+
     it('showLocation call in content frameContext works', () => {
       framelessPlatform.initializeWithContext(FrameContexts.content);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -640,6 +682,7 @@ describe('location', () => {
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(defaultLocation);
     });
+
     it('showLocation calls with successful result', done => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
@@ -665,6 +708,7 @@ describe('location', () => {
         } as DOMMessageEvent);
       });
     });
+
     it('showLocation calls with error', done => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
