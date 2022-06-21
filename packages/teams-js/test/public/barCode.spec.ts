@@ -41,7 +41,7 @@ describe('barCode', () => {
     timeOutIntervalInSec: 30,
   };
   describe('Testing scanBarCode API', () => {
-    it('should not allow selectPeople calls before initialization', () => {
+    it('should not allow scanBarCode calls before initialization', () => {
       expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError('The library has not yet been initialized');
     });
 
