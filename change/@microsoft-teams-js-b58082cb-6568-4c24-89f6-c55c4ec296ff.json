@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "hide video api from public docs",
+  "packageName": "@microsoft/teams-js",
+  "email": "Xukai.Wu@microsoft.com",
+  "dependentChangeType": "none"
+}
