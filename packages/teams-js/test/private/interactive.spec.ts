@@ -46,7 +46,8 @@ describe('interactive', () => {
       const mockTenantInfo: interactive.FluidTenantInfo = {
         tenantId: 'test-tenant',
         ordererEndpoint: 'https://test.azure.com',
-        storageEndpoint: 'https://test.azure.com'
+        storageEndpoint: 'https://test.azure.com',
+        serviceEndpoint: 'https://test.azure.com'
       };
 
       const promise = interactive.getFluidTenantInfo();

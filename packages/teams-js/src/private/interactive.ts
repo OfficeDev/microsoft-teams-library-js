@@ -100,6 +100,12 @@ export namespace interactive {
      * Endpoint to configure for storage.
      */
     storageEndpoint: string;
+
+    /**
+     * New Service Endpoint for Fluid 1.0. The `ordererEndpoint` and `storageEndpoint` props
+     * will soon be deprecated.
+     */
+    serviceEndpoint?: string;
   }
 
   /**
