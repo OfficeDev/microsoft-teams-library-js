@@ -1,3 +1,4 @@
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
@@ -131,6 +132,50 @@ describe('Dialog', () => {
           const message = framelessMock.findMessageByFunc('messageForChild');
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
+        });
+
+        it(`FRAMED: Should successfully call the callback when dialog.closed: ${context}`, async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
+          const urlDialogInfo: UrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.open(urlDialogInfo);
+          try {
+            framedMock.sendMessage('tasks.startTask', submitString);
+          } catch (e) {
+            e.toBeFalsy();
+          }
+        });
+
+        it(`FRAMELESS: Should successfully call the callback when dialog is closed: ${context}`, async () => {
+          await framelessMock.initializeWithContext(FrameContexts.content);
+          const urlDialogInfo: UrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.open(urlDialogInfo);
+          const message = framelessMock.findMessageByFunc('tasks.startTask');
+
+          const callbackId = message.id;
+          try {
+            framelessMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [undefined, submitString],
+              },
+            } as DOMMessageEvent);
+          } catch (e) {
+            e.toBeFalsy();
+          }
         });
       } else {
         it(`FRAMED: should not allow calls from context ${context}`, async () => {
@@ -491,6 +536,52 @@ describe('Dialog', () => {
           const handlerMessage = framelessMock.findMessageByFunc('registerHandler');
           expect(handlerMessage).not.toBeNull();
           expect(handlerMessage.args).toStrictEqual(['messageForParent']);
+        });
+
+        it(`FRAMED: Should successfully call the callback in dialog.bot.open: ${context}`, async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
+          const botUrlDialogInfo: BotUrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+            completionBotId: 'botId',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.bot.open(botUrlDialogInfo);
+          try {
+            framedMock.sendMessage('tasks.startTask', submitString);
+          } catch (e) {
+            e.toBeFalsy();
+          }
+        });
+
+        it(`FRAMELESS: Should successfully call the callback in dialog.bot.open: ${context}`, async () => {
+          await framelessMock.initializeWithContext(FrameContexts.content);
+          const botUrlDialogInfo: BotUrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+            completionBotId: 'botId',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.open(botUrlDialogInfo);
+          const message = framelessMock.findMessageByFunc('tasks.startTask');
+
+          const callbackId = message.id;
+          try {
+            framelessMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [undefined, submitString],
+              },
+            } as DOMMessageEvent);
+          } catch (e) {
+            e.toBeFalsy();
+          }
         });
       } else {
         it(`FRAMED: should not allow calls from context ${context}`, async () => {
