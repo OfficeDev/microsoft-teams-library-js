@@ -6,13 +6,13 @@ The teams-js library provides a suite of APIs that encompass a broad range of fu
 
 The concept of a "capability" has been defined to organize APIs and provide a host-agnostic method for detecting supported functionality. All functionality in the SDK is grouped into these capabilities.
 
-A capability is a logical grouping of APIs that provide similar functionality. A host supports a given capability _only if_ it supports all the APIs defined within that capability. Hosts **cannot** partially implement a capability. Capabilities can be feature or content-based, such a `mail`, `calendar`, `chat`, `dialog`, `authentication`, etc., but there may also be capabilities for application types such as `pages`, or other potential groups not yet anticipated.
+A capability is a logical grouping of APIs that provide similar functionality. A host supports a given capability _only if_ it supports all the APIs defined within that capability. Hosts **cannot** partially implement a capability. Capabilities can be feature or content-based, such as `mail`, `calendar`, `chat`, `dialog`, `authentication`, etc., but there may also be capabilities for application types such as `pages`, or other potential groups not yet anticipated.
 
 In teams-js, APIs are defined as functions in a JavaScript namespace whose name matches their required capability. If an app is running in a host that supports the `calendar` capability, then the app can safely call APIs such as `calendar.openCalendarItem` (as well as other calendar-related APIs defined in the namespace). Meanwhile, if an app attempts to call an API that's not supported in that host, the API will throw an exception.
 
 There are two ways for an app to take a dependency on a given capability:
 
-1. The app will be able to declare the capability as required in its manifest. Hosts will only load apps if they support all the capabilities those apps require. The app will not be listed in the hosts's store if any of its required capabilities are unsupported.
+1. The app will be able to declare the capability as required in its manifest. Hosts will only load apps if they support all the capabilities those apps require. The app will not be listed in the host's store if any of its required capabilities are unsupported.
 2. If the app doesn't declare a capability as required, then it needs to check for that capability at runtime by calling an `isSupported()` function on that capability and adjust its behavior as appropriate. This allows an app to enable optional UI and functionality in hosts that support it, while continuing to run (and appear in the store) for hosts that don't.
 
 ### Subcapabilities
@@ -25,7 +25,7 @@ Since hosts must support all functionality in a capability to declare it as "sup
 
 Since developing new capabilties necessitates some amount of iteration and support rollout time, new capabilities (and their functions) still under development should be TSDoc tagged with the [@beta](https://tsdoc.org/pages/tags/beta/) tag. This ensures that potential consumers are aware that any and all functionality in that capability can change in the future and that they should not use it in production apps.
 
-It **strongly** discouraged that private capabilities be used for this purpose. Develop new capabilities in the public space with [@beta](https://tsdoc.org/pages/tags/beta/) tags.
+It is **strongly** discouraged that private capabilities be used for this purpose. Develop new capabilities in the public space with [@beta](https://tsdoc.org/pages/tags/beta/) tags.
 
 ## Private APIs
 
@@ -44,7 +44,7 @@ Here are the steps for adding an API that utilizes version checks (e.g. `if (!is
 
 e.g.
 
-```json
+```TypeScript
 export function isSupported(): boolean {
   return runtime.supports.newCapability? true : false;
 }
