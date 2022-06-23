@@ -7,7 +7,7 @@ const WebStorageCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'webStorageCapability',
     title: 'Web Storage Capability',
-    onClick: async () => `Storage ${storage.isWebStorageSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `Storage ${storage.isWebStorageClearedOnUserLogOut() ? 'is' : 'is not'} supported`,
   });
 
 const StorageAPIs = (): ReactElement => (
