@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "hide video api from public docs",
+  "comment": "mark video api as beta",
   "packageName": "@microsoft/teams-js",
   "email": "Xukai.Wu@microsoft.com",
   "dependentChangeType": "none"
