@@ -5,7 +5,7 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * @hidden
+ * @beta
  * Namespace to video extensibility of the SDK
  */
 export namespace video {
