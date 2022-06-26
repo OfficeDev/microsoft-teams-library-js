@@ -338,3 +338,26 @@ export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
   }
   return url.toString();
 }
+
+/**
+ * Upload logs to the azure blob container with a SAS
+ * @param logs logs of the app
+ * @param fileName name of the file to be updated in the blob container
+ * @param azureSas The Shared Access Signature token
+ * @internal
+ */
+export function uploadLogsWithAzureSas(logs: string, fileName: string, azureSas: string): Promise<Response> {
+  const [endpoint, rest] = azureSas.split('?');
+  const url = `${endpoint}/${fileName}?${rest}`;
+
+  return fetch(url, {
+    method: 'PUT',
+    headers: {
+      'x-ms-date': Date.now().toLocaleString(),
+      'x-ms-version': '2015-02-21',
+      'x-ms-blob-type': 'BlockBlob',
+      'x-ms-blob-content-disposition': `attachment; filename=${fileName}`,
+    },
+    body: logs,
+  });
+}

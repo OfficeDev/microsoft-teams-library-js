@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { uploadLogsWithAzureSas } from '../internal/utils';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -15,24 +16,35 @@ import { runtime } from '../public/runtime';
 export namespace logs {
   /**
    * @hidden
-   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  interface ILogRequestOptions {
+    appId: string;
+    azureSas: string;
+  }
+
+  /**
+   * @hidden
    * Registers a handler for getting app log
-   *
    * @param handler - The handler to invoke to get the app log
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function registerGetLogHandler(handler: () => string): void {
+  export function registerGetLogHandler(handler: () => string | Promise<string>): void {
     ensureInitialized();
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
     if (handler) {
-      registerHandler('log.request', () => {
-        const log: string = handler();
-        sendMessageToParent('log.receive', [log]);
+      registerHandler('log.request', ({ appId, azureSas }: ILogRequestOptions) => {
+        Promise.resolve(handler()).then(log => {
+          appId && azureSas
+            ? uploadLogsWithAzureSas(log, `${appId}.txt`, azureSas)
+            : sendMessageToParent('log.receive', [log]);
+        });
       });
     } else {
       removeHandler('log.request');
