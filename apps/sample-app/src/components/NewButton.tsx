@@ -1,5 +1,5 @@
 import { IStackTokens, Stack } from '@fluentui/react';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { Button } from '@fluentui/react-components';
 import * as React from 'react';
 
 // Example formatting
@@ -20,7 +20,9 @@ const NewButton = ({ handleClick, output, title }: BoxAndButtonProps): React.Rea
   };
   return (
     <Stack horizontal tokens={stackTokens}>
-      <PrimaryButton text={title} onClick={getOutput} />
+      <Button appearance="primary" onClick={getOutput}>
+        {title}
+      </Button>
       <div>
         <span id={`text_${name}`} style={{ wordWrap: 'break-word' }}>
           {output}

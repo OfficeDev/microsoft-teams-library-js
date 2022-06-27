@@ -11,6 +11,7 @@
     "start": "webpack serve"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.0.0-rc.14",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },

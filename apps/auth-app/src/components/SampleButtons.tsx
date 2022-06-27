@@ -1,19 +1,10 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { IStackTokens, Stack } from '@fluentui/react';
 import { Button } from '@fluentui/react-components';
 import * as React from 'react';
 
-export interface IButtonExampleProps {
-  // These are set based on the toggles shown above the examples (not needed in real code)
-  disabled?: boolean;
-  checked?: boolean;
-}
-
-// Example formatting
 const stackTokens: IStackTokens = { childrenGap: 40 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const ButtonDefaultExample = () => {
+export const SampleButtons: React.FC = () => {
   return (
     <Stack horizontal tokens={stackTokens}>
       <Button appearance="primary">Get started</Button>
@@ -34,3 +25,5 @@ function _alertClicked(): void {
 function _alertSessionId(): void {
   alert('Clicked');
 }
+
+export default SampleButtons;

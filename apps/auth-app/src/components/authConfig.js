@@ -1,8 +1,8 @@
 export const msalConfig = {
   auth: {
-    clientId: '062a757f-1122-4e79-85ec-0771c1ccf618',
+    clientId: '9888499b-8e19-4639-922b-984a598ae024',
     authority: 'https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47',
-    redirectUri: 'https://localhost:4002/',
+    redirectUri: 'https://localhost:4002/?auth=1',
   },
   cache: {
     cacheLocation: 'sessionStorage', // This configures where your cache will be stored
@@ -12,5 +12,11 @@ export const msalConfig = {
 
 // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
 export const loginRequest = {
-  scopes: ['User.Read'],
+  scopes: ['User.Read', 'Mail.Read'],
+};
+
+// Add the endpoints here for Microsoft Graph API services you'd like to use.
+export const graphConfig = {
+  graphMeEndpoint: 'https://graph.microsoft.com/v1.0/me',
+  graphEmailEndpoint: 'https://graph.microsoft.com/v1.0/me/messages',
 };
