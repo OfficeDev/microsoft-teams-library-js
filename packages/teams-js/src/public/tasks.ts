@@ -21,7 +21,7 @@ export namespace tasks {
    * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
    * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
    * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
-   * 
+   *
    * Allows an app to open the task module.
    *
    * @param taskInfo - An object containing the parameters of the task module
