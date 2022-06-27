@@ -34,6 +34,7 @@ export interface IRuntime {
     readonly people?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
+    readonly search?: {};
     readonly sharing?: {};
     readonly teams?: {
       readonly fullTrust?: {
@@ -74,6 +75,7 @@ export let runtime: IRuntime = {
     people: undefined,
     profile: undefined,
     remoteCamera: undefined,
+    search: undefined,
     sharing: undefined,
     teams: {
       fullTrust: {
