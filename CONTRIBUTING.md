@@ -2,7 +2,11 @@
 
 One of the best ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
 
-## General Contributing Guide
+## API Design Guidelines
+
+Please review the [architectural guidelines](packages/teams-js/devdocs/architecture.md) when adding/changing functionality in the teams-js library.
+
+## General Contribution Guide
 
 1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
 2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
@@ -19,7 +23,7 @@ Before submitting a feature or substantial code contribution please discuss it w
 
 Please format commit messages as follows (based on this [excellent post](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)):
 
-```
+```console
 Summarize change in 50 characters or less
 
 Provide more detail after the first line. Leave one blank line below the
@@ -38,70 +42,7 @@ times in N different commits. If there was some accidental reformatting or white
 changes during the course of your commits, please rebase them away before submitting
 the PR.
 
-### Adding an API that utilizes version checks for compatibility
-
-This option should only be used for work that meets ALL of the below requirements:
-
-- Features which have already been discussed with the TeamsJS owners and for which approval to use this approach has been granted,
-- Feature implementation that has a requirement of running in host clients that have not onboarded to the new declarative capability support architecture
-
-Here are the steps for adding an API that utilizes version checks (e.g. `if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)...`):
-
-1. Add the API as a new capability or subcapability rather than adding to an existing capability. Please look at other capabilities such as [calendar.ts](packages/teams-js/src/public/calendar.ts) for examples of how to structure a capability. There must be an isSupported() function with every capability which is a simple boolean check for seeing if `runtime.supports` contains the capability.
-
-e.g.
-
-```
-export function isSupported(): boolean {
-  return runtime.supports.newCapability? true : false;
-}
-```
-
-2. In [runtime.ts](packages/teams-js/src/public/runtime.ts), add an object describing the new capability and its compatibility requirements to `versionConstants`. The version number your new capability should go under
-
-e.g.
-
-```
-// Object key is type string, value is type Array<ICapabilityReqs>
-'1.9.0': [
-    {
-      capability: { anAndroidCapability: {} },
-      hostClientTypes: [
-        HostClientType.android,
-        HostClientType.teamsRoomsAndroid,
-        HostClientType.teamsPhones,
-        HostClientType.teamsDisplays,
-      ],
-    },
-  ],
-```
-
-If you're adding a capability to an already existing version requirement, simply add your object to the existing array.
-
-e.g.
-
-```
-// Object key is type string, value is type Array<ICapabilityReqs>
-'1.9.0': [
-    {
-      capability: { anAndroidCapability: {} },
-      hostClientTypes: [
-        HostClientType.android,
-        HostClientType.teamsRoomsAndroid,
-        HostClientType.teamsPhones,
-        HostClientType.teamsDisplays,
-      ],
-    },
-    {
-      capability: { aSecondCapability: {} },
-      hostClientTypes: v1HostClientTypes,
-    },
-  ],
-```
-
-3. And that's it! Our unit tests are designed to automatically integrate the new capability, so if the unit tests pass, you're good to go.
-
-### CHANGE LOG using Beachball
+## CHANGE LOG using Beachball
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.
 
