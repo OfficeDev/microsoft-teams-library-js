@@ -3,19 +3,19 @@
   "manifestVersion": "1.10",
   "version": "0.2",
   "id": "8142d2d1-4113-411f-868f-8e6e606e8827",
-  "packageName": "basic-app-teams-test-tab",
+  "packageName": "auth app",
   "developer": {
     "name": "Ananya Barthakur",
-    "websiteUrl": "https://localhost:4002/",
-    "privacyUrl": "https://localhost:4002/",
-    "termsOfUseUrl": "https://localhost:4002/"
+    "websiteUrl": "https://localhost:4003/",
+    "privacyUrl": "https://localhost:4003/",
+    "termsOfUseUrl": "https://localhost:4003/"
   },
   "name": {
-    "short": "Basic App"
+    "short": "Sample App"
   },
   "description": {
-    "short": "Test tabs.",
-    "full": "No really, test them tabs."
+    "short": "Sample App!",
+    "full": "sample app :)"
   },
   "icons": {
     "outline": "outline.png",
@@ -26,14 +26,14 @@
     {
       "entityId": "test-tab",
       "name": "Test Tab",
-      "contentUrl": "https://localhost:4002/",
-      "websiteUrl": "https://localhost:4002/",
+      "contentUrl": "https://localhost:4003/",
+      "websiteUrl": "https://localhost:4003/",
       "scopes": ["personal"]
     }
   ],
   "configurableTabs": [
     {
-      "configurationUrl": "https://localhost:4002/",
+      "configurationUrl": "https://localhost:4003/",
       "scopes": ["team", "groupchat"],
       "context": [
         "channelTab",
@@ -45,7 +45,7 @@
       ]
     }
   ],
-  "validDomains": ["localhost:4002"],
+  "validDomains": ["localhost:4003"],
   "permissions": ["identity", "messageTeamMembers"],
   "devicePermissions": ["media", "geolocation"],
   "showLoadingIndicator": false

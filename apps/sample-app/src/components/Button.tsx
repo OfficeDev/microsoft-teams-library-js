@@ -1,36 +1,23 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { IStackTokens, Stack } from '@fluentui/react';
-import { Button } from '@fluentui/react-components';
-import * as React from 'react';
+import { useMsal } from '@azure/msal-react';
 
-export interface IButtonExampleProps {
-  // These are set based on the toggles shown above the examples (not needed in real code)
-  disabled?: boolean;
-  checked?: boolean;
+import { loginRequest } from './authConfig';
+
+function handleLogin(instance): void {
+  instance.loginRedirect(loginRequest).catch(e => {
+    console.error(e);
+  });
 }
-
-// Example formatting
-const stackTokens: IStackTokens = { childrenGap: 40 };
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const ButtonDefaultExample = () => {
-  return (
-    <Stack horizontal tokens={stackTokens}>
-      <Button appearance="primary">Get started</Button>
-      <Button appearance="primary" onClick={_alertClicked}>
-        Standard
-      </Button>
-      <Button appearance="primary" onClick={_alertSessionId}>
-        Primary
-      </Button>
-    </Stack>
-  );
+{
+  /*}
+function SignInButton(): () => void {
+  const { instance } = useMsal();
+  handleLogin(instance);
+  return () => handleLogin(instance);
+}
+*/
+}
+export const SignInButton = (): (() => void) => {
+  const { instance } = useMsal();
+  handleLogin(instance);
+  return () => handleLogin(instance);
 };
-
-function _alertClicked(): void {
-  alert('Clicked');
-}
-
-function _alertSessionId(): void {
-  alert('Clicked');
-}

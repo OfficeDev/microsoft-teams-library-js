@@ -1,8 +1,8 @@
 {
-  "name": "sample-app",
+  "name": "auth-app",
   "private": true,
-  "author": "Microsoft Teams",
-  "description": "Teams Perf Test App utilizing Teams JavaScript client SDK to test Teams Host Perf",
+  "author": "Msft",
+  "description": "auth",
   "version": "0.0.1",
   "scripts": {
     "build": "yarn lint && webpack",
@@ -11,11 +11,14 @@
     "start": "webpack serve"
   },
   "dependencies": {
-    "@fluentui/react-components": "^9.0.0-rc.14",
+    "@azure/msal-browser": "^2.26.0",
+    "@azure/msal-react": "^1.4.2",
+    "@microsoft/microsoft-graph-client": "^3.0.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
+    "@microsoft/microsoft-graph-types": "^2.21.0",
     "@microsoft/teams-js": "file:../../packages/teams-js"
   }
 }

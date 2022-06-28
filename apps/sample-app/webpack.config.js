@@ -29,7 +29,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -39,9 +39,12 @@ module.exports = {
     contentBase: path.join(__dirname, 'build'),
     publicPath: '/',
     compress: true,
-    port: 4002,
+    port: 4003,
     https: true,
     disableHostCheck: true,
+  },
+  optimization: {
+    minimize: false,
   },
   performance: { hints: false },
   plugins: [new HtmlWebPackPlugin({ template: './index.html', filename: 'index.html' })],

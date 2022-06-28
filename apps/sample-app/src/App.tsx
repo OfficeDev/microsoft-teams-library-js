@@ -1,31 +1,35 @@
 import './App.css';
 
-import { app } from '@microsoft/teams-js';
-import React, { ReactElement, useState } from 'react';
+import { Spinner, SpinnerSize } from '@fluentui/react';
+import { Button } from '@fluentui/react-components';
+import { FluentProvider, teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme } from '@fluentui/react-components';
+import { app, authentication } from '@microsoft/teams-js';
+import React, { useState } from 'react';
 
-import { ButtonDefaultExample } from './components/Button';
-import { DropdownBasicExample } from './components/Dropdown';
-import NewButton from './components/NewButton';
+import { ProfileContent } from './components/Profile';
+const App: React.FC = () => {
+  const [isInitialized, setIsInitialized] = React.useState(false);
+  const [accessToken, setAccessToken] = React.useState<string>();
 
-// import AppInitialization from './components/AppInitialization';
+  React.useEffect(() => {
+    (async () => {
+      await app.initialize();
+      setIsInitialized(true);
+    })();
+  }, [setIsInitialized]);
 
-export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  async function handle() {
+    const result = await authentication.authenticate({
+      url: 'https://localhost:4003/?auth=1',
+    });
+    setAccessToken(result);
+  }
 
-const App = (): ReactElement => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [context, setContext] = useState<app.Context>();
+  const [Theme, setTheme] = useState('');
 
-  const [notifyLoadedRes, setNotifyLoadedRes] = React.useState('');
-  const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
-
-  const notifyLoaded = (): void => {
-    app.notifyAppLoaded();
-    setNotifyLoadedRes('called');
-  };
-
-  const notifySuccess = (): void => {
-    app.notifySuccess();
-    setNotifySuccessRes('called');
-  };
   React.useEffect(() => {
     (async () => {
       try {
@@ -34,39 +38,78 @@ const App = (): ReactElement => {
         app.notifySuccess();
         const ctx = await app.getContext();
         setContext(ctx);
+        const themeRn = (await app.getContext()).app.theme;
+        setTheme(themeRn);
+        app.registerOnThemeChangeHandler(function(theme) {
+          setTheme(theme);
+        });
       } catch (e) {
         console.error(e);
       }
     })();
-  }, [setContext]);
+  }, [setContext, setTheme]);
 
-  return (
-    <>
-      <div className="App">
-        <h1> Trial App 1-3 </h1>
-        <DropdownBasicExample />
-        <div className="Button">
-          <p> Trial FluentUI Button</p>
-          <ButtonDefaultExample />
-        </div>
-        <p>{JSON.stringify(context)}</p>
-        <h1>{JSON.stringify(context?.app.sessionId)} </h1>
-        <NewButton
-          handleClick={notifyLoaded}
-          output={notifyLoadedRes}
-          title="appInitialization.appLoaded"
-          name="appInitializationAppLoaded"
-        />
-        <br />
-        <NewButton
-          handleClick={notifySuccess}
-          output={notifySuccessRes}
-          title="appInitialization.success"
-          name="appInitializationSuccess"
-        />
-      </div>
-    </>
-  );
+  if (Theme == 'default') {
+    return (
+      <>
+        <FluentProvider theme={teamsLightTheme}>
+          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
+            <p className="App-header2">(starting auth flow...)</p>
+          )}
+
+          {isInitialized && !accessToken && (
+            <p className="first">
+              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
+                Sign in
+              </Button>
+            </p>
+          )}
+          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
+          {!isInitialized && <Spinner size={SpinnerSize.large} />}
+        </FluentProvider>
+      </>
+    );
+  } else if (Theme == 'dark') {
+    return (
+      <>
+        <FluentProvider theme={teamsDarkTheme}>
+          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
+            <p className="App-header2">(starting auth flow...)</p>
+          )}
+
+          {isInitialized && !accessToken && (
+            <p className="first">
+              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
+                Sign in
+              </Button>
+            </p>
+          )}
+          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
+          {!isInitialized && <Spinner size={SpinnerSize.large} />}
+        </FluentProvider>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <FluentProvider theme={teamsHighContrastTheme}>
+          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
+            <p className="App-header2">(starting auth flow...)</p>
+          )}
+
+          {isInitialized && !accessToken && (
+            <p className="first">
+              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
+                Sign in
+              </Button>
+            </p>
+          )}
+          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
+          {!isInitialized && <Spinner size={SpinnerSize.large} />}
+        </FluentProvider>
+      </>
+    );
+  }
 };
 
 export default App;
