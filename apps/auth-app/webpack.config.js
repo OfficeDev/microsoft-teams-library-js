@@ -39,7 +39,7 @@ module.exports = {
     contentBase: path.join(__dirname, 'build'),
     publicPath: '/',
     compress: true,
-    port: 4002,
+    port: 4003,
     https: true,
     disableHostCheck: true,
   },

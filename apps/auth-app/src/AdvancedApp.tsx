@@ -40,9 +40,6 @@ const App: React.FC = () => {
         setContext(ctx);
         const themeRn = (await app.getContext()).app.theme;
         setTheme(themeRn);
-        app.registerOnThemeChangeHandler(function(theme) {
-          setTheme(theme);
-        });
       } catch (e) {
         console.error(e);
       }

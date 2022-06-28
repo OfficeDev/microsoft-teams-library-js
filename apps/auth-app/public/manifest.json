@@ -6,16 +6,16 @@
   "packageName": "auth app",
   "developer": {
     "name": "Ananya Barthakur",
-    "websiteUrl": "https://localhost:4002/",
-    "privacyUrl": "https://localhost:4002/",
-    "termsOfUseUrl": "https://localhost:4002/"
+    "websiteUrl": "https://localhost:4003/",
+    "privacyUrl": "https://localhost:4003/",
+    "termsOfUseUrl": "https://localhost:4003/"
   },
   "name": {
-    "short": "Auth App"
+    "short": "Sample App"
   },
   "description": {
-    "short": "auth.",
-    "full": "auth."
+    "short": "Sample App!",
+    "full": "sample app :)"
   },
   "icons": {
     "outline": "outline.png",
@@ -26,14 +26,14 @@
     {
       "entityId": "test-tab",
       "name": "Test Tab",
-      "contentUrl": "https://localhost:4002/",
-      "websiteUrl": "https://localhost:4002/",
+      "contentUrl": "https://localhost:4003/",
+      "websiteUrl": "https://localhost:4003/",
       "scopes": ["personal"]
     }
   ],
   "configurableTabs": [
     {
-      "configurationUrl": "https://localhost:4002/",
+      "configurationUrl": "https://localhost:4003/",
       "scopes": ["team", "groupchat"],
       "context": [
         "channelTab",
@@ -45,7 +45,7 @@
       ]
     }
   ],
-  "validDomains": ["localhost:4002"],
+  "validDomains": ["localhost:4003"],
   "permissions": ["identity", "messageTeamMembers"],
   "devicePermissions": ["media", "geolocation"],
   "showLoadingIndicator": false

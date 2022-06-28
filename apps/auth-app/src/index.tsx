@@ -9,7 +9,6 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import AuthApp from './AuthApp';
 import { msalConfig } from './components/authConfig';
-
 const msalInstance = new PublicClientApplication(msalConfig);
 
 const queryString = window.location.search;
@@ -20,7 +19,7 @@ if (isAuth) {
   ReactDOM.render(
     <React.StrictMode>
       <MsalProvider instance={msalInstance}>
-        <AuthApp /> {/* auth app */}
+        <App />
       </MsalProvider>
     </React.StrictMode>,
     document.getElementById('root'),
@@ -29,7 +28,7 @@ if (isAuth) {
   ReactDOM.render(
     <React.StrictMode>
       <FluentProvider theme={teamsLightTheme}>
-        <App /> {/* the app */}
+        <App />
       </FluentProvider>
     </React.StrictMode>,
     document.getElementById('root'),
