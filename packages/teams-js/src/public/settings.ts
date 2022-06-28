@@ -59,7 +59,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.getConfig pages.config.getConfig(): Promise\<Config\>} instead.
+   * As of 2.0.0, please use {@link pages.getConfig pages.getConfig(): Promise\<InstanceConfig\>} instead.
    *
    * Gets the settings for the current instance.
    *
