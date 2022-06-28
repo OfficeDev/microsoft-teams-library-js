@@ -11,6 +11,7 @@ import AuthenticationAPIs from './components/AuthenticationAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import GeoLocationAPIs from './components/GeoLocationAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
@@ -113,6 +114,7 @@ const App = (): ReactElement => {
       <DialogAPIs />
       <FilesAPIs />
       <FullTrustAPIs />
+      <GeoLocationAPIs />
       <LocationAPIs />
       <LogAPIs />
       <MailAPIs />

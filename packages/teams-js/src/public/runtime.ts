@@ -17,9 +17,10 @@ export interface IRuntime {
       readonly bot?: {};
       readonly update?: {};
     };
-    readonly location?: {
-      map?: {};
+    readonly geoLocation?: {
+      readonly map?: {};
     };
+    readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
     readonly meetingRoom?: {};
@@ -58,9 +59,10 @@ export let runtime: IRuntime = {
       bot: undefined,
       update: undefined,
     },
-    location: {
+    geoLocation: {
       map: undefined,
     },
+    location: undefined,
     logs: undefined,
     mail: undefined,
     meetingRoom: undefined,
@@ -101,9 +103,6 @@ export const teamsRuntimeConfig: IRuntime = {
       update: {},
     },
     logs: {},
-    location: {
-      map: {},
-    },
     meetingRoom: {},
     menus: {},
     monetization: {},
@@ -158,6 +157,10 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   ],
   '2.0.1': [
     {
+      capability: { geoLocation: { map: {} } },
+      hostClientTypes: v1HostClientTypes,
+    },
+    {
       capability: { teams: { fullTrust: { joinedTeams: {} } } },
       hostClientTypes: [
         HostClientType.android,
@@ -165,10 +168,6 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
       ],
-    },
-    {
-      capability: { teams: { location: { map: {} } } },
-      hostClientTypes: v1HostClientTypes,
     },
   ],
 };

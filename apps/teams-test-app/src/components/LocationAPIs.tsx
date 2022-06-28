@@ -1,4 +1,4 @@
-import { location, SdkError } from '@microsoft/teams-js';
+import { Location, location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -8,13 +8,6 @@ const CheckLocationCapability = (): React.ReactElement =>
     name: 'checkLocationCapability',
     title: 'Check Location Capability',
     onClick: async () => `Location module ${location.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
-const CheckLocationMapCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkLocationMapCapability',
-    title: 'Check Location Map Capability',
-    onClick: async () => `Location module ${location.map.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetLocation = (): React.ReactElement =>
@@ -28,7 +21,7 @@ const GetLocation = (): React.ReactElement =>
         }
       },
       submit: async (locationProps, setResult) => {
-        const callback = (error: SdkError, location: location.Location): void => {
+        const callback = (error: SdkError, location: Location): void => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {
@@ -41,28 +34,8 @@ const GetLocation = (): React.ReactElement =>
     },
   });
 
-const GetCurrentLocation = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'getCurrentLocation',
-    title: 'Get Current Location',
-    onClick: async () => {
-      const result = await location.getCurrentLocation();
-      return JSON.stringify(result);
-    },
-  });
-
-const ChooseLocation = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'chooseLocation',
-    title: 'Choose Location',
-    onClick: async () => {
-      const result = await location.map.chooseLocation();
-      return JSON.stringify(result);
-    },
-  });
-
 const ShowLocation = (): React.ReactElement =>
-  ApiWithTextInput<location.Location>({
+  ApiWithTextInput<Location>({
     name: 'showLocation',
     title: 'Show Location',
     onClick: {
@@ -71,43 +44,18 @@ const ShowLocation = (): React.ReactElement =>
           throw new Error('latitude and longitude are required');
         }
       },
-      submit: {
-        withPromise: async locationProps => {
-          await location.map.showLocation(locationProps);
-          return 'Completed';
-        },
-        withCallback: (locationProps, setResult) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const callback = (error: SdkError, status: boolean): void => {
-            if (error) {
-              setResult(JSON.stringify(error));
-            } else {
-              setResult('Completed');
-            }
-          };
-          location.showLocation(locationProps, callback);
-        },
+      submit: async (locationProps, setResult) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const callback = (error: SdkError, status: boolean): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('Completed');
+          }
+        };
+        location.showLocation(locationProps, callback);
+        return '';
       },
-    },
-  });
-
-const HasLocationPermission = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'HasLocationPermission',
-    title: 'Has Permission',
-    onClick: async () => {
-      const result = await location.hasPermission();
-      return JSON.stringify(result);
-    },
-  });
-
-const RequestLocationPermission = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'RequestLocationPermission',
-    title: 'Request Permission',
-    onClick: async () => {
-      const result = await location.requestPermission();
-      return JSON.stringify(result);
     },
   });
 
@@ -115,13 +63,8 @@ const LocationAPIs = (): ReactElement => (
   <>
     <h1>location</h1>
     <GetLocation />
-    <GetCurrentLocation />
-    <ChooseLocation />
     <ShowLocation />
-    <HasLocationPermission />
-    <RequestLocationPermission />
     <CheckLocationCapability />
-    <CheckLocationMapCapability />
   </>
 );
 

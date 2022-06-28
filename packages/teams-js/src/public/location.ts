@@ -1,8 +1,8 @@
-import { sendAndHandleSdkError as sendAndHandleError, sendMessageToParent } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { DevicePermission, ErrorCode, SdkError } from './interfaces';
+import { ErrorCode, Location, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -29,82 +29,10 @@ export namespace location {
   }
 
   /**
-   * Data struture to represent the location information
-   */
-  export interface Location {
-    /**
-    Latitude of the location
-    */
-    latitude: number;
-    /**
-    Longitude of the location
-    */
-    longitude: number;
-    /**
-    Accuracy of the coordinates captured
-    */
-    accuracy?: number;
-    /**
-    Time stamp when the location was captured
-    */
-    timestamp?: number;
-  }
-
-  /**
-   * Fetches current user coordinates
-   * @returns User's current location
-   */
-  export function getCurrentLocation(): Promise<Location> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    return sendAndHandleError('location.getLocation', { allowChooseLocation: false, showMap: false });
-  }
-
-  /**
-   * Checks whether or not location has user permission
-   *
-   * @returns if the location has user permission
-   */
-  export function hasPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    const permissions: DevicePermission = DevicePermission.GeoLocation;
-
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('permissions.has', permissions));
-    });
-  }
-
-  /**
-   * Request user permission for location
-   *
-   * @returns if the user conseted permission for location
-   */
-  export function requestPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    const permissions: DevicePermission = DevicePermission.GeoLocation;
-
-    return new Promise<boolean>(resolve => {
-      resolve(sendAndHandleError('permissions.request', permissions));
-    });
-  }
-
-  export function isSupported(): boolean {
-    return runtime.supports.location ? true : false;
-  }
-
-  /**
    * @deprecated
    * As of 2.0.1, please use one of the following functions:
-   * - {@link location.getCurrentLocation location.getCurrentLocation(): Promise\<Location\>} to get the current locaiton.
-   * - {@link location.map.chooseLocation location.map.chooseLocation(): Promise\<Location\>} to choose location on map.
+   * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current locaiton.
+   * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<Location\>} to choose location on map.
    *
    * Fetches user location
    * @param props {@link LocationProps} - Specifying how the location request is handled
@@ -131,7 +59,7 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.1, please use {@link location.map.showLocation location.map.showLocation(location: Location): Promise\<void\>} instead.
+   * As of 2.0.1, please use {@link geoLocation.map.showLocation geoLocation.map.showLocation(location: Location): Promise\<void\>} instead.
    *
    * Shows the location on map corresponding to the given coordinates
    *
@@ -155,43 +83,7 @@ export namespace location {
 
     sendMessageToParent('location.showLocation', [location], callback);
   }
-
-  /**
-   * Namespace to interact with the location on map module-specific part of the SDK.
-   */
-  export namespace map {
-    /**
-     * Allows user to choose location on map
-     *
-     * @returns The location chosen by the user after closing the map
-     */
-    export function chooseLocation(): Promise<Location> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      return sendAndHandleError('location.getLocation', { allowChooseLocation: true, showMap: true });
-    }
-
-    /**
-     * Shows the location on map corresponding to the given coordinates
-     *
-     * @param location {@link Location} - which needs to be shown on map
-     * @returns Promise that resolves when the location dialog has been closed
-     */
-    export function showLocation(location: Location): Promise<void> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (!location) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
-      return sendAndHandleError('location.showLocation', location);
-    }
-
-    export function isSupported(): boolean {
-      return runtime.supports.location ? true : false;
-    }
+  export function isSupported(): boolean {
+    return runtime.supports.location ? true : false;
   }
 }

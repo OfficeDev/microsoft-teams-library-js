@@ -791,3 +791,25 @@ export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
 }
+
+/**
+ * Data struture to represent the location information
+ */
+export interface Location {
+  /**
+    Latitude of the location
+    */
+  latitude: number;
+  /**
+    Longitude of the location
+    */
+  longitude: number;
+  /**
+    Accuracy of the coordinates captured
+    */
+  accuracy?: number;
+  /**
+    Time stamp when the location was captured
+    */
+  timestamp?: number;
+}
