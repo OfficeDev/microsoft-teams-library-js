@@ -1,5 +1,5 @@
 import { files } from '../../src/private/files';
-import { FileOpenPreference } from '../../src/public';
+import { FileOpenPreference, ErrorCode } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -550,6 +550,243 @@ describe('files', () => {
       const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
       expect(openDownloadFolderMessage).not.toBeNull();
       utils.respondToMessage(openDownloadFolderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('addCloudStorageProvider', () => {
+    it('should not allow calls before initialization', () => {
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.addCloudStorageProvider(null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.addCloudStorageProvider(callback);
+
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('removeCloudStorageProvider', () => {
+    const logoutRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.removeCloudStorageProvider(logoutRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.removeCloudStorageProvider(logoutRequest, callback);
+
+      const removeCloudStorageProviderMessage = utils.findMessageByFunc('files.removeCloudStorageProvider');
+      expect(removeCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(removeCloudStorageProviderMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('addCloudStorageProviderFile', () => {
+    const addNewFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderNewFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        newFileName: 'testFile',
+        newFileExtension: 'docx',
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.addCloudStorageProviderFile(addNewFileRequest, callback);
+
+      const addCloudStorageProviderFileMessage = utils.findMessageByFunc('files.addCloudStorageProviderFile');
+      expect(addCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderFileMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('renameCloudStorageProviderFile', () => {
+    const mockExistingFile: files.CloudStorageFolderItem = {
+      id: '111',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file1.com',
+      title: 'file1',
+      isSubdirectory: false,
+      type: 'pdf',
+    };
+    const mockNewFile: files.CloudStorageFolderItem = {
+      id: '111',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file2.com',
+      title: 'file2',
+      isSubdirectory: false,
+      type: 'pdf',
+    };
+    const renameFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderRenameFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        existingFile: mockExistingFile,
+        newFile: mockNewFile,
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.renameCloudStorageProviderFile(renameFileRequest, callback);
+
+      const renameCloudStorageProviderFileMessage = utils.findMessageByFunc('files.renameCloudStorageProviderFile');
+      expect(renameCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(renameCloudStorageProviderFileMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('performCloudStorageProviderFileAction', () => {
+    const mockItem: files.CloudStorageFolderItem = {
+      id: '111',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'abc.com',
+      title: 'file1',
+      isSubdirectory: false,
+      type: 'pdf',
+    };
+
+    const cloudStorageProviderFileActionRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderActionContent> = {
+      content: {
+        action: files.CloudStorageProviderFileAction.Upload,
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockItem],
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null),
+      ).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() =>
+        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
+      ).toThrowError('This call is only allowed in following contexts: ["content"]. Current context: "settings"');
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
+
+      const performCloudStorageProviderFileActionMessage = utils.findMessageByFunc(
+        'files.performCloudStorageProviderFileAction',
+      );
+      expect(performCloudStorageProviderFileActionMessage).not.toBeNull();
+      utils.respondToMessage(performCloudStorageProviderFileActionMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });

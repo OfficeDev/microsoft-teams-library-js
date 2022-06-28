@@ -75,5 +75,5 @@ export function createTeamsDeepLinkForAppInstallDialog(appId: string): string {
   }
   return `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForAppInstall}${encodeURIComponent(
     appId,
-  )}/`;
+  )}`;
 }

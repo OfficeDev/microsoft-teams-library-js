@@ -164,18 +164,38 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
     name: 'registerRaiseHandStateChangedHandler',
     title: 'Register RaiseHandState Changed Handler',
     onClick: async setResult => {
-      const handler = (raiseHandStateChangedEventData: meeting.IRaiseHandStateChangedEventData): void => {
+      const handler = (eventData: meeting.RaiseHandStateChangedEventData): void => {
         let res;
-        if (raiseHandStateChangedEventData.error) {
-          res = `Receieved error ${JSON.stringify(raiseHandStateChangedEventData.error)}`;
+        if (eventData.error) {
+          res = `Receieved error ${JSON.stringify(eventData.error)}`;
         } else {
-          res = `RaiseHand state changed to ${JSON.stringify(raiseHandStateChangedEventData.raiseHandState)}`;
+          res = `RaiseHand state changed to ${JSON.stringify(eventData.raiseHandState)}`;
         }
         setResult(res);
       };
       meeting.registerRaiseHandStateChangedHandler(handler);
 
       return generateRegistrationMsg('the raise hand state changes');
+    },
+  });
+
+const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerMeetingReactionReceivedHandler',
+    title: 'Register Meeting Reaction Received Handler',
+    onClick: async setResult => {
+      const handler = (eventData: meeting.MeetingReactionReceivedEventData): void => {
+        let res;
+        if (eventData.error) {
+          res = `Receieved error ${JSON.stringify(eventData.error)}`;
+        } else {
+          res = `Received ${JSON.stringify(eventData.meetingReactionType)}`;
+        }
+        setResult(res);
+      };
+      meeting.registerMeetingReactionReceivedHandler(handler);
+
+      return generateRegistrationMsg('meeting reaction received');
     },
   });
 
@@ -288,6 +308,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
     <RegisterRaiseHandStateChangedHandler />
+    <RegisterMeetingReactionReceivedHandler />
     <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
