@@ -134,7 +134,7 @@ describe('Dialog', () => {
           expect(message.args).toStrictEqual(['exampleMessage']);
         });
 
-        it(`FRAMED: Should successfully call the callback when dialog.closed: ${context}`, async () => {
+        it(`FRAMED: Should successfully call the callback when dialog is closed. context: ${context}`, async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
           const urlDialogInfo: UrlDialogInfo = {
             url: 'someUrl',
