@@ -63,7 +63,6 @@ const App: React.FC = () => {
     })();
   }, [setContext, setCurrTheme]);
 
-  // TODO: optimize code below to be less repetitive
   return (
     <>
       <FluentProvider theme={currTheme}>
