@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Fixed broken images and inconsistencies in repo undefineddocumentation",
+  "comment": "Fixed broken images and inconsistencies in repo documentation",
   "packageName": "@microsoft/teams-js",
   "email": "AE-MS@users.noreply.github.com",
   "dependentChangeType": "none"
