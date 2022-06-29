@@ -54,7 +54,7 @@ export function isSupported(): boolean {
 
 e.g.
 
-```json
+```TypeScript
 // Object key is type string, value is type Array<ICapabilityReqs>
 '1.9.0': [
     {
@@ -73,7 +73,7 @@ If you're adding a capability to an already existing version requirement, simply
 
 e.g.
 
-```json
+```TypeScript
 // Object key is type string, value is type Array<ICapabilityReqs>
 '1.9.0': [
     {
@@ -100,14 +100,14 @@ The TeamsJS SDK 2.0 requires that all asynchronous functions be added using Prom
 
 BAD
 
-```javascript
+```TypeScript
 export function getFoo(callback: (foo: Foo, sdkError: SdkError) => void): void
 {…}
 ```
 
 GOOD
 
-```javascript
+```TypeScript
 export function getFoo(): Promise<Foo>
 {…}
 ```
