@@ -2,7 +2,13 @@ import './App.css';
 
 import { Spinner, SpinnerSize } from '@fluentui/react';
 import { Button } from '@fluentui/react-components';
-import { FluentProvider, teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme } from '@fluentui/react-components';
+import {
+  FluentProvider,
+  teamsDarkTheme,
+  teamsHighContrastTheme,
+  teamsLightTheme,
+  Theme,
+} from '@fluentui/react-components';
 import { app, authentication } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
@@ -28,7 +34,7 @@ const App: React.FC = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [context, setContext] = useState<app.Context>();
-  const [Theme, setTheme] = useState('');
+  const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
 
   React.useEffect(() => {
     (async () => {
@@ -38,78 +44,45 @@ const App: React.FC = () => {
         app.notifySuccess();
         const ctx = await app.getContext();
         setContext(ctx);
-        const themeRn = (await app.getContext()).app.theme;
-        setTheme(themeRn);
         app.registerOnThemeChangeHandler(function(theme) {
-          setTheme(theme);
+          switch (theme) {
+            case 'dark':
+              setCurrTheme(teamsDarkTheme);
+              break;
+            case 'contrast':
+              setCurrTheme(teamsHighContrastTheme);
+              break;
+            case 'default':
+            default:
+              setCurrTheme(teamsLightTheme);
+          }
         });
       } catch (e) {
         console.error(e);
       }
     })();
-  }, [setContext, setTheme]);
+  }, [setContext, setCurrTheme]);
 
-  if (Theme == 'default') {
-    return (
-      <>
-        <FluentProvider theme={teamsLightTheme}>
-          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
-            <p className="App-header2">(starting auth flow...)</p>
-          )}
+  // TODO: optimize code below to be less repetitive
+  return (
+    <>
+      <FluentProvider theme={currTheme}>
+        {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
+          <p className="App-header2">(starting auth flow...)</p>
+        )}
 
-          {isInitialized && !accessToken && (
-            <p className="first">
-              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
-                Sign in
-              </Button>
-            </p>
-          )}
-          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
-          {!isInitialized && <Spinner size={SpinnerSize.large} />}
-        </FluentProvider>
-      </>
-    );
-  } else if (Theme == 'dark') {
-    return (
-      <>
-        <FluentProvider theme={teamsDarkTheme}>
-          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
-            <p className="App-header2">(starting auth flow...)</p>
-          )}
-
-          {isInitialized && !accessToken && (
-            <p className="first">
-              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
-                Sign in
-              </Button>
-            </p>
-          )}
-          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
-          {!isInitialized && <Spinner size={SpinnerSize.large} />}
-        </FluentProvider>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <FluentProvider theme={teamsHighContrastTheme}>
-          {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
-            <p className="App-header2">(starting auth flow...)</p>
-          )}
-
-          {isInitialized && !accessToken && (
-            <p className="first">
-              <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
-                Sign in
-              </Button>
-            </p>
-          )}
-          {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
-          {!isInitialized && <Spinner size={SpinnerSize.large} />}
-        </FluentProvider>
-      </>
-    );
-  }
+        {isInitialized && !accessToken && (
+          <p className="first">
+            <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
+              Sign in
+            </Button>
+          </p>
+        )}
+        {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
+        {!isInitialized && <Spinner size={SpinnerSize.large} />}
+      </FluentProvider>
+    </>
+  );
 };
 
 export default App;

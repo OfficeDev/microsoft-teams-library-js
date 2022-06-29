@@ -19,7 +19,7 @@ if (isAuth) {
   ReactDOM.render(
     <React.StrictMode>
       <MsalProvider instance={msalInstance}>
-        <App />
+        <AuthApp />
       </MsalProvider>
     </React.StrictMode>,
     document.getElementById('root'),

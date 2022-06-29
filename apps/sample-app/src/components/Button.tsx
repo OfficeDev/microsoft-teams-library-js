@@ -7,15 +7,7 @@ function handleLogin(instance): void {
     console.error(e);
   });
 }
-{
-  /*}
-function SignInButton(): () => void {
-  const { instance } = useMsal();
-  handleLogin(instance);
-  return () => handleLogin(instance);
-}
-*/
-}
+
 export const SignInButton = (): (() => void) => {
   const { instance } = useMsal();
   handleLogin(instance);

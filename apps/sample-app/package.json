@@ -1,8 +1,8 @@
 {
-  "name": "auth-app",
+  "name": "sample-app",
   "private": true,
   "author": "Msft",
-  "description": "auth",
+  "description": "sample app",
   "version": "0.0.1",
   "scripts": {
     "build": "yarn lint && webpack",

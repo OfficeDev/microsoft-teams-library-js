@@ -1,6 +1,5 @@
 import { useMsal } from '@azure/msal-react';
 import { Spinner, SpinnerSize } from '@fluentui/react';
-//import { createListItems, IExampleItem } from '@fluentui/example-data';
 import { authentication } from '@microsoft/teams-js';
 import React from 'react';
 
