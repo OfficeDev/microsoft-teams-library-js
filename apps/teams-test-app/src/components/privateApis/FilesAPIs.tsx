@@ -133,13 +133,13 @@ const GetExternalProviders = (): React.ReactElement =>
     name: 'getExternalProviders',
     title: 'Get External Providers',
     label: 'excludeAddedProviders',
-    onClick: async (excludeAddedProviders: boolean) => {
+    onClick: async (excludeAddedProviders: boolean, setResult: (result: string) => void) => {
       let result;
       const callback = (error: SdkError, providers: files.IExternalProvider[]): void => {
         if (error) {
-          result = JSON.stringify(error);
+          setResult(JSON.stringify(error));
         } else {
-          result = JSON.stringify(providers);
+          setResult(JSON.stringify(providers));
         }
       };
       await files.getExternalProviders(excludeAddedProviders, callback);
