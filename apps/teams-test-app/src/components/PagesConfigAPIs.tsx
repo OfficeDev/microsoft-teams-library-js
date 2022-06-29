@@ -85,10 +85,10 @@ const SetValidityState = (): React.ReactElement =>
     },
   });
 
-const RegisterOnRemoveHandler = (): React.ReactElement =>
+const RegisterOnRemoveHandlerSuccess = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'config_registerOnRemoveHandler',
-    title: 'Register On Remove Handler',
+    name: 'config_registerOnRemoveHandlerSuccess',
+    title: 'Register On Remove Handler Success',
     onClick: {
       withPromise: async setResult => {
         pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
@@ -101,6 +101,27 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
         settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
           setResult('Remove event received.');
           removeEvent.notifySuccess();
+        });
+      },
+    },
+  });
+
+const RegisterOnRemoveHandlerFailure = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_registerOnRemoveHandlerFailure',
+    title: 'Register On Remove Handler Failure',
+    onClick: {
+      withPromise: async setResult => {
+        pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure();
+        });
+        return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
+      },
+      withCallback: setResult => {
+        settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure();
         });
       },
     },
@@ -139,7 +160,8 @@ const PagesConfigAPIs = (): ReactElement => (
     <RegisterOnSaveHandler />
     <SetConfig />
     <SetValidityState />
-    <RegisterOnRemoveHandler />
+    <RegisterOnRemoveHandlerSuccess />
+    <RegisterOnRemoveHandlerFailure />
     <RegisterOChangeConfigHandler />
     <CheckPageConfigCapability />
   </>
