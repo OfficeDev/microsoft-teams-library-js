@@ -1,4 +1,4 @@
-import { appEntity, SdkError } from '@microsoft/teams-js';
+import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -21,18 +21,15 @@ const SelectAppEntity = (): React.ReactElement =>
     name: 'select_appEntity',
     title: 'Select AppEntity',
     onClick: {
-      validateInput: ({ threadId, categories, subEntityId }) => {
-        if (!threadId || !categories || !subEntityId) {
-          throw new Error('threadId, categories, and subEntityId are required');
+      validateInput: ({ threadId, categories }) => {
+        if (!threadId || !categories) {
+          throw new Error('threadId and categories are required');
         }
         if (typeof threadId !== 'string') {
           throw new Error('threadId has to be a string');
         }
         if (!Array.isArray(categories) || categories.some(x => typeof x !== 'string')) {
           throw new Error('categories has to be a string array');
-        }
-        if (typeof subEntityId !== 'string') {
-          throw new Error('subEntityId has to be a string');
         }
       },
       submit: appEntityParams => {
@@ -44,12 +41,14 @@ const SelectAppEntity = (): React.ReactElement =>
               resolve(JSON.stringify(error));
             }
           };
-          appEntity.selectAppEntity(
-            appEntityParams.threadId,
-            appEntityParams.categories,
-            appEntityParams.subEntityId,
-            callback,
-          );
+          app.getContext().then(context => {
+            appEntity.selectAppEntity(
+              appEntityParams.threadId,
+              appEntityParams.categories,
+              appEntityParams.subEntityId ?? context.page.subPageId ?? '',
+              callback,
+            );
+          });
         });
       },
     },
