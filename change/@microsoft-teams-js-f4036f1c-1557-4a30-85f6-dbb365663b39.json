@@ -1,6 +1,6 @@
 {
   "type": "major",
-  "comment": "Split the location capability into new set of functions and subcapabilities, and added hasPermission and requestPermission functionality to check permissions",
+  "comment": "Added a new capability `geoLocation` that split the location capability into new set of functions and subcapabilities. Permission related APIs like hasPermission and requestPermission were also added",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
