@@ -21,6 +21,7 @@ export namespace logs {
    */
   interface ILogRequestOptions {
     appId: string;
+    appSessionId?: string;
     azureSas: string;
   }
 
@@ -39,10 +40,10 @@ export namespace logs {
     }
 
     if (handler) {
-      registerHandler('log.request', ({ appId, azureSas }: ILogRequestOptions) => {
+      registerHandler('log.request', ({ appId, appSessionId, azureSas }: ILogRequestOptions) => {
         Promise.resolve(handler()).then(log => {
           appId && azureSas
-            ? uploadLogsWithAzureSas(log, `${appId}.txt`, azureSas)
+            ? uploadLogsWithAzureSas(log, `${appId}_${appSessionId}.txt`, azureSas)
             : sendMessageToParent('log.receive', [log]);
         });
       });
