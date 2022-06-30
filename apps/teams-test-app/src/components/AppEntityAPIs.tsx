@@ -1,4 +1,4 @@
-import { app, appEntity, SdkError } from '@microsoft/teams-js';
+import { appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -13,6 +13,7 @@ const CheckAppEntityCapability = (): React.ReactElement =>
 interface AppEntityParams {
   threadId: string;
   categories: string[];
+  subEntityId: string;
 }
 
 const SelectAppEntity = (): React.ReactElement =>
@@ -20,15 +21,18 @@ const SelectAppEntity = (): React.ReactElement =>
     name: 'select_appEntity',
     title: 'Select AppEntity',
     onClick: {
-      validateInput: ({ threadId, categories }) => {
-        if (!threadId || !categories) {
-          throw new Error('threadId and categories are required');
+      validateInput: ({ threadId, categories, subEntityId }) => {
+        if (!threadId || !categories || !subEntityId) {
+          throw new Error('threadId, categories, and subEntityId are required');
         }
         if (typeof threadId !== 'string') {
           throw new Error('threadId has to be a string');
         }
         if (!Array.isArray(categories) || categories.some(x => typeof x !== 'string')) {
           throw new Error('categories has to be a string array');
+        }
+        if (typeof subEntityId !== 'string') {
+          throw new Error('subEntityId has to be a string');
         }
       },
       submit: appEntityParams => {
@@ -40,14 +44,12 @@ const SelectAppEntity = (): React.ReactElement =>
               resolve(JSON.stringify(error));
             }
           };
-          app.getContext().then(context => {
-            appEntity.selectAppEntity(
-              appEntityParams.threadId,
-              appEntityParams.categories,
-              context.page.subPageId ?? '',
-              callback,
-            );
-          });
+          appEntity.selectAppEntity(
+            appEntityParams.threadId,
+            appEntityParams.categories,
+            appEntityParams.subEntityId,
+            callback,
+          );
         });
       },
     },
