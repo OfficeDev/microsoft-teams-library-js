@@ -1,3 +1,4 @@
+import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -133,49 +134,149 @@ describe('Dialog', () => {
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
         });
+        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+          framedMock.initializeWithContext(context).then(() => {
+            expect.assertions(2);
+            const urlDialogInfo: UrlDialogInfo = {
+              url: 'someUrl',
+              size: { height: DialogDimension.Large, width: DialogDimension.Large },
+              title: 'someTitle',
+              fallbackUrl: 'someFallbackUrl',
+            };
+            const submitString = 'succesfullySubmit';
 
-        it(`FRAMED: Should successfully call the callback when dialog is closed. context: ${context}`, async () => {
-          await framedMock.initializeWithContext(FrameContexts.content);
-          const urlDialogInfo: UrlDialogInfo = {
-            url: 'someUrl',
-            size: { height: DialogDimension.Large, width: DialogDimension.Large },
-            title: 'someTitle',
-            fallbackUrl: 'someFallbackUrl',
-          };
-          const submitString = 'succesfullySubmit';
+            dialog.open(urlDialogInfo, (result: dialog.ISdkResponse): void => {
+              expect(result.result).toBe(submitString);
+              expect(result.err).toBeFalsy();
+              done();
+            });
+            const message = framedMock.findMessageByFunc('tasks.startTask');
 
-          dialog.open(urlDialogInfo);
-          try {
-            framedMock.sendMessage('tasks.startTask', submitString);
-          } catch (e) {
-            e.toBeFalsy();
-          }
+            framedMock.respondToMessage(message, undefined, submitString);
+          });
         });
 
-        it(`FRAMELESS: Should successfully call the callback when dialog is closed: ${context}`, async () => {
-          await framelessMock.initializeWithContext(FrameContexts.content);
-          const urlDialogInfo: UrlDialogInfo = {
-            url: 'someUrl',
-            size: { height: DialogDimension.Large, width: DialogDimension.Large },
-            title: 'someTitle',
-            fallbackUrl: 'someFallbackUrl',
-          };
-          const submitString = 'succesfullySubmit';
+        it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+          framelessMock.initializeWithContext(context).then(() => {
+            expect.assertions(5);
+            const urlDialogInfo: UrlDialogInfo = {
+              url: 'someUrl',
+              size: { height: DialogDimension.Large, width: DialogDimension.Large },
+              title: 'someTitle',
+              fallbackUrl: 'someFallbackUrl',
+            };
+            const submitString = 'succesfullySubmit';
+            dialog.open(urlDialogInfo, (result: dialog.ISdkResponse) => {
+              expect(result.result).toBe(submitString);
+              expect(result.err).toBeFalsy();
+              done();
+            });
+            const message = framelessMock.findMessageByFunc('tasks.startTask');
 
-          dialog.open(urlDialogInfo);
-          const message = framelessMock.findMessageByFunc('tasks.startTask');
-
-          const callbackId = message.id;
-          try {
+            const callbackId = message.id;
             framelessMock.respondToMessage({
               data: {
                 id: callbackId,
                 args: [undefined, submitString],
               },
             } as DOMMessageEvent);
-          } catch (e) {
-            e.toBeFalsy();
-          }
+          });
+        });
+
+        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+          framedMock.initializeWithContext(context).then(() => {
+            expect.assertions(2);
+            const urlDialogInfo: UrlDialogInfo = {
+              url: 'someUrl',
+              size: { height: DialogDimension.Large, width: DialogDimension.Large },
+              title: 'someTitle',
+              fallbackUrl: 'someFallbackUrl',
+            };
+            const error = { errorCode: 500, message: 'Internal Error Occured' };
+
+            dialog.open(urlDialogInfo, (result: dialog.ISdkResponse): void => {
+              expect(result.result).toBeFalsy();
+              expect(result.err).toBe(error);
+              done();
+            });
+            const message = framedMock.findMessageByFunc('tasks.startTask');
+
+            framedMock.respondToMessage(message, error, undefined);
+          });
+        });
+
+        it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+          framelessMock.initializeWithContext(context).then(() => {
+            expect.assertions(5);
+            const urlDialogInfo: UrlDialogInfo = {
+              url: 'someUrl',
+              size: { height: DialogDimension.Large, width: DialogDimension.Large },
+              title: 'someTitle',
+              fallbackUrl: 'someFallbackUrl',
+            };
+            dialog.open(urlDialogInfo, (result: dialog.ISdkResponse) => {
+              expect(result.result).toBeFalsy();
+              expect(result.err).toBe(error);
+              done();
+            });
+            const error = { errorCode: 500, message: 'Internal Error Occured' };
+            const message = framelessMock.findMessageByFunc('tasks.startTask');
+
+            const callbackId = message.id;
+            framelessMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [error, undefined],
+              },
+            } as DOMMessageEvent);
+          });
+        });
+
+        it(`FRAMELESS: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
+          await framelessMock.initializeWithContext(context);
+
+          expect.assertions(5);
+
+          const urlDialogInfo: UrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.open(urlDialogInfo, undefined, emptyCallback);
+          const message = framelessMock.findMessageByFunc('tasks.startTask');
+          expect(doesHandlerExist('messageForParent')).toBeTruthy();
+          const callbackId = message.id;
+          framelessMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [undefined, submitString],
+            },
+          } as DOMMessageEvent);
+          expect(doesHandlerExist('messageForParent')).toBeFalsy();
+        });
+
+        it(`FRAMED: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
+          await framedMock.initializeWithContext(context);
+
+          expect.assertions(2);
+
+          const urlDialogInfo: UrlDialogInfo = {
+            url: 'someUrl',
+            size: { height: DialogDimension.Large, width: DialogDimension.Large },
+            title: 'someTitle',
+            fallbackUrl: 'someFallbackUrl',
+          };
+          const submitString = 'succesfullySubmit';
+
+          dialog.open(urlDialogInfo, undefined, emptyCallback);
+          expect(doesHandlerExist('messageForParent')).toBeTruthy();
+          const message = framedMock.findMessageByFunc('tasks.startTask');
+
+          framedMock.respondToMessage(message, null, submitString);
+          expect(doesHandlerExist('messageForParent')).toBeFalsy();
         });
       } else {
         it(`FRAMED: should not allow calls from context ${context}`, async () => {
@@ -538,50 +639,113 @@ describe('Dialog', () => {
           expect(handlerMessage.args).toStrictEqual(['messageForParent']);
         });
 
-        it(`FRAMED: Should successfully call the callback in dialog.bot.open: ${context}`, async () => {
-          await framedMock.initializeWithContext(FrameContexts.content);
-          const botUrlDialogInfo: BotUrlDialogInfo = {
-            url: 'someUrl',
-            size: { height: DialogDimension.Large, width: DialogDimension.Large },
-            title: 'someTitle',
-            fallbackUrl: 'someFallbackUrl',
-            completionBotId: 'botId',
-          };
+        it(`FRAMELESS: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
+          await framelessMock.initializeWithContext(context);
+
+          expect.assertions(5);
+
           const submitString = 'succesfullySubmit';
 
-          dialog.bot.open(botUrlDialogInfo);
-          try {
-            framedMock.sendMessage('tasks.startTask', submitString);
-          } catch (e) {
-            e.toBeFalsy();
-          }
+          dialog.bot.open(botUrlDialogInfo, undefined, emptyCallback);
+          const message = framelessMock.findMessageByFunc('tasks.startTask');
+          expect(doesHandlerExist('messageForParent')).toBeTruthy();
+          const callbackId = message.id;
+          framelessMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [undefined, submitString],
+            },
+          } as DOMMessageEvent);
+          expect(doesHandlerExist('messageForParent')).toBeFalsy();
         });
 
-        it(`FRAMELESS: Should successfully call the callback in dialog.bot.open: ${context}`, async () => {
-          await framelessMock.initializeWithContext(FrameContexts.content);
-          const botUrlDialogInfo: BotUrlDialogInfo = {
-            url: 'someUrl',
-            size: { height: DialogDimension.Large, width: DialogDimension.Large },
-            title: 'someTitle',
-            fallbackUrl: 'someFallbackUrl',
-            completionBotId: 'botId',
-          };
+        it(`FRAMED: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
+          await framedMock.initializeWithContext(context);
+
+          expect.assertions(2);
+
           const submitString = 'succesfullySubmit';
+          dialog.bot.open(botUrlDialogInfo, undefined, emptyCallback);
+          expect(doesHandlerExist('messageForParent')).toBeTruthy();
+          const message = framedMock.findMessageByFunc('tasks.startTask');
 
-          dialog.open(botUrlDialogInfo);
-          const message = framelessMock.findMessageByFunc('tasks.startTask');
+          framedMock.respondToMessage(message, null, submitString);
+          expect(doesHandlerExist('messageForParent')).toBeFalsy();
+        });
 
-          const callbackId = message.id;
-          try {
+        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+          framedMock.initializeWithContext(context).then(() => {
+            expect.assertions(2);
+
+            const submitString = 'succesfullySubmit';
+
+            dialog.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse): void => {
+              expect(result.result).toBe(submitString);
+              expect(result.err).toBeFalsy();
+              done();
+            });
+            const message = framedMock.findMessageByFunc('tasks.startTask');
+
+            framedMock.respondToMessage(message, undefined, submitString);
+          });
+        });
+
+        it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+          framelessMock.initializeWithContext(context).then(() => {
+            const submitString = 'succesfullySubmit';
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            dialog.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
+              expect(result.result).toBe(submitString);
+              expect(result.err).toBeFalsy();
+              done();
+            });
+            const message = framelessMock.findMessageByFunc('tasks.startTask');
+
+            const callbackId = message.id;
             framelessMock.respondToMessage({
               data: {
                 id: callbackId,
                 args: [undefined, submitString],
               },
             } as DOMMessageEvent);
-          } catch (e) {
-            e.toBeFalsy();
-          }
+          });
+        });
+
+        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+          framedMock.initializeWithContext(context).then(() => {
+            expect.assertions(2);
+
+            const error = { errorCode: 500, message: 'Internal Error Occured' };
+
+            dialog.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse): void => {
+              expect(result.result).toBeFalsy();
+              expect(result.err).toBe(error);
+              done();
+            });
+            const message = framedMock.findMessageByFunc('tasks.startTask');
+
+            framedMock.respondToMessage(message, error, undefined);
+          });
+        });
+
+        it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+          framelessMock.initializeWithContext(context).then(() => {
+            dialog.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
+              expect(result.result).toBeFalsy();
+              expect(result.err).toBe(error);
+              done();
+            });
+            const error = { errorCode: 500, message: 'Internal Error Occured' };
+            const message = framelessMock.findMessageByFunc('tasks.startTask');
+
+            const callbackId = message.id;
+            framelessMock.respondToMessage({
+              data: {
+                id: callbackId,
+                args: [error, undefined],
+              },
+            } as DOMMessageEvent);
+          });
         });
       } else {
         it(`FRAMED: should not allow calls from context ${context}`, async () => {
