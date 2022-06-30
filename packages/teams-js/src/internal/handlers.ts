@@ -56,6 +56,11 @@ export function removeHandler(name: string): void {
 }
 
 /** @internal */
+export function doesHandlerExist(name: string): boolean {
+  return HandlersPrivate.handlers[name] != null;
+}
+
+/** @internal */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
   handler && sendMessageToParent('registerHandler', ['themeChange']);
