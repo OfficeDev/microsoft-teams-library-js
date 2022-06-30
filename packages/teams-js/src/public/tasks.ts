@@ -18,8 +18,9 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for url based dialogs
-   * and {@link dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): PostMessageChannel} for bot based dialogs.
+   * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
+   * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
    *
    * Allows an app to open the task module.
    *
@@ -30,17 +31,16 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
+    const dialogSubmitHandler = submitHandler
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      : undefined;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
-        submitHandler(sdkResponse.err, sdkResponse.result),
-      );
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
-        submitHandler(sdkResponse.err, sdkResponse.result),
-      );
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -66,7 +66,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit dialog.submit(result?: string | object, appIds?: string | string[]): void} instead.
+   * As of 2.0.0, please use {@link dialog.submit} instead.
    *
    * Submit the task module.
    *
@@ -77,6 +77,11 @@ export namespace tasks {
     dialog.submit(result, appIds);
   }
 
+  /**
+   * Converts {@link TaskInfo} to {@link UrlDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - Converted UrlDialogInfo object
+   */
   export function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
@@ -90,6 +95,11 @@ export namespace tasks {
     return urldialogInfo;
   }
 
+  /**
+   * Converts {@link TaskInfo} to {@link BotUrlDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted BotUrlDialogInfo object
+   */
   export function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
@@ -103,6 +113,13 @@ export namespace tasks {
     };
     return botUrldialogInfo;
   }
+
+  /**
+   * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
+   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension.Small}
+   * @param taskInfo TaskInfo object from which to extract size info, if specified
+   * @returns TaskInfo with height and width specified
+   */
   export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;

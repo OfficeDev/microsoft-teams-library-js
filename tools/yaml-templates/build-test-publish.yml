@@ -17,18 +17,17 @@ steps:
     inputs:
       Arguments: 'install'
 
-  - task: Yarn@3
+  - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
     condition: and(
       eq(variables['Build.Reason'], 'PullRequest'),
-      not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/2.0.0-beta')),
-      not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/2.0.0-beta'))
+      not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')),
+      not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/'))
       )
-    inputs:
-      Arguments: 'beachball check'
 
-  - script: 'node prepNextDevRelease.js'
-    displayName: 'node prepNextDevRelease.js'
+  # Determines what the next beta version will be. E.g 2.0.0-beta.x
+  - script: 'node prepBetaRelease.js'
+    displayName: 'node prepBetaRelease.js'
     workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
     condition: and(
       eq(variables['Build.SourceBranch'], 'refs/heads/main'),
@@ -154,3 +153,17 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
     displayName: 'Publish NPM feed to Build Artifacts'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\view-published-packages-urls.ps1
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+      flattenFolders: true
+    displayName: 'Copy View Published Pacakges Url script to scripts'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
+      ArtifactName: 'scripts'
+    displayName: 'Publish Powershell Scripts to Build Artifacts'

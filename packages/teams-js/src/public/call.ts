@@ -15,14 +15,22 @@ export namespace call {
   }
 
   export interface StartCallParams {
-    // comma-separated list of user IDs representing the participants of the call.
-    // Currently the User ID field supports the Azure AD UserPrincipalName,
-    // typically an email address, or in case of a PSTN call, it supports a pstn
-    // mri 4:<phonenumber>.
+    /**
+     * Comma-separated list of user IDs representing the participants of the call.
+     *
+     * @remarks
+     * Currently the User ID field supports the Azure AD UserPrincipalName,
+     * typically an email address, or in case of a PSTN call, it supports a pstn
+     * mri 4:<phonenumber>.
+     */
     targets: string[];
-    // List of modalities for the call. Defaults to [“audio”].
+    /**
+     * List of modalities for the call. Defaults to [“audio”].
+     */
     requestedModalities?: CallModalities[];
-    // An optional parameter that informs about the source of the deep link
+    /**
+     * An optional parameter that informs about the source of the deep link
+     */
     source?: string;
   }
 

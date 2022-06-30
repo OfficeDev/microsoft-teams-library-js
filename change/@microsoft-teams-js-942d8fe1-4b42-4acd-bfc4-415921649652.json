@@ -1,6 +1,6 @@
 {
-  "type": "patch",
-  "comment": "Added missing reference documentation comments to the `pages` capability",
+  "type": "none",
+  "comment": "Added a powershell script to view published package urls in our ADO pipeline",
   "packageName": "@microsoft/teams-js",
   "email": "jdahiya8719@outlook.com",
   "dependentChangeType": "none"

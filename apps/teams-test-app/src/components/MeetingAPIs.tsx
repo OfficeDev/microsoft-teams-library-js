@@ -159,6 +159,61 @@ const RegisterLiveStreamChangedHandler = (): React.ReactElement =>
     },
   });
 
+const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerRaiseHandStateChangedHandler',
+    title: 'Register RaiseHandState Changed Handler',
+    onClick: async setResult => {
+      const handler = (eventData: meeting.RaiseHandStateChangedEventData): void => {
+        let res;
+        if (eventData.error) {
+          res = `Receieved error ${JSON.stringify(eventData.error)}`;
+        } else {
+          res = `RaiseHand state changed to ${JSON.stringify(eventData.raiseHandState)}`;
+        }
+        setResult(res);
+      };
+      meeting.registerRaiseHandStateChangedHandler(handler);
+
+      return generateRegistrationMsg('the raise hand state changes');
+    },
+  });
+
+const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerMeetingReactionReceivedHandler',
+    title: 'Register Meeting Reaction Received Handler',
+    onClick: async setResult => {
+      const handler = (eventData: meeting.MeetingReactionReceivedEventData): void => {
+        let res;
+        if (eventData.error) {
+          res = `Receieved error ${JSON.stringify(eventData.error)}`;
+        } else {
+          res = `Received ${JSON.stringify(eventData.meetingReactionType)}`;
+        }
+        setResult(res);
+      };
+      meeting.registerMeetingReactionReceivedHandler(handler);
+
+      return generateRegistrationMsg('meeting reaction received');
+    },
+  });
+
+const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerSpeakingStateChangedHandler',
+    title: 'Register SpeakingState Changed Handler',
+    onClick: async setResult => {
+      const handler = (speakingState: meeting.ISpeakingState): void => {
+        const res = `Speaking state changed to ${speakingState.isSpeakingDetected}`;
+        setResult(res);
+      };
+      meeting.registerSpeakingStateChangeHandler(handler);
+
+      return generateRegistrationMsg('the speaking state changes');
+    },
+  });
+
 const ShareAppContentToStage = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'shareAppContentToStage',
@@ -252,6 +307,9 @@ const MeetingAPIs = (): ReactElement => (
     <RequestStartLiveStreaming />
     <RequestStopLiveStreaming />
     <RegisterLiveStreamChangedHandler />
+    <RegisterRaiseHandStateChangedHandler />
+    <RegisterMeetingReactionReceivedHandler />
+    <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />

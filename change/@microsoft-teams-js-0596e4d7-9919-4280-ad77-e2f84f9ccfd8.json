@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added a link to information about the updated `Context` in the reference documentation comments",
+  "comment": "Fixed broken SDK reference documentation links and added SDK reference documentation validation to build step.",
   "packageName": "@microsoft/teams-js",
   "email": "erinha@users.noreply.github.com",
   "dependentChangeType": "patch"
