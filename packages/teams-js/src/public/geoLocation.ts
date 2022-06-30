@@ -10,7 +10,7 @@ import { runtime } from './runtime';
 export namespace geoLocation {
   /**
    * Fetches current user coordinates
-   * @returns Promise of user's current location
+   * @returns Promise of user's current {@linkcode Location}
    */
   export function getCurrentLocation(): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);

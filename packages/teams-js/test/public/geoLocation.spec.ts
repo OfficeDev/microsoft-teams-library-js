@@ -134,9 +134,13 @@ describe('geoLocation', () => {
 
         it('hasPermission call in default version of platform support fails', async () => {
           await framelessPlatform.initializeWithContext(context);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          expect.assertions(4);
           framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-          expect(() => geoLocation.hasPermission()).rejects.toEqual(errorNotSupportedOnPlatform);
+          try {
+            geoLocation.hasPermission();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
         });
 
         it('hasPermission call with successful result', async () => {
@@ -205,9 +209,12 @@ describe('geoLocation', () => {
         it('requestPermission call in default version of platform support fails', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion('originalDefaultPlatformVersion');
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
-
-          expect(() => geoLocation.requestPermission()).rejects.toEqual(errorNotSupportedOnPlatform);
+          expect.assertions(4);
+          try {
+            geoLocation.requestPermission();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
         });
 
         it(`should throw error when geoLocation is not supported in runtime config. context: ${context}`, async () => {
@@ -313,8 +320,7 @@ describe('geoLocation', () => {
           it(`showLocation call in default version of platform support fails. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.task);
             framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
-
+            expect.assertions(4);
             try {
               geoLocation.map.showLocation(defaultLocation);
             } catch (e) {
@@ -426,7 +432,6 @@ describe('geoLocation', () => {
           it(`chooseLocation call in default version of platform support fails. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.task);
             framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
             expect.assertions(4);
 
             try {
@@ -493,5 +498,15 @@ describe('geoLocation', () => {
         }
       });
     });
+  });
+  it('hasPermission call in default version of platform support fails', async () => {
+    await framelessPlatform.initializeWithContext(FrameContexts.content);
+    expect.assertions(4);
+    framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+    try {
+      geoLocation.hasPermission();
+    } catch (e) {
+      expect(e).toEqual(errorNotSupportedOnPlatform);
+    }
   });
 });
