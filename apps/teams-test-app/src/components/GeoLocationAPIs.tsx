@@ -14,7 +14,7 @@ const CheckGeoLocationMapCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkLocationMapCapability',
     title: 'Check geoLocation Map Capability',
-    onClick: async () => `geoLocation module ${geoLocation.map.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `geoLocation.map module ${geoLocation.map.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetCurrentLocation = (): React.ReactElement =>
