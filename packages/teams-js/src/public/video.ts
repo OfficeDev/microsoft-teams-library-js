@@ -11,6 +11,7 @@ import { runtime } from './runtime';
 export namespace video {
   /**
    * Represents a video frame
+   * @beta
    */
   export interface VideoFrame {
     /**
@@ -41,6 +42,7 @@ export namespace video {
 
   /**
    * Video frame format enum, currently only support NV12
+   * @beta
    */
   export enum VideoFrameFormat {
     NV12,
@@ -48,16 +50,18 @@ export namespace video {
 
   /**
    * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
+   * @beta
    */
   export interface VideoFrameConfig {
     /**
-     * video format
+     * Video format
      */
     format: VideoFrameFormat;
   }
 
   /**
-   *  Video effect change type enum
+   * Video effect change type enum
+   * @beta
    */
   export enum EffectChangeType {
     /**
@@ -71,7 +75,8 @@ export namespace video {
   }
 
   /**
-   *  Video frame call back function definition
+   * Video frame call back function definition
+   * @beta
    */
   export type VideoFrameCallback = (
     frame: VideoFrame,
@@ -80,12 +85,14 @@ export namespace video {
   ) => void;
 
   /**
-   *  Video effect change call back function definition
+   * Video effect change call back function definition
+   * @beta
    */
   export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
    * Register to read the video frames in Permissions section
+   * @beta
    * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
    * @param config - VideoFrameConfig to customize generated video frame parameters
    */
@@ -104,10 +111,10 @@ export namespace video {
   }
 
   /**
-   * video extension should call this to notify host client that the current selected effect parameter changed.
+   * Video extension should call this to notify host client that the current selected effect parameter changed.
    * If it's pre-meeting, host client will call videoEffectCallback immediately then use the videoEffect.
    * If it's the in-meeting scenario, we will call videoEffectCallback when apply button clicked.
-   *
+   * @beta
    * @param effectChangeType - the effect change type.
    * @param effectId - Newly selected effect id.
    */
@@ -124,6 +131,7 @@ export namespace video {
 
   /**
    * Register the video effect callback, host client uses this to notify the video extension the new video effect will by applied
+   * @beta
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
@@ -137,6 +145,7 @@ export namespace video {
   /**
    * Sending notification to host client finished the video frame processing, now host client can render this video frame
    * or pass the video frame to next one in video pipeline
+   * @beta
    */
   function notifyVideoFrameProcessed(): void {
     sendMessageToParent('video.videoFrameProcessed');
@@ -144,6 +153,7 @@ export namespace video {
 
   /**
    * Sending error notification to host client
+   * @beta
    * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
@@ -152,6 +162,7 @@ export namespace video {
 
   /**
    * Checks if video capability is supported by the host
+   * @beta
    * @returns true if the video capability is enabled in runtime.supports.video and
    * false if it is disabled
    */
