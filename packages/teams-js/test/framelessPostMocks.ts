@@ -2,6 +2,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
+import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
@@ -59,8 +60,15 @@ export class FramelessPostMocks {
   /**
    * To be called after initializeWithContext to set the clientSupportedSDKVersion
    */
-  public setClientSupportedSDKVersion = (version: string) => {
+  public setClientSupportedSDKVersion = (version: string): void => {
     GlobalVars.clientSupportedSDKVersion = version;
+  };
+
+  /**
+   * To be called after initializeWithContext to set the runtimeConfig
+   */
+  public setRuntimeConfig = (runtime: IRuntime): void => {
+    applyRuntimeConfig(runtime);
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {

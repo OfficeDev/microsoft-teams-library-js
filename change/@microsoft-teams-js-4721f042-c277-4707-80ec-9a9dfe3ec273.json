@@ -1,10 +1,7 @@
 {
   "type": "minor",
-  "comment": {
-    "title": "",
-    "value": ""
-  },
+  "comment": "Added `storage` capability with APIs to allows apps to discover if web storage is supported by the host client",
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "reenulnu@microsoft.com",
   "dependentChangeType": "patch"
 }

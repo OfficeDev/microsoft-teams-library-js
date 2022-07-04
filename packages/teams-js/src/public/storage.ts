@@ -9,6 +9,11 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace storage {
+  /**
+   * Checks if web storage gets cleared when a user logs out from host client
+   *
+   * @returns true is web storage gets cleared on logout and false if it does not
+   */
   export function isWebStorageClearedOnUserLogOut(): boolean {
     ensureInitialized();
     // return true as storage is always cleared on desktop.
@@ -18,6 +23,11 @@ export namespace storage {
     return isSupported();
   }
 
+  /**
+   * Checks if storage capability is supported by the host
+   * @returns true if the storage capability is enabled in runtime.supports.storage and
+   * false if it is disabled
+   */
   export function isSupported(): boolean {
     return runtime.supports.storage ? true : false;
   }
