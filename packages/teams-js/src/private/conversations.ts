@@ -10,99 +10,76 @@ import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
+ * Represents the information about the conversation being opened
  */
 export interface OpenConversationRequest {
   /**
-   * @hidden
    * The Id of the subEntity where the conversation is taking place
    */
   subEntityId: string;
 
   /**
-   * @hidden
    * The title of the conversation
    */
   title: string;
 
   /**
-   * @hidden
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
    */
   conversationId?: string;
 
   /**
-   * @hidden
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
    */
   channelId?: string;
 
   /**
-   * @hidden
    * The entity Id of the tab
    */
   entityId: string;
 
   /**
-   * @hidden
    * A function that is called once the conversation Id has been created
    */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
-   * @hidden
    * A function that is called if the pane is closed
    */
   onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
 /**
- * @hidden
- * Hide from docs.
- * ------
- *
- * @internal
+ * Represents information about the conversation that has been started or closed
  */
 export interface ConversationResponse {
   /**
-   * @hidden
    * The Id of the subEntity where the conversation is taking place
    */
   subEntityId: string;
 
   /**
-   * @hidden
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
    */
   conversationId?: string;
 
   /**
-   * @hidden
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
    */
   channelId?: string;
 
   /**
-   * @hidden
    * The entity Id of the tab
    */
   entityId?: string;
 }
 
 /**
- * @hidden
  * Namespace to interact with the conversational subEntities inside the tab
  */
 export namespace conversations {
   /**
-   * @hidden
-   * Hide from docs
-   * --------------
-   * Allows the user to start or continue a conversation with each subentity inside the tab
+   * Allows the user to start or continue a conversation with each sub-entity inside the tab
    *
    * @returns Promise resolved upon completion
    */
@@ -148,9 +125,6 @@ export namespace conversations {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------------
    * Allows the user to close the conversation in the right pane
    */
   export function closeConversation(): void {
