@@ -8,6 +8,7 @@
     "notDocumented": false
   },
   "intentionallyNotExported": [
+    "src/private/conversations.ts:OpenConversationRequest",
     "src/public/chat.ts:OpenGroupChatRequest",
     "src/public/chat.ts:OpenSingleChatRequest",
     "src/public/interfaces.ts:BotUrlDialogInfo",

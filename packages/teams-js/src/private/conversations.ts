@@ -10,7 +10,11 @@ import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
- * Represents information about the conversation being opened
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
  */
 export interface OpenConversationRequest {
   /**
@@ -50,7 +54,11 @@ export interface OpenConversationRequest {
 }
 
 /**
- * Represents information about the conversation that has been started or closed
+ * @hidden
+ * Hide from docs.
+ * ------
+ *
+ * @internal
  */
 export interface ConversationResponse {
   /**
