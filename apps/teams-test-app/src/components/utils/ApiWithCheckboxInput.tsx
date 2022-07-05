@@ -9,10 +9,10 @@ export interface ApiWithCheckboxInputProps {
   name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
   label: string;
   onClick:
-    | ((input: boolean) => Promise<string>)
+    | ((input: boolean, setResult: (result: string) => void) => Promise<string>)
     | {
-        withPromise: (input: boolean) => Promise<string>;
-        withCallback: (input: boolean) => string;
+        withPromise: (input: boolean, setResult: (result: string) => void) => Promise<string>;
+        withCallback: (input: boolean, setResult: (result: string) => void) => string;
       };
   defaultCheckboxState?: boolean;
 }
@@ -27,14 +27,14 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
 
     try {
       if (typeof onClick === 'function') {
-        const result = await onClick(value);
+        const result = await onClick(value, setResult);
         setResult(result);
       } else {
         if (isTestBackCompat()) {
-          const result = onClick.withCallback(value);
+          const result = onClick.withCallback(value, setResult);
           setResult(result);
         } else {
-          const result = await onClick.withPromise(value);
+          const result = await onClick.withPromise(value, setResult);
           setResult(result);
         }
       }
