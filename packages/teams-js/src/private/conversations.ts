@@ -10,7 +10,7 @@ import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
 
 /**
- * Represents the information about the conversation being opened
+ * Represents information about the conversation being opened
  */
 export interface OpenConversationRequest {
   /**
@@ -81,6 +81,7 @@ export namespace conversations {
   /**
    * Allows the user to start or continue a conversation with each sub-entity inside the tab
    *
+   * @param openConversationRequest the conversation that is being opened or started
    * @returns Promise resolved upon completion
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
