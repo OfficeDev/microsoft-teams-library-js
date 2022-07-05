@@ -619,6 +619,9 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
   completionBotId: string;
 }
 
+/**
+ * Data structure to describe dialog information
+ */
 export interface DialogInfo {
   /**
    * The url to be rendered in the webview/iframe.

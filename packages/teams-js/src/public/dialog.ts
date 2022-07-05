@@ -89,7 +89,7 @@ export namespace dialog {
     }
     const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
     sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-      submitHandler({ err, result });
+      submitHandler?.({ err, result });
       removeHandler('messageForParent');
     });
   }
@@ -237,7 +237,7 @@ export namespace dialog {
       const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
 
       sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler({ err, result });
+        submitHandler?.({ err, result });
         removeHandler('messageForParent');
       });
     }
