@@ -229,6 +229,5 @@ export const _minRuntimeConfigToUninitialize = {
     },
     teamsCore: {},
     logs: {},
-    barCode: {},
   },
 };

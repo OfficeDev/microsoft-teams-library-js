@@ -22,14 +22,14 @@ const ScanBarCode = (): React.ReactElement =>
       },
       submit: async input => {
         const scannedCode = await barCode.scanBarCode(input);
-        return scannedCode;
+        return JSON.stringify(scannedCode);
       },
     },
   });
 
 const HasBarCodePermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'HasBarCodePermission',
+    name: 'hasBarCodePermission',
     title: 'Has Permission',
     onClick: async () => {
       const result = await barCode.hasPermission();
@@ -39,7 +39,7 @@ const HasBarCodePermission = (): React.ReactElement =>
 
 const RequestBarCodePermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'RequestBarCodePermission',
+    name: 'requestBarCodePermission',
     title: 'Request Permission',
     onClick: async () => {
       const result = await barCode.requestPermission();
