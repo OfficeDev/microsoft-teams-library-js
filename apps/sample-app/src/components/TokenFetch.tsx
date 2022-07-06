@@ -19,12 +19,21 @@ const TokenFetchComponent: React.FC = () => {
       setAccessToken(response.accessToken);
       authentication.notifySuccess(response.accessToken);
     });
+    instance.acquireTokenSilent(request).catch(response => {
+      authentication.notifyFailure(response);
+    });
   }, [setAccessToken, accounts, instance]);
 
   return (
     <>
-      {!accessToken && <p>Fetching access token...</p> && <Spinner size={SpinnerSize.large} />}
-      {accessToken && <p>...</p>}
+      {!accessToken ? (
+        <>
+          <p>Fetching access token...</p>
+          <Spinner size={SpinnerSize.large} />
+        </>
+      ) : (
+        <p>...</p>
+      )}
     </>
   );
 };

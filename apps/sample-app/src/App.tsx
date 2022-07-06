@@ -1,18 +1,12 @@
 import './App.css';
 
-import { Spinner, SpinnerSize } from '@fluentui/react';
-import { Button } from '@fluentui/react-components';
-import {
-  FluentProvider,
-  teamsDarkTheme,
-  teamsHighContrastTheme,
-  teamsLightTheme,
-  Theme,
-} from '@fluentui/react-components';
+import { Button, FluentProvider, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
 import { app, authentication } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
 import { ProfileContent } from './components/Profile';
+import { appInitializationFailed, getTheme } from './components/utils';
+
 const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = React.useState(false);
   const [accessToken, setAccessToken] = React.useState<string>();
@@ -24,63 +18,50 @@ const App: React.FC = () => {
     })();
   }, [setIsInitialized]);
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async function handle() {
+  const handle = React.useCallback(async () => {
     const result = await authentication.authenticate({
       url: 'https://localhost:4003/?auth=1',
     });
     setAccessToken(result);
-  }
+  }, [setAccessToken]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [context, setContext] = useState<app.Context>();
   const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
 
   React.useEffect(() => {
     (async () => {
       try {
-        await app.initialize();
+        app.isInitialized();
         app.notifyAppLoaded();
         app.notifySuccess();
-        const ctx = await app.getContext();
-        setContext(ctx);
+        const context = await app.getContext();
+        const themeNow = getTheme(context?.app?.theme);
+        setCurrTheme(themeNow);
         app.registerOnThemeChangeHandler(function(theme) {
-          switch (theme) {
-            case 'dark':
-              setCurrTheme(teamsDarkTheme);
-              break;
-            case 'contrast':
-              setCurrTheme(teamsHighContrastTheme);
-              break;
-            case 'default':
-            default:
-              setCurrTheme(teamsLightTheme);
-          }
+          setCurrTheme(getTheme(theme));
         });
       } catch (e) {
-        console.error(e);
+        appInitializationFailed();
       }
     })();
-  }, [setContext, setCurrTheme]);
+  }, [setCurrTheme]);
 
   return (
-    <>
-      <FluentProvider theme={currTheme}>
-        {isInitialized && !accessToken && <p className="App-header">Sample App</p> && (
-          <p className="App-header2">(starting auth flow...)</p>
-        )}
-
-        {isInitialized && !accessToken && (
-          <p className="first">
-            <Button className="signInPrimary" appearance="primary" onClick={() => handle()}>
-              Sign in
-            </Button>
-          </p>
-        )}
-        {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
-        {!isInitialized && <Spinner size={SpinnerSize.large} />}
-      </FluentProvider>
-    </>
+    <FluentProvider theme={currTheme}>
+      {isInitialized && !accessToken && (
+        <div className="appMainPage">
+          <Text as="p">Sample App</Text>
+          <div>
+            <Text as="p">
+              <Button appearance="primary" onClick={() => handle()}>
+                Sign in
+              </Button>
+            </Text>
+          </div>
+        </div>
+      )}
+      {isInitialized && accessToken && <ProfileContent accessToken={accessToken} />}
+      {!isInitialized && <Spinner />}
+    </FluentProvider>
   );
 };
 

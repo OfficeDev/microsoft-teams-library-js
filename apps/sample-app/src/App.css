@@ -1,24 +1,7 @@
-.App {
-  text-align: center;
-  background-color: whitesmoke;
-}
-
-.App-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  
-}
-.App-header2 {
+.appMainPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(8px + 2vmin);
-}
-.first{
-  align-items:center;
-  text-align: center;
 }

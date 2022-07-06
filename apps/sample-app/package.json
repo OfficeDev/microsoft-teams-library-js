@@ -1,8 +1,8 @@
 {
-  "name": "sample-app",
+  "name": "teams-sample-app",
   "private": true,
-  "author": "Msft",
-  "description": "sample app",
+  "author": "Microsoft Teams",
+  "description": "Sample app leveraging teams js v2 for multi-hub experience",
   "version": "0.0.1",
   "scripts": {
     "build": "yarn lint && webpack",
@@ -15,7 +15,8 @@
     "@azure/msal-react": "^1.4.2",
     "@microsoft/microsoft-graph-client": "^3.0.2",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "@fluentui/react": "^8.75.1"
   },
   "devDependencies": {
     "@microsoft/microsoft-graph-types": "^2.21.0",
