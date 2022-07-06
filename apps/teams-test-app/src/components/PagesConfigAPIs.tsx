@@ -106,6 +106,27 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
     },
   });
 
+const RegisterOnRemoveHandlerFailure = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_registerOnRemoveHandlerFailure',
+    title: 'Register On Remove Handler Failure',
+    onClick: {
+      withPromise: async setResult => {
+        pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure('someReason');
+        });
+        return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
+      },
+      withCallback: setResult => {
+        settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure('someReason');
+        });
+      },
+    },
+  });
+
 const RegisterChangeConfigHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerChangeConfigsHandler',
@@ -140,6 +161,7 @@ const PagesConfigAPIs = (): ReactElement => (
     <SetConfig />
     <SetValidityState />
     <RegisterOnRemoveHandler />
+    <RegisterOnRemoveHandlerFailure />
     <RegisterChangeConfigHandler />
     <CheckPageConfigCapability />
   </>
