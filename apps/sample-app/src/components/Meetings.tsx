@@ -12,6 +12,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
   const { messages } = props;
 
   const itemList: CalendarListItem[] = [];
+  // using a for loop instead of 'map' function to remove instances of 'OOF'
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     if (message['subject']?.includes('OOF')) {
@@ -37,10 +38,8 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
   ];
 
   return (
-    <>
-      <div>
-        <DetailsList items={itemList} columns={columns} />
-      </div>
-    </>
+    <div>
+      <DetailsList items={itemList} columns={columns} />
+    </div>
   );
 };

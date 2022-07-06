@@ -2,7 +2,7 @@
   "name": "teams-sample-app",
   "private": true,
   "author": "Microsoft Teams",
-  "description": "Sample app leveraging teams js v2 for multi-hub experience",
+  "description": "Sample app leveraging teams js v2 for multi-host experience",
   "version": "0.0.1",
   "scripts": {
     "build": "yarn lint && webpack",

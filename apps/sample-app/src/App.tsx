@@ -13,8 +13,12 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     (async () => {
-      await app.initialize();
-      setIsInitialized(true);
+      try {
+        await app.initialize();
+        setIsInitialized(true);
+      } catch (e) {
+        appInitializationFailed();
+      }
     })();
   }, [setIsInitialized]);
 

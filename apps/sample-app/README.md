@@ -1,6 +1,6 @@
 # Sample App
 
-Sample app leveraging teams js v2 for multi hub experience
+Sample app leveraging teams js v2 for multi host experience
 
 (I will be working on this section below in the coming few weeks)
 

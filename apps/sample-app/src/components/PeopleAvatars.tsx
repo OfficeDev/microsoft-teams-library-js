@@ -35,7 +35,7 @@ export const PeopleAvatarList: React.FC<MeetingProps> = (props: MeetingProps) =>
 
   const AvatarExample: React.FunctionComponent = () => {
     //Need to change label of each hover trigger on Avatar
-    /// goal: person name, capabailites of call/mail/text
+    /// goal: person name, capabilities of call/mail/text
     return (
       <div>
         {AvatarItemList.map(a => (
