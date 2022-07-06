@@ -19,3 +19,10 @@ export function appInitializationFailed(): void {
     message: 'App initialization failed',
   });
 }
+
+export function getDates(): [string, string] {
+  const current = new Date();
+  const currDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
+  const tomorrowDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + (current.getDate() + 1);
+  return [currDate, tomorrowDate];
+}

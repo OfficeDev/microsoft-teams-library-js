@@ -11,12 +11,10 @@ export const MainPage: React.FC<UserProps> = (props: UserProps) => {
   const { userInfo } = props;
 
   return (
-    <>
-      <div className="mainPageHeader">
-        <Text as="p">
-          Hello, <strong> {userInfo.displayName} </strong>
-        </Text>
-      </div>
-    </>
+    <div className="mainPageHeader">
+      <Text as="p">
+        Hello, <strong> {userInfo.displayName} </strong>
+      </Text>
+    </div>
   );
 };

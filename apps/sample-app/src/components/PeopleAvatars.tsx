@@ -1,8 +1,9 @@
 import './styles.css';
 
-import { Avatar, Tooltip } from '@fluentui/react-components';
+import { Avatar, MenuItem, MenuList, Text, Tooltip } from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
 import React from 'react';
+
 interface MeetingProps {
   messages: Message[];
 }
@@ -32,21 +33,30 @@ export const PeopleAvatarList: React.FC<MeetingProps> = (props: MeetingProps) =>
       AvatarItemList.push(item);
     }
   }
-
   const AvatarExample: React.FunctionComponent = () => {
-    //Need to change label of each hover trigger on Avatar
-    /// goal: person name, capabilities of call/mail/text
     return (
       <div>
         {AvatarItemList.map(a => (
-          <Tooltip content="Sample text" relationship={'label'} key={a.id}>
-            {triggerProps => (
-              <span key={a.id}>
-                <button {...triggerProps} key={a.id}>
-                  <Avatar key={a.id} {...a} color="colorful" size={56} />
-                </button>
-              </span>
-            )}
+          <Tooltip
+            content={
+              <>
+                <Text as="span"> {a.name} </Text>
+                <MenuList>
+                  {/* just some sample options now, it will actually be dependent on capabilties supported by host*/}
+                  <MenuItem>Call</MenuItem>
+                  <MenuItem>Text</MenuItem>
+                  <MenuItem>Mail</MenuItem>
+                </MenuList>
+              </>
+            }
+            key={a.id}
+            relationship={'label'}
+          >
+            <Text as="span" key={a.id}>
+              <button key={a.id}>
+                <Avatar key={a.id} {...a} color="colorful" size={56} />
+              </button>
+            </Text>
           </Tooltip>
         ))}
       </div>

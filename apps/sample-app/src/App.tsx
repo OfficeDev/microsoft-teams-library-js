@@ -10,31 +10,13 @@ import { appInitializationFailed, getTheme } from './components/utils';
 const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = React.useState(false);
   const [accessToken, setAccessToken] = React.useState<string>();
+  const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
 
   React.useEffect(() => {
     (async () => {
       try {
         await app.initialize();
         setIsInitialized(true);
-      } catch (e) {
-        appInitializationFailed();
-      }
-    })();
-  }, [setIsInitialized]);
-
-  const handle = React.useCallback(async () => {
-    const result = await authentication.authenticate({
-      url: 'https://localhost:4003/?auth=1',
-    });
-    setAccessToken(result);
-  }, [setAccessToken]);
-
-  const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
-
-  React.useEffect(() => {
-    (async () => {
-      try {
-        app.isInitialized();
         app.notifyAppLoaded();
         app.notifySuccess();
         const context = await app.getContext();
@@ -47,7 +29,15 @@ const App: React.FC = () => {
         appInitializationFailed();
       }
     })();
-  }, [setCurrTheme]);
+  }, [setIsInitialized, setCurrTheme]);
+
+  const handle = React.useCallback(async () => {
+    const currURL = window.location.href;
+    const result = await authentication.authenticate({
+      url: new URL('/?auth=1', currURL).toString(),
+    });
+    setAccessToken(result);
+  }, [setAccessToken]);
 
   return (
     <FluentProvider theme={currTheme}>

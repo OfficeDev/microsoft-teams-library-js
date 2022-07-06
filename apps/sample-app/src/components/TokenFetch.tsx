@@ -15,13 +15,15 @@ const TokenFetchComponent: React.FC = () => {
       ...loginRequest,
       account: accounts[0],
     };
-    instance.acquireTokenSilent(request).then(response => {
-      setAccessToken(response.accessToken);
-      authentication.notifySuccess(response.accessToken);
-    });
-    instance.acquireTokenSilent(request).catch(response => {
-      authentication.notifyFailure(response);
-    });
+    instance
+      .acquireTokenSilent(request)
+      .then(response => {
+        setAccessToken(response.accessToken);
+        authentication.notifySuccess(response.accessToken);
+      })
+      .catch(response => {
+        authentication.notifyFailure(response);
+      });
   }, [setAccessToken, accounts, instance]);
 
   return (

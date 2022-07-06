@@ -6,6 +6,7 @@ import React from 'react';
 import { MainPage } from './MainPage';
 import { MeetingList } from './Meetings';
 import { PeopleAvatarList } from './PeopleAvatars';
+import { getDates } from './utils';
 
 interface ProfileContentProps {
   accessToken: string;
@@ -29,13 +30,10 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       setUserInfo(userResponse);
 
       // Calendar Info
-      /// get date and time (maybe something like this can go into utils)
-      const current = new Date();
-      const cDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
-      const tomorrowDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + (current.getDate() + 1);
+      const [currDate, tomorrowDate] = getDates();
       // currently the calendar info does not adjust to time zone. Need to fix such that only meetings for that Pacific Time Zone day show up
       const calendarResponse = await client
-        .api('/me/calendarview?startdatetime=' + cDate + '&enddatetime=' + tomorrowDate)
+        .api('/me/calendarview?startdatetime=' + currDate + '&enddatetime=' + tomorrowDate)
         .header('Prefer', 'outlook.timezone="Pacific Standard Time"')
         .get();
       const calendar = calendarResponse as Calendar;
@@ -48,11 +46,15 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       {!calendar ? (
         <Text as="p"> loading meeting info..</Text>
       ) : (
-        <div className="data">
-          <Text as="p"> Your Meetings Today</Text>
-          <MeetingList messages={calendar['value']} />
-          <Text as="p"> People to Meet Today</Text>
-          <PeopleAvatarList messages={calendar['value']} />
+        <div className="flex-container">
+          <div className="column">
+            <Text as="p"> Your Meetings Today</Text>
+            <MeetingList messages={calendar['value']} />
+          </div>
+          <div className="column bg-alt">
+            <Text as="p"> People to Meet Today</Text>
+            <PeopleAvatarList messages={calendar['value']} />
+          </div>
         </div>
       )}
     </>

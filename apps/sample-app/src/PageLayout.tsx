@@ -1,7 +1,5 @@
 import { useIsAuthenticated } from '@azure/msal-react';
 import { useMsal } from '@azure/msal-react';
-// need to edit below import so as to not use fluent northstar
-import { Props } from '@fluentui/react-northstar';
 import React from 'react';
 
 import { loginRequest } from './components/authConfig';
@@ -11,7 +9,10 @@ function handleLogin(instance): void {
     console.error(e);
   });
 }
-export const PageLayout: React.FC<Props> = ({ children }: Props) => {
+interface props {
+  children: unknown;
+}
+export const PageLayout: React.FC<props> = ({ children }: props) => {
   const isAuthenticated = useIsAuthenticated();
   const { instance } = useMsal();
   return (
