@@ -1,11 +1,11 @@
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { storage } from '../../src/public/storage';
+import { webStorage } from '../../src/public/webStorage';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
-describe('storage', () => {
+describe('webStorage', () => {
   const mobilePlatformMock = new FramelessPostMocks();
   const desktopPlatformMock = new Utils();
 
@@ -28,54 +28,54 @@ describe('storage', () => {
 
   describe('isWebStorageClearedOnUserLogOut', () => {
     it('should not allow calls before initialization', () => {
-      expect(storage.isWebStorageClearedOnUserLogOut).toThrowError('The library has not yet been initialized');
+      expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError('The library has not yet been initialized');
     });
     Object.values(FrameContexts).forEach(context => {
       it('should always allow isWebStorageClearedOnUserLogOut calls in desktop for all contexts', async () => {
         await desktopPlatformMock.initializeWithContext(context, HostClientType.desktop);
-        const result = storage.isWebStorageClearedOnUserLogOut();
+        const result = webStorage.isWebStorageClearedOnUserLogOut();
         expect(result).toBeTruthy();
       });
-  });
+    });
     Object.values(FrameContexts).forEach(context => {
       it('should never allow isWebStorageClearedOnUserLogOut calls in web for all contexts', async () => {
         await desktopPlatformMock.initializeWithContext(FrameContexts.content, HostClientType.web);
-        const result = storage.isWebStorageClearedOnUserLogOut();
+        const result = webStorage.isWebStorageClearedOnUserLogOut();
         expect(result).not.toBeTruthy();
       });
     });
     Object.values(FrameContexts).forEach(context => {
       it('should allow calls isWebStorageClearedOnUserLogOut calls in mobile for all contexts', async () => {
           await mobilePlatformMock.initializeWithContext(context);
-          mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {storage: {}}});
-          const result = storage.isWebStorageClearedOnUserLogOut();
+          mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {webStorage: {}}});
+          const result = webStorage.isWebStorageClearedOnUserLogOut();
           expect(result).toBeTruthy();
       });
     });
   });
 
   describe('Framed - isSupported', () => {
-    it('storage.isSupported should return false if the runtime says storage is not supported', () => {
+    it('webStorage.isSupported should return false if the runtime says webStorage is not supported', () => {
       desktopPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(storage.isSupported()).not.toBeTruthy();
+      expect(webStorage.isSupported()).not.toBeTruthy();
     });
 
-    it('storage.isSupported should return true if the runtime says storage is supported', () => {
-      desktopPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {storage: {}}});
-      expect(storage.isSupported()).toBeTruthy();
+    it('webStorage.isSupported should return true if the runtime says webStorage is supported', () => {
+      desktopPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {webStorage: {}}});
+      expect(webStorage.isSupported()).toBeTruthy();
     });
   });
   describe('Frameless - isSupported', () => {
-    it('storage.isSupported should return false if the runtime says storage is not supported', async () => {
+    it('webStorage.isSupported should return false if the runtime says webStorage is not supported', async () => {
       await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.ios);
       mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(storage.isSupported()).not.toBeTruthy();
+      expect(webStorage.isSupported()).not.toBeTruthy();
     });
 
-    it('storage.isSupported should return true if the runtime says storage is supported', async () => {
+    it('webStorage.isSupported should return true if the runtime says webStorage is supported', async () => {
       await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.ios);
-      mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {storage: {}}});
-      expect(storage.isSupported()).toBeTruthy();
+      mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {webStorage: {}}});
+      expect(webStorage.isSupported()).toBeTruthy();
     });
   });
 });

@@ -12,7 +12,7 @@ export interface IRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly storage?: {};
+    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -53,7 +53,7 @@ export let runtime: IRuntime = {
     calendar: undefined,
     call: undefined,
     chat: undefined,
-    storage: undefined,
+    webStorage: undefined,
     conversations: undefined,
     dialog: {
       bot: undefined,
@@ -166,7 +166,7 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   ],
   '2.0.5': [
     {
-      capability: { storage: {} },
+      capability: { webStorage: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],

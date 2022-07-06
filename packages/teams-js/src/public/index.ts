@@ -45,7 +45,7 @@ export { profile } from './profile';
 export { video } from './video';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
-export { storage } from './storage';
+export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
 export {

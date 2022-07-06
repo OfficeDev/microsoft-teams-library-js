@@ -34,9 +34,9 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
-import StorageAPIs from './components/StorageAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
+import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -132,7 +132,7 @@ const App = (): ReactElement => {
       <PrivateAPIs />
       <RemoteCameraAPIs />
       <SharingAPIs />
-      <StorageAPIs />
+      <WebStorageAPIs />
       <StageViewAPIs />
       <TeamsCoreAPIs />
       <TeamsAPIs />
