@@ -85,10 +85,10 @@ const SetValidityState = (): React.ReactElement =>
     },
   });
 
-const RegisterOnRemoveHandlerSuccess = (): React.ReactElement =>
+const RegisterOnRemoveHandler = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'config_registerOnRemoveHandlerSuccess',
-    title: 'Register On Remove Handler Success',
+    name: 'config_registerOnRemoveHandler',
+    title: 'Register On Remove Handler',
     onClick: {
       withPromise: async setResult => {
         pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
