@@ -153,3 +153,17 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       ArtifactName: 'NPMFeed'
     displayName: 'Publish NPM feed to Build Artifacts'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\view-published-packages-urls.ps1
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+      flattenFolders: true
+    displayName: 'Copy View Published Pacakges Url script to scripts'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
+      ArtifactName: 'scripts'
+    displayName: 'Publish Powershell Scripts to Build Artifacts'
