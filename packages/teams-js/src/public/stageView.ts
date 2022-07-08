@@ -1,6 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the stage view specific part of the SDK.
@@ -53,11 +54,24 @@ export namespace stageView {
     return new Promise(resolve => {
       ensureInitialized(FrameContexts.content);
 
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
       if (!stageViewParams) {
         throw new Error('[stageView.open] Stage view params cannot be null');
       }
 
       resolve(sendAndHandleSdkError('stageView.open', stageViewParams));
     });
+  }
+
+  /**
+   * Checks if stageView capability is supported by the host
+   * @returns true if the stageView capability is enabled in runtime.supports.stageView and
+   * false if it is disabled
+   */
+  export function isSupported(): boolean {
+    return runtime.supports.stageView ? true : false;
   }
 }
