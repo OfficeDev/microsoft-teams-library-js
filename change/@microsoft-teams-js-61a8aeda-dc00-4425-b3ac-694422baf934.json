@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated reference documentation for global deprecated Context interface. Each deprecated `Context` property now links to respective mapped property in app.Context interface.",
+  "comment": "Updated reference documentation for global deprecated `Context` interface. Each deprecated `Context` property now links to respective mapped property in `app.Context` interface.",
   "packageName": "@microsoft/teams-js",
   "email": "jekoch@microsoft.com",
   "dependentChangeType": "patch"
