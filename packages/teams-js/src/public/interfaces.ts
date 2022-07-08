@@ -179,52 +179,69 @@ export enum FileOpenPreference {
  *
  * Represents the structure of the received context message.
  */
+
 export interface Context {
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.groupId} instead
+   *
    * The Office 365 group ID for the team with which the content is associated.
    * This field is available only when the identity permission is requested in the manifest.
    */
   groupId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.internalId} instead
+   *
    * The Microsoft Teams ID for the team with which the content is associated.
    */
   teamId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.displayName} instead
+   *
    * The name for the team with which the content is associated.
    */
   teamName?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.id} instead
+   *
    * The Microsoft Teams ID for the channel with which the content is associated.
    */
   channelId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.displayName} instead
+   *
    * The name for the channel with which the content is associated.
    */
   channelName?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.membershipType} instead
+   *
    * The type of the channel with which the content is associated.
    */
   channelType?: ChannelType;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.id} instead
+   *
    * The developer-defined unique ID for the entity this content points to.
    */
   entityId: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.subPageId} instead
+   *
    * The developer-defined unique ID for the sub-entity this content points to.
    * This field should be used to restore to a specific state within an entity,
    * such as scrolling to or activating a specific piece of content.
@@ -232,14 +249,18 @@ export interface Context {
   subEntityId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.locale} instead
+   *
    * The current locale that the user has configured for the app formatted as
    * languageId-countryId (for example, en-us).
    */
   locale: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.osLocaleInfo} instead
+   *
    * More detailed locale info from the user's OS if available. Can be used together with
    * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
    * time format configuration
@@ -247,9 +268,9 @@ export interface Context {
   osLocaleInfo?: LocaleInfo;
 
   /**
-   * @hidden
    * @deprecated
-   * As of 2.0.0, please use {@link loginHint} or {@link userPrincipalName} instead.
+   *
+   * As of 2.0.0, please use {@link app.Context.user.loginHint} or {@link app.Context.user.userPrincipalName} instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -258,7 +279,9 @@ export interface Context {
   upn?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.tenant.id} instead
+   *
    * The Azure AD tenant ID of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -267,67 +290,89 @@ export interface Context {
   tid?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.theme} instead
+   *
    * The current UI theme.
    */
   theme?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.isFullScreen} instead
+   *
    * Indication whether the tab is in full-screen mode.
    */
   isFullScreen?: boolean;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.type} instead
+   *
    * The type of the team.
    */
   teamType?: TeamType;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteUrl} instead
+   *
    * The root SharePoint site associated with the team.
    */
   teamSiteUrl?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteDomain} instead
+   *
    * The domain of the root SharePoint site associated with the team.
    */
   teamSiteDomain?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSitePath} instead
+   *
    * The relative path to the SharePoint site associated with the team.
    */
   teamSitePath?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.ownerTeamTenantId} instead
+   *
    * The tenant ID of the host team.
    */
   hostTeamTenantId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.ownerGroupId} instead
+   *
    * The AAD group ID of the host team.
    */
   hostTeamGroupId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.relativeUrl} instead
+   *
    * The relative path to the SharePoint folder associated with the channel.
    */
   channelRelativeUrl?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.host.sessionId} instead
+   *
    * Unique ID for the current Teams session for use in correlating telemetry data.
    */
   sessionId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.userRole} instead
+   *
    * The user's role in the team.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to the user's role, and never as proof of her role.
@@ -335,13 +380,17 @@ export interface Context {
   userTeamRole?: UserTeamRole;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.chat.id} instead
+   *
    * The Microsoft Teams ID for the chat with which the content is associated.
    */
   chatId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.loginHint} instead
+   *
    * A value suitable for use as a login_hint when authenticating with Azure AD.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -350,7 +399,9 @@ export interface Context {
   loginHint?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.userPrincipalName} instead
+   *
    * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -359,7 +410,9 @@ export interface Context {
   userPrincipalName?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.id} instead
+   *
    * The Azure AD object id of the current user.
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -368,154 +421,204 @@ export interface Context {
   userObjectId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.isArchived} instead
+   *
    * Indicates whether team is archived.
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
    */
   isTeamArchived?: boolean;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.host.name} instead
+   *
    * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
    */
   hostName?: HostName;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.host.clientType} instead
+   *
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
    * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
    */
   hostClientType?: HostClientType;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.frameContext} instead
+   *
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext?: FrameContexts;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharepoint} instead
+   *
    * SharePoint context. This is only available when hosted in SharePoint.
    */
   sharepoint?: any;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.tenant.teamsSku} instead
+   *
    * The type of license for the current users tenant.
    */
   tenantSKU?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.licenseType} instead
+   *
    * The license type for the current user.
    */
   userLicenseType?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.parentMessageId} instead
+   *
    * The ID of the parent message from which this task module was launched.
    * This is only available in task modules launched from bot cards.
    */
   parentMessageId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.host.ringId} instead
+   *
    * Current ring ID
    */
   ringId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.sessionId} instead
+   *
    * Unique ID for the current session for use in correlating telemetry data.
    */
   appSessionId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.appLaunchId} instead
+   *
    * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
    */
   appLaunchId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.isCallingAllowed} instead
+   *
    * Represents whether calling is allowed for the current logged in User
    */
   isCallingAllowed?: boolean;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.isPSTNCallingAllowed} instead
+   *
    * Represents whether PSTN calling is allowed for the current logged in User
    */
   isPSTNCallingAllowed?: boolean;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.meeting.id} instead
+   *
    * Meeting Id used by tab when running in meeting context
    */
   meetingId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.channel.defaultOneNoteSectionId} instead
+   *
    * The OneNote section ID that is linked to the channel.
    */
   defaultOneNoteSectionId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.isMultiWindow} instead
+   *
    * Indication whether the tab is in a pop out window
    */
   isMultiWindow?: boolean;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.iconPositionVertical} instead
+   *
    * Personal app icon y coordinate position
    */
   appIconPosition?: number;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.page.sourceOrigin} instead
+   *
    * Source origin from where the tab is opened
    */
   sourceOrigin?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.userClickTime} instead
+   *
    * Time when the user clicked on the tab
    */
   userClickTime?: number;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.team.templateId} instead
+   *
    * Team Template ID if there was a Team Template associated with the creation of the team.
    */
   teamTemplateId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.app.userFileOpenPreference} instead
+   *
    * Where the user prefers the file to be opened from by default during file open
    */
   userFileOpenPreference?: FileOpenPreference;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.user.displayName} instead
+   *
    * The address book name of the current user.
    */
   userDisplayName?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteId} instead
+   *
    * Teamsite ID, aka sharepoint site id.
    */
   teamSiteId?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.mySiteDomain} instead
+   *
    * The SharePoint my site domain associated with the user.
    */
   mySiteDomain?: string;
 
   /**
-   * @hidden
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.sharePointSite.mySitePath} instead
+   *
    * The SharePoint relative path to the current users mysite
    */
   mySitePath?: string;
