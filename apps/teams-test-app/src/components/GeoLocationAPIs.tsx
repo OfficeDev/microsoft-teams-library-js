@@ -5,7 +5,7 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
 const CheckGeoLocationCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkLocationCapability',
+    name: 'checkGeoLocationCapability',
     title: 'Check geoLocation Capability',
     onClick: async () => `geoLocation module ${geoLocation.isSupported() ? 'is' : 'is not'} supported`,
   });
@@ -14,7 +14,7 @@ const CheckGeoLocationMapCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkLocationMapCapability',
     title: 'Check geoLocation Map Capability',
-    onClick: async () => `geoLocation.map module ${geoLocation.map.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `LocationMap module ${geoLocation.map.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const GetCurrentLocation = (): React.ReactElement =>
@@ -29,7 +29,7 @@ const GetCurrentLocation = (): React.ReactElement =>
 
 const ChooseLocation = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'map.chooseLocation',
+    name: 'chooseLocationOnMap',
     title: 'Choose Location',
     onClick: async () => {
       const result = await geoLocation.map.chooseLocation();
@@ -39,7 +39,7 @@ const ChooseLocation = (): React.ReactElement =>
 
 const ShowLocation = (): React.ReactElement =>
   ApiWithTextInput<Location>({
-    name: 'map.showLocation',
+    name: 'showLocationOnMap',
     title: 'Show Location',
     onClick: {
       validateInput: input => {
@@ -56,7 +56,7 @@ const ShowLocation = (): React.ReactElement =>
 
 const HasGeoLocationPermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'HasGeoLocationPermission',
+    name: 'hasGeoLocationPermission',
     title: 'Has Permission',
     onClick: async () => {
       const result = await geoLocation.hasPermission();
@@ -66,7 +66,7 @@ const HasGeoLocationPermission = (): React.ReactElement =>
 
 const RequestGeoLocationPermission = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'RequestGeoLocationPermission',
+    name: 'requestGeoLocationPermission',
     title: 'Request Permission',
     onClick: async () => {
       const result = await geoLocation.requestPermission();
