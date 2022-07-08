@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "upload logs to blob container directly when SAS is provided",
+  "packageName": "@microsoft/teams-js",
+  "email": "Xukai.Wu@microsoft.com",
+  "dependentChangeType": "patch"
+}
