@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add isSupported to stageView",
+  "packageName": "@microsoft/teams-js",
+  "email": "rile@microsoft.com",
+  "dependentChangeType": "patch"
+}
