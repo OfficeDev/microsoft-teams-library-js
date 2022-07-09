@@ -464,7 +464,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.tenant.teamsSku} instead
+   * As of 2.0.0, please use {@link app.Context.user.tenant.teamsSku} instead
    *
    * The type of license for the current users tenant.
    */
