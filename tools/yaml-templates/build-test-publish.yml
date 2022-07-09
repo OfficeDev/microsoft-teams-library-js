@@ -124,15 +124,26 @@ steps:
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
 
+  - powershell: |
+      Copy-Item ".npmrc_publish" -Destination ".npmrc"
+    displayName: 'Copy .npmrc_publish to .npmrc'
+
   - task: CopyFiles@2
     inputs:
       Contents: |
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE
+        .npmrc
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
+
+  # Delete the .npmrc file so it doesn't affect other pipeline tasks
+  - task: DeleteFiles@1
+    inputs:
+      Contents: .npmrc
+    displayName: 'Delete .npmrc'
 
   - task: CopyFiles@2
     inputs:
