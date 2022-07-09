@@ -185,10 +185,10 @@ it('should throw exception', () => {
 
 We do not currently have official code coverage metrics. If you are running the Jest Visual Studio Code plugin, you can toggle the Coverage feature on, which highlights the lines of code that are not covered by the jest unit tests.
 
-![image.png](/.attachments/image-0f9c238f-c5ab-4ccc-bc21-e7099a85f7b3.png) Hot Tip ![image.png](/.attachments/image-000ab97c-3165-4e9e-a1cc-2fbf6130c446.png): Use this to help you decide if your unit tests are comprehensive!
+🔥 Hot Tip 🔥: Use this to help you decide if your unit tests are comprehensive!
 
-1. Open the VS Code Command Palette (Ctrl+Shift+P on Windows, Cmd+Shift+P on Mac)
+1. Open the VS Code Command Palette (Ctrl+Shift+P on Windows, ⌘+Shift+P on Mac)
 2. Type "Jest: Toggle Coverage"
 
-In the status bar at the bottom of VS Code, you should now see this symbol ![image.png](/.attachments/image-19286005-3c6b-4388-9358-1e3e5c0b7ab8.png) and when you open a source file, you should be able to see the lines highlighted when they are missing full or partial coverage:
-![image.png](/.attachments/image-a47fee95-d675-4e84-842d-7fede856ee59.png)
+In the status bar at the bottom of VS Code, you should now see this symbol ![Jest status bar symbol](jest_status.png) and when you open a source file, you should be able to see the lines highlighted when they are missing full or partial coverage:
+![VS code screenshot with code coverage highlighted](coverage_screenshot.png)
