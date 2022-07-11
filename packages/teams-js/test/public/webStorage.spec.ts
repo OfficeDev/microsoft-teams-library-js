@@ -1,12 +1,10 @@
-import { cli, version } from 'webpack-dev-middleware/node_modules/webpack';
+import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, generateBackCompatRuntimeConfig } from '../../src/public/runtime';
 import { webStorage } from '../../src/public/webStorage';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
-import { compareSDKVersions } from '../../src/internal/utils';
 
 describe('webStorage', () => {
   const framelessPlatformMock = new FramelessPostMocks();
@@ -31,67 +29,94 @@ describe('webStorage', () => {
     jest.clearAllMocks();
   });
 
-  describe('isWebStorageClearedOnUserLogOut', () => {
+  describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
     it('should not allow calls before initialization', () => {
       expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError('The library has not yet been initialized');
     });
-    Object.values(HostClientType).forEach(clientType => {
-      Object.values(FrameContexts).forEach(context => {
-        Object.values(testVersions).forEach(version => {
-        it(`should allow Framed - isWebStorageClearedOnUserLogOut calls for version ${version} and context ${context} and hostClientType ${clientType}`, async () => {
-          await framedPlatformMock.initializeWithContext(context, clientType);
-          framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-          const result = webStorage.isWebStorageClearedOnUserLogOut();
-          if(clientType === HostClientType.ios || clientType === HostClientType.android)
-          {
-            if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) 
-            {
-              expect(result).toBeTruthy();
-            }
-            else
-            {
-              expect(result).not.toBeTruthy();
-            }
-           
+
+    const supportedMobileClientTypes = [HostClientType.ios, HostClientType.android];
+
+    describe('Framed - isWebStorageClearedOnUserLogOut', () => {
+      Object.values(FrameContexts).forEach(frameContext => {
+        Object.values(HostClientType).forEach(clientType => {
+          // desktop HostClientType is always supported
+          if (clientType === HostClientType.desktop) {
+            it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
+              await framedPlatformMock.initializeWithContext(frameContext, clientType);
+              expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+            });
+          } else {
+            Object.values(testVersions).forEach(version => {
+              // mobile hostClientType is supported with valid version
+              if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) {
+                if (supportedMobileClientTypes.some(supportedClientType => supportedClientType === clientType)) {
+                  it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                    await framedPlatformMock.initializeWithContext(frameContext, clientType);
+                    framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+                  });
+                } else {
+                  it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                    await framedPlatformMock.initializeWithContext(frameContext, clientType);
+                    framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  });
+                }
+              } else {
+                // not supported for any client type with invalid version
+                it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                  await framedPlatformMock.initializeWithContext(frameContext, clientType);
+                  framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                });
+              }
+            });
           }
-          else if (clientType === HostClientType.desktop)
-          {
-            expect(result).toBeTruthy();
-          }
-          else
-          {
-            expect(result).not.toBeTruthy();
-          }  
-        });
-        it(`should allow Frameless - isWebStorageClearedOnUserLogOut calls for version ${version} and context ${context} and hostClientType ${clientType}`, async () => {
-          await framelessPlatformMock.initializeWithContext(context, clientType);
-          framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-          const result = webStorage.isWebStorageClearedOnUserLogOut();
-          if(clientType === HostClientType.ios || clientType === HostClientType.android)
-          {
-            if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) 
-            {
-              expect(result).toBeTruthy();
-            }
-            else
-            {
-              expect(result).not.toBeTruthy();
-            }
-           
-          }
-          else if (clientType === HostClientType.desktop)
-          {
-            expect(result).toBeTruthy();
-          }
-          else
-          {
-            expect(result).not.toBeTruthy();
-          } 
         });
       });
+    }); // end framed
+
+    describe('Frameless - isWebStorageClearedOnUserLogOut', () => {
+      Object.values(FrameContexts).forEach(frameContext => {
+        Object.values(HostClientType).forEach(clientType => {
+          // desktop HostClientType is always supported
+          if (clientType === HostClientType.desktop) {
+            it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
+              await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+              expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+            });
+          } else {
+            Object.values(testVersions).forEach(version => {
+              //mobile HostClientType is supported for valid version
+              if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) {
+                if (supportedMobileClientTypes.some(supportedClientType => supportedClientType === clientType)) {
+                  it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                    await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+                    framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+                  });
+                } else {
+                  it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                    await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+                    framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  });
+                }
+              } else {
+                // not supported for any client type with invalid version
+                it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
+                  await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+                  framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                });
+              }
+            });
+          }
+        });
       });
-    });
+    }); // end frameless
   });
+
   describe('Framed - isSupported', () => {
     it('webStorage.isSupported should return false if the runtime says webStorage is not supported', () => {
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -99,7 +124,7 @@ describe('webStorage', () => {
     });
 
     it('webStorage.isSupported should return true if the runtime says webStorage is supported', () => {
-      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {webStorage: {}}});
+      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
       expect(webStorage.isSupported()).toBeTruthy();
     });
   });
@@ -112,7 +137,7 @@ describe('webStorage', () => {
 
     it('webStorage.isSupported should return true if the runtime says webStorage is supported', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.task, HostClientType.ios);
-      framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {webStorage: {}}});
+      framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
       expect(webStorage.isSupported()).toBeTruthy();
     });
   });
