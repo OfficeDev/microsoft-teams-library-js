@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const result = params.get('code');
+      const { authId, method } = JSON.parse(params.get('state'));
+      if (method === 'deeplink') {
+        window.location.href = `msteams://teams.microsoft.com/l/auth-callback?authId=${authId}&result=${result}`;
+      }
+    </script>
+  </body>
+</html>

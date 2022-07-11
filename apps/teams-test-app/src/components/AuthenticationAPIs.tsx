@@ -128,6 +128,37 @@ const Authenticate = (): React.ReactElement =>
     },
   });
 
+const externalAuthParams = {
+  url: 'auth_start.html?oauthRedirectMethod=deeplink&authId=1',
+  isExternal: true,
+};
+
+const AuthenticateExternal = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'authentication.authenticate3',
+    title: 'authentication.authenticate.external',
+    onClick: {
+      withPromise: async () => {
+        const token = await authentication.authenticate(externalAuthParams);
+        return 'Success: ' + token;
+      },
+      withCallback: setResult => {
+        const successCallback = (result: string): void => {
+          setResult('Success: ' + result);
+        };
+        const failureCallback = (result: string): void => {
+          setResult('Error: Error: ' + result);
+        };
+        const authRequest: authentication.AuthenticateParameters = {
+          successCallback: successCallback,
+          failureCallback: failureCallback,
+          ...externalAuthParams,
+        };
+        authentication.authenticate(authRequest);
+      },
+    },
+  });
+
 const AuthenticationAPIs = (): ReactElement => (
   <>
     <h1>authentication</h1>
@@ -137,6 +168,7 @@ const AuthenticationAPIs = (): ReactElement => (
     <NotifyFailure />
     <NotifySuccess />
     <Authenticate />
+    <AuthenticateExternal />
   </>
 );
 
