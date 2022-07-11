@@ -1,13 +1,34 @@
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { DevicePermission, ErrorCode, Location } from './interfaces';
+import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newwer version of location module.
  */
 export namespace geoLocation {
+  /**
+   * Data struture to represent the location information
+   */
+  export interface Location {
+    /**
+      Latitude of the location
+      */
+    latitude: number;
+    /**
+      Longitude of the location
+      */
+    longitude: number;
+    /**
+      Accuracy of the coordinates captured
+      */
+    accuracy?: number;
+    /**
+      Time stamp when the location was captured
+      */
+    timestamp?: number;
+  }
   /**
    * Fetches current user coordinates
    * @returns Promise of user's current {@linkcode Location}

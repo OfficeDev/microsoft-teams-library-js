@@ -1,4 +1,4 @@
-import { Location, location, SdkError } from '@microsoft/teams-js';
+import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -21,7 +21,7 @@ const GetLocation = (): React.ReactElement =>
         }
       },
       submit: async (locationProps, setResult) => {
-        const callback = (error: SdkError, location: Location): void => {
+        const callback = (error: SdkError, location: location.Location): void => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {
@@ -35,7 +35,7 @@ const GetLocation = (): React.ReactElement =>
   });
 
 const ShowLocation = (): React.ReactElement =>
-  ApiWithTextInput<Location>({
+  ApiWithTextInput<location.Location>({
     name: 'showLocation',
     title: 'Show Location',
     onClick: {

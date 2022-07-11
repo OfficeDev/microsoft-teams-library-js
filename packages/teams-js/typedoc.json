@@ -14,7 +14,6 @@
     "src/public/interfaces.ts:DialogSize",
     "src/public/interfaces.ts:TaskInfo",
     "src/public/interfaces.ts:UrlDialogInfo",
-    "src/public/interfaces.ts:Location",
     "src/public/media.ts:MediaControllerEvent"
   ]
 }

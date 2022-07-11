@@ -1,4 +1,4 @@
-import { geoLocation, Location } from '@microsoft/teams-js';
+import { geoLocation } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -38,7 +38,7 @@ const ChooseLocation = (): React.ReactElement =>
   });
 
 const ShowLocation = (): React.ReactElement =>
-  ApiWithTextInput<Location>({
+  ApiWithTextInput<geoLocation.Location>({
     name: 'showLocationOnMap',
     title: 'Show Location',
     onClick: {

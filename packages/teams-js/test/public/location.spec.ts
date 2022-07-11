@@ -3,7 +3,6 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
-import { Location } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -16,7 +15,7 @@ describe('location', () => {
   const framedPlatform = new Utils();
   const minVersionForLocationAPIs = locationAPIsRequiredVersion;
 
-  const defaultLocation: Location = { latitude: 17, longitude: 17, accuracy: -1, timestamp: 100 };
+  const defaultLocation: location.Location = { latitude: 17, longitude: 17, accuracy: -1, timestamp: 100 };
   const originalDefaultPlatformVersion = '1.6.0';
   const defaultLocationProps: location.LocationProps = { allowChooseLocation: false, showMap: false };
 
@@ -133,7 +132,7 @@ describe('location', () => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
-        location.getLocation(defaultLocationProps, (error: SdkError, loc: Location) => {
+        location.getLocation(defaultLocationProps, (error: SdkError, loc: location.Location) => {
           expect(error).toBeFalsy();
           expect(loc).not.toBeNull();
           expect(loc.latitude).toBe(defaultLocation.latitude);
@@ -163,7 +162,7 @@ describe('location', () => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
-        location.getLocation(defaultLocationProps, (error: SdkError, loc: Location) => {
+        location.getLocation(defaultLocationProps, (error: SdkError, loc: location.Location) => {
           expect(loc).toBeFalsy();
           expect(error.errorCode).toBe(ErrorCode.PERMISSION_DENIED);
           done();

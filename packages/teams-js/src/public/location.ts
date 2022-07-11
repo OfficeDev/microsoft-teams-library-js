@@ -2,7 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { ErrorCode, Location, SdkError } from './interfaces';
+import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -26,6 +26,28 @@ export namespace location {
     value will be false.
     */
     showMap?: boolean;
+  }
+
+  /**
+   * Data struture to represent the location information
+   */
+  export interface Location {
+    /**
+    Latitude of the location
+    */
+    latitude: number;
+    /**
+    Longitude of the location
+    */
+    longitude: number;
+    /**
+    Accuracy of the coordinates captured
+    */
+    accuracy?: number;
+    /**
+    Time stamp when the location was captured
+    */
+    timestamp?: number;
   }
 
   /**
