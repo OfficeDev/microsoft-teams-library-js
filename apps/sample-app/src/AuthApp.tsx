@@ -2,7 +2,6 @@ import './App.css';
 
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import { Spinner } from '@fluentui/react';
-import { Text } from '@fluentui/react-components';
 import { app } from '@microsoft/teams-js';
 import React from 'react';
 
@@ -31,11 +30,7 @@ const AuthApp: React.FC = () => {
           <AuthenticatedTemplate>
             <TokenFetchComponent />
           </AuthenticatedTemplate>
-          <UnauthenticatedTemplate>
-            <div className="appMainPage">
-              <Text as="p">You are not signed in! Please sign in.</Text>
-            </div>
-          </UnauthenticatedTemplate>
+          <UnauthenticatedTemplate></UnauthenticatedTemplate>
         </PageLayout>
       )}
       {!isInitialized && <Spinner />}

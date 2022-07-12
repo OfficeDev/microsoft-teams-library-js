@@ -1,6 +1,6 @@
 import './App.css';
 
-import { Button, FluentProvider, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
+import { Button, FluentProvider, LargeTitle, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
 import { app, authentication } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
@@ -43,8 +43,10 @@ const App: React.FC = () => {
     <FluentProvider theme={currTheme}>
       {isInitialized && !accessToken && (
         <div className="appMainPage">
-          <Text as="p">Sample App</Text>
-          <div>
+          <div className="appMainPage-sub-container">
+            <LargeTitle block> My Day </LargeTitle>
+          </div>
+          <div className="appMainPage-sub-container">
             <Text as="p">
               <Button appearance="primary" onClick={() => handle()}>
                 Sign in

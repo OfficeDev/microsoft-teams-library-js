@@ -16,11 +16,18 @@
 .flex-container .column {
   text-align: center;
   padding: 10px;
-  background: #dbdfe5;
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
 }
-.flex-container .column.bg-alt {
-  background: #b4bac0;
+.sub-flex-container {
+  align-items: center;
+  display: flex;
+  padding: 5%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.paddingClass {
+  padding: 5%;
 }

@@ -1,51 +1,91 @@
 import './styles.css';
 
-import { Avatar, MenuItem, MenuList, Text, Tooltip } from '@fluentui/react-components';
-import { Message } from '@microsoft/microsoft-graph-types';
+import { Avatar, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Text, Tooltip } from '@fluentui/react-components';
+import { Message, User } from '@microsoft/microsoft-graph-types';
 import React from 'react';
 
-interface MeetingProps {
+import { getSupportedCapabilities, handleAudioCall, handleMail, handleMessage, handleVideoCall } from './utils';
+
+interface AvatarProps {
   messages: Message[];
+  user: User;
 }
 
-export const PeopleAvatarList: React.FC<MeetingProps> = (props: MeetingProps) => {
-  const { messages } = props;
-  interface AvatarItem {
-    id?: string | undefined;
-    name?: string;
-  }
+export interface AvatarItem {
+  id?: string | undefined;
+  name?: string;
+}
+interface AvatarProps {
+  messages: Message[];
+  user: User;
+}
+
+export interface AvatarItem {
+  id?: string | undefined;
+  name?: string;
+}
+
+export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
+  const messages = props.messages;
+  const user = props.user;
   const AvatarItemList: AvatarItem[] = [];
 
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    if (message['attendees'].length > 15 || message['attendees'].length === 0) {
-      continue;
-    }
-    if (message['subject']?.includes('OOF')) {
+    if (
+      message['attendees'].length > 15 ||
+      message['subject']?.includes('OOF') ||
+      message['subject']?.includes('Canceled')
+    ) {
       continue;
     }
     for (let j = 0; j < messages[i]['attendees'].length; j++) {
+      if (message['attendees'][j] === user.displayName) {
+        continue;
+      }
       const attendee = message['attendees'][j];
       const item: AvatarItem = {
         id: attendee['emailAddress']['address'] || '',
         name: attendee['emailAddress']['name'] || '',
       };
-      AvatarItemList.push(item);
+      if (item.name === user.displayName) {
+        continue;
+      } else {
+        AvatarItemList.push(item);
+      }
     }
   }
   const AvatarExample: React.FunctionComponent = () => {
+    const capabilities = getSupportedCapabilities();
     return (
       <div>
         {AvatarItemList.map(a => (
           <Tooltip
             content={
               <>
-                <Text as="span"> {a.name} </Text>
+                <Text weight="semibold" as="span">
+                  {a.name}
+                </Text>
                 <MenuList>
-                  {/* just some sample options now, it will actually be dependent on capabilties supported by host*/}
-                  <MenuItem>Call</MenuItem>
-                  <MenuItem>Text</MenuItem>
-                  <MenuItem>Mail</MenuItem>
+                  {capabilities.map(c => (
+                    <div key={c}>
+                      {c === 'Call' && (
+                        <Menu>
+                          <MenuTrigger>
+                            <MenuItem>Call</MenuItem>
+                          </MenuTrigger>
+                          <MenuPopover>
+                            <MenuList>
+                              <MenuItem onClick={() => handleAudioCall(a)}>Audio {c}</MenuItem>
+                              <MenuItem onClick={() => handleVideoCall(a)}> Video {c}</MenuItem>
+                            </MenuList>
+                          </MenuPopover>
+                        </Menu>
+                      )}
+                      {c === 'Message' && <MenuItem onClick={() => handleMessage(a)}> {c}</MenuItem>}
+                      {c === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{c}</MenuItem>}
+                    </div>
+                  ))}
                 </MenuList>
               </>
             }
@@ -62,6 +102,7 @@ export const PeopleAvatarList: React.FC<MeetingProps> = (props: MeetingProps) =>
       </div>
     );
   };
+
   return (
     <div>
       <AvatarExample />

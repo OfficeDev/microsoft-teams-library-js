@@ -17,7 +17,7 @@ export const PageLayout: React.FC<props> = ({ children }: props) => {
   const { instance } = useMsal();
   return (
     <>
-      {isAuthenticated ? <div className="appMainPage">Signed In</div> : handleLogin(instance)}
+      {!isAuthenticated && handleLogin(instance)}
       {children}
     </>
   );

@@ -34,7 +34,6 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       // currently the calendar info does not adjust to time zone. Need to fix such that only meetings for that Pacific Time Zone day show up
       const calendarResponse = await client
         .api('/me/calendarview?startdatetime=' + currDate + '&enddatetime=' + tomorrowDate)
-        .header('Prefer', 'outlook.timezone="Pacific Standard Time"')
         .get();
       const calendar = calendarResponse as Calendar;
       setCalendar(calendar);
@@ -48,12 +47,16 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       ) : (
         <div className="flex-container">
           <div className="column">
-            <Text as="p"> Your Meetings Today</Text>
+            <Text weight="semibold" className="paddingClass" as="p">
+              Your Meetings Today
+            </Text>
             <MeetingList messages={calendar['value']} />
           </div>
-          <div className="column bg-alt">
-            <Text as="p"> People to Meet Today</Text>
-            <PeopleAvatarList messages={calendar['value']} />
+          <div className="column">
+            <Text weight="semibold" className="paddingClass" as="p">
+              People to Meet Today
+            </Text>
+            {!userInfo ? <p> getting info </p> : <PeopleAvatarList messages={calendar['value']} user={userInfo} />}
           </div>
         </div>
       )}

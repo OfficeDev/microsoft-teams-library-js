@@ -15,7 +15,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
   // using a for loop instead of 'map' function to remove instances of 'OOF'
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    if (message['subject']?.includes('OOF')) {
+    if (message['subject']?.includes('OOF' || 'working remote' || 'Canceled')) {
       continue;
     }
     const item: CalendarListItem = {
@@ -23,6 +23,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
       subject: message['subject'] || '',
       sender: message['organizer']['emailAddress']['name'] || '',
     };
+
     itemList.push(item);
   }
 
