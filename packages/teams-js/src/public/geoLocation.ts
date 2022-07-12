@@ -5,7 +5,7 @@ import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newwer version of location module.
+ * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
  */
 export namespace geoLocation {
   /**
@@ -31,7 +31,7 @@ export namespace geoLocation {
   }
   /**
    * Fetches current user coordinates
-   * @returns Promise of user's current {@linkcode Location}
+   * @returns Promise that will resolve with the {@link geoLocation.Location} object
    */
   export function getCurrentLocation(): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -44,7 +44,7 @@ export namespace geoLocation {
   /**
    * Checks whether or not location has user permission
    *
-   * @returns if the location has user permission
+   * @returns true if the user has granted the app permission to location information, false otherwise
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -59,9 +59,9 @@ export namespace geoLocation {
   }
 
   /**
-   * Request user permission for location
+   * Requests user permission for location
    *
-   * @returns if the user conseted permission for location
+   * @returns true if the user consented permission for location, false otherwise
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -99,7 +99,7 @@ export namespace geoLocation {
     /**
      * Shows the location on map corresponding to the given coordinates
      *
-     * @param location {@link Location} - which needs to be shown on map
+     * @param location - Location to be shown on the map
      * @returns Promise that resolves when the location dialog has been closed
      */
     export function showLocation(location: Location): Promise<void> {

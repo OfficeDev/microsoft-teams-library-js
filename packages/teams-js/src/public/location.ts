@@ -6,11 +6,15 @@ import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
+ * @deprecated
+ * As of 2.0.1, please use geoLocation namespace.
+ *
  * Namespace to interact with the location module-specific part of the SDK.
  */
 export namespace location {
   /**
-   * Data Structure to set the location properties in {@linkcode getLocation} call.
+   * @deprecated
+   * Data Structure to set the location properties in getLocation call.
    */
   export interface LocationProps {
     /**
@@ -29,6 +33,7 @@ export namespace location {
   }
 
   /**
+   * @deprecated
    * Data struture to represent the location information
    */
   export interface Location {
@@ -53,7 +58,7 @@ export namespace location {
   /**
    * @deprecated
    * As of 2.0.1, please use one of the following functions:
-   * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current locaiton.
+   * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current location.
    * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<Location\>} to choose location on map.
    *
    * Fetches user location
@@ -85,7 +90,7 @@ export namespace location {
    *
    * Shows the location on map corresponding to the given coordinates
    *
-   * @param location {@link Location} - which needs to be shown on map
+   * @param location - Location to be shown on the map
    * @param callback - Callback to invoke when the location is opened on map
    */
   export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
@@ -105,6 +110,7 @@ export namespace location {
 
     sendMessageToParent('location.showLocation', [location], callback);
   }
+
   export function isSupported(): boolean {
     return runtime.supports.location ? true : false;
   }
