@@ -86,7 +86,7 @@ export namespace geoLocation {
     /**
      * Allows user to choose location on map
      *
-     * @returns The location chosen by the user after closing the map
+     * @returns Promise that will resolve with the location chosen by the user
      */
     export function chooseLocation(): Promise<Location> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
