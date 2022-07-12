@@ -60,8 +60,15 @@ export class FramelessPostMocks {
   /**
    * To be called after initializeWithContext to set the clientSupportedSDKVersion
    */
-  public setClientSupportedSDKVersion = (version: string) => {
+  public setClientSupportedSDKVersion = (version: string): void => {
     GlobalVars.clientSupportedSDKVersion = version;
+  };
+
+  /**
+   * To be called after initializeWithContext to set the runtimeConfig
+   */
+  public setRuntimeConfig = (runtime: IRuntime): void => {
+    applyRuntimeConfig(runtime);
   };
 
   public findMessageByFunc = (func: string): MessageRequest => {
