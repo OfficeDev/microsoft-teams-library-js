@@ -94,11 +94,4 @@ export class FramelessPostMocks {
   public respondToMessage = (event: DOMMessageEvent): void => {
     ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(event);
   };
-
-  /**
-   * To be called after initializeWithContext to set the runtimeConfig
-   */
-  public setRuntimeConfig = (runtime: IRuntime) => {
-    applyRuntimeConfig(runtime);
-  };
 }

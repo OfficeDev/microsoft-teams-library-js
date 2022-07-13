@@ -16,10 +16,16 @@ describe('barCode', () => {
 
   const allowedContexts = [FrameContexts.content, FrameContexts.task];
   const allowedHostClientTypes = [
+    HostClientType.desktop,
+    HostClientType.web,
     HostClientType.android,
     HostClientType.ios,
-    HostClientType.ipados,
+    HostClientType.rigel,
     HostClientType.surfaceHub,
+    HostClientType.teamsRoomsWindows,
+    HostClientType.teamsRoomsAndroid,
+    HostClientType.teamsPhones,
+    HostClientType.teamsDisplays,
   ];
 
   beforeEach(() => {
@@ -69,6 +75,8 @@ describe('barCode', () => {
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
 
+            expect(message.args[0]).toEqual(barCodeConfig);
+
             const callbackId = message.id;
             const response = 'scannedCode';
             mobilePlatformMock.respondToMessage({
@@ -81,7 +89,7 @@ describe('barCode', () => {
             await expect(promise).resolves.toBe(response);
           });
 
-          it('scanBarCode calls with error', async () => {
+          it('scanBarCode rejects promise with Error when error received from host', async () => {
             await mobilePlatformMock.initializeWithContext(context, hostClientType);
             mobilePlatformMock.setClientSupportedSDKVersion(minScanBarCodeAPISupportVersion);
             const promise = barCode.scanBarCode(barCodeConfig);
@@ -89,6 +97,7 @@ describe('barCode', () => {
             const message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
+            expect(message.args[0]).toEqual(barCodeConfig);
 
             const callbackId = message.id;
             mobilePlatformMock.respondToMessage({
@@ -165,6 +174,7 @@ describe('barCode', () => {
             const message = mobilePlatformMock.findMessageByFunc('permissions.has');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe('media');
 
             const callbackId = message.id;
             mobilePlatformMock.respondToMessage({
@@ -177,7 +187,7 @@ describe('barCode', () => {
             await expect(promise).resolves.toBe(true);
           });
 
-          it('HasPermission call with error', async () => {
+          it('HasPermission rejects promise with Error when error received from host', async () => {
             await mobilePlatformMock.initializeWithContext(context, HostClientType);
             mobilePlatformMock.setClientSupportedSDKVersion(minScanBarCodeAPISupportVersion);
             const promise = barCode.hasPermission();
@@ -185,6 +195,7 @@ describe('barCode', () => {
             const message = mobilePlatformMock.findMessageByFunc('permissions.has');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe('media');
 
             const callbackId = message.id;
             mobilePlatformMock.respondToMessage({
@@ -244,6 +255,8 @@ describe('barCode', () => {
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
 
+            expect(message.args[0]).toBe('media');
+
             const callbackId = message.id;
             mobilePlatformMock.respondToMessage({
               data: {
@@ -255,7 +268,7 @@ describe('barCode', () => {
             await expect(promise).resolves.toBe(true);
           });
 
-          it('requestPermission call with error', async () => {
+          it('requestPermission rejects promise with Error when error received from host', async () => {
             await mobilePlatformMock.initializeWithContext(context, HostClientType);
             mobilePlatformMock.setClientSupportedSDKVersion(minScanBarCodeAPISupportVersion);
             const promise = barCode.requestPermission();
@@ -263,6 +276,7 @@ describe('barCode', () => {
             const message = mobilePlatformMock.findMessageByFunc('permissions.request');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
+            expect(message.args[0]).toBe('media');
 
             const callbackId = message.id;
             mobilePlatformMock.respondToMessage({

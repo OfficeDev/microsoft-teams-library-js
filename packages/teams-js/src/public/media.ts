@@ -26,7 +26,7 @@ import {
 } from '../internal/mediaUtil';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, generateGUID } from '../internal/utils';
 import { barCode } from './barCode';
-import { FrameContexts } from './constants';
+import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
 export namespace media {
@@ -699,6 +699,20 @@ export namespace media {
       throw new Error('[media.scanBarCode] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.content, FrameContexts.task);
+
+    if (
+      GlobalVars.hostClientType === HostClientType.desktop ||
+      GlobalVars.hostClientType === HostClientType.web ||
+      GlobalVars.hostClientType === HostClientType.rigel ||
+      GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
+      GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
+      GlobalVars.hostClientType === HostClientType.teamsPhones ||
+      GlobalVars.hostClientType === HostClientType.teamsDisplays
+    ) {
+      const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      callback(notSupportedError, null);
+      return;
+    }
 
     if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };

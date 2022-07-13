@@ -167,7 +167,7 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     },
     {
       capability: { barCode: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.surfaceHub],
+      hostClientTypes: v1HostClientTypes,
     },
   ],
   '2.0.5': [

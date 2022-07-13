@@ -6,27 +6,27 @@ import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the scan barCode module-specific part of the SDK.
+ * Namespace to interact with the barcode scanning-specific part of the SDK.
  */
 export namespace barCode {
   /**
-   * Barcode configuration supplied to scanBarCode API to customize barcode scanning experience in mobile
+   * Data structure to customize the barcode scanning experience in scanBarCode API.
    * All properties in BarCodeConfig are optional and have default values in the platform
    */
   export interface BarCodeConfig {
     /**
-     * Optional; Lets the developer specify the scan timeout interval in seconds
-     * Default value is 30 seconds and max allowed value is 60 seconds
+     * Optional; designates the scan timeout interval in seconds.
+     * Default value is 30 seconds, max allowed value is 60 seconds.
      */
     timeOutIntervalInSec?: number;
   }
 
   /**
-   * Scan Barcode/QRcode using camera
+   * Scan Barcode or QRcode using camera
    *
    * @param barCodeConfig - input configuration to customize the barcode scanning experience
    *
-   * @return a scanned code
+   * @returns a scanned code
    */
   export function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
     return new Promise<string>(resolve => {
@@ -45,7 +45,7 @@ export namespace barCode {
   /**
    * Checks whether or not media has user permission
    *
-   * @returns if the media has user permission
+   * @returns true if the user has granted the app permission to media information, false otherwise
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -60,9 +60,9 @@ export namespace barCode {
   }
 
   /**
-   * Request user permission for media
+   * Requests user permission for media
    *
-   * @returns if the user conseted permission for media
+   * @returns true if the user has granted the app permission to the media, false otherwise
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
