@@ -4246,7 +4246,7 @@ copy-descriptor@^0.1.0:
 
 copy-webpack-plugin@9.0.1:
   version "9.0.1"
-  resolved "https://domoreexp.pkgs.visualstudio.com/_packaging/npm-mirror/npm/registry/copy-webpack-plugin/-/copy-webpack-plugin-9.0.1.tgz#b71d21991599f61a4ee00ba79087b8ba279bbb59"
+  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-9.0.1.tgz#b71d21991599f61a4ee00ba79087b8ba279bbb59"
   integrity sha1-tx0hmRWZ9hpO4AunkIe4uiebu1k=
   dependencies:
     fast-glob "^3.2.5"
