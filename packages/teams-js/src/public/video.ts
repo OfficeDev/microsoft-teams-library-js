@@ -1,3 +1,4 @@
+import CancelablePromise, { cancelable } from 'cancelable-promise';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -9,6 +10,11 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
+  let effectChangingPromise: CancelablePromise<void> = CancelablePromise.resolve();
+  let previousEffect: string | undefined = undefined;
+  let activeEffect: string | undefined = undefined;
+  let videoEffectChangedHandler: VideoEffectChangedHandler | null = null;
+
   /**
    * Represents a video frame
    * @beta
@@ -75,6 +81,9 @@ export namespace video {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0, please use {@link video.VideoFrameProcessor} instead.
+   *
    * Video frame call back function definition
    * @beta
    */
@@ -85,12 +94,58 @@ export namespace video {
   ) => void;
 
   /**
+   * Video frame handler function definition.
+   *
+   * @param frame - the {@link video.VideoFrame} to process.
+   * @param effectId - the effect id to use while processing.
+   *
+   * @see {@link video.registerVideoFrameProcessor}
+   *
+   * @beta
+   */
+  export type VideoFrameProcessor = (frame: VideoFrame, effectId: string | undefined) => Promise<void> | void;
+
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link video.VideoEffectChangedHandler} instead.
+   *
    * Video effect change call back function definition
    * @beta
    */
   export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
   /**
+   * Video effect changing hanlder function definition.
+   *
+   * @param currentEffectId - the effectId that is currently being used.
+   * @param newEffectId - the effectId that user wants to change to.
+   *
+   * @see {@link video.registerVideoEffectChangingHandler}
+   *
+   * @beta
+   */
+  export type VideoEffectChangingHandler = (
+    currentEffectId: string | undefined,
+    newEffectId: string,
+  ) => Promise<void> | void;
+
+  /**
+   * Video effect changed handler function definition.
+   *
+   * @param previousEffectId - the effectId that was previously active.
+   * @param currentEffectId - the effectId that is currently being used.
+   *
+   * @see {@link video.registerVideoEffectChangedHandler}
+   */
+  export type VideoEffectChangedHandler = (
+    previousEffectId: string | undefined,
+    currentEffectId: string | undefined,
+  ) => void;
+
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link video.registerVideoFrameProcessor} instead.
+   *
    * Register to read the video frames in Permissions section
    * @beta
    * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
@@ -107,6 +162,59 @@ export namespace video {
         frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
       }
     });
+    sendMessageToParent('video.registerForVideoFrame', [config]);
+  }
+
+  /**
+   * Register video frame processor
+
+   * @param frameProcessor - The {@link video.VideoFrameProcessor} to register.
+   * @param config - {@link video.VideoFrameConfig} to customize generated video frame parameters.
+   * 
+   * @remarks
+   * The video app can process the given {@link video.VideoFrame} either synchronously or asynchronously.
+   * If {@param frameProcessor} returns a PromiseLike, we will wait for it to settle before further processing,
+   * otherwise we will regard the {@param frameProcessor} has finished its processing synchronously and proceed.
+   * 
+   * The video app should process the given {@link video.VideoFrame} with the provided {@link video.VideoFrameProcessor effectId} 
+   * 
+   * Video API gurantees that when an effect change occurs, it first calls
+   * {@link video.VideoEffectChangedHandler}. The effectId passed to {@link video.VideoFrameProcessor}
+   * remains unchanged until the return vlaue of {@link video.VideoEffectChangedHandler} settles.
+   * 
+   * @beta
+   */
+  export function registerVideoFrameProcessor(frameProcessor: VideoFrameProcessor, config: VideoFrameConfig): void {
+    ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
+      if (videoFrame !== undefined) {
+        try {
+          const maybePromise = frameProcessor(videoFrame, activeEffect);
+          if (typeof maybePromise === 'object' && typeof maybePromise.then === 'function') {
+            maybePromise.then(notifyVideoFrameProcessed, notifyError).finally(() => {
+              if (previousEffect !== activeEffect) {
+                videoEffectChangedHandler(previousEffect, activeEffect);
+                previousEffect = activeEffect;
+              }
+            });
+          } else {
+            notifyVideoFrameProcessed();
+            if (previousEffect !== activeEffect) {
+              videoEffectChangedHandler(previousEffect, activeEffect);
+              previousEffect = activeEffect;
+            }
+          }
+        } catch (e) {
+          notifyError(e);
+        }
+      }
+    });
+
+    // [Discussion]: should we introduce new event here?
     sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
@@ -130,6 +238,9 @@ export namespace video {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0, please use {@link video.registerVideoEffectChangingHandler} instead.
+   *
    * Register the video effect callback, host client uses this to notify the video extension the new video effect will by applied
    * @beta
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
@@ -140,6 +251,70 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('video.effectParameterChange', callback);
+  }
+
+  /**
+   * Register the video effect changed handler, host client uses this to notify the video extension that a new video effect will
+   * be applied.
+   * @param handler
+   *
+   * @remarks
+   * `handler` will be called when the user picks a new effect and it should prepare any necessary resource that
+   * is required to process future video frames with that new effect.
+   *
+   * If `handler` returns a PromiseLike, host client will wait for its settlement, and the `effectId` to be passed to
+   * {@link video.videoFrameProcessor} remains unchanged until the returned PromiseLike settles.
+   *
+   * This handler will not be called when the user clears existing effect (e.g. effectId === undefined).
+   * In that case, {@link video.VideoEffectChangedHandler} will be called directly.
+   *
+   * @beta
+   */
+  export function registerVideoEffectChangingHandler(handler: VideoEffectChangingHandler): void {
+    ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler('video.effectParameterChange', (effectId: string | undefined) => {
+      effectChangingPromise.cancel();
+      if (effectId === undefined) {
+        activeEffect = undefined;
+      } else {
+        const p = handler(previousEffect, effectId);
+        if (typeof p === 'object' && typeof p.then === 'function') {
+          effectChangingPromise = cancelable(p);
+          effectChangingPromise.then(() => {
+            previousEffect = activeEffect;
+            activeEffect = effectId;
+          });
+        } else {
+          previousEffect = activeEffect;
+          activeEffect = effectId;
+        }
+      }
+    });
+  }
+
+  /**
+   * Register the video effect changed handler, host client uses this to notify the video extension that a new video effect will
+   * be applied.
+   * @param handler
+   *
+   * @remarks
+   * In case of switching to a new video effect, {@link video.VideoEffectChangingHandler} will be called first,
+   * and then after its return value resolves, {@link video.VideoFrameProcessor} will start being called with the new effectId.
+   * `handler` is called after the {@link video.VideoFrameProcessor} is called with the new effectId and settled.
+   *
+   * @beta
+   */
+  export function registerVideoEffectChangedHandler(handler: VideoEffectChangedHandler): void {
+    ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    videoEffectChangedHandler = handler;
   }
 
   /**
@@ -154,10 +329,12 @@ export namespace video {
   /**
    * Sending error notification to host client
    * @beta
-   * @param errorMessage - The error message that will be sent to the host
+   * @param error - The error that will be sent to the host
    */
-  function notifyError(errorMessage: string): void {
-    sendMessageToParent('video.notifyError', [errorMessage]);
+  function notifyError(error: any): void {
+    sendMessageToParent('video.notifyError', [
+      error instanceof Error ? error.message : 'toString' in error ? error.toString() : 'unknown error',
+    ]);
   }
 
   /**
