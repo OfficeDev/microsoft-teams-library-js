@@ -3,6 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, geoLocation, location } from '../../src/public/index';
+import { DevicePermission } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
@@ -152,6 +153,7 @@ describe('geoLocation', () => {
           const message = framelessPlatform.findMessageByFunc('permissions.has');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
+          expect(message.args[0]).toEqual(DevicePermission.GeoLocation);
 
           const callbackId = message.id;
           framelessPlatform.respondToMessage({
@@ -164,7 +166,7 @@ describe('geoLocation', () => {
           await expect(promise).resolves.toBe(true);
         });
 
-        it('HasPermission call with error', async () => {
+        it('HasPermission rejects promise with Error when error received from host', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
           framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
@@ -237,6 +239,7 @@ describe('geoLocation', () => {
           const message = framelessPlatform.findMessageByFunc('permissions.request');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
+          expect(message.args[0]).toEqual(DevicePermission.GeoLocation);
 
           const callbackId = message.id;
           framelessPlatform.respondToMessage({
@@ -249,7 +252,7 @@ describe('geoLocation', () => {
           await expect(promise).resolves.toBe(true);
         });
 
-        it('requestPermission call with error', async () => {
+        it('requestPermission rejects promise with Error when error received from host', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
           framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
