@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Upgrade video APIs to use Promise",
+  "packageName": "@microsoft/teams-js",
+  "email": "nandin.borjigin@gmail.com",
+  "dependentChangeType": "patch"
+}
