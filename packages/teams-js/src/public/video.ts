@@ -1,4 +1,5 @@
 import CancelablePromise, { cancelable } from 'cancelable-promise';
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -197,14 +198,14 @@ export namespace video {
           if (typeof maybePromise === 'object' && typeof maybePromise.then === 'function') {
             maybePromise.then(notifyVideoFrameProcessed, notifyError).finally(() => {
               if (previousEffect !== activeEffect) {
-                videoEffectChangedHandler(previousEffect, activeEffect);
+                videoEffectChangedHandler && videoEffectChangedHandler(previousEffect, activeEffect);
                 previousEffect = activeEffect;
               }
             });
           } else {
             notifyVideoFrameProcessed();
             if (previousEffect !== activeEffect) {
-              videoEffectChangedHandler(previousEffect, activeEffect);
+              videoEffectChangedHandler && videoEffectChangedHandler(previousEffect, activeEffect);
               previousEffect = activeEffect;
             }
           }
@@ -331,9 +332,15 @@ export namespace video {
    * @beta
    * @param error - The error that will be sent to the host
    */
-  function notifyError(error: any): void {
+  function notifyError(error: unknown): void {
     sendMessageToParent('video.notifyError', [
-      error instanceof Error ? error.message : 'toString' in error ? error.toString() : 'unknown error',
+      typeof error === 'string'
+        ? error
+        : error instanceof Error
+        ? error.message
+        : typeof error === 'object'
+        ? error.toString()
+        : 'unknown error',
     ]);
   }
 
