@@ -75,8 +75,13 @@ export namespace geoLocation {
     });
   }
 
+  /**
+   * Checks if geoLocation capability is supported by the host
+   *
+   * @returns boolean to represent whether geoLocation is supported
+   */
   export function isSupported(): boolean {
-    return runtime.supports.geoLocation ? true : false;
+    return runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
   }
 
   /**
@@ -113,8 +118,15 @@ export namespace geoLocation {
       return sendAndHandleError('location.showLocation', location);
     }
 
+    /**
+     * Checks if geoLocation.map capability is supported by the host
+     *
+     * @returns boolean to represent whether geoLocation.map is supported
+     */
     export function isSupported(): boolean {
-      return runtime.supports.geoLocation ? (runtime.supports.geoLocation.map ? true : false) : false;
+      return runtime.supports.geoLocation && runtime.supports.geoLocation.map && runtime.supports.permissions
+        ? true
+        : false;
     }
   }
 }

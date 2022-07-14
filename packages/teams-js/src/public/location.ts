@@ -111,6 +111,14 @@ export namespace location {
     sendMessageToParent('location.showLocation', [location], callback);
   }
 
+  /**
+   * @deprecated
+   * As of 2.0.1, please use geoLocation namespace, and use {@link geoLocation.isSupported geoLocation.isSupported: boolean} to check if geoLocation is supported.
+   *
+   * Checks if Location capability is supported by the host
+   *
+   * @returns boolean to represent whether Location is supported
+   */
   export function isSupported(): boolean {
     return runtime.supports.location ? true : false;
   }

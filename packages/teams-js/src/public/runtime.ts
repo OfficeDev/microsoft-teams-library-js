@@ -36,6 +36,7 @@ export interface IRuntime {
       readonly fullTrust?: {};
     };
     readonly people?: {};
+    readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly sharing?: {};
@@ -80,6 +81,7 @@ export let runtime: IRuntime = {
       fullTrust: undefined,
     },
     people: undefined,
+    permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
     sharing: undefined,
@@ -160,10 +162,6 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     },
   ],
   '2.0.1': [
-    {
-      capability: { geoLocation: { map: {} } },
-      hostClientTypes: v1HostClientTypes,
-    },
     {
       capability: { teams: { fullTrust: { joinedTeams: {} } } },
       hostClientTypes: [
