@@ -21,11 +21,11 @@ import {
   isVideoControllerRegistered,
   throwExceptionIfMediaCallIsNotSupportedOnMobile,
   validateGetMediaInputs,
+  validateScanBarCodeInput,
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../internal/mediaUtil';
-import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise, generateGUID } from '../internal/utils';
-import { barCode } from './barCode';
+import { generateGUID } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 
@@ -719,7 +719,13 @@ export namespace media {
       callback(oldPlatformError, null);
       return;
     }
-    config = config === undefined ? {} : config;
-    callCallbackWithErrorOrResultFromPromiseAndReturnPromise<string>(barCode.scanBarCode, callback, config);
+
+    if (!validateScanBarCodeInput(config)) {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      callback(invalidInput, null);
+      return;
+    }
+
+    sendMessageToParent('media.scanBarCode', [config], callback);
   }
 }

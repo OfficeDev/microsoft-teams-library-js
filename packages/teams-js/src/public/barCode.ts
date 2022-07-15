@@ -76,7 +76,12 @@ export namespace barCode {
     });
   }
 
+  /**
+   * Checks if barCode capability is supported by the host
+   *
+   * @returns boolean to represent whether barCode is supported
+   */
   export function isSupported(): boolean {
-    return runtime.supports.barCode ? true : false;
+    return runtime.supports.barCode && runtime.supports.permissions ? true : false;
   }
 }
