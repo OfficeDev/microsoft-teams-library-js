@@ -56,10 +56,20 @@ describe('geoLocation', () => {
           }
         });
 
+        it(`getCurrentLocation should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+          await framelessPlatform.initializeWithContext(context);
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          expect.assertions(4);
+          try {
+            geoLocation.getCurrentLocation();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it(`getCurrentLocation calls with successful result. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
-          framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.getCurrentLocation();
 
@@ -82,7 +92,7 @@ describe('geoLocation', () => {
         it(`getCurrentLocation calls with error. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.getCurrentLocation();
 
@@ -132,6 +142,17 @@ describe('geoLocation', () => {
           }
         });
 
+        it(`geoLocation should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+          await framelessPlatform.initializeWithContext(context);
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          expect.assertions(4);
+          try {
+            geoLocation.hasPermission();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it('hasPermission call in default version of platform support fails', async () => {
           await framelessPlatform.initializeWithContext(context);
           expect.assertions(4);
@@ -146,7 +167,7 @@ describe('geoLocation', () => {
         it('hasPermission call with successful result', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.hasPermission();
 
@@ -169,7 +190,7 @@ describe('geoLocation', () => {
         it('HasPermission rejects promise with Error when error received from host', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.hasPermission();
 
@@ -218,6 +239,17 @@ describe('geoLocation', () => {
           }
         });
 
+        it(`requestLocation should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+          await framelessPlatform.initializeWithContext(context);
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          expect.assertions(4);
+          try {
+            geoLocation.requestPermission();
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it(`should throw error when geoLocation is not supported in runtime config. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -232,7 +264,7 @@ describe('geoLocation', () => {
         it('requestPermission call with successful result', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.requestPermission();
 
@@ -255,7 +287,7 @@ describe('geoLocation', () => {
         it('requestPermission rejects promise with Error when error received from host', async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+          framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
 
           const promise = geoLocation.requestPermission();
 
@@ -309,9 +341,20 @@ describe('geoLocation', () => {
 
           it(`should throw error when geoLocation.map is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
             expect.assertions(4);
 
+            try {
+              geoLocation.map.showLocation(defaultLocation);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`showLocation should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+            await framelessPlatform.initializeWithContext(context);
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            expect.assertions(4);
             try {
               geoLocation.map.showLocation(defaultLocation);
             } catch (e) {
@@ -333,7 +376,11 @@ describe('geoLocation', () => {
           it(`should not allow showLocation calls without props. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+
+            framelessPlatform.setRuntimeConfig({
+              apiVersion: 1,
+              supports: { geoLocation: { map: {} }, permissions: {} },
+            });
             expect.assertions(4);
 
             try {
@@ -346,7 +393,10 @@ describe('geoLocation', () => {
           it(`showLocation calls with successful result. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            framelessPlatform.setRuntimeConfig({
+              apiVersion: 1,
+              supports: { geoLocation: { map: {} }, permissions: {} },
+            });
 
             const promise = geoLocation.map.showLocation(defaultLocation);
 
@@ -368,8 +418,10 @@ describe('geoLocation', () => {
 
           it(`showLocation calls with error context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
-            framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            framelessPlatform.setRuntimeConfig({
+              apiVersion: 1,
+              supports: { geoLocation: { map: {} }, permissions: {} },
+            });
 
             const promise = geoLocation.map.showLocation(defaultLocation);
 
@@ -421,7 +473,7 @@ describe('geoLocation', () => {
 
           it(`should throw error when geoLocation.map is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {} } });
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: {}, permissions: {} } });
             expect.assertions(4);
 
             try {
@@ -431,9 +483,19 @@ describe('geoLocation', () => {
             }
           });
 
+          it(`map.chooseLocation should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+            await framelessPlatform.initializeWithContext(context);
+            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            expect.assertions(4);
+            try {
+              geoLocation.map.chooseLocation();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
           it(`chooseLocation call in default version of platform support fails. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.task);
-            framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
             expect.assertions(4);
 
             try {
@@ -446,7 +508,10 @@ describe('geoLocation', () => {
           it(`chooseLocation calls with successful result. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.content);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            framelessPlatform.setRuntimeConfig({
+              apiVersion: 1,
+              supports: { geoLocation: { map: {} }, permissions: {} },
+            });
 
             const promise = geoLocation.map.chooseLocation();
 
@@ -469,7 +534,10 @@ describe('geoLocation', () => {
           it(`chooseLocation calls with error context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(FrameContexts.content);
             framelessPlatform.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { geoLocation: { map: {} } } });
+            framelessPlatform.setRuntimeConfig({
+              apiVersion: 1,
+              supports: { geoLocation: { map: {} }, permissions: {} },
+            });
 
             const promise = geoLocation.map.chooseLocation();
 
@@ -500,15 +568,5 @@ describe('geoLocation', () => {
         }
       });
     });
-  });
-  it('hasPermission call in default version of platform support fails', async () => {
-    await framelessPlatform.initializeWithContext(FrameContexts.content);
-    expect.assertions(4);
-    framelessPlatform.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-    try {
-      geoLocation.hasPermission();
-    } catch (e) {
-      expect(e).toEqual(errorNotSupportedOnPlatform);
-    }
   });
 });
