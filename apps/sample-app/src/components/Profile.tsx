@@ -1,6 +1,6 @@
 import { Text } from '@fluentui/react-components';
 import { AuthProvider, AuthProviderCallback, Client, Options } from '@microsoft/microsoft-graph-client';
-import { Calendar, User } from '@microsoft/microsoft-graph-types';
+import { Calendar, Message, User } from '@microsoft/microsoft-graph-types';
 import React from 'react';
 
 import { MainPage } from './MainPage';
@@ -16,20 +16,19 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
   const { accessToken } = props;
   const [userInfo, setUserInfo] = React.useState<User>();
   const [calendar, setCalendar] = React.useState<Calendar>();
-
+  const [emails, setEmails] = React.useState<Message>();
   React.useEffect(() => {
     (async () => {
       const authProvider: AuthProvider = (callback: AuthProviderCallback) => {
         callback(undefined, accessToken);
       };
-      console.log('starting info');
       const options: Options = { authProvider };
       const client = Client.init(options);
-      // User Profile Info
+      // get User Profile Info
       const userResponse = await client.api('/me').get();
       setUserInfo(userResponse);
 
-      // Calendar Info
+      // get Calendar Meeting Info
       const [currDate, tomorrowDate] = getDates();
       // currently the calendar info does not adjust to time zone. Need to fix such that only meetings for that Pacific Time Zone day show up
       const calendarResponse = await client
@@ -37,6 +36,9 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
         .get();
       const calendar = calendarResponse as Calendar;
       setCalendar(calendar);
+      // get recent emails
+      let emails = await client.api('/me/messages');
+      setEmails(emails);
     })();
   }, [accessToken, setUserInfo, setCalendar]);
   return (
