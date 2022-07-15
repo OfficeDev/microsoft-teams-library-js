@@ -129,7 +129,7 @@ const Authenticate = (): React.ReactElement =>
   });
 
 const externalAuthParams = {
-  url: 'auth_start.html?oauthRedirectMethod=deeplink&authId=1',
+  url: 'https://teams-test-tab.azurewebsites.net/auth_start.html?authId=1&oauthRedirectMethod={oauthRedirectMethod}',
   isExternal: true,
 };
 
