@@ -11,7 +11,6 @@ import { FramelessPostMocks } from '../framelessPostMocks';
  */
 describe('barCode', () => {
   const mobilePlatformMock = new FramelessPostMocks();
-  const minScanBarCodeAPISupportVersion = '2.0.1';
   const defaultPlatformVersion = '1.6.0';
 
   const allowedContexts = [FrameContexts.content, FrameContexts.task];
