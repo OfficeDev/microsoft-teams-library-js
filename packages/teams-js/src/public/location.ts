@@ -7,7 +7,7 @@ import { runtime } from './runtime';
 
 /**
  * @deprecated
- * As of 2.0.1, please use geoLocation namespace.
+ * As of 2.1.0, please use geoLocation namespace.
  *
  * Namespace to interact with the location module-specific part of the SDK.
  */
@@ -57,7 +57,7 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.1, please use one of the following functions:
+   * As of 2.1.0, please use one of the following functions:
    * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current location.
    * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<Location\>} to choose location on map.
    *
@@ -86,7 +86,7 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.1, please use {@link geoLocation.map.showLocation geoLocation.map.showLocation(location: Location): Promise\<void\>} instead.
+   * As of 2.1.0, please use {@link geoLocation.map.showLocation geoLocation.map.showLocation(location: Location): Promise\<void\>} instead.
    *
    * Shows the location on map corresponding to the given coordinates
    *
@@ -113,7 +113,7 @@ export namespace location {
 
   /**
    * @deprecated
-   * As of 2.0.1, please use geoLocation namespace, and use {@link geoLocation.isSupported geoLocation.isSupported: boolean} to check if geoLocation is supported.
+   * As of 2.1.0, please use geoLocation namespace, and use {@link geoLocation.isSupported geoLocation.isSupported: boolean} to check if geoLocation is supported.
    *
    * Checks if Location capability is supported by the host
    *
