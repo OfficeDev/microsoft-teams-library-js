@@ -1,0 +1,11 @@
+.appMainPage {
+  display: flex;
+  padding: 10%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(8px + 2vmin);
+}
+.appMainPage-sub-container {
+  padding: 5%;
+}
