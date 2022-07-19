@@ -6,10 +6,14 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
+ *
+ * @beta
  */
 export namespace geoLocation {
   /**
    * Data struture to represent the location information
+   *
+   * @beta
    */
   export interface Location {
     /**
@@ -31,7 +35,9 @@ export namespace geoLocation {
   }
   /**
    * Fetches current user coordinates
-   * @returns Promise that will resolve with the {@link geoLocation.Location} object
+   * @returns Promise that will resolve with {@link geoLocation.Location} object or reject with an error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   *
+   * @beta
    */
   export function getCurrentLocation(): Promise<Location> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -44,7 +50,10 @@ export namespace geoLocation {
   /**
    * Checks whether or not location has user permission
    *
-   * @returns true if the user has granted the app permission to location information, false otherwise
+   * @returns Promise that will resolve with true if the user had granted the app permission to location information, or with false otherwise,
+   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   *
+   * @beta
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -62,6 +71,10 @@ export namespace geoLocation {
    * Requests user permission for location
    *
    * @returns true if the user consented permission for location, false otherwise
+   * @returns Promise that will resolve with true if the user consented permission for location, or with false otherwise,
+   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   *
+   * @beta
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -79,6 +92,8 @@ export namespace geoLocation {
    * Checks if geoLocation capability is supported by the host
    *
    * @returns boolean to represent whether geoLocation is supported
+   *
+   * @beta
    */
   export function isSupported(): boolean {
     return runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
@@ -86,12 +101,16 @@ export namespace geoLocation {
 
   /**
    * Namespace to interact with the location on map module-specific part of the SDK.
+   *
+   * @beta
    */
   export namespace map {
     /**
      * Allows user to choose location on map
      *
-     * @returns Promise that will resolve with the location chosen by the user
+     * @returns Promise that will resolve with {@link geoLocation.Location} object chosen by the user or reject with an error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+     *
+     * @beta
      */
     export function chooseLocation(): Promise<Location> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -105,7 +124,9 @@ export namespace geoLocation {
      * Shows the location on map corresponding to the given coordinates
      *
      * @param location - Location to be shown on the map
-     * @returns Promise that resolves when the location dialog has been closed
+     * @returns Promise that resolves when the location dialog has been closed or reject with an error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+     *
+     * @beta
      */
     export function showLocation(location: Location): Promise<void> {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -122,6 +143,8 @@ export namespace geoLocation {
      * Checks if geoLocation.map capability is supported by the host
      *
      * @returns boolean to represent whether geoLocation.map is supported
+     *
+     * @beta
      */
     export function isSupported(): boolean {
       return runtime.supports.geoLocation && runtime.supports.geoLocation.map && runtime.supports.permissions
