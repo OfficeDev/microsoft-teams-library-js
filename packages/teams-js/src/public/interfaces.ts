@@ -891,3 +891,9 @@ export enum ErrorCode {
    */
   SIZE_EXCEEDED = 10000,
 }
+
+/** @hidden */
+export enum DevicePermission {
+  GeoLocation = 'geolocation',
+  Media = 'media',
+}
