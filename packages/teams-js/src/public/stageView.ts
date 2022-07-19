@@ -49,6 +49,7 @@ export namespace stageView {
    * Feature is under development
    *
    * Opens a stage view to display a Teams application
+   * @beta
    * @param stageViewParams - The parameters to pass into the stage view.
    * @returns Promise that resolves or rejects with an error once the stage view is closed.
    */
@@ -70,6 +71,7 @@ export namespace stageView {
 
   /**
    * Checks if stageView capability is supported by the host
+   * @beta
    * @returns true if the stageView capability is enabled in runtime.supports.stageView and
    * false if it is disabled
    */
