@@ -670,7 +670,7 @@ describe('media', () => {
 
   describe('scanBarCode', () => {
     it('scanBarCode call in default version of platform support fails', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.task);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
       media.scanBarCode((e: SdkError, d: string) => {
         expect(e).not.toBeNull();
@@ -679,7 +679,7 @@ describe('media', () => {
     });
 
     it('should not allow scanBarCode calls for authentication frame context', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.authentication);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.authentication, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       expect(() => media.scanBarCode(emptyCallback, null)).toThrowError(
         'This call is only allowed in following contexts: ["content","task"]. Current context: "authentication".',
@@ -687,7 +687,7 @@ describe('media', () => {
     });
 
     it('scanBarCode call in task frameContext works', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.task);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       media.scanBarCode(emptyCallback, null);
       const message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
@@ -696,7 +696,7 @@ describe('media', () => {
     });
 
     it('scanBarCode call in content frameContext works', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       media.scanBarCode(emptyCallback, null);
       const message = mobilePlatformMock.findMessageByFunc('media.scanBarCode');
@@ -705,7 +705,7 @@ describe('media', () => {
     });
 
     it('scanBarCode calls with successful result', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
 
       media.scanBarCode((err: SdkError, decodedText: string) => {
@@ -728,7 +728,7 @@ describe('media', () => {
     });
 
     it('scanBarCode with optional barcode config calls with successful result', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       const barCodeConfig: media.BarCodeConfig = {
         timeOutIntervalInSec: 40,
@@ -754,7 +754,7 @@ describe('media', () => {
     });
 
     it('scanBarCode calls with error', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.content);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.content, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       media.scanBarCode((err: SdkError, decodedText: string) => {
         expect(decodedText).toBeFalsy();
@@ -775,7 +775,7 @@ describe('media', () => {
     });
 
     it('should not allow scanBarCode calls with invalid timeOutIntervalInSec', async () => {
-      await mobilePlatformMock.initializeWithContext(FrameContexts.task);
+      await mobilePlatformMock.initializeWithContext(FrameContexts.task, HostClientType.android);
       mobilePlatformMock.setClientSupportedSDKVersion(scanBarCodeAPISupportVersion);
       const barCodeConfig: any = {
         timeOutIntervalInSec: 0,
