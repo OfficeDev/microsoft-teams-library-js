@@ -13,22 +13,17 @@ const teamsDeepLinkUrlPathForCalendar = '/l/meeting/new';
 
 export const handleNewMail = async (): Promise<void> => {
   if (!calendar.isSupported()) {
-    const context = await app.getContext();
-    if (context?.app?.host?.name === 'Teams') {
-      const calendarParams: calendar.ComposeMeetingParams = {
-        attendees: ['emailAddress@microsoft.com'],
-      };
-      const attendeeSearchParameter =
-        calendarParams.attendees === undefined
-          ? ''
-          : `${teamsDeepLinkAttendeesUrlParameterName}=` +
-            calendarParams.attendees.map(attendee => encodeURIComponent(attendee)).join(',');
+    const calendarParams: calendar.ComposeMeetingParams = {
+      attendees: ['emailAddress@microsoft.com'],
+    };
+    const attendeeSearchParameter =
+      calendarParams.attendees === undefined
+        ? ''
+        : `${teamsDeepLinkAttendeesUrlParameterName}=` +
+          calendarParams.attendees.map(attendee => encodeURIComponent(attendee)).join(',');
 
-      const deepLinkUrl = `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}`;
-      app.openLink(deepLinkUrl);
-    } else {
-      alert('compose new meeting is not supported');
-    }
+    const deepLinkUrl = `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}`;
+    app.openLink(deepLinkUrl);
   } else {
     const calendarParams: calendar.ComposeMeetingParams = {
       attendees: ['emailAdd@microsoft.com'],
