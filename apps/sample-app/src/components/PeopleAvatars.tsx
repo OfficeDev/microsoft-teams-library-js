@@ -32,17 +32,11 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
 
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    if (
-      message['attendees'].length > 15 ||
-      message['subject']?.includes('OOF') ||
-      message['subject']?.includes('Canceled')
-    ) {
+    // 5 is an arbitrary number to show only relevant meetings
+    if (message['attendees'].length > 5 || message['isCancelled'] || message['showAs'] === 'free') {
       continue;
     }
     for (let j = 0; j < messages[i]['attendees'].length; j++) {
-      if (message['attendees'][j] === user.displayName) {
-        continue;
-      }
       const attendee = message['attendees'][j];
       const item: AvatarItem = {
         id: attendee['emailAddress']['address'] || '',
@@ -103,9 +97,5 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
     );
   };
 
-  return (
-    <div>
-      <AvatarExample />
-    </div>
-  );
+  return <AvatarExample />;
 };

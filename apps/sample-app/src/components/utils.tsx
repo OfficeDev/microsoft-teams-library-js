@@ -79,10 +79,3 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
   const result = await mail.composeMail(mailParams);
   return alert(result);
 };
-export const handleCalendar = async (a: AvatarItem): Promise<void> => {
-  const calendarParams: calendar.ComposeMeetingParams = {
-    attendees: [`${a.id}`],
-  };
-  const result = await calendar.composeMeeting(calendarParams);
-  return alert(result);
-};
