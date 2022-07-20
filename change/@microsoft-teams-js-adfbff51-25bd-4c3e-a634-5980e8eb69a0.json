@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Enabled tasks FrameContext in call API",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
