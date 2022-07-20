@@ -61,23 +61,23 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
                   {a.name}
                 </Text>
                 <MenuList>
-                  {capabilities.map(c => (
-                    <div key={c}>
-                      {c === 'Call' && (
+                  {capabilities.map(capability => (
+                    <div key={capability}>
+                      {capability === 'Call' && (
                         <Menu>
                           <MenuTrigger>
                             <MenuItem>Call</MenuItem>
                           </MenuTrigger>
                           <MenuPopover>
                             <MenuList>
-                              <MenuItem onClick={() => handleAudioCall(a)}>Audio {c}</MenuItem>
-                              <MenuItem onClick={() => handleVideoCall(a)}> Video {c}</MenuItem>
+                              <MenuItem onClick={() => handleAudioCall(a)}>Audio {capability}</MenuItem>
+                              <MenuItem onClick={() => handleVideoCall(a)}> Video {capability}</MenuItem>
                             </MenuList>
                           </MenuPopover>
                         </Menu>
                       )}
-                      {c === 'Message' && <MenuItem onClick={() => handleMessage(a)}> {c}</MenuItem>}
-                      {c === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{c}</MenuItem>}
+                      {capability === 'Message' && <MenuItem onClick={() => handleMessage(a)}> {capability}</MenuItem>}
+                      {capability === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{capability}</MenuItem>}
                     </div>
                   ))}
                 </MenuList>

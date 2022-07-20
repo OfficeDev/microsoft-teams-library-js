@@ -80,12 +80,12 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
   await mail.composeMail(mailParams);
 };
 
-export const handleOpenMailItem = async (e: MessageListItem): Promise<void> => {
+export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<void> => {
   if (!mail.isSupported()) {
     alert('open mail item is not supported');
   } else {
     const openMailParams: mail.OpenMailItemParams = {
-      itemId: e.key || '',
+      itemId: emailItem.key || '',
     };
     await mail.openMailItem(openMailParams);
   }

@@ -26,13 +26,13 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
   const EmailExample: React.FunctionComponent = () => {
     return (
       <div>
-        {emailItems.map(e => (
-          <Text as="span" key={e.key}>
-            <button key={e.key}>
+        {emailItems.map(emailItem => (
+          <Text as="span" key={emailItem.key}>
+            <button key={emailItem.key}>
               <div>
-                <DocumentCard key={e.key} onClick={() => handleOpenMailItem(e)}>
-                  <DocumentCardTitle title={e.subject || ''} shouldTruncate />
-                  <DocumentCardTitle title={e.sender || ''} shouldTruncate showAsSecondaryTitle />
+                <DocumentCard key={emailItem.key} onClick={() => handleOpenMailItem(emailItem)}>
+                  <DocumentCardTitle title={emailItem.subject || ''} shouldTruncate />
+                  <DocumentCardTitle title={emailItem.sender || ''} shouldTruncate showAsSecondaryTitle />
                 </DocumentCard>
               </div>
             </button>
