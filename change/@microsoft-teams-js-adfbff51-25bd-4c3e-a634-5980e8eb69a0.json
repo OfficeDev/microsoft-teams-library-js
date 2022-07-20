@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Enabled `FrameContexts.tasks` for `startCall` API in `call.ts`",
+  "comment": "Enabled `FrameContexts.task` for `startCall` API in `call.ts`",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "patch"
