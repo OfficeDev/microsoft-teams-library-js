@@ -746,12 +746,32 @@ export namespace files {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.deleteCloudStorageProviderFile] callback cannot be null');
     }
 
-    if (!(deleteFileRequest && deleteFileRequest.content)) {
+    if (
+      !(
+        deleteFileRequest &&
+        deleteFileRequest.content &&
+        deleteFileRequest.content.itemList &&
+        deleteFileRequest.content.itemList.length > 0
+      )
+    ) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
       );
     }
+
+    deleteFileRequest.content.itemList.forEach(item => {
+      if (
+        deleteFileRequest.content.providerCode === CloudStorageProvider.SharePoint
+          ? (<ISharePointFile>item).isFolder
+          : (<CloudStorageFolderItem>item).isSubdirectory
+      ) {
+        throw getSdkError(
+          ErrorCode.INVALID_ARGUMENTS,
+          '[files.deleteCloudStorageProviderFile] Invalid file(s) details',
+        );
+      }
+    });
 
     sendMessageToParent('files.deleteCloudStorageProviderFile', [deleteFileRequest], callback);
   }
@@ -778,10 +798,17 @@ export namespace files {
       );
     }
 
-    if (!(downloadFileRequest && downloadFileRequest.content)) {
+    if (
+      !(
+        downloadFileRequest &&
+        downloadFileRequest.content &&
+        downloadFileRequest.content.itemList &&
+        downloadFileRequest.content.itemList.length > 0
+      )
+    ) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
       );
     }
 
@@ -807,10 +834,32 @@ export namespace files {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.uploadCloudStorageProviderFile] callback cannot be null');
     }
 
-    if (!(uploadFileRequest && uploadFileRequest.content)) {
+    if (
+      !(
+        uploadFileRequest &&
+        uploadFileRequest.content &&
+        uploadFileRequest.content.itemList &&
+        uploadFileRequest.content.itemList.length > 0 &&
+        uploadFileRequest.content.destinationFolder
+      )
+    ) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content is missing',
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    }
+
+    if (
+      !(
+        (uploadFileRequest.content.providerCode === CloudStorageProvider.SharePoint
+          ? (<ISharePointFile>uploadFileRequest.content.destinationFolder).isFolder
+          : (<CloudStorageFolderItem>uploadFileRequest.content.destinationFolder).isSubdirectory) &&
+        uploadFileRequest.content.destinationFolder.objectUrl
+      )
+    ) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.uploadCloudStorageProviderFile] Invalid destination folder details',
       );
     }
 
