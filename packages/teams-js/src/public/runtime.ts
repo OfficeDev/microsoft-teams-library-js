@@ -38,6 +38,7 @@ export interface IRuntime {
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly sharing?: {};
+    readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -81,6 +82,7 @@ export let runtime: IRuntime = {
     profile: undefined,
     remoteCamera: undefined,
     sharing: undefined,
+    stageView: undefined,
     teams: {
       fullTrust: {
         joinedTeams: undefined,
@@ -118,6 +120,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     remoteCamera: {},
     sharing: {},
+    stageView: {},
     teams: {
       fullTrust: {},
     },
