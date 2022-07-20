@@ -9,6 +9,7 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
@@ -33,9 +34,11 @@ export interface IRuntime {
       readonly fullTrust?: {};
     };
     readonly people?: {};
+    readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly sharing?: {};
+    readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -50,6 +53,7 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    barCode: undefined,
     calendar: undefined,
     call: undefined,
     chat: undefined,
@@ -74,9 +78,11 @@ export let runtime: IRuntime = {
       fullTrust: undefined,
     },
     people: undefined,
+    permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
     sharing: undefined,
+    stageView: undefined,
     teams: {
       fullTrust: {
         joinedTeams: undefined,
@@ -114,6 +120,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     remoteCamera: {},
     sharing: {},
+    stageView: {},
     teams: {
       fullTrust: {},
     },
