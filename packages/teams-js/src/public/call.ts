@@ -2,7 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 export namespace call {
@@ -44,7 +44,7 @@ export namespace call {
     return new Promise(resolve => {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
-        throw new Error('Not supported');
+        throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
         resolve(
