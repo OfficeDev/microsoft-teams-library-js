@@ -4,14 +4,12 @@ import { Button } from '@fluentui/react-components';
 import { app, calendar } from '@microsoft/teams-js';
 import React from 'react';
 
-import { MessageListItem } from './Emails';
-
 const teamsDeepLinkHost = 'teams.microsoft.com';
 const teamsDeepLinkProtocol = 'https';
 const teamsDeepLinkAttendeesUrlParameterName = 'attendees';
 const teamsDeepLinkUrlPathForCalendar = '/l/meeting/new';
 
-export const handleNewMail = async (): Promise<void> => {
+export const handleNewMeeting = async (): Promise<void> => {
   if (!calendar.isSupported()) {
     const calendarParams: calendar.ComposeMeetingParams = {
       attendees: ['emailAddress@microsoft.com'],
@@ -32,21 +30,10 @@ export const handleNewMail = async (): Promise<void> => {
   }
 };
 
-export const handleOpenMail = async (e: MessageListItem): Promise<void> => {
-  if (!calendar.isSupported()) {
-    alert('open mail item is not supported');
-  } else {
-    const openMailParams: calendar.OpenCalendarItemParams = {
-      itemId: e.key || '',
-    };
-    const result = await calendar.openCalendarItem(openMailParams);
-    return alert(result);
-  }
-};
 export const CalendarCapability: React.FunctionComponent = () => {
   return (
     <div>
-      <Button onClick={() => handleNewMail()}>Add Meeting</Button>
+      <Button onClick={() => handleNewMeeting()}>Add Meeting</Button>
     </div>
   );
 };

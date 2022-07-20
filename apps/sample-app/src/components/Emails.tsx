@@ -3,7 +3,7 @@ import { Text } from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
 import React from 'react';
 
-import { handleOpenMail } from './Calendar';
+import { handleOpenMailItem } from './utils';
 
 interface EmailProps {
   messages: Message[];
@@ -30,7 +30,7 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
           <Text as="span" key={e.key}>
             <button key={e.key}>
               <div>
-                <DocumentCard key={e.key} onClick={() => handleOpenMail(e)}>
+                <DocumentCard key={e.key} onClick={() => handleOpenMailItem(e)}>
                   <DocumentCardTitle title={e.subject || ''} shouldTruncate />
                   <DocumentCardTitle title={e.sender || ''} shouldTruncate showAsSecondaryTitle />
                 </DocumentCard>
