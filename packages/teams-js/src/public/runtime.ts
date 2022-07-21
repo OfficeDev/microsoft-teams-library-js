@@ -19,6 +19,9 @@ export interface IRuntime {
       readonly bot?: {};
       readonly update?: {};
     };
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -62,6 +65,9 @@ export let runtime: IRuntime = {
     dialog: {
       bot: undefined,
       update: undefined,
+    },
+    geoLocation: {
+      map: undefined,
     },
     location: undefined,
     logs: undefined,
