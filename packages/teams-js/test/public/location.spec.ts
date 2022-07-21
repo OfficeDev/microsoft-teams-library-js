@@ -1,7 +1,7 @@
 import { locationAPIsRequiredVersion } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
@@ -324,6 +324,68 @@ describe('location', () => {
           },
         } as DOMMessageEvent);
       });
+    });
+  });
+
+  it('location.isSupported should return false if the runtime says location is not supported', () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    expect(location.isSupported()).not.toBeTruthy();
+  });
+
+  it('location.isSupported should return true if the runtime says location is supported', () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+    expect(location.isSupported()).toBeTruthy();
+  });
+
+  it('Frameless - getLocation should throw error when not supported in the runtime config', () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(4);
+
+      try {
+        location.getLocation(defaultLocationProps, emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+  });
+
+  it('Frameless - showLocation should throw error when location is not supported', async () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(4);
+
+      try {
+        location.showLocation(defaultLocation, emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+  });
+
+  it('Framed - getLocation should throw error when not supported in the runtime config', () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(4);
+
+      try {
+        location.getLocation(defaultLocationProps, emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+  });
+
+  it('Framed - showLocation should throw error when location is not supported', async () => {
+    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(4);
+
+      try {
+        location.showLocation(defaultLocation, emptyCallback);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
   });
 });
