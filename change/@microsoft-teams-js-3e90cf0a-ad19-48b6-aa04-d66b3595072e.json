@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "marked barCode capability beta for potential future changes",
+  "comment": "Added beta tag to barCode capability to accurately reflect level of support offered",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
