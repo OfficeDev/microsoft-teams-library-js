@@ -129,7 +129,8 @@ const Authenticate = (): React.ReactElement =>
   });
 
 const externalAuthParams = {
-  url: 'https://teams-test-tab.azurewebsites.net/auth_start.html?authId=1&oauthRedirectMethod={oauthRedirectMethod}',
+  url:
+    'https://teams-test-tab.azurewebsites.net/auth_start.html?authId=b9237908-2150-497a-8e47-8bf3ebf81b77&oauthRedirectMethod={oauthRedirectMethod}',
   isExternal: true,
 };
 
