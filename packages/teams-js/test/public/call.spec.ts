@@ -1,4 +1,5 @@
 import { app, call, FrameContexts } from '../../src/public';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -29,7 +30,7 @@ describe('call', () => {
 
   it('should not allow calls if not supported', async () => {
     utils.initializeWithContext(FrameContexts.content);
-    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('Not supported');
+    await expect(call.startCall(mockStartCallParams)).rejects.toEqual(errorNotSupportedOnPlatform);
   });
 
   it('startCall should be called if supported: Non-legacy host', async () => {
