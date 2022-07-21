@@ -364,9 +364,9 @@ describe('location', () => {
   });
 
   it('Framed - getLocation should throw error when not supported in the runtime config', () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
-      expect.assertions(4);
+    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framedPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(1);
 
       try {
         location.getLocation(defaultLocationProps, emptyCallback);
@@ -377,9 +377,9 @@ describe('location', () => {
   });
 
   it('Framed - showLocation should throw error when location is not supported', async () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
-      expect.assertions(4);
+    framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    framedPlatform.initializeWithContext(FrameContexts.task).then(() => {
+      expect.assertions(1);
 
       try {
         location.showLocation(defaultLocation, emptyCallback);
