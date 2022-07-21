@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "marked barCode capability beta for potential future changes",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
