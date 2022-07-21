@@ -47,6 +47,14 @@ export const locationAPIsRequiredVersion = '1.9.0';
 
 /**
  * @hidden
+ * This is the client version when permisisons are supported
+ *
+ * @internal
+ */
+export const permissionsAPIsRequiredVersion = '2.0.1';
+
+/**
+ * @hidden
  * This is the client version when people picker API is supported on mobile.
  *
  * @internal
