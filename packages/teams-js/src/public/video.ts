@@ -4,11 +4,19 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const NOOP = (): void => {};
+
 /**
  * Namespace to video extensibility of the SDK
  * @beta
  */
 export namespace video {
+  let activeEffectId: string | undefined = undefined;
+  let requestedEffectId: string | undefined = undefined;
+  let unloadPreviousEffect: () => void = NOOP;
+  let unloadActiveEffect: () => void = NOOP;
+
   /**
    * Represents a video frame
    * @beta
@@ -38,6 +46,10 @@ export namespace video {
      * RGB stride, valid only when video frame format is RGB
      */
     stride?: number;
+    /**
+     * The ID of the effect that should be applied on this frame
+     */
+    effectId: string | undefined;
   }
 
   /**
@@ -88,7 +100,7 @@ export namespace video {
    * Video effect change call back function definition
    * @beta
    */
-  export type VideoEffectCallBack = (effectId: string | undefined) => void;
+  export type VideoEffectCallBack = (effectId: string | undefined) => void | Promise<void> | Promise<() => void>;
 
   /**
    * Register to read the video frames in Permissions section
@@ -102,9 +114,9 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
+    registerHandler('video.newVideoFrame', async (videoFrame: Omit<VideoFrame, 'effectId'>) => {
       if (videoFrame !== undefined) {
-        frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
+        frameCallback({ ...videoFrame, effectId: activeEffectId }, notifyVideoFrameProcessed, notifyError);
       }
     });
     sendMessageToParent('video.registerForVideoFrame', [config]);
@@ -139,7 +151,20 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('video.effectParameterChange', callback);
+    registerHandler('video.effectParameterChange', async (effectId: string | undefined) => {
+      requestedEffectId = effectId;
+      const unload = await callback(effectId);
+      const unloadFunction = typeof unload === 'function' ? unload : NOOP;
+      if (requestedEffectId === effectId) {
+        activeEffectId = effectId;
+        requestedEffectId = undefined;
+        unloadPreviousEffectIfNeeded();
+        unloadPreviousEffect = unloadActiveEffect;
+        unloadActiveEffect = unloadFunction;
+      } else {
+        unloadFunction();
+      }
+    });
   }
 
   /**
@@ -148,6 +173,7 @@ export namespace video {
    * @beta
    */
   function notifyVideoFrameProcessed(): void {
+    unloadPreviousEffectIfNeeded();
     sendMessageToParent('video.videoFrameProcessed');
   }
 
@@ -157,7 +183,18 @@ export namespace video {
    * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
+    unloadPreviousEffectIfNeeded();
     sendMessageToParent('video.notifyError', [errorMessage]);
+  }
+
+  /**
+   * Unloads previous effect if needed.
+   */
+  function unloadPreviousEffectIfNeeded(): void {
+    if (unloadPreviousEffect !== NOOP) {
+      unloadPreviousEffect();
+      unloadPreviousEffect = NOOP;
+    }
   }
 
   /**
