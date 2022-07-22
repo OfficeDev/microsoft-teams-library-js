@@ -7,11 +7,15 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the barcode scanning-specific part of the SDK.
+ *
+ * @beta
  */
 export namespace barCode {
   /**
    * Data structure to customize the barcode scanning experience in scanBarCode API.
    * All properties in BarCodeConfig are optional and have default values in the platform
+   *
+   * @beta
    */
   export interface BarCodeConfig {
     /**
@@ -27,6 +31,8 @@ export namespace barCode {
    * @param barCodeConfig - input configuration to customize the barcode scanning experience
    *
    * @returns a scanned code
+   *
+   * @beta
    */
   export function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
     return new Promise<string>(resolve => {
@@ -46,6 +52,8 @@ export namespace barCode {
    * Checks whether or not media has user permission
    *
    * @returns true if the user has granted the app permission to media information, false otherwise
+   *
+   * @beta
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -63,6 +71,8 @@ export namespace barCode {
    * Requests user permission for media
    *
    * @returns true if the user has granted the app permission to the media, false otherwise
+   *
+   * @beta
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -80,6 +90,8 @@ export namespace barCode {
    * Checks if barCode capability is supported by the host
    *
    * @returns boolean to represent whether barCode is supported
+   *
+   * @beta
    */
   export function isSupported(): boolean {
     return runtime.supports.barCode && runtime.supports.permissions ? true : false;
