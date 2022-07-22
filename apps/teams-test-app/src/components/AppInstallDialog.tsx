@@ -2,6 +2,7 @@ import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckAppInstallDialogCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -28,11 +29,10 @@ const OpenAppInstallDialog = (): React.ReactElement =>
   });
 
 const AppInstallDialogAPIs: React.FC = () => (
-  <>
-    <h1>appInstallDialog</h1>
+  <ModuleWrapper title="appInstallDialog">
     <OpenAppInstallDialog />
     <CheckAppInstallDialogCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppInstallDialogAPIs;

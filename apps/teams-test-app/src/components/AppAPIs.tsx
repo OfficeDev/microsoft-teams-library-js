@@ -2,12 +2,12 @@ import { app, Context, executeDeepLink, getContext, registerOnThemeChangeHandler
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
     name: 'getContextV2',
     title: 'Get Context',
-    prettyPrint: true,
     onClick: {
       withPromise: async () => {
         const context = await app.getContext();
@@ -72,12 +72,11 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
   });
 
 const AppAPIs = (): ReactElement => (
-  <>
-    <h1>app</h1>
+  <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
     <RegisterOnThemeChangeHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppAPIs;

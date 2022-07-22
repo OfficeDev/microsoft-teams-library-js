@@ -2,6 +2,7 @@ import { location, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckLocationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -60,12 +61,11 @@ const ShowLocation = (): React.ReactElement =>
   });
 
 const LocationAPIs = (): ReactElement => (
-  <>
-    <h1>location</h1>
+  <ModuleWrapper title="location">
     <GetLocation />
     <ShowLocation />
     <CheckLocationCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default LocationAPIs;

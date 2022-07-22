@@ -2,13 +2,11 @@ import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiContainer } from './ApiContainer';
-import { ApiPrettyPrintJsonContainer } from './ApiPrettyPrintJsonContainer';
 import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithoutInputProps {
   title: string;
   name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
-  prettyPrint?: boolean;
   onClick:
     | ((setResult: (result: string) => void) => Promise<string>)
     | {
@@ -18,7 +16,7 @@ export interface ApiWithoutInputProps {
 }
 
 export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement => {
-  const { name, onClick, prettyPrint = false, title } = props;
+  const { name, onClick, title } = props;
   const [result, setResult] = React.useState('');
   const onClickCallback = React.useCallback(async () => {
     setResult(noHostSdkMsg);
@@ -37,11 +35,7 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
     }
   }, [setResult, onClick]);
 
-  return prettyPrint ? (
-    <ApiPrettyPrintJsonContainer title={title} result={result} name={name}>
-      <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
-    </ApiPrettyPrintJsonContainer>
-  ) : (
+  return (
     <ApiContainer title={title} result={result} name={name}>
       <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
     </ApiContainer>

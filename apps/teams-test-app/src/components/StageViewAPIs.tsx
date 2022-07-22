@@ -2,6 +2,7 @@ import { SdkError, stageView } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckStageViewCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -51,11 +52,10 @@ const OpenStageView = (): ReactElement =>
   });
 
 const StageViewAPIs = (): ReactElement => (
-  <>
-    <h1>stageView</h1>
+  <ModuleWrapper title="stageView">
     <OpenStageView />
     <CheckStageViewCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default StageViewAPIs;

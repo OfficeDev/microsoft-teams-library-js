@@ -2,6 +2,7 @@ import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckPeopleCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -45,11 +46,10 @@ const SelectPeople = (): React.ReactElement =>
   });
 
 const PeopleAPIs = (): ReactElement => (
-  <>
-    <h1>people</h1>
+  <ModuleWrapper title="people">
     <SelectPeople />
     <CheckPeopleCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PeopleAPIs;

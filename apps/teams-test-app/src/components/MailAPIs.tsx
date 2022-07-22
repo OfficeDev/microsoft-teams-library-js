@@ -2,6 +2,7 @@ import { mail } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckMailCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -54,12 +55,11 @@ const OpenMailItem = (): React.ReactElement =>
   });
 
 const MailAPIs = (): ReactElement => (
-  <>
-    <h1>mail</h1>
+  <ModuleWrapper title="mail">
     <ComposeMail />
     <OpenMailItem />
     <CheckMailCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MailAPIs;

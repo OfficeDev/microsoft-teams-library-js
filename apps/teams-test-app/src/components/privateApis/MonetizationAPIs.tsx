@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckMonetizationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -44,11 +45,10 @@ const OpenPurchaseExperience = (): React.ReactElement =>
   });
 
 const MonetizationAPIs = (): ReactElement => (
-  <>
-    <h1>monetization</h1>
+  <ModuleWrapper title="Monetization">
     <OpenPurchaseExperience />
     <CheckMonetizationCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MonetizationAPIs;

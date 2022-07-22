@@ -2,6 +2,7 @@ import { app, authentication, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
@@ -129,15 +130,14 @@ const Authenticate = (): React.ReactElement =>
   });
 
 const AuthenticationAPIs = (): ReactElement => (
-  <>
-    <h1>authentication</h1>
+  <ModuleWrapper title="authentication">
     <Initialize />
     <GetAuthToken />
     <GetUser />
     <NotifyFailure />
     <NotifySuccess />
     <Authenticate />
-  </>
+  </ModuleWrapper>
 );
 
 export default AuthenticationAPIs;

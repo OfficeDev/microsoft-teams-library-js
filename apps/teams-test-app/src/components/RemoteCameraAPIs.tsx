@@ -3,6 +3,7 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const RemoteCameraCapabilityCheck = (): React.ReactElement =>
   ApiWithoutInput({
@@ -160,8 +161,7 @@ const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
   });
 
 const RemoteCameraAPIs = (): React.ReactElement => (
-  <>
-    <h1>remoteCamera</h1>
+  <ModuleWrapper title="remoteCamera">
     <RemoteCameraCapabilityCheck />
     <GetCapableParticipants />
     <RequestControl />
@@ -171,7 +171,7 @@ const RemoteCameraAPIs = (): React.ReactElement => (
     <RegisterOnErrorHandler />
     <RegisterOnDeviceStateChangeHandler />
     <RegisterOnSessionStatusChangeHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default RemoteCameraAPIs;

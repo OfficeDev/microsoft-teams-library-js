@@ -2,6 +2,7 @@ import { geoLocation } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckGeoLocationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -75,8 +76,7 @@ const RequestGeoLocationPermission = (): React.ReactElement =>
   });
 
 const GeoLocationAPIs = (): ReactElement => (
-  <>
-    <h1>geoLocation</h1>
+  <ModuleWrapper title="geoLocation">
     <GetCurrentLocation />
     <ChooseLocation />
     <ShowLocation />
@@ -84,7 +84,7 @@ const GeoLocationAPIs = (): ReactElement => (
     <RequestGeoLocationPermission />
     <CheckGeoLocationCapability />
     <CheckGeoLocationMapCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default GeoLocationAPIs;

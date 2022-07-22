@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput } from './utils';
 import { ApiContainer } from './utils/ApiContainer';
 import { isTestBackCompat } from './utils/isTestBackCompat';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateBack = (): React.ReactElement =>
   ApiWithoutInput({
@@ -87,8 +88,7 @@ const PagesBackStackAPIs = (): ReactElement => {
   }, [totalStates]);
 
   return (
-    <>
-      <h1>pages.backStack</h1>
+    <ModuleWrapper title="pages.backStack">
       <NavigateBack />
       <ApiContainer name="addStates" title="Add States" result={addStatesValue}>
         <input name="button_addStates" type="button" value="Add States" onClick={onAddStatesClick} />
@@ -106,7 +106,7 @@ const PagesBackStackAPIs = (): ReactElement => {
         />
       </ApiContainer>
       <CheckPageBackStackCapability />
-    </>
+    </ModuleWrapper>
   );
 };
 

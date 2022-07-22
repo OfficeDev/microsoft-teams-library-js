@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NotifyLoaded = (): React.ReactElement =>
   ApiWithoutInput({
@@ -95,13 +96,12 @@ const NotifyExpectedFailure = (): React.ReactElement =>
   });
 
 const AppInitializationAPIs = (): ReactElement => (
-  <>
-    <h1>appInitialization</h1>
+  <ModuleWrapper title="appInitialization">
     <NotifyLoaded />
     <NotifySuccess />
     <NotifyFailure />
     <NotifyExpectedFailure />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppInitializationAPIs;

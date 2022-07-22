@@ -2,6 +2,7 @@ import { FileOpenPreference, files, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const GetCloudStorageFolders = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -216,8 +217,7 @@ const OpenDownloadFolder = (): ReactElement =>
   });
 
 const FilesAPIs = (): ReactElement => (
-  <>
-    <h1>files</h1>
+  <ModuleWrapper title="files">
     <GetCloudStorageFolders />
     <AddCloudStorageFolder />
     <DeleteCloudStorageFolder />
@@ -227,7 +227,7 @@ const FilesAPIs = (): ReactElement => (
     <CopyMoveFiles />
     <GetFileDownloads />
     <OpenDownloadFolder />
-  </>
+  </ModuleWrapper>
 );
 
 export default FilesAPIs;

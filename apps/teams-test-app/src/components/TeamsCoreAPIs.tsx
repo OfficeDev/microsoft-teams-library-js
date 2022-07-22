@@ -9,6 +9,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const EnablePrintCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -111,14 +112,13 @@ const CheckTeamsCoreCapability = (): React.ReactElement =>
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
-  <>
-    <h1>teamsCore</h1>
+  <ModuleWrapper title="teamsCore">
     <EnablePrintCapability />
     <Print />
     <RegisterOnLoadHandler />
     <RegisterBeforeUnloadHandler />
     <CheckTeamsCoreCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default TeamsCoreAPIs;

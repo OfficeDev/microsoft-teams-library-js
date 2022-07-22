@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
@@ -297,7 +298,7 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
   });
 
 const MeetingAPIs = (): ReactElement => (
-  <>
+  <ModuleWrapper title="meeting">
     <h1>meeting</h1>
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
@@ -314,7 +315,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
-  </>
+  </ModuleWrapper>
 );
 
 export default MeetingAPIs;
