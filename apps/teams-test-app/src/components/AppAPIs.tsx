@@ -7,6 +7,7 @@ const GetContext = (): ReactElement =>
   ApiWithoutInput({
     name: 'getContextV2',
     title: 'Get Context',
+    prettyPrint: true,
     onClick: {
       withPromise: async () => {
         const context = await app.getContext();
