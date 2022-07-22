@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Modified yaml file to pull from folder scripts and copy all the powershell files in there to be published as artifacts instead of just one",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "none"
-}
