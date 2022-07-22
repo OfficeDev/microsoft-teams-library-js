@@ -1,8 +1,35 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 13 May 2022 22:32:13 GMT and should not be manually modified.
+This log was last generated on Fri, 22 Jul 2022 01:40:44 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.1.0
+
+Fri, 22 Jul 2022 01:40:44 GMT
+
+### Minor changes
+
+- Added `meeting.registerMeetingReactionReceivedHandler`
+- Added `scanBarCode` to barCode.ts from media.ts along with permission APIs `hasPermission` and `requestPermission`
+- Added a new capability `geoLocation` that split the location capability into new set of functions and subcapabilities. Added permission-related APIs `hasPermission` and `requestPermission`.
+- Added `webStorage` capability with APIs to allows apps to discover if web storage is supported by the host client
+- Added 3P cloud storage provider API support to files.ts
+- Added `isSupported` to `stageView`
+- Added `profile.showProfile` API and unit tests
+
+### Patches
+
+- Removing unnecessary `/` in `appInstallDialog.openAppInstallDialog()`
+- Renamed `IRaiseHandStateChangedEvent` interface to `IRaiseHandStateChangedEventData` and changed the error so it can be assigned undefined rather than null
+- Fixed broken SDK reference documentation links and added SDK reference documentation validation to build step.
+- Ensured `submitHandler` exists before calling it in `dialog.open`, `dialog.bot.open` and `tasks.startTask` APIs.
+- Added frameless unit tests for `authentication.notifySuccess` and `authentication.notifyFailure`
+- Added beta tag to `barCode` capability to accurately reflect level of support offered
+- Added `meeting.registerRaiseHandStateChangedHandler`
+- Updated reference documentation for global deprecated `Context` interface. Each deprecated `Context` property now links to respective mapped property in `app.Context` interface.
+- Enabled `FrameContexts.task` for `startCall` API in call.ts
+- Fixed formatting of reference documentation for `call.StartCallParams` interface.
 
 ## 2.0.0
 
