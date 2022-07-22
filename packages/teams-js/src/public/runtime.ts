@@ -9,13 +9,18 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
       readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
     };
     readonly location?: {};
     readonly logs?: {};
@@ -32,9 +37,11 @@ export interface IRuntime {
       readonly fullTrust?: {};
     };
     readonly people?: {};
+    readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly sharing?: {};
+    readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -49,13 +56,18 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    barCode: undefined,
     calendar: undefined,
     call: undefined,
     chat: undefined,
+    webStorage: undefined,
     conversations: undefined,
     dialog: {
       bot: undefined,
       update: undefined,
+    },
+    geoLocation: {
+      map: undefined,
     },
     location: undefined,
     logs: undefined,
@@ -72,9 +84,11 @@ export let runtime: IRuntime = {
       fullTrust: undefined,
     },
     people: undefined,
+    permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
     sharing: undefined,
+    stageView: undefined,
     teams: {
       fullTrust: {
         joinedTeams: undefined,
@@ -112,6 +126,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     remoteCamera: {},
     sharing: {},
+    stageView: {},
     teams: {
       fullTrust: {},
     },
@@ -160,6 +175,12 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
       ],
+    },
+  ],
+  '2.0.5': [
+    {
+      capability: { webStorage: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
 };

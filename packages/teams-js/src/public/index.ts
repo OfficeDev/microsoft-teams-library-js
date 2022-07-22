@@ -28,8 +28,10 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
+export { barCode } from './barCode';
 export { chat } from './chat';
 export { dialog } from './dialog';
+export { geoLocation } from './geoLocation';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { menus } from './menus';
@@ -45,6 +47,7 @@ export { profile } from './profile';
 export { video } from './video';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
+export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
 export {
