@@ -2,17 +2,19 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts, minAdaptiveCardVersion } from './constants';
 import {
   AdaptiveCardDialogInfo,
+  AdaptiveCardVersion,
   BotAdaptiveCardDialogInfo,
   BotUrlDialogInfo,
   DialogInfo,
   DialogSize,
+  ErrorCode,
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
@@ -285,14 +287,35 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-        removeHandler('messageForParent');
+      getVersion().then(hostVersion => {
+        validateMinimumAdaptiveCardVersion(hostVersion);
+
+        if (messageFromChildHandler) {
+          registerHandler('messageForParent', messageFromChildHandler);
+        }
+        const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
+        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+          removeHandler('messageForParent');
+        });
       });
+    }
+
+    export function getVersion(): Promise<AdaptiveCardVersion> {
+      return sendAndHandleSdkError('adaptiveCard.version');
+    }
+
+    function validateMinimumAdaptiveCardVersion(hostVersion: AdaptiveCardVersion): void {
+      if (
+        hostVersion.majorVersion < minAdaptiveCardVersion.majorVersion ||
+        (hostVersion.majorVersion === minAdaptiveCardVersion.majorVersion &&
+          hostVersion.minorVersion < minAdaptiveCardVersion.minorVersion)
+      ) {
+        throw {
+          errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
+          message: `Can not open adaptive card dialog because host adaptive card version is ${hostVersion.majorVersion}.${hostVersion.minorVersion}, but the minimum acceptable adaptive card version is ${minAdaptiveCardVersion.majorVersion}.${minAdaptiveCardVersion.minorVersion}`,
+        };
+      }
     }
 
     /**
@@ -301,7 +324,9 @@ export namespace dialog {
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      */
     export function isSupported(): boolean {
-      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard ? true : false;
+      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard && runtime.supports.adaptiveCard
+        ? true
+        : false;
     }
 
     export namespace bot {
@@ -323,14 +348,19 @@ export namespace dialog {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        if (messageFromChildHandler) {
-          registerHandler('messageForParent', messageFromChildHandler);
-        }
-        const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-          removeHandler('messageForParent');
+        getVersion().then(hostVersion => {
+          validateMinimumAdaptiveCardVersion(hostVersion);
+
+          if (messageFromChildHandler) {
+            registerHandler('messageForParent', messageFromChildHandler);
+          }
+          const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+
+          sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+            submitHandler?.({ err, result });
+            removeHandler('messageForParent');
+          });
         });
       }
 
@@ -342,7 +372,8 @@ export namespace dialog {
       export function isSupported(): boolean {
         return runtime.supports.dialog &&
           runtime.supports.dialog.adaptiveCard &&
-          runtime.supports.dialog.adaptiveCard.bot
+          runtime.supports.dialog.adaptiveCard.bot &&
+          runtime.supports.adaptiveCard
           ? true
           : false;
       }

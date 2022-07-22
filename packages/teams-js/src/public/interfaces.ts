@@ -681,7 +681,10 @@ export interface DialogSize {
   width: DialogDimension | number;
 }
 
-interface BaseDialogInfo {
+/**
+ * Shared Dialog Properties
+ */
+export interface BaseDialogInfo {
   /*
    * The requested size of the dialog
    */
@@ -920,4 +923,9 @@ export enum ErrorCode {
 export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
+}
+
+export interface AdaptiveCardVersion {
+  majorVersion: number;
+  minorVersion: number;
 }

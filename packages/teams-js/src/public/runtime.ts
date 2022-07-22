@@ -7,6 +7,7 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly adaptiveCard?: {};
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
     readonly barCode?: {};
@@ -60,6 +61,7 @@ export interface IRuntime {
 export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
+    adaptiveCard: undefined,
     appInstallDialog: undefined,
     barCode: undefined,
     calendar: undefined,
