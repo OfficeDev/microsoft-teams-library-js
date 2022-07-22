@@ -839,8 +839,7 @@ export namespace files {
         uploadFileRequest &&
         uploadFileRequest.content &&
         uploadFileRequest.content.itemList &&
-        uploadFileRequest.content.itemList.length > 0 &&
-        uploadFileRequest.content.destinationFolder
+        uploadFileRequest.content.itemList.length > 0
       )
     ) {
       throw getSdkError(
@@ -851,6 +850,7 @@ export namespace files {
 
     if (
       !(
+        uploadFileRequest.content.destinationFolder &&
         (uploadFileRequest.content.providerCode === CloudStorageProvider.SharePoint
           ? (<ISharePointFile>uploadFileRequest.content.destinationFolder).isFolder
           : (<CloudStorageFolderItem>uploadFileRequest.content.destinationFolder).isSubdirectory) &&
@@ -896,7 +896,7 @@ export namespace files {
    * @param handler - When 3P cloud storage provider content is updated this handler is called
    *
    */
-  export function registerCloudStorageProviderContentChangeHandler(handler: () => void): void {
+  export function registerCloudStorageProviderContentChangeHandler(handler: (provider: string) => void): void {
     ensureInitialized();
 
     if (!handler) {

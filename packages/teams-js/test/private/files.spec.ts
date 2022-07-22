@@ -754,10 +754,37 @@ describe('files', () => {
       isSubdirectory: false,
       type: 'pdf',
     };
+    const mockDeleteFolder: files.CloudStorageFolderItem = {
+      id: '112',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'folder1.com',
+      title: 'folder1',
+      isSubdirectory: true,
+      type: 'folder',
+    };
     const deleteFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
       content: {
         providerCode: files.CloudStorageProvider.Box,
         itemList: [mockDeleteFile],
+      },
+    };
+
+    const deleteFolderRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockDeleteFolder],
+      },
+    };
+
+    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: null,
+    };
+
+    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
       },
     };
 
@@ -776,6 +803,36 @@ describe('files', () => {
       await utils.initializeWithContext('settings');
       expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageProviderFile(deleteFileRequestWithNullContent, emptyCallback)).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.deleteCloudStorageProviderFile(deleteFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls for delete folder in itemList of request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageProviderFile(deleteFolderRequest, emptyCallback)).toThrowError(
+        '[files.deleteCloudStorageProviderFile] Invalid file(s) details',
       );
     });
 
@@ -811,6 +868,15 @@ describe('files', () => {
         itemList: [mockDownloadFile],
       },
     };
+    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: null,
+    };
+    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
+      },
+    };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
@@ -827,6 +893,31 @@ describe('files', () => {
       await utils.initializeWithContext('settings');
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.downloadCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.downloadCloudStorageProviderFile(downloadFileRequestWithNullContent, emptyCallback),
+      ).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.downloadCloudStorageProviderFile(downloadFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
       );
     });
 
@@ -865,11 +956,44 @@ describe('files', () => {
       isSubdirectory: true,
       type: 'folder',
     };
+    const mockDestinationFile: files.CloudStorageFolderItem = {
+      id: '113',
+      lastModifiedTime: '2021-03-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file2.com',
+      title: 'file2',
+      isSubdirectory: false,
+      type: 'file',
+    };
     const uploadFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
       content: {
         providerCode: files.CloudStorageProvider.Dropbox,
         itemList: [mockUploadFile],
         destinationFolder: mockDestinationFolder,
+      },
+    };
+    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: null,
+    };
+    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [],
+        destinationFolder: mockDestinationFolder,
+      },
+    };
+    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: null,
+      },
+    };
+    const uploadFileRequestWithFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFile,
       },
     };
 
@@ -889,6 +1013,43 @@ describe('files', () => {
       expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
         'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
       );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.uploadCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.uploadCloudStorageProviderFile(uploadFileRequestWithNullContent, emptyCallback)).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null destinationFolder request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithNullDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
     });
 
     it('should send the message to parent correctly', () => {
