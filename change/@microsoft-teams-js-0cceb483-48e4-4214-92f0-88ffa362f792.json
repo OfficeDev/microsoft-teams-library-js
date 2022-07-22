@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Ensured `submitHandler` exists before calling it in `dialog.open`, `dialog.bot.open` and `tasks.startTask` APIs.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
