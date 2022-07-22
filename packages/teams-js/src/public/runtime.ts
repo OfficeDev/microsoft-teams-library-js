@@ -16,15 +16,6 @@ export interface IRuntime {
     readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
-      readonly update?: {};
-      readonly url?: {
-        readonly bot?: {};
-      };
-    };
-    readonly geoLocation?: {
-      readonly map?: {};
-    };
-    readonly dialog2?: {
       readonly adaptiveCard?: {
         readonly bot?: {};
       };
@@ -32,6 +23,9 @@ export interface IRuntime {
       readonly url?: {
         readonly bot?: {};
       };
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
     };
     readonly location?: {};
     readonly logs?: {};
@@ -74,12 +68,6 @@ export let runtime: IRuntime = {
     webStorage: undefined,
     conversations: undefined,
     dialog: {
-      update: undefined,
-      url: {
-        bot: undefined,
-      },
-    },
-    dialog2: {
       adaptiveCard: {
         bot: undefined,
       },
@@ -131,18 +119,6 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
-      update: {},
-      url: {
-        bot: {},
-      },
-    },
-    dialog2: {
-      // I think this should be omitted: creating adaptive cards in teams would still work from tasks
-      // but we make no promises about how their adaptive cards work since they have an old version of adaptive
-      // cards
-      adaptiveCard: {
-        bot: {},
-      },
       update: {},
       url: {
         bot: {},
