@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { parse } from 'yargs';
 
 export interface ApiPrettyPrintJsonContainerProps {
   title: string;
@@ -17,11 +16,12 @@ export const ApiPrettyPrintJsonContainer = (
     throw new Error('name has to be set and it can only contain alphanumeric characters, dots and underscores.');
   }
 
-  const parseJSON = (json: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parseJSON = (data: any): unknown => {
     try {
-      return JSON.parse(json);
+      return JSON.parse(data);
     } catch (e) {
-      return json;
+      return data;
     }
   };
 
