@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Ensured `submitHandler` exists before calling it in `dialog.open`, `dialog.bot.open` and `tasks.startTask` APIs.",
+  "comment": "Added beta tag to `barCode` capability to accurately reflect level of support offered",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"

@@ -15,26 +15,21 @@ const GetLocation = (): React.ReactElement =>
     name: 'getLocation',
     title: 'Get Location',
     onClick: {
-      validateInput: input => {
-        if (input.allowChooseLocation === undefined) {
+      validateInput: locationProps => {
+        if (locationProps.allowChooseLocation === undefined) {
           throw new Error('allowChooseLocation is required');
         }
       },
-      submit: {
-        withPromise: async locationProps => {
-          const result = await location.getLocation(locationProps);
-          return JSON.stringify(result);
-        },
-        withCallback: (locationProps, setResult) => {
-          const callback = (error: SdkError, location: location.Location): void => {
-            if (error) {
-              setResult(JSON.stringify(error));
-            } else {
-              setResult(JSON.stringify(location));
-            }
-          };
-          location.getLocation(locationProps, callback);
-        },
+      submit: async (locationProps, setResult) => {
+        const callback = (error: SdkError, location: location.Location): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult(JSON.stringify(location));
+          }
+        };
+        location.getLocation(locationProps, callback);
+        return '';
       },
     },
   });
@@ -49,22 +44,17 @@ const ShowLocation = (): React.ReactElement =>
           throw new Error('latitude and longitude are required');
         }
       },
-      submit: {
-        withPromise: async locationProps => {
-          await location.showLocation(locationProps);
-          return 'Completed';
-        },
-        withCallback: (locationProps, setResult) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const callback = (error: SdkError, status: boolean): void => {
-            if (error) {
-              setResult(JSON.stringify(error));
-            } else {
-              setResult('Completed');
-            }
-          };
-          location.showLocation(locationProps, callback);
-        },
+      submit: async (locationProps, setResult) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const callback = (error: SdkError, status: boolean): void => {
+          if (error) {
+            setResult(JSON.stringify(error));
+          } else {
+            setResult('Completed');
+          }
+        };
+        location.showLocation(locationProps, callback);
+        return '';
       },
     },
   });

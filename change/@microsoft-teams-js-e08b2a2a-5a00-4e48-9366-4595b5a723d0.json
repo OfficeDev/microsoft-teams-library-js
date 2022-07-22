@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "scanBarCode is added to barCode.ts from media.ts along with permission APIs like hasPermission and requestPermission",
+  "comment": "Added `scanBarCode` to barCode.ts from media.ts along with permission APIs `hasPermission` and `requestPermission`",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
