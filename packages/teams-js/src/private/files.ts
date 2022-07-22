@@ -731,7 +731,8 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates the delete 3P cloud storage file(s) flow, which will delete existing file(s) from the given 3P provider
+   * Initiates the delete 3P cloud storage file(s) / folder (folder has to be empty) flow,
+   * which will delete existing file(s) / folder from the given 3P provider
    *
    * @param deleteFileRequest 3P cloud storage provider delete action request content
    * @param callback Callback that will be triggered post deleting existing file(s) flow is finished
@@ -760,19 +761,6 @@ export namespace files {
       );
     }
 
-    deleteFileRequest.content.itemList.forEach(item => {
-      if (
-        deleteFileRequest.content.providerCode === CloudStorageProvider.SharePoint
-          ? (<ISharePointFile>item).isFolder
-          : (<CloudStorageFolderItem>item).isSubdirectory
-      ) {
-        throw getSdkError(
-          ErrorCode.INVALID_ARGUMENTS,
-          '[files.deleteCloudStorageProviderFile] Invalid file(s) details',
-        );
-      }
-    });
-
     sendMessageToParent('files.deleteCloudStorageProviderFile', [deleteFileRequest], callback);
   }
 
@@ -780,7 +768,8 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates the download 3P cloud storage file(s) flow, which will download existing file(s) from the given 3P provider
+   * Initiates the download 3P cloud storage file(s) flow,
+   * which will download existing file(s) from the given 3P provider in the teams client side without sharing any file info in the callback
    *
    * @param downloadFileRequest 3P cloud storage provider download file(s) action request content
    * @param callback Callback that will be triggered post downloading existing file(s) flow is finished

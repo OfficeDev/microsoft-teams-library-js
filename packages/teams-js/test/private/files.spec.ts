@@ -829,13 +829,6 @@ describe('files', () => {
       );
     });
 
-    it('should not allow calls for delete folder in itemList of request content', async () => {
-      await utils.initializeWithContext('content');
-      expect(() => files.deleteCloudStorageProviderFile(deleteFolderRequest, emptyCallback)).toThrowError(
-        '[files.deleteCloudStorageProviderFile] Invalid file(s) details',
-      );
-    });
-
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
