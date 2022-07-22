@@ -299,7 +299,6 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
 
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="meeting">
-    <h1>meeting</h1>
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
     <GetMeetingDetails />
