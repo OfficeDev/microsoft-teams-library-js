@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Marked `video` APIs with @beta tag to indicate they are not yet ready for use in production environments",
-  "packageName": "@microsoft/teams-js",
-  "email": "Xukai.Wu@microsoft.com",
-  "dependentChangeType": "none"
-}
