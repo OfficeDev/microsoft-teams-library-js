@@ -1,21 +1,39 @@
 import './styles.css';
 
 import { Button } from '@fluentui/react-components';
-import { calendar } from '@microsoft/teams-js';
+import { app, calendar } from '@microsoft/teams-js';
 import React from 'react';
 
-export const Calendar: React.FunctionComponent = () => {
-  const handleCalendar = async (): Promise<void> => {
-    // create calendar paramaters
+const teamsDeepLinkHost = 'teams.microsoft.com';
+const teamsDeepLinkProtocol = 'https';
+const teamsDeepLinkAttendeesUrlParameterName = 'attendees';
+const teamsDeepLinkUrlPathForCalendar = '/l/meeting/new';
+
+export const handleNewMeeting = async (): Promise<void> => {
+  if (!calendar.isSupported()) {
     const calendarParams: calendar.ComposeMeetingParams = {
-      attendees: ['t-abarthakur@microsoft.com'],
+      attendees: ['emailAddress@microsoft.com'],
     };
-    // send to 'compose meeting'
+    const attendeeSearchParameter =
+      calendarParams.attendees === undefined
+        ? ''
+        : `${teamsDeepLinkAttendeesUrlParameterName}=` +
+          calendarParams.attendees.map(attendee => encodeURIComponent(attendee)).join(',');
+
+    const deepLinkUrl = `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}`;
+    app.openLink(deepLinkUrl);
+  } else {
+    const calendarParams: calendar.ComposeMeetingParams = {
+      attendees: ['emailAdd@microsoft.com'],
+    };
     await calendar.composeMeeting(calendarParams);
-  };
+  }
+};
+
+export const CalendarCapability: React.FunctionComponent = () => {
   return (
     <div>
-      <Button onClick={() => handleCalendar}>Add Meeting</Button>
+      <Button onClick={() => handleNewMeeting()}>Add Meeting</Button>
     </div>
   );
 };
