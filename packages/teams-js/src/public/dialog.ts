@@ -63,38 +63,6 @@ export namespace dialog {
   }
 
   /**
-   * Allows app to open a url based dialog.
-   *
-   * @remarks
-   * This function cannot be called from inside of a dialog
-   *
-   * @param urlDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-   * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
-   *
-   * @returns a function that can be used to send messages to the dialog.
-   */
-  export function open(
-    urlDialogInfo: UrlDialogInfo,
-    submitHandler?: DialogSubmitHandler,
-    messageFromChildHandler?: PostMessageChannel,
-  ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    if (messageFromChildHandler) {
-      registerHandler('messageForParent', messageFromChildHandler);
-    }
-    const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-    sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-      submitHandler?.({ err, result });
-      removeHandler('messageForParent');
-    });
-  }
-
-  /**
    * Submit the dialog module.
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
@@ -210,53 +178,10 @@ export namespace dialog {
   }
 
   /**
-   * Namespace to open a dialog that sends results to the bot framework
-   */
-  export namespace bot {
-    /**
-     * Allows an app to open the dialog module using bot.
-     *
-     * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
-     * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
-     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
-     *
-     * @returns a function that can be used to send messages to the dialog.
-     */
-    export function open(
-      botUrlDialogInfo: BotUrlDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-      messageFromChildHandler?: PostMessageChannel,
-    ): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
-
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-        removeHandler('messageForParent');
-      });
-    }
-
-    /**
-     * Checks if dialog.bot capability is supported by the host
-     *
-     * @returns boolean to represent whether dialog.bot is supported
-     */
-    export function isSupported(): boolean {
-      return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
-    }
-  }
-
-  /**
    * @hidden
    * Hide from docs
    * --------
-   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
+   * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode url.open} API.
    *
    * @internal
    */
@@ -275,7 +200,7 @@ export namespace dialog {
    * @hidden
    * Hide from docs
    * --------
-   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
+   * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode url.bot.open} API.
    *
    * @internal
    */
@@ -289,5 +214,91 @@ export namespace dialog {
       completionBotId: botUrlDialogInfo.completionBotId,
     };
     return dialogInfo;
+  }
+
+  export namespace url {
+    /**
+     * Allows app to open a url based dialog.
+     *
+     * @remarks
+     * This function cannot be called from inside of a dialog
+     *
+     * @param urlDialogInfo - An object containing the parameters of the dialog module.
+     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+     *
+     * @returns a function that can be used to send messages to the dialog.
+     */
+    export function open(
+      urlDialogInfo: UrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      if (messageFromChildHandler) {
+        registerHandler('messageForParent', messageFromChildHandler);
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        submitHandler?.({ err, result });
+        removeHandler('messageForParent');
+      });
+    }
+
+    /**
+     * Checks if dialog.url module is supported by the host
+     *
+     * @returns boolean to represent whether dialog.url module is supported
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.dialog.url ? true : false;
+    }
+
+    /**
+     * Namespace to open a dialog that sends results to the bot framework
+     */
+    export namespace bot {
+      /**
+       * Allows an app to open a url-based dialog module using bot.
+       *
+       * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
+       * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
+       * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+       *
+       * @returns a function that can be used to send messages to the dialog.
+       */
+      export function open(
+        botUrlDialogInfo: BotUrlDialogInfo,
+        submitHandler?: DialogSubmitHandler,
+        messageFromChildHandler?: PostMessageChannel,
+      ): void {
+        ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        if (messageFromChildHandler) {
+          registerHandler('messageForParent', messageFromChildHandler);
+        }
+        const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
+
+        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+          removeHandler('messageForParent');
+        });
+      }
+
+      /**
+       * Checks if dialog.bot capability is supported by the host
+       *
+       * @returns boolean to represent whether dialog.bot is supported
+       */
+      export function isSupported(): boolean {
+        return runtime.supports.dialog && runtime.supports.dialog.url && runtime.supports.dialog.url.bot ? true : false;
+      }
+    }
   }
 }

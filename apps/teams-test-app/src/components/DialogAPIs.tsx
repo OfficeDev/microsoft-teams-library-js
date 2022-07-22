@@ -42,7 +42,7 @@ const DialogAPIs = (): ReactElement => {
             // Message from parent
             setResult(message);
           };
-          dialog.open(urlDialogInfo as UrlDialogInfo, onComplete, messageFromChildHandler);
+          dialog.url.open(urlDialogInfo as UrlDialogInfo, onComplete, messageFromChildHandler);
           return '';
         },
       },
