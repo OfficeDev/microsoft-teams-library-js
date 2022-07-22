@@ -940,12 +940,26 @@ describe('files', () => {
       isSubdirectory: false,
       type: 'pdf',
     };
+    const userDetails: files.IFilesEntityUser = {
+      displayName: 'username',
+      email: 'username@email',
+      mri: 'mri',
+    };
     const mockDestinationFolder: files.CloudStorageFolderItem = {
       id: '112',
       lastModifiedTime: '2021-03-14T15:08:35Z',
       size: 0,
       objectUrl: 'folder1',
       title: 'folder1',
+      isSubdirectory: true,
+      type: 'folder',
+    };
+    const mockDestinationFolderWithInvalidUrl: files.CloudStorageFolderItem = {
+      id: '113',
+      lastModifiedTime: '2021-03-14T15:08:35Z',
+      size: 0,
+      objectUrl: null,
+      title: 'folder2',
       isSubdirectory: true,
       type: 'folder',
     };
@@ -957,6 +971,22 @@ describe('files', () => {
       title: 'file2',
       isSubdirectory: false,
       type: 'file',
+    };
+    const mockDestinationFileForSharepoint: files.ISharePointFile = {
+      createdByUser: userDetails,
+      lastModifiedByUser: userDetails,
+      sentByUser: userDetails,
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file3.com',
+      title: 'file3',
+      isFolder: false,
+      type: 'pdf',
+      siteUrl: 'siteurl',
+      objectId: 'objectId',
+      serverRelativeUrl: 'serverRelativeUrl',
+      createdTime: '2021-04-14T15:08:35Z',
+      openInWindowFileUrl: 'openInWindowFileUrl',
     };
     const uploadFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
       content: {
@@ -982,11 +1012,25 @@ describe('files', () => {
         destinationFolder: null,
       },
     };
+    const uploadFileRequestWithInvalidDestinationFolderDetails: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFolderWithInvalidUrl,
+      },
+    };
     const uploadFileRequestWithFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
       content: {
         providerCode: files.CloudStorageProvider.Dropbox,
         itemList: [mockUploadFile],
         destinationFolder: mockDestinationFile,
+      },
+    };
+    const uploadFileRequestWithSharepointFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.SharePoint,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFileForSharepoint,
       },
     };
 
@@ -1035,6 +1079,27 @@ describe('files', () => {
       await utils.initializeWithContext('content');
       expect(() =>
         files.uploadCloudStorageProviderFile(uploadFileRequestWithNullDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for non sharepoint file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for sharepoint file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithSharepointFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for request content with invalid destination folder details ', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithInvalidDestinationFolderDetails, emptyCallback),
       ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
     });
 
