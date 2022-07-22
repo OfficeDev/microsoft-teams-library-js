@@ -1,6 +1,7 @@
 import { ErrorCode } from '../../src/public';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { stageView } from '../../src/public/stageView';
 import { Utils } from '../utils';
 
@@ -22,6 +23,7 @@ describe('stageView', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -94,6 +96,19 @@ describe('stageView', () => {
       utils.respondToMessage(openStageViewMessage, err);
 
       await expect(promise).rejects.toEqual(err);
+    });
+
+    it('should throw error when stageView is not supported.', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      expect.assertions(1);
+
+      try {
+        await stageView.open(stageViewParams);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
   });
 });

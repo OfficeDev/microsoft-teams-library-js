@@ -8,9 +8,11 @@ import AppEntityAPIs from './components/AppEntityAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AppInstallDialogAPIs from './components/AppInstallDialog';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
+import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import GeoLocationAPIs from './components/GeoLocationAPIs';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
@@ -108,12 +110,14 @@ const App = (): ReactElement => {
       <AppInstallDialogAPIs />
       <AuthenticationAPIs />
       <AppEntityAPIs />
+      <BarCodeAPIs />
       <CalendarAPIs />
       <CallAPIs />
       <ChatAPIs />
       <DialogAPIs />
       <FilesAPIs />
       <FullTrustAPIs />
+      <GeoLocationAPIs />
       <LocationAPIs />
       <LogAPIs />
       <MailAPIs />
