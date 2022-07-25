@@ -1,0 +1,10 @@
+{
+  "type": "minor",
+  "comment": {
+    "title": "",
+    "value": ""
+  },
+  "packageName": "@microsoft/teams-js",
+  "email": "ashleyrocha16@gmail.com",
+  "dependentChangeType": "patch"
+}
