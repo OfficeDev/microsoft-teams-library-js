@@ -288,7 +288,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.openLink core.openLink(deepLink: string): Promise\<void\>} instead.
+ * As of 2.0.0, please use {@link app.openLink app.openLink(deepLink: string): Promise\<void\>} instead.
  *
  * Execute deep link API.
  *
