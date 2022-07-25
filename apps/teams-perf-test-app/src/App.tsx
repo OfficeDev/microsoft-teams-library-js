@@ -8,6 +8,7 @@ import AppInitialization from './components/AppInitialization';
 app.initialize();
 app.notifyAppLoaded();
 app.notifySuccess();
+app.notifyAppReady();
 
 export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
 

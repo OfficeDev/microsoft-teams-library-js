@@ -80,6 +80,35 @@ describe('appInitialization', () => {
     });
   });
 
+  describe('testing notifyAppReady', () => {
+    it('should call app.notifyAppReady from the legacy code', async () => {
+      await utils.initializeWithContext('content');
+      const appFunc = jest.spyOn(app, 'notifyAppReady');
+      appInitialization.notifyAppReady();
+      expect(appFunc).toHaveBeenCalled();
+      expect(appFunc).toHaveReturned();
+      appFunc.mockRestore();
+    });
+    it('should call notifyAppReady correctly in legacy flow', async () => {
+      await utils.initializeWithContext('content');
+
+      appInitialization.notifyAppReady();
+      const message = utils.findMessageByFunc(appInitialization.Messages.AppReady);
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toEqual(version);
+    });
+    it('should call notifyAppReady correctly', async () => {
+      await utils.initializeWithContext('content');
+
+      app.notifyAppReady();
+      const message = utils.findMessageByFunc(app.Messages.AppReady);
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toEqual(version);
+    });
+  });
+
   describe('testing notifyExpectedFailure', () => {
     it('should call app.notifyExpectedFailure from the legacy code', async () => {
       await utils.initializeWithContext('content');

@@ -56,6 +56,16 @@ export namespace appInitialization {
 
   /**
    * @deprecated
+   * As of 2.0.0, please use {@link app.notifyAppReady app.notifyAppReady(): void} instead.
+   *
+   * Notifies the frame that app initialization is successful, app had done with startup routines and is ready for user interaction.
+   */
+  export function notifyAppReady(): void {
+    app.notifyAppReady();
+  }
+
+  /**
+   * @deprecated
    * As of 2.0.0, please use {@link app.notifyFailure app.notifyFailure(appInitializationFailedRequest: IFailedRequest): void} instead.
    *
    * Notifies the frame that app initialization has failed and to show an error page in its place.

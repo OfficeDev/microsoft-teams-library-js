@@ -537,6 +537,23 @@ describe('Testing app capability', () => {
       });
     });
 
+    describe('Testing app.notifyAppReady function', () => {
+      it('app.notifyAppReady should not allow calls before initialization', () => {
+        expect(() => app.notifyAppReady()).toThrowError('The library has not yet been initialized');
+      });
+
+      Object.values(FrameContexts).forEach(context => {
+        it(`app.notifyAppReady should successfully notify app is loaded with no error from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          app.notifyAppReady();
+          const message = utils.findMessageByFunc(app.Messages.AppReady);
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toEqual(version);
+        });
+      });
+    });
+
     describe('Testing app.notifyFailure function', () => {
       it('app.notifyFailure should not allow calls before initialization', () => {
         expect(() =>
@@ -1263,6 +1280,23 @@ describe('Testing app capability', () => {
           await framelessPostMock.initializeWithContext(context);
           app.notifySuccess();
           const message = framelessPostMock.findMessageByFunc(app.Messages.Success);
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toEqual(version);
+        });
+      });
+    });
+
+    describe('Testing app.notifyAppReady function', () => {
+      it('app.notifyAppReady should not allow calls before initialization', () => {
+        expect(() => app.notifyAppReady()).toThrowError('The library has not yet been initialized');
+      });
+
+      Object.values(FrameContexts).forEach(context => {
+        it(`app.notifyAppReady should successfully notify app is loaded with no error from ${context} context`, async () => {
+          await framelessPostMock.initializeWithContext(context);
+          app.notifyAppReady();
+          const message = framelessPostMock.findMessageByFunc(app.Messages.AppReady);
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toEqual(version);

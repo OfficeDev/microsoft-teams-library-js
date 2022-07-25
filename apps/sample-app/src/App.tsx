@@ -19,6 +19,7 @@ const App: React.FC = () => {
         setIsInitialized(true);
         app.notifyAppLoaded();
         app.notifySuccess();
+        app.notifyAppReady();
         const context = await app.getContext();
         const themeNow = getTheme(context?.app?.theme);
         setCurrTheme(themeNow);

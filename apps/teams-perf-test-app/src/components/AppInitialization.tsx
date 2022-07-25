@@ -6,6 +6,7 @@ import BoxAndButton from './BoxAndButton';
 const AppInitializationAPIs = (): ReactElement => {
   const [notifyLoadedRes, setNotifyLoadedRes] = React.useState('');
   const [notifySuccessRes, setNotifySuccessRes] = React.useState('');
+  const [notifyAppReadyRes, setNotifyAppReadyRes] = React.useState('');
   const [notifyFailureRes, setNotifyFailureRes] = React.useState('');
 
   const notifyLoaded = (): void => {
@@ -16,6 +17,11 @@ const AppInitializationAPIs = (): ReactElement => {
   const notifySuccess = (): void => {
     app.notifySuccess();
     setNotifySuccessRes('called');
+  };
+
+  const notifyAppReady = (): void => {
+    app.notifyAppReady();
+    setNotifyAppReadyRes('called');
   };
 
   const notifyFailure = (reason?: string): void => {
@@ -40,6 +46,13 @@ const AppInitializationAPIs = (): ReactElement => {
         hasInput={false}
         title="appInitialization.success"
         name="appInitializationSuccess"
+      />
+      <BoxAndButton
+        handleClick={notifyAppReady}
+        output={notifyAppReadyRes}
+        hasInput={false}
+        title="appInitialization.appReady"
+        name="appInitializationAppReady"
       />
       <BoxAndButton
         handleClickWithInput={notifyFailure}

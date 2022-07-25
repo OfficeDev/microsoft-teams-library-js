@@ -37,6 +37,7 @@ export namespace app {
   export const Messages = {
     AppLoaded: 'appInitialization.appLoaded',
     Success: 'appInitialization.success',
+    AppReady: 'appInitialization.appReady',
     Failure: 'appInitialization.failure',
     ExpectedFailure: 'appInitialization.expectedFailure',
   };
@@ -686,6 +687,14 @@ export namespace app {
   export function notifySuccess(): void {
     ensureInitialized();
     sendMessageToParent(Messages.Success, [version]);
+  }
+
+  /**
+   * Notifies the frame that app initialization is successful, app done with startup routines and is ready for user interaction.
+   */
+  export function notifyAppReady(): void {
+    ensureInitialized();
+    sendMessageToParent(Messages.AppReady, [version]);
   }
 
   /**

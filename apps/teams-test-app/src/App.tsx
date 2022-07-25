@@ -62,9 +62,11 @@ if (
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
+    appInitialization.notifyAppReady();
   } else {
     app.notifyAppLoaded();
     app.notifySuccess();
+    app.notifyAppReady();
   }
 }
 

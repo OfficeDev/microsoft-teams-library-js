@@ -36,6 +36,22 @@ const NotifySuccess = (): React.ReactElement =>
     },
   });
 
+const NotifyAppReady = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'appInitializationAppReady',
+    title: 'appInitialization.appReady',
+    onClick: {
+      withPromise: async () => {
+        app.notifyAppReady();
+        return 'called';
+      },
+      withCallback: setResult => {
+        appInitialization.notifyAppReady();
+        setResult('called');
+      },
+    },
+  });
+
 const NotifyFailure = (): React.ReactElement =>
   ApiWithTextInput<app.FailedReason | appInitialization.FailedReason>({
     name: 'appInitializationFailure2',
@@ -99,6 +115,7 @@ const AppInitializationAPIs = (): ReactElement => (
     <h1>appInitialization</h1>
     <NotifyLoaded />
     <NotifySuccess />
+    <NotifyAppReady />
     <NotifyFailure />
     <NotifyExpectedFailure />
   </>
