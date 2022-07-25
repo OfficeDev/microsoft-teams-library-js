@@ -1,0 +1,15 @@
+name: Test TeamsFx Post-Release Workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  NotifyTeamsFx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify TeamsFx Repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.TEAMSFX_REPO_ACCESS_TOKEN }}
+          repository: OfficeDev/TeamsFx
+          event-type: teamsjs-released
+          client-payload: '{"version": "${{ steps.extract_version.outputs.version }}"}'
