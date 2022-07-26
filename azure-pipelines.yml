@@ -40,6 +40,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Perf'
         condition: succeededOrFailed()
 
   - job: E2ETest2
@@ -60,6 +61,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Default'
         condition: succeededOrFailed()
 
   - job: E2ETest3
@@ -86,6 +88,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Local Tag'
         condition: succeededOrFailed()
 
   - job: E2ETest4
@@ -107,6 +110,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - BC Latest'
         condition: succeededOrFailed()
 
   - job: E2ETest5
@@ -133,6 +137,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - TeamsJs V1'
         condition: succeededOrFailed()
 
   - job: E2ETestCDN
@@ -167,6 +172,7 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - CDN'
         condition: succeededOrFailed()
 
   - job: E2ETestAndroid
