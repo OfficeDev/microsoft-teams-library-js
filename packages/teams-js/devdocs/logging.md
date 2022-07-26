@@ -16,6 +16,8 @@ TeamsJS logging leverages the popular [debug](https://www.npmjs.com/package/debu
 
 5. Click on the "Log Level" dropdown and ensure "Verbose" is checked (it will probably be set to "Default levels"). All TeamsJs log statements are currently written at Verbose.
 
+6. Refresh your app
+
 Logging should now be enabled for the TeamsJS library. You can most easily see this logging by typing "teamsjs:" into the "Filter" box on the "Console" tab, e.g.
 
 ![screenshot of filter textbox](filter.png)

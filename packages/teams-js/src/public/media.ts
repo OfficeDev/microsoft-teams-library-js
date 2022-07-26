@@ -683,6 +683,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.1.0, please use {@link barCode.scanBarCode barCode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
+
    * Scan Barcode/QRcode using camera
    *
    * @remarks

@@ -32,17 +32,11 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
 
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    if (
-      message['attendees'].length > 15 ||
-      message['subject']?.includes('OOF') ||
-      message['subject']?.includes('Canceled')
-    ) {
+    // 5 is an arbitrary number to show only relevant meetings
+    if (message['attendees'].length > 5 || message['isCancelled'] || message['showAs'] === 'free') {
       continue;
     }
     for (let j = 0; j < messages[i]['attendees'].length; j++) {
-      if (message['attendees'][j] === user.displayName) {
-        continue;
-      }
       const attendee = message['attendees'][j];
       const item: AvatarItem = {
         id: attendee['emailAddress']['address'] || '',
@@ -67,23 +61,23 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
                   {a.name}
                 </Text>
                 <MenuList>
-                  {capabilities.map(c => (
-                    <div key={c}>
-                      {c === 'Call' && (
+                  {capabilities.map(capability => (
+                    <div key={capability}>
+                      {capability === 'Call' && (
                         <Menu>
                           <MenuTrigger>
                             <MenuItem>Call</MenuItem>
                           </MenuTrigger>
                           <MenuPopover>
                             <MenuList>
-                              <MenuItem onClick={() => handleAudioCall(a)}>Audio {c}</MenuItem>
-                              <MenuItem onClick={() => handleVideoCall(a)}> Video {c}</MenuItem>
+                              <MenuItem onClick={() => handleAudioCall(a)}>Audio {capability}</MenuItem>
+                              <MenuItem onClick={() => handleVideoCall(a)}> Video {capability}</MenuItem>
                             </MenuList>
                           </MenuPopover>
                         </Menu>
                       )}
-                      {c === 'Message' && <MenuItem onClick={() => handleMessage(a)}> {c}</MenuItem>}
-                      {c === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{c}</MenuItem>}
+                      {capability === 'Message' && <MenuItem onClick={() => handleMessage(a)}> {capability}</MenuItem>}
+                      {capability === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{capability}</MenuItem>}
                     </div>
                   ))}
                 </MenuList>
@@ -103,9 +97,5 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
     );
   };
 
-  return (
-    <div>
-      <AvatarExample />
-    </div>
-  );
+  return <AvatarExample />;
 };
