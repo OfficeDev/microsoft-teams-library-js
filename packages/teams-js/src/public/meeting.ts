@@ -152,7 +152,6 @@ export namespace meeting {
   /**
    * Property bag for the speakingState changed event
    *
-   * @beta
    */
   export interface SpeakingStateChangedEventData {
     /**
