@@ -1,4 +1,5 @@
 import { teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme, Theme } from '@fluentui/react-components';
+import { Message } from '@microsoft/microsoft-graph-types';
 import { app, calendar, call, chat, mail, OpenSingleChatRequest } from '@microsoft/teams-js';
 
 import { MessageListItem } from './Emails';
@@ -81,12 +82,16 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
 };
 
 export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<void> => {
-  if (!mail.isSupported()) {
-    alert('open mail item is not supported');
+  const openMailParams: mail.OpenMailItemParams = {
+    itemId: emailItem.key || '',
+  };
+  await mail.openMailItem(openMailParams);
+};
+
+export const shouldShowMeeting = (meeting: Message): boolean => {
+  if (meeting['showAs'] === 'free' || meeting['isCancelled']) {
+    return false;
   } else {
-    const openMailParams: mail.OpenMailItemParams = {
-      itemId: emailItem.key || '',
-    };
-    await mail.openMailItem(openMailParams);
+    return true;
   }
 };

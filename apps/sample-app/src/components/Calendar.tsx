@@ -10,10 +10,10 @@ const teamsDeepLinkAttendeesUrlParameterName = 'attendees';
 const teamsDeepLinkUrlPathForCalendar = '/l/meeting/new';
 
 export const handleNewMeeting = async (): Promise<void> => {
+  const calendarParams: calendar.ComposeMeetingParams = {
+    attendees: ['emailAddress@microsoft.com'],
+  };
   if (!calendar.isSupported()) {
-    const calendarParams: calendar.ComposeMeetingParams = {
-      attendees: ['emailAddress@microsoft.com'],
-    };
     const attendeeSearchParameter =
       calendarParams.attendees === undefined
         ? ''
@@ -23,9 +23,6 @@ export const handleNewMeeting = async (): Promise<void> => {
     const deepLinkUrl = `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}`;
     app.openLink(deepLinkUrl);
   } else {
-    const calendarParams: calendar.ComposeMeetingParams = {
-      attendees: ['emailAdd@microsoft.com'],
-    };
     await calendar.composeMeeting(calendarParams);
   }
 };
