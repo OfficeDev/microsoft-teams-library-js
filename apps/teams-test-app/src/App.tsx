@@ -32,6 +32,7 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import SearchAPIs from './components/SearchAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
@@ -130,6 +131,7 @@ const App = (): ReactElement => {
       <PeopleAPIs />
       <PrivateAPIs />
       <RemoteCameraAPIs />
+      <SearchAPIs />
       <SharingAPIs />
       <StageViewAPIs />
       <TeamsCoreAPIs />
