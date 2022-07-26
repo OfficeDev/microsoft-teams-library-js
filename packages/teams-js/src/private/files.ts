@@ -885,7 +885,7 @@ export namespace files {
    * @param handler - When 3P cloud storage provider content is updated this handler is called
    *
    */
-  export function registerCloudStorageProviderContentChangeHandler(handler: (provider: string) => void): void {
+  export function registerCloudStorageProviderContentChangeHandler(handler: () => void): void {
     ensureInitialized();
 
     if (!handler) {
