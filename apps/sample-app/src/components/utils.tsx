@@ -89,9 +89,5 @@ export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<vo
 };
 
 export const shouldShowMeeting = (meeting: Message): boolean => {
-  if (meeting['showAs'] === 'free' || meeting['isCancelled']) {
-    return false;
-  } else {
-    return true;
-  }
+  return meeting['showAs'] !== 'free' && !meeting['isCancelled'];
 };
