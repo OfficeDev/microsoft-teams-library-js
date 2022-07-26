@@ -56,7 +56,7 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openChat(chatRequest)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+        'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
       );
     });
 
@@ -141,7 +141,7 @@ describe('chat', () => {
         message: 'someMessage',
       };
       return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["content"]. Current context: "settings".',
+        'This call is only allowed in following contexts: ["content","task"]. Current context: "settings".',
       );
     });
 
