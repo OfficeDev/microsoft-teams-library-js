@@ -49,4 +49,5 @@ steps:
       failTaskOnFailedTests: false
       testRunTitle: 'E2E Tests - Android'
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
+      mergeTestResults: true
     condition: succeededOrFailed()
