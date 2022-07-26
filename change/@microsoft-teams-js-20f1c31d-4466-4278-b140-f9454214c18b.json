@@ -1,8 +1,8 @@
 {
   "type": "minor",
   "comment": {
-    "title": "",
-    "value": ""
+    "title": "`registerSpeakingStateChangeHandler` API updates",
+    "value": "Updated interface for `registerSpeakingStateChangeHandler` API. Changed name to `SpeakingStateChangedEventData` and added an error object to align with other API error handling."
   },
   "packageName": "@microsoft/teams-js",
   "email": "ashleyrocha16@gmail.com",
