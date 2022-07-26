@@ -47,6 +47,7 @@ steps:
 
   - task: PublishTestResults@2
     inputs:
+      searchFolder: '$(System.DefaultWorkingDirectory)\packages'
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/unit-tests-report*.xml'
       testRunTitle: 'Unit Tests'
