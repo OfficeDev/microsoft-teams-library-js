@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "\"Testing npmrc auth token, will update description once tests are completed\"",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "none"
+}
