@@ -128,34 +128,36 @@ const Authenticate = (): React.ReactElement =>
     },
   });
 
-const externalAuthParams = {
-  url:
-    'https://teams-test-tab.azurewebsites.net/auth_start.html?authId=b9237908-2150-497a-8e47-8bf3ebf81b77&oauthRedirectMethod={oauthRedirectMethod}',
-  isExternal: true,
-};
-
 const AuthenticateExternal = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'authentication.authenticate3',
+  ApiWithTextInput<authentication.AuthenticatePopUpParameters>({
+    name: 'authentication.authenticate.external',
     title: 'authentication.authenticate.external',
     onClick: {
-      withPromise: async () => {
-        const token = await authentication.authenticate(externalAuthParams);
-        return 'Success: ' + token;
+      validateInput: input => {
+        if (!input.url) {
+          throw new Error('url is required');
+        }
       },
-      withCallback: setResult => {
-        const successCallback = (result: string): void => {
-          setResult('Success: ' + result);
-        };
-        const failureCallback = (result: string): void => {
-          setResult('Error: Error: ' + result);
-        };
-        const authRequest: authentication.AuthenticateParameters = {
-          successCallback: successCallback,
-          failureCallback: failureCallback,
-          ...externalAuthParams,
-        };
-        authentication.authenticate(authRequest);
+      submit: {
+        withPromise: async authParams => {
+          const token = await authentication.authenticate({ ...authParams, isExternal: true });
+          return 'Success: ' + token;
+        },
+        withCallback: (authParams, setResult) => {
+          const successCallback = (result: string): void => {
+            setResult('Success: ' + result);
+          };
+          const failureCallback = (result: string): void => {
+            setResult('Error: Error: ' + result);
+          };
+          const authRequest: authentication.AuthenticateParameters = {
+            successCallback: successCallback,
+            failureCallback: failureCallback,
+            ...authParams,
+            isExternal: true,
+          };
+          authentication.authenticate(authRequest);
+        },
       },
     },
   });
