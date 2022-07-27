@@ -204,7 +204,7 @@ const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
     name: 'registerSpeakingStateChangedHandler',
     title: 'Register SpeakingState Changed Handler',
     onClick: async setResult => {
-      const handler = (eventData: meeting.SpeakingStateChangedEventData): void => {
+      const handler = (eventData: meeting.ISpeakingState): void => {
         let res;
         if (eventData.error) {
           res = `Receieved error ${JSON.stringify(eventData.error)}`;

@@ -153,12 +153,12 @@ export namespace meeting {
    * Property bag for the speakingState changed event
    *
    */
-  export interface SpeakingStateChangedEventData {
+  export interface ISpeakingState {
     /**
      * Indicates whether one or more participants in a meeting are speaking, or
      * if no participants are speaking
      */
-    isSpeakingDetected?: boolean;
+    isSpeakingDetected: boolean;
 
     /**
      * error object in case there is a failure
@@ -467,15 +467,13 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for changes to paticipant speaking states. This API returns {@link SpeakingStateChangedEventData}, which will have isSpeakingDetected
+   * Registers a handler for changes to paticipant speaking states. This API returns {@link ISpeakingState}, which will have isSpeakingDetected
    * or an error object. If any participant is speaking, isSpeakingDetected will be true. If no participants are speaking, isSpeakingDetected
    * will be false. Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    */
-  export function registerSpeakingStateChangeHandler(
-    handler: (eventData: SpeakingStateChangedEventData) => void,
-  ): void {
+  export function registerSpeakingStateChangeHandler(handler: (eventData: ISpeakingState) => void): void {
     if (!handler) {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }

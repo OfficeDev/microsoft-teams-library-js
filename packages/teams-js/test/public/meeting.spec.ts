@@ -1073,12 +1073,12 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const speakingState: meeting.SpeakingStateChangedEventData = { isSpeakingDetected: true };
+      const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
-      let returnedSpeakingState: meeting.SpeakingStateChangedEventData | null;
+      let returnedSpeakingState: meeting.ISpeakingState | null;
 
-      meeting.registerSpeakingStateChangeHandler((eventData: meeting.SpeakingStateChangedEventData) => {
+      meeting.registerSpeakingStateChangeHandler((eventData: meeting.ISpeakingState) => {
         handlerCalled = true;
         returnedSpeakingState = eventData;
       });
@@ -1101,12 +1101,12 @@ describe('meeting', () => {
 
     it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', () => {
       framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
-      const speakingState: meeting.SpeakingStateChangedEventData = { isSpeakingDetected: true };
+      const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
-      let returnedSpeakingState: meeting.SpeakingStateChangedEventData | null;
+      let returnedSpeakingState: meeting.ISpeakingState | null;
 
-      meeting.registerSpeakingStateChangeHandler((eventData: meeting.SpeakingStateChangedEventData) => {
+      meeting.registerSpeakingStateChangeHandler((eventData: meeting.ISpeakingState) => {
         handlerCalled = true;
         returnedSpeakingState = eventData;
       });
