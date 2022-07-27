@@ -4,7 +4,14 @@ import { Avatar, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Text, Toolt
 import { Message, User } from '@microsoft/microsoft-graph-types';
 import React from 'react';
 
-import { getSupportedCapabilities, handleAudioCall, handleMail, handleMessage, handleVideoCall } from './utils';
+import {
+  getSupportedCapabilities,
+  handleAudioCall,
+  handleMail,
+  handleMessage,
+  handleVideoCall,
+  shouldShowMeeting,
+} from './utils';
 
 interface AvatarProps {
   messages: Message[];
@@ -33,7 +40,7 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     // 5 is an arbitrary number to show only relevant meetings
-    if (message['attendees'].length > 5 || message['isCancelled'] || message['showAs'] === 'free') {
+    if (message['attendees'].length > 5 || !shouldShowMeeting(message)) {
       continue;
     }
     for (let j = 0; j < messages[i]['attendees'].length; j++) {
