@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "\"Testing npmrc auth token, will update description once tests are completed\"",
+  "comment": "\"Added in `Env` variable expansion to `NPM_TOKEN` variable in add-npmrc powershell script\"",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
