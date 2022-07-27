@@ -1078,9 +1078,9 @@ describe('meeting', () => {
       let handlerCalled = false;
       let returnedSpeakingState: meeting.ISpeakingState | null;
 
-      meeting.registerSpeakingStateChangeHandler((eventData: meeting.ISpeakingState) => {
+      meeting.registerSpeakingStateChangeHandler((speakingState: meeting.ISpeakingState) => {
         handlerCalled = true;
-        returnedSpeakingState = eventData;
+        returnedSpeakingState = speakingState;
       });
 
       const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
