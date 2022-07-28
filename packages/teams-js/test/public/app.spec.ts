@@ -367,6 +367,7 @@ describe('Testing app capability', () => {
           expect(getContextMessage).not.toBeNull();
 
           const contextBridge: Context = {
+            actionInfo: { actionId: 'actionId', actionObjects: [] },
             groupId: 'someGroupId',
             teamId: 'someTeamId',
             teamName: 'someTeamName',
@@ -420,6 +421,7 @@ describe('Testing app capability', () => {
           };
 
           const expectedContext: app.Context = {
+            actionInfo: { actionId: 'actionId', actionObjects: [] },
             app: {
               iconPositionVertical: 5,
               locale: 'someLocale',
@@ -498,7 +500,8 @@ describe('Testing app capability', () => {
 
           expect(actualContext).toEqual(expectedContext);
           expect(actualContext.page.frameContext).toBe(context);
-          expect(actualContext.meeting.id).toBe('dummyMeetingId');
+          expect(actualContext.meeting?.id).toBe('dummyMeetingId');
+          expect(actualContext.actionInfo?.actionId).toBe('actionId');
         });
       });
     });

@@ -180,7 +180,34 @@ export enum FileOpenPreference {
  * Represents the structure of the received context message.
  */
 
+export enum ActionObjectType {
+  M365Conontent = 'm365content',
+}
+
+export interface BaseActionObject<T extends ActionObjectType> {
+  type: T;
+}
+
+/**
+ * Represents Action Information
+ */
+export interface ActionInfo {
+  /**
+   * Maps to the action id supplied inside the manifest
+   */
+  actionId: string;
+  actionObjects: BaseActionObject<ActionObjectType>[];
+}
+
 export interface Context {
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.actionInfo} instead
+   *
+   * Common information applicable to all content actions
+   */
+  actionInfo?: ActionInfo;
+
   /**
    * @deprecated
    * As of 2.0.0, please use {@link app.Context.team.groupId} instead

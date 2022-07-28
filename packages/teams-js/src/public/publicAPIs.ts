@@ -352,6 +352,9 @@ export function initializeWithFrameContext(
  */
 function transformAppContextToLegacyContext(appContext: app.Context): Context {
   const context: Context = {
+    // actionInfo
+    actionInfo: appContext.actionInfo,
+
     // app
     locale: appContext.app.locale,
     appSessionId: appContext.app.sessionId,
