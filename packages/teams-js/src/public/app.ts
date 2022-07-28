@@ -447,32 +447,32 @@ export namespace app {
    */
   export interface Context {
     /**
-     * Info of the app
+     * Properties about the current session for your app
      */
     app: AppInfo;
 
     /**
-     * Info of the current page of App
+     * Info about the current page context hosting your app
      */
     page: PageInfo;
 
     /**
-     * Info of the user
+     * Info about the current user
      */
     user?: UserInfo;
 
     /**
-     * Info of the Microsoft Teams channel
+     * When running in the context of a Teams channel, provides information about the channel, else `undefined`
      */
     channel?: ChannelInfo;
 
     /**
-     * Info of the Microsoft Teams chat
+     * When running the context of a Teams chat, provides information about the chat, else `undefined`
      */
     chat?: ChatInfo;
 
     /**
-     * Info of the Microsoft Teams meeting
+     * When running the context of a Teams meeting, provides information about the meeting, else `undefined`
      */
     meeting?: MeetingInfo;
 
@@ -482,12 +482,12 @@ export namespace app {
     sharepoint?: any;
 
     /**
-     * Info of the sharePoint site associated with the team.
+     * When running in Teams for an organization with a tenant, provides information about the SharePoint site associated with the team.
      */
     sharePointSite?: SharePointSiteInfo;
 
     /**
-     * Info of the Microsoft Teams team
+     * When running in Teams, provides information about the Team context in which your app is running.
      */
     team?: TeamInfo;
   }
