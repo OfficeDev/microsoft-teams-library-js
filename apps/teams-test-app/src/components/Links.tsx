@@ -48,7 +48,7 @@ const Links = (): ReactElement => (
     </a>
     <br />
     <a rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_self">
-      Target self
+      Target Self
     </a>
     <br />
     <a rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_parent">
