@@ -181,7 +181,7 @@ export enum FileOpenPreference {
  */
 
 export enum ActionObjectType {
-  M365Conontent = 'm365content',
+  M365Content = 'm365content',
 }
 
 export interface BaseActionObject<T extends ActionObjectType> {
