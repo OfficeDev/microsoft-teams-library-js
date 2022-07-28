@@ -130,7 +130,7 @@ const Authenticate = (): React.ReactElement =>
   });
 
 const AuthenticationAPIs = (): ReactElement => (
-  <ModuleWrapper title="authentication">
+  <ModuleWrapper title="Authentication">
     <Initialize />
     <GetAuthToken />
     <GetUser />

@@ -221,7 +221,7 @@ const ViewImagesWithUrls = (): React.ReactElement =>
   });
 
 const MediaAPIs = (): ReactElement => (
-  <ModuleWrapper title="media">
+  <ModuleWrapper title="Media">
     <CaptureImage />
     <SelectMedia />
     <GetMedia />

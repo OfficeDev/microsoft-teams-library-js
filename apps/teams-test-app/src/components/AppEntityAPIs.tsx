@@ -56,7 +56,7 @@ const SelectAppEntity = (): React.ReactElement =>
   });
 
 const AppEntityAPIs = (): ReactElement => (
-  <ModuleWrapper title="appEntity">
+  <ModuleWrapper title="AppEntity">
     <SelectAppEntity />
     <CheckAppEntityCapability />
   </ModuleWrapper>

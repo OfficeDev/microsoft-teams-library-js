@@ -217,7 +217,7 @@ const OpenDownloadFolder = (): ReactElement =>
   });
 
 const FilesAPIs = (): ReactElement => (
-  <ModuleWrapper title="files">
+  <ModuleWrapper title="Files">
     <GetCloudStorageFolders />
     <AddCloudStorageFolder />
     <DeleteCloudStorageFolder />

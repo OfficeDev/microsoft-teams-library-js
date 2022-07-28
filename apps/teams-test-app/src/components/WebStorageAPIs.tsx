@@ -12,7 +12,7 @@ const WebStorageCapability = (): React.ReactElement =>
   });
 
 const WebStorageAPIs = (): ReactElement => (
-  <ModuleWrapper title="webStorage">
+  <ModuleWrapper title="WebStorage">
     <WebStorageCapability />
   </ModuleWrapper>
 );

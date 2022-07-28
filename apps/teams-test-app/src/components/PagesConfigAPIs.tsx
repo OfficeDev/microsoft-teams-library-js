@@ -155,7 +155,7 @@ const CheckPageConfigCapability = (): React.ReactElement =>
   });
 
 const PagesConfigAPIs = (): ReactElement => (
-  <ModuleWrapper title="pages.config">
+  <ModuleWrapper title="Pages.config">
     <Initialize />
     <RegisterOnSaveHandler />
     <SetConfig />

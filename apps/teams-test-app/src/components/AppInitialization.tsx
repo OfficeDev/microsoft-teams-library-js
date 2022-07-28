@@ -96,7 +96,7 @@ const NotifyExpectedFailure = (): React.ReactElement =>
   });
 
 const AppInitializationAPIs = (): ReactElement => (
-  <ModuleWrapper title="appInitialization">
+  <ModuleWrapper title="AppInitialization">
     <NotifyLoaded />
     <NotifySuccess />
     <NotifyFailure />

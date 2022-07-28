@@ -76,7 +76,7 @@ const RequestGeoLocationPermission = (): React.ReactElement =>
   });
 
 const GeoLocationAPIs = (): ReactElement => (
-  <ModuleWrapper title="geoLocation">
+  <ModuleWrapper title="GeoLocation">
     <GetCurrentLocation />
     <ChooseLocation />
     <ShowLocation />

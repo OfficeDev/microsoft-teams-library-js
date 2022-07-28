@@ -88,7 +88,7 @@ const PagesBackStackAPIs = (): ReactElement => {
   }, [totalStates]);
 
   return (
-    <ModuleWrapper title="pages.backStack">
+    <ModuleWrapper title="Pages.backStack">
       <NavigateBack />
       <ApiContainer name="addStates" title="Add States" result={addStatesValue}>
         <input name="button_addStates" type="button" value="Add States" onClick={onAddStatesClick} />

@@ -49,7 +49,7 @@ const ShareWebContent = (): React.ReactElement =>
   });
 
 const SharingAPIs = (): ReactElement => (
-  <ModuleWrapper title="sharing">
+  <ModuleWrapper title="Sharing">
     <ShareWebContent />
     <CheckSharingCapability />
   </ModuleWrapper>

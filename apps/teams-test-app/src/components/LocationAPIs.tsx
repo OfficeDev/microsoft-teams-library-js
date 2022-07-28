@@ -61,7 +61,7 @@ const ShowLocation = (): React.ReactElement =>
   });
 
 const LocationAPIs = (): ReactElement => (
-  <ModuleWrapper title="location">
+  <ModuleWrapper title="Location">
     <GetLocation />
     <ShowLocation />
     <CheckLocationCapability />

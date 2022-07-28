@@ -97,7 +97,7 @@ const CheckPagesTabsCapability = (): React.ReactElement =>
   });
 
 const PagesTabsAPIs = (): ReactElement => (
-  <ModuleWrapper title="pages.tabs">
+  <ModuleWrapper title="Pages.tabs">
     <NavigateToTab />
     <GetTabInstances />
     <GetMruTabInstances />

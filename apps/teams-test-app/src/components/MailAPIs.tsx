@@ -55,7 +55,7 @@ const OpenMailItem = (): React.ReactElement =>
   });
 
 const MailAPIs = (): ReactElement => (
-  <ModuleWrapper title="mail">
+  <ModuleWrapper title="Mail">
     <ComposeMail />
     <OpenMailItem />
     <CheckMailCapability />

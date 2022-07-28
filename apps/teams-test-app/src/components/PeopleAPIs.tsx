@@ -46,7 +46,7 @@ const SelectPeople = (): React.ReactElement =>
   });
 
 const PeopleAPIs = (): ReactElement => (
-  <ModuleWrapper title="people">
+  <ModuleWrapper title="People">
     <SelectPeople />
     <CheckPeopleCapability />
   </ModuleWrapper>

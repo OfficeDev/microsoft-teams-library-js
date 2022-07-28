@@ -161,7 +161,7 @@ const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
   });
 
 const RemoteCameraAPIs = (): React.ReactElement => (
-  <ModuleWrapper title="remoteCamera">
+  <ModuleWrapper title="RemoteCamera">
     <RemoteCameraCapabilityCheck />
     <GetCapableParticipants />
     <RequestControl />

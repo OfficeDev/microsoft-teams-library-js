@@ -112,7 +112,7 @@ const CheckTeamsCoreCapability = (): React.ReactElement =>
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
-  <ModuleWrapper title="teamsCore">
+  <ModuleWrapper title="TeamsCore">
     <EnablePrintCapability />
     <Print />
     <RegisterOnLoadHandler />

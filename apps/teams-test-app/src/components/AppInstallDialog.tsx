@@ -29,7 +29,7 @@ const OpenAppInstallDialog = (): React.ReactElement =>
   });
 
 const AppInstallDialogAPIs: React.FC = () => (
-  <ModuleWrapper title="appInstallDialog">
+  <ModuleWrapper title="AppInstallDialog">
     <OpenAppInstallDialog />
     <CheckAppInstallDialogCapability />
   </ModuleWrapper>

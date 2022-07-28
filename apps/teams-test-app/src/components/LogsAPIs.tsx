@@ -19,7 +19,7 @@ const RegisterGetLogHandler = (): React.ReactElement =>
   });
 
 const LogsAPIs = (): ReactElement => (
-  <ModuleWrapper title="logs">
+  <ModuleWrapper title="Logs">
     <RegisterGetLogHandler />
   </ModuleWrapper>
 );

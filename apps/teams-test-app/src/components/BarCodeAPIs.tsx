@@ -49,7 +49,7 @@ const RequestBarCodePermission = (): React.ReactElement =>
   });
 
 const BarCodeAPIs = (): ReactElement => (
-  <ModuleWrapper title="barCode">
+  <ModuleWrapper title="BarCode">
     <ScanBarCode />
     <HasBarCodePermission />
     <RequestBarCodePermission />

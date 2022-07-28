@@ -39,7 +39,7 @@ const OpenCalendarItem = (): React.ReactElement =>
   });
 
 const CalendarAPIs = (): ReactElement => (
-  <ModuleWrapper title="calendar">
+  <ModuleWrapper title="Calendar">
     <CheckCalendarCapability />
     <ComposeMeeting />
     <OpenCalendarItem />

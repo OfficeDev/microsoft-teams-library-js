@@ -33,7 +33,7 @@ const StartCall = (): React.ReactElement =>
   });
 
 const CallAPIs: React.FC = () => (
-  <ModuleWrapper title="call">
+  <ModuleWrapper title="Call">
     <StartCall />
     <CheckCallCapability />
   </ModuleWrapper>

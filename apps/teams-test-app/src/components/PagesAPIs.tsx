@@ -253,7 +253,7 @@ const CheckPageCapability = (): React.ReactElement =>
   });
 
 const PagesAPIs = (): ReactElement => (
-  <ModuleWrapper title="pages">
+  <ModuleWrapper title="Pages">
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />

@@ -52,7 +52,7 @@ const OpenStageView = (): ReactElement =>
   });
 
 const StageViewAPIs = (): ReactElement => (
-  <ModuleWrapper title="stageView">
+  <ModuleWrapper title="StageView">
     <OpenStageView />
     <CheckStageViewCapability />
   </ModuleWrapper>

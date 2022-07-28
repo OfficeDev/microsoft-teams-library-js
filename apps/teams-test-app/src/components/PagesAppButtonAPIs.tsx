@@ -70,7 +70,7 @@ const RegisterAppButtonHoverLeaveHandler = (): React.ReactElement =>
   });
 
 const PagesAppButtonAPIs = (): ReactElement => (
-  <ModuleWrapper title="pages.appButton">
+  <ModuleWrapper title="Pages.appButton">
     <RegisterAppButtonClickHandler />
     <RegisterAppButtonHoverEnterHandler />
     <RegisterAppButtonHoverLeaveHandler />
