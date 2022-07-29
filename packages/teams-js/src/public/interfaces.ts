@@ -169,16 +169,23 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
+/**
+ * Action Types
+ */
 export enum ActionObjectType {
   M365Content = 'm365content',
 }
 
+/**
+ * Data pertaining to object(s) the action is being performed on
+ */
 export interface BaseActionObject<T extends ActionObjectType> {
   type: T;
 }
 
 /**
- * Represents Action Information
+ * Common information which applies to all actions and an array of
+ * corresponding action objects
  */
 export interface ActionInfo {
   /**
@@ -188,6 +195,10 @@ export interface ActionInfo {
   actionObjects: BaseActionObject<ActionObjectType>[];
 }
 
+/**
+ * Stores information needed to represent M365 Content stored
+ * in OneDrive or Sharepoint
+ */
 export interface M365ContentAction extends BaseActionObject<ActionObjectType.M365Content> {
   /**
    * Only office content IDs are passed to the app. Apps should use these ids
@@ -197,6 +208,9 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
   secondaryId?: SecondaryId;
 }
 
+/**
+ * Contains information on what Graph item is being queried
+ */
 export interface SecondaryId {
   name: SecondaryM365ContentIdName;
   value: string;
@@ -212,6 +226,9 @@ export enum SecondaryM365ContentIdName {
   UserId = 'userId',
 }
 
+/**
+ * Type guard to determine if an action item is of M365Content Type
+ */
 export function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
   // eslint-disable-next-line no-prototype-builtins
   return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
