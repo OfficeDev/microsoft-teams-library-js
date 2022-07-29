@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated powershell script to use relative path instead of DevOps specific variables",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "none"
-}

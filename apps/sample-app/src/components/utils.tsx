@@ -1,6 +1,8 @@
 import { teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme, Theme } from '@fluentui/react-components';
+import { Message } from '@microsoft/microsoft-graph-types';
 import { app, calendar, call, chat, mail, OpenSingleChatRequest } from '@microsoft/teams-js';
 
+import { MessageListItem } from './Emails';
 import { AvatarItem } from './PeopleAvatars';
 export const getTheme = (themeNow: string): Theme => {
   switch (themeNow) {
@@ -76,13 +78,16 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
     type: mail.ComposeMailType.New,
     toRecipients: [`${a.id}`],
   };
-  const result = await mail.composeMail(mailParams);
-  return alert(result);
+  await mail.composeMail(mailParams);
 };
-export const handleCalendar = async (a: AvatarItem): Promise<void> => {
-  const calendarParams: calendar.ComposeMeetingParams = {
-    attendees: [`${a.id}`],
+
+export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<void> => {
+  const openMailParams: mail.OpenMailItemParams = {
+    itemId: emailItem.key || '',
   };
-  const result = await calendar.composeMeeting(calendarParams);
-  return alert(result);
+  await mail.openMailItem(openMailParams);
+};
+
+export const shouldShowMeeting = (meeting: Message): boolean => {
+  return meeting['showAs'] !== 'free' && !meeting['isCancelled'];
 };
