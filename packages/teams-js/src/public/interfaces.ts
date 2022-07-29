@@ -169,17 +169,6 @@ export enum FileOpenPreference {
   Web = 'web',
 }
 
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app.Context} instead.
- *
- * @remarks
- * For more details on the updated {@link app.Context} interface, visit
- * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface}.
- *
- * Represents the structure of the received context message.
- */
-
 export enum ActionObjectType {
   M365Content = 'm365content',
 }
@@ -198,6 +187,46 @@ export interface ActionInfo {
   actionId: string;
   actionObjects: BaseActionObject<ActionObjectType>[];
 }
+
+export interface M365ContentAction extends BaseActionObject<ActionObjectType.M365Content> {
+  /**
+   * Only office content IDs are passed to the app. Apps should use these ids
+   * to query the Microsoft graph for more details.
+   */
+  itemId: string;
+  secondaryId?: SecondaryId;
+}
+
+export interface SecondaryId {
+  name: SecondaryM365ContentIdName;
+  value: string;
+}
+
+/**
+ * These correspond with field names in the MSGraph
+ */
+export enum SecondaryM365ContentIdName {
+  DriveId = 'driveId',
+  GroupId = 'groupId',
+  SiteId = 'siteId',
+  UserId = 'userId',
+}
+
+export function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
+  // eslint-disable-next-line no-prototype-builtins
+  return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
+
+/**
+ * @deprecated
+ * As of 2.0.0, please use {@link app.Context} instead.
+ *
+ * @remarks
+ * For more details on the updated {@link app.Context} interface, visit
+ * {@link https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface}.
+ *
+ * Represents the structure of the received context message.
+ */
 
 export interface Context {
   /**
