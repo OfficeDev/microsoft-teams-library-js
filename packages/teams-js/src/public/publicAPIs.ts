@@ -330,7 +330,7 @@ export function setFrameContext(frameContext: FrameContext): void {
  * @deprecated
  * As of 2.0.0, please use {@link pages.initializeWithFrameContext pages.initializeWithFrameContext(frameInfo: FrameInfo, callback?: () => void, validMessageOrigins?: string[],): void} instead.
  *
- * Initilize with FrameContext
+ * Initialize with FrameContext
  *
  * @param frameContext - FrameContext information to be set
  * @param callback - The optional callback to be invoked be invoked after initilizing the frame context

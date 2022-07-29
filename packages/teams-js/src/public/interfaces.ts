@@ -170,7 +170,7 @@ export enum FileOpenPreference {
 }
 
 /**
- * Action Types
+ * Possible Action Types
  */
 export enum ActionObjectType {
   M365Content = 'm365content',
@@ -178,21 +178,11 @@ export enum ActionObjectType {
 
 /**
  * Data pertaining to object(s) the action is being performed on
+ *
+ * @param T The type of action being implemented
  */
 export interface BaseActionObject<T extends ActionObjectType> {
   type: T;
-}
-
-/**
- * Common information which applies to all actions and an array of
- * corresponding action objects
- */
-export interface ActionInfo {
-  /**
-   * Maps to the action id supplied inside the manifest
-   */
-  actionId: string;
-  actionObjects: BaseActionObject<ActionObjectType>[];
 }
 
 /**
@@ -232,6 +222,20 @@ export enum SecondaryM365ContentIdName {
 export function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
   // eslint-disable-next-line no-prototype-builtins
   return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
+
+/**
+ * Information common to all actions
+ */
+export interface ActionInfo {
+  /**
+   * Maps to the action id supplied inside the manifest
+   */
+  actionId: string;
+  /**
+   * Array of corresponding action objects
+   */
+  actionObjects: BaseActionObject<ActionObjectType>[];
 }
 
 /**
