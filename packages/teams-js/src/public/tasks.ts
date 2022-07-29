@@ -18,9 +18,9 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
-   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
-   * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
+   * As of 2.0.0, please use {@link dialog.url.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * and {@link dialog.url.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void}
+   * for bot based dialogs. In Teams *only* this function can be used for adaptive card based dialogs.
    *
    * Allows an app to open the task module.
    *
@@ -38,9 +38,9 @@ export namespace tasks {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }

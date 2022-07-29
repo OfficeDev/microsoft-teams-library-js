@@ -25,6 +25,9 @@ export {
   LocaleInfo,
   FrameInfo,
   ShareDeepLinkParameters,
+  AdaptiveCardVersion,
+  AdaptiveCardDialogInfo,
+  BotAdaptiveCardDialogInfo,
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';

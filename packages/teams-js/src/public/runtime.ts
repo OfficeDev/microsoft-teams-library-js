@@ -7,6 +7,7 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly adaptiveCard?: {};
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
     readonly barCode?: {};
@@ -16,8 +17,13 @@ export interface IRuntime {
     readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
-      readonly bot?: {};
+      readonly adaptiveCard?: {
+        readonly bot?: {};
+      };
       readonly update?: {};
+      readonly url?: {
+        readonly bot?: {};
+      };
     };
     readonly geoLocation?: {
       readonly map?: {};
@@ -55,6 +61,7 @@ export interface IRuntime {
 export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
+    adaptiveCard: undefined,
     appInstallDialog: undefined,
     barCode: undefined,
     calendar: undefined,
@@ -63,8 +70,13 @@ export let runtime: IRuntime = {
     webStorage: undefined,
     conversations: undefined,
     dialog: {
-      bot: undefined,
+      adaptiveCard: {
+        bot: undefined,
+      },
       update: undefined,
+      url: {
+        bot: undefined,
+      },
     },
     geoLocation: {
       map: undefined,
@@ -109,8 +121,10 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
-      bot: {},
       update: {},
+      url: {
+        bot: {},
+      },
     },
     logs: {},
     meetingRoom: {},

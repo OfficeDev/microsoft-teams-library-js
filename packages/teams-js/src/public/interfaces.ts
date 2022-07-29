@@ -682,18 +682,9 @@ export interface DialogSize {
 }
 
 /**
- * Data structure to describe dialog information needed to open a url based dialog.
+ * Shared Dialog Properties
  */
-export interface UrlDialogInfo {
-  /**
-   * The url to be rendered in the webview/iframe.
-   *
-   * @remarks
-   * The domain of the url must match at least one of the
-   * valid domains specified in the validDomains block of the manifest
-   */
-  url: string;
-
+export interface BaseDialogInfo {
   /*
    * The requested size of the dialog
    */
@@ -703,6 +694,42 @@ export interface UrlDialogInfo {
    * Title of the task module.
    */
   title?: string;
+}
+
+/**
+ * Data structure to describe dialog information needed to open an adaptive card based dialog.
+ */
+export interface AdaptiveCardDialogInfo extends BaseDialogInfo {
+  /**
+   * JSON defining an adaptive card.
+   */
+  card?: string;
+}
+
+/**
+ * Data structure to describe dialog information needed to open a bot based adaptive card dialog.
+ */
+export interface BotAdaptiveCardDialogInfo extends AdaptiveCardDialogInfo {
+  /**
+   * Specifies a bot ID to send the result of the user's interaction with the task module.
+   * The bot will receive a task/complete invoke event with a JSON object
+   * in the event payload.
+   */
+  completionBotId: string;
+}
+
+/**
+ * Data structure to describe dialog information needed to open a url based dialog.
+ */
+export interface UrlDialogInfo extends BaseDialogInfo {
+  /**
+   * The url to be rendered in the webview/iframe.
+   *
+   * @remarks
+   * The domain of the url must match at least one of the
+   * valid domains specified in the validDomains block of the manifest
+   */
+  url: string;
 
   /**
    * If client doesnt support the URL, the URL that needs to be opened in the browser.
@@ -711,7 +738,7 @@ export interface UrlDialogInfo {
 }
 
 /**
- * Data structure to describe dialog information needed to open a bot based dialog.
+ * Data structure to describe dialog information needed to open a bot based url dialog.
  */
 export interface BotUrlDialogInfo extends UrlDialogInfo {
   /**
@@ -896,4 +923,12 @@ export enum ErrorCode {
 export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
+}
+
+/**
+ * Represents the major and minor versions of the AdaptiveCard schema
+ */
+export interface AdaptiveCardVersion {
+  majorVersion: number;
+  minorVersion: number;
 }

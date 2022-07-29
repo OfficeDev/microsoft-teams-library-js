@@ -1,3 +1,5 @@
+import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
+
 export enum HostClientType {
   desktop = 'desktop',
   web = 'web',
@@ -65,7 +67,6 @@ export enum DialogDimension {
   Small = 'small',
 }
 
-import { ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0, please use {@link DialogDimension} instead.
@@ -83,3 +84,5 @@ export enum ChannelType {
 }
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+
+export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 15 };
