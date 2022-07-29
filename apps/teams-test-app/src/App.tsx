@@ -106,7 +106,6 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 const App = (): ReactElement => {
   return (
     <>
-      <Links />
       <AppAPIs />
       <AppInitializationAPIs />
       <AppInstallDialogAPIs />
@@ -120,6 +119,7 @@ const App = (): ReactElement => {
       <FilesAPIs />
       <FullTrustAPIs />
       <GeoLocationAPIs />
+      <Links />
       <LocationAPIs />
       <LogAPIs />
       <MailAPIs />

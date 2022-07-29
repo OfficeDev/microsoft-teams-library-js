@@ -2,6 +2,12 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithTextInput } from './utils';
 
+/**
+ * This file contains links and BoxButtons for Browser APIs to test the behavior of link redirection
+ */
+
+const teamsTestTabURL = 'https://teams-test-tab.azurewebsites.net/';
+
 const MoveToLink = (): ReactElement =>
   ApiWithTextInput<string>({
     name: 'moveToLink',
@@ -11,6 +17,9 @@ const MoveToLink = (): ReactElement =>
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
+
+        // validate that input should also be a valid URL
+        new URL(input);
       },
       submit: async input => {
         window.location.href = input;
@@ -28,6 +37,9 @@ const OpenLinkInNewWindow = (): ReactElement =>
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
+
+        // validate that input should also be a valid URL
+        new URL(input);
       },
       submit: async input => {
         window.open(input);
@@ -39,23 +51,23 @@ const OpenLinkInNewWindow = (): ReactElement =>
 const Links = (): ReactElement => (
   <>
     <h1>Links</h1>
-    <a id="link_simple" href="https://teams-test-tab.azurewebsites.net/">
+    <a id="link_simple" href={teamsTestTabURL}>
       Simple Link
     </a>
     <br />
-    <a id="link_target_blank" rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_blank">
+    <a id="link_target_blank" rel="noreferrer" href={teamsTestTabURL} target="_blank">
       Target Blank
     </a>
     <br />
-    <a rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_self">
+    <a rel="noreferrer" href={teamsTestTabURL} target="_self">
       Target Self
     </a>
     <br />
-    <a rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_parent">
+    <a rel="noreferrer" href={teamsTestTabURL} target="_parent">
       Target Parent
     </a>
     <br />
-    <a rel="noreferrer" href="https://teams-test-tab.azurewebsites.net/" target="_top">
+    <a rel="noreferrer" href={teamsTestTabURL} target="_top">
       Target Top
     </a>
     <br />
