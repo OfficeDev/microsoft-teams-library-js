@@ -933,7 +933,7 @@ describe('files', () => {
   describe('uploadCloudStorageProviderFile', () => {
     const mockUploadFile: files.File = {
       size: 32,
-      webkitRelativePath: 'file1.com',
+      filePath: 'file1',
       type: 'pdf',
       name: 'file1',
       lastModified: new Date(),

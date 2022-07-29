@@ -310,13 +310,9 @@ export namespace files {
      */
     name: string;
     /**
-     * The file path.
+     * The file path to uniquely identify it within the file hierarchy
      */
-    webkitRelativePath: string;
-    /**
-     * Represents if file or a folder
-     */
-    isFolder?: boolean;
+    filePath: string;
   }
 
   /**
