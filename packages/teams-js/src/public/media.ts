@@ -454,9 +454,7 @@ export namespace media {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
+   * @beta
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   export enum MediaControllerEvent {

@@ -1,35 +1,39 @@
 export { authentication } from './authentication';
 export {
+  ChannelType,
+  DialogDimension,
   FrameContexts,
   HostClientType,
-  DialogDimension,
+  HostName,
   TaskModuleDimension,
   TeamType,
   UserTeamRole,
-  ChannelType,
-  HostName,
 } from './constants';
 export {
+  BotUrlDialogInfo,
   Context,
   DeepLinkParameters,
+  DialogInfo,
+  DialogSize,
   ErrorCode,
+  FileOpenPreference,
   FrameContext,
+  FrameInfo,
   LoadContext,
+  LocaleInfo,
   SdkError,
+  ShareDeepLinkParameters,
   TabInformation,
   TabInstance,
   TabInstanceParameters,
-  DialogInfo,
+  TaskInfo,
   TeamInformation,
-  FileOpenPreference,
-  LocaleInfo,
-  FrameInfo,
-  ShareDeepLinkParameters,
+  UrlDialogInfo,
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
 export { barCode } from './barCode';
-export { chat } from './chat';
+export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';
 export { pages } from './pages';
