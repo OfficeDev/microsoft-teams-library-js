@@ -251,7 +251,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.groupId} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.groupId} instead
    *
    * The Office 365 group ID for the team with which the content is associated.
    * This field is available only when the identity permission is requested in the manifest.
@@ -260,7 +260,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.internalId} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.internalId} instead
    *
    * The Microsoft Teams ID for the team with which the content is associated.
    */
@@ -268,7 +268,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.displayName} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.displayName} instead
    *
    * The name for the team with which the content is associated.
    */
@@ -276,7 +276,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.id} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.id} instead
    *
    * The Microsoft Teams ID for the channel with which the content is associated.
    */
@@ -284,7 +284,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.displayName} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.displayName} instead
    *
    * The name for the channel with which the content is associated.
    */
@@ -292,7 +292,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.membershipType} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.membershipType} instead
    *
    * The type of the channel with which the content is associated.
    */
@@ -300,7 +300,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.id} instead
+   * As of 2.0.0, please use {@link app.PageInfo.id} instead
    *
    * The developer-defined unique ID for the entity this content points to.
    */
@@ -308,7 +308,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.subPageId} instead
+   * As of 2.0.0, please use {@link app.PageInfo.subPageId} instead
    *
    * The developer-defined unique ID for the sub-entity this content points to.
    * This field should be used to restore to a specific state within an entity,
@@ -318,7 +318,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.locale} instead
+   * As of 2.0.0, please use {@link app.AppInfo.locale} instead
    *
    * The current locale that the user has configured for the app formatted as
    * languageId-countryId (for example, en-us).
@@ -327,7 +327,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.osLocaleInfo} instead
+   * As of 2.0.0, please use {@link app.AppInfo.osLocaleInfo} instead
    *
    * More detailed locale info from the user's OS if available. Can be used together with
    * the @microsoft/globe NPM package to ensure your app respects the user's OS date and
@@ -338,7 +338,7 @@ export interface Context {
   /**
    * @deprecated
    *
-   * As of 2.0.0, please use {@link app.Context.user.loginHint} or {@link app.Context.user.userPrincipalName} instead.
+   * As of 2.0.0, please use {@link app.UserInfo.loginHint} or {@link app.UserInfo.userPrincipalName} instead.
    * The UPN of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
@@ -348,7 +348,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.tenant.id} instead
+   * As of 2.0.0, please use {@link app.TenantInfo.id} instead
    *
    * The Azure AD tenant ID of the current user.
    * Because a malicious party can run your content in a browser, this value should
@@ -359,7 +359,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.theme} instead
+   * As of 2.0.0, please use {@link app.AppInfo.theme} instead
    *
    * The current UI theme.
    */
@@ -367,7 +367,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.isFullScreen} instead
+   * As of 2.0.0, please use {@link app.PageInfo.isFullScreen} instead
    *
    * Indication whether the tab is in full-screen mode.
    */
@@ -375,7 +375,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.type} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.type} instead
    *
    * The type of the team.
    */
@@ -383,7 +383,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteUrl} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.teamSiteUrl} instead
    *
    * The root SharePoint site associated with the team.
    */
@@ -391,7 +391,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteDomain} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.teamSiteDomain} instead
    *
    * The domain of the root SharePoint site associated with the team.
    */
@@ -399,7 +399,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSitePath} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.teamSitePath} instead
    *
    * The relative path to the SharePoint site associated with the team.
    */
@@ -407,7 +407,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.ownerTeamTenantId} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.ownerTenantId} instead
    *
    * The tenant ID of the host team.
    */
@@ -415,7 +415,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.ownerGroupId} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.ownerGroupId} instead
    *
    * The AAD group ID of the host team.
    */
@@ -423,7 +423,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.relativeUrl} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.relativeUrl} instead
    *
    * The relative path to the SharePoint folder associated with the channel.
    */
@@ -431,7 +431,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.host.sessionId} instead
+   * As of 2.0.0, please use {@link app.AppHostInfo.sessionId} instead
    *
    * Unique ID for the current Teams session for use in correlating telemetry data.
    */
@@ -439,7 +439,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.userRole} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.userRole} instead
    *
    * The user's role in the team.
    * Because a malicious party can run your content in a browser, this value should
@@ -449,7 +449,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.chat.id} instead
+   * As of 2.0.0, please use {@link app.ChatInfo.id} instead
    *
    * The Microsoft Teams ID for the chat with which the content is associated.
    */
@@ -457,7 +457,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.loginHint} instead
+   * As of 2.0.0, please use {@link app.UserInfo.loginHint} instead
    *
    * A value suitable for use as a login_hint when authenticating with Azure AD.
    * Because a malicious party can run your content in a browser, this value should
@@ -468,7 +468,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.userPrincipalName} instead
+   * As of 2.0.0, please use {@link app.UserInfo.userPrincipalName} instead
    *
    * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
    * Because a malicious party run your content in a browser, this value should
@@ -479,7 +479,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.id} instead
+   * As of 2.0.0, please use {@link app.UserInfo.id} instead
    *
    * The Azure AD object id of the current user.
    * Because a malicious party run your content in a browser, this value should
@@ -490,7 +490,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.isArchived} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.isArchived} instead
    *
    * Indicates whether team is archived.
    * Apps should use this as a signal to prevent any changes to content associated with archived teams.
@@ -499,7 +499,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.host.name} instead
+   * As of 2.0.0, please use {@link app.AppHostInfo.name} instead
    *
    * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
    */
@@ -507,7 +507,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.host.clientType} instead
+   * As of 2.0.0, please use {@link app.AppHostInfo.clientType} instead
    *
    * The type of the host client. Possible values are : android, ios, web, desktop, rigel(deprecated, use teamsRoomsWindows instead),
    * surfaceHub, teamsRoomsWindows, teamsRoomsAndroid, teamsPhones, teamsDisplays
@@ -516,7 +516,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.frameContext} instead
+   * As of 2.0.0, please use {@link app.PageInfo.frameContext} instead
    *
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
@@ -532,7 +532,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.tenant.teamsSku} instead
+   * As of 2.0.0, please use {@link app.TenantInfo.teamsSku} instead
    *
    * The type of license for the current users tenant.
    */
@@ -540,7 +540,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.licenseType} instead
+   * As of 2.0.0, please use {@link app.UserInfo.licenseType} instead
    *
    * The license type for the current user.
    */
@@ -548,7 +548,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.parentMessageId} instead
+   * As of 2.0.0, please use {@link app.AppInfo.parentMessageId} instead
    *
    * The ID of the parent message from which this task module was launched.
    * This is only available in task modules launched from bot cards.
@@ -557,7 +557,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.host.ringId} instead
+   * As of 2.0.0, please use {@link app.AppHostInfo.ringId} instead
    *
    * Current ring ID
    */
@@ -565,7 +565,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.sessionId} instead
+   * As of 2.0.0, please use {@link app.AppInfo.sessionId} instead
    *
    * Unique ID for the current session for use in correlating telemetry data.
    */
@@ -573,7 +573,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.appLaunchId} instead
+   * As of 2.0.0, please use {@link app.AppInfo.appLaunchId} instead
    *
    * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data``
    */
@@ -581,7 +581,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.isCallingAllowed} instead
+   * As of 2.0.0, please use {@link app.UserInfo.isCallingAllowed} instead
    *
    * Represents whether calling is allowed for the current logged in User
    */
@@ -589,7 +589,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.isPSTNCallingAllowed} instead
+   * As of 2.0.0, please use {@link app.UserInfo.isPSTNCallingAllowed} instead
    *
    * Represents whether PSTN calling is allowed for the current logged in User
    */
@@ -597,7 +597,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.meeting.id} instead
+   * As of 2.0.0, please use {@link app.MeetingInfo.id} instead
    *
    * Meeting Id used by tab when running in meeting context
    */
@@ -605,7 +605,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.channel.defaultOneNoteSectionId} instead
+   * As of 2.0.0, please use {@link app.ChannelInfo.defaultOneNoteSectionId} instead
    *
    * The OneNote section ID that is linked to the channel.
    */
@@ -613,7 +613,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.isMultiWindow} instead
+   * As of 2.0.0, please use {@link app.PageInfo.isMultiWindow} instead
    *
    * Indication whether the tab is in a pop out window
    */
@@ -621,7 +621,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.iconPositionVertical} instead
+   * As of 2.0.0, please use {@link app.AppInfo.iconPositionVertical} instead
    *
    * Personal app icon y coordinate position
    */
@@ -629,7 +629,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.page.sourceOrigin} instead
+   * As of 2.0.0, please use {@link app.PageInfo.sourceOrigin} instead
    *
    * Source origin from where the tab is opened
    */
@@ -637,7 +637,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.userClickTime} instead
+   * As of 2.0.0, please use {@link app.AppInfo.userClickTime} instead
    *
    * Time when the user clicked on the tab
    */
@@ -645,7 +645,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.team.templateId} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.templateId} instead
    *
    * Team Template ID if there was a Team Template associated with the creation of the team.
    */
@@ -653,7 +653,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.app.userFileOpenPreference} instead
+   * As of 2.0.0, please use {@link app.AppInfo.userFileOpenPreference} instead
    *
    * Where the user prefers the file to be opened from by default during file open
    */
@@ -661,7 +661,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.user.displayName} instead
+   * As of 2.0.0, please use {@link app.UserInfo.displayName} instead
    *
    * The address book name of the current user.
    */
@@ -669,7 +669,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.teamSiteId} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.teamSiteId} instead
    *
    * Teamsite ID, aka sharepoint site id.
    */
@@ -677,7 +677,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.mySiteDomain} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.mySiteDomain} instead
    *
    * The SharePoint my site domain associated with the user.
    */
@@ -685,7 +685,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.sharePointSite.mySitePath} instead
+   * As of 2.0.0, please use {@link app.SharePointSiteInfo.mySitePath} instead
    *
    * The SharePoint relative path to the current users mysite
    */
