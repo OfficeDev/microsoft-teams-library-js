@@ -88,69 +88,6 @@ export namespace dialog {
   }
 
   /**
-   *  Send message to the parent from dialog
-   *
-   *  @remarks
-   * This function is only called from inside of a dialog
-   *
-   * @param message - The message to send to the parent
-   */
-  export function sendMessageToParentFromDialog(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    message: any,
-  ): void {
-    ensureInitialized(FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    sendMessageToParent('messageForParent', [message]);
-  }
-
-  /**
-   *  Send message to the dialog from the parent
-   *
-   * @param message - The message to send
-   */
-  export function sendMessageToDialog(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    message: any,
-  ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    sendMessageToParent('messageForChild', [message]);
-  }
-
-  /**
-   * Register a listener that will be triggered when a message is received from the app that opened the dialog.
-   *
-   * @remarks
-   * This function is only called from inside of a dialog.
-   *
-   * @param listener - The listener that will be triggered.
-   */
-  export function registerOnMessageFromParent(listener: PostMessageChannel): void {
-    ensureInitialized(FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    // We need to remove the original 'messageForChild'
-    // handler since the original does not allow for post messages.
-    // It is replaced by the user specified listener that is passed in.
-    removeHandler('messageForChild');
-    registerHandler('messageForChild', listener);
-    storedMessages.reverse();
-    while (storedMessages.length > 0) {
-      const message = storedMessages.pop();
-      listener(message);
-    }
-  }
-
-  /**
    * Checks if dialog module is supported by the host
    *
    * @returns boolean to represent whether dialog module is supported
@@ -273,15 +210,10 @@ export namespace dialog {
      *
      * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module.
      * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
      *
      * @returns a function that can be used to send messages to the dialog.
      */
-    export function open(
-      adaptiveCardDialogInfo: AdaptiveCardDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-      messageFromChildHandler?: PostMessageChannel,
-    ): void {
+    export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -290,12 +222,8 @@ export namespace dialog {
       getVersion().then(hostVersion => {
         validateMinimumAdaptiveCardVersion(hostVersion);
 
-        if (messageFromChildHandler) {
-          registerHandler('messageForParent', messageFromChildHandler);
-        }
         const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
         sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
           removeHandler('messageForParent');
         });
       });
@@ -335,14 +263,12 @@ export namespace dialog {
        *
        * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
        * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
-       * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
        *
        * @returns a function that can be used to send messages to the dialog.
        */
       export function open(
         botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
         submitHandler?: DialogSubmitHandler,
-        messageFromChildHandler?: PostMessageChannel,
       ): void {
         ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
         if (!isSupported()) {
@@ -352,14 +278,10 @@ export namespace dialog {
         getVersion().then(hostVersion => {
           validateMinimumAdaptiveCardVersion(hostVersion);
 
-          if (messageFromChildHandler) {
-            registerHandler('messageForParent', messageFromChildHandler);
-          }
           const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
           sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
             submitHandler?.({ err, result });
-            removeHandler('messageForParent');
           });
         });
       }
@@ -414,6 +336,69 @@ export namespace dialog {
     }
 
     /**
+     *  Send message to the parent from dialog
+     *
+     *  @remarks
+     * This function is only called from inside of a dialog
+     *
+     * @param message - The message to send to the parent
+     */
+    export function sendMessageToParentFromDialog(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      message: any,
+    ): void {
+      ensureInitialized(FrameContexts.task);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      sendMessageToParent('messageForParent', [message]);
+    }
+
+    /**
+     *  Send message to the dialog from the parent
+     *
+     * @param message - The message to send
+     */
+    export function sendMessageToDialog(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      message: any,
+    ): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      sendMessageToParent('messageForChild', [message]);
+    }
+
+    /**
+     * Register a listener that will be triggered when a message is received from the app that opened the dialog.
+     *
+     * @remarks
+     * This function is only called from inside of a dialog.
+     *
+     * @param listener - The listener that will be triggered.
+     */
+    export function registerOnMessageFromParent(listener: PostMessageChannel): void {
+      ensureInitialized(FrameContexts.task);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      // We need to remove the original 'messageForChild'
+      // handler since the original does not allow for post messages.
+      // It is replaced by the user specified listener that is passed in.
+      removeHandler('messageForChild');
+      registerHandler('messageForChild', listener);
+      storedMessages.reverse();
+      while (storedMessages.length > 0) {
+        const message = storedMessages.pop();
+        listener(message);
+      }
+    }
+
+    /**
      * Checks if dialog.url module is supported by the host
      *
      * @returns boolean to represent whether dialog.url module is supported
@@ -458,7 +443,7 @@ export namespace dialog {
       /**
        * Checks if dialog.bot capability is supported by the host
        *
-       * @returns boolean to represent whether dialog.bot is supported
+       * @returns boolean to represent whether dialog.url.bot is supported
        */
       export function isSupported(): boolean {
         return runtime.supports.dialog && runtime.supports.dialog.url && runtime.supports.dialog.url.bot ? true : false;
