@@ -230,6 +230,10 @@ export namespace dialog {
     }
 
     export function getVersion(): Promise<AdaptiveCardVersion> {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
       return sendAndHandleSdkError('adaptiveCard.version');
     }
 
