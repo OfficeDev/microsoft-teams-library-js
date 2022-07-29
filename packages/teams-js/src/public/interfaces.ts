@@ -227,7 +227,6 @@ export function isM365ContentType(actionItem: unknown): actionItem is M365Conten
  *
  * Represents the structure of the received context message.
  */
-
 export interface Context {
   /**
    * @deprecated
