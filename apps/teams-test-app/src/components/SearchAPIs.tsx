@@ -10,9 +10,8 @@ const RegisterHandlers = (): React.ReactElement =>
     title: 'Search Register Handlers',
     onClick: async setResult => {
       const onChange = (onChangeHandler: search.SearchQuery): void => {
-        console.log('diana', onChangeHandler.searchTerm);
+        console.log(onChangeHandler.searchTerm);
       };
-      console.log('diana', typeof onChange);
       const onClosed = (onClosedHandler: search.SearchQuery): void => {
         console.log(onClosedHandler);
       };
