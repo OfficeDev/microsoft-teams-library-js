@@ -3,6 +3,8 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 
+type authAuthenticateParams = authentication.AuthenticatePopUpParameters & { mockOAuth?: boolean };
+
 const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'initialize',
@@ -96,7 +98,7 @@ const NotifySuccess = (): React.ReactElement =>
   });
 
 const Authenticate = (): React.ReactElement =>
-  ApiWithTextInput<authentication.AuthenticatePopUpParameters>({
+  ApiWithTextInput<authAuthenticateParams>({
     name: 'authentication.authenticate2',
     title: 'authentication.authenticate',
     onClick: {
@@ -107,7 +109,7 @@ const Authenticate = (): React.ReactElement =>
       },
       submit: {
         withPromise: async authParams => {
-          const token = await authentication.authenticate(authParams);
+          const token = await authentication.authenticate(getAuthParams(authParams));
           return 'Success: ' + token;
         },
         withCallback: (authParams, setResult) => {
@@ -122,11 +124,25 @@ const Authenticate = (): React.ReactElement =>
             failureCallback: failureCallback,
             ...authParams,
           };
-          authentication.authenticate(authRequest);
+          authentication.authenticate(getAuthParams(authRequest));
         },
       },
     },
   });
+
+const getAuthParams = (authParam: authAuthenticateParams): authentication.AuthenticatePopUpParameters => {
+  let authUrl = authParam.url;
+
+  // Append mockOAuth flag at the end of URL
+  if (authParam.mockOAuth) {
+    authUrl = authParam.url + 'mockOAuth=true';
+  }
+
+  return {
+    ...authParam,
+    url: authUrl,
+  };
+};
 
 const AuthenticationAPIs = (): ReactElement => (
   <>

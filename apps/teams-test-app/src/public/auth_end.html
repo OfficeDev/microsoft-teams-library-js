@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    Ending auth
+  </head>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const result = params.get('code');
+      const { authId, method, hostName } = JSON.parse(params.get('state'));
+
+      // Redirect back to Orange host
+      if (method === 'deeplink' && hostName == 'Orange') {
+        window.location.href = `msorange://testapp.com?auth_callback?authId=${authId}&result=${result}`;
+      }
+    </script>
+  </body>
+</html>
