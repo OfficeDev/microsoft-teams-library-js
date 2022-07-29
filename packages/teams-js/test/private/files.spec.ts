@@ -931,14 +931,20 @@ describe('files', () => {
   });
 
   describe('uploadCloudStorageProviderFile', () => {
-    const mockUploadFile: files.CloudStorageFolderItem = {
-      id: '111',
-      lastModifiedTime: '2021-04-14T15:08:35Z',
+    const mockUploadFile: files.File = {
       size: 32,
-      objectUrl: 'file1.com',
-      title: 'file1',
-      isSubdirectory: false,
+      webkitRelativePath: 'file1.com',
       type: 'pdf',
+      name: 'file1',
+      lastModified: new Date(),
+      text: () => {
+        return new Promise<string>(() => 'file text');
+      },
+      arrayBuffer: () => {
+        return new Promise<ArrayBuffer>(() => 'file text');
+      },
+      slice: () => new Blob(),
+      stream: () => new ReadableStream(),
     };
     const userDetails: files.IFilesEntityUser = {
       displayName: 'username',

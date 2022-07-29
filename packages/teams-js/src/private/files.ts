@@ -298,6 +298,28 @@ export namespace files {
   }
 
   /**
+   * Object used to represent a file
+   */
+  export interface File extends Blob {
+    /**
+     * Last modified timestamp
+     */
+    lastModified: Date;
+    /**
+     * Name of the file
+     */
+    name: string;
+    /**
+     * The file path.
+     */
+    webkitRelativePath: string;
+    /**
+     * Represents if file or a folder
+     */
+    isFolder?: boolean;
+  }
+
+  /**
    * @hidden
    * Hide from docs
    *
@@ -380,7 +402,7 @@ export namespace files {
    * Interface representing 3P cloud storage provider upload existing file(s) action
    */
   export interface CloudStorageProviderUploadFileContent extends CloudStorageProviderContent {
-    itemList: CloudStorageFolderItem[] | ISharePointFile[];
+    itemList: File[];
     destinationFolder: CloudStorageFolderItem | ISharePointFile;
   }
 
@@ -680,7 +702,7 @@ export namespace files {
    */
   export function addCloudStorageProviderFile(
     addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -709,7 +731,7 @@ export namespace files {
    */
   export function renameCloudStorageProviderFile(
     renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -739,7 +761,7 @@ export namespace files {
    */
   export function deleteCloudStorageProviderFile(
     deleteFileRequest: CloudStorageProviderRequest<CloudStorageProviderDeleteFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -776,7 +798,7 @@ export namespace files {
    */
   export function downloadCloudStorageProviderFile(
     downloadFileRequest: CloudStorageProviderRequest<CloudStorageProviderDownloadFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -815,7 +837,7 @@ export namespace files {
    */
   export function uploadCloudStorageProviderFile(
     uploadFileRequest: CloudStorageProviderRequest<CloudStorageProviderUploadFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
