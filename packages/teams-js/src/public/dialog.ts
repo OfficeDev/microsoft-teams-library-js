@@ -224,7 +224,7 @@ export namespace dialog {
 
         const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
         sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          removeHandler('messageForParent');
+          submitHandler?.({ err, result });
         });
       });
     }
