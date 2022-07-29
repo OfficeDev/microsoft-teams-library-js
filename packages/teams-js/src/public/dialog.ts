@@ -201,6 +201,9 @@ export namespace dialog {
     return dialogInfo;
   }
 
+  /**
+   * Subcapability for interacting with adaptive card dialogs
+   */
   export namespace adaptiveCard {
     /**
      * Allows app to open an adaptive card based dialog.
@@ -210,8 +213,6 @@ export namespace dialog {
      *
      * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module.
      * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-     *
-     * @returns a function that can be used to send messages to the dialog.
      */
     export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -229,6 +230,12 @@ export namespace dialog {
       });
     }
 
+    /**
+     * Query the host to see what version of the AdaptiveCard schema they support
+     *
+     * @returns a Promise containing the {@linkcode AdaptiveCardVersion}, describing what version of the AdaptiveCard
+     * schema the host supports
+     */
     export function getVersion(): Promise<AdaptiveCardVersion> {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -261,6 +268,9 @@ export namespace dialog {
         : false;
     }
 
+    /**
+     * Namespace for interaction with adaptive card dialogs that need to communicate with the bot framework
+     */
     export namespace bot {
       /**
        * Allows an app to open a adaptive card-based dialog module using bot.
@@ -306,6 +316,9 @@ export namespace dialog {
     }
   }
 
+  /**
+   * Namespace for interacting with url based dialogs
+   */
   export namespace url {
     /**
      * Allows app to open a url based dialog.

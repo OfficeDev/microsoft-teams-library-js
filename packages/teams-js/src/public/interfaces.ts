@@ -925,6 +925,9 @@ export enum DevicePermission {
   Media = 'media',
 }
 
+/**
+ * Represents the major and minor versions of the AdaptiveCard schema
+ */
 export interface AdaptiveCardVersion {
   majorVersion: number;
   minorVersion: number;

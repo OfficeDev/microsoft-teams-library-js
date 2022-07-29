@@ -1,3 +1,5 @@
+import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
+
 export enum HostClientType {
   desktop = 'desktop',
   web = 'web',
@@ -65,7 +67,6 @@ export enum DialogDimension {
   Small = 'small',
 }
 
-import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0, please use {@link DialogDimension} instead.
