@@ -209,7 +209,7 @@ const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
         if (eventData.error) {
           res = `Receieved error ${JSON.stringify(eventData.error)}`;
         } else {
-          res = `Received ${JSON.stringify(eventData.isSpeakingDetected)}`;
+          res = `Speaking state changed to ${JSON.stringify(eventData.isSpeakingDetected)}`;
         }
         setResult(res);
       };
