@@ -16,12 +16,20 @@ import {
   ActionObjectType,
   Context,
   FileOpenPreference,
-  isM365ContentType,
+  M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/**
+ * Type guard to determine if an action item is of M365Content Type
+ */
+function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
+  // eslint-disable-next-line no-prototype-builtins
+  return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';

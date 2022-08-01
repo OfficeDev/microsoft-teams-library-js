@@ -217,14 +217,6 @@ export enum SecondaryM365ContentIdName {
 }
 
 /**
- * Type guard to determine if an action item is of M365Content Type
- */
-export function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
-  // eslint-disable-next-line no-prototype-builtins
-  return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
-}
-
-/**
  * Information common to all actions
  */
 export interface ActionInfo {
