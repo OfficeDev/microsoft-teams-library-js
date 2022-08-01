@@ -10,6 +10,9 @@ export {
   UserTeamRole,
 } from './constants';
 export {
+  ActionInfo,
+  ActionObjectType,
+  BaseActionObject,
   BotUrlDialogInfo,
   Context,
   DeepLinkParameters,
@@ -21,7 +24,10 @@ export {
   FrameInfo,
   LoadContext,
   LocaleInfo,
+  M365ContentAction,
   SdkError,
+  SecondaryId,
+  SecondaryM365ContentIdName,
   ShareDeepLinkParameters,
   TabInformation,
   TabInstance,

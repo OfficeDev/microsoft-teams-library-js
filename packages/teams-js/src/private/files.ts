@@ -298,6 +298,24 @@ export namespace files {
   }
 
   /**
+   * Object used to represent a file
+   */
+  export interface File extends Blob {
+    /**
+     * Last modified timestamp
+     */
+    lastModified: Date;
+    /**
+     * Name of the file
+     */
+    name: string;
+    /**
+     * The file path to uniquely identify it within the file hierarchy
+     */
+    filePath: string;
+  }
+
+  /**
    * @hidden
    * Hide from docs
    *
@@ -339,6 +357,7 @@ export namespace files {
   export interface CloudStorageProviderNewFileContent extends CloudStorageProviderContent {
     newFileName: string;
     newFileExtension: string;
+    destinationFolder: CloudStorageFolderItem | ISharePointFile;
   }
 
   /**
@@ -356,11 +375,31 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Interface representing 3P cloud storage provider actions like Upload / Download / Delete file(s)
+   * Interface representing 3P cloud storage provider delete existing file(s) action
    */
-  export interface CloudStorageProviderActionContent extends CloudStorageProviderContent {
-    action: CloudStorageProviderFileAction;
+  export interface CloudStorageProviderDeleteFileContent extends CloudStorageProviderContent {
     itemList: CloudStorageFolderItem[] | ISharePointFile[];
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider download existing file(s) action
+   */
+  export interface CloudStorageProviderDownloadFileContent extends CloudStorageProviderContent {
+    itemList: CloudStorageFolderItem[] | ISharePointFile[];
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Interface representing 3P cloud storage provider upload existing file(s) action
+   */
+  export interface CloudStorageProviderUploadFileContent extends CloudStorageProviderContent {
+    itemList: File[];
+    destinationFolder: CloudStorageFolderItem | ISharePointFile;
   }
 
   /**
@@ -659,7 +698,7 @@ export namespace files {
    */
   export function addCloudStorageProviderFile(
     addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -688,7 +727,7 @@ export namespace files {
    */
   export function renameCloudStorageProviderFile(
     renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileContent>,
-    callback: (error?: SdkError) => void,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
@@ -710,40 +749,128 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Initiates the 3P cloud storage provider file action (Upload / Download / Delete) flow
+   * Initiates the delete 3P cloud storage file(s) / folder (folder has to be empty) flow,
+   * which will delete existing file(s) / folder from the given 3P provider
    *
-   * Upload Action : Allows uploading file(s) to the given 3P cloud storage provider
-   * Download Action : Allows downloading file(s) from the given 3P cloud storage provider
-   * Delete Action : Allows deleting file(s) from the given 3P cloud storage provider
-   *
-   * @param cloudStorageProviderFileActionRequest 3P cloud storage provider file action (Upload / Download / Delete) request content
-   * @param callback Callback that will be triggered post 3P cloud storage action
+   * @param deleteFileRequest 3P cloud storage provider delete action request content
+   * @param callback Callback that will be triggered post deleting existing file(s) flow is finished
    */
-  export function performCloudStorageProviderFileAction(
-    cloudStorageProviderFileActionRequest: CloudStorageProviderRequest<CloudStorageProviderActionContent>,
-    callback: (error?: SdkError) => void,
+  export function deleteCloudStorageProviderFile(
+    deleteFileRequest: CloudStorageProviderRequest<CloudStorageProviderDeleteFileContent>,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.deleteCloudStorageProviderFile] callback cannot be null');
+    }
+
+    if (
+      !(
+        deleteFileRequest &&
+        deleteFileRequest.content &&
+        deleteFileRequest.content.itemList &&
+        deleteFileRequest.content.itemList.length > 0
+      )
+    ) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    }
+
+    sendMessageToParent('files.deleteCloudStorageProviderFile', [deleteFileRequest], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates the download 3P cloud storage file(s) flow,
+   * which will download existing file(s) from the given 3P provider in the teams client side without sharing any file info in the callback
+   *
+   * @param downloadFileRequest 3P cloud storage provider download file(s) action request content
+   * @param callback Callback that will be triggered post downloading existing file(s) flow is finished
+   */
+  export function downloadCloudStorageProviderFile(
+    downloadFileRequest: CloudStorageProviderRequest<CloudStorageProviderDownloadFileContent>,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.performCloudStorageProviderFileAction] callback cannot be null',
+        '[files.downloadCloudStorageProviderFile] callback cannot be null',
       );
     }
 
-    if (!(cloudStorageProviderFileActionRequest && cloudStorageProviderFileActionRequest.content)) {
+    if (
+      !(
+        downloadFileRequest &&
+        downloadFileRequest.content &&
+        downloadFileRequest.content.itemList &&
+        downloadFileRequest.content.itemList.length > 0
+      )
+    ) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
-        '[files.performCloudStorageProviderFileAction] 3P cloud storage provider request content is missing',
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
       );
     }
 
-    sendMessageToParent(
-      'files.performCloudStorageProviderFileAction',
-      [cloudStorageProviderFileActionRequest],
-      callback,
-    );
+    sendMessageToParent('files.downloadCloudStorageProviderFile', [downloadFileRequest], callback);
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   *
+   * Initiates the upload 3P cloud storage file(s) flow, which will upload file(s) to the given 3P provider
+   *
+   * @param uploadFileRequest 3P cloud storage provider upload file(s) action request content
+   * @param callback Callback that will be triggered post uploading file(s) flow is finished
+   */
+  export function uploadCloudStorageProviderFile(
+    uploadFileRequest: CloudStorageProviderRequest<CloudStorageProviderUploadFileContent>,
+    callback: (error?: SdkError, actionStatus?: boolean) => void,
+  ): void {
+    ensureInitialized(FrameContexts.content);
+
+    if (!callback) {
+      throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.uploadCloudStorageProviderFile] callback cannot be null');
+    }
+
+    if (
+      !(
+        uploadFileRequest &&
+        uploadFileRequest.content &&
+        uploadFileRequest.content.itemList &&
+        uploadFileRequest.content.itemList.length > 0
+      )
+    ) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    }
+
+    if (
+      !(
+        uploadFileRequest.content.destinationFolder &&
+        (uploadFileRequest.content.providerCode === CloudStorageProvider.SharePoint
+          ? (<ISharePointFile>uploadFileRequest.content.destinationFolder).isFolder
+          : (<CloudStorageFolderItem>uploadFileRequest.content.destinationFolder).isSubdirectory) &&
+        uploadFileRequest.content.destinationFolder.objectUrl
+      )
+    ) {
+      throw getSdkError(
+        ErrorCode.INVALID_ARGUMENTS,
+        '[files.uploadCloudStorageProviderFile] Invalid destination folder details',
+      );
+    }
+
+    sendMessageToParent('files.uploadCloudStorageProviderFile', [uploadFileRequest], callback);
   }
 
   /**
@@ -763,7 +890,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderList', handler);
+    registerHandler('files.cloudStorageProviderListChange', handler);
   }
 
   /**
@@ -783,7 +910,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderContent', handler);
+    registerHandler('files.cloudStorageProviderContentChange', handler);
   }
 
   function getSdkError(errorCode: ErrorCode, message: string): SdkError {

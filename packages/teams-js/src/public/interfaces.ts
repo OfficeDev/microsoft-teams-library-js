@@ -170,6 +170,67 @@ export enum FileOpenPreference {
 }
 
 /**
+ * Possible Action Types
+ */
+export enum ActionObjectType {
+  M365Content = 'm365content',
+}
+
+/**
+ * Data pertaining to object(s) the action is being performed on
+ *
+ * @param T The type of action being implemented
+ */
+export interface BaseActionObject<T extends ActionObjectType> {
+  type: T;
+}
+
+/**
+ * Stores information needed to represent M365 Content stored
+ * in OneDrive or Sharepoint
+ */
+export interface M365ContentAction extends BaseActionObject<ActionObjectType.M365Content> {
+  /**
+   * Only office content IDs are passed to the app. Apps should use these ids
+   * to query the Microsoft graph for more details.
+   */
+  itemId: string;
+  secondaryId?: SecondaryId;
+}
+
+/**
+ * Contains information on what Graph item is being queried
+ */
+export interface SecondaryId {
+  name: SecondaryM365ContentIdName;
+  value: string;
+}
+
+/**
+ * These correspond with field names in the MSGraph
+ */
+export enum SecondaryM365ContentIdName {
+  DriveId = 'driveId',
+  GroupId = 'groupId',
+  SiteId = 'siteId',
+  UserId = 'userId',
+}
+
+/**
+ * Information common to all actions
+ */
+export interface ActionInfo {
+  /**
+   * Maps to the action id supplied inside the manifest
+   */
+  actionId: string;
+  /**
+   * Array of corresponding action objects
+   */
+  actionObjects: BaseActionObject<ActionObjectType>[];
+}
+
+/**
  * @deprecated
  * As of 2.0.0, please use {@link app.Context} instead.
  *
@@ -179,8 +240,15 @@ export enum FileOpenPreference {
  *
  * Represents the structure of the received context message.
  */
-
 export interface Context {
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.actionInfo} instead
+   *
+   * Common information applicable to all content actions
+   */
+  actionInfo?: ActionInfo;
+
   /**
    * @deprecated
    * As of 2.0.0, please use {@link app.Context.team.groupId} instead
