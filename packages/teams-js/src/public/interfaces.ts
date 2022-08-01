@@ -243,7 +243,7 @@ export interface ActionInfo {
 export interface Context {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.actionInfo} instead
+   * As of 2.0.0, please use {@link app.Context | app.Context.actionInfo} instead
    *
    * Common information applicable to all content actions
    */
