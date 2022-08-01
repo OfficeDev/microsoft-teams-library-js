@@ -10,6 +10,12 @@ export {
   HostName,
 } from './constants';
 export {
+  ActionInfo,
+  BaseActionObject,
+  M365ContentAction,
+  ActionObjectType,
+  SecondaryId,
+  SecondaryM365ContentIdName,
   Context,
   DeepLinkParameters,
   ErrorCode,
