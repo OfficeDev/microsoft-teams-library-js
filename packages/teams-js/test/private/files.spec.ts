@@ -631,11 +631,21 @@ describe('files', () => {
   });
 
   describe('addCloudStorageProviderFile', () => {
+    const mockDestinationFolder: files.CloudStorageFolderItem = {
+      id: '111',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 0,
+      objectUrl: 'folder1',
+      title: 'folder1',
+      isSubdirectory: true,
+      type: 'folder',
+    };
     const addNewFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderNewFileContent> = {
       content: {
         providerCode: files.CloudStorageProvider.Box,
         newFileName: 'testFile',
         newFileExtension: 'docx',
+        destinationFolder: mockDestinationFolder,
       },
     };
 
@@ -734,43 +744,89 @@ describe('files', () => {
     });
   });
 
-  describe('performCloudStorageProviderFileAction', () => {
-    const mockItem: files.CloudStorageFolderItem = {
+  describe('deleteCloudStorageProviderFile', () => {
+    const mockDeleteFile: files.CloudStorageFolderItem = {
       id: '111',
       lastModifiedTime: '2021-04-14T15:08:35Z',
       size: 32,
-      objectUrl: 'abc.com',
+      objectUrl: 'file1.com',
       title: 'file1',
       isSubdirectory: false,
       type: 'pdf',
     };
-
-    const cloudStorageProviderFileActionRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderActionContent> = {
+    const mockDeleteFolder: files.CloudStorageFolderItem = {
+      id: '112',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'folder1.com',
+      title: 'folder1',
+      isSubdirectory: true,
+      type: 'folder',
+    };
+    const deleteFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
       content: {
-        action: files.CloudStorageProviderFileAction.Upload,
         providerCode: files.CloudStorageProvider.Box,
-        itemList: [mockItem],
+        itemList: [mockDeleteFile],
+      },
+    };
+
+    const deleteFolderRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockDeleteFolder],
+      },
+    };
+
+    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: null,
+    };
+
+    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
       },
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() =>
-        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
-      ).toThrowError('The library has not yet been initialized');
+      expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
     });
 
     it('should not allow calls with empty callback', async () => {
       await utils.initializeWithContext('content');
-      expect(() =>
-        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, null),
-      ).toThrowError();
+      expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, null)).toThrowError();
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
+      expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.deleteCloudStorageProviderFile(deleteFileRequestWithNullContent, emptyCallback)).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
       expect(() =>
-        files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, emptyCallback),
-      ).toThrowError('This call is only allowed in following contexts: ["content"]. Current context: "settings"');
+        files.deleteCloudStorageProviderFile(deleteFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.deleteCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
     });
 
     it('should send the message to parent correctly', () => {
@@ -780,13 +836,298 @@ describe('files', () => {
         expect(err).toBeFalsy();
       });
 
-      files.performCloudStorageProviderFileAction(cloudStorageProviderFileActionRequest, callback);
+      files.deleteCloudStorageProviderFile(deleteFileRequest, callback);
 
-      const performCloudStorageProviderFileActionMessage = utils.findMessageByFunc(
-        'files.performCloudStorageProviderFileAction',
+      const deleteCloudStorageProviderFileMessage = utils.findMessageByFunc('files.deleteCloudStorageProviderFile');
+      expect(deleteCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(deleteCloudStorageProviderFileMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('downloadCloudStorageProviderFile', () => {
+    const mockDownloadFile: files.CloudStorageFolderItem = {
+      id: '111',
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file1.com',
+      title: 'file1',
+      isSubdirectory: false,
+      type: 'pdf',
+    };
+    const downloadFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockDownloadFile],
+      },
+    };
+    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: null,
+    };
+    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
       );
-      expect(performCloudStorageProviderFileActionMessage).not.toBeNull();
-      utils.respondToMessage(performCloudStorageProviderFileActionMessage, false);
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.downloadCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.downloadCloudStorageProviderFile(downloadFileRequestWithNullContent, emptyCallback),
+      ).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.downloadCloudStorageProviderFile(downloadFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.downloadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.downloadCloudStorageProviderFile(downloadFileRequest, callback);
+
+      const downloadCloudStorageProviderFileMessage = utils.findMessageByFunc('files.downloadCloudStorageProviderFile');
+      expect(downloadCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(downloadCloudStorageProviderFileMessage, false);
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('uploadCloudStorageProviderFile', () => {
+    const mockUploadFile: files.File = {
+      size: 32,
+      filePath: 'file1',
+      type: 'pdf',
+      name: 'file1',
+      lastModified: new Date(),
+      text: () => {
+        return new Promise<string>(() => 'file text');
+      },
+      arrayBuffer: () => {
+        return new Promise<ArrayBuffer>(() => 'file text');
+      },
+      slice: () => new Blob(),
+      stream: () => new ReadableStream(),
+    };
+    const userDetails: files.IFilesEntityUser = {
+      displayName: 'username',
+      email: 'username@email',
+      mri: 'mri',
+    };
+    const mockDestinationFolder: files.CloudStorageFolderItem = {
+      id: '112',
+      lastModifiedTime: '2021-03-14T15:08:35Z',
+      size: 0,
+      objectUrl: 'folder1',
+      title: 'folder1',
+      isSubdirectory: true,
+      type: 'folder',
+    };
+    const mockDestinationFolderWithInvalidUrl: files.CloudStorageFolderItem = {
+      id: '113',
+      lastModifiedTime: '2021-03-14T15:08:35Z',
+      size: 0,
+      objectUrl: null,
+      title: 'folder2',
+      isSubdirectory: true,
+      type: 'folder',
+    };
+    const mockDestinationFile: files.CloudStorageFolderItem = {
+      id: '113',
+      lastModifiedTime: '2021-03-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file2.com',
+      title: 'file2',
+      isSubdirectory: false,
+      type: 'file',
+    };
+    const mockDestinationFileForSharepoint: files.ISharePointFile = {
+      createdByUser: userDetails,
+      lastModifiedByUser: userDetails,
+      sentByUser: userDetails,
+      lastModifiedTime: '2021-04-14T15:08:35Z',
+      size: 32,
+      objectUrl: 'file3.com',
+      title: 'file3',
+      isFolder: false,
+      type: 'pdf',
+      siteUrl: 'siteurl',
+      objectId: 'objectId',
+      serverRelativeUrl: 'serverRelativeUrl',
+      createdTime: '2021-04-14T15:08:35Z',
+      openInWindowFileUrl: 'openInWindowFileUrl',
+    };
+    const uploadFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFolder,
+      },
+    };
+    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: null,
+    };
+    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [],
+        destinationFolder: mockDestinationFolder,
+      },
+    };
+    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: null,
+      },
+    };
+    const uploadFileRequestWithInvalidDestinationFolderDetails: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFolderWithInvalidUrl,
+      },
+    };
+    const uploadFileRequestWithFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFile,
+      },
+    };
+    const uploadFileRequestWithSharepointFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.SharePoint,
+        itemList: [mockUploadFile],
+        destinationFolder: mockDestinationFileForSharepoint,
+      },
+    };
+
+    it('should not allow calls before initialization', () => {
+      expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls with empty callback', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, null)).toThrowError();
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
+        'This call is only allowed in following contexts: ["content"]. Current context: "settings"',
+      );
+    });
+
+    it('should not allow calls with null request', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.uploadCloudStorageProviderFile(null, emptyCallback)).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() => files.uploadCloudStorageProviderFile(uploadFileRequestWithNullContent, emptyCallback)).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with empty itemList in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithEmptyItemList, emptyCallback),
+      ).toThrowError(
+        '[files.uploadCloudStorageProviderFile] 3P cloud storage provider request content details are missing',
+      );
+    });
+
+    it('should not allow calls with null destinationFolder request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithNullDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for non sharepoint file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for sharepoint file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithSharepointFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for request content with invalid destination folder details ', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithInvalidDestinationFolderDetails, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should not allow upload calls for file as destination folder in request content', async () => {
+      await utils.initializeWithContext('content');
+      expect(() =>
+        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
+      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
+    });
+
+    it('should send the message to parent correctly', () => {
+      utils.initializeWithContext('content');
+
+      const callback = jest.fn(err => {
+        expect(err).toBeFalsy();
+      });
+
+      files.uploadCloudStorageProviderFile(uploadFileRequest, callback);
+
+      const uploadCloudStorageProviderFileMessage = utils.findMessageByFunc('files.uploadCloudStorageProviderFile');
+      expect(uploadCloudStorageProviderFileMessage).not.toBeNull();
+      utils.respondToMessage(uploadCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
