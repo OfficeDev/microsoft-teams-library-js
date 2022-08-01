@@ -6,14 +6,5 @@
     "notExported": true,
     "invalidLink": true,
     "notDocumented": false
-  },
-  "intentionallyNotExported": [
-    "src/public/chat.ts:OpenGroupChatRequest",
-    "src/public/chat.ts:OpenSingleChatRequest",
-    "src/public/interfaces.ts:BotUrlDialogInfo",
-    "src/public/interfaces.ts:DialogSize",
-    "src/public/interfaces.ts:TaskInfo",
-    "src/public/interfaces.ts:UrlDialogInfo",
-    "src/public/media.ts:MediaControllerEvent"
-  ]
+  }
 }
