@@ -41,7 +41,7 @@ export namespace dialog {
    * Hide from docs because this function is only used during initialization
    * ------------------
    * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
-   * Function is called during app intitialization
+   * Function is called during app initialization
    * @internal
    */
   export function initialize(): void {
@@ -95,7 +95,7 @@ export namespace dialog {
   }
 
   /**
-   * Submit the dialog module.
+   * Submit the dialog module and close the dialog
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
