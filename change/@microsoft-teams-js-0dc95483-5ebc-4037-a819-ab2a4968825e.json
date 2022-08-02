@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "add code comment for dialog",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}
