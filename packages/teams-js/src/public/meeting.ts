@@ -149,12 +149,21 @@ export namespace meeting {
     isAppSharing: boolean;
   }
 
+  /**
+   * Property bag for the speakingState changed event
+   *
+   */
   export interface ISpeakingState {
     /**
      * Indicates whether one or more participants in a meeting are speaking, or
      * if no participants are speaking
      */
     isSpeakingDetected: boolean;
+
+    /**
+     * error object in case there is a failure
+     */
+    error?: SdkError;
   }
 
   /**
@@ -458,9 +467,9 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for changes to paticipant speaking states. If any participant is speaking, isSpeakingDetected
-   * will be true. If no participants are speaking, isSpeakingDetected will be false. Only one handler can be registered
-   * at a time. A subsequent registration replaces an existing registration.
+   * Registers a handler for changes to paticipant speaking states. This API returns {@link ISpeakingState}, which will have isSpeakingDetected
+   * and/or an error object. If any participant is speaking, isSpeakingDetected will be true. If no participants are speaking, isSpeakingDetected
+   * will be false. Default value is false. Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    *
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    */
