@@ -244,7 +244,7 @@ export interface ActionInfo {
 
 /**
  * @deprecated
- * As of 2.0.0, please use the {@link app.Context | app.Context} interface and its updated properties instead.
+ * As of 2.0.0, please use the {@link app.Context} interface and its updated properties instead.
  *
  * @remarks
  * For more details about the updated {@link app.Context} interface, visit the
@@ -389,7 +389,7 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.TeamInfo.type | aopp.Context.team.type} instead
+   * As of 2.0.0, please use {@link app.TeamInfo.type | app.Context.team.type} instead
    *
    * The type of the team.
    */
