@@ -171,6 +171,8 @@ export enum FileOpenPreference {
 
 /**
  * Possible Action Types
+ *
+ * @beta
  */
 export enum ActionObjectType {
   M365Content = 'm365content',
@@ -180,6 +182,8 @@ export enum ActionObjectType {
  * Data pertaining to object(s) the action is being performed on
  *
  * @param T The type of action being implemented
+ *
+ * @beta
  */
 export interface BaseActionObject<T extends ActionObjectType> {
   type: T;
@@ -188,6 +192,8 @@ export interface BaseActionObject<T extends ActionObjectType> {
 /**
  * Stores information needed to represent M365 Content stored
  * in OneDrive or Sharepoint
+ *
+ * @beta
  */
 export interface M365ContentAction extends BaseActionObject<ActionObjectType.M365Content> {
   /**
@@ -200,6 +206,8 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
 
 /**
  * Contains information on what Graph item is being queried
+ *
+ * @beta
  */
 export interface SecondaryId {
   name: SecondaryM365ContentIdName;
@@ -208,6 +216,8 @@ export interface SecondaryId {
 
 /**
  * These correspond with field names in the MSGraph
+ *
+ * @beta
  */
 export enum SecondaryM365ContentIdName {
   DriveId = 'driveId',
@@ -218,6 +228,8 @@ export enum SecondaryM365ContentIdName {
 
 /**
  * Information common to all actions
+ *
+ * @beta
  */
 export interface ActionInfo {
   /**

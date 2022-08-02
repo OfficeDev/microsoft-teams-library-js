@@ -448,6 +448,8 @@ export namespace app {
   export interface Context {
     /**
      * Content Action Info
+     *
+     * @beta
      */
     actionInfo?: ActionInfo;
     /**
