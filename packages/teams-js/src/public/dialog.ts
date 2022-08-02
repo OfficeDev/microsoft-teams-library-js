@@ -95,7 +95,7 @@ export namespace dialog {
   }
 
   /**
-   * Submit the dialog module and closes the dialog
+   * Submit the dialog module and close the dialog
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
