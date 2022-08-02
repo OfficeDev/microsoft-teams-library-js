@@ -116,7 +116,7 @@ export namespace tasks {
 
   /**
    * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
-   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension.Small}
+   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension | TaskModuleDimension.Small}
    * @param taskInfo TaskInfo object from which to extract size info, if specified
    * @returns TaskInfo with height and width specified
    */
