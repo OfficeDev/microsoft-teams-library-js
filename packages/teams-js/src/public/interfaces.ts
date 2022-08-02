@@ -232,7 +232,7 @@ export interface ActionInfo {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.Context} instead.
+ * As of 2.0.0, please use the {@link app.Context | app.Context} interface and its updated properties instead.
  *
  * @remarks
  * For more details on the updated {@link app.Context} interface, visit
