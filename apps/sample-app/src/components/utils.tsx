@@ -1,4 +1,5 @@
 import { teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme, Theme } from '@fluentui/react-components';
+import { Message } from '@microsoft/microsoft-graph-types';
 import { app, calendar, call, chat, mail, OpenSingleChatRequest } from '@microsoft/teams-js';
 
 import { MessageListItem } from './Emails';
