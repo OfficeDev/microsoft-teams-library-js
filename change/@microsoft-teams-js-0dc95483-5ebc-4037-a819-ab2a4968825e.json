@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added clarifying comment to `dialog.submit` to indicate the dialog is closed when `submit` is called.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}
