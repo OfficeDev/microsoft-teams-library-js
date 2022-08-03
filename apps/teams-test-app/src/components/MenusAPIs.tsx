@@ -3,6 +3,7 @@ import React from 'react';
 import { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckMenusCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -81,13 +82,12 @@ const ShowActionMenu = (): React.ReactElement =>
   });
 
 const MenusAPIs = (): ReactElement => (
-  <>
-    <h1>Menus</h1>
+  <ModuleWrapper title="Menus">
     <CheckMenusCapability />
     <SetUpViews />
     <SetNavBarMenu />
     <ShowActionMenu />
-  </>
+  </ModuleWrapper>
 );
 
 export default MenusAPIs;
