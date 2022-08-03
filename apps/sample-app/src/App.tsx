@@ -1,6 +1,15 @@
 import './App.css';
 
-import { Button, FluentProvider, LargeTitle, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
+import {
+  Button,
+  FluentProvider,
+  LargeTitle,
+  Spinner,
+  teamsLightTheme,
+  Text,
+  Theme,
+  webLightTheme,
+} from '@fluentui/react-components';
 import { app, authentication } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
@@ -11,7 +20,6 @@ const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = React.useState(false);
   const [accessToken, setAccessToken] = React.useState<string>();
   const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
-
   React.useEffect(() => {
     (async () => {
       try {
@@ -20,12 +28,17 @@ const App: React.FC = () => {
         app.notifyAppLoaded();
         app.notifySuccess();
         const context = await app.getContext();
-        const themeNow = getTheme(context?.app?.theme);
-        setCurrTheme(themeNow);
-        app.registerOnThemeChangeHandler(function(theme) {
-          setCurrTheme(getTheme(theme));
-        });
+        if (context?.app?.host?.name === 'Teams') {
+          const themeNow = getTheme(context?.app?.theme);
+          setCurrTheme(themeNow);
+          app.registerOnThemeChangeHandler(function(theme) {
+            setCurrTheme(getTheme(theme));
+          });
+        } else {
+          setCurrTheme(webLightTheme);
+        }
       } catch (e) {
+        alert('Initialization Error: App should be sideloaded onto a host');
         appInitializationFailed();
       }
     })();
