@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added `FrameContexts.task` to `openChat` and `openGroupChat` in chat.ts",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
