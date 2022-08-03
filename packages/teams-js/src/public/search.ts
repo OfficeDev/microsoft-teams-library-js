@@ -11,7 +11,7 @@ import { runtime } from './runtime';
  */
 export namespace search {
   const onChangeHandlerName = 'search.queryChange';
-  const onClosedHandlerName = 'search.queryClosed';
+  const onClosedHandlerName = 'search.queryClose';
   const onExecutedHandlerName = 'search.queryExecute';
 
   /**
