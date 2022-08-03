@@ -21,7 +21,7 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
       key: m.id,
       subject: m.subject || '',
       sender: m.sender?.emailAddress?.name || '',
-      importance: 'Importance: ' + m.importance || ' ',
+      importance: 'Importance: ' + m.importance || '',
     };
   });
   const EmailExample: React.FunctionComponent = () => {
@@ -35,7 +35,7 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
                 <DocumentCardTitle title={emailItem.subject || ''} shouldTruncate />
                 <DocumentCardActivity
                   activity={emailItem.importance || ''}
-                  people={[{ name: emailItem.sender || ' ', profileImageSrc: '' }]}
+                  people={[{ name: emailItem.sender || '', profileImageSrc: '' }]}
                 />
               </DocumentCard>
             </Text>
