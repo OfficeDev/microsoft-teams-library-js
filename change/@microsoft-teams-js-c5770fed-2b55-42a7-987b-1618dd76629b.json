@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added `@beta` tags to new content action-related interfaces.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jekoch@microsoft.com",
-  "dependentChangeType": "patch"
-}

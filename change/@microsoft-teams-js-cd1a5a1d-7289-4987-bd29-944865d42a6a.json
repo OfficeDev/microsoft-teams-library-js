@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Exported publicly documented global interfaces to enable use outside the SDK.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
