@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Split single action API into 3 action APIs",
+  "comment": "Split single `CloudStorageProviderFile` action API into 3 action APIs",
   "packageName": "@microsoft/teams-js",
   "email": "jainharsh@microsof.com",
   "dependentChangeType": "patch"
