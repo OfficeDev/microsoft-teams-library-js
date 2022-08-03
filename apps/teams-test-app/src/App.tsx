@@ -105,7 +105,7 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <>
+    <div className="App-container">
       <AppAPIs />
       <AppInitializationAPIs />
       <AppInstallDialogAPIs />
@@ -142,7 +142,7 @@ const App = (): ReactElement => {
       <StageViewAPIs />
       <TeamsCoreAPIs />
       <TeamsAPIs />
-    </>
+    </div>
   );
 };
 

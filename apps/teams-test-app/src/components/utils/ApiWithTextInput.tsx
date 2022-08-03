@@ -61,8 +61,10 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
 
   return (
     <ApiContainer title={title} result={result} name={name}>
-      <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} />
-      <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
+      <span>
+        <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} />
+        <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
+      </span>
     </ApiContainer>
   );
 };
