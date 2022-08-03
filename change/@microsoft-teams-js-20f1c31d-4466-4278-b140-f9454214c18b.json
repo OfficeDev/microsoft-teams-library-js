@@ -1,9 +1,6 @@
 {
   "type": "minor",
-  "comment": {
-    "title": "`registerSpeakingStateChangeHandler` API updates",
-    "value": "Updated interface for `registerSpeakingStateChangeHandler` API (add an optional error object) to align with other API error handling."
-  },
+  "comment": "Added an optional error object to `ISpeakingState` interface to align `registerSpeakingStateChangeHandler` API with other API error handling.",
   "packageName": "@microsoft/teams-js",
   "email": "ashleyrocha16@gmail.com",
   "dependentChangeType": "patch"
