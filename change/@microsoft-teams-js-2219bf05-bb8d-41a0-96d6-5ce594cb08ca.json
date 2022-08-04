@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated reference documentation links for deprecated global `Context` interface to work with typedoc system.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
