@@ -2,6 +2,7 @@ import { webStorage } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const WebStorageCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -11,10 +12,9 @@ const WebStorageCapability = (): React.ReactElement =>
   });
 
 const WebStorageAPIs = (): ReactElement => (
-  <>
-    <h1>webStorage</h1>
+  <ModuleWrapper title="WebStorage">
     <WebStorageCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default WebStorageAPIs;

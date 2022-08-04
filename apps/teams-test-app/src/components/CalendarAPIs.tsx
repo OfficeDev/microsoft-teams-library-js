@@ -2,6 +2,7 @@ import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckCalendarCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -38,12 +39,11 @@ const OpenCalendarItem = (): React.ReactElement =>
   });
 
 const CalendarAPIs = (): ReactElement => (
-  <>
-    <h1>calendar</h1>
+  <ModuleWrapper title="Calendar">
     <CheckCalendarCapability />
     <ComposeMeeting />
     <OpenCalendarItem />
-  </>
+  </ModuleWrapper>
 );
 
 export default CalendarAPIs;

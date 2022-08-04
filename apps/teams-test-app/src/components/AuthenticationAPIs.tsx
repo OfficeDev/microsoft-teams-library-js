@@ -2,6 +2,7 @@ import { app, authentication, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 type authAuthenticateParams = authentication.AuthenticatePopUpParameters & { mockOAuth?: boolean };
 
@@ -145,15 +146,14 @@ const getAuthParams = (authParam: authAuthenticateParams): authentication.Authen
 };
 
 const AuthenticationAPIs = (): ReactElement => (
-  <>
-    <h1>authentication</h1>
+  <ModuleWrapper title="Authentication">
     <Initialize />
     <GetAuthToken />
     <GetUser />
     <NotifyFailure />
     <NotifySuccess />
     <Authenticate />
-  </>
+  </ModuleWrapper>
 );
 
 export default AuthenticationAPIs;

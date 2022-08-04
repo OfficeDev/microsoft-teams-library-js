@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "add action items to teams-sdk",
-  "packageName": "@microsoft/teams-js",
-  "email": "jekoch@microsoft.com",
-  "dependentChangeType": "patch"
-}

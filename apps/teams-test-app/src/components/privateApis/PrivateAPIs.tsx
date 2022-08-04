@@ -9,6 +9,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const getUserSettingTypesFromInput = (input: string[]): UserSettingTypes[] => {
   const ret: UserSettingTypes[] = [];
@@ -104,13 +105,12 @@ const PrivateAPIs = (): ReactElement => {
     });
 
   return (
-    <>
-      <h1>privateAPIs</h1>
+    <ModuleWrapper title="PrivateAPIs">
       <RegisterUserSettingsChangeHandler />
       <UploadCustomApp />
       <OpenFilePreview />
       <input id="fileid" type="file" onChange={e => acceptFile(e.target.files)} hidden />
-    </>
+    </ModuleWrapper>
   );
 };
 

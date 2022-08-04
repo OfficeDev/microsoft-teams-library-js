@@ -2,6 +2,7 @@ import { SdkError, teams } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const GetTeamsChannels = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -56,11 +57,10 @@ const RefreshSiteUrl = (): React.ReactElement =>
   });
 
 const TeamsAPIs: React.FC = () => (
-  <>
-    <h1>TeamsAPIs</h1>
+  <ModuleWrapper title="TeamsAPIs">
     <GetTeamsChannels />
     <RefreshSiteUrl />
-  </>
+  </ModuleWrapper>
 );
 
 export default TeamsAPIs;
