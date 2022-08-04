@@ -10,8 +10,8 @@
       const { authId, method, hostName } = JSON.parse(params.get('state'));
 
       // Redirect back to Orange host
-      if (method === 'deeplink' && hostName == 'Orange') {
-        window.location.href = `msorange://testapp.com?auth_callback?authId=${authId}&result=${result}`;
+      if (method === 'deeplink' && hostName === 'Orange') {
+        window.location.href = `msorange://testapp.com/auth_callback?authId=${authId}&result=${result}`;
       }
     </script>
   </body>

@@ -135,7 +135,7 @@ const getAuthParams = (authParam: authAuthenticateParams): authentication.Authen
 
   // Append mockOAuth flag at the end of URL
   if (authParam.mockOAuth) {
-    authUrl = authParam.url + 'mockOAuth=true';
+    authUrl = authParam.url + '&mockOAuth=true';
   }
 
   return {
