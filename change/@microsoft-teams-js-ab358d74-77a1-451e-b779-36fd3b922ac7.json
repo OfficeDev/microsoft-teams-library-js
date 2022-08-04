@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `ActionInfo` object to the `Context` interface. This is used to pass information about an action that was taken on content from the host to the application.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jekoch@microsoft.com",
-  "dependentChangeType": "patch"
-}

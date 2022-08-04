@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added an optional error object to `ISpeakingState` interface to align `registerSpeakingStateChangeHandler` API with other API error handling.",
-  "packageName": "@microsoft/teams-js",
-  "email": "ashleyrocha16@gmail.com",
-  "dependentChangeType": "patch"
-}

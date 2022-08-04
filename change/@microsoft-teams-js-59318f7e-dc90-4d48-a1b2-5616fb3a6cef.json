@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Fixed outdated references to `core.` namespace in documentation",
-  "packageName": "@microsoft/teams-js",
-  "email": "AE-MS@users.noreply.github.com",
-  "dependentChangeType": "none"
-}
