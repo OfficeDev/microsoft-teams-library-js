@@ -40,7 +40,7 @@ jobs:
         displayName: 'Run tests for electron webview'
         inputs:
           Arguments: 'run xvfb-maybe mocha'
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
         inputs:
@@ -68,7 +68,7 @@ jobs:
         displayName: 'Run tests for electron webview'
         inputs:
           Arguments: 'run xvfb-maybe mocha'
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
         inputs:
@@ -102,7 +102,7 @@ jobs:
         displayName: 'Run tests for electron webview'
         inputs:
           Arguments: 'run xvfb-maybe mocha'
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
         inputs:
@@ -131,7 +131,7 @@ jobs:
         displayName: 'Run tests for electron webview'
         inputs:
           Arguments: 'run xvfb-maybe mocha'
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
         inputs:
