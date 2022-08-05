@@ -36,12 +36,6 @@ jobs:
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      - task: Yarn@2
-        displayName: 'Run tests for electron webview'
-        inputs:
-          Arguments: 'run xvfb-maybe mocha'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
