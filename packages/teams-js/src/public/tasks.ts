@@ -66,7 +66,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit} instead.
+   * As of 2.0.0, please use {@link dialog.url.submit} instead.
    *
    * Submit the task module.
    *
@@ -74,7 +74,7 @@ export namespace tasks {
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    dialog.submit(result, appIds);
+    dialog.url.submit(result, appIds);
   }
 
   /**

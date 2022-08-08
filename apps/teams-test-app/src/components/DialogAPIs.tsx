@@ -188,7 +188,7 @@ const DialogAPIs = (): ReactElement => {
         },
         submit: {
           withPromise: async submitInput => {
-            dialog.submit(submitInput.result, submitInput.appIds);
+            dialog.url.submit(submitInput.result, submitInput.appIds);
             return '';
           },
           withCallback: submitInput => {

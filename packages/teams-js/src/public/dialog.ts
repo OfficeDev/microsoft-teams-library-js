@@ -72,22 +72,6 @@ export namespace dialog {
   }
 
   /**
-   * Submit the dialog module.
-   *
-   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
-   * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
-   */
-  export function submit(result?: string | object, appIds?: string | string[]): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
-  }
-
-  /**
    * Checks if dialog module is supported by the host
    *
    * @returns boolean to represent whether dialog module is supported
@@ -212,7 +196,7 @@ export namespace dialog {
      * This function cannot be called from inside of a dialog
      *
      * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module.
-     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+     * @param submitHandler - Handler that triggers when the adaptive card dialog executes the Action.Submit action from the adaptive card or when the user closes the dialog.
      */
     export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -413,6 +397,22 @@ export namespace dialog {
         const message = storedMessages.pop();
         listener(message);
       }
+    }
+
+    /**
+     * Submit the dialog module.
+     *
+     * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+     * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
+     */
+    export function submit(result?: string | object, appIds?: string | string[]): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+      sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
     }
 
     /**
