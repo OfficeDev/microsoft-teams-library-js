@@ -3,11 +3,12 @@
 import { GlobalVars } from '../internal/globalVars';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { AdaptiveCardVersion } from './interfaces';
 export interface IRuntime {
+  readonly adaptiveCardVersion?: AdaptiveCardVersion;
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly adaptiveCard?: {};
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
     readonly barCode?: {};
@@ -61,7 +62,6 @@ export interface IRuntime {
 export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
-    adaptiveCard: undefined,
     appInstallDialog: undefined,
     barCode: undefined,
     calendar: undefined,

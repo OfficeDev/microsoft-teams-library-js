@@ -9,12 +9,10 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts, minAdaptiveCardVersion } from './constants';
 import {
   AdaptiveCardDialogInfo,
-  AdaptiveCardVersion,
   BotAdaptiveCardDialogInfo,
   BotUrlDialogInfo,
   DialogInfo,
   DialogSize,
-  ErrorCode,
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
@@ -204,41 +202,10 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      getVersion().then(hostVersion => {
-        validateMinimumAdaptiveCardVersion(hostVersion);
-
-        const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-        });
+      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        submitHandler?.({ err, result });
       });
-    }
-
-    /**
-     * Query the host to see what version of the AdaptiveCard schema they support
-     *
-     * @returns a Promise containing the {@linkcode AdaptiveCardVersion}, describing what version of the AdaptiveCard
-     * schema the host supports
-     */
-    export function getVersion(): Promise<AdaptiveCardVersion> {
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      return sendAndHandleSdkError('adaptiveCard.version');
-    }
-
-    function validateMinimumAdaptiveCardVersion(hostVersion: AdaptiveCardVersion): void {
-      if (
-        hostVersion.majorVersion < minAdaptiveCardVersion.majorVersion ||
-        (hostVersion.majorVersion === minAdaptiveCardVersion.majorVersion &&
-          hostVersion.minorVersion < minAdaptiveCardVersion.minorVersion)
-      ) {
-        throw {
-          errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-          message: `Can not open adaptive card dialog because host adaptive card version is ${hostVersion.majorVersion}.${hostVersion.minorVersion}, but the minimum acceptable adaptive card version is ${minAdaptiveCardVersion.majorVersion}.${minAdaptiveCardVersion.minorVersion}`,
-        };
-      }
     }
 
     /**
@@ -247,9 +214,7 @@ export namespace dialog {
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      */
     export function isSupported(): boolean {
-      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard && runtime.supports.adaptiveCard
-        ? true
-        : false;
+      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard ? true : false;
     }
 
     /**
@@ -273,14 +238,10 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
 
-        getVersion().then(hostVersion => {
-          validateMinimumAdaptiveCardVersion(hostVersion);
+        const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-          const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
-
-          sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-            submitHandler?.({ err, result });
-          });
+        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
         });
       }
 
@@ -292,8 +253,7 @@ export namespace dialog {
       export function isSupported(): boolean {
         return runtime.supports.dialog &&
           runtime.supports.dialog.adaptiveCard &&
-          runtime.supports.dialog.adaptiveCard.bot &&
-          runtime.supports.adaptiveCard
+          runtime.supports.dialog.adaptiveCard.bot
           ? true
           : false;
       }
