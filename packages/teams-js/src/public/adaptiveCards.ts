@@ -6,5 +6,9 @@ import { runtime } from './runtime';
  * version supported by the host, or undefined if the host does not support adaptive cards
  */
 export function getAdaptiveCardSchemaVersion(): AdaptiveCardVersion | undefined {
-  return runtime.adaptiveCardVersion;
+  if (!runtime.hostVersionsInfo) {
+    return undefined;
+  } else {
+    return runtime.hostVersionsInfo.adaptiveCardSchemaVersion;
+  }
 }

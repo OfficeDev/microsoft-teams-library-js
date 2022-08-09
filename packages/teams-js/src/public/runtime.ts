@@ -3,10 +3,10 @@
 import { GlobalVars } from '../internal/globalVars';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
-import { AdaptiveCardVersion } from './interfaces';
+import { HostVersionsInfo } from './interfaces';
 export interface IRuntime {
-  readonly adaptiveCardVersion?: AdaptiveCardVersion;
   readonly apiVersion: number;
+  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appInstallDialog?: {};

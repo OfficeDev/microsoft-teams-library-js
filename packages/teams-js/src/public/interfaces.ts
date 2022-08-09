@@ -925,6 +925,11 @@ export enum DevicePermission {
   Media = 'media',
 }
 
+/** @hidden */
+export interface HostVersionsInfo {
+  adaptiveCardSchemaVersion?: AdaptiveCardVersion;
+}
+
 /**
  * Represents the major and minor versions of the AdaptiveCard schema
  */
