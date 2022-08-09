@@ -121,6 +121,9 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
+      adaptiveCard: {
+        bot: {},
+      },
       update: {},
       url: {
         bot: {},
