@@ -22,9 +22,12 @@ import {
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.url.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * As of 2.0.0, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
    * and {@link dialog.url.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void}
-   * for bot based dialogs. In Teams *only* this function can be used for adaptive card based dialogs.
+   * for url dialogs that send their result to a bot.
+   * Please use {@link dialog.adaptiveCard.open dialog.adaptiveCard.open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void}
+   * for adaptive card based dialogs and {@link dialog.adaptiveCard.bot.open dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void}
+   * for adaptive card based dialogs that send their results to a bot
    *
    * Allows an app to open the task module.
    *
