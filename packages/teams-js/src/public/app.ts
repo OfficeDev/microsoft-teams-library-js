@@ -473,12 +473,12 @@ export namespace app {
     channel?: ChannelInfo;
 
     /**
-     * When running the context of a Teams chat, provides information about the chat, else `undefined`
+     * When running in the context of a Teams chat, provides information about the chat, else `undefined`
      */
     chat?: ChatInfo;
 
     /**
-     * When running the context of a Teams meeting, provides information about the meeting, else `undefined`
+     * When running in the context of a Teams meeting, provides information about the meeting, else `undefined`
      */
     meeting?: MeetingInfo;
 
