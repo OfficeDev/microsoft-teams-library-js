@@ -463,7 +463,8 @@ export namespace app {
     page: PageInfo;
 
     /**
-     * Info about the current user
+     * Info about the currently logged in user running the app.
+     * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
      */
     user?: UserInfo;
 
@@ -489,11 +490,13 @@ export namespace app {
 
     /**
      * When running in Teams for an organization with a tenant, provides information about the SharePoint site associated with the team.
+     * Will be `undefined` when not running in Teams for an organization with a tenant.
      */
     sharePointSite?: SharePointSiteInfo;
 
     /**
      * When running in Teams, provides information about the Team context in which your app is running.
+     * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
   }
