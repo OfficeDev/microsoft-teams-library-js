@@ -20,7 +20,7 @@ import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
-import { Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
@@ -447,6 +447,12 @@ export namespace app {
    */
   export interface Context {
     /**
+     * Content Action Info
+     *
+     * @beta
+     */
+    actionInfo?: ActionInfo;
+    /**
      * Info of the app
      */
     app: AppInfo;
@@ -754,6 +760,7 @@ export namespace app {
  */
 function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.Context {
   const context: app.Context = {
+    actionInfo: legacyContext.actionInfo,
     app: {
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',

@@ -82,12 +82,12 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
 };
 
 export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<void> => {
-  if (!mail.isSupported()) {
-    alert('open mail item is not supported');
-  } else {
-    const openMailParams: mail.OpenMailItemParams = {
-      itemId: emailItem.key || '',
-    };
-    await mail.openMailItem(openMailParams);
-  }
+  const openMailParams: mail.OpenMailItemParams = {
+    itemId: emailItem.key || '',
+  };
+  await mail.openMailItem(openMailParams);
+};
+
+export const shouldShowMeeting = (meeting: Message): boolean => {
+  return meeting['showAs'] !== 'free' && !meeting['isCancelled'];
 };

@@ -14,6 +14,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
@@ -252,8 +253,7 @@ const CheckPageCapability = (): React.ReactElement =>
   });
 
 const PagesAPIs = (): ReactElement => (
-  <>
-    <h1>pages</h1>
+  <ModuleWrapper title="Pages">
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
@@ -264,7 +264,7 @@ const PagesAPIs = (): ReactElement => (
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
     <CheckPageCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesAPIs;
