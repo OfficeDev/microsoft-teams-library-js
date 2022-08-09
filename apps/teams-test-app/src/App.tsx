@@ -13,6 +13,7 @@ import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
+import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
@@ -104,7 +105,7 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <>
+    <div className="App-container">
       <AppAPIs />
       <AppInitializationAPIs />
       <AppInstallDialogAPIs />
@@ -118,6 +119,7 @@ const App = (): ReactElement => {
       <FilesAPIs />
       <FullTrustAPIs />
       <GeoLocationAPIs />
+      <Links />
       <LocationAPIs />
       <LogAPIs />
       <MailAPIs />
@@ -140,7 +142,7 @@ const App = (): ReactElement => {
       <StageViewAPIs />
       <TeamsCoreAPIs />
       <TeamsAPIs />
-    </>
+    </div>
   );
 };
 

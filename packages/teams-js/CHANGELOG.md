@@ -1,8 +1,26 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 22 Jul 2022 16:36:44 GMT and should not be manually modified.
+This log was last generated on Wed, 03 Aug 2022 19:21:51 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.2.0
+
+Wed, 03 Aug 2022 19:21:51 GMT
+
+### Minor changes
+
+- Added an optional error object to `ISpeakingState` interface to align `registerSpeakingStateChangeHandler` API with other API error handling.
+- Added `ActionInfo` object to the `Context` interface. This is used to pass information about an action that was taken on content from the host to the application.
+- Split single `CloudStorageProviderFile` action API into 3 action APIs
+
+### Patches
+
+- Added clarifying comment to `dialog.submit` to indicate the dialog is closed when `submit` is called.
+- Updated reference documentation links for deprecated global `Context` interface to work with typedoc system.
+- Added `FrameContexts.task` to `openChat` and `openGroupChat` in chat.ts
+- Added `@beta` tags to new content action-related interfaces.
+- Exported publicly documented global interfaces to enable use outside the SDK.
 
 ## 2.1.0
 
