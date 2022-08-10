@@ -453,32 +453,33 @@ export namespace app {
      */
     actionInfo?: ActionInfo;
     /**
-     * Info of the app
+     * Properties about the current session for your app
      */
     app: AppInfo;
 
     /**
-     * Info of the current page of App
+     * Info about the current page context hosting your app
      */
     page: PageInfo;
 
     /**
-     * Info of the user
+     * Info about the currently logged in user running the app.
+     * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
      */
     user?: UserInfo;
 
     /**
-     * Info of the Microsoft Teams channel
+     * When running in the context of a Teams channel, provides information about the channel, else `undefined`
      */
     channel?: ChannelInfo;
 
     /**
-     * Info of the Microsoft Teams chat
+     * When running in the context of a Teams chat, provides information about the chat, else `undefined`
      */
     chat?: ChatInfo;
 
     /**
-     * Info of the Microsoft Teams meeting
+     * When running in the context of a Teams meeting, provides information about the meeting, else `undefined`
      */
     meeting?: MeetingInfo;
 
@@ -488,12 +489,14 @@ export namespace app {
     sharepoint?: any;
 
     /**
-     * Info of the sharePoint site associated with the team.
+     * When running in Teams for an organization with a tenant, provides information about the SharePoint site associated with the team.
+     * Will be `undefined` when not running in Teams for an organization with a tenant.
      */
     sharePointSite?: SharePointSiteInfo;
 
     /**
-     * Info of the Microsoft Teams team
+     * When running in Teams, provides information about the Team context in which your app is running.
+     * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
   }
