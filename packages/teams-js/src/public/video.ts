@@ -41,7 +41,7 @@ export namespace video {
     /**
      * The time stamp of the current video frame
      */
-    timestamp: number;
+    timestamp?: number;
   }
 
   /**
@@ -158,7 +158,7 @@ export namespace video {
    * or pass the video frame to next one in video pipeline
    * @beta
    */
-  function notifyVideoFrameProcessed(timestamp: number): void {
+  function notifyVideoFrameProcessed(timestamp?: number): void {
     sendMessageToParent('video.videoFrameProcessed', [timestamp]);
   }
 
