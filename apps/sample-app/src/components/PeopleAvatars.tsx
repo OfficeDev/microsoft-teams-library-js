@@ -91,8 +91,8 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
                             </MenuTrigger>
                             <MenuPopover>
                               <MenuList>
-                                <MenuItem onClick={() => handleAudioCall(a)}>Audio {capability}</MenuItem>
-                                <MenuItem onClick={() => handleVideoCall(a)}> Video {capability}</MenuItem>
+                                <MenuItem onClick={() => handleAudioCall(avatar)}>Audio {capability}</MenuItem>
+                                <MenuItem onClick={() => handleVideoCall(avatar)}> Video {capability}</MenuItem>
                               </MenuList>
                             </MenuPopover>
                           </Menu>
