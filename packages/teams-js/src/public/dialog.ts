@@ -194,7 +194,8 @@ export namespace dialog {
      * This function cannot be called from inside of a dialog
      *
      * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module.
-     * @param submitHandler - Handler that triggers when the adaptive card dialog executes the Action.Submit action from the adaptive card or when the user closes the dialog.
+     * @param submitHandler - Handler that triggers when the adaptive card dialog executes the Action.Submit action
+     * from the adaptive card or when the user closes the dialog.
      */
     export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
