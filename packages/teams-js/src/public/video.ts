@@ -107,7 +107,7 @@ export namespace video {
     }
 
     registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
-      if (videoFrame !== undefined) {
+      if (videoFrame) {
         const timestamp = videoFrame.timestamp;
         frameCallback(
           videoFrame,
