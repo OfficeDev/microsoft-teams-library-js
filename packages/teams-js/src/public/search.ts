@@ -94,6 +94,33 @@ export namespace search {
   }
 
   /**
+   * Allows the caller to unregister for all events fired by the host search experience. Calling
+   * this function will cause your app to stop appearing in the set of search scopes in the hosts
+   */
+  export function unregisterHandlers(): void {
+    // TODO: figure out what frame contexts you want to support this in
+    // This is just a guess that I made and should be something you make
+    // an explicit decision about.
+    ensureInitialized(
+      FrameContexts.content,
+      FrameContexts.task,
+      FrameContexts.sidePanel,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    // This should let the host know to stop making the app scope show up in the search experience
+    // Can also be used to clean up handlers on the host if desired
+    sendMessageToParent('search.unregister');
+    removeHandler(onChangeHandlerName);
+    removeHandler(onClosedHandlerName);
+    removeHandler(onExecutedHandlerName);
+  }
+
+  /**
    * Checks if search capability is supported by the host
    * @returns true if the search capability is enabled in runtime.supports.search and
    * false if it is disabled
