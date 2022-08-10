@@ -74,12 +74,12 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
           People to Meet Today
         </Title3>
         <div>
-          {AvatarItemList.map(a => (
+          {AvatarItemList.map(avatar => (
             <Tooltip
               content={
                 <>
                   <Text weight="semibold" as="span">
-                    {a.name}
+                    {avatar.name}
                   </Text>
                   <MenuList>
                     {capabilities.map(capability => (
@@ -98,20 +98,20 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
                           </Menu>
                         )}
                         {capability === 'Message' && (
-                          <MenuItem onClick={() => handleMessage(a)}> {capability}</MenuItem>
+                          <MenuItem onClick={() => handleMessage(avatar)}> {capability}</MenuItem>
                         )}
-                        {capability === 'Mail' && <MenuItem onClick={() => handleMail(a)}>{capability}</MenuItem>}
+                        {capability === 'Mail' && <MenuItem onClick={() => handleMail(avatar)}>{capability}</MenuItem>}
                       </div>
                     ))}
                   </MenuList>
                 </>
               }
-              key={a.id}
+              key={avatar.id}
               relationship={'label'}
             >
-              <Text as="span" key={a.id}>
-                <button key={a.id}>
-                  <Avatar key={a.id} {...a} color="colorful" size={56} />
+              <Text as="span" key={avatar.id}>
+                <button key={avatar.id}>
+                  <Avatar key={avatar.id} {...avatar} color="colorful" size={56} />
                 </button>
               </Text>
             </Tooltip>
