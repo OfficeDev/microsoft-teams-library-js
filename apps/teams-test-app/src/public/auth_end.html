@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    Ending auth
+    <h2 style="font-size: 40px;">Ending auth</h2>
+    <div id="errorMessage" style="font-size: 30px;"></div>
   </head>
   <body>
     <script>
@@ -12,6 +13,8 @@
       // Redirect back to Orange host
       if (method === 'deeplink' && hostName === 'Orange') {
         window.location.href = `msorange://testapp.com/auth_callback?authId=${authId}&result=${result}`;
+      } else {
+        document.getElementById('errorMessage').textContent = 'Unable to redirect back to the App';
       }
     </script>
   </body>
