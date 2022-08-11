@@ -4,8 +4,8 @@ import React from 'react';
 
 const handlePages = async (): Promise<void> => {
   const input: pages.NavigateToAppParams = {
-    // Still deciding whether to direct user to 'real' App Page as demo or leave as is
-    appId: 'addAppIDHere',
+    // App ID below is for the Monday App
+    appId: 'eab2d3ce-6d6a-4415-abc4-5f40a8317b1f',
     pageId: 'addPageIDHere',
   };
   await pages.navigateToApp(input);
@@ -21,9 +21,13 @@ const ShareDeepLinkPage = async (): Promise<void> => {
 };
 export const PagesCapability: React.FunctionComponent = () => {
   return (
-    <div>
-      <Button onClick={() => handlePages()}> Deeplink page </Button>
-      <Button onClick={() => ShareDeepLinkPage()}> Share Deep Link Page </Button>
+    <div className="flex-container">
+      <div className="column">
+        <Button onClick={() => handlePages()}> Monday App </Button>
+      </div>
+      <div className="column">
+        <Button onClick={() => ShareDeepLinkPage()}> Share Deep Link Page </Button>
+      </div>
     </div>
   );
 };
