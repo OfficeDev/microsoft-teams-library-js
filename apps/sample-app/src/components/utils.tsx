@@ -1,11 +1,18 @@
-import { teamsDarkTheme, teamsHighContrastTheme, teamsLightTheme, Theme } from '@fluentui/react-components';
+import {
+  teamsDarkTheme,
+  teamsHighContrastTheme,
+  teamsLightTheme,
+  Theme,
+  webDarkTheme,
+  webLightTheme,
+} from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
 import { app, calendar, call, chat, mail, OpenSingleChatRequest } from '@microsoft/teams-js';
 
 import { MessageListItem } from './Emails';
 import { AvatarItem } from './PeopleAvatars';
 
-export const getTheme = (themeNow: string): Theme => {
+export const getThemeTeams = (themeNow: string): Theme => {
   switch (themeNow) {
     case 'dark':
       return teamsDarkTheme;
@@ -15,6 +22,15 @@ export const getTheme = (themeNow: string): Theme => {
       break;
     default:
       return teamsLightTheme;
+  }
+};
+export const getThemeOther = (themeNow: string): Theme => {
+  switch (themeNow) {
+    case 'dark':
+      return webDarkTheme;
+      break;
+    default:
+      return webLightTheme;
   }
 };
 export function appInitializationFailed(): void {
