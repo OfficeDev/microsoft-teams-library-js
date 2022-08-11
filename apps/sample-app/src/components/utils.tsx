@@ -4,6 +4,7 @@ import { app, calendar, call, chat, mail, OpenSingleChatRequest } from '@microso
 
 import { MessageListItem } from './Emails';
 import { AvatarItem } from './PeopleAvatars';
+
 export const getTheme = (themeNow: string): Theme => {
   switch (themeNow) {
     case 'dark':
@@ -81,13 +82,19 @@ export const handleMail = async (a: AvatarItem): Promise<void> => {
   await mail.composeMail(mailParams);
 };
 
+const convertRestIdtoEwsId = (restId: string): string => {
+  let retId = restId.replace(/_/g, '+');
+  retId = retId.replace(/-/g, '/');
+  return retId;
+};
+
 export const handleOpenMailItem = async (emailItem: MessageListItem): Promise<void> => {
+  const convertedID = convertRestIdtoEwsId(emailItem.key || '');
   const openMailParams: mail.OpenMailItemParams = {
-    itemId: emailItem.key || '',
+    itemId: convertedID,
   };
   await mail.openMailItem(openMailParams);
 };
-
 export const shouldShowMeeting = (meeting: Message): boolean => {
   return meeting['showAs'] !== 'free' && !meeting['isCancelled'];
 };
