@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only. Removed app.initializePrivateApis, an unexported no-op function.",
+  "comment": "Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only and removed some `@internal` items from dev documentation. Removed `app.initializePrivateApis`, an unexported and hidden no-op function.",
   "packageName": "@microsoft/teams-js",
   "email": "trharris@microsoft.com",
   "dependentChangeType": "patch"
