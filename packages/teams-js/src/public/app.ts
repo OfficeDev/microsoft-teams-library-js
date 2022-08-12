@@ -616,11 +616,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to set a mock window for unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _initialize(hostWindow: any): void {
     Communication.currentWindow = hostWindow;
@@ -628,11 +627,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to clear state between unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _uninitialize(): void {
     if (!GlobalVars.initializeCalled) {
@@ -758,6 +756,7 @@ export namespace app {
  * Transforms the Legacy Context object received from Messages to the structured app.Context object
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.Context {
   const context: app.Context = {

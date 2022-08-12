@@ -187,6 +187,7 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
 
 /**
  * @internal
+ * Limited to Microsoft-internal use
  *
  * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
  * and do not provide their own runtime config. Their supported capabilities are based on the highest
@@ -225,12 +226,11 @@ export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  * Constant used to set minimum runtime configuration
  * while un-initializing an app in unit test case.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const _minRuntimeConfigToUninitialize = {
   apiVersion: 1,
