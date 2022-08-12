@@ -17,6 +17,7 @@ import { validOrigins } from './constants';
  *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 function validateHostAgainstPattern(pattern: string, host: string): boolean {
   if (pattern.substring(0, 2) === '*.') {
@@ -34,7 +35,10 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
   return false;
 }
 
-/**@internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (messageOrigin.protocol !== 'https:') {
@@ -56,7 +60,10 @@ export function validateOrigin(messageOrigin: URL): boolean {
   return false;
 }
 
-/**@internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function getGenericOnCompleteHandler(errorMessage?: string): (success: boolean, reason?: string) => void {
   return (success: boolean, reason: string): void => {
     if (!success) {
@@ -83,6 +90,7 @@ export function getGenericOnCompleteHandler(errorMessage?: string): (success: bo
  *    compareSDKVersions('2.0', 2.0) returns NaN
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function compareSDKVersions(v1: string, v2: string): number {
   if (typeof v1 !== 'string' || typeof v2 !== 'string') {
@@ -127,11 +135,16 @@ export function compareSDKVersions(v1: string, v2: string): number {
  * Generates a GUID
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function generateGUID(): string {
   return uuid.v4();
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function deepFreeze<T extends object>(obj: T): T {
   Object.keys(obj).forEach(prop => {
     if (typeof obj[prop] === 'object') {
@@ -148,6 +161,7 @@ export function deepFreeze<T extends object>(obj: T): T {
  * promises to support callbacks for backward compatibility
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export type ErrorResultCallback<T> = (err?: SdkError, result?: T) => void;
 export type ErrorResultNullCallback<T> = (err: SdkError | null, result: T | null) => void;
@@ -165,6 +179,7 @@ export type SdkErrorCallback = ResultCallback<SdkError | null>;
  * @returns
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function callCallbackWithErrorOrResultFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
@@ -193,6 +208,7 @@ export function callCallbackWithErrorOrResultFromPromiseAndReturnPromise<T>(
  * @param args
  * @returns
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
@@ -219,7 +235,9 @@ export function callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise<T>(
  * @param callback
  * @param args
  * @returns
+ *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function callCallbackWithSdkErrorFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
@@ -248,6 +266,7 @@ export function callCallbackWithSdkErrorFromPromiseAndReturnPromise<T>(
  * @returns
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T>(
   funcHelper: InputFunction<T>,
@@ -278,6 +297,7 @@ export function callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise<T
  * if the initial action didn't complete within provided timeout.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function runWithTimeout<TResult, TError>(
   action: () => Promise<TResult>,
@@ -298,6 +318,10 @@ export function runWithTimeout<TResult, TError>(
   });
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
   const url = new URL(
     'https://teams.microsoft.com/l/entity/' +

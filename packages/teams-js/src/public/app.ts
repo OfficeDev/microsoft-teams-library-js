@@ -16,7 +16,6 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
-import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -604,7 +603,6 @@ export namespace app {
         menus.initialize();
         pages.config.initialize();
         dialog.initialize();
-        initializePrivateApis();
       }
 
       // Handle additional valid message origins if specified

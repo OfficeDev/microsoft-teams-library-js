@@ -300,17 +300,6 @@ describe('Testing app capability', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
       it('app.initialize should assign additionalValidOrigins when supplied', async () => {
         const validOrigin = 'https://www.mydomain.com';
         const initPromise = app.initialize([validOrigin]);
@@ -1047,22 +1036,6 @@ describe('Testing app capability', () => {
 
       it('app.initialize should call dialog.initialize', async () => {
         const spy = jest.spyOn(dialog, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
 
         const initPromise = app.initialize();
         const initMessage = framelessPostMock.findMessageByFunc('initialize');
