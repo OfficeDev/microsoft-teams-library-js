@@ -1,3 +1,4 @@
+import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -40,7 +41,7 @@ describe('webStorage', () => {
       Object.values(FrameContexts).forEach(frameContext => {
         Object.values(HostClientType).forEach(clientType => {
           // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop) {
+          if (clientType === HostClientType.desktop || clientType === HostClientType.web) {
             it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
               await framedPlatformMock.initializeWithContext(frameContext, clientType);
               expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
@@ -65,9 +66,14 @@ describe('webStorage', () => {
               } else {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  await framedPlatformMock.initializeWithContext(frameContext, clientType);
-                  framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  if (
+                    GlobalVars.hostClientType === HostClientType.web ||
+                    HostClientType.desktop === GlobalVars.hostClientType
+                  ) {
+                    await framedPlatformMock.initializeWithContext(frameContext, clientType);
+                    framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+                  }
                 });
               }
             });
@@ -80,7 +86,7 @@ describe('webStorage', () => {
       Object.values(FrameContexts).forEach(frameContext => {
         Object.values(HostClientType).forEach(clientType => {
           // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop) {
+          if (clientType === HostClientType.desktop || clientType === HostClientType.web) {
             it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
               await framelessPlatformMock.initializeWithContext(frameContext, clientType);
               expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
@@ -105,9 +111,14 @@ describe('webStorage', () => {
               } else {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  await framelessPlatformMock.initializeWithContext(frameContext, clientType);
-                  framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  if (
+                    GlobalVars.hostClientType === HostClientType.web ||
+                    HostClientType.desktop === GlobalVars.hostClientType
+                  ) {
+                    await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+                    framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
+                  }
                 });
               }
             });

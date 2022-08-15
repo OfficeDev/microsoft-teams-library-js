@@ -19,7 +19,7 @@ export namespace webStorage {
   export function isWebStorageClearedOnUserLogOut(): boolean {
     ensureInitialized();
     // return true as web storage is always cleared on desktop.
-    if (GlobalVars.hostClientType === HostClientType.desktop) {
+    if (GlobalVars.hostClientType === HostClientType.desktop || GlobalVars.hostClientType === HostClientType.web) {
       return true;
     }
     return isSupported();
