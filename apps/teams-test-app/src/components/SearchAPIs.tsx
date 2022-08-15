@@ -11,15 +11,19 @@ const RegisterHandlers = (): React.ReactElement =>
     onClick: async setResult => {
       const onChange = (onChangeHandler: search.SearchQuery): void => {
         console.log(onChangeHandler.searchTerm);
-        setResult('onChange');
+
+        setResult('Update your application with the changed search query: ' + onChangeHandler.searchTerm);
       };
       const onClosed = (onClosedHandler: search.SearchQuery): void => {
-        console.log(onClosedHandler);
-        setResult('onClosed');
+        console.log(onClosedHandler.searchTerm);
+        setResult(
+          'Update your application to handle the search experience being closed. Last query: ' +
+            onClosedHandler.searchTerm,
+        );
       };
       const onExecute = (onExecuteHandler: search.SearchQuery): void => {
-        console.log(onExecuteHandler);
-        setResult('onExecute');
+        console.log(onExecuteHandler.searchTerm);
+        setResult('Update your application to handle an executed search result: ' + onExecuteHandler.searchTerm);
       };
       setResult('register handlers');
 
