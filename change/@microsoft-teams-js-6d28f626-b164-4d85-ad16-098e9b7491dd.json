@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "orange testing",
+  "comment": "Adding search capability to use global search box in the current app in Outlook",
   "packageName": "@microsoft/teams-js",
   "email": "t-licondiana@microsoft.com",
   "dependentChangeType": "patch"

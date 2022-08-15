@@ -113,7 +113,6 @@ export const teamsRuntimeConfig: IRuntime = {
       fullTrust: {},
     },
     remoteCamera: {},
-    search: {},
     sharing: {},
     teams: {
       fullTrust: {},

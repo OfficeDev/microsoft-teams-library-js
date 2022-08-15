@@ -58,7 +58,7 @@ export namespace search {
         console.log(`Update your application with the changed search query: ${query.searchTerm}`);
       },
       () => {
-        console.log('Update your application to handle the search experience being closed');
+        console.log('Update your application to handle the search experience being closed. Last query: ${query.searchTerm}');
       },
       query => {
         console.log(`Update your application to handle an executed search result: ${query.searchTerm}`);
@@ -122,7 +122,7 @@ export namespace search {
 
   /**
    * Checks if search capability is supported by the host
-   * @returns true if the search capability is enabled in runtime.supports.search and
+   * @returns true if the search capability is supported by the host and false otherwise
    * false if it is disabled
    */
   export function isSupported(): boolean {
