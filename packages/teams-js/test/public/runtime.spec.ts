@@ -70,10 +70,7 @@ describe('runtime', () => {
         );
 
         notSupportedHostClientTypes.forEach(clientType => {
-          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(
-            /:/g,
-            ' ',
-          )} capability`, async () => {
+          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(/[{:}]/g, ' ')} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
             const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
               generateBackCompatRuntimeConfig(version).supports,
