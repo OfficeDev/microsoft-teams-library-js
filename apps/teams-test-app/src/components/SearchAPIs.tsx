@@ -11,12 +11,15 @@ const RegisterHandlers = (): React.ReactElement =>
     onClick: async setResult => {
       const onChange = (onChangeHandler: search.SearchQuery): void => {
         console.log(onChangeHandler.searchTerm);
+        setResult('onChange');
       };
       const onClosed = (onClosedHandler: search.SearchQuery): void => {
         console.log(onClosedHandler);
+        setResult('onClosed');
       };
       const onExecute = (onExecuteHandler: search.SearchQuery): void => {
         console.log(onExecuteHandler);
+        setResult('onExecute');
       };
       setResult('register handlers');
 
