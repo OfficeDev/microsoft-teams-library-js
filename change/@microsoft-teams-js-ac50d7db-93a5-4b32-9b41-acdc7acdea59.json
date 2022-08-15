@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Adding missing HostClientTypes.",
+  "packageName": "@microsoft/teams-js",
+  "email": "shrshinde@microsoft.com",
+  "dependentChangeType": "patch"
+}
