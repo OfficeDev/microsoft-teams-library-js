@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Adding missing HostClientTypes.",
+  "comment": "Added missing `HostClientType` values so correct `Runtime` is generated for `teams.fullTrust.joinedTeams` and `webStorage` capabilities.",
   "packageName": "@microsoft/teams-js",
   "email": "shrshinde@microsoft.com",
   "dependentChangeType": "patch"
