@@ -21,11 +21,11 @@ const ShareDeepLinkPage = async (): Promise<void> => {
 };
 export const PagesCapability: React.FunctionComponent = () => {
   return (
-    <div className="flex-container" id="Pages API">
-      <div className="column" aria-labelledby="Pages API">
+    <div className="flex-container">
+      <div className="column">
         <Button onClick={() => handlePages()}> Monday App </Button>
       </div>
-      <div className="column" aria-labelledby="Pages API">
+      <div className="column">
         <Button onClick={() => ShareDeepLinkPage()}> Share Deep Link Page </Button>
       </div>
     </div>
