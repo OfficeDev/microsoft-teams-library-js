@@ -454,9 +454,7 @@ export namespace media {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
+   * @beta
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   export enum MediaControllerEvent {
@@ -683,6 +681,9 @@ export namespace media {
   }
 
   /**
+   * @deprecated
+   * As of 2.1.0, please use {@link barCode.scanBarCode barCode.scanBarCode(config?: BarCodeConfig): Promise\<string\>} instead.
+
    * Scan Barcode/QRcode using camera
    *
    * @remarks

@@ -13,6 +13,10 @@
   color: white;
 }
 
+.App-container {
+  display: grid;
+}
+
 button {
   cursor: pointer;
 }

@@ -9,13 +9,18 @@ export interface IRuntime {
   readonly supports: {
     readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
       readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
     };
     readonly location?: {};
     readonly logs?: {};
@@ -32,9 +37,11 @@ export interface IRuntime {
       readonly fullTrust?: {};
     };
     readonly people?: {};
+    readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly sharing?: {};
+    readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -49,13 +56,18 @@ export let runtime: IRuntime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
+    barCode: undefined,
     calendar: undefined,
     call: undefined,
     chat: undefined,
+    webStorage: undefined,
     conversations: undefined,
     dialog: {
       bot: undefined,
       update: undefined,
+    },
+    geoLocation: {
+      map: undefined,
     },
     location: undefined,
     logs: undefined,
@@ -72,9 +84,11 @@ export let runtime: IRuntime = {
       fullTrust: undefined,
     },
     people: undefined,
+    permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
     sharing: undefined,
+    stageView: undefined,
     teams: {
       fullTrust: {
         joinedTeams: undefined,
@@ -112,6 +126,7 @@ export const teamsRuntimeConfig: IRuntime = {
     },
     remoteCamera: {},
     sharing: {},
+    stageView: {},
     teams: {
       fullTrust: {},
     },
@@ -156,16 +171,30 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       capability: { teams: { fullTrust: { joinedTeams: {} } } },
       hostClientTypes: [
         HostClientType.android,
+        HostClientType.desktop,
+        HostClientType.ios,
         HostClientType.teamsRoomsAndroid,
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
+        HostClientType.web,
       ],
+    },
+    {
+      capability: { webStorage: {} },
+      hostClientTypes: [HostClientType.desktop],
+    },
+  ],
+  '2.0.5': [
+    {
+      capability: { webStorage: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
 };
 
 /**
  * @internal
+ * Limited to Microsoft-internal use
  *
  * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
  * and do not provide their own runtime config. Their supported capabilities are based on the highest
@@ -204,12 +233,11 @@ export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  * Constant used to set minimum runtime configuration
  * while un-initializing an app in unit test case.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const _minRuntimeConfigToUninitialize = {
   apiVersion: 1,

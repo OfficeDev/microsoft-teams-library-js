@@ -64,7 +64,7 @@ export namespace chat {
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>(resolve => {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -105,7 +105,7 @@ export namespace chat {
         };
         openChat(chatRequest);
       } else {
-        ensureInitialized(FrameContexts.content);
+        ensureInitialized(FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }

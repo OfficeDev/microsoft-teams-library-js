@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
@@ -204,8 +205,13 @@ const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
     name: 'registerSpeakingStateChangedHandler',
     title: 'Register SpeakingState Changed Handler',
     onClick: async setResult => {
-      const handler = (speakingState: meeting.ISpeakingState): void => {
-        const res = `Speaking state changed to ${speakingState.isSpeakingDetected}`;
+      const handler = (eventData: meeting.ISpeakingState): void => {
+        let res;
+        if (eventData.error) {
+          res = `Receieved error ${JSON.stringify(eventData.error)}`;
+        } else {
+          res = `Speaking state changed to ${JSON.stringify(eventData.isSpeakingDetected)}`;
+        }
         setResult(res);
       };
       meeting.registerSpeakingStateChangeHandler(handler);
@@ -297,8 +303,7 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
   });
 
 const MeetingAPIs = (): ReactElement => (
-  <>
-    <h1>meeting</h1>
+  <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
     <GetMeetingDetails />
@@ -314,7 +319,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
-  </>
+  </ModuleWrapper>
 );
 
 export default MeetingAPIs;

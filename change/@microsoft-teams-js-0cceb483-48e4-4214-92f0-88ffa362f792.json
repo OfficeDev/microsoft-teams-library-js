@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Checked for submitHandler's existance before calling it in dialog.open, dialog.bot.open and tasks.startTask API.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}

@@ -8,10 +8,10 @@ import { runtime } from './runtime';
 export namespace monetization {
   /**
    * @hidden
-   * Hide from docs
    * Data structure to represent a subscription plan.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface PlanInfo {
     /**
@@ -28,7 +28,6 @@ export namespace monetization {
 
   /**
    * @hidden
-   * Hide from docs
    * Open dialog to start user's purchase experience
    *
    * @param planInfo optional parameter. It contains info of the subscription plan pushed to users.
@@ -36,6 +35,7 @@ export namespace monetization {
    * @returns Promise that will be resolved when the operation has completed or rejected with SdkError value
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function openPurchaseExperience(planInfo?: PlanInfo): Promise<void>;
   /**
@@ -43,7 +43,6 @@ export namespace monetization {
    * As of 2.0.0, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
    *
    * @hidden
-   * Hide from docs
    * Open dialog to start user's purchase experience
    *
    * @param callback Callback contains 1 parameters, error.
@@ -51,6 +50,7 @@ export namespace monetization {
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function openPurchaseExperience(callback: (error: SdkError | null) => void, planInfo?: PlanInfo): void;
   /**

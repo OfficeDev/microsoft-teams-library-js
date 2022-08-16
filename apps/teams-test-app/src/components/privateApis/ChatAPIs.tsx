@@ -9,6 +9,7 @@ import React from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckChatCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -114,15 +115,14 @@ const GetChatMembers = (): React.ReactElement =>
   });
 
 const ConversationsAPIs = (): React.ReactElement => (
-  <>
-    <h1>chat</h1>
+  <ModuleWrapper title="Chat">
     <OpenChat />
     <OpenGroupChat />
     <OpenConversation />
     <CloseConversation />
     <GetChatMembers />
     <CheckChatCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default ConversationsAPIs;

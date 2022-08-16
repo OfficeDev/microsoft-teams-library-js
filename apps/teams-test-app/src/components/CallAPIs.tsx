@@ -2,6 +2,7 @@ import { call } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckCallCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -32,11 +33,10 @@ const StartCall = (): React.ReactElement =>
   });
 
 const CallAPIs: React.FC = () => (
-  <>
-    <h1>call</h1>
+  <ModuleWrapper title="Call">
     <StartCall />
     <CheckCallCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default CallAPIs;

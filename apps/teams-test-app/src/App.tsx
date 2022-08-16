@@ -8,9 +8,12 @@ import AppEntityAPIs from './components/AppEntityAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AppInstallDialogAPIs from './components/AppInstallDialog';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
+import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import GeoLocationAPIs from './components/GeoLocationAPIs';
+import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
@@ -36,6 +39,7 @@ import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
+import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -140,7 +144,7 @@ const App = (): ReactElement => {
   const [showApi, setShowApi] = React.useState<API>(API.ALL);
   const shouldShowApi = (api: API): boolean => showApi === API.ALL || showApi === api;
   return (
-    <>
+    <div className="App-container">
       <button onClick={() => setShowApiSelector(prev => !prev)}>Show capability</button>
       {showApiSelector &&
         Object.values(API).map(value => (
@@ -161,12 +165,15 @@ const App = (): ReactElement => {
       {shouldShowApi(API.APP_INSTALL) && <AppInstallDialogAPIs />}
       {shouldShowApi(API.AUTH) && <AuthenticationAPIs />}
       {shouldShowApi(API.APP_ENTITY) && <AppEntityAPIs />}
+      <BarCodeAPIs />
       {shouldShowApi(API.CALENDAR) && <CalendarAPIs />}
       {shouldShowApi(API.CALL) && <CallAPIs />}
       {shouldShowApi(API.CHAT) && <ChatAPIs />}
       {shouldShowApi(API.DIALOG) && <DialogAPIs />}
       {shouldShowApi(API.FILES) && <FilesAPIs />}
       {shouldShowApi(API.FULL_TRUST) && <FullTrustAPIs />}
+      <GeoLocationAPIs />
+      <Links />
       {shouldShowApi(API.LOCATION) && <LocationAPIs />}
       {shouldShowApi(API.LOG) && <LogAPIs />}
       {shouldShowApi(API.MAIL) && <MailAPIs />}
@@ -185,10 +192,11 @@ const App = (): ReactElement => {
       {shouldShowApi(API.PRIVATE) && <PrivateAPIs />}
       {shouldShowApi(API.REMOTE_CAMERA) && <RemoteCameraAPIs />}
       {shouldShowApi(API.SHARING) && <SharingAPIs />}
+      <WebStorageAPIs />
       {shouldShowApi(API.STAGE_VIEW) && <StageViewAPIs />}
       {shouldShowApi(API.TEAMS_CORE) && <TeamsCoreAPIs />}
       {shouldShowApi(API.TEAMS) && <TeamsAPIs />}
-    </>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added a powershell script to view published package urls in our ADO pipeline",
+  "comment": "Released 2.2.0",
   "packageName": "@microsoft/teams-js",
   "email": "jdahiya8719@outlook.com",
   "dependentChangeType": "none"
