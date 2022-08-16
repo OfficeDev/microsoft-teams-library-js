@@ -2,14 +2,13 @@ import './styles.css';
 
 import {
   Avatar,
-  Menu,
   MenuItem,
   MenuList,
-  MenuPopover,
-  MenuTrigger,
+  Popover,
+  PopoverSurface,
+  PopoverTrigger,
   Text,
   Title3,
-  Tooltip,
 } from '@fluentui/react-components';
 import { Message, User } from '@microsoft/microsoft-graph-types';
 import { call, chat, mail } from '@microsoft/teams-js';
@@ -63,43 +62,48 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
   const AvatarExample: React.FunctionComponent = () => {
     return (
       <>
-        <Title3 block className="paddingClass">
+        <Title3 block className="paddingClass" id="People to Meet Today">
           People to Meet Today
         </Title3>
-        <div>
+        <div aria-labelledby="People to Meet today">
           {AvatarItemList.map(avatar => (
-            <Tooltip
-              content={
-                <>
-                  <Text weight="semibold" as="span">
+            <>
+              <Popover trapFocus openOnHover={true} size="medium">
+                <PopoverTrigger>
+                  <Avatar key={avatar.id} {...avatar} color="colorful" size={56} tabIndex={0} />
+                </PopoverTrigger>
+                <PopoverSurface>
+                  <Text weight="semibold" as="span" tabIndex={0}>
                     {avatar.name}
                   </Text>
                   <MenuList>
                     {call.isSupported() && (
                       <>
-                        <Menu>
-                          <MenuTrigger>
-                            <MenuItem>Call</MenuItem>
-                          </MenuTrigger>
-                          <MenuPopover>
-                            <MenuList>
-                              <MenuItem onClick={() => handleAudioCall(avatar)}>Audio Call </MenuItem>
-                              <MenuItem onClick={() => handleVideoCall(avatar)}> Video Call</MenuItem>
-                            </MenuList>
-                          </MenuPopover>
-                        </Menu>
+                        <Popover openOnHover={true} size="small">
+                          <PopoverTrigger>
+                            <MenuItem tabIndex={0}>Call</MenuItem>
+                          </PopoverTrigger>
+                          <PopoverSurface>
+                            <MenuItem onClick={() => handleAudioCall(avatar)}>Audio Call</MenuItem>
+                            <MenuItem onClick={() => handleVideoCall(avatar)}>Video Call</MenuItem>
+                          </PopoverSurface>
+                        </Popover>
                       </>
                     )}
-                    {mail.isSupported() && <MenuItem onClick={() => handleMail(avatar)}>Mail</MenuItem>}
-                    {chat.isSupported() && <MenuItem onClick={() => handleMessage(avatar)}>Message </MenuItem>}
+                    {mail.isSupported() && (
+                      <MenuItem onClick={() => handleMail(avatar)} tabIndex={0}>
+                        Mail
+                      </MenuItem>
+                    )}
+                    {chat.isSupported() && (
+                      <MenuItem onClick={() => handleMessage(avatar)} tabIndex={0}>
+                        Message
+                      </MenuItem>
+                    )}
                   </MenuList>
-                </>
-              }
-              key={avatar.id}
-              relationship={'label'}
-            >
-              <Avatar key={avatar.id} {...avatar} color="colorful" size={56} />
-            </Tooltip>
+                </PopoverSurface>
+              </Popover>
+            </>
           ))}
         </div>
       </>

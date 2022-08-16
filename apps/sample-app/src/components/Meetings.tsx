@@ -43,10 +43,10 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
 
   return (
     <>
-      <Title3 block className="paddingClass">
+      <Title3 block className="paddingClass" id="Meetings">
         Your Meetings Today
       </Title3>
-      <div>
+      <div aria-labelledby="Meetings">
         <DetailsList items={itemList} columns={columns} selectionMode={SelectionMode.none} />
       </div>
     </>

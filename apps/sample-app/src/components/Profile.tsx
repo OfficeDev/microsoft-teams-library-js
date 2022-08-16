@@ -66,12 +66,13 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
           <div className="flex-container">
             <div className="column">{emails && <EmailList messages={emails} />}</div>
             <div className="column">
-              <Title3 className="paddingClass"> Other Features </Title3>
-              <div className="flex-container">
+              <Title3 className="paddingClass" id="Calendar and Pages API">
+                Other Features
+              </Title3>
+              <div className="flex-container" aria-labelledby='"Calendar and Pages API"'>
                 <div className="column">
                   <CalendarCapability />
                 </div>
-                {/* Pages Capability only has placeholder parameters */}
                 <PagesCapability />
               </div>
             </div>

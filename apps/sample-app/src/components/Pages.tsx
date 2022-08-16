@@ -11,7 +11,7 @@ const handlePages = async (): Promise<void> => {
   await pages.navigateToApp(input);
 };
 const ShareDeepLinkPage = async (): Promise<void> => {
-  // Still deciding whether to share 'real' Page Link as demo or leave as is
+  // placeholder pages below
   const deepLinkInput: ShareDeepLinkParameters = {
     subPageId: 'subentityId',
     subPageLabel: 'subentitylabel',
@@ -21,11 +21,11 @@ const ShareDeepLinkPage = async (): Promise<void> => {
 };
 export const PagesCapability: React.FunctionComponent = () => {
   return (
-    <div className="flex-container">
-      <div className="column">
+    <div className="flex-container" id="Pages API">
+      <div className="column" aria-labelledby="Pages API">
         <Button onClick={() => handlePages()}> Monday App </Button>
       </div>
-      <div className="column">
+      <div className="column" aria-labelledby="Pages API">
         <Button onClick={() => ShareDeepLinkPage()}> Share Deep Link Page </Button>
       </div>
     </div>
