@@ -171,16 +171,23 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       capability: { teams: { fullTrust: { joinedTeams: {} } } },
       hostClientTypes: [
         HostClientType.android,
+        HostClientType.desktop,
+        HostClientType.ios,
         HostClientType.teamsRoomsAndroid,
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
+        HostClientType.web,
       ],
+    },
+    {
+      capability: { webStorage: {} },
+      hostClientTypes: [HostClientType.desktop],
     },
   ],
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.ios],
+      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
 };
