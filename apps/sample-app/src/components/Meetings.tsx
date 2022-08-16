@@ -1,6 +1,6 @@
 import './styles.css';
 
-import { DetailsList } from '@fluentui/react';
+import { DetailsList, SelectionMode } from '@fluentui/react';
 import { Title3 } from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
 import React from 'react';
@@ -47,7 +47,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
         Your Meetings Today
       </Title3>
       <div>
-        <DetailsList items={itemList} columns={columns} />
+        <DetailsList items={itemList} columns={columns} selectionMode={SelectionMode.none} />
       </div>
     </>
   );

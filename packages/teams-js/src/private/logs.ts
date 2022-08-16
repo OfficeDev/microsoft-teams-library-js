@@ -9,18 +9,19 @@ import { runtime } from '../public/runtime';
  * Namespace to interact with the logging part of the SDK.
  * This object is used to send the app logs on demand to the host client
  *
- * Hide from docs
- *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export namespace logs {
   /**
    * @hidden
-   * Hide from docs
-   * ------
+   *
    * Registers a handler for getting app log
    *
    * @param handler - The handler to invoke to get the app log
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function registerGetLogHandler(handler: () => string): void {
     ensureInitialized();
@@ -38,6 +39,14 @@ export namespace logs {
     }
   }
 
+  /**
+   * @hidden
+   *
+   * @returns boolean to represent whether the logs capability is supported
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
   export function isSupported(): boolean {
     return runtime.supports.logs ? true : false;
   }
