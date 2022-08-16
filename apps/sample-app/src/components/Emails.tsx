@@ -27,8 +27,10 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
   const EmailExample: React.FunctionComponent = () => {
     return (
       <>
-        <Title3 className="paddingClass"> Recent Emails</Title3>
-        <div className="column">
+        <Title3 className="paddingClass" id="Recent Emails">
+          Recent Emails
+        </Title3>
+        <div className="column" aria-labelledby="Recent Emails">
           {emailItems.map(emailItem => (
             <Text as="span" key={emailItem.key}>
               <DocumentCard key={emailItem.key} onClick={() => handleOpenMailItem(emailItem)}>
