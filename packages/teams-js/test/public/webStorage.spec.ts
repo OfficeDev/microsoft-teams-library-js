@@ -1,4 +1,3 @@
-import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -66,14 +65,9 @@ describe('webStorage', () => {
               } else {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  if (
-                    GlobalVars.hostClientType === HostClientType.web ||
-                    HostClientType.desktop === GlobalVars.hostClientType
-                  ) {
-                    await framedPlatformMock.initializeWithContext(frameContext, clientType);
-                    framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-                  }
+                  await framedPlatformMock.initializeWithContext(frameContext, clientType);
+                  framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
             });
@@ -111,14 +105,9 @@ describe('webStorage', () => {
               } else {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  if (
-                    GlobalVars.hostClientType === HostClientType.web ||
-                    HostClientType.desktop === GlobalVars.hostClientType
-                  ) {
-                    await framelessPlatformMock.initializeWithContext(frameContext, clientType);
-                    framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-                  }
+                  await framelessPlatformMock.initializeWithContext(frameContext, clientType);
+                  framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
             });
