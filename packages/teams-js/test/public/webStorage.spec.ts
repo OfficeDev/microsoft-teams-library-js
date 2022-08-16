@@ -41,7 +41,7 @@ describe('webStorage', () => {
       Object.values(FrameContexts).forEach(frameContext => {
         Object.values(HostClientType).forEach(clientType => {
           // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop || clientType === HostClientType.web) {
+          if (clientType === HostClientType.desktop) {
             it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
               await framedPlatformMock.initializeWithContext(frameContext, clientType);
               expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
@@ -86,7 +86,7 @@ describe('webStorage', () => {
       Object.values(FrameContexts).forEach(frameContext => {
         Object.values(HostClientType).forEach(clientType => {
           // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop || clientType === HostClientType.web) {
+          if (clientType === HostClientType.desktop) {
             it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
               await framelessPlatformMock.initializeWithContext(frameContext, clientType);
               expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();

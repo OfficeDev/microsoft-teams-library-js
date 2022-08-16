@@ -181,13 +181,13 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     },
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.desktop, HostClientType.web],
+      hostClientTypes: [HostClientType.desktop],
     },
   ],
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios, HostClientType.web],
+      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
 };
