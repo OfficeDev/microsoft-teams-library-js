@@ -110,12 +110,15 @@ enum API {
   APP_INSTALL = 'App Install Dialog',
   AUTH = 'Authentication',
   APP_ENTITY = 'App Entity',
+  BAR_CODE = 'Bar Code',
   CALENDAR = 'Calendar',
   CALL = 'Call',
   CHAT = 'Chat',
   DIALOG = 'Dialog',
   FILES = 'Files',
   FULL_TRUST = 'Full Trust APIs',
+  GEO_LOCATION = 'GeoLocation',
+  LINKS = 'Links',
   LOCATION = 'Location',
   LOG = 'Logs',
   MAIL = 'Mail',
@@ -134,6 +137,7 @@ enum API {
   PRIVATE = 'Private APIs',
   REMOTE_CAMERA = 'Remote Camera',
   SHARING = 'Sharing',
+  WEB_STORAGE = 'Web Storage',
   STAGE_VIEW = 'Stage View',
   TEAMS_CORE = 'Teams Core',
   TEAMS = 'Teams APIs',
@@ -165,15 +169,15 @@ const App = (): ReactElement => {
       {shouldShowApi(API.APP_INSTALL) && <AppInstallDialogAPIs />}
       {shouldShowApi(API.AUTH) && <AuthenticationAPIs />}
       {shouldShowApi(API.APP_ENTITY) && <AppEntityAPIs />}
-      <BarCodeAPIs />
+      {shouldShowApi(API.BAR_CODE) && <BarCodeAPIs />}
       {shouldShowApi(API.CALENDAR) && <CalendarAPIs />}
       {shouldShowApi(API.CALL) && <CallAPIs />}
       {shouldShowApi(API.CHAT) && <ChatAPIs />}
       {shouldShowApi(API.DIALOG) && <DialogAPIs />}
       {shouldShowApi(API.FILES) && <FilesAPIs />}
       {shouldShowApi(API.FULL_TRUST) && <FullTrustAPIs />}
-      <GeoLocationAPIs />
-      <Links />
+      {shouldShowApi(API.GEO_LOCATION) && <GeoLocationAPIs />}
+      {shouldShowApi(API.LINKS) && <Links />}
       {shouldShowApi(API.LOCATION) && <LocationAPIs />}
       {shouldShowApi(API.LOG) && <LogAPIs />}
       {shouldShowApi(API.MAIL) && <MailAPIs />}
@@ -192,7 +196,7 @@ const App = (): ReactElement => {
       {shouldShowApi(API.PRIVATE) && <PrivateAPIs />}
       {shouldShowApi(API.REMOTE_CAMERA) && <RemoteCameraAPIs />}
       {shouldShowApi(API.SHARING) && <SharingAPIs />}
-      <WebStorageAPIs />
+      {shouldShowApi(API.WEB_STORAGE) && <WebStorageAPIs />}
       {shouldShowApi(API.STAGE_VIEW) && <StageViewAPIs />}
       {shouldShowApi(API.TEAMS_CORE) && <TeamsCoreAPIs />}
       {shouldShowApi(API.TEAMS) && <TeamsAPIs />}
