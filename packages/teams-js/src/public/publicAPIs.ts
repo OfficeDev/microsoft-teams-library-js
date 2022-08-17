@@ -36,11 +36,10 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
  * As of 2.0.0, please use {@link app._initialize app._initialize(hostWindow: any): void} instead.
  *
  * @hidden
- * Hide from docs.
- * ------
  * Undocumented function used to set a mock window for unit tests
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 // eslint-disable-next-line
 export function _initialize(hostWindow: any): void {
@@ -52,11 +51,10 @@ export function _initialize(hostWindow: any): void {
  * As of 2.0.0, please use {@link app._uninitialize app._uninitialize(): void} instead.
  *
  * @hidden
- * Hide from docs.
- * ------
  * Undocumented function used to clear state between unit tests
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function _uninitialize(): void {
   app._uninitialize();
@@ -330,7 +328,7 @@ export function setFrameContext(frameContext: FrameContext): void {
  * @deprecated
  * As of 2.0.0, please use {@link pages.initializeWithFrameContext pages.initializeWithFrameContext(frameInfo: FrameInfo, callback?: () => void, validMessageOrigins?: string[],): void} instead.
  *
- * Initilize with FrameContext
+ * Initialize with FrameContext
  *
  * @param frameContext - FrameContext information to be set
  * @param callback - The optional callback to be invoked be invoked after initilizing the frame context
@@ -352,6 +350,9 @@ export function initializeWithFrameContext(
  */
 function transformAppContextToLegacyContext(appContext: app.Context): Context {
   const context: Context = {
+    // actionInfo
+    actionInfo: appContext.actionInfo,
+
     // app
     locale: appContext.app.locale,
     appSessionId: appContext.app.sessionId,

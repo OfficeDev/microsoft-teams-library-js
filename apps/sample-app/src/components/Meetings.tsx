@@ -1,8 +1,11 @@
 import './styles.css';
 
-import { DetailsList } from '@fluentui/react';
+import { DetailsList, SelectionMode } from '@fluentui/react';
+import { Title3 } from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
 import React from 'react';
+
+import { shouldShowMeeting } from './utils';
 
 interface MeetingProps {
   messages: Message[];
@@ -15,7 +18,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
   // using a for loop instead of 'map' function to remove instances of 'OOF'
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    if (message['isCancelled'] || message['showAs'] === 'free') {
+    if (!shouldShowMeeting(message)) {
       continue;
     }
     const item: CalendarListItem = {
@@ -39,8 +42,13 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
   ];
 
   return (
-    <div>
-      <DetailsList items={itemList} columns={columns} />
-    </div>
+    <>
+      <Title3 block className="paddingClass">
+        Your Meetings Today
+      </Title3>
+      <div>
+        <DetailsList items={itemList} columns={columns} selectionMode={SelectionMode.none} />
+      </div>
+    </>
   );
 };

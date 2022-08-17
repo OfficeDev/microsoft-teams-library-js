@@ -8,19 +8,12 @@ import { FrameContexts } from '../public/constants';
 import { FilePreviewParameters, UserSettingTypes } from './interfaces';
 
 /**
- * @internal
- */
-export function initializePrivateApis(): void {
-  // To maintain backwards compatability, this function cannot be deleted as it is callable
-}
-/**
  * @hidden
- * Hide from docs.
- * ------
  * Upload a custom App manifest directly to both team and personal scopes.
  * This method works just for the first party Apps.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized();
@@ -30,7 +23,6 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 
 /**
  * @hidden
- * Internal use only
  * Sends a custom action MessageRequest to host or parent window
  *
  * @param actionName - Specifies name of the custom action to be sent
@@ -39,6 +31,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @returns id of sent message
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function sendCustomMessage(
   actionName: string,
@@ -54,7 +47,6 @@ export function sendCustomMessage(
 
 /**
  * @hidden
- * Internal use only
  * Sends a custom action MessageEvent to a child iframe/window, only if you are not using auth popup.
  * Otherwise it will go to the auth popup (which becomes the child)
  *
@@ -63,6 +55,7 @@ export function sendCustomMessage(
  * @returns id of sent message
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function sendCustomEvent(
   actionName: string,
@@ -80,13 +73,13 @@ export function sendCustomEvent(
 
 /**
  * @hidden
- * Internal use only
  * Adds a handler for an action sent by a child window or parent window
  *
  * @param actionName - Specifies name of the action message to handle
  * @param customHandler - The callback to invoke when the action message is received. The return value is sent to the child
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function registerCustomHandler(
   actionName: string,
@@ -109,6 +102,7 @@ export function registerCustomHandler(
  * @param handler - When a subscribed setting is updated this handler is called
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function registerUserSettingsChangeHandler(
   settingTypes: UserSettingTypes[],
@@ -121,11 +115,12 @@ export function registerUserSettingsChangeHandler(
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  * Opens a client-friendly preview of the specified file.
  *
  * @param file - The file to preview.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
   ensureInitialized(FrameContexts.content, FrameContexts.task);

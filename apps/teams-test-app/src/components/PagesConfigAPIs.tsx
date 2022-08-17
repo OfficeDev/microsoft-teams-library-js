@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
@@ -154,8 +155,7 @@ const CheckPageConfigCapability = (): React.ReactElement =>
   });
 
 const PagesConfigAPIs = (): ReactElement => (
-  <>
-    <h1>pages.config</h1>
+  <ModuleWrapper title="Pages.config">
     <Initialize />
     <RegisterOnSaveHandler />
     <SetConfig />
@@ -164,7 +164,7 @@ const PagesConfigAPIs = (): ReactElement => (
     <RegisterOnRemoveHandlerFailure />
     <RegisterChangeConfigHandler />
     <CheckPageConfigCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesConfigAPIs;

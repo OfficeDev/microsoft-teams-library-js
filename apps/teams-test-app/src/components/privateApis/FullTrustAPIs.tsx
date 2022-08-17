@@ -2,6 +2,7 @@ import { pages, TeamInstanceParameters, teams } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckTeamsFullTrustCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -88,8 +89,7 @@ const GetConfigSetting = (): React.ReactElement =>
   });
 
 const FullTrustAPIs = (): ReactElement => (
-  <>
-    <h1>FullTrustAPIs</h1>
+  <ModuleWrapper title="FullTrustAPIs">
     <GetUserJoinedTeams />
     <GetConfigSetting />
     <EnterFullScreen />
@@ -99,7 +99,7 @@ const FullTrustAPIs = (): ReactElement => (
     <CheckTeamsFullTrustCapability />
     <CheckLegacyFullTrustCapability />
     <CheckPagesFullTrustCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default FullTrustAPIs;

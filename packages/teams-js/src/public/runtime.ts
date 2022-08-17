@@ -171,22 +171,30 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       capability: { teams: { fullTrust: { joinedTeams: {} } } },
       hostClientTypes: [
         HostClientType.android,
+        HostClientType.desktop,
+        HostClientType.ios,
         HostClientType.teamsRoomsAndroid,
         HostClientType.teamsPhones,
         HostClientType.teamsDisplays,
+        HostClientType.web,
       ],
+    },
+    {
+      capability: { webStorage: {} },
+      hostClientTypes: [HostClientType.desktop],
     },
   ],
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.ios],
+      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
 };
 
 /**
  * @internal
+ * Limited to Microsoft-internal use
  *
  * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
  * and do not provide their own runtime config. Their supported capabilities are based on the highest
@@ -225,12 +233,11 @@ export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  * Constant used to set minimum runtime configuration
  * while un-initializing an app in unit test case.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const _minRuntimeConfigToUninitialize = {
   apiVersion: 1,

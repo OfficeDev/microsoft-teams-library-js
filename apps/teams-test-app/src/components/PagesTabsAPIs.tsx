@@ -10,6 +10,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateToTab = (): React.ReactElement =>
   ApiWithTextInput<TabInstance>({
@@ -96,13 +97,12 @@ const CheckPagesTabsCapability = (): React.ReactElement =>
   });
 
 const PagesTabsAPIs = (): ReactElement => (
-  <>
-    <h1>pages.tabs</h1>
+  <ModuleWrapper title="Pages.tabs">
     <NavigateToTab />
     <GetTabInstances />
     <GetMruTabInstances />
     <CheckPagesTabsCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesTabsAPIs;

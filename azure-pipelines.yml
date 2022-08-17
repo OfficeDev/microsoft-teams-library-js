@@ -40,6 +40,8 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Perf'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETest2
@@ -56,10 +58,18 @@ jobs:
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
+      - task: Yarn@2
+        displayName: 'Run tests for electron webview'
+        inputs:
+          Arguments: 'run xvfb-maybe mocha'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Default'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETest3
@@ -82,10 +92,18 @@ jobs:
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
+      - task: Yarn@2
+        displayName: 'Run tests for electron webview'
+        inputs:
+          Arguments: 'run xvfb-maybe mocha'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Local Tag'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETest4
@@ -103,10 +121,18 @@ jobs:
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
         enabled: true
 
+      - task: Yarn@2
+        displayName: 'Run tests for electron webview'
+        inputs:
+          Arguments: 'run xvfb-maybe mocha'
+          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - BC Latest'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETest5
@@ -133,6 +159,8 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - TeamsJs V1'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETestCDN
@@ -167,6 +195,8 @@ jobs:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - CDN'
+          mergeTestResults: true
         condition: succeededOrFailed()
 
   - job: E2ETestAndroid

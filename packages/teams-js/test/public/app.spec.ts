@@ -12,10 +12,24 @@ import {
   TeamType,
   UserTeamRole,
 } from '../../src/public/constants';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import {
+  ActionObjectType,
+  Context,
+  FileOpenPreference,
+  M365ContentAction,
+  SecondaryM365ContentIdName,
+} from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/**
+ * Type guard to determine if an action item is of M365Content Type
+ */
+function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
+  // eslint-disable-next-line no-prototype-builtins
+  return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
@@ -286,17 +300,6 @@ describe('Testing app capability', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
       it('app.initialize should assign additionalValidOrigins when supplied', async () => {
         const validOrigin = 'https://www.mydomain.com';
         const initPromise = app.initialize([validOrigin]);
@@ -366,7 +369,47 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
+          const actionObjects = [
+            {
+              itemId: '1',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.DriveId,
+                value: 'secondaryDriveValue',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            { itemId: '2', type: ActionObjectType.M365Content },
+            {
+              itemId: '3',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.GroupId,
+                value: 'secondaryGroupId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            {
+              itemId: '4',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.SiteId,
+                value: 'secondarySiteId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            {
+              itemId: '5',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.UserId,
+                value: 'secondarySiteId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+          ];
+
           const contextBridge: Context = {
+            actionInfo: {
+              actionId: 'actionId',
+              actionObjects: actionObjects,
+            },
             groupId: 'someGroupId',
             teamId: 'someTeamId',
             teamName: 'someTeamName',
@@ -420,6 +463,7 @@ describe('Testing app capability', () => {
           };
 
           const expectedContext: app.Context = {
+            actionInfo: { actionId: 'actionId', actionObjects: actionObjects },
             app: {
               iconPositionVertical: 5,
               locale: 'someLocale',
@@ -496,9 +540,17 @@ describe('Testing app capability', () => {
           utils.respondToMessage(getContextMessage, contextBridge);
           const actualContext = await contextPromise;
 
+          const firstActionItem =
+            isM365ContentType(actualContext.actionInfo?.actionObjects[0]) && actualContext.actionInfo?.actionObjects[0];
+          const secondActionItem = actualContext.actionInfo?.actionObjects[1];
+
           expect(actualContext).toEqual(expectedContext);
           expect(actualContext.page.frameContext).toBe(context);
-          expect(actualContext.meeting.id).toBe('dummyMeetingId');
+          expect(actualContext.meeting?.id).toBe('dummyMeetingId');
+          expect(actualContext.actionInfo?.actionId).toBe('actionId');
+          expect(actualContext.actionInfo?.actionObjects.length).toBe(5);
+          expect(firstActionItem.secondaryId?.name).toEqual(SecondaryM365ContentIdName.DriveId);
+          expect(isM365ContentType(secondActionItem)).toBe(false);
         });
       });
     });
@@ -1001,22 +1053,6 @@ describe('Testing app capability', () => {
 
       it('app.initialize should call dialog.initialize', async () => {
         const spy = jest.spyOn(dialog, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
 
         const initPromise = app.initialize();
         const initMessage = framelessPostMock.findMessageByFunc('initialize');

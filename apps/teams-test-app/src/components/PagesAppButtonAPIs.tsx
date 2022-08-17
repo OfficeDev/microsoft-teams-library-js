@@ -7,6 +7,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const RegisterAppButtonClickHandler = (): React.ReactElement =>
   ApiWithoutInput({
@@ -69,12 +70,11 @@ const RegisterAppButtonHoverLeaveHandler = (): React.ReactElement =>
   });
 
 const PagesAppButtonAPIs = (): ReactElement => (
-  <>
-    <h1>pages.appButton</h1>
+  <ModuleWrapper title="Pages.appButton">
     <RegisterAppButtonClickHandler />
     <RegisterAppButtonHoverEnterHandler />
     <RegisterAppButtonHoverLeaveHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesAppButtonAPIs;
