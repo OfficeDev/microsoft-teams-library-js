@@ -74,6 +74,25 @@ const RequestGeoLocationPermission = (): React.ReactElement =>
     },
   });
 
+const WebAPIGetCurrentPosition = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'WebAPIGetCurrentPosition',
+    title: 'Web API GetCurrentPosition',
+    onClick: async setResult => {
+      let result;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          result = 'Latitude: ' + position.coords.latitude + ' Longitude: ' + position.coords.longitude;
+          setResult(result);
+        });
+      } else {
+        result = 'navigator.geolocation is not accessible';
+        setResult(result);
+      }
+      return JSON.stringify('Do not have required permissions to access location');
+    },
+  });
+
 const GeoLocationAPIs = (): ReactElement => (
   <>
     <h1>geoLocation</h1>
@@ -82,6 +101,7 @@ const GeoLocationAPIs = (): ReactElement => (
     <ShowLocation />
     <HasGeoLocationPermission />
     <RequestGeoLocationPermission />
+    <WebAPIGetCurrentPosition />
     <CheckGeoLocationCapability />
     <CheckGeoLocationMapCapability />
   </>
