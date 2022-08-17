@@ -5,8 +5,11 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Allows you to interact with the host search experience
+ * Allows your application to interact with the host M365 application's search box.
+ * By integrating your application with the host's search box, users can search
+ * your app using the same search box they use elsewhere in Teams, Outlook, or Office.
  *
+ * This functionality is in Beta.
  * @beta
  */
 export namespace search {
@@ -15,7 +18,7 @@ export namespace search {
   const onExecutedHandlerName = 'search.queryExecute';
 
   /**
-   * This interface contains information pertaining to the search term in the host search experience
+   * This interface contains information pertaining to the contents of the host M365 application's search box
    */
   export interface SearchQuery {
     /** The current search term in the host search experience */
@@ -28,28 +31,36 @@ export namespace search {
     // timestamp: number;
   }
 
+  /**
+   * This type will store the SearchQuery and allow other logic to be made inside the handler.
+   */
+
   export type SearchQueryHandler = (query: SearchQuery) => void;
 
   /**
    * Allows the caller to register for various events fired by the host search experience.
-   * Calling this function will cause the host search experience to set its default scope to
-   * the name of your application.
+   * Calling this function indicates that your application intends to plug into the host's search box and handle search events,
+   * when the user is actively using your page/tab.
+   * 
+   * The host may visually update its search box, e.g. with the name or icon of your application.
    * 
    * Your application should *not* re-render inside of these callbacks, there may be a large number
-   * of onChangeHandler calls if the user is changing the searchQuery rapidly.
+   * of onChangeHandler calls if the user is typing rapidly in the search box.
    *
-   * @param onChangeHandler - This handler will be called when the user begins searching and every
-   * time the user changes the contents of the query. The value of the query is the current term
-   * the user is searching for. Should be used to put your application into whatever state is used
-   * to handle searching. This handler will be called with an empty {@link SearchQuery.searchTerm}
-   * when search is beginning. 
-   * @param onClosedHandler - This handler will be called when the user finishes searching. Should be
-   * used to return your application to its default, non-search state. The value of {@link SearchQuery.searchTerm}
-   * will be whatever the last query was before ending search.
-   * @param onExecuteHandler - This optional handler will be called whenever the user 'executes' the
-   * search (by pressing enter for example). The value of {@link SearchQuery.searchTerm} is the current 
-   * term the user is searching for. Should be used if your app wants to treat executing searches differently than responding
-   * to changes to the search query.
+   * @param onChangeHandler - This optional handler will be called when the user first starts using the
+   * host's search box and as the user types their query. Can be used to put your application into a 
+   * word-wheeling state or to display suggestions as the user is typing. 
+   * 
+   * This handler will be called with an empty {@link SearchQuery.searchTerm} when search is beginning, and subsequently,
+   * with the current contents of the search box.
+   * 
+   * @param onClosedHandler - This handler will be called when the user exits or cancels their search.
+   * Should be used to return your application to its most recent, non-search state. The value of {@link SearchQuery.searchTerm} 
+   * will be whatever the last query was before ending search. 
+   * 
+   * @param onExecuteHandler - The handler will be called when the user executes their 
+   * search (by pressing Enter for example). Should be used to display the full list of search results. 
+   * The value of {@link SearchQuery.searchTerm} is the complete query the user entered in the search box.
    *
    * @example
    * ``` ts
@@ -67,29 +78,20 @@ export namespace search {
    * ```
    */
   export function registerHandlers(
-    onChangeHandler: SearchQueryHandler,
     onClosedHandler: SearchQueryHandler,
-    onExecuteHandler?: SearchQueryHandler,
+    onExecuteHandler: SearchQueryHandler,
+    onChangeHandler?: SearchQueryHandler,
   ): void {
-    // TODO: figure out what frame contexts you want to support this in
-    // This is just a guess that I made and should be something you make
-    // an explicit decision about.
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.task,
-      FrameContexts.sidePanel,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+    ensureInitialized(FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler(onChangeHandlerName, onChangeHandler);
     registerHandler(onClosedHandlerName, onClosedHandler);
-    if (onExecuteHandler) {
-      registerHandler(onExecutedHandlerName, onExecuteHandler);
+    registerHandler(onExecutedHandlerName, onExecuteHandler);
+    if (onChangeHandler) {
+      registerHandler(onChangeHandlerName, onChangeHandler);
     }
   }
 
@@ -98,16 +100,7 @@ export namespace search {
    * this function will cause your app to stop appearing in the set of search scopes in the hosts
    */
   export function unregisterHandlers(): void {
-    // TODO: figure out what frame contexts you want to support this in
-    // This is just a guess that I made and should be something you make
-    // an explicit decision about.
-    ensureInitialized(
-      FrameContexts.content,
-      FrameContexts.task,
-      FrameContexts.sidePanel,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+    ensureInitialized(FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;

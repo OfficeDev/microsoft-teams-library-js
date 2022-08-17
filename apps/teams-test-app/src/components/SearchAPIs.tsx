@@ -1,8 +1,8 @@
 import { search } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-//import { search } from '../../../../packages/teams-js/src/public/search';
 import { ApiWithoutInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const RegisterHandlers = (): React.ReactElement =>
   ApiWithoutInput({
@@ -34,8 +34,9 @@ const RegisterHandlers = (): React.ReactElement =>
 
 const SearchAPIs = (): ReactElement => (
   <>
-    <h1>search</h1>
-    <RegisterHandlers />
+    <ModuleWrapper title="Search">
+      <RegisterHandlers />
+    </ModuleWrapper>
   </>
 );
 
