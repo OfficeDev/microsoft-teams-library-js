@@ -38,18 +38,21 @@ For more information about how to contribute to this repo, visit [this page](htt
 
 ### Related PRs:
 
-[Remove this section if n/a]
+> Remove this section if n/a
 
-### Todo:
+### Next/remaining steps:
 
-[Remove this section if n/a]
+> List the next or remaining steps in implementing the overall feature in subsequent PRs (or is the feature 100% complete after this?).
+
+> Remove this section if n/a
 
 - [ ] Item 1
 - [ ] Item 2
 
 ### Screenshots:
 
-[Remove this section if n/a]
-|Before|After|
-|---|---|
+> Remove this section if n/a
+
+| Before     | After      |
+| ---------- | ---------- |
 | < image1 > | < image2 > |
