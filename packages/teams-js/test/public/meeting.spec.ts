@@ -1071,16 +1071,16 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a handler for when the array of participants speaking changes', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
       let returnedSpeakingState: meeting.ISpeakingState | null;
 
-      meeting.registerSpeakingStateChangeHandler((isSpeakingDetected: meeting.ISpeakingState) => {
+      meeting.registerSpeakingStateChangeHandler((speakingState: meeting.ISpeakingState) => {
         handlerCalled = true;
-        returnedSpeakingState = isSpeakingDetected;
+        returnedSpeakingState = speakingState;
       });
 
       const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
@@ -1096,7 +1096,35 @@ describe('meeting', () => {
       } as DOMMessageEvent);
 
       expect(handlerCalled).toBeTruthy();
-      expect(returnedSpeakingState.isSpeakingDetected).toBe(speakingState.isSpeakingDetected);
+      expect(returnedSpeakingState).toBe(speakingState);
+    });
+
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+      const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
+
+      let handlerCalled = false;
+      let returnedSpeakingState: meeting.ISpeakingState | null;
+
+      meeting.registerSpeakingStateChangeHandler((eventData: meeting.ISpeakingState) => {
+        handlerCalled = true;
+        returnedSpeakingState = eventData;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.speakingStateChanged',
+          args: [speakingState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(returnedSpeakingState).toBe(speakingState);
     });
   });
 

@@ -7,7 +7,10 @@ import { getLogger } from './telemetry';
 
 const handlersLogger = getLogger('handlers');
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 class HandlersPrivate {
   public static handlers: {
     [func: string]: Function;
@@ -17,7 +20,10 @@ class HandlersPrivate {
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function initializeHandlers(): void {
   // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
   HandlersPrivate.handlers['themeChange'] = handleThemeChange;
@@ -27,7 +33,10 @@ export function initializeHandlers(): void {
 }
 
 const callHandlerLogger = handlersLogger.extend('callHandler');
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function callHandler(name: string, args?: unknown[]): [true, unknown] | [false, undefined] {
   const handler = HandlersPrivate.handlers[name];
   if (handler) {
@@ -40,7 +49,10 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
   }
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
@@ -50,18 +62,32 @@ export function registerHandler(name: string, handler: Function, sendMessage = t
   }
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function removeHandler(name: string): void {
   delete HandlersPrivate.handlers[name];
 }
 
 /** @internal */
+export function doesHandlerExist(name: string): boolean {
+  return HandlersPrivate.handlers[name] != null;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
   handler && sendMessageToParent('registerHandler', ['themeChange']);
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function handleThemeChange(theme: string): void {
   if (HandlersPrivate.themeChangeHandler) {
     HandlersPrivate.themeChangeHandler(theme);
@@ -72,13 +98,19 @@ export function handleThemeChange(theme: string): void {
   }
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
   handler && sendMessageToParent('registerHandler', ['load']);
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 function handleLoad(context: LoadContext): void {
   if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(context);
@@ -89,13 +121,19 @@ function handleLoad(context: LoadContext): void {
   }
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
   handler && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
     sendMessageToParent('readyToUnload', []);

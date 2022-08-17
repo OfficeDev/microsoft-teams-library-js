@@ -14,6 +14,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
@@ -83,9 +84,49 @@ const NavigateToApp = (): React.ReactElement =>
     },
   });
 
-const ShareDeepLink = (): ReactElement =>
+// This will be removed shortly, after the UI tests are updated to look for the new name (reflected in the almost duplicative ShareDeepLink element)
+const ShareDeepLinkOld = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
     name: 'core.shareDeepLink',
+    title: 'Share Deeplink',
+    onClick: {
+      validateInput: input => {
+        if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {
+          throw new Error('subPageId and subPageLabel OR subEntityId and subEntityLabel are required.');
+        }
+      },
+      submit: {
+        withPromise: async input => {
+          if (input.subEntityId && input.subEntityLabel) {
+            await pages.shareDeepLink({
+              subPageId: input.subEntityId,
+              subPageLabel: input.subEntityLabel,
+              subPageWebUrl: input.subEntityWebUrl,
+            });
+          } else {
+            await pages.shareDeepLink(input);
+          }
+          return 'called shareDeepLink';
+        },
+        withCallback: (input, setResult) => {
+          if (input.subEntityId && input.subEntityLabel) {
+            shareDeepLink(input);
+          } else {
+            shareDeepLink({
+              subEntityId: input.subPageId,
+              subEntityLabel: input.subPageLabel,
+              subEntityWebUrl: input.subPageWebUrl,
+            });
+          }
+          setResult('called shareDeepLink');
+        },
+      },
+    },
+  });
+
+const ShareDeepLink = (): ReactElement =>
+  ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
+    name: 'pages.shareDeepLink',
     title: 'Share Deeplink',
     onClick: {
       validateInput: input => {
@@ -212,18 +253,18 @@ const CheckPageCapability = (): React.ReactElement =>
   });
 
 const PagesAPIs = (): ReactElement => (
-  <>
-    <h1>pages</h1>
+  <ModuleWrapper title="Pages">
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
+    <ShareDeepLinkOld />
     <ShareDeepLink />
     <ReturnFocus />
     <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
     <CheckPageCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesAPIs;

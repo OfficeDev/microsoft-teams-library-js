@@ -2,6 +2,7 @@ import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckAppEntityCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -13,6 +14,7 @@ const CheckAppEntityCapability = (): React.ReactElement =>
 interface AppEntityParams {
   threadId: string;
   categories: string[];
+  subEntityId: string;
 }
 
 const SelectAppEntity = (): React.ReactElement =>
@@ -44,7 +46,7 @@ const SelectAppEntity = (): React.ReactElement =>
             appEntity.selectAppEntity(
               appEntityParams.threadId,
               appEntityParams.categories,
-              context.page.subPageId ?? '',
+              appEntityParams.subEntityId ?? context.page.subPageId ?? '',
               callback,
             );
           });
@@ -54,11 +56,10 @@ const SelectAppEntity = (): React.ReactElement =>
   });
 
 const AppEntityAPIs = (): ReactElement => (
-  <>
-    <h1>appEntity</h1>
+  <ModuleWrapper title="AppEntity">
     <SelectAppEntity />
     <CheckAppEntityCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppEntityAPIs;

@@ -8,9 +8,12 @@ import AppEntityAPIs from './components/AppEntityAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AppInstallDialogAPIs from './components/AppInstallDialog';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
+import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import GeoLocationAPIs from './components/GeoLocationAPIs';
+import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
@@ -37,6 +40,7 @@ import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
+import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -102,18 +106,21 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <>
+    <div className="App-container">
       <AppAPIs />
       <AppInitializationAPIs />
       <AppInstallDialogAPIs />
       <AuthenticationAPIs />
       <AppEntityAPIs />
+      <BarCodeAPIs />
       <CalendarAPIs />
       <CallAPIs />
       <ChatAPIs />
       <DialogAPIs />
       <FilesAPIs />
       <FullTrustAPIs />
+      <GeoLocationAPIs />
+      <Links />
       <LocationAPIs />
       <LogAPIs />
       <MailAPIs />
@@ -133,10 +140,11 @@ const App = (): ReactElement => {
       <RemoteCameraAPIs />
       <SearchAPIs />
       <SharingAPIs />
+      <WebStorageAPIs />
       <StageViewAPIs />
       <TeamsCoreAPIs />
       <TeamsAPIs />
-    </>
+    </div>
   );
 };
 

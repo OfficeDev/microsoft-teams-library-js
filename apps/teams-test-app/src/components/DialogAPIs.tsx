@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const DialogAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -212,8 +213,7 @@ const DialogAPIs = (): ReactElement => {
     });
 
   return (
-    <>
-      <h1>dialog</h1>
+    <ModuleWrapper title="Dialog">
       <CheckDialogCapability />
       <OpenDialog />
       <ResizeDialog />
@@ -222,7 +222,7 @@ const DialogAPIs = (): ReactElement => {
       <SendMessageToChild />
       <SendMessageToParent />
       <RegisterForParentMessage />
-    </>
+    </ModuleWrapper>
   );
 };
 

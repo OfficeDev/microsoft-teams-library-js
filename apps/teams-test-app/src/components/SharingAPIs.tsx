@@ -2,6 +2,7 @@ import { SdkError, sharing } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckSharingCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -48,11 +49,10 @@ const ShareWebContent = (): React.ReactElement =>
   });
 
 const SharingAPIs = (): ReactElement => (
-  <>
-    <h1>sharing</h1>
+  <ModuleWrapper title="Sharing">
     <ShareWebContent />
     <CheckSharingCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default SharingAPIs;

@@ -47,8 +47,10 @@ steps:
 
   - task: PublishTestResults@2
     inputs:
+      searchFolder: '$(System.DefaultWorkingDirectory)\packages'
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/unit-tests-report*.xml'
+      testRunTitle: 'Unit Tests'
     condition: succeededOrFailed()
 
   - task: Yarn@2
@@ -157,10 +159,10 @@ steps:
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\view-published-packages-urls.ps1
+        packages\teams-js\scripts\*.ps1
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
-    displayName: 'Copy View Published Pacakges Url script to scripts'
+    displayName: 'Copy Power Shell scripts to scripts'
 
   - task: PublishBuildArtifacts@1
     inputs:

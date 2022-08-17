@@ -19,7 +19,9 @@ export namespace tasks {
   /**
    * @deprecated
    * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
-   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs.
+   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
+   * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
+   *
    * Allows an app to open the task module.
    *
    * @param taskInfo - An object containing the parameters of the task module
@@ -29,17 +31,16 @@ export namespace tasks {
     taskInfo: TaskInfo,
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
+    const dialogSubmitHandler = submitHandler
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      : undefined;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
-        submitHandler(sdkResponse.err, sdkResponse.result),
-      );
+      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), (sdkResponse: dialog.ISdkResponse) =>
-        submitHandler(sdkResponse.err, sdkResponse.result),
-      );
+      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -115,7 +116,7 @@ export namespace tasks {
 
   /**
    * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
-   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension.Small}
+   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension | TaskModuleDimension.Small}
    * @param taskInfo TaskInfo object from which to extract size info, if specified
    * @returns TaskInfo with height and width specified
    */

@@ -1,8 +1,53 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 13 May 2022 22:32:13 GMT and should not be manually modified.
+This log was last generated on Wed, 03 Aug 2022 19:21:51 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.2.0
+
+Wed, 03 Aug 2022 19:21:51 GMT
+
+### Minor changes
+
+- Added an optional error object to `ISpeakingState` interface to align `registerSpeakingStateChangeHandler` API with other API error handling.
+- Added `ActionInfo` object to the `Context` interface. This is used to pass information about an action that was taken on content from the host to the application.
+- Split single `CloudStorageProviderFile` action API into 3 action APIs
+
+### Patches
+
+- Added clarifying comment to `dialog.submit` to indicate the dialog is closed when `submit` is called.
+- Updated reference documentation links for deprecated global `Context` interface to work with typedoc system.
+- Added `FrameContexts.task` to `openChat` and `openGroupChat` in chat.ts
+- Added `@beta` tags to new content action-related interfaces.
+- Exported publicly documented global interfaces to enable use outside the SDK.
+
+## 2.1.0
+
+Fri, 22 Jul 2022 16:36:44 GMT
+
+### Minor changes
+
+- Added `webStorage` capability with APIs to allows apps to discover if web storage is supported by the host client
+- Added 3P cloud storage provider API support to files.ts
+- Added `isSupported` to `stageView`
+- Added `profile.showProfile` API and unit tests
+- Added `meeting.registerMeetingReactionReceivedHandler`
+- Added `scanBarCode` to barCode.ts from media.ts along with permission APIs `hasPermission` and `requestPermission`
+- Added a new capability `geoLocation` that split the location capability into new set of functions and subcapabilities. Added permission-related APIs `hasPermission` and `requestPermission`.
+
+### Patches
+
+- Fixed broken SDK reference documentation links and added SDK reference documentation validation to build step.
+- Ensured `submitHandler` exists before calling it in `dialog.open`, `dialog.bot.open` and `tasks.startTask` APIs.
+- Added frameless unit tests for `authentication.notifySuccess` and `authentication.notifyFailure`
+- Added beta tag to `barCode` capability to accurately reflect level of support offered
+- Added `meeting.registerRaiseHandStateChangedHandler`
+- Updated reference documentation for global deprecated `Context` interface. Each deprecated `Context` property now links to respective mapped property in `app.Context` interface.
+- Enabled `FrameContexts.task` for `startCall` API in call.ts
+- Fixed formatting of reference documentation for `call.StartCallParams` interface.
+- Removing unnecessary `/` in `appInstallDialog.openAppInstallDialog()`
+- Renamed `IRaiseHandStateChangedEvent` interface to `IRaiseHandStateChangedEventData` and changed the error so it can be assigned undefined rather than null
 
 ## 2.0.0
 

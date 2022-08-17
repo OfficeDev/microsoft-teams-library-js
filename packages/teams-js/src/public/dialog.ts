@@ -39,10 +39,11 @@ export namespace dialog {
   /**
    * @hidden
    * Hide from docs because this function is only used during initialization
-   * ------------------
+   *
    * Adds register handlers for messageForChild upon initialization and only in the tasks FrameContext. {@link FrameContexts.task}
-   * Function is called during app intitialization
+   * Function is called during app initialization
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function initialize(): void {
     registerHandler('messageForChild', handleDialogMessage, false);
@@ -89,13 +90,13 @@ export namespace dialog {
     }
     const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
     sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-      submitHandler({ err, result });
+      submitHandler?.({ err, result });
       removeHandler('messageForParent');
     });
   }
 
   /**
-   * Submit the dialog module.
+   * Submit the dialog module and close the dialog
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
@@ -237,7 +238,7 @@ export namespace dialog {
       const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
 
       sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler({ err, result });
+        submitHandler?.({ err, result });
         removeHandler('messageForParent');
       });
     }
@@ -254,11 +255,11 @@ export namespace dialog {
 
   /**
    * @hidden
-   * Hide from docs
-   * --------
+   *
    * Convert UrlDialogInfo to DialogInfo to send the information to host in {@linkcode open} API.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {
@@ -273,11 +274,11 @@ export namespace dialog {
 
   /**
    * @hidden
-   * Hide from docs
-   * --------
+   *
    * Convert BotUrlDialogInfo to DialogInfo to send the information to host in {@linkcode bot.open} API.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {

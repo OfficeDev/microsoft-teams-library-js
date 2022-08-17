@@ -34,9 +34,16 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
       setResult('Error: ' + err);
     }
   }, [setResult, onClick]);
+
   return (
     <ApiContainer title={title} result={result} name={name}>
-      <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
+      <input
+        name={`button_${name}`}
+        style={{ width: 'fit-content' }}
+        type="button"
+        value={title}
+        onClick={onClickCallback}
+      />
     </ApiContainer>
   );
 };

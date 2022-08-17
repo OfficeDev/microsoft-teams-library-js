@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const mediaHelper = (item: string): string => {
   let output = '';
@@ -220,15 +221,14 @@ const ViewImagesWithUrls = (): React.ReactElement =>
   });
 
 const MediaAPIs = (): ReactElement => (
-  <>
-    <h1>media</h1>
+  <ModuleWrapper title="Media">
     <CaptureImage />
     <SelectMedia />
     <GetMedia />
     <ViewImagesWithId />
     <ViewImagesWithUrls />
     <ScanBarCode />
-  </>
+  </ModuleWrapper>
 );
 
 export default MediaAPIs;

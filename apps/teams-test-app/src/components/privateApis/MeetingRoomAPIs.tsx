@@ -3,6 +3,7 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckMeetingRoomCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -67,14 +68,13 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
   });
 
 const MeetingRoomAPIs = (): React.ReactElement => (
-  <>
-    <h1>meetingRoom</h1>
+  <ModuleWrapper title="MeetingRoom">
     <GetPairedMeetingRoomInfo />
     <SendCommandToPairedMeetingRoom />
     <RegisterMeetingRoomCapabilitiesUpdateHandler />
     <RegisterMeetingRoomStatesUpdateHandler />
     <CheckMeetingRoomCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MeetingRoomAPIs;

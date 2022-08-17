@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const Initialize = (): React.ReactElement =>
   ApiWithoutInput({
@@ -106,6 +107,27 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
     },
   });
 
+const RegisterOnRemoveHandlerFailure = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'config_registerOnRemoveHandlerFailure',
+    title: 'Register On Remove Handler Failure',
+    onClick: {
+      withPromise: async setResult => {
+        pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure('someReason');
+        });
+        return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
+      },
+      withCallback: setResult => {
+        settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
+          setResult('Remove event failed.');
+          removeEvent.notifyFailure('someReason');
+        });
+      },
+    },
+  });
+
 const RegisterChangeConfigHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerChangeConfigsHandler',
@@ -133,16 +155,16 @@ const CheckPageConfigCapability = (): React.ReactElement =>
   });
 
 const PagesConfigAPIs = (): ReactElement => (
-  <>
-    <h1>pages.config</h1>
+  <ModuleWrapper title="Pages.config">
     <Initialize />
     <RegisterOnSaveHandler />
     <SetConfig />
     <SetValidityState />
     <RegisterOnRemoveHandler />
+    <RegisterOnRemoveHandlerFailure />
     <RegisterChangeConfigHandler />
     <CheckPageConfigCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesConfigAPIs;
