@@ -47,6 +47,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       setEmails(emails);
     })();
   }, [accessToken, setUserInfo, setCalendar, setEmails]);
+
   return (
     <>
       {!userInfo ? <p>loading user info...</p> : <MainPage userInfo={userInfo} />}
@@ -56,32 +57,23 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
         <>
           <div className="flex-container">
             <div className="column">
-              <Title3 block className="paddingClass">
-                Your Meetings Today
-              </Title3>
               <MeetingList messages={calendar['value']} />
             </div>
             <div className="column">
-              <Title3 block className="paddingClass">
-                People to Meet Today
-              </Title3>
               {!userInfo ? <p> getting info </p> : <PeopleAvatarList messages={calendar['value']} user={userInfo} />}
             </div>
           </div>
           <div className="flex-container">
+            <div className="column">{emails && <EmailList messages={emails} />}</div>
             <div className="column">
-              <Title3 block className="paddingClass">
-                Your Recent Emails
-              </Title3>
-              {emails && <EmailList messages={emails} />}
-            </div>
-            <div className="column">
-              <Title3 block className="paddingClass">
-                Other features
-              </Title3>
-              <CalendarCapability />
-              {/* Pages Capability only has placeholder parameters */}
-              <PagesCapability />
+              <Title3 className="paddingClass"> Other Features </Title3>
+              <div className="flex-container">
+                <div className="column">
+                  <CalendarCapability />
+                </div>
+                {/* Pages Capability only has placeholder parameters */}
+                <PagesCapability />
+              </div>
             </div>
           </div>
         </>

@@ -7,6 +7,7 @@ import { profile } from '../public/profile';
  * @returns true if the parameters are valid, false otherwise
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function validateShowProfileRequest(
   showProfileRequest: profile.ShowProfileRequest,
@@ -43,6 +44,7 @@ export function validateShowProfileRequest(
  * @returns true if the persona is valid, false otherwise
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 function validatePersona(persona: profile.Persona): [boolean, string | undefined] {
   if (!persona) {

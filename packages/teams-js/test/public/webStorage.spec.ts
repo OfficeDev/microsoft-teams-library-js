@@ -67,7 +67,7 @@ describe('webStorage', () => {
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                   await framedPlatformMock.initializeWithContext(frameContext, clientType);
                   framedPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
             });
@@ -107,7 +107,7 @@ describe('webStorage', () => {
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                   await framelessPlatformMock.initializeWithContext(frameContext, clientType);
                   framelessPlatformMock.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
+                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
             });

@@ -16,11 +16,10 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
-import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
-import { Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
@@ -447,32 +446,39 @@ export namespace app {
    */
   export interface Context {
     /**
-     * Info of the app
+     * Content Action Info
+     *
+     * @beta
+     */
+    actionInfo?: ActionInfo;
+    /**
+     * Properties about the current session for your app
      */
     app: AppInfo;
 
     /**
-     * Info of the current page of App
+     * Info about the current page context hosting your app
      */
     page: PageInfo;
 
     /**
-     * Info of the user
+     * Info about the currently logged in user running the app.
+     * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
      */
     user?: UserInfo;
 
     /**
-     * Info of the Microsoft Teams channel
+     * When running in the context of a Teams channel, provides information about the channel, else `undefined`
      */
     channel?: ChannelInfo;
 
     /**
-     * Info of the Microsoft Teams chat
+     * When running in the context of a Teams chat, provides information about the chat, else `undefined`
      */
     chat?: ChatInfo;
 
     /**
-     * Info of the Microsoft Teams meeting
+     * When running in the context of a Teams meeting, provides information about the meeting, else `undefined`
      */
     meeting?: MeetingInfo;
 
@@ -482,12 +488,14 @@ export namespace app {
     sharepoint?: any;
 
     /**
-     * Info of the sharePoint site associated with the team.
+     * When running in Teams for an organization with a tenant, provides information about the SharePoint site associated with the team.
+     * Will be `undefined` when not running in Teams for an organization with a tenant.
      */
     sharePointSite?: SharePointSiteInfo;
 
     /**
-     * Info of the Microsoft Teams team
+     * When running in Teams, provides information about the Team context in which your app is running.
+     * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
   }
@@ -595,7 +603,6 @@ export namespace app {
         menus.initialize();
         pages.config.initialize();
         dialog.initialize();
-        initializePrivateApis();
       }
 
       // Handle additional valid message origins if specified
@@ -609,11 +616,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to set a mock window for unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _initialize(hostWindow: any): void {
     Communication.currentWindow = hostWindow;
@@ -621,11 +627,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to clear state between unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _uninitialize(): void {
     if (!GlobalVars.initializeCalled) {
@@ -751,9 +756,11 @@ export namespace app {
  * Transforms the Legacy Context object received from Messages to the structured app.Context object
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.Context {
   const context: app.Context = {
+    actionInfo: legacyContext.actionInfo,
     app: {
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',

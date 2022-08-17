@@ -1,6 +1,6 @@
 {
-  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.10/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.10",
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.13",
   "version": "0.2",
   "id": "8142d2d1-4113-411f-868f-8e6e606e8827",
   "packageName": "sample app",
@@ -48,5 +48,5 @@
   "validDomains": ["localhost:4003"],
   "permissions": ["identity", "messageTeamMembers"],
   "devicePermissions": ["media", "geolocation"],
-  "showLoadingIndicator": false
+  "showLoadingIndicator": true
 }

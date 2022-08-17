@@ -8,6 +8,7 @@ export const version = PACKAGE_VERSION;
  * Mobile clients are passing versions, hence will be applicable to web and desktop clients only.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const defaultSDKVersionForCompatCheck = '2.0.1';
 
@@ -16,16 +17,25 @@ export const defaultSDKVersionForCompatCheck = '2.0.1';
  * This is the client version when selectMedia API - VideoAndImage is supported on mobile.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const videoAndImageMediaAPISupportVersion = '2.0.2';
 
 /**
+ * @hidden
  * This is the client version when selectMedia API - Video with non-full screen mode is supported on mobile.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
 
 /**
+ * @hidden
  * This is the client version when selectMedia API - ImageOutputFormats is supported on mobile.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export const imageOutputFormatsAPISupportVersion = '2.0.4';
 
@@ -34,6 +44,7 @@ export const imageOutputFormatsAPISupportVersion = '2.0.4';
  * Minimum required client supported version for {@link getUserJoinedTeams} to be supported on {@link HostClientType.android}
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
 
@@ -42,6 +53,7 @@ export const getUserJoinedTeamsSupportedAndroidClientVersion = '2.0.1';
  * This is the client version when location APIs (getLocation and showLocation) are supported.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const locationAPIsRequiredVersion = '1.9.0';
 
@@ -50,6 +62,7 @@ export const locationAPIsRequiredVersion = '1.9.0';
  * This is the client version when permisisons are supported
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const permissionsAPIsRequiredVersion = '2.0.1';
 
@@ -58,6 +71,7 @@ export const permissionsAPIsRequiredVersion = '2.0.1';
  * This is the client version when people picker API is supported on mobile.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const peoplePickerRequiredVersion = '2.0.0';
 
@@ -66,6 +80,7 @@ export const peoplePickerRequiredVersion = '2.0.0';
  * This is the client version when captureImage API is supported on mobile.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const captureImageMobileSupportVersion = '1.7.0';
 
@@ -74,6 +89,7 @@ export const captureImageMobileSupportVersion = '1.7.0';
  * This is the client version when media APIs are supported on all three platforms ios, android and web.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const mediaAPISupportVersion = '1.8.0';
 
@@ -82,6 +98,7 @@ export const mediaAPISupportVersion = '1.8.0';
  * This is the client version when getMedia API is supported via Callbacks on all three platforms ios, android and web.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const getMediaCallbackSupportVersion = '2.0.0';
 
@@ -90,6 +107,7 @@ export const getMediaCallbackSupportVersion = '2.0.0';
  * This is the client version when scanBarCode API is supported on mobile.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
@@ -98,6 +116,7 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
  * List of supported Host origins
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const validOrigins = [
   'teams.microsoft.com',
@@ -134,6 +153,7 @@ export const validOrigins = [
  * USer specified message origins should satisfy this test
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const userOriginUrlValidationRegExp = /^https:\/\//;
 
@@ -142,6 +162,7 @@ export const userOriginUrlValidationRegExp = /^https:\/\//;
  * The protocol used for deep links into Teams
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkProtocol = 'https';
 
@@ -150,5 +171,6 @@ export const teamsDeepLinkProtocol = 'https';
  * The host used for deep links into Teams
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkHost = 'teams.microsoft.com';

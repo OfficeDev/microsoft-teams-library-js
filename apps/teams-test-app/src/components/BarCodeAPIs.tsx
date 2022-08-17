@@ -2,6 +2,7 @@ import { barCode } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckBarCodeCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -67,14 +68,13 @@ const WebAPIGetUserMedia = (): React.ReactElement =>
   });
 
 const BarCodeAPIs = (): ReactElement => (
-  <>
-    <h1>barCode</h1>
+  <ModuleWrapper title="BarCode">
     <ScanBarCode />
     <HasBarCodePermission />
     <RequestBarCodePermission />
     <CheckBarCodeCapability />
     <WebAPIGetUserMedia />
-  </>
+  </ModuleWrapper>
 );
 
 export default BarCodeAPIs;
