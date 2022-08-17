@@ -75,7 +75,7 @@ export namespace monetization {
       planInfo = param1;
     }
     const wrappedFunction: InputFunction<void> = () => {
-      return new Promise<void>(resolve => {
+      return new Promise<void>((resolve) => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }

@@ -184,7 +184,7 @@ export namespace authentication {
   }
 
   function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
-    return new Promise<[boolean, string]>(resolve => {
+    return new Promise<[boolean, string]>((resolve) => {
       resolve(
         sendMessageToParentAsync('authentication.getAuthToken', [
           authTokenRequest?.resources,
@@ -245,7 +245,7 @@ export namespace authentication {
   }
 
   function getUserHelper(): Promise<UserProfile> {
-    return new Promise<[boolean, UserProfile | string]>(resolve => {
+    return new Promise<[boolean, UserProfile | string]>((resolve) => {
       resolve(sendMessageToParentAsync('authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {

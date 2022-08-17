@@ -5,7 +5,7 @@ import { runtime } from './runtime';
 
 export namespace mail {
   export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');
@@ -20,7 +20,7 @@ export namespace mail {
   }
 
   export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');

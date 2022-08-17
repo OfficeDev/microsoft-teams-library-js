@@ -42,7 +42,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
   }
   const messageOriginHost = messageOrigin.host;
 
-  if (validOrigins.some(pattern => validateHostAgainstPattern(pattern, messageOriginHost))) {
+  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
   }
 
@@ -133,7 +133,7 @@ export function generateGUID(): string {
 }
 
 export function deepFreeze<T extends object>(obj: T): T {
-  Object.keys(obj).forEach(prop => {
+  Object.keys(obj).forEach((prop) => {
     if (typeof obj[prop] === 'object') {
       deepFreeze(obj[prop]);
     }
@@ -287,11 +287,11 @@ export function runWithTimeout<TResult, TError>(
   return new Promise((resolve, reject) => {
     const timeoutHandle = setTimeout(reject, timeoutInMs, timeoutError);
     action()
-      .then(result => {
+      .then((result) => {
         clearTimeout(timeoutHandle);
         resolve(result);
       })
-      .catch(error => {
+      .catch((error) => {
         clearTimeout(timeoutHandle);
         reject(error);
       });

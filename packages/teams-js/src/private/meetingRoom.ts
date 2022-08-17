@@ -141,7 +141,7 @@ export namespace meetingRoom {
    * @returns Promise resolved with meeting room info or rejected with SdkError value
    */
   export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
-    return new Promise<MeetingRoomInfo>(resolve => {
+    return new Promise<MeetingRoomInfo>((resolve) => {
       ensureInitialized();
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -160,7 +160,7 @@ export namespace meetingRoom {
    * @returns Promise resolved upon completion or rejected with SdkError value
    */
   export function sendCommandToPairedMeetingRoom(commandName: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (!commandName || commandName.length == 0) {
         throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
       }

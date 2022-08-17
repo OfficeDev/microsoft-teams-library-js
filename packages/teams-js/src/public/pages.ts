@@ -112,7 +112,7 @@ export namespace pages {
    * @returns Promise that resolves with the {@link InstanceConfig} object.
    */
   export function getConfig(): Promise<InstanceConfig> {
-    return new Promise<InstanceConfig>(resolve => {
+    return new Promise<InstanceConfig>((resolve) => {
       ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -131,7 +131,7 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
         FrameContexts.content,
         FrameContexts.sidePanel,
@@ -160,7 +160,7 @@ export namespace pages {
    * @returns a promise that will resolve if the navigation was successful
    */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
         FrameContexts.content,
         FrameContexts.sidePanel,
@@ -261,7 +261,7 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
-      return new Promise<void>(resolve => {
+      return new Promise<void>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -277,7 +277,7 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>(resolve => {
+      return new Promise<TabInformation>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -292,7 +292,7 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>(resolve => {
+      return new Promise<TabInformation>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -350,7 +350,7 @@ export namespace pages {
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
-      return new Promise<void>(resolve => {
+      return new Promise<void>((resolve) => {
         ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -547,7 +547,7 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return new Promise<void>(resolve => {
+      return new Promise<void>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
