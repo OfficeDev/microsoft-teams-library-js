@@ -62,10 +62,10 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
   const AvatarExample: React.FunctionComponent = () => {
     return (
       <>
-        <Title3 block className="paddingClass" id="People to Meet Today">
+        <Title3 block className="paddingClass">
           People to Meet Today
         </Title3>
-        <div aria-labelledby="People to Meet today">
+        <div>
           {AvatarItemList.map(avatar => (
             <>
               <Popover trapFocus openOnHover={true} size="medium">
