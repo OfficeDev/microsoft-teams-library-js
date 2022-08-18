@@ -17,11 +17,11 @@ const TokenFetchComponent: React.FC = () => {
     };
     instance
       .acquireTokenSilent(request)
-      .then(response => {
+      .then((response) => {
         setAccessToken(response.accessToken);
         authentication.notifySuccess(response.accessToken);
       })
-      .catch(response => {
+      .catch((response) => {
         authentication.notifyFailure(response);
       });
   }, [setAccessToken, accounts, instance]);

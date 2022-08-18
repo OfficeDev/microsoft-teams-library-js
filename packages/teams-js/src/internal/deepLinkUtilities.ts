@@ -22,7 +22,7 @@ export function createTeamsDeepLinkForChat(users: string[], topic?: string, mess
   }
 
   const usersSearchParameter =
-    `${teamsDeepLinkUsersUrlParameterName}=` + users.map(user => encodeURIComponent(user)).join(',');
+    `${teamsDeepLinkUsersUrlParameterName}=` + users.map((user) => encodeURIComponent(user)).join(',');
   const topicSearchParameter =
     topic === undefined ? '' : `&${teamsDeepLinkTopicUrlParameterName}=${encodeURIComponent(topic)}`;
   const messageSearchParameter =
@@ -36,7 +36,7 @@ export function createTeamsDeepLinkForCall(targets: string[], withVideo?: boolea
     throw new Error('Must have at least one target when creating a call deep link');
   }
   const usersSearchParameter =
-    `${teamsDeepLinkUsersUrlParameterName}=` + targets.map(user => encodeURIComponent(user)).join(',');
+    `${teamsDeepLinkUsersUrlParameterName}=` + targets.map((user) => encodeURIComponent(user)).join(',');
   const withVideoSearchParameter =
     withVideo === undefined ? '' : `&${teamsDeepLinkWithVideoUrlParameterName}=${encodeURIComponent(withVideo)}`;
   const sourceSearchParameter =
@@ -56,7 +56,7 @@ export function createTeamsDeepLinkForCalendar(
     attendees === undefined
       ? ''
       : `${teamsDeepLinkAttendeesUrlParameterName}=` +
-        attendees.map(attendee => encodeURIComponent(attendee)).join(',');
+        attendees.map((attendee) => encodeURIComponent(attendee)).join(',');
   const startTimeSearchParameter =
     startTime === undefined ? '' : `&${teamsDeepLinkStartTimeUrlParameterName}=${encodeURIComponent(startTime)}`;
   const endTimeSearchParameter =

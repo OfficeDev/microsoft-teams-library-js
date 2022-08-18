@@ -39,10 +39,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       const calendar = calendarResponse as Calendar;
       setCalendar(calendar);
       // get recent emails
-      const emailResponse = await client
-        .api('/me/messages')
-        .top(5)
-        .get();
+      const emailResponse = await client.api('/me/messages').top(5).get();
       const emails = emailResponse.value as Message[];
       setEmails(emails);
     })();

@@ -22,7 +22,7 @@ const DialogAPIs = (): ReactElement => {
       name: 'dialogOpen',
       title: 'Dialog Open',
       onClick: {
-        validateInput: input => {
+        validateInput: (input) => {
           if (input.url === undefined) {
             throw new Error('Url undefined');
           }
@@ -54,7 +54,7 @@ const DialogAPIs = (): ReactElement => {
       name: 'dialogResize',
       title: 'Dialog Resize',
       onClick: {
-        validateInput: input => {
+        validateInput: (input) => {
           if (!input) {
             throw new Error('input is undefined');
           }
@@ -159,7 +159,7 @@ const DialogAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'registerForParentMessage',
       title: 'registerForParentMessage',
-      onClick: async setResult => {
+      onClick: async (setResult) => {
         let msg = 'Completed';
         if (isTestBackCompat()) {
           const parentWindow = ParentAppWindow.Instance;
@@ -182,17 +182,17 @@ const DialogAPIs = (): ReactElement => {
       name: 'dialogSubmitWithInput',
       title: 'Dialog Submit With Input',
       onClick: {
-        validateInput: input => {
+        validateInput: (input) => {
           if (input.result === undefined && input.appIds === undefined) {
             throw new Error('Result and appIds undefined');
           }
         },
         submit: {
-          withPromise: async submitInput => {
+          withPromise: async (submitInput) => {
             dialog.submit(submitInput.result, submitInput.appIds);
             return '';
           },
-          withCallback: submitInput => {
+          withCallback: (submitInput) => {
             tasks.submitTask(submitInput.result, submitInput.appIds);
           },
         },

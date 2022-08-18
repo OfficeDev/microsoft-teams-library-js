@@ -35,7 +35,7 @@ export namespace barCode {
    * @beta
    */
   export function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
-    return new Promise<string>(resolve => {
+    return new Promise<string>((resolve) => {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -62,7 +62,7 @@ export namespace barCode {
     }
     const permissions: DevicePermission = DevicePermission.Media;
 
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       resolve(sendAndHandleSdkError('permissions.has', permissions));
     });
   }
@@ -81,7 +81,7 @@ export namespace barCode {
     }
     const permissions: DevicePermission = DevicePermission.Media;
 
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       resolve(sendAndHandleSdkError('permissions.request', permissions));
     });
   }

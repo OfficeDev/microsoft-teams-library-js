@@ -54,7 +54,7 @@ export namespace stageView {
    * @returns Promise that resolves or rejects with an error once the stage view is closed.
    */
   export function open(stageViewParams: StageViewParams): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       ensureInitialized(FrameContexts.content);
 
       if (!isSupported()) {
