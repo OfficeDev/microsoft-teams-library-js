@@ -42,8 +42,8 @@ describe('stageView', () => {
       await expect(stageView.open(stageViewParams)).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(frameContext => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === frameContext)) {
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
         it(`should not allow calls from ${frameContext} context`, async () => {
           await utils.initializeWithContext(frameContext);
 

@@ -32,8 +32,8 @@ describe('tasks', () => {
       expect(() => tasks.startTask(taskInfo)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should pass along the taskInfo correctly when card is specified. ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -194,8 +194,8 @@ describe('tasks', () => {
       expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should successfully pass taskInfo in context: ${JSON.stringify(context)}`, async () => {
           await utils.initializeWithContext(context);
           const taskInfo = { width: 10, height: 10 };
@@ -253,8 +253,8 @@ describe('tasks', () => {
       expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const taskInfo: TaskInfo = {};
