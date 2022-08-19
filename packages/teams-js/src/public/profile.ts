@@ -19,7 +19,7 @@ export namespace profile {
   export function showProfile(showProfileRequest: ShowProfileRequest): Promise<void> {
     ensureInitialized(FrameContexts.content);
 
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const [isValid, message] = validateShowProfileRequest(showProfileRequest);
       if (!isValid) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message };

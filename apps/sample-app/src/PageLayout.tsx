@@ -5,7 +5,7 @@ import React from 'react';
 import { loginRequest } from './components/authConfig';
 
 function handleLogin(instance): void {
-  instance.loginRedirect(loginRequest).catch(e => {
+  instance.loginRedirect(loginRequest).catch((e) => {
     console.error(e);
   });
 }

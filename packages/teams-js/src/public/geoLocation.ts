@@ -62,7 +62,7 @@ export namespace geoLocation {
     }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       resolve(sendAndHandleError('permissions.has', permissions));
     });
   }
@@ -83,7 +83,7 @@ export namespace geoLocation {
     }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>((resolve) => {
       resolve(sendAndHandleError('permissions.request', permissions));
     });
   }

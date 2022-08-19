@@ -63,7 +63,7 @@ export namespace people {
   }
 
   function selectPeopleHelper(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
-    return new Promise<PeoplePickerResult[]>(resolve => {
+    return new Promise<PeoplePickerResult[]>((resolve) => {
       if (!isCurrentSDKVersionAtLeast(peoplePickerRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }

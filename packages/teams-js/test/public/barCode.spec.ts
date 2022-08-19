@@ -38,8 +38,8 @@ describe('barCode', () => {
       expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should throw error when barCode is not supported in runtime config. context: ${context}`, async () => {
           await mobilePlatformMock.initializeWithContext(context);
           mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -131,8 +131,8 @@ describe('barCode', () => {
       return expect(() => barCode.hasPermission()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should throw error when barCode is not supported in runtime config. context: ${context}`, async () => {
           await mobilePlatformMock.initializeWithContext(context);
           mobilePlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -205,8 +205,8 @@ describe('barCode', () => {
   });
 
   describe('Testing RequestPermisison API', () => {
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
           expect(() => barCode.requestPermission()).toThrowError('The library has not yet been initialized');
         });
