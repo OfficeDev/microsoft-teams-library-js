@@ -12,21 +12,33 @@ export namespace menus {
   /**
    * @hidden
    * Represents information about item in View Configuration.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export interface ViewConfiguration {
     /**
      * @hidden
      * Unique identifier of view.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     id: string;
     /**
      * @hidden
      * Display title of the view.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     title: string;
     /**
      * @hidden
      * Additional information for accessibility.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     contentDescription?: string;
   }

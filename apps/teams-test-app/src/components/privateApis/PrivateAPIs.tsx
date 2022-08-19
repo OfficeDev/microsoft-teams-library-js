@@ -28,8 +28,8 @@ const RegisterUserSettingsChangeHandler = (): React.ReactElement =>
     name: 'registerUserSettingsChangeHandler',
     title: 'Register User Settings Change Handler',
     onClick: {
-      validateInput: input => {
-        if (!input || !Array.isArray(input) || input.length === 0 || input.find(x => typeof x !== 'string')) {
+      validateInput: (input) => {
+        if (!input || !Array.isArray(input) || input.length === 0 || input.find((x) => typeof x !== 'string')) {
           throw new Error('input has to be an array of strings with at least one element.');
         }
       },
@@ -52,7 +52,7 @@ const PrivateAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'uploadCustomApp',
       title: 'Upload Custom App',
-      onClick: async setResult => {
+      onClick: async (setResult) => {
         const elem = document.getElementById('fileid');
         if (elem) {
           setUploadCustomAppRes.current = setResult;
@@ -92,12 +92,12 @@ const PrivateAPIs = (): ReactElement => {
       name: 'openFilePreview',
       title: 'Open File Preview',
       onClick: {
-        validateInput: input => {
+        validateInput: (input) => {
           if (!input.entityId || !input.title || !input.type || !input.objectUrl) {
             throw new Error('entityId, title, type and objectUrl are all required on the input object.');
           }
         },
-        submit: async input => {
+        submit: async (input) => {
           openFilePreview(input);
           return 'Called';
         },
@@ -109,7 +109,7 @@ const PrivateAPIs = (): ReactElement => {
       <RegisterUserSettingsChangeHandler />
       <UploadCustomApp />
       <OpenFilePreview />
-      <input id="fileid" type="file" onChange={e => acceptFile(e.target.files)} hidden />
+      <input id="fileid" type="file" onChange={(e) => acceptFile(e.target.files)} hidden />
     </ModuleWrapper>
   );
 };

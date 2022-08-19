@@ -20,13 +20,13 @@ const SetConfig = (): React.ReactElement =>
     name: 'config_setConfig',
     title: 'Set Config',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.contentUrl) {
           throw new Error('contentUrl is required');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await pages.config.setConfig(input);
           return 'Completed';
         },
@@ -53,14 +53,14 @@ const RegisterOnSaveHandler = (): React.ReactElement =>
     name: 'config_registerOnSaveHandler',
     title: 'Set RegisterOnSaveHandler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.config.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
           setResult('Save event received.');
           saveEvent.notifySuccess();
         });
         return 'config.registerOnSaveHandler()' + noHostSdkMsg;
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         settings.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
           setResult('Save event received.');
           saveEvent.notifySuccess();
@@ -75,11 +75,11 @@ const SetValidityState = (): React.ReactElement =>
     title: 'Set Validity State',
     label: 'setValidityState',
     onClick: {
-      withPromise: async isValid => {
+      withPromise: async (isValid) => {
         pages.config.setValidityState(isValid);
         return `Set validity state to ${isValid}`;
       },
-      withCallback: isValid => {
+      withCallback: (isValid) => {
         settings.setValidityState(isValid);
         return `Set validity state to ${isValid}`;
       },
@@ -91,14 +91,14 @@ const RegisterOnRemoveHandler = (): React.ReactElement =>
     name: 'config_registerOnRemoveHandler',
     title: 'Register On Remove Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
           setResult('Remove event received.');
           removeEvent.notifySuccess();
         });
         return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
           setResult('Remove event received.');
           removeEvent.notifySuccess();
@@ -112,14 +112,14 @@ const RegisterOnRemoveHandlerFailure = (): React.ReactElement =>
     name: 'config_registerOnRemoveHandlerFailure',
     title: 'Register On Remove Handler Failure',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.config.registerOnRemoveHandler((removeEvent: pages.config.RemoveEvent): void => {
           setResult('Remove event failed.');
           removeEvent.notifyFailure('someReason');
         });
         return 'config.registerOnRemoveHandler()' + noHostSdkMsg;
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         settings.registerOnRemoveHandler((removeEvent: settings.RemoveEvent): void => {
           setResult('Remove event failed.');
           removeEvent.notifyFailure('someReason');
@@ -133,13 +133,13 @@ const RegisterChangeConfigHandler = (): React.ReactElement =>
     name: 'config_registerChangeConfigsHandler',
     title: 'Register Change Config Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.config.registerChangeConfigHandler((): void => {
           setResult('successfully called');
         });
         return 'pages.config.registerChangeConfigHandler()' + noHostSdkMsg;
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerChangeSettingsHandler((): void => {
           setResult('successfully called');
         });

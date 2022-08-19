@@ -7,10 +7,10 @@ import { SdkError } from './interfaces';
 export namespace meeting {
   /**
    * @hidden
-   * Hide from docs
-   * Data structure to represent a meeting details
+   * Data structure to represent meeting details
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface IMeetingDetailsResponse {
     /**
@@ -85,10 +85,10 @@ export namespace meeting {
 
   /**
    * @hidden
-   * Hide from docs
    * Data structure to represent a conversation object.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface IConversation {
     /**
@@ -100,10 +100,10 @@ export namespace meeting {
 
   /**
    * @hidden
-   * Hide from docs
    * Data structure to represent an organizer object.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface IOrganizer {
     /**
@@ -273,8 +273,6 @@ export namespace meeting {
 
   /**
    * @hidden
-   * Hide from docs
-   *
    * Allows an app to get the meeting details for the meeting
    *
    * @param callback - Callback contains 2 parameters, error and meetingDetailsResponse.
@@ -282,6 +280,7 @@ export namespace meeting {
    * result can either contain a IMeetingDetailsResponse value, in case of a successful get or null when the get fails
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getMeetingDetails(
     callback: (error: SdkError | null, meetingDetails: IMeetingDetailsResponse | null) => void,
@@ -307,6 +306,7 @@ export namespace meeting {
    * authenticationTokenOfAnonymousUser can either contain a string value, incase of a successful get or null when the get fails
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getAuthenticationTokenForAnonymousUser(
     callback: (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null) => void,

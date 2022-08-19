@@ -15,7 +15,7 @@ const NavigateBack = (): React.ReactElement =>
         await pages.backStack.navigateBack();
         return 'Completed';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         const onComplete = (status: boolean, reason?: string): void => {
           if (!status) {
             if (reason) {

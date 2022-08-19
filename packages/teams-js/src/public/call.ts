@@ -41,7 +41,7 @@ export namespace call {
    * @returns If the call is accepted
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;

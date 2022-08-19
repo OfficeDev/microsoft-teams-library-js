@@ -35,8 +35,8 @@ describe('sharing_v1', () => {
 
   describe('Testing sharing.shareWebContent function v1', () => {
     Object.keys(FrameContexts)
-      .map(key => FrameContexts[key])
-      .forEach(frameContext => {
+      .map((key) => FrameContexts[key])
+      .forEach((frameContext) => {
         if (!allowedContexts.includes(frameContext)) {
           it(`sharing.shareWebContent should not allow calls from ${frameContext} context`, async () => {
             await utils.initializeWithContext(frameContext);
@@ -73,7 +73,7 @@ describe('sharing_v1', () => {
             expect(sharing.shareWebContent(shareRequest)).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
-          it(`sharing.shareWebContent should successfully call the callback function when given the share web content in correct format when initialized with ${frameContext} context- success scenario`, done => {
+          it(`sharing.shareWebContent should successfully call the callback function when given the share web content in correct format when initialized with ${frameContext} context- success scenario`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
               const callback = () => {
@@ -100,7 +100,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when the shared content is missing when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when the shared content is missing when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = { content: undefined };
               const error = {
@@ -108,7 +108,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content is missing',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -117,7 +117,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when content array is empty when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when content array is empty when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = { content: [] };
               const error = {
@@ -125,7 +125,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content is missing',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -134,9 +134,9 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when content type is missing when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when content type is missing when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
-              const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+              const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
                 content: [
                   {
                     url: 'https://www.microsoft.com',
@@ -144,13 +144,13 @@ describe('sharing_v1', () => {
                     message: 'Test',
                   },
                 ],
-              } as any) as sharing.IShareRequest<sharing.IURLContent>;
+              } as any as sharing.IShareRequest<sharing.IURLContent>;
               const error = {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
                 message: 'Shared content type cannot be undefined',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -159,7 +159,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when content items are of mixed types when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when content items are of mixed types when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = {
                 content: [
@@ -180,7 +180,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content must be of the same type',
               };
 
-              sharing.shareWebContent(shareRequest as any, response => {
+              sharing.shareWebContent(shareRequest as any, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -189,7 +189,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when url is missing in URL content type when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when url is missing in URL content type when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = {
                 content: [
@@ -204,7 +204,7 @@ describe('sharing_v1', () => {
                 message: 'URLs are required for URL content types',
               };
 
-              sharing.shareWebContent(shareRequest as any, response => {
+              sharing.shareWebContent(shareRequest as any, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -213,7 +213,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when content is an unsupported type when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when content is an unsupported type when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = {
                 content: [
@@ -227,7 +227,7 @@ describe('sharing_v1', () => {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
                 message: 'Content type is unsupported',
               };
-              sharing.shareWebContent(shareRequest as any, response => {
+              sharing.shareWebContent(shareRequest as any, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -236,7 +236,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when other errors occur when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when other errors occur when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
                 content: [
@@ -253,7 +253,7 @@ describe('sharing_v1', () => {
                 message: 'Feature is not supported.',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -264,7 +264,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when request is null when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when request is null when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest: sharing.IShareRequest<sharing.IURLContent> = null;
               const error = {
@@ -272,7 +272,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content is missing',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -281,7 +281,7 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when request is undefined when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when request is undefined when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest: sharing.IShareRequest<sharing.IURLContent> = undefined;
               const error = {
@@ -289,7 +289,7 @@ describe('sharing_v1', () => {
                 message: 'Shared content is missing',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -298,19 +298,19 @@ describe('sharing_v1', () => {
             });
           });
 
-          it(`sharing.shareWebContent should throw a SdkError when request is invalid object when initialized with ${frameContext} context`, done => {
+          it(`sharing.shareWebContent should throw a SdkError when request is invalid object when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
-              const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+              const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
                 first: 1,
                 second: 2,
-              } as any) as sharing.IShareRequest<sharing.IURLContent>;
+              } as any as sharing.IShareRequest<sharing.IURLContent>;
 
               const error = {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
                 message: 'Shared content is missing',
               };
 
-              sharing.shareWebContent(shareRequest, response => {
+              sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
               });
@@ -352,8 +352,8 @@ describe('sharing_v2', () => {
 
   describe('Testing sharing.shareWebContent v2 function', () => {
     Object.keys(FrameContexts)
-      .map(key => FrameContexts[key])
-      .forEach(frameContext => {
+      .map((key) => FrameContexts[key])
+      .forEach((frameContext) => {
         if (!allowedContexts.includes(frameContext)) {
           it(`sharing.shareWebContent should not allow calls from ${frameContext} context`, async () => {
             await utils.initializeWithContext(frameContext);
@@ -569,10 +569,10 @@ describe('sharing_v2', () => {
 
           it(`sharing.shareWebContent should throw a SdkError when request is invalid object when initialized with ${frameContext} context`, async () => {
             await utils.initializeWithContext(FrameContexts.content);
-            const shareRequest: sharing.IShareRequest<sharing.IURLContent> = ({
+            const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
               first: 1,
               second: 2,
-            } as any) as sharing.IShareRequest<sharing.IURLContent>;
+            } as any as sharing.IShareRequest<sharing.IURLContent>;
             const error = {
               errorCode: ErrorCode.INVALID_ARGUMENTS,
               message: 'Shared content is missing',

@@ -38,8 +38,8 @@ describe('meeting', () => {
       );
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully send the toggleIncomingClientAudio message. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           meeting.toggleIncomingClientAudio(emptyCallBack);
@@ -129,8 +129,8 @@ describe('meeting', () => {
       );
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully get the incoming client audio state. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           let callbackCalled = false;
@@ -210,8 +210,8 @@ describe('meeting', () => {
       FrameContexts.content,
     ];
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully get the meeting details. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -311,8 +311,8 @@ describe('meeting', () => {
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully send the getAuthenticationTokenForAnonymousUser message. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
           let callbackCalled = false;
@@ -395,8 +395,8 @@ describe('meeting', () => {
       expect(() => meeting.getLiveStreamState(emptyCallBack)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully get live stream state. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -483,8 +483,8 @@ describe('meeting', () => {
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should throw if the requestStartLiveStreaming message sends and fails', async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -577,8 +577,8 @@ describe('meeting', () => {
     });
 
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should throw if the requestStopLiveStreaming message sends and fails', async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -661,8 +661,8 @@ describe('meeting', () => {
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should successfully register a handler for when live stream is changed', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -708,8 +708,8 @@ describe('meeting', () => {
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully share app content to stage. content: ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -796,8 +796,8 @@ describe('meeting', () => {
       );
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should successfully send the getAppContentStageSharingCapabilities message.', async () => {
           await framelessPlatformMock.initializeWithContext(context);
           let callbackCalled = false;
@@ -889,8 +889,8 @@ describe('meeting', () => {
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully terminate app content stage sharing session. context: ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
@@ -974,8 +974,8 @@ describe('meeting', () => {
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should successfully get current stage sharing state information. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 

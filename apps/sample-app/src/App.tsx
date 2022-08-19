@@ -24,13 +24,13 @@ const App: React.FC = () => {
         if (context?.app?.host?.name === 'Teams') {
           const themeNow = getThemeTeams(context?.app?.theme);
           setCurrTheme(themeNow);
-          app.registerOnThemeChangeHandler(function(theme) {
+          app.registerOnThemeChangeHandler(function (theme) {
             setCurrTheme(getThemeTeams(theme));
           });
         } else {
           const themeNow = getThemeOther(context?.app?.theme);
           setCurrTheme(themeNow);
-          app.registerOnThemeChangeHandler(function(theme) {
+          app.registerOnThemeChangeHandler(function (theme) {
             setCurrTheme(getThemeOther(theme));
           });
         }
