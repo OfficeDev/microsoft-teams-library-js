@@ -26,11 +26,7 @@ export namespace search {
     /** The current search term in the host search experience */
     searchTerm: string;
 
-    /**
-     * Timestamp sequence value to ensure messages are processed in correct order / combine them.
-     * Having any sort of logic around combining messages or sorting them
-     * would make sense to go into the teamsjs-sdk layer
-     */
+    /** Timestamp sequence value to ensure messages are processed in correct order / combine them. */
     timestamp: number;
   }
 
