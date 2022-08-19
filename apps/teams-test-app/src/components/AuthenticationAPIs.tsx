@@ -15,7 +15,7 @@ const Initialize = (): React.ReactElement =>
         await app.initialize();
         return 'called';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         const callback = (): void => {
           return;
         };
@@ -34,7 +34,7 @@ const GetAuthToken = (): React.ReactElement =>
         return; //This API can have no input
       },
       submit: {
-        withPromise: async authParams => {
+        withPromise: async (authParams) => {
           const result = await authentication.getAuthToken(authParams);
           return JSON.stringify(result);
         },
@@ -62,7 +62,7 @@ const GetUser = (): React.ReactElement =>
         const user = await authentication.getUser();
         return JSON.stringify(user);
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         const successCallback = (user: authentication.UserProfile): void => {
           setResult(JSON.stringify(user));
         };
@@ -82,7 +82,7 @@ const NotifyFailure = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'authentication.notifyFailure2',
     title: 'authentication.notifyFailure',
-    onClick: async input => {
+    onClick: async (input) => {
       authentication.notifyFailure(input);
       return 'called';
     },
@@ -92,7 +92,7 @@ const NotifySuccess = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'authentication.notifySuccess2',
     title: 'authentication.notifySuccess',
-    onClick: async input => {
+    onClick: async (input) => {
       authentication.notifySuccess(input);
       return 'called';
     },
@@ -103,13 +103,13 @@ const Authenticate = (): React.ReactElement =>
     name: 'authentication.authenticate2',
     title: 'authentication.authenticate',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.url) {
           throw new Error('url is required');
         }
       },
       submit: {
-        withPromise: async authParams => {
+        withPromise: async (authParams) => {
           const token = await authentication.authenticate(getAuthParams(authParams));
           return 'Success: ' + token;
         },

@@ -38,7 +38,7 @@ export class Utils {
     this.childMessages = [];
 
     this.parentWindow = {
-      postMessage: function(message: MessageRequest, targetOrigin: string): void {
+      postMessage: function (message: MessageRequest, targetOrigin: string): void {
         if (message.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
         } else if (message.func !== 'initialize' && targetOrigin !== that.validOrigin) {
@@ -53,12 +53,12 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = listener;
         }
       },
-      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
         if (type === 'message') {
           that.processMessage = null;
         }
@@ -66,21 +66,21 @@ export class Utils {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function(url: string): void {
+        assign: function (url: string): void {
           return;
         },
       },
       parent: this.parentWindow,
       nativeInterface: {
-        framelessPostMessage: function(message: string): void {
+        framelessPostMessage: function (message: string): void {
           that.messages.push(JSON.parse(message));
         },
       },
       self: null as Window,
-      open: function(url: string, name: string, specs: string): Window {
+      open: function (url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
@@ -88,10 +88,10 @@ export class Utils {
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function(message: MessageRequest, targetOrigin: string): void {
+      postMessage: function (message: MessageRequest, targetOrigin: string): void {
         that.childMessages.push(message);
       },
-      close: function(): void {
+      close: function (): void {
         return;
       },
       closed: false,
@@ -160,7 +160,7 @@ export class Utils {
   };
 
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
-    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage({
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
         args: args,
@@ -199,5 +199,5 @@ export class Utils {
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-  public flushPromises = () => new Promise(resolve => setTimeout(resolve));
+  public flushPromises = () => new Promise((resolve) => setTimeout(resolve));
 }

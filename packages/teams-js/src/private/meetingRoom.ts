@@ -180,7 +180,7 @@ export namespace meetingRoom {
    * Limited to Microsoft-internal use
    */
   export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
-    return new Promise<MeetingRoomInfo>(resolve => {
+    return new Promise<MeetingRoomInfo>((resolve) => {
       ensureInitialized();
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -200,7 +200,7 @@ export namespace meetingRoom {
    * Limited to Microsoft-internal use
    */
   export function sendCommandToPairedMeetingRoom(commandName: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (!commandName || commandName.length == 0) {
         throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
       }

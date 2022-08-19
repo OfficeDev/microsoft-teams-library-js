@@ -90,7 +90,7 @@ export namespace sharing {
   }
 
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -113,14 +113,14 @@ export namespace sharing {
 
   function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
     let err: SdkError;
-    if (shareRequest.content.some(item => !item.type)) {
+    if (shareRequest.content.some((item) => !item.type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'Shared content type cannot be undefined',
       };
       throw err;
     }
-    if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
+    if (shareRequest.content.some((item) => item.type !== shareRequest.content[0].type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'Shared content must be of the same type',
@@ -132,7 +132,7 @@ export namespace sharing {
   function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
     let err: SdkError;
     if (shareRequest.content[0].type === 'URL') {
-      if (shareRequest.content.some(item => !item.url)) {
+      if (shareRequest.content.some((item) => !item.url)) {
         err = {
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'URLs are required for URL content types',

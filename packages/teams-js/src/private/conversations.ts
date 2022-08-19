@@ -143,7 +143,7 @@ export namespace conversations {
    * Limited to Microsoft-internal use
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -215,7 +215,7 @@ export namespace conversations {
    * Limited to Microsoft-internal use
    */
   export function getChatMembers(): Promise<ChatMembersInformation> {
-    return new Promise<ChatMembersInformation>(resolve => {
+    return new Promise<ChatMembersInformation>((resolve) => {
       ensureInitialized();
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;

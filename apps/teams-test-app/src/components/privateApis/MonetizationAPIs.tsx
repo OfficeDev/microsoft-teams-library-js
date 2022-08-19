@@ -17,7 +17,7 @@ const OpenPurchaseExperience = (): React.ReactElement =>
     name: 'monetization_openPurchaseExperience',
     title: 'Open Purchase Experience',
     onClick: {
-      validateInput: planInfo => {
+      validateInput: (planInfo) => {
         if (!planInfo) {
           return; //This API allow for the input not to be provided
         }
@@ -26,7 +26,7 @@ const OpenPurchaseExperience = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async planInfo => {
+        withPromise: async (planInfo) => {
           await monetization.openPurchaseExperience(planInfo);
           return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
         },

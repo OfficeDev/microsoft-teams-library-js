@@ -75,7 +75,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
   }
 
   if (!Communication.parentWindow) {
-    const extendedWindow = (Communication.currentWindow as unknown) as ExtendedWindow;
+    const extendedWindow = Communication.currentWindow as unknown as ExtendedWindow;
     if (extendedWindow.nativeInterface) {
       GlobalVars.isFramelessWindow = true;
       extendedWindow.onNativeMessage = handleParentMessage;
@@ -169,7 +169,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
     resolve(waitForResponse<T>(request.id));
   });
@@ -180,7 +180,7 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] = un
  * Limited to Microsoft-internal use
  */
 function waitForResponse<T>(requestId: number): Promise<T> {
-  return new Promise<T>(resolve => {
+  return new Promise<T>((resolve) => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
 }

@@ -36,7 +36,7 @@ describe('appWindow', () => {
         expect(() => childAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`FRAMED: should initiate the post message to child: ${frameContext}`, async () => {
           await framedMock.initializeWithContext(frameContext);
           childAppWindow.postMessage('exampleMessage');
@@ -62,7 +62,7 @@ describe('appWindow', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`FRAMED: should initiate the registration call for messageForParent: ${frameContext}`, async () => {
           await framedMock.initializeWithContext(frameContext);
           childAppWindow.addEventListener('message', emptyCallback);
@@ -90,8 +90,8 @@ describe('appWindow', () => {
         expect(() => parentAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
-        if (allowedContexts.some(allowedContext => allowedContext == frameContext)) {
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.some((allowedContext) => allowedContext == frameContext)) {
           it(`FRAMED: should initiate the post message to parent: ${frameContext}`, async () => {
             await framedMock.initializeWithContext(frameContext);
             parentAppWindow.postMessage('exampleMessage');
@@ -135,8 +135,8 @@ describe('appWindow', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
-        if (allowedContexts.some(allowedContext => allowedContext == frameContext)) {
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.some((allowedContext) => allowedContext == frameContext)) {
           it(`FRAMED: should initiate the registration call for messageForChild: ${frameContext}`, async () => {
             await framedMock.initializeWithContext(frameContext);
             parentAppWindow.addEventListener('message', emptyCallback);

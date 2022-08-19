@@ -54,7 +54,7 @@ describe('AppSDK-privateAPIs', () => {
     'http://invalid.origin.com',
   ];
 
-  unSupportedDomains.forEach(unSupportedDomain => {
+  unSupportedDomains.forEach((unSupportedDomain) => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
       await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
       let callbackCalled: boolean = false;
@@ -103,7 +103,7 @@ describe('AppSDK-privateAPIs', () => {
     'https://www.example.com',
   ];
 
-  supportedDomains.forEach(supportedDomain => {
+  supportedDomains.forEach((supportedDomain) => {
     it('should allow utils.messages from supported domain ' + supportedDomain, async () => {
       await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
       const contextPromise = app.getContext();
@@ -543,8 +543,8 @@ describe('AppSDK-privateAPIs', () => {
       fileOpenPreference: FileOpenPreference.Web,
       conversationId: 'someConversationId',
     };
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it('should successfully open a file preview with content frameContext', async () => {
           await utils.initializeWithContext(context);
 
