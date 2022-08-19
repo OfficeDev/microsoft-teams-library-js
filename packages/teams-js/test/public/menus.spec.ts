@@ -35,7 +35,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setUpViews should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framedMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -66,7 +66,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setNavBarMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framedMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -100,7 +100,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.showActionMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framedMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -155,7 +155,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setUpViews should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framelessMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -190,7 +190,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setNavBarMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framelessMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -235,7 +235,7 @@ describe('Testing menus capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(frameContext => {
+      Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.showActionMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
           await framelessMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });

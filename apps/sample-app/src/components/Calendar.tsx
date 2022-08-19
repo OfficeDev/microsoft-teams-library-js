@@ -18,7 +18,7 @@ export const handleNewMeeting = async (): Promise<void> => {
       calendarParams.attendees === undefined
         ? ''
         : `${teamsDeepLinkAttendeesUrlParameterName}=` +
-          calendarParams.attendees.map(attendee => encodeURIComponent(attendee)).join(',');
+          calendarParams.attendees.map((attendee) => encodeURIComponent(attendee)).join(',');
 
     const deepLinkUrl = `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}${teamsDeepLinkUrlPathForCalendar}?${attendeeSearchParameter}`;
     app.openLink(deepLinkUrl);

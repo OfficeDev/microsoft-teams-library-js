@@ -37,8 +37,8 @@ describe('Testing monetization capability', () => {
           ).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (!allowedContexts.some(allowedContext => allowedContext == context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (!allowedContexts.some((allowedContext) => allowedContext == context)) {
             it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
               await framedPlatformMock.initializeWithContext(context);
               expect(() => {
@@ -96,8 +96,8 @@ describe('Testing monetization capability', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (!allowedContexts.some(allowedContext => allowedContext == context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (!allowedContexts.some((allowedContext) => allowedContext == context)) {
             it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
               await framelessPlatformMock.initializeWithContext(context);
               expect(() => monetization.openPurchaseExperience()).toThrowError(
@@ -167,8 +167,8 @@ describe('Testing monetization capability', () => {
           ).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (!allowedContexts.some(allowedContext => allowedContext == context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (!allowedContexts.some((allowedContext) => allowedContext == context)) {
             it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
               await framelessPlatformMock.initializeWithContext(context);
               expect(() => {
@@ -233,8 +233,8 @@ describe('Testing monetization capability', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (!allowedContexts.some(allowedContext => allowedContext == context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (!allowedContexts.some((allowedContext) => allowedContext == context)) {
             it(`should to not allow to initialize FramContext with context: ${context}.`, async () => {
               await framelessPlatformMock.initializeWithContext(context);
               expect(() => monetization.openPurchaseExperience()).toThrowError(

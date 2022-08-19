@@ -9,7 +9,7 @@ const GetIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getIncomingClientAudioState',
     title: 'Get Incoming Client Audio State',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, result: boolean | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -26,7 +26,7 @@ const ToggleIncomingClientAudioState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'toggleIncomingClientAudio',
     title: 'Toggle Incoming Client Audio',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, result: boolean | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -43,7 +43,7 @@ const GetMeetingDetails = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getMeetingDetails',
     title: 'Get Meeting Details',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, meetingDetails: meeting.IMeetingDetailsResponse | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -60,7 +60,7 @@ const GetAuthenticationTokenForAnonymousUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAuthTokenForAnonymousUser',
     title: 'Get Auth Token For Anonymous User',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, authenticationTokenOfAnonymousUser: string | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -79,7 +79,7 @@ const GetLiveStreamState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getLiveStreamState',
     title: 'Get LiveStream State',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, liveStreamState: meeting.LiveStreamState | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -102,7 +102,7 @@ const RequestStartLiveStreaming = (): React.ReactElement =>
     name: 'requestStartLiveStreaming',
     title: 'Request Start LiveStreaming',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.streamUrl) {
           throw new Error('streamUrl is required.');
         }
@@ -129,7 +129,7 @@ const RequestStopLiveStreaming = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'requestStopLiveStreaming',
     title: 'Request Stop LiveStreaming',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -146,7 +146,7 @@ const RegisterLiveStreamChangedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerLiveStreamChangedHandler',
     title: 'Register LiveStream Changed Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (liveStreamState: meeting.LiveStreamState): void => {
         let res = `Live StreamState changed to ${liveStreamState.isStreaming}`;
         if (liveStreamState.error) {
@@ -164,7 +164,7 @@ const RegisterRaiseHandStateChangedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerRaiseHandStateChangedHandler',
     title: 'Register RaiseHandState Changed Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (eventData: meeting.RaiseHandStateChangedEventData): void => {
         let res;
         if (eventData.error) {
@@ -184,7 +184,7 @@ const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerMeetingReactionReceivedHandler',
     title: 'Register Meeting Reaction Received Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (eventData: meeting.MeetingReactionReceivedEventData): void => {
         let res;
         if (eventData.error) {
@@ -204,7 +204,7 @@ const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerSpeakingStateChangedHandler',
     title: 'Register SpeakingState Changed Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (eventData: meeting.ISpeakingState): void => {
         let res;
         if (eventData.error) {
@@ -247,7 +247,7 @@ const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAppContentStageSharingCapabilities',
     title: 'Get App Content Stage Sharing Capabilities',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (
         error: SdkError | null,
         appContentStageSharingCapabilities: meeting.IAppContentStageSharingCapabilities | null,
@@ -269,7 +269,7 @@ const StopSharingAppContentToStage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'stopSharingAppContentToStage',
     title: 'Stop Sharing App Content To Stage',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error: SdkError | null, result: boolean | null): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -286,7 +286,7 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAppContentStageSharingState',
     title: 'Get App Content Stage Sharing State',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (
         error: SdkError | null,
         appContentStageSharingState: meeting.IAppContentStageSharingState | null,

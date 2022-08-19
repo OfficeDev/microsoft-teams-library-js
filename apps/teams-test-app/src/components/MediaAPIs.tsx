@@ -72,7 +72,7 @@ const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
     title: 'Capture Image',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error?: SdkError, files?: media.File[]): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -93,7 +93,7 @@ const SelectMedia = (): React.ReactElement =>
     name: 'selectMedia',
     title: 'Select Media',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.mediaType || !input.maxMediaCount) {
           throw new Error('mediaType and maxMediaCount are required');
         }
@@ -147,7 +147,7 @@ const ViewImagesWithId = (): React.ReactElement =>
     name: 'viewImagesWithId',
     title: 'View Images With Id',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.mediaType || !input.maxMediaCount) {
           throw new Error('mediaType and maxMediaCount are required');
         }
@@ -200,8 +200,8 @@ const ViewImagesWithUrls = (): React.ReactElement =>
     name: 'viewImagesWithUrls',
     title: 'View Images With Urls',
     onClick: {
-      validateInput: input => {
-        if (!input || !Array.isArray(input) || input.length === 0 || input.find(x => typeof x !== 'string')) {
+      validateInput: (input) => {
+        if (!input || !Array.isArray(input) || input.length === 0 || input.find((x) => typeof x !== 'string')) {
           throw new Error('input has to be an array of strings with at least one element');
         }
       },
@@ -213,7 +213,7 @@ const ViewImagesWithUrls = (): React.ReactElement =>
             setResult('media.viewImagesWithUrls() executed');
           }
         };
-        const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
+        const urlList: media.ImageUri[] = input.map((x) => ({ value: x, type: 2 /* ImageUriType.ID */ }));
         media.viewImages(urlList, callback);
         return '';
       },

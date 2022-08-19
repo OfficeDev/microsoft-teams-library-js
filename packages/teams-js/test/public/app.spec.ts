@@ -68,7 +68,7 @@ describe('Testing app capability', () => {
     });
 
     describe('Testing app.getFrameContext function', () => {
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getFrameContext should return ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(app.getFrameContext()).toBe(context);
@@ -244,7 +244,7 @@ describe('Testing app capability', () => {
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
-      Object.values(HostClientType).forEach(hostClientType => {
+      Object.values(HostClientType).forEach((hostClientType) => {
         it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
           const initPromise = app.initialize();
 
@@ -318,7 +318,7 @@ describe('Testing app capability', () => {
         await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -560,7 +560,7 @@ describe('Testing app capability', () => {
         expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyAppLoaded should successfully notify app is loaded with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           app.notifyAppLoaded();
@@ -577,7 +577,7 @@ describe('Testing app capability', () => {
         expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifySuccess should successfully notify success with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           app.notifyAppLoaded();
@@ -599,7 +599,7 @@ describe('Testing app capability', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyFailure should call notify failure correctly with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -638,11 +638,11 @@ describe('Testing app capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.registerOnThemeChangeHandler should successfully register a theme change handler from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           let newTheme: string;
-          app.registerOnThemeChangeHandler(theme => {
+          app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
           utils.sendMessage('themeChange', 'someTheme');
@@ -764,7 +764,7 @@ describe('Testing app capability', () => {
     });
 
     describe('Testing app.getFrameContext function', () => {
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getFrameContext should return ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
           expect(app.getFrameContext()).toBe(context);
@@ -969,7 +969,7 @@ describe('Testing app capability', () => {
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
-      Object.values(HostClientType).forEach(hostClientType => {
+      Object.values(HostClientType).forEach((hostClientType) => {
         it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
           const initPromise = app.initialize();
 
@@ -1073,7 +1073,7 @@ describe('Testing app capability', () => {
         await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
 
@@ -1277,7 +1277,7 @@ describe('Testing app capability', () => {
         expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyAppLoaded should successfully notify app is loaded with no error from ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
           app.notifyAppLoaded();
@@ -1294,7 +1294,7 @@ describe('Testing app capability', () => {
         expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifySuccess should successfully notify success with no error from ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
           app.notifySuccess();
@@ -1316,7 +1316,7 @@ describe('Testing app capability', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyFailure should call notify failure correctly with ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
 
@@ -1355,11 +1355,11 @@ describe('Testing app capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.registerOnThemeChangeHandler should successfully register a theme change handler from ${context} context`, async () => {
           await framelessPostMock.initializeWithContext(context);
           let newTheme: string;
-          app.registerOnThemeChangeHandler(theme => {
+          app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
           framelessPostMock.respondToMessage({

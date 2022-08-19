@@ -11,7 +11,7 @@ export namespace appInstallDialog {
   }
 
   export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       ensureInitialized(
         FrameContexts.content,
         FrameContexts.sidePanel,

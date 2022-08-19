@@ -47,8 +47,8 @@ describe('Dialog', () => {
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -134,7 +134,7 @@ describe('Dialog', () => {
           expect(message).not.toBeUndefined();
           expect(message.args).toStrictEqual(['exampleMessage']);
         });
-        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
             expect.assertions(2);
             const urlDialogInfo: UrlDialogInfo = {
@@ -156,7 +156,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+        it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
             expect.assertions(5);
             const urlDialogInfo: UrlDialogInfo = {
@@ -183,7 +183,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
             expect.assertions(2);
             const urlDialogInfo: UrlDialogInfo = {
@@ -205,7 +205,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+        it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
             expect.assertions(5);
             const urlDialogInfo: UrlDialogInfo = {
@@ -313,8 +313,8 @@ describe('Dialog', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(() => dialog.update.resize({} as any)).toThrowError('The library has not yet been initialized');
       });
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -424,8 +424,8 @@ describe('Dialog', () => {
       FrameContexts.task,
       FrameContexts.meetingStage,
     ];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -543,8 +543,8 @@ describe('Dialog', () => {
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -673,7 +673,7 @@ describe('Dialog', () => {
           expect(doesHandlerExist('messageForParent')).toBeFalsy();
         });
 
-        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+        it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
             expect.assertions(2);
 
@@ -690,7 +690,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, done => {
+        it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
             const submitString = 'succesfullySubmit';
             // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -711,7 +711,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+        it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
             expect.assertions(2);
 
@@ -728,7 +728,7 @@ describe('Dialog', () => {
           });
         });
 
-        it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, done => {
+        it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
             dialog.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
               expect(result.result).toBeFalsy();
@@ -793,8 +793,8 @@ describe('Dialog', () => {
       expect(() => dialog.sendMessageToDialog('message')).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(frameContext => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === frameContext)) {
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
         it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
           await framedMock.initializeWithContext(frameContext);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -865,8 +865,8 @@ describe('Dialog', () => {
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         if (frameContext === FrameContexts.task) {
           it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framedMock.initializeWithContext(frameContext);
@@ -937,8 +937,8 @@ describe('Dialog', () => {
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         if (frameContext === FrameContexts.task) {
           it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framedMock.initializeWithContext(frameContext);

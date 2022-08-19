@@ -16,12 +16,12 @@ const ScanBarCode = (): React.ReactElement =>
     name: 'scanBarCode',
     title: 'Scan Bar Code',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           throw new Error('BarCodeConfig is required');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         const scannedCode = await barCode.scanBarCode(input);
         return JSON.stringify(scannedCode);
       },

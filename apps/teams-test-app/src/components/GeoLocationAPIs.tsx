@@ -43,12 +43,12 @@ const ShowLocation = (): React.ReactElement =>
     name: 'showLocationOnMap',
     title: 'Show Location',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.latitude || !input.longitude) {
           throw new Error('latitude and longitude are required');
         }
       },
-      submit: async locationProps => {
+      submit: async (locationProps) => {
         await geoLocation.map.showLocation(locationProps);
         return 'Completed';
       },

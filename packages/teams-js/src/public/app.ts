@@ -541,7 +541,7 @@ export namespace app {
   }
 
   function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
       if (!GlobalVars.initializeCalled) {
@@ -671,10 +671,10 @@ export namespace app {
    * @returns Promise that will resolve with the {@link app.Context} object.
    */
   export function getContext(): Promise<app.Context> {
-    return new Promise<LegacyContext>(resolve => {
+    return new Promise<LegacyContext>((resolve) => {
       ensureInitialized();
       resolve(sendAndUnwrap('getContext'));
-    }).then(legacyContext => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
+    }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
   /**
@@ -737,7 +737,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
         FrameContexts.content,
         FrameContexts.sidePanel,

@@ -34,7 +34,7 @@ describe('logs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it('logs.registerGetLogHandler should throw error when logs is not supported.', async () => {
         await utils.initializeWithContext(context);
         expect.assertions(1);

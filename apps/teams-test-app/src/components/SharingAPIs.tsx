@@ -16,7 +16,7 @@ const ShareWebContent = (): React.ReactElement =>
     name: 'share_shareWebContent',
     title: 'Share web content',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.content || input.content.length === 0) {
           throw new Error('content is required');
         }
@@ -30,7 +30,7 @@ const ShareWebContent = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await sharing.shareWebContent(input);
           return 'Success';
         },
