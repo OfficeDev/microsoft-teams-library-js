@@ -19,6 +19,8 @@ export namespace search {
 
   /**
    * This interface contains information pertaining to the contents of the host M365 application's search box
+   *
+   * @beta
    */
   export interface SearchQuery {
     /** The current search term in the host search experience */
@@ -34,8 +36,9 @@ export namespace search {
 
   /**
    * This type will store the SearchQuery and allow other logic to be made inside the handler.
+   *
+   * @beta
    */
-
   export type SearchQueryHandler = (query: SearchQuery) => void;
 
   /**
@@ -69,7 +72,7 @@ export namespace search {
       query => {
         console.log(`Update your application with the changed search query: ${query.searchTerm}`);
       },
-      () => {
+      query => {
         console.log('Update your application to handle the search experience being closed. Last query: ${query.searchTerm}');
       },
       query => {
@@ -77,6 +80,8 @@ export namespace search {
       },
      );
    * ```
+   *
+   * @beta
    */
   export function registerHandlers(
     onClosedHandler: SearchQueryHandler,
@@ -99,6 +104,8 @@ export namespace search {
   /**
    * Allows the caller to unregister for all events fired by the host search experience. Calling
    * this function will cause your app to stop appearing in the set of search scopes in the hosts
+   *
+   * @beta
    */
   export function unregisterHandlers(): void {
     ensureInitialized(FrameContexts.content);
@@ -118,6 +125,8 @@ export namespace search {
    * Checks if search capability is supported by the host
    * @returns true if the search capability is supported by the host and false otherwise
    * false if it is disabled
+   *
+   * @beta
    */
   export function isSupported(): boolean {
     return runtime.supports.search ? true : false;
