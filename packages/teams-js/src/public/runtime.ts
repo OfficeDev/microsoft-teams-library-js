@@ -40,6 +40,7 @@ export interface IRuntime {
     readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
+    readonly search?: {};
     readonly sharing?: {};
     readonly stageView?: {};
     readonly teams?: {
@@ -87,6 +88,7 @@ export let runtime: IRuntime = {
     permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
+    search: undefined,
     sharing: undefined,
     stageView: undefined,
     teams: {
