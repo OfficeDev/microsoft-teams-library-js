@@ -690,4 +690,52 @@ export namespace pages {
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
     }
   }
+
+  /**
+   * Parameters for the NavigateToSelf API
+   */
+  export interface NavigateToSelfParams {
+    /**
+     * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+     */
+    pageId: string;
+
+    /**
+     * Optional URL to open if the navigation cannot be completed within the host
+     */
+    webUrl?: string;
+
+    /**
+     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
+     * back to the application via the Context object.
+     */
+    subPageId?: string;
+  }
+
+  export namespace self {
+    /**
+     * Navigate to the currently running application with page ID, with optional parameters for a WebURL (if the
+     * application cannot be navigated to, such as if it is not installed),and sub-page ID (for navigating to
+     * specific content within the page). This is equivalent to navigating to a deep link with the above data, but
+     * does not require the application to build a URL or worry about different deep link formats for different hosts.
+     * @param params - Parameters for the navigation
+     * @returns a promise that will resolve if the navigation was successful
+     */
+    export function navigateTo(params: NavigateToSelfParams): Promise<void> {
+      return new Promise<void>(resolve => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(send('pages.self.navigateTo', params));
+      });
+    }
+  }
 }
