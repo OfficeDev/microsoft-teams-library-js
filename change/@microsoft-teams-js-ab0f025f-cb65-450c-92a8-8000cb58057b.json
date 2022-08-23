@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new sub capability `pages.self`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "shrshinde@microsoft.com",
+  "dependentChangeType": "patch"
+}
