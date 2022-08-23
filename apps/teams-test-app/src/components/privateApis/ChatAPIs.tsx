@@ -23,12 +23,12 @@ const OpenChat = (): React.ReactElement =>
     name: 'openChat',
     title: 'Open Chat',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.user) {
           throw new Error('user is required on the input');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await chat.openChat(input);
         return 'chat.openChat()' + noHostSdkMsg;
       },
@@ -40,12 +40,12 @@ const OpenGroupChat = (): React.ReactElement =>
     name: 'openGroupChat',
     title: 'Open Group Chat',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.users) {
           throw new Error('users is required on the input');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await chat.openGroupChat(input);
         return 'chat.openChat()' + noHostSdkMsg;
       },
@@ -57,13 +57,13 @@ const OpenConversation = (): React.ReactElement =>
     name: 'openConversation2',
     title: 'Open Conversation',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.entityId || !input.title || !input.subEntityId) {
           throw new Error('entityId, title and subEntityId are required on the input');
         }
       },
       submit: async (input, setResult) => {
-        input.onStartConversation = conversationResponse => {
+        input.onStartConversation = (conversationResponse) => {
           setResult(
             'Start Conversation Subentity Id ' +
               conversationResponse.subEntityId +
@@ -75,7 +75,7 @@ const OpenConversation = (): React.ReactElement =>
               conversationResponse.channelId,
           );
         };
-        input.onCloseConversation = conversationResponse => {
+        input.onCloseConversation = (conversationResponse) => {
           setResult(
             'Close Conversation Subentity Id ' +
               conversationResponse.subEntityId +

@@ -6,7 +6,7 @@ import { runtime } from './runtime';
 
 export namespace calendar {
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');
@@ -20,7 +20,7 @@ export namespace calendar {
     });
   }
   export function composeMeeting(composeMeetingParams: ComposeMeetingParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');

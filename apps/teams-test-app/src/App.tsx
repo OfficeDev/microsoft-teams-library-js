@@ -36,6 +36,7 @@ import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import SearchAPIs from './components/SearchAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
@@ -89,7 +90,7 @@ export const generateJsonParseErrorMsg = (example?: Record<string, any>): string
       example,
     )}. For example, ${JSON.stringify(example)}`;
   } else {
-    return 'Please JSON format your input. If you\'ve ensured your input is JSON formatted but are still getting this message, please also ensure that your input contains all necessary keys, etc.';
+    return "Please JSON format your input. If you've ensured your input is JSON formatted but are still getting this message, please also ensure that your input contains all necessary keys, etc.";
   }
 };
 
@@ -139,6 +140,7 @@ const App = (): ReactElement => {
       <PeopleAPIs />
       <PrivateAPIs />
       <RemoteCameraAPIs />
+      <SearchAPIs />
       <SharingAPIs />
       <WebStorageAPIs />
       <StageViewAPIs />

@@ -96,7 +96,7 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
     }),
   );
   const dedupUrls: { [url: string]: boolean } = {};
-  combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
+  combinedOriginUrls = combinedOriginUrls.filter((_originUrl) => {
     if (dedupUrls[_originUrl]) {
       return false;
     }

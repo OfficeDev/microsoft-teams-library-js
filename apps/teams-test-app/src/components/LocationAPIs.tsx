@@ -16,7 +16,7 @@ const GetLocation = (): React.ReactElement =>
     name: 'getLocation',
     title: 'Get Location',
     onClick: {
-      validateInput: locationProps => {
+      validateInput: (locationProps) => {
         if (locationProps.allowChooseLocation === undefined) {
           throw new Error('allowChooseLocation is required');
         }
@@ -40,7 +40,7 @@ const ShowLocation = (): React.ReactElement =>
     name: 'showLocation',
     title: 'Show Location',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.latitude || !input.longitude) {
           throw new Error('latitude and longitude are required');
         }

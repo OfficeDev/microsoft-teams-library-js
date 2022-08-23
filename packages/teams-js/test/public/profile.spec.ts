@@ -25,8 +25,8 @@ describe('profile', () => {
       expect(() => profile.showProfile(undefined)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should return an error if validation fails. context: ${context}`, async () => {
           await desktopPlatformMock.initializeWithContext(context);
           await expect(profile.showProfile(undefined)).rejects.toEqual({

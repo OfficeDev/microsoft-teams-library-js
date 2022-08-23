@@ -50,9 +50,9 @@ describe('people', () => {
       expect(() => people.selectPeople()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        Object.values(v1HostClientTypes).forEach(hostClientType => {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        Object.values(v1HostClientTypes).forEach((hostClientType) => {
           it(`should throw error when people is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatformMock.initializeWithContext(context, hostClientType);
             framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -172,9 +172,9 @@ describe('people', () => {
       expect(() => people.selectPeople(() => {})).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
-        Object.values(v1HostClientTypes).forEach(hostClientType => {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        Object.values(v1HostClientTypes).forEach((hostClientType) => {
           it(`should throw error when people is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatformMock.initializeWithContext(context, hostClientType);
             framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -211,7 +211,7 @@ describe('people', () => {
             expect(message.args[0]).toEqual(null);
           });
 
-          it(`selectPeople call in default version of platform support fails. context: ${context}`, done => {
+          it(`selectPeople call in default version of platform support fails. context: ${context}`, (done) => {
             framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
               framelessPlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
               people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
@@ -222,7 +222,7 @@ describe('people', () => {
             });
           });
 
-          it(`selectPeople calls with valid peoplePickerInput. context: ${context}`, done => {
+          it(`selectPeople calls with valid peoplePickerInput. context: ${context}`, (done) => {
             framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
               framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
 
@@ -244,7 +244,7 @@ describe('people', () => {
             });
           });
 
-          it(`selectPeople calls with error. context: ${context}`, done => {
+          it(`selectPeople calls with error. context: ${context}`, (done) => {
             framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
               framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
 

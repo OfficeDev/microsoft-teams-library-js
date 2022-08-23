@@ -63,7 +63,7 @@ export namespace chat {
    * @returns Promise resolved upon completion
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -94,7 +94,7 @@ export namespace chat {
    * @returns Promise resolved upon completion
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
       }

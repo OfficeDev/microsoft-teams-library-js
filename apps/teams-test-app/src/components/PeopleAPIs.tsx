@@ -16,14 +16,14 @@ const SelectPeople = (): React.ReactElement =>
     name: 'selectPeople',
     title: 'Select People',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           return; //API allows for no input to be provided
         }
         return;
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = input ? await people.selectPeople(input) : people.selectPeople();
           return JSON.stringify(result);
         },

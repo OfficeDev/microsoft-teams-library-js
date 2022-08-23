@@ -532,7 +532,7 @@ describe('media', () => {
       const notifyEventToApp = jest.spyOn(videoController, 'notifyEventToApp');
 
       try {
-        await videoController.stop(e => {
+        await videoController.stop((e) => {
           return e;
         });
       } catch (err) {

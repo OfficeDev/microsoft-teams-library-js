@@ -130,7 +130,7 @@ export namespace teams {
       export function getUserJoinedTeams(
         teamInstanceParameters?: TeamInstanceParameters,
       ): Promise<UserJoinedTeamsInformation> {
-        return new Promise<UserJoinedTeamsInformation>(resolve => {
+        return new Promise<UserJoinedTeamsInformation>((resolve) => {
           ensureInitialized();
           if (!isSupported()) {
             throw errorNotSupportedOnPlatform;
@@ -182,7 +182,7 @@ export namespace teams {
      * Limited to Microsoft-internal use
      */
     export function getConfigSetting(key: string): Promise<string> {
-      return new Promise<string>(resolve => {
+      return new Promise<string>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
