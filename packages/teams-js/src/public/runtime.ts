@@ -31,10 +31,11 @@ export interface IRuntime {
     readonly notifications?: {};
     readonly pages?: {
       readonly appButton?: {};
-      readonly tabs?: {};
-      readonly config?: {};
       readonly backStack?: {};
+      readonly config?: {};
       readonly fullTrust?: {};
+      readonly self?: {};
+      readonly tabs?: {};
     };
     readonly people?: {};
     readonly permissions?: {};
@@ -83,6 +84,7 @@ export let runtime: IRuntime = {
       config: undefined,
       backStack: undefined,
       fullTrust: undefined,
+      self: undefined,
     },
     people: undefined,
     permissions: undefined,
@@ -192,6 +194,13 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
+
+  '2.2.0': [
+    {
+      capability: { pages: { self: {} } },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
 };
 
 /**
@@ -208,9 +217,9 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
   let newSupports = { ...teamsRuntimeConfig.supports };
 
-  Object.keys(versionConstants).forEach((versionNumber) => {
+  Object.keys(versionConstants).forEach(versionNumber => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      versionConstants[versionNumber].forEach((capabilityReqs) => {
+      versionConstants[versionNumber].forEach(capabilityReqs => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
           newSupports = {
             ...newSupports,
