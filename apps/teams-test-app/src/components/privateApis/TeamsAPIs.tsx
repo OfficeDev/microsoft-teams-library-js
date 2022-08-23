@@ -9,12 +9,12 @@ const GetTeamsChannels = (): React.ReactElement =>
     name: 'getTeamChannels2',
     title: 'Get Team Channels',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input || typeof input !== 'string') {
           throw new Error('input is required and it has to be a string.');
         }
       },
-      submit: async groupId => {
+      submit: async (groupId) => {
         return new Promise((res, rej) => {
           const onComplete = (error: SdkError, channels: teams.ChannelInfo[]): void => {
             if (error) {
@@ -35,12 +35,12 @@ const RefreshSiteUrl = (): React.ReactElement =>
     name: 'refreshSiteUrl2',
     title: 'Refresh site url',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input || typeof input !== 'string') {
           throw new Error('input is required and it has to be a string.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         return new Promise((res, rej) => {
           const callback = (error: SdkError): void => {
             if (error) {

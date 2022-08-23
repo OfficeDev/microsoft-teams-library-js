@@ -43,8 +43,8 @@ describe('geoLocation', () => {
       expect(() => geoLocation.getCurrentLocation()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should throw error when getCurrentLocation is not supported in runtime config. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -129,8 +129,8 @@ describe('geoLocation', () => {
       return expect(() => geoLocation.hasPermission()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should throw error when geoLocation is not supported in runtime config. context: ${context}`, async () => {
           await framelessPlatform.initializeWithContext(context);
           framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -222,8 +222,8 @@ describe('geoLocation', () => {
   });
 
   describe('Testing RequestPermisison API', () => {
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
           expect(() => geoLocation.requestPermission()).toThrowError('The library has not yet been initialized');
         });
@@ -326,8 +326,8 @@ describe('geoLocation', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`should throw error when geoLocation is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -457,8 +457,8 @@ describe('geoLocation', () => {
         expect(() => geoLocation.map.chooseLocation()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`should throw error when geoLocation is not supported in runtime config. context: ${context}`, async () => {
             await framelessPlatform.initializeWithContext(context);
             framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });

@@ -37,8 +37,8 @@ describe('Testing teams capabillity', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`teams.getTeamChannels should throw error when teams is not supported. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -109,7 +109,7 @@ describe('Testing teams capabillity', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`teams.refreshSiteUrl should throw error when teams is not supported. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -137,7 +137,7 @@ describe('Testing teams capabillity', () => {
 
         it(`teams.refreshSiteUrl should trigger callback correctly. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
-          const callback = jest.fn(err => {
+          const callback = jest.fn((err) => {
             expect(err).toBeFalsy();
           });
 

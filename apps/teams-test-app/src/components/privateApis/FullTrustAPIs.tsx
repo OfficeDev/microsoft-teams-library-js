@@ -49,7 +49,7 @@ const GetUserJoinedTeams = (): React.ReactElement =>
   ApiWithTextInput<TeamInstanceParameters | undefined>({
     name: 'getUserJoinedTeams',
     title: 'Get User Joined Teams',
-    onClick: async input => {
+    onClick: async (input) => {
       const result = await teams.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
@@ -76,12 +76,12 @@ const GetConfigSetting = (): React.ReactElement =>
     name: 'getConfigSetting2',
     title: 'Get Config Setting',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input || typeof input !== 'string') {
           throw new Error('the input should be a string.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         const result = await teams.fullTrust.getConfigSetting(input);
         return result;
       },

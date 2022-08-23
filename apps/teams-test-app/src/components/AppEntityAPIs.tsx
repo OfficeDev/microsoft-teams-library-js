@@ -29,12 +29,12 @@ const SelectAppEntity = (): React.ReactElement =>
         if (typeof threadId !== 'string') {
           throw new Error('threadId has to be a string');
         }
-        if (!Array.isArray(categories) || categories.some(x => typeof x !== 'string')) {
+        if (!Array.isArray(categories) || categories.some((x) => typeof x !== 'string')) {
           throw new Error('categories has to be a string array');
         }
       },
-      submit: appEntityParams => {
-        return new Promise(resolve => {
+      submit: (appEntityParams) => {
+        return new Promise((resolve) => {
           const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
             if (entity) {
               resolve(JSON.stringify(entity));
@@ -42,7 +42,7 @@ const SelectAppEntity = (): React.ReactElement =>
               resolve(JSON.stringify(error));
             }
           };
-          app.getContext().then(context => {
+          app.getContext().then((context) => {
             appEntity.selectAppEntity(
               appEntityParams.threadId,
               appEntityParams.categories,

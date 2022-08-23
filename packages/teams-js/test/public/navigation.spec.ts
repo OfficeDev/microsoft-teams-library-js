@@ -29,7 +29,7 @@ describe('MicrosoftTeams-Navigation', () => {
       expect(() => returnFocus(true)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
@@ -66,7 +66,7 @@ describe('MicrosoftTeams-Navigation', () => {
       expect(() => navigateToTab(null)).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
@@ -119,8 +119,8 @@ describe('MicrosoftTeams-Navigation', () => {
       );
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`navigation.navigateCrossDomain should successfully call pages.navigateCrossDomain when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const pagesNavigateCrossDomain = jest.spyOn(pages, 'navigateCrossDomain');
@@ -202,7 +202,7 @@ describe('MicrosoftTeams-Navigation', () => {
       expect(() => navigateBack()).toThrowError('The library has not yet been initialized');
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateBack should successfully call pages.backStack.navigateBack when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesBackStackNavigateBack = jest.spyOn(pages.backStack, 'navigateBack');

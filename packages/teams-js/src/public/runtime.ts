@@ -40,6 +40,7 @@ export interface IRuntime {
     readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
+    readonly search?: {};
     readonly sharing?: {};
     readonly stageView?: {};
     readonly teams?: {
@@ -87,6 +88,7 @@ export let runtime: IRuntime = {
     permissions: undefined,
     profile: undefined,
     remoteCamera: undefined,
+    search: undefined,
     sharing: undefined,
     stageView: undefined,
     teams: {
@@ -206,9 +208,9 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
   let newSupports = { ...teamsRuntimeConfig.supports };
 
-  Object.keys(versionConstants).forEach(versionNumber => {
+  Object.keys(versionConstants).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      versionConstants[versionNumber].forEach(capabilityReqs => {
+      versionConstants[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
           newSupports = {
             ...newSupports,
