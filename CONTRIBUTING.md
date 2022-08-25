@@ -50,15 +50,12 @@ The TeamsJS Client SDK contains a [Change Log](./packages/teams-js/CHANGELOG.md)
 
 Beachball generates JSON change files based on a few simple answers from you:
 
-- Change type: this can be one of four types: Patch, Minor, None, and Major.
+- Change type: this can be one of four types: Major, Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
 
-  - Patch - bug fixes; no API changes.
-
-  - Minor - small feature; backwards compatible API changes.
-
-  - None - this change does not affect the published package in any way.
-
-  - Major - major feature; breaking changes.
+  - Major - when you make incompatible API changes,
+  - Minor - when you add functionality in a backwards compatible manner,
+  - Patch - when you make backwards compatible bug fixes
+  - None - when the change does not affect the published package in any way.
 
 - Describe changes: Type your own message or choose one of the commit messages. Try to make it descriptive - it will help you if you need to locate the change file later.
   - Please use past tense (e.g., "Added comments to \`app.initialize\`")
