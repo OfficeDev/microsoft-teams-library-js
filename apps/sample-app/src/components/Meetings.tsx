@@ -46,9 +46,7 @@ export const MeetingList: React.FC<MeetingProps> = (props: MeetingProps) => {
       <Title3 block className="paddingClass">
         Your Meetings Today
       </Title3>
-      <div>
-        <DetailsList items={itemList} columns={columns} selectionMode={SelectionMode.none} />
-      </div>
+      <DetailsList items={itemList} columns={columns} selectionMode={SelectionMode.none} />
     </>
   );
 };
