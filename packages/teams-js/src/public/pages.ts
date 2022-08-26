@@ -709,8 +709,7 @@ export namespace pages {
 
   export namespace self {
     /**
-     * Navigate to the currently running application with page ID, with optional parameters for a WebURL (if the
-     * application cannot be navigated to, such as if it is not installed),and sub-page ID (for navigating to
+     * Navigate to the currently running application with page ID, and sub-page ID (for navigating to
      * specific content within the page). This is equivalent to navigating to a deep link with the above data, but
      * does not require the application to build a URL or worry about different deep link formats for different hosts.
      * @param params - Parameters for the navigation
