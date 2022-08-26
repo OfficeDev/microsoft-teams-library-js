@@ -481,7 +481,6 @@ describe('Testing pages module', () => {
     describe('Testing pages.self.navigateTo function', () => {
       const navigateToSelfParams: pages.NavigateToSelfParams = {
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
         subPageId: 'task456',
       };
 
@@ -2207,7 +2206,6 @@ describe('Testing pages module', () => {
     describe('Testing pages.self.navigateTo function', () => {
       const navigateToSelfParams: pages.NavigateToSelfParams = {
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
         subPageId: 'task456',
       };
 
