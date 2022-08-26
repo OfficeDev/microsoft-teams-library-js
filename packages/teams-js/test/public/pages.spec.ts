@@ -39,7 +39,7 @@ describe('Testing pages module', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -82,7 +82,7 @@ describe('Testing pages module', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFocusEnterHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
           expect.assertions(1);
@@ -143,8 +143,8 @@ describe('Testing pages module', () => {
         expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             expect.assertions(1);
@@ -184,8 +184,8 @@ describe('Testing pages module', () => {
         websiteUrl: 'someWebsiteUrl',
       };
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             expect.assertions(1);
@@ -241,8 +241,8 @@ describe('Testing pages module', () => {
         entityId: 'someEntityId',
       };
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.getConfig should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -322,9 +322,9 @@ describe('Testing pages module', () => {
       });
       */
 
-      Object.keys(FrameContexts).forEach(k => {
+      Object.keys(FrameContexts).forEach((k) => {
         const context = FrameContexts[k];
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.navigateCrossDomain should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -408,8 +408,8 @@ describe('Testing pages module', () => {
         FrameContexts.meetingStage,
       ];
 
-      Object.keys(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.navigateToApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -500,8 +500,8 @@ describe('Testing pages module', () => {
         FrameContexts.meetingStage,
       ];
 
-      Object.keys(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.self.navigateTo should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -560,8 +560,8 @@ describe('Testing pages module', () => {
         expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.shareDeepLink should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             expect.assertions(1);
@@ -608,7 +608,7 @@ describe('Testing pages module', () => {
           'The library has not yet been initialized',
         );
       });
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -693,7 +693,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.navigateToTab should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -718,7 +718,7 @@ describe('Testing pages module', () => {
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             expect(navigateToTabMsg).not.toBeNull();
             utils.respondToMessage(navigateToTabMsg, false);
-            await promise.catch(e =>
+            await promise.catch((e) =>
               expect(e).toMatchObject(new Error('Invalid internalTabInstanceId and/or channelId were/was provided')),
             );
           });
@@ -746,7 +746,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.getTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -801,7 +801,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.getMruTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -874,8 +874,8 @@ describe('Testing pages module', () => {
           expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -968,8 +968,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.setConfig should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1012,8 +1012,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerOnSaveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1049,7 +1049,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully add webhookUrl to save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
@@ -1082,7 +1082,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify success from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -1096,7 +1096,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify failure from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -1111,7 +1111,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should not allow multiple notifies from the registered save handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifySuccess();
                 expect(() => saveEvent.notifySuccess()).toThrowError(
                   'The SaveEvent may only notify success or failure once.',
@@ -1149,8 +1149,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerOnRemoveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1190,7 +1190,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(removeEvent => {
+              pages.config.registerOnRemoveHandler((removeEvent) => {
                 removeEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -1207,7 +1207,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(removeEvent => {
+              pages.config.registerOnRemoveHandler((removeEvent) => {
                 removeEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -1242,8 +1242,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerChangeConfigHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1324,7 +1324,7 @@ describe('Testing pages module', () => {
           await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.navigateBack should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1357,7 +1357,7 @@ describe('Testing pages module', () => {
             'The library has not yet been initialized',
           );
         });
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1460,8 +1460,8 @@ describe('Testing pages module', () => {
           expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.fullTrust.enterFullScreen should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1508,8 +1508,8 @@ describe('Testing pages module', () => {
           expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.fullTrust.exitFullscreen should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1578,8 +1578,8 @@ describe('Testing pages module', () => {
           expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onClick should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1631,8 +1631,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onHoverEnter should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1684,8 +1684,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onHoverLeave should throw error when pages is not supported when initialized with ${context}`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1775,7 +1775,7 @@ describe('Testing pages module', () => {
         expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.returnFocus should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -1817,7 +1817,7 @@ describe('Testing pages module', () => {
           'The library has not yet been initialized',
         );
       });
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFocusEnterHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           expect.assertions(4);
@@ -1887,8 +1887,8 @@ describe('Testing pages module', () => {
         expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             expect.assertions(4);
@@ -1928,8 +1928,8 @@ describe('Testing pages module', () => {
         websiteUrl: 'someWebsiteUrl',
       };
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             expect.assertions(4);
@@ -1984,8 +1984,8 @@ describe('Testing pages module', () => {
         entityId: 'someEntityId',
       };
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.getConfig should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2035,9 +2035,9 @@ describe('Testing pages module', () => {
         );
       });
 
-      Object.keys(FrameContexts).forEach(k => {
+      Object.keys(FrameContexts).forEach((k) => {
         const context = FrameContexts[k];
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.navigateCrossDomain should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2134,8 +2134,8 @@ describe('Testing pages module', () => {
         );
       });
 
-      Object.keys(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.navigateToApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2226,8 +2226,8 @@ describe('Testing pages module', () => {
         FrameContexts.meetingStage,
       ];
 
-      Object.keys(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContext => allowedContext === context)) {
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`pages.self.navigateTo should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2289,8 +2289,8 @@ describe('Testing pages module', () => {
         expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`pages.shareDeepLink should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             expect.assertions(4);
@@ -2337,7 +2337,7 @@ describe('Testing pages module', () => {
           'The library has not yet been initialized',
         );
       });
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2413,7 +2413,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.navigateToTab should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2454,7 +2454,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.getTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2515,7 +2515,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.tabs.getMruTabInstances should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2583,8 +2583,8 @@ describe('Testing pages module', () => {
           expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.setValidityState should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2677,8 +2677,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.setConfig should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2720,8 +2720,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerOnSaveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2759,7 +2759,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully add webhookUrl to save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
@@ -2795,7 +2795,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify success from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -2813,7 +2813,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should successfully notify failure from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -2831,7 +2831,7 @@ describe('Testing pages module', () => {
             it(`pages.config.registerOnSaveHandler should not allow multiple notifies from the registered save handler when initialized with ${context} context`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               let handlerCalled = false;
-              pages.config.registerOnSaveHandler(saveEvent => {
+              pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifySuccess();
                 expect(() => saveEvent.notifySuccess()).toThrowError(
                   'The SaveEvent may only notify success or failure once.',
@@ -2873,8 +2873,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerOnRemoveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -2916,7 +2916,7 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(removeEvent => {
+              pages.config.registerOnRemoveHandler((removeEvent) => {
                 removeEvent.notifySuccess();
                 handlerCalled = true;
               });
@@ -2935,7 +2935,7 @@ describe('Testing pages module', () => {
               await framelessPostMocks.initializeWithContext(context);
 
               let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(removeEvent => {
+              pages.config.registerOnRemoveHandler((removeEvent) => {
                 removeEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
@@ -2972,8 +2972,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerChangeConfigHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3037,7 +3037,7 @@ describe('Testing pages module', () => {
           await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.navigateBack should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3070,7 +3070,7 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
+        Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3158,8 +3158,8 @@ describe('Testing pages module', () => {
           expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.fullTrust.enterFullScreen should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3206,8 +3206,8 @@ describe('Testing pages module', () => {
           expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.fullTrust.exitFullscreen should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3257,8 +3257,8 @@ describe('Testing pages module', () => {
           expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onClick should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3312,8 +3312,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onHoverEnter should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -3369,8 +3369,8 @@ describe('Testing pages module', () => {
           );
         });
 
-        Object.values(FrameContexts).forEach(context => {
-          if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.appButton.onHoverLeave should throw error when pages is not supported when initialized with ${context}`, async () => {
               await framelessPostMocks.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
