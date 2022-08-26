@@ -9,12 +9,12 @@ const NavigateTo = (): React.ReactElement =>
     name: 'navigateTo',
     title: 'Navigate To',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.pageId) {
           throw new Error('PageID are required.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await pages.self.navigateTo(input);
         return 'Completed';
       },

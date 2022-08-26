@@ -194,13 +194,6 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
     },
   ],
-
-  '2.2.0': [
-    {
-      capability: { pages: { self: {} } },
-      hostClientTypes: v1HostClientTypes,
-    },
-  ],
 };
 
 /**
@@ -217,9 +210,9 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
   let newSupports = { ...teamsRuntimeConfig.supports };
 
-  Object.keys(versionConstants).forEach(versionNumber => {
+  Object.keys(versionConstants).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      versionConstants[versionNumber].forEach(capabilityReqs => {
+      versionConstants[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
           newSupports = {
             ...newSupports,
