@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "add timestamp to VideoFrame type, send timestamp after video frame processed",
+  "packageName": "@microsoft/teams-js",
+  "email": "lubobill1990@163.com",
+  "dependentChangeType": "patch"
+}
