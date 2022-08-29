@@ -55,7 +55,6 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    ensureInitialized(FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
