@@ -36,8 +36,8 @@ describe('video', () => {
     };
 
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow registerForVideoFrame calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -380,8 +380,8 @@ describe('video', () => {
     const effectId = 'effectId';
 
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -448,8 +448,8 @@ describe('video', () => {
 
   describe('registerForVideoEffect', () => {
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow registerForVideoEffect calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 

@@ -4,7 +4,10 @@ import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from '
 import { GlobalVars } from './globalVars';
 import { compareSDKVersions } from './utils';
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCalled) {
     throw new Error('The library has not yet been initialized');
@@ -36,6 +39,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
  * @param requiredVersion - SDK version required by the API
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKVersionForCompatCheck): boolean {
   const value = compareSDKVersions(GlobalVars.clientSupportedSDKVersion, requiredVersion);
@@ -50,6 +54,7 @@ export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKV
  * Helper function to identify if host client is either android or ios
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function isHostClientMobile(): boolean {
   return GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios;
@@ -62,6 +67,7 @@ export function isHostClientMobile(): boolean {
  *          supported by platform or not. Null is returned in case of success.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function throwExceptionIfMobileApiIsNotSupported(
   requiredVersion: string = defaultSDKVersionForCompatCheck,
@@ -81,6 +87,7 @@ export function throwExceptionIfMobileApiIsNotSupported(
  * which is used later for message source/origin validation
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
   let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
@@ -89,7 +96,7 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
     }),
   );
   const dedupUrls: { [url: string]: boolean } = {};
-  combinedOriginUrls = combinedOriginUrls.filter(_originUrl => {
+  combinedOriginUrls = combinedOriginUrls.filter((_originUrl) => {
     if (dedupUrls[_originUrl]) {
       return false;
     }

@@ -16,12 +16,12 @@ const OpenAppInstallDialog = (): React.ReactElement =>
     name: 'openAppInstallDialog',
     title: 'Open App Install Dialog',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await appInstallDialog.openAppInstallDialog(input);
         return 'called';
       },

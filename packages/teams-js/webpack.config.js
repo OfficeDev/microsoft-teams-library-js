@@ -84,7 +84,7 @@ module.exports = {
       output: 'MicrosoftTeams-manifest.json',
     }),
     {
-      apply: compiler => {
+      apply: (compiler) => {
         compiler.hooks.done.tap('wsi-test', () => {
           const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosoftTeams-manifest.json'), 'utf-8'));
           // If for some reason hash was not generated for the assets, this test will fail in build.

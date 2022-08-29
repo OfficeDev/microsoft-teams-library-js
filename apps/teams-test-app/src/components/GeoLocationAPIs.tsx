@@ -43,12 +43,12 @@ const ShowLocation = (): React.ReactElement =>
     name: 'showLocationOnMap',
     title: 'Show Location',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.latitude || !input.longitude) {
           throw new Error('latitude and longitude are required');
         }
       },
-      submit: async locationProps => {
+      submit: async (locationProps) => {
         await geoLocation.map.showLocation(locationProps);
         return 'Completed';
       },
@@ -75,6 +75,25 @@ const RequestGeoLocationPermission = (): React.ReactElement =>
     },
   });
 
+const WebAPIGetCurrentPosition = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'WebAPIGetCurrentPosition',
+    title: 'Web API GetCurrentPosition',
+    onClick: async (setResult) => {
+      let result;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          result = 'Latitude: ' + position.coords.latitude + ' Longitude: ' + position.coords.longitude;
+          setResult(result);
+        });
+      } else {
+        result = 'navigator.geolocation is not accessible';
+        setResult(result);
+      }
+      return JSON.stringify('Do not have required permissions to access location');
+    },
+  });
+
 const GeoLocationAPIs = (): ReactElement => (
   <ModuleWrapper title="GeoLocation">
     <GetCurrentLocation />
@@ -82,6 +101,7 @@ const GeoLocationAPIs = (): ReactElement => (
     <ShowLocation />
     <HasGeoLocationPermission />
     <RequestGeoLocationPermission />
+    <WebAPIGetCurrentPosition />
     <CheckGeoLocationCapability />
     <CheckGeoLocationMapCapability />
   </ModuleWrapper>

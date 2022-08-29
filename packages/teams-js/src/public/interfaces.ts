@@ -21,6 +21,7 @@ export interface TabInstance {
 
   /**
    * @internal
+   * Limited to Microsoft-internal use
    * @protected
    */
   internalTabInstanceId?: string;
@@ -862,9 +863,9 @@ export interface DialogSize {
 }
 /**
  * @hidden
- * Hide from docs.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface LoadContext {
   /**

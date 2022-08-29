@@ -16,7 +16,7 @@ const OpenStageView = (): ReactElement =>
     name: 'stageViewOpen',
     title: 'StageView Open',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId are required.');
         }
@@ -31,7 +31,7 @@ const OpenStageView = (): ReactElement =>
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await stageView.open(input);
           return 'opened';
         },
@@ -45,7 +45,7 @@ const OpenStageView = (): ReactElement =>
           stageView
             .open(input)
             .then()
-            .catch(error => callback(error));
+            .catch((error) => callback(error));
         },
       },
     },

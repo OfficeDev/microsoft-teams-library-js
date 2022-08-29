@@ -5,13 +5,12 @@ import { app, authentication } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
 import { ProfileContent } from './components/Profile';
-import { appInitializationFailed, getTheme } from './components/utils';
+import { appInitializationFailed, getThemeOther, getThemeTeams } from './components/utils';
 
 const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = React.useState(false);
   const [accessToken, setAccessToken] = React.useState<string>();
   const [currTheme, setCurrTheme] = useState<Theme>(teamsLightTheme);
-
   React.useEffect(() => {
     (async () => {
       try {
@@ -20,12 +19,23 @@ const App: React.FC = () => {
         app.notifyAppLoaded();
         app.notifySuccess();
         const context = await app.getContext();
-        const themeNow = getTheme(context?.app?.theme);
-        setCurrTheme(themeNow);
-        app.registerOnThemeChangeHandler(function(theme) {
-          setCurrTheme(getTheme(theme));
-        });
+        // Learn more about 'app' namespace from the link below
+        //https://docs.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/using-teams-client-sdk?tabs=javascript%2Cmanifest-teams-toolkit#differentiate-your-app-experience
+        if (context?.app?.host?.name === 'Teams') {
+          const themeNow = getThemeTeams(context?.app?.theme);
+          setCurrTheme(themeNow);
+          app.registerOnThemeChangeHandler(function (theme) {
+            setCurrTheme(getThemeTeams(theme));
+          });
+        } else {
+          const themeNow = getThemeOther(context?.app?.theme);
+          setCurrTheme(themeNow);
+          app.registerOnThemeChangeHandler(function (theme) {
+            setCurrTheme(getThemeOther(theme));
+          });
+        }
       } catch (e) {
+        alert('Initialization Error: App should be sideloaded onto a host');
         appInitializationFailed();
       }
     })();
@@ -48,7 +58,7 @@ const App: React.FC = () => {
           </div>
           <div className="appMainPage-sub-container">
             <Text as="p">
-              <Button appearance="primary" onClick={() => handle()}>
+              <Button appearance="primary" onClick={() => handle()} tabIndex={0}>
                 Sign in
               </Button>
             </Text>

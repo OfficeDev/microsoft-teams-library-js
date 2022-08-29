@@ -127,7 +127,7 @@ describe('location', () => {
       expect(message.args[0]).toEqual(defaultLocationProps);
     });
 
-    it('getLocation calls with successful result', done => {
+    it('getLocation calls with successful result', (done) => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
@@ -157,7 +157,7 @@ describe('location', () => {
       });
     });
 
-    it('getLocation calls with error', done => {
+    it('getLocation calls with error', (done) => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
@@ -274,7 +274,7 @@ describe('location', () => {
       expect(message.args[0]).toEqual(defaultLocation);
     });
 
-    it('showLocation calls with successful result', done => {
+    it('showLocation calls with successful result', (done) => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
@@ -300,7 +300,7 @@ describe('location', () => {
       });
     });
 
-    it('showLocation calls with error', done => {
+    it('showLocation calls with error', (done) => {
       framelessPlatform.initializeWithContext(FrameContexts.content).then(() => {
         framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
         framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });

@@ -95,7 +95,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(utils.messages.length).toBe(1);
   });
 
-  it('should invoke all callbacks once initialization completes', done => {
+  it('should invoke all callbacks once initialization completes', (done) => {
     let count = 0;
     initialize(() => {
       ++count;
@@ -115,7 +115,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.respondToMessage(initMessage, 'content');
   });
 
-  it('should invoke callback immediatelly if initialization has already completed', done => {
+  it('should invoke callback immediatelly if initialization has already completed', (done) => {
     initialize();
     expect(utils.processMessage).toBeDefined();
     expect(utils.messages.length).toBe(1);
@@ -183,7 +183,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     await utils.initializeWithContext(FrameContexts.content);
 
     let newTheme: string;
-    registerOnThemeChangeHandler(theme => {
+    registerOnThemeChangeHandler((theme) => {
       newTheme = theme;
     });
 
@@ -229,7 +229,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerInvoked).toBe(true);
   });
 
-  it('should successfully get context', done => {
+  it('should successfully get context', (done) => {
     utils.initializeWithContext(FrameContexts.content).then(() => {
       const expectedContext: Context = {
         groupId: 'someGroupId',
@@ -266,8 +266,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
         appLaunchId: 'appLaunchId',
         meetingId: 'dummyMeetingId',
       };
-      getContext(context => {
-        Object.keys(expectedContext).forEach(e => {
+      getContext((context) => {
+        Object.keys(expectedContext).forEach((e) => {
           expect(JSON.stringify(expectedContext[e])).toBe(JSON.stringify(context[e]));
         });
         expect(context.frameContext).toBe(FrameContexts.content);
@@ -282,9 +282,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  it('should successfully get frame context in side panel', done => {
+  it('should successfully get frame context in side panel', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
-      getContext(context => {
+      getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
@@ -296,9 +296,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  it('should successfully get frame context when returned from client', done => {
+  it('should successfully get frame context when returned from client', (done) => {
     utils.initializeWithContext(FrameContexts.content).then(() => {
-      getContext(context => {
+      getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
@@ -310,9 +310,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  it('should successfully get frame context in side panel with fallback logic if not returned from client', done => {
+  it('should successfully get frame context in side panel with fallback logic if not returned from client', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
-      getContext(context => {
+      getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
@@ -344,8 +344,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext(FrameContexts.content);
 
-      getTabInstances(tabInfo => tabInfo);
-      getTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      getTabInstances((tabInfo) => tabInfo);
+      getTabInstances((tabInfo) => tabInfo, {} as TabInstanceParameters);
     });
   });
 
@@ -353,8 +353,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext(FrameContexts.content);
 
-      getMruTabInstances(tabInfo => tabInfo);
-      getMruTabInstances(tabInfo => tabInfo, {} as TabInstanceParameters);
+      getMruTabInstances((tabInfo) => tabInfo);
+      getMruTabInstances((tabInfo) => tabInfo, {} as TabInstanceParameters);
     });
   });
 
@@ -367,7 +367,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
@@ -395,7 +395,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should invoke error callback', done => {
+    it('should invoke error callback', (done) => {
       utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
@@ -423,7 +423,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should invoke getGenericOnCompleteHandler when no callback is provided.', done => {
+    it('should invoke getGenericOnCompleteHandler when no callback is provided.', (done) => {
       utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
@@ -454,7 +454,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
@@ -491,7 +491,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
@@ -520,7 +520,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should invoke error callback', done => {
+    it('should invoke error callback', (done) => {
       utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
@@ -549,7 +549,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
         const request = 'dummyDeepLink';
 
@@ -587,7 +587,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.task).then(() => {
         const request = 'dummyDeepLink';
 
@@ -616,7 +616,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should invoke error callback', done => {
+    it('should invoke error callback', (done) => {
       utils.initializeWithContext(FrameContexts.task).then(() => {
         const request = 'dummyDeepLink';
 
@@ -646,7 +646,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       });
     });
 
-    it('should successfully send a request', done => {
+    it('should successfully send a request', (done) => {
       utils.initializeWithContext(FrameContexts.content).then(() => {
         const request = 'dummyDeepLink';
 
@@ -788,8 +788,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       FrameContexts.meetingStage,
     ];
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const request = 'dummyDeepLink';
@@ -874,7 +874,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
       let handlerInvoked = false;
       let readyToUnloadFunc: () => void;
-      registerBeforeUnloadHandler(readyToUnload => {
+      registerBeforeUnloadHandler((readyToUnload) => {
         readyToUnloadFunc = readyToUnload;
         handlerInvoked = true;
         return true;
