@@ -38,6 +38,10 @@ export namespace video {
      * RGB stride, valid only when video frame format is RGB
      */
     stride?: number;
+    /**
+     * The time stamp of the current video frame
+     */
+    timestamp?: number;
   }
 
   /**
@@ -103,8 +107,15 @@ export namespace video {
     }
 
     registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
-      if (videoFrame !== undefined) {
-        frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
+      if (videoFrame) {
+        const timestamp = videoFrame.timestamp;
+        frameCallback(
+          videoFrame,
+          () => {
+            notifyVideoFrameProcessed(timestamp);
+          },
+          notifyError,
+        );
       }
     });
     sendMessageToParent('video.registerForVideoFrame', [config]);
@@ -147,8 +158,8 @@ export namespace video {
    * or pass the video frame to next one in video pipeline
    * @beta
    */
-  function notifyVideoFrameProcessed(): void {
-    sendMessageToParent('video.videoFrameProcessed');
+  function notifyVideoFrameProcessed(timestamp?: number): void {
+    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
   }
 
   /**
