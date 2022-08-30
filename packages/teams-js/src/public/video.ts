@@ -69,11 +69,11 @@ export namespace video {
    */
   export enum EffectChangeType {
     /**
-     * current video effect changed
+     * Current video effect changed
      */
     EffectChanged,
     /**
-     * disable the video effect
+     * Disable the video effect
      */
     EffectDisabled,
   }
@@ -106,24 +106,28 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler('video.newVideoFrame', (videoFrame: VideoFrame) => {
-      if (videoFrame) {
-        const timestamp = videoFrame.timestamp;
-        frameCallback(
-          videoFrame,
-          () => {
-            notifyVideoFrameProcessed(timestamp);
-          },
-          notifyError,
-        );
-      }
-    });
+    registerHandler(
+      'video.newVideoFrame',
+      (videoFrame: VideoFrame) => {
+        if (videoFrame) {
+          const timestamp = videoFrame.timestamp;
+          frameCallback(
+            videoFrame,
+            () => {
+              notifyVideoFrameProcessed(timestamp);
+            },
+            notifyError,
+          );
+        }
+      },
+      false,
+    );
     sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
   /**
-   * Video extension should call this to notify host client that the current selected effect parameter changed.
-   * If it's pre-meeting, host client will call videoEffectCallback immediately then use the videoEffect.
+   * Video extension should call this to notify host that the current selected effect parameter changed.
+   * If it's pre-meeting, host will call videoEffectCallback immediately then use the videoEffect.
    * If it's the in-meeting scenario, we will call videoEffectCallback when apply button clicked.
    * @beta
    * @param effectChangeType - the effect change type.
@@ -141,7 +145,7 @@ export namespace video {
   }
 
   /**
-   * Register the video effect callback, host client uses this to notify the video extension the new video effect will by applied
+   * Register the video effect callback, host uses this to notify the video extension the new video effect will by applied
    * @beta
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
@@ -150,11 +154,12 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('video.effectParameterChange', callback);
+    registerHandler('video.effectParameterChange', callback, false);
+    sendMessageToParent('video.registerForVideoEffect');
   }
 
   /**
-   * Sending notification to host client finished the video frame processing, now host client can render this video frame
+   * Sending notification to host finished the video frame processing, now host can render this video frame
    * or pass the video frame to next one in video pipeline
    * @beta
    */
@@ -163,7 +168,7 @@ export namespace video {
   }
 
   /**
-   * Sending error notification to host client
+   * Sending error notification to host
    * @beta
    * @param errorMessage - The error message that will be sent to the host
    */
