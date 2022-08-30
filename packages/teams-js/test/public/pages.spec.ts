@@ -1807,7 +1807,7 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.setCurrentFrame function', () => {
-      const allowedContexts = [FrameContexts.content];
+      // const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
@@ -1818,36 +1818,36 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect.assertions(4);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            try {
-              pages.setCurrentFrame(frameContext);
-            } catch (e) {
-              expect(e).toMatchObject(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+        // if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          expect.assertions(4);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
             pages.setCurrentFrame(frameContext);
-            const message = framelessPostMocks.findMessageByFunc('setFrameContext');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toStrictEqual(frameContext);
-          });
-        } else {
-          it(`pages.setCurrentFrame should not allow calls from ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
+
+        it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          pages.setCurrentFrame(frameContext);
+          const message = framelessPostMocks.findMessageByFunc('setFrameContext');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toStrictEqual(frameContext);
+        });
+        // } else {
+        //   it(`pages.setCurrentFrame should not allow calls from ${context} context`, async () => {
+        //     await framelessPostMocks.initializeWithContext(context);
+        //     expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
+        //       `This call is only allowed in following contexts: ${JSON.stringify(
+        //         allowedContexts,
+        //       )}. Current context: "${context}".`,
+        //     );
+        //   });
+        // }
       });
     });
 
