@@ -93,15 +93,24 @@ export namespace videoEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+
     registerHandler(
       'video.newVideoFrame',
       (videoFrame: VideoFrame) => {
-        if (videoFrame !== undefined) {
-          frameCallback(videoFrame, notifyVideoFrameProcessed, notifyError);
+        if (videoFrame) {
+          const timestamp = videoFrame.timestamp;
+          frameCallback(
+            videoFrame,
+            () => {
+              notifyVideoFrameProcessed(timestamp);
+            },
+            notifyError,
+          );
         }
       },
       false,
     );
+
     sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
@@ -225,8 +234,8 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  function notifyVideoFrameProcessed(): void {
-    sendMessageToParent('video.videoFrameProcessed');
+  function notifyVideoFrameProcessed(timestamp?: number): void {
+    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
   }
 
   /**
