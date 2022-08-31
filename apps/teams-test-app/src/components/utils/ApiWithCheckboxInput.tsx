@@ -47,7 +47,7 @@ export const ApiWithCheckboxInput = (props: ApiWithCheckboxInputProps): React.Re
     <ApiContainer title={title} result={result} name={name}>
       <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
       {label}
-      <input type="checkbox" name={label} onChange={e => setValue(e.target.checked)} />
+      <input type="checkbox" name={label} onChange={(e) => setValue(e.target.checked)} />
     </ApiContainer>
   );
 };

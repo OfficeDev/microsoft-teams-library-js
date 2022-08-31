@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-
+const fs = require('fs');
 module.exports = {
   mode: 'production',
   entry: './src/index.tsx',

@@ -16,12 +16,12 @@ const ShowNotification = (): React.ReactElement =>
     name: 'showNotification',
     title: 'Show Notification',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.message || !input.notificationType) {
           throw new Error('message and notificationType are required.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         notifications.showNotification(input);
         return 'Called';
       },

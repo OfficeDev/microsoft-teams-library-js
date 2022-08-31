@@ -17,13 +17,13 @@ const NavigateToTab = (): React.ReactElement =>
     name: 'navigateToTab',
     title: 'Navigate To Tab',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.tabName) {
           throw new Error('tabName is required');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await pages.tabs.navigateToTab(input);
           return 'Completed';
         },
@@ -53,7 +53,7 @@ const GetTabInstances = (): React.ReactElement =>
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = await pages.tabs.getTabInstances(input);
           return JSON.stringify(result);
         },
@@ -75,7 +75,7 @@ const GetMruTabInstances = (): React.ReactElement =>
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = await pages.tabs.getMruTabInstances(input);
           return JSON.stringify(result);
         },

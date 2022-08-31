@@ -7,14 +7,13 @@ import { ShowNotificationParameters } from './interfaces';
 export namespace notifications {
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * display notification API.
    *
    * @param message - Notification message.
    * @param notificationType - Notification type
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
     ensureInitialized(FrameContexts.content);
@@ -24,6 +23,14 @@ export namespace notifications {
 
     sendMessageToParent('notifications.showNotification', [showNotificationParameters]);
   }
+
+  /**
+   * @hidden
+   * @returns boolean to represent whether the notifications capability is supported
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
   export function isSupported(): boolean {
     return runtime.supports.notifications ? true : false;
   }

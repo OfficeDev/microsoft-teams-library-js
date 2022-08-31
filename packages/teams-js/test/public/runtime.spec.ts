@@ -21,9 +21,9 @@ describe('runtime', () => {
 
   describe('generateBackCompatRuntimeConfig', () => {
     Object.entries(versionConstants).forEach(([version, capabilities]) => {
-      capabilities.forEach(supportedCapability => {
+      capabilities.forEach((supportedCapability) => {
         const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
-        supportedCapability.hostClientTypes.forEach(clientType => {
+        supportedCapability.hostClientTypes.forEach((clientType) => {
           it(`Back compat host client type ${clientType} supporting up to ${version} should support ${capability.replace(
             /:/g,
             ' ',
@@ -47,11 +47,11 @@ describe('runtime', () => {
           });
 
           const lowerVersions = Object.keys(versionConstants).filter(
-            otherVer => compareSDKVersions(version, otherVer) >= 0,
+            (otherVer) => compareSDKVersions(version, otherVer) >= 0,
           );
 
-          lowerVersions.forEach(lowerVersion => {
-            versionConstants[lowerVersion].forEach(lowerCap => {
+          lowerVersions.forEach((lowerVersion) => {
+            versionConstants[lowerVersion].forEach((lowerCap) => {
               it(`Back compat host client type ${clientType} supporting up to ${version} should ALSO support ${JSON.stringify(
                 lowerCap.capability,
               ).replace(/[{:}]/g, ' ')} capability`, async () => {
@@ -66,12 +66,12 @@ describe('runtime', () => {
         });
 
         const notSupportedHostClientTypes = Object.values(HostClientType).filter(
-          type => !supportedCapability.hostClientTypes.includes(type),
+          (type) => !supportedCapability.hostClientTypes.includes(type),
         );
 
-        notSupportedHostClientTypes.forEach(clientType => {
+        notSupportedHostClientTypes.forEach((clientType) => {
           it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(
-            /:/g,
+            /[{:}]/g,
             ' ',
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);

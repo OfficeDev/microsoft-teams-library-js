@@ -33,8 +33,8 @@ describe('notifications', () => {
         'The library has not yet been initialized',
       );
     });
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`showNotification should throw error if notifications capability is not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           expect.assertions(1);

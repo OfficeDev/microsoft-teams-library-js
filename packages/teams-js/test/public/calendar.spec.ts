@@ -39,12 +39,12 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem(openCalendarItemParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -56,7 +56,7 @@ describe('calendar', () => {
 
           await calendar
             .openCalendarItem(openCalendarItemParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -83,7 +83,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: null })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an undefined itemId is supplied', async () => {
@@ -94,7 +94,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: undefined })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an empty itemId is supplied', async () => {
@@ -105,7 +105,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: '' })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if the openCalendarItem message sends and fails', async () => {
@@ -125,7 +125,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
 
-      await openCalendarItemPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      await openCalendarItemPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the openCalendarItem message', async () => {
@@ -173,12 +173,12 @@ describe('calendar', () => {
 
       await calendar
         .composeMeeting(composeMeetingParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -190,7 +190,7 @@ describe('calendar', () => {
 
           await calendar
             .composeMeeting(composeMeetingParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -225,7 +225,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(composeMeeting, data.success, data.error);
 
-      await composeMeetingPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      await composeMeetingPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the composeMeeting message: Non-legacy host', async () => {

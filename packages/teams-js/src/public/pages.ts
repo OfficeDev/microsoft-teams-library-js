@@ -39,6 +39,7 @@ export namespace pages {
    * @param handler - The handler for placing focus within the application.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     ensureInitialized();
@@ -321,9 +322,10 @@ export namespace pages {
     /**
      * @hidden
      * Hide from docs because this function is only used during initialization
-     * ------------------
+     *
      * Adds register handlers for settings.save and settings.remove upon initialization. Function is called in {@link app.initializeHelper}
      * @internal
+     * Limited to Microsoft-internal use
      */
     export function initialize(): void {
       registerHandler('settings.save', handleSave, false);

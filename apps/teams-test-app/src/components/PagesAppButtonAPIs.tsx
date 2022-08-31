@@ -14,13 +14,13 @@ const RegisterAppButtonClickHandler = (): React.ReactElement =>
     name: 'registerAppButtonClickHandler',
     title: 'Register App Button Click Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.appButton.onClick((): void => {
           setResult('successfully called');
         });
         return 'registered';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerAppButtonClickHandler((): void => {
           setResult('successfully called');
         });
@@ -34,13 +34,13 @@ const RegisterAppButtonHoverEnterHandler = (): React.ReactElement =>
     name: 'registerAppButtonHoverEnterHandler',
     title: 'Register App Button Hover Enter Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.appButton.onHoverEnter((): void => {
           setResult('successfully called');
         });
         return 'registered';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerAppButtonHoverEnterHandler((): void => {
           setResult('successfully called');
         });
@@ -54,13 +54,13 @@ const RegisterAppButtonHoverLeaveHandler = (): React.ReactElement =>
     name: 'registerAppButtonHoverLeaveHandler',
     title: 'Register App Button Hover Leave Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.appButton.onHoverLeave((): void => {
           setResult('successfully called');
         });
         return 'registered';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerAppButtonHoverLeaveHandler((): void => {
           setResult('successfully called');
         });

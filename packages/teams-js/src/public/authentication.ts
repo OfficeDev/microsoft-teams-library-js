@@ -203,13 +203,12 @@ export namespace authentication {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Requests the decoded Azure AD user identity on behalf of the app.
    *
    * @returns Promise that resolves with the {@link UserProfile}.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getUser(): Promise<UserProfile>;
   /**
@@ -217,12 +216,11 @@ export namespace authentication {
    * As of 2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
-   * Hide from docs.
-   * ------
    * Requests the decoded Azure AD user identity on behalf of the app.
    *
    * @param userRequest - It passes success/failure callbacks in the userRequest object(deprecated)
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
@@ -537,26 +535,34 @@ export namespace authentication {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface UserProfile {
     /**
      * @hidden
      * The intended recipient of the token. The application that receives the token must verify that the audience
      * value is correct and reject any tokens intended for a different audience.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     aud: string;
     /**
      * @hidden
      * Identifies how the subject of the token was authenticated.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     amr: string[];
     /**
      * @hidden
      * Stores the time at which the token was issued. It is often used to measure token freshness.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     iat: number;
     /**
@@ -564,28 +570,43 @@ export namespace authentication {
      * Identifies the security token service (STS) that constructs and returns the token. In the tokens that Azure AD
      * returns, the issuer is sts.windows.net. The GUID in the issuer claim value is the tenant ID of the Azure AD
      * directory. The tenant ID is an immutable and reliable identifier of the directory.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     iss: string;
     /**
      * @hidden
      * Provides the last name, surname, or family name of the user as defined in the Azure AD user object.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     family_name: string;
     /**
      * @hidden
      * Provides the first or "given" name of the user, as set on the Azure AD user object.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     given_name: string;
     /**
      * @hidden
      * Provides a human-readable value that identifies the subject of the token. This value is not guaranteed to
      * be unique within a tenant and is designed to be used only for display purposes.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     unique_name: string;
     /**
      * @hidden
      * Contains a unique identifier of an object in Azure AD. This value is immutable and cannot be reassigned or
      * reused. Use the object ID to identify an object in queries to Azure AD.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     oid: string;
     /**
@@ -594,6 +615,9 @@ export namespace authentication {
      * This value is immutable and cannot be reassigned or reused, so it can be used to perform authorization
      * checks safely. Because the subject is always present in the tokens the Azure AD issues, we recommended
      * using this value in a general-purpose authorization system.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     sub: string;
     /**
@@ -601,6 +625,9 @@ export namespace authentication {
      * An immutable, non-reusable identifier that identifies the directory tenant that issued the token. You can
      * use this value to access tenant-specific directory resources in a multitenant application. For example,
      * you can use this value to identify the tenant in a call to the Graph API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     tid: string;
     /**
@@ -609,6 +636,9 @@ export namespace authentication {
      * should verify that the current date is within the token lifetime; otherwise it should reject the token. The
      * service might allow for up to five minutes beyond the token lifetime to account for any differences in clock
      * time ("time skew") between Azure AD and the service.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     exp: number;
     /**
@@ -617,16 +647,25 @@ export namespace authentication {
      * should verify that the current date is within the token lifetime; otherwise it should reject the token. The
      * service might allow for up to five minutes beyond the token lifetime to account for any differences in clock
      * time ("time skew") between Azure AD and the service.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     nbf: number;
     /**
      * @hidden
      * Stores the user name of the user principal.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     upn: string;
     /**
      * @hidden
      * Stores the version number of the token.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     ver: string;
   }
@@ -635,11 +674,10 @@ export namespace authentication {
    * @deprecated
    * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
    * @hidden
-   * Hide from docs.
-   * ------
    * Describes the UserRequest. Success callback describes how a successful request is handled.
    * Failure callback describes how a failed request is handled.
    * @internal
+   * Limited to Microsoft-internal use
    */
   export interface UserRequest {
     /**
