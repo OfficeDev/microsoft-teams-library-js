@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added support for audio-driven avatars to the `video` API, and the ability to upload personalized video effects to the private folder",
+  "packageName": "@microsoft/teams-js",
+  "email": "Xukai.Wu@microsoft.com",
+  "dependentChangeType": "patch"
+}
