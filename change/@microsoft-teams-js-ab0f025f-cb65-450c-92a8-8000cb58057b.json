@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added new sub capability `pages.self`.",
+  "comment": "Added new sub capability `pages.self` that enables to navigate within an application without specifying application ID.",
   "packageName": "@microsoft/teams-js",
   "email": "shrshinde@microsoft.com",
   "dependentChangeType": "patch"

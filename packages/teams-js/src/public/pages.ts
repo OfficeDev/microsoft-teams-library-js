@@ -693,20 +693,33 @@ export namespace pages {
 
   /**
    * Parameters for the NavigateToSelf API
+   *
+   * @beta
    */
-  export interface NavigateToSelfParams {
+  export interface NavigateToParams {
     /**
+     * @deprecated
+     * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
+     *
      * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
      */
     pageId: string;
 
     /**
+     * @deprecated
+     * As of 2.0.0, please use {@link app.PageInfo.subPageId | app.Context.page.subPageId} instead
+     *
      * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
      * back to the application via the Context object.
      */
     subPageId?: string;
   }
 
+  /**
+   * Provides functions for navigating without your own application ID.
+   *
+   * @beta
+   */
   export namespace self {
     /**
      * Navigate to the currently running application with page ID, and sub-page ID (for navigating to
@@ -714,8 +727,10 @@ export namespace pages {
      * does not require the application to build a URL or worry about different deep link formats for different hosts.
      * @param params - Parameters for the navigation
      * @returns a promise that will resolve if the navigation was successful
+     *
+     * @beta
      */
-    export function navigateTo(params: NavigateToSelfParams): Promise<void> {
+    export function navigateTo(params: NavigateToParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -736,6 +751,8 @@ export namespace pages {
      * Checks if pages.self capability is supported by the host
      * @returns true if the pages.self capability is enabled in runtime.supports.pages.self and
      * false if it is disabled
+     *
+     * @beta
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.self ? true : false) : false;

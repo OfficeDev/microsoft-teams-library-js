@@ -135,8 +135,8 @@ const App = (): ReactElement => {
       <PagesAppButtonAPIs />
       <PagesBackStackAPIs />
       <PagesConfigAPIs />
-      <PagesTabsAPIs />
       <PagesSelfAPIs />
+      <PagesTabsAPIs />
       <PeopleAPIs />
       <PrivateAPIs />
       <RemoteCameraAPIs />
