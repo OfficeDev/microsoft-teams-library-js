@@ -46,14 +46,8 @@ const OpenChat = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        return await chat
-          .openChat(input)
-          .then(() => {
-            return 'openChat was called';
-          })
-          .catch(() => {
-            return 'openChat' + noHostSdkMsg;
-          });
+        await chat.openChat(input);
+        return 'chat.openChat() was called';
       },
     },
   });
@@ -86,14 +80,8 @@ const OpenGroupChat = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        return await chat
-          .openGroupChat(input)
-          .then(() => {
-            return 'openGroupChat was called';
-          })
-          .catch(() => {
-            return 'chat.openGroupChat()' + noHostSdkMsg;
-          });
+        await chat.openGroupChat(input);
+        return 'chat.openGroupChat() was called';
       },
     },
   });
@@ -176,14 +164,8 @@ const OpenConversation = (): React.ReactElement =>
           );
         };
 
-        return await conversations
-          .openConversation(input)
-          .then(() => {
-            return 'conversations.openConversation() called';
-          })
-          .catch(() => {
-            return 'conversations.openConversation()' + noHostSdkMsg;
-          });
+        await conversations.openConversation(input);
+        return 'conversations.openConversation() called';
       },
     },
   });
