@@ -27,7 +27,7 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
   const EmailExample: React.FunctionComponent = () => {
     return (
       <>
-        <Title3 className="paddingClass"> Recent Emails</Title3>
+        <Title3 className="paddingClass">Recent Emails</Title3>
         <div className="column">
           {emailItems.map((emailItem) => (
             <Text as="span" key={emailItem.key}>

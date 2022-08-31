@@ -58,7 +58,7 @@ const App: React.FC = () => {
           </div>
           <div className="appMainPage-sub-container">
             <Text as="p">
-              <Button appearance="primary" onClick={() => handle()}>
+              <Button appearance="primary" onClick={() => handle()} tabIndex={0}>
                 Sign in
               </Button>
             </Text>
