@@ -22,10 +22,10 @@ export class FramelessPostMocks {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
-      removeEventListener: function(type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
+      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
+      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
       nativeInterface: {
-        framelessPostMessage: function(message: string): void {
+        framelessPostMessage: function (message: string): void {
           let msg = JSON.parse(message);
           that.messages.push(msg);
         },
@@ -33,7 +33,7 @@ export class FramelessPostMocks {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function(url: string): void {
+        assign: function (url: string): void {
           return;
         },
       },
@@ -88,10 +88,10 @@ export class FramelessPostMocks {
         args: args,
       } as MessageResponse,
     } as DOMMessageEvent;
-    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(domEvent);
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
   };
 
   public respondToMessage = (event: DOMMessageEvent): void => {
-    ((this.mockWindow as unknown) as ExtendedWindow).onNativeMessage(event);
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(event);
   };
 }

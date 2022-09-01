@@ -16,7 +16,7 @@ export interface MessageListItem {
 }
 export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
   const { messages } = props;
-  const emailItems = messages.map<MessageListItem>(m => {
+  const emailItems = messages.map<MessageListItem>((m) => {
     return {
       key: m.id,
       subject: m.subject || '',
@@ -27,9 +27,9 @@ export const EmailList: React.FC<EmailProps> = (props: EmailProps) => {
   const EmailExample: React.FunctionComponent = () => {
     return (
       <>
-        <Title3 className="paddingClass"> Recent Emails</Title3>
+        <Title3 className="paddingClass">Recent Emails</Title3>
         <div className="column">
-          {emailItems.map(emailItem => (
+          {emailItems.map((emailItem) => (
             <Text as="span" key={emailItem.key}>
               <DocumentCard key={emailItem.key} onClick={() => handleOpenMailItem(emailItem)}>
                 <DocumentCardTitle title={emailItem.subject || ''} shouldTruncate />

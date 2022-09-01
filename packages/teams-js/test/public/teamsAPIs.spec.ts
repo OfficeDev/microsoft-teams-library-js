@@ -32,7 +32,7 @@ describe('Testing TeamsCore Capability', () => {
         expect(() => teamsCore.enablePrintCapability()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`teamsCore.enablePrintCapability should throw error when teamsCore is not supported. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -46,7 +46,7 @@ describe('Testing TeamsCore Capability', () => {
         });
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`Ctrl+P shouldn't call teamsCore.enablePrintCapability if printCapabilty is disabled. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           let handlerCalled = false;
@@ -137,7 +137,7 @@ describe('Testing TeamsCore Capability', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`teamsCore.registerOnLoadHandler should throw error when teamsCore is not supported. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -176,7 +176,7 @@ describe('Testing TeamsCore Capability', () => {
         ).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`teamsCore.registerBeforeUnloadHandler should throw error when teamsCore is not supported. context:${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -218,7 +218,7 @@ describe('Testing TeamsCore Capability', () => {
 
           let handlerInvoked = false;
           let readyToUnloadFunc: () => void;
-          teamsCore.registerBeforeUnloadHandler(readyToUnload => {
+          teamsCore.registerBeforeUnloadHandler((readyToUnload) => {
             readyToUnloadFunc = readyToUnload;
             handlerInvoked = true;
             return true;

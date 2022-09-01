@@ -26,7 +26,7 @@ describe('video', () => {
     }
   });
   describe('registerForVideoFrame', () => {
-    let emptyVideoFrameCallback = (
+    const emptyVideoFrameCallback = (
       _frame: video.VideoFrame,
       _notifyVideoFrameProcessed: () => void,
       _notifyError: (errorMessage: string) => void,
@@ -36,8 +36,8 @@ describe('video', () => {
     };
 
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow registerForVideoFrame calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -73,8 +73,7 @@ describe('video', () => {
 
     it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-
-      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(4);
       try {
         video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
@@ -101,26 +100,18 @@ describe('video', () => {
       expect(message.args).toEqual([videoFrameConfig]);
     });
 
-    it('FRAMED - should successfully register video frame handler', async () => {
+    it('FRAMED - should not send default message when register video frame handler', async () => {
       await framedPlatformMock.initializeWithContext('sidePanel');
-
       video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
-
       const messageForRegister = framedPlatformMock.findMessageByFunc('registerHandler');
-      expect(messageForRegister).not.toBeNull();
-      expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('video.newVideoFrame');
+      expect(messageForRegister).toBeNull();
     });
 
-    it('FRAMELESS - should successfully register video frame handler', async () => {
+    it('FRAMELESS - should not send default message when register video frame handler', async () => {
       await framelessPlatformMock.initializeWithContext('sidePanel');
-
       video.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
-
       const messageForRegister = framelessPlatformMock.findMessageByFunc('registerHandler');
-      expect(messageForRegister).not.toBeNull();
-      expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('video.newVideoFrame');
+      expect(messageForRegister).toBeNull();
     });
 
     it('FRAMED - should successfully invoke video frame event handler', async () => {
@@ -179,17 +170,12 @@ describe('video', () => {
 
     it('FRAMED - should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const errorMessage = 'VideoFrame was unexpectedly null';
       const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
-        if (_frame === null) {
-          _notifyError(errorMessage);
-        } else {
-          _notifyVideoFrameProcessed();
-        }
+        _notifyVideoFrameProcessed();
       };
 
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
@@ -202,22 +188,43 @@ describe('video', () => {
       const message = framedPlatformMock.findMessageByFunc('video.videoFrameProcessed');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(0);
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBeUndefined();
     });
 
-    it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const errorMessage = 'VideoFrame was unexpectedly null';
+    it('FRAMED - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
-        if (_frame === null) {
-          _notifyError(errorMessage);
-        } else {
-          _notifyVideoFrameProcessed();
-        }
+        _notifyVideoFrameProcessed();
+      };
+
+      video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+      const videoFrameMock = {
+        width: 30,
+        height: 40,
+        data: 101,
+        timestamp: 200,
+      };
+      framedPlatformMock.sendMessage('video.newVideoFrame', videoFrameMock);
+      const message = framedPlatformMock.findMessageByFunc('video.videoFrameProcessed');
+
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe(200);
+    });
+
+    it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      const videoFrameCallback = (
+        _frame: video.VideoFrame,
+        _notifyVideoFrameProcessed: () => void,
+        _notifyError: (errorMessage: string) => void,
+      ): void => {
+        _notifyVideoFrameProcessed();
       };
 
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
@@ -235,27 +242,57 @@ describe('video', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.videoFrameProcessed');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(0);
+      expect(message.args.length).toBe(1);
     });
 
-    it('FRAMED - should invoke video frame event handler and successfully send notifyError', async () => {
-      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const errorMessage = 'VideoFrame was unexpectedly null';
+    it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
-        if (_frame === null) {
-          _notifyError(errorMessage);
-        } else {
-          _notifyVideoFrameProcessed();
-        }
+        _notifyVideoFrameProcessed();
       };
 
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+      const videoFrameMock = {
+        width: 30,
+        height: 40,
+        data: 101,
+        timestamp: 200,
+      };
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'video.newVideoFrame',
+          args: [videoFrameMock],
+        },
+      } as DOMMessageEvent);
+      const message = framelessPlatformMock.findMessageByFunc('video.videoFrameProcessed');
 
-      framedPlatformMock.sendMessage('video.newVideoFrame', null);
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(1);
+      expect(message.args[0]).toBe(200);
+    });
+
+    it('FRAMED - should invoke video frame event handler and successfully send notifyError', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      const errorMessage = 'Error occurs when processing the video frame';
+      const videoFrameCallback = (
+        _frame: video.VideoFrame,
+        _notifyVideoFrameProcessed: () => void,
+        _notifyError: (errorMessage: string) => void,
+      ): void => {
+        _notifyError(errorMessage);
+      };
+
+      video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+      const videoFrameMock = {
+        width: 30,
+        height: 40,
+        data: 101,
+      };
+      framedPlatformMock.sendMessage('video.newVideoFrame', videoFrameMock);
       const message = framedPlatformMock.findMessageByFunc('video.notifyError');
 
       expect(message).not.toBeNull();
@@ -265,24 +302,25 @@ describe('video', () => {
 
     it('FRAMELESS - should invoke video frame event handler and successfully send notifyError', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      const errorMessage = 'VideoFrame was unexpectedly null';
+      const errorMessage = 'Error occurs when processing the video frame';
       const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
-        if (_frame === null) {
-          _notifyError(errorMessage);
-        } else {
-          _notifyVideoFrameProcessed();
-        }
+        _notifyError(errorMessage);
       };
 
       video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+      const videoFrameMock = {
+        width: 30,
+        height: 40,
+        data: 101,
+      };
       framelessPlatformMock.respondToMessage({
         data: {
           func: 'video.newVideoFrame',
-          args: [null],
+          args: [videoFrameMock],
         },
       } as DOMMessageEvent);
       const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
@@ -333,8 +371,8 @@ describe('video', () => {
     const effectId = 'effectId';
 
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow notifySelectedVideoEffectChanged calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -370,8 +408,7 @@ describe('video', () => {
 
     it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-
-      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(4);
       try {
         video.notifySelectedVideoEffectChanged(effectChangeType, effectId);
@@ -401,8 +438,8 @@ describe('video', () => {
 
   describe('registerForVideoEffect', () => {
     const allowedContexts = [FrameContexts.sidePanel];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('FRAMED - should not allow registerForVideoEffect calls from the wrong context', async () => {
           await framedPlatformMock.initializeWithContext(context);
 
@@ -440,8 +477,7 @@ describe('video', () => {
 
     it('FRAMELESS - should throw error when video is not supported in runtime config', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-
-      framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(4);
       try {
         video.registerForVideoEffect(() => {});
@@ -456,10 +492,10 @@ describe('video', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       video.registerForVideoEffect(() => {});
 
-      const messageForRegister = framedPlatformMock.findMessageByFunc('registerHandler');
+      expect(framedPlatformMock.findMessageByFunc('registerHandler')).toBeNull();
+      const messageForRegister = framedPlatformMock.findMessageByFunc('video.registerForVideoEffect');
       expect(messageForRegister).not.toBeNull();
-      expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('video.effectParameterChange');
+      expect(messageForRegister.args?.length).toBe(0);
     });
 
     it('FRAMELESS - should successfully register effectParameterChange', async () => {
@@ -468,10 +504,10 @@ describe('video', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       video.registerForVideoEffect(() => {});
 
-      const messageForRegister = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(framelessPlatformMock.findMessageByFunc('registerHandler')).toBeNull();
+      const messageForRegister = framelessPlatformMock.findMessageByFunc('video.registerForVideoEffect');
       expect(messageForRegister).not.toBeNull();
-      expect(messageForRegister.args.length).toBe(1);
-      expect(messageForRegister.args[0]).toBe('video.effectParameterChange');
+      expect(messageForRegister.args?.length).toBe(0);
     });
 
     it('FRAMED - should successfully invoke effectParameterChange handler', async () => {

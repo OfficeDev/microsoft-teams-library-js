@@ -50,8 +50,8 @@ describe('chat', () => {
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.task];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`openChat should throw error if chat capability is not supported in runtime config - Context: ${context}`, async () => {
           const chatRequest: OpenSingleChatRequest = {
             user: 'someUPN',
@@ -139,8 +139,8 @@ describe('chat', () => {
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.task];
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContext => allowedContext === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`openGroupChat should throw error if chat capability is not supported in runtime config - Context: ${context}`, async () => {
           const chatRequest: OpenGroupChatRequest = {
             users: ['someUPN', 'someUPN2'],

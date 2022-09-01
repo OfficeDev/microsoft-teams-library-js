@@ -39,10 +39,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
       const calendar = calendarResponse as Calendar;
       setCalendar(calendar);
       // get recent emails
-      const emailResponse = await client
-        .api('/me/messages')
-        .top(5)
-        .get();
+      const emailResponse = await client.api('/me/messages').top(5).get();
       const emails = emailResponse.value as Message[];
       setEmails(emails);
     })();
@@ -66,12 +63,11 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
           <div className="flex-container">
             <div className="column">{emails && <EmailList messages={emails} />}</div>
             <div className="column">
-              <Title3 className="paddingClass"> Other Features </Title3>
+              <Title3 className="paddingClass">Other Features</Title3>
               <div className="flex-container">
                 <div className="column">
                   <CalendarCapability />
                 </div>
-                {/* Pages Capability only has placeholder parameters */}
                 <PagesCapability />
               </div>
             </div>

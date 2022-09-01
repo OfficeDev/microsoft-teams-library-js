@@ -10,10 +10,9 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces
 /**
  * @hidden
  * Namespace to interact with the `teams` specific part of the SDK.
- * ------
- * Hide from docs
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export namespace teams {
   export enum ChannelType {
@@ -22,6 +21,12 @@ export namespace teams {
     Shared = 2,
   }
 
+  /**
+   * @hidden
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
   export interface ChannelInfo {
     siteUrl: string;
     objectId: string;
@@ -32,11 +37,12 @@ export namespace teams {
 
   /**
    * @hidden
-   * Hide from docs
-   * ------
    * Get a list of channels belong to a Team
    *
    * @param groupId - a team's objectId
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function getTeamChannels(groupId: string, callback: (error: SdkError, channels: ChannelInfo[]) => void): void {
     ensureInitialized(FrameContexts.content);
@@ -63,6 +69,9 @@ export namespace teams {
    *
    * @param threadId - ID of the thread where the app entity will be created; if threadId is not
    * provided, the threadId from route params will be used.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void {
     ensureInitialized();
@@ -88,6 +97,9 @@ export namespace teams {
    *
    * @returns true if the teams capability is enabled in runtime.supports.teams and
    * false if it is disabled
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
     return runtime.supports.teams ? true : false;
@@ -95,26 +107,30 @@ export namespace teams {
 
   /**
    * @hidden
-   * Hide from docs
-   * ------
-   *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export namespace fullTrust {
+    /**
+     * @hidden
+     * @internal
+     * Limited to Microsoft-internal use
+     */
     export namespace joinedTeams {
       /**
        * @hidden
-       * Hide from docs
-       * ------
        * Allows an app to retrieve information of all user joined teams
        *
        * @param teamInstanceParameters - Optional flags that specify whether to scope call to favorite teams
        * @returns Promise that resolves with information about the user joined teams or rejects with an error when the operation has completed
+       *
+       * @internal
+       * Limited to Microsoft-internal use
        */
       export function getUserJoinedTeams(
         teamInstanceParameters?: TeamInstanceParameters,
       ): Promise<UserJoinedTeamsInformation> {
-        return new Promise<UserJoinedTeamsInformation>(resolve => {
+        return new Promise<UserJoinedTeamsInformation>((resolve) => {
           ensureInitialized();
           if (!isSupported()) {
             throw errorNotSupportedOnPlatform;
@@ -136,12 +152,13 @@ export namespace teams {
       }
       /**
        * @hidden
-       * Hide from docs
-       * ------
        * Checks if teams.fullTrust.joinedTeams capability is supported by the host
        *
        * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
        * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
+       *
+       * @internal
+       * Limited to Microsoft-internal use
        */
       export function isSupported(): boolean {
         return runtime.supports.teams
@@ -156,15 +173,16 @@ export namespace teams {
 
     /**
      * @hidden
-     * Hide from docs
-     * ------
      * Allows an app to get the configuration setting value
      *
      * @param key - The key for the config setting
      * @returns Promise that resolves with the value for the provided configuration setting or rejects with an error when the operation has completed
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     export function getConfigSetting(key: string): Promise<string> {
-      return new Promise<string>(resolve => {
+      return new Promise<string>((resolve) => {
         ensureInitialized();
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -175,11 +193,12 @@ export namespace teams {
 
     /**
      * @hidden
-     * Hide from docs
-     * ------
      * Checks if teams.fullTrust capability is supported by the host
      * @returns true if the teams.fullTrust capability is enabled in runtime.supports.teams.fullTrust and
      * false if it is disabled
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     export function isSupported(): boolean {
       return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;

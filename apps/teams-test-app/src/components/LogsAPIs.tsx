@@ -9,7 +9,7 @@ const RegisterGetLogHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerGetLogHandler',
     title: 'Register Get Log Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       logs.registerGetLogHandler(() => {
         setResult('Success');
         return 'App log string';

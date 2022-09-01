@@ -13,7 +13,7 @@ const MoveToLink = (): ReactElement =>
     name: 'moveToLink',
     title: 'Move to Link',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
@@ -21,7 +21,7 @@ const MoveToLink = (): ReactElement =>
         // validate that input should also be a valid URL
         new URL(input);
       },
-      submit: async input => {
+      submit: async (input) => {
         window.location.href = input;
         return Promise.resolve('Moved to new link');
       },
@@ -33,7 +33,7 @@ const OpenLinkInNewWindow = (): ReactElement =>
     name: 'openLinkInNewWindow',
     title: 'Open link in new window',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
@@ -41,7 +41,7 @@ const OpenLinkInNewWindow = (): ReactElement =>
         // validate that input should also be a valid URL
         new URL(input);
       },
-      submit: async input => {
+      submit: async (input) => {
         window.open(input);
         return Promise.resolve('Link opened');
       },

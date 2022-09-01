@@ -16,16 +16,16 @@ const StartCall = (): React.ReactElement =>
     name: 'startCall',
     title: 'Start Call',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.targets) {
           throw new Error('targets is required');
         }
         const targets = input.targets;
-        if (!Array.isArray(targets) || targets.length === 0 || targets.some(x => typeof x !== 'string')) {
+        if (!Array.isArray(targets) || targets.length === 0 || targets.some((x) => typeof x !== 'string')) {
           throw new Error('targets has to be a non-empty array of strings');
         }
       },
-      submit: async callParams => {
+      submit: async (callParams) => {
         const result = await call.startCall(callParams);
         return 'result: ' + result;
       },
