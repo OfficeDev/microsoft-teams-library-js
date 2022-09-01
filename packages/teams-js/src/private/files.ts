@@ -431,7 +431,7 @@ export namespace files {
     /**
      * The file path to uniquely identify it within the file hierarchy
      */
-    filePath: string;
+    webkitRelativePath?: string;
   }
 
   /**
@@ -1046,15 +1046,7 @@ export namespace files {
       );
     }
 
-    if (
-      !(
-        uploadFileRequest.content.destinationFolder &&
-        (uploadFileRequest.content.providerCode === CloudStorageProvider.SharePoint
-          ? (<ISharePointFile>uploadFileRequest.content.destinationFolder).isFolder
-          : (<CloudStorageFolderItem>uploadFileRequest.content.destinationFolder).isSubdirectory) &&
-        uploadFileRequest.content.destinationFolder.objectUrl
-      )
-    ) {
+    if (!uploadFileRequest.content.destinationFolder) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
         '[files.uploadCloudStorageProviderFile] Invalid destination folder details',
