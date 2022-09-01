@@ -133,7 +133,6 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.setCurrentFrame function', () => {
-      const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
@@ -144,86 +143,63 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            expect.assertions(1);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            try {
-              pages.setCurrentFrame(frameContext);
-            } catch (e) {
-              expect(e).toMatchObject(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+        it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          expect.assertions(1);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
             pages.setCurrentFrame(frameContext);
-            const message = utils.findMessageByFunc('setFrameContext');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(frameContext);
-          });
-        } else {
-          it(`pages.setCurrentFrame should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
+
+        it(`pages.setCurrentFrame should successfully set frame context when initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          pages.setCurrentFrame(frameContext);
+          const message = utils.findMessageByFunc('setFrameContext');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toBe(frameContext);
+        });
       });
     });
 
     describe('Testing pages.initializeWithFrameContext function', () => {
-      const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
       };
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            expect.assertions(1);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            try {
-              pages.initializeWithFrameContext(frameContext);
-            } catch (e) {
-              expect(e).toMatchObject(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
-            await utils.initializeWithContext(context);
+        it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          expect.assertions(1);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
             pages.initializeWithFrameContext(frameContext);
-            expect(utils.processMessage).toBeDefined();
-            expect(utils.messages.length).toBe(2);
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
 
-            const initMessage = utils.findMessageByFunc('initialize');
-            expect(initMessage).not.toBeNull();
-            expect(initMessage.id).toBe(0);
-            expect(initMessage.func).toBe('initialize');
-            expect(initMessage.args.length).toEqual(1);
-            expect(initMessage.args[0]).toEqual(version);
-            const message = utils.findMessageByFunc('setFrameContext');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(frameContext);
-          });
-        } else {
-          it(`pages.initializeWithFrameContext should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => pages.initializeWithFrameContext(frameContext)).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+        it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
+          await utils.initializeWithContext(context);
+          pages.initializeWithFrameContext(frameContext);
+          expect(utils.processMessage).toBeDefined();
+          expect(utils.messages.length).toBe(2);
+
+          const initMessage = utils.findMessageByFunc('initialize');
+          expect(initMessage).not.toBeNull();
+          expect(initMessage.id).toBe(0);
+          expect(initMessage.func).toBe('initialize');
+          expect(initMessage.args.length).toEqual(1);
+          expect(initMessage.args[0]).toEqual(version);
+          const message = utils.findMessageByFunc('setFrameContext');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toBe(frameContext);
+        });
       });
     });
 
@@ -1852,51 +1828,41 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.initializeWithFrameContext function', () => {
-      const allowedContexts = [FrameContexts.content];
+      // const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
       };
 
       Object.values(FrameContexts).forEach(context => {
-        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
-          it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect.assertions(4);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            try {
-              pages.initializeWithFrameContext(frameContext);
-            } catch (e) {
-              expect(e).toMatchObject(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
-            await framelessPostMocks.initializeWithContext(context);
+        // if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+        it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          expect.assertions(4);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          try {
             pages.initializeWithFrameContext(frameContext);
-            expect(framelessPostMocks.messages.length).toBe(2);
+          } catch (e) {
+            expect(e).toMatchObject(errorNotSupportedOnPlatform);
+          }
+        });
 
-            const initMessage = framelessPostMocks.findMessageByFunc('initialize');
-            expect(initMessage).not.toBeNull();
-            expect(initMessage.id).toBe(0);
-            expect(initMessage.func).toBe('initialize');
-            expect(initMessage.args.length).toEqual(1);
-            expect(initMessage.args[0]).toEqual(version);
-            const message = framelessPostMocks.findMessageByFunc('setFrameContext');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toStrictEqual(frameContext);
-          });
-        } else {
-          it(`pages.initializeWithFrameContext should not allow calls from ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
-            expect(() => pages.initializeWithFrameContext(frameContext)).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+        it('pages.initializeWithFrameContext should successfully initialize and set the frame context', async () => {
+          await framelessPostMocks.initializeWithContext(context);
+          pages.initializeWithFrameContext(frameContext);
+          expect(framelessPostMocks.messages.length).toBe(2);
+
+          const initMessage = framelessPostMocks.findMessageByFunc('initialize');
+          expect(initMessage).not.toBeNull();
+          expect(initMessage.id).toBe(0);
+          expect(initMessage.func).toBe('initialize');
+          expect(initMessage.args.length).toEqual(1);
+          expect(initMessage.args[0]).toEqual(version);
+          const message = framelessPostMocks.findMessageByFunc('setFrameContext');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(1);
+          expect(message.args[0]).toStrictEqual(frameContext);
+        });
       });
     });
 
