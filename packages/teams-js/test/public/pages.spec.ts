@@ -1783,7 +1783,6 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.setCurrentFrame function', () => {
-      // const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
@@ -1794,7 +1793,6 @@ describe('Testing pages module', () => {
       });
 
       Object.values(FrameContexts).forEach(context => {
-        // if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`pages.setCurrentFrame should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           expect.assertions(4);
@@ -1814,28 +1812,16 @@ describe('Testing pages module', () => {
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toStrictEqual(frameContext);
         });
-        // } else {
-        //   it(`pages.setCurrentFrame should not allow calls from ${context} context`, async () => {
-        //     await framelessPostMocks.initializeWithContext(context);
-        //     expect(() => pages.setCurrentFrame(frameContext)).toThrowError(
-        //       `This call is only allowed in following contexts: ${JSON.stringify(
-        //         allowedContexts,
-        //       )}. Current context: "${context}".`,
-        //     );
-        //   });
-        // }
       });
     });
 
     describe('Testing pages.initializeWithFrameContext function', () => {
-      // const allowedContexts = [FrameContexts.content];
       const frameContext: FrameInfo = {
         contentUrl: 'someContentUrl',
         websiteUrl: 'someWebsiteUrl',
       };
 
       Object.values(FrameContexts).forEach(context => {
-        // if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
         it(`pages.initializeWithFrameContext should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await framelessPostMocks.initializeWithContext(context);
           expect.assertions(4);
