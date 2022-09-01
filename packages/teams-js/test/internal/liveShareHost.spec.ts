@@ -6,15 +6,11 @@ import {
     ContainerState,
     UserMeetingRole
 } from '../../src/internal/liveShareHost';
-import { ViewerActionTypes } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { FileOpenPreference } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
-describe('interactive', () => {
+describe('LiveShareHost', () => {
   const utils = new Utils();
-  const emptyCallback = () => {};
   const host = new LiveShareHost();
 
   beforeEach(() => {
