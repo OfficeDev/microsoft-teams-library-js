@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "change setcurrentframe to allow all framecontexts",
+  "packageName": "@microsoft/teams-js",
+  "email": "sthousto@microsoft.com",
+  "dependentChangeType": "patch"
+}
