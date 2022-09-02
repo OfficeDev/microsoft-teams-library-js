@@ -1032,34 +1032,6 @@ describe('files', () => {
       ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
     });
 
-    // it('should not allow upload calls for non sharepoint file as destination folder in request content', async () => {
-    //   await utils.initializeWithContext('content');
-    //   expect(() =>
-    //     files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
-    //   ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    // });
-
-    // it('should not allow upload calls for sharepoint file as destination folder in request content', async () => {
-    //   await utils.initializeWithContext('content');
-    //   expect(() =>
-    //     files.uploadCloudStorageProviderFile(uploadFileRequestWithSharepointFileAsDestinationFolder, emptyCallback),
-    //   ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    // });
-
-    // it('should not allow upload calls for request content with invalid destination folder details ', async () => {
-    //   await utils.initializeWithContext('content');
-    //   expect(() =>
-    //     files.uploadCloudStorageProviderFile(uploadFileRequestWithInvalidDestinationFolderDetails, emptyCallback),
-    //   ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    // });
-
-    // it('should not allow upload calls for file as destination folder in request content', async () => {
-    //   await utils.initializeWithContext('content');
-    //   expect(() =>
-    //     files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
-    //   ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    // });
-
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 

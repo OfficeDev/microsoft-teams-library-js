@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "1. Renamed filePath field to webkitRelativePath 2. Removed two validation checks for destinationFolder fields",
+  "comment": "1. Renamed `filePath` field to `webkitRelativePath` 2. Removed two validation checks for `destinationFolder` fields",
   "packageName": "@microsoft/teams-js",
   "email": "jainharsh@microsof.com",
   "dependentChangeType": "patch"
