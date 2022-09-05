@@ -534,6 +534,7 @@ export namespace files {
   /**
    * @hidden
    * Hide from docs
+   * @beta
    *
    * Interface representing 3P cloud storage provider upload existing file(s) action
    *
