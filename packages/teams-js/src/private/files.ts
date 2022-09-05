@@ -1015,6 +1015,7 @@ export namespace files {
    * Hide from docs
    *
    * Initiates the upload 3P cloud storage file(s) flow, which will upload file(s) to the given 3P provider
+   * @beta
    *
    * @param uploadFileRequest 3P cloud storage provider upload file(s) action request content
    * @param callback Callback that will be triggered post uploading file(s) flow is finished
