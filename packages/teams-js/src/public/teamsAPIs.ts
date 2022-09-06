@@ -48,10 +48,31 @@ export namespace teamsCore {
    * @internal
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+    registerOnLoadHandlerHelper(handler, () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
+  }
+
+  /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerOnLoadHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - The handler to invoke when the page is loaded.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerOnLoadHandlerHelper(
+    handler: (context: LoadContext) => void,
+    versionSpecificHelper?: () => void,
+  ): void {
     ensureInitialized();
 
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+    if (versionSpecificHelper) {
+      versionSpecificHelper();
     }
 
     Handlers.registerOnLoadHandler(handler);
@@ -67,9 +88,31 @@ export namespace teamsCore {
    * @internal
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+    registerBeforeUnloadHandlerHelper(handler, () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
+  }
+
+  /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerBeforeUnloadHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - - The handler to invoke before the page is unloaded. If this handler returns true the page should
+   * invoke the readyToUnload function provided to it once it's ready to be unloaded.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerBeforeUnloadHandlerHelper(
+    handler: (readyToUnload: () => void) => boolean,
+    versionSpecificHelper?: () => void,
+  ): void {
     ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+    if (versionSpecificHelper) {
+      versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);
   }

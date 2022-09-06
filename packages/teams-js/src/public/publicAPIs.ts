@@ -120,7 +120,7 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-  pages.registerFullScreenHandler(handler);
+  pages.registerFullScreenHandlerHelper(handler);
 }
 
 /**
@@ -133,7 +133,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
-  pages.appButton.onClick(handler);
+  pages.appButton.onClickHelper(handler);
 }
 
 /**
@@ -146,7 +146,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-  pages.appButton.onHoverEnter(handler);
+  pages.appButton.onHoverEnterHelper(handler);
 }
 
 /**
@@ -159,7 +159,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-  pages.appButton.onHoverLeave(handler);
+  pages.appButton.onHoverLeaveHelper(handler);
 }
 
 /**
@@ -174,7 +174,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
  * @param handler - The handler to invoke when the user presses their Team client's back button.
  */
 export function registerBackButtonHandler(handler: () => boolean): void {
-  pages.backStack.registerBackButtonHandler(handler);
+  pages.backStack.registerBackButtonHandlerHelper(handler);
 }
 
 /**
@@ -187,7 +187,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  * @param handler - The handler to invoke when the page is loaded.
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-  teamsCore.registerOnLoadHandler(handler);
+  teamsCore.registerOnLoadHandlerHelper(handler);
 }
 
 /**
@@ -201,7 +201,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
-  teamsCore.registerBeforeUnloadHandler(handler);
+  teamsCore.registerBeforeUnloadHandlerHelper(handler);
 }
 
 /**
@@ -214,7 +214,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  pages.registerFocusEnterHandler(handler);
+  pages.registerFocusEnterHandlerHelper(handler);
 }
 
 /**
@@ -226,7 +226,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
-  pages.config.registerChangeConfigHandler(handler);
+  pages.config.registerChangeConfigHandlerHelper(handler);
 }
 
 /**
