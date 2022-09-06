@@ -692,7 +692,7 @@ export namespace pages {
   }
 
   /**
-   * Parameters for the NavigateToSelf API
+   * Parameters for the NavigateWithinAnApp API
    *
    * @beta
    */

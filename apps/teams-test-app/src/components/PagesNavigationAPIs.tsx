@@ -5,7 +5,7 @@ import { ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateTo = (): React.ReactElement =>
-  ApiWithTextInput<pages.NavigationWithinAnAppParams>({
+  ApiWithTextInput<pages.NavigateWithinAnAppParams>({
     name: 'navigateTo',
     title: 'Navigate To',
     onClick: {
