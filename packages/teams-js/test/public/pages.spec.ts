@@ -478,14 +478,14 @@ describe('Testing pages module', () => {
       });
     });
 
-    describe('Testing pages.navigation.withinAnApp function', () => {
-      const NavigateToParams: pages.NavigateWithinAnAppParams = {
+    describe('Testing pages.navigation.withinApp function', () => {
+      const NavigateToParams: pages.NavigateWithinAppParams = {
         pageId: 'tasklist123',
         subPageId: 'task456',
       };
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
-        await expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toThrowError(
+        await expect(pages.navigation.withinApp(NavigateToParams)).rejects.toThrowError(
           'The library has not yet been initialized',
         );
       });
@@ -501,32 +501,32 @@ describe('Testing pages module', () => {
 
       Object.keys(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`pages.navigation.withinAnApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          it(`pages.navigation.withinApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            expect(pages.navigation.withinApp(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
-          it(`pages.navigation.withinAnApp should allow calls from ${context} context`, async () => {
+          it(`pages.navigation.withinApp should allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { navigation: {} } } });
 
-            const promise = pages.navigation.withinAnApp(NavigateToParams);
+            const promise = pages.navigation.withinApp(NavigateToParams);
 
-            const navigateToMessage = utils.findMessageByFunc('pages.navigation.withinAnApp');
+            const navigateToMessage = utils.findMessageByFunc('pages.navigation.withinApp');
             utils.respondToMessage(navigateToMessage, true);
 
             await expect(promise).resolves.toBe(undefined);
           });
 
-          it('pages.navigation.withinAnApp should successfully send the navigateToApp message', async () => {
+          it('pages.navigation.withinApp should successfully send the navigateToApp message', async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { navigation: {} } } });
 
-            const promise = pages.navigation.withinAnApp(NavigateToParams);
+            const promise = pages.navigation.withinApp(NavigateToParams);
 
-            const navigateToMessage = utils.findMessageByFunc('pages.navigation.withinAnApp');
+            const navigateToMessage = utils.findMessageByFunc('pages.navigation.withinApp');
             utils.respondToMessage(navigateToMessage, true);
             await promise;
 
@@ -534,10 +534,10 @@ describe('Testing pages module', () => {
             expect(navigateToMessage.args[0]).toStrictEqual(NavigateToParams);
           });
         } else {
-          it(`pages.navigation.withinAnApp should not allow calls from ${context} context`, async () => {
+          it(`pages.navigation.withinApp should not allow calls from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
-            await expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toThrowError(
+            await expect(pages.navigation.withinApp(NavigateToParams)).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -2203,14 +2203,14 @@ describe('Testing pages module', () => {
       });
     });
 
-    describe('Testing pages.navigation.withinAnApp function', () => {
-      const NavigateToParams: pages.NavigateWithinAnAppParams = {
+    describe('Testing pages.navigation.withinApp function', () => {
+      const NavigateToParams: pages.NavigateWithinAppParams = {
         pageId: 'tasklist123',
         subPageId: 'task456',
       };
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
-        await expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toThrowError(
+        await expect(pages.navigation.withinApp(NavigateToParams)).rejects.toThrowError(
           'The library has not yet been initialized',
         );
       });
@@ -2226,17 +2226,17 @@ describe('Testing pages module', () => {
 
       Object.keys(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`pages.navigation.withinAnApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
+          it(`pages.navigation.withinApp should throw errors when pages is not supported when initialized with ${context}`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            expect(pages.navigation.withinApp(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
-          it(`pages.navigation.withinAnApp should allow calls from ${context} context`, async () => {
+          it(`pages.navigation.withinApp should allow calls from ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { navigation: {} } } });
-            const promise = pages.navigation.withinAnApp(NavigateToParams);
-            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.navigation.withinAnApp');
+            const promise = pages.navigation.withinApp(NavigateToParams);
+            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.navigation.withinApp');
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToMessage.id,
@@ -2247,11 +2247,11 @@ describe('Testing pages module', () => {
             await expect(promise).resolves.toBe(undefined);
           });
 
-          it('pages.navigation.withinAnApp should successfully send the navigateToApp message', async () => {
+          it('pages.navigation.withinApp should successfully send the navigateToApp message', async () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { navigation: {} } } });
-            const promise = pages.navigation.withinAnApp(NavigateToParams);
-            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.navigation.withinAnApp');
+            const promise = pages.navigation.withinApp(NavigateToParams);
+            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.navigation.withinApp');
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToMessage.id,
@@ -2263,9 +2263,9 @@ describe('Testing pages module', () => {
             expect(navigateToMessage.args[0]).toStrictEqual(NavigateToParams);
           });
         } else {
-          it(`pages.navigation.withinAnApp should not allow calls from ${context} context`, async () => {
+          it(`pages.navigation.withinApp should not allow calls from ${context} context`, async () => {
             await framelessPostMocks.initializeWithContext(context);
-            await expect(pages.navigation.withinAnApp(NavigateToParams)).rejects.toThrowError(
+            await expect(pages.navigation.withinApp(NavigateToParams)).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,

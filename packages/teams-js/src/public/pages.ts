@@ -692,11 +692,11 @@ export namespace pages {
   }
 
   /**
-   * Parameters for the NavigateWithinAnApp API
+   * Parameters for the NavigatewithinApp API
    *
    * @beta
    */
-  export interface NavigateWithinAnAppParams {
+  export interface NavigateWithinAppParams {
     /**
      * @deprecated
      * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
@@ -730,7 +730,7 @@ export namespace pages {
      *
      * @beta
      */
-    export function withinAnApp(params: NavigateWithinAnAppParams): Promise<void> {
+    export function withinApp(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -743,7 +743,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.navigation.withinAnApp', params));
+        resolve(send('pages.navigation.withinApp', params));
       });
     }
 
