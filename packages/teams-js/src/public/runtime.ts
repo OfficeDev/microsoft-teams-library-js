@@ -34,7 +34,7 @@ export interface IRuntime {
       readonly backStack?: {};
       readonly config?: {};
       readonly fullTrust?: {};
-      readonly self?: {};
+      readonly navigation?: {};
       readonly tabs?: {};
     };
     readonly people?: {};
@@ -84,7 +84,7 @@ export let runtime: IRuntime = {
       config: undefined,
       backStack: undefined,
       fullTrust: undefined,
-      self: undefined,
+      navigation: undefined,
     },
     people: undefined,
     permissions: undefined,

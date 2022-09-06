@@ -5,7 +5,7 @@ import { ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateTo = (): React.ReactElement =>
-  ApiWithTextInput<pages.NavigateToParams>({
+  ApiWithTextInput<pages.NavigationWithinAnAppParams>({
     name: 'navigateTo',
     title: 'Navigate To',
     onClick: {
@@ -15,16 +15,16 @@ const NavigateTo = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await pages.self.navigateTo(input);
+        await pages.navigation.withinAnApp(input);
         return 'Completed';
       },
     },
   });
 
-const PagesSelfAPIs = (): ReactElement => (
-  <ModuleWrapper title="Pages.self">
+const PagesNavigationAPIs = (): ReactElement => (
+  <ModuleWrapper title="Pages.navigation">
     <NavigateTo />
   </ModuleWrapper>
 );
 
-export default PagesSelfAPIs;
+export default PagesNavigationAPIs;

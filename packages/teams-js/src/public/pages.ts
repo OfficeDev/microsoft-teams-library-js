@@ -696,7 +696,7 @@ export namespace pages {
    *
    * @beta
    */
-  export interface NavigateToParams {
+  export interface NavigateWithinAnAppParams {
     /**
      * @deprecated
      * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
@@ -720,7 +720,7 @@ export namespace pages {
    *
    * @beta
    */
-  export namespace self {
+  export namespace navigation {
     /**
      * Navigate to the currently running application with page ID, and sub-page ID (for navigating to
      * specific content within the page). This is equivalent to navigating to a deep link with the above data, but
@@ -730,7 +730,7 @@ export namespace pages {
      *
      * @beta
      */
-    export function navigateTo(params: NavigateToParams): Promise<void> {
+    export function withinAnApp(params: NavigateWithinAnAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -743,19 +743,19 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.self.navigateTo', params));
+        resolve(send('pages.navigation.withinAnApp', params));
       });
     }
 
     /**
-     * Checks if pages.self capability is supported by the host
-     * @returns true if the pages.self capability is enabled in runtime.supports.pages.self and
+     * Checks if pages.navigation capability is supported by the host
+     * @returns true if the pages.navigation capability is enabled in runtime.supports.pages.navigation and
      * false if it is disabled
      *
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.self ? true : false) : false;
+      return runtime.supports.pages ? (runtime.supports.pages.navigation ? true : false) : false;
     }
   }
 }

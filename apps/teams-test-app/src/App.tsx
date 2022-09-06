@@ -24,7 +24,7 @@ import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
-import PagesSelfAPIs from './components/PagesSelfAPIs';
+import PagesNavigationAPIs from './components/PagesNavigationAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
@@ -135,7 +135,7 @@ const App = (): ReactElement => {
       <PagesAppButtonAPIs />
       <PagesBackStackAPIs />
       <PagesConfigAPIs />
-      <PagesSelfAPIs />
+      <PagesNavigationAPIs />
       <PagesTabsAPIs />
       <PeopleAPIs />
       <PrivateAPIs />
