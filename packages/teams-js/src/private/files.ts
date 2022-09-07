@@ -431,7 +431,7 @@ export namespace files {
     /**
      * The file path to uniquely identify it within the file hierarchy
      */
-    filePath: string;
+    webkitRelativePath?: string;
   }
 
   /**
@@ -534,6 +534,7 @@ export namespace files {
   /**
    * @hidden
    * Hide from docs
+   * @beta
    *
    * Interface representing 3P cloud storage provider upload existing file(s) action
    *
@@ -813,13 +814,16 @@ export namespace files {
    * Initiates add 3P cloud storage provider flow, where a pop up window opens for user to select required
    * 3P provider from the configured policy supported 3P provider list, following which user authentication
    * for selected 3P provider is performed on success of which the selected 3P provider support is added for user
+   * @beta
    *
-   * @param callback Callback that will be triggered post add 3P cloud storage provider action
+   * @param callback Callback that will be triggered post add 3P cloud storage provider action.
+   * If the error is encountered (and hence passed back), no provider value is sent back.
+   * For success scenarios, error value will be passed as null and a valid provider value is sent.
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function addCloudStorageProvider(callback: (error?: SdkError) => void): void {
+  export function addCloudStorageProvider(callback: (error?: SdkError, provider?: CloudStorageProvider) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
@@ -1015,6 +1019,7 @@ export namespace files {
    * Hide from docs
    *
    * Initiates the upload 3P cloud storage file(s) flow, which will upload file(s) to the given 3P provider
+   * @beta
    *
    * @param uploadFileRequest 3P cloud storage provider upload file(s) action request content
    * @param callback Callback that will be triggered post uploading file(s) flow is finished
@@ -1046,15 +1051,7 @@ export namespace files {
       );
     }
 
-    if (
-      !(
-        uploadFileRequest.content.destinationFolder &&
-        (uploadFileRequest.content.providerCode === CloudStorageProvider.SharePoint
-          ? (<ISharePointFile>uploadFileRequest.content.destinationFolder).isFolder
-          : (<CloudStorageFolderItem>uploadFileRequest.content.destinationFolder).isSubdirectory) &&
-        uploadFileRequest.content.destinationFolder.objectUrl
-      )
-    ) {
+    if (!uploadFileRequest.content.destinationFolder) {
       throw getSdkError(
         ErrorCode.INVALID_ARGUMENTS,
         '[files.uploadCloudStorageProviderFile] Invalid destination folder details',
