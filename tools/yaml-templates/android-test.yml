@@ -41,7 +41,7 @@ steps:
   - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
     displayName: 'Run Android E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
-    retryCountOnTaskFailure: 2
+    retryCountOnTaskFailure: 1
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
