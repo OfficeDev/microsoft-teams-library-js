@@ -19,6 +19,7 @@ export enum HostClientType {
 export enum HostName {
   office = 'Office',
   outlook = 'Outlook',
+  outlookWin32 = 'OutlookWin32',
   orange = 'Orange',
   teams = 'Teams',
 }
