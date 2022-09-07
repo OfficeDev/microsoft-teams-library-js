@@ -1,5 +1,6 @@
 import { FrameContexts } from '../../src/public';
 import { _uninitialize } from '../../src/public/publicAPIs';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
 
@@ -21,6 +22,7 @@ describe('settings', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (_uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       _uninitialize();
     }
   });
@@ -210,6 +212,14 @@ describe('settings', () => {
       expect(handlerCalled).toBe(true);
     });
 
+    it('settings.registerOnSaveHandler should not throw if pages.config is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => settings.registerOnSaveHandler(() => {})).not.toThrowError();
+    });
+
     it('settings.registerOnSaveHandler should successfully register a save handler', async () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
@@ -344,6 +354,14 @@ describe('settings', () => {
       const message = utils.findMessageByFunc('settings.remove.success');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(0);
+    });
+
+    it('settings.registerOnRemoveHandler should not throw if pages.config is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => settings.registerOnRemoveHandler(() => {})).not.toThrowError();
     });
 
     it('settings.registerOnRemoveHandler should successfully notify success from the registered remove handler', async () => {

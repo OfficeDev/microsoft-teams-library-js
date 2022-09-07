@@ -109,7 +109,7 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the save button.
    */
   export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
-    pages.config.registerOnSaveHandler(handler);
+    pages.config.registerOnSaveHandlerHelper(handler);
   }
 
   /**
@@ -124,6 +124,6 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-    pages.config.registerOnRemoveHandler(handler);
+    pages.config.registerOnRemoveHandlerHelper(handler);
   }
 }
