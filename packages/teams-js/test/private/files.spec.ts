@@ -576,15 +576,16 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err, provider) => {
         expect(err).toBeFalsy();
+        expect(provider).toEqual(files.CloudStorageProvider.Dropbox);
       });
 
       files.addCloudStorageProvider(callback);
 
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderMessage, false);
+      utils.respondToMessage(addCloudStorageProviderMessage, false, files.CloudStorageProvider.Dropbox);
       expect(callback).toHaveBeenCalled();
     });
   });

@@ -814,13 +814,14 @@ export namespace files {
    * Initiates add 3P cloud storage provider flow, where a pop up window opens for user to select required
    * 3P provider from the configured policy supported 3P provider list, following which user authentication
    * for selected 3P provider is performed on success of which the selected 3P provider support is added for user
+   * @beta
    *
    * @param callback Callback that will be triggered post add 3P cloud storage provider action
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function addCloudStorageProvider(callback: (error?: SdkError) => void): void {
+  export function addCloudStorageProvider(callback: (error?: SdkError, provider?: CloudStorageProvider) => void): void {
     ensureInitialized(FrameContexts.content);
 
     if (!callback) {
