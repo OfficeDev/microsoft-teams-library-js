@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new liveShare hub",
+  "packageName": "@microsoft/teams-js",
+  "email": "stevenic@microsoft.com",
+  "dependentChangeType": "patch"
+}
