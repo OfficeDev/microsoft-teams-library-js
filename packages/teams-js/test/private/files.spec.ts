@@ -608,6 +608,27 @@ describe('files', () => {
       utils.respondToMessage(addCloudStorageProviderMessage, sdkError);
       expect(callback).toHaveBeenCalled();
     });
+
+    it('should send the message to parent correctly, handle error scenario and validate provider value', () => {
+      utils.initializeWithContext('content');
+
+      const sdkError: SdkError = {
+        errorCode: ErrorCode.INTERNAL_ERROR,
+        message: 'Error Message',
+      };
+
+      const callback = jest.fn((err, provider) => {
+        expect(err).toEqual(sdkError);
+        expect(provider).toEqual(undefined);
+      });
+
+      files.addCloudStorageProvider(callback);
+
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, sdkError, undefined);
+      expect(callback).toHaveBeenCalled();
+    });
   });
 
   describe('removeCloudStorageProvider', () => {
