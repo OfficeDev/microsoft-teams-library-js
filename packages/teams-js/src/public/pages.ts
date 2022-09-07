@@ -50,6 +50,27 @@ export namespace pages {
   }
 
   /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerFocusEnterHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - The handler for placing focus within the application.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerFocusEnterHandlerHelper(
+    handler: (navigateForward: boolean) => void,
+    versionSpecificHelper?: () => void,
+  ): void {
+    ensureInitialized();
+    if (versionSpecificHelper) {
+      versionSpecificHelper();
+    }
+    registerHandler('focusEnter', handler);
+  }
+
+  /**
    * Sets/Updates the current frame with new information
    *
    * @param frameInfo - Frame information containing the URL used in the iframe on reload and the URL for when the
@@ -212,6 +233,27 @@ export namespace pages {
   }
 
   /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerFullScreenHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerFullScreenHandlerHelper(
+    handler: (isFullScreen: boolean) => void,
+    versionSpecificHelper?: () => void,
+  ): void {
+    ensureInitialized();
+    if (versionSpecificHelper) {
+      versionSpecificHelper();
+    }
+    registerHandler('fullScreenChange', handler);
+  }
+
+  /**
    * Checks if the pages capability is supported by the host
    * @returns true if the pages capability is enabled in runtime.supports.pages and
    * false if it is disabled
@@ -369,9 +411,30 @@ export namespace pages {
      * @param handler - The handler to invoke when the user selects the Save button.
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
+      registerOnSaveHandlerHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerOnSaveHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user selects the Save button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerOnSaveHandlerHelper(
+      handler: (evt: SaveEvent) => void,
+      versionSpecificHelper?: () => void,
+    ): void {
       ensureInitialized(FrameContexts.settings);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       saveHandler = handler;
       handler && sendMessageToParent('registerHandler', ['save']);
@@ -385,9 +448,30 @@ export namespace pages {
      * @param handler - The handler to invoke when the user selects the Remove button.
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
+      registerOnRemoveHandlerHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerOnRemoveHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user selects the Remove button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerOnRemoveHandlerHelper(
+      handler: (evt: RemoveEvent) => void,
+      versionSpecificHelper?: () => void,
+    ): void {
       ensureInitialized(FrameContexts.remove, FrameContexts.settings);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       removeHandler = handler;
       handler && sendMessageToParent('registerHandler', ['remove']);
@@ -408,10 +492,30 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
+      registerChangeConfigHandlerHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerConfigChangeHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user clicks on Settings.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerChangeConfigHandlerHelper(handler: () => void, versionSpecificHelper?: () => void): void {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
+
       registerHandler('changeSettings', handler);
     }
 
@@ -567,9 +671,27 @@ export namespace pages {
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
+      registerBackButtonHandlerHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerBackButtonHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user presses the host client's back button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
       ensureInitialized();
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       backButtonPressHandler = handler;
       handler && sendMessageToParent('registerHandler', ['backButton']);
@@ -648,9 +770,27 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: () => void): void {
+      onClickHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the onClick API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function onClickHelper(handler: () => void, versionSpecificHelper?: () => void): void {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       registerHandler('appButtonClick', handler);
     }
@@ -661,9 +801,27 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: () => void): void {
+      onHoverEnterHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the onHoverEnter API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function onHoverEnterHelper(handler: () => void, versionSpecificHelper?: () => void): void {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       registerHandler('appButtonHoverEnter', handler);
     }
@@ -674,9 +832,27 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: () => void): void {
+      onHoverLeaveHelper(handler, () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the onHoverLeave API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when existing hover of the personal app button in the app bar.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function onHoverLeaveHelper(handler: () => void, versionSpecificHelper?: () => void): void {
       ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       registerHandler('appButtonHoverLeave', handler);
     }

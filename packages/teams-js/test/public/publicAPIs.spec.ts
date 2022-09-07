@@ -26,6 +26,7 @@ import {
   setFrameContext,
   shareDeepLink,
 } from '../../src/public/publicAPIs';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {
@@ -46,6 +47,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (_uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       _uninitialize();
     }
   });
@@ -141,6 +143,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
+  it('registerChangeSettingsHandler should not throw if pages.config is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerChangeSettingsHandler(() => {})).not.toThrowError();
+  });
+
   it('should successfully register a app button click handler', async () => {
     await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
@@ -151,6 +161,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     utils.sendMessage('appButtonClick', '');
     expect(handlerCalled).toBeTruthy();
+  });
+
+  it('registerAppButtonHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonClickHandler(() => {})).not.toThrowError();
   });
 
   it('should successfully register a app button hover enter handler', async () => {
@@ -166,6 +184,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
+  it('registerAppButtonHoverEnterHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonHoverEnterHandler(() => {})).not.toThrowError();
+  });
+
   it('should successfully register a app button hover leave handler', async () => {
     await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
@@ -177,6 +203,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.sendMessage('appButtonHoverLeave', '');
 
     expect(handlerCalled).toBeTruthy();
+  });
+
+  it('registerAppButtonHoverLeaveHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonHoverLeaveHandler(() => {})).not.toThrowError();
   });
 
   it('should successfully register a theme change handler', async () => {
@@ -216,17 +250,61 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerInvoked).toBe(true);
   });
 
+  it('registerBackButtonHandler should not throw if pages.backStack is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    expect(() =>
+      registerBackButtonHandler(() => {
+        return true;
+      }),
+    ).not.toThrowError();
+  });
+
   it('should successfully register a focus enter handler and return true', async () => {
     await utils.initializeWithContext(FrameContexts.content);
 
     let handlerInvoked = false;
-    registerFocusEnterHandler((x: boolean) => {
+    registerFocusEnterHandler((_x: boolean) => {
       handlerInvoked = true;
       return true;
     });
 
     utils.sendMessage('focusEnter');
     expect(handlerInvoked).toBe(true);
+  });
+
+  it('registerFocusEnterHandler should not throw if pages is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const emptyHandler = (x: boolean): boolean => {
+      return true;
+    };
+    expect(() => microsoftTeams.registerFocusEnterHandler(emptyHandler)).not.toThrowError();
+  });
+
+  it('should successfully register a full screen handler', async () => {
+    await utils.initializeWithContext(FrameContexts.content); // this can be used in any context
+
+    let handlerInvoked = false;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    microsoftTeams.registerFullScreenHandler((_x: boolean) => {
+      handlerInvoked = true;
+    });
+
+    utils.sendMessage('fullScreenChange');
+    expect(handlerInvoked).toBe(true);
+  });
+
+  it('registerFullScreenHandler should not throw if pages is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content); // this can be used in any context
+    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    const emptyHandler = (x: boolean): void => {};
+    expect(() => microsoftTeams.registerFullScreenHandler(emptyHandler)).not.toThrowError();
   });
 
   it('should successfully get context', (done) => {
@@ -676,7 +754,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Ctrl+P shouldn't call print handler if printCapability is disabled", () => {
     let handlerCalled = false;
     initialize();
     jest.spyOn(microsoftTeams, 'print').mockImplementation((): void => {
@@ -692,7 +770,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeFalsy();
   });
 
-  it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Cmd+P shouldn't call print handler if printCapability is disabled", () => {
     let handlerCalled = false;
     initialize();
     jest.spyOn(microsoftTeams, 'print').mockImplementation((): void => {
@@ -776,6 +854,13 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
       expect(handlerInvoked).toBe(true);
     });
+    it('registerOnLoadHandler should not throw if teamsCore is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => registerOnLoadHandler(() => {})).not.toThrowError();
+    });
   });
 
   describe('should not allow authentication and remove context', () => {
@@ -824,6 +909,17 @@ describe('MicrosoftTeams-publicAPIs', () => {
       utils.sendMessage('beforeUnload');
 
       expect(handlerInvoked).toBe(true);
+    });
+
+    it('registerBeforeUnloadHandler should not throw if teamsCore is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      expect(() =>
+        registerBeforeUnloadHandler(() => {
+          return true;
+        }),
+      ).not.toThrowError();
     });
 
     it('should call readyToUnload automatically when no before unload handler is registered', async () => {
