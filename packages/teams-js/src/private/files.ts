@@ -816,7 +816,9 @@ export namespace files {
    * for selected 3P provider is performed on success of which the selected 3P provider support is added for user
    * @beta
    *
-   * @param callback Callback that will be triggered post add 3P cloud storage provider action
+   * @param callback Callback that will be triggered post add 3P cloud storage provider action.
+   * If the error is encountered (and hence passed back), no provider value is sent back.
+   * For success scenarios, error value will be passed as null and a valid provider value is sent.
    *
    * @internal
    * Limited to Microsoft-internal use

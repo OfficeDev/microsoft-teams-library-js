@@ -1,5 +1,5 @@
 import { files } from '../../src/private/files';
-import { FileOpenPreference, ErrorCode } from '../../src/public';
+import { FileOpenPreference, ErrorCode, SdkError } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -586,6 +586,26 @@ describe('files', () => {
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
       utils.respondToMessage(addCloudStorageProviderMessage, false, files.CloudStorageProvider.Dropbox);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should send the message to parent correctly and handle error scenario', () => {
+      utils.initializeWithContext('content');
+
+      const sdkError: SdkError = {
+        errorCode: ErrorCode.INTERNAL_ERROR,
+        message: 'Error Message',
+      };
+
+      const callback = jest.fn(err => {
+        expect(err).toEqual(sdkError);
+      });
+
+      files.addCloudStorageProvider(callback);
+
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, sdkError);
       expect(callback).toHaveBeenCalled();
     });
   });
