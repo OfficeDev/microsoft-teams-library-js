@@ -1,5 +1,5 @@
 import { files } from '../../src/private/files';
-import { FileOpenPreference, ErrorCode } from '../../src/public';
+import { FileOpenPreference, ErrorCode, SdkError } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -442,7 +442,7 @@ describe('files', () => {
     it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -525,7 +525,7 @@ describe('files', () => {
     it('should send the message to parent correctly with file path as null', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -541,7 +541,7 @@ describe('files', () => {
     it('should send the message to parent correctly with non-null file path', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -576,15 +576,57 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn((err, provider) => {
         expect(err).toBeFalsy();
+        expect(provider).toEqual(files.CloudStorageProvider.Dropbox);
       });
 
       files.addCloudStorageProvider(callback);
 
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderMessage, false);
+      utils.respondToMessage(addCloudStorageProviderMessage, false, files.CloudStorageProvider.Dropbox);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should send the message to parent correctly and handle error scenario', () => {
+      utils.initializeWithContext('content');
+
+      const sdkError: SdkError = {
+        errorCode: ErrorCode.INTERNAL_ERROR,
+        message: 'Error Message',
+      };
+
+      const callback = jest.fn(err => {
+        expect(err).toEqual(sdkError);
+      });
+
+      files.addCloudStorageProvider(callback);
+
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, sdkError);
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should send the message to parent correctly, handle error scenario and validate provider value', () => {
+      utils.initializeWithContext('content');
+
+      const sdkError: SdkError = {
+        errorCode: ErrorCode.INTERNAL_ERROR,
+        message: 'Error Message',
+      };
+
+      const callback = jest.fn((err, provider) => {
+        expect(err).toEqual(sdkError);
+        expect(provider).toEqual(undefined);
+      });
+
+      files.addCloudStorageProvider(callback);
+
+      const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
+      expect(addCloudStorageProviderMessage).not.toBeNull();
+      utils.respondToMessage(addCloudStorageProviderMessage, sdkError, undefined);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -617,7 +659,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -670,7 +712,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -731,7 +773,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -777,18 +819,16 @@ describe('files', () => {
       },
     };
 
-    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> =
-      {
-        content: null,
-      };
+    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: null,
+    };
 
-    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Box,
-          itemList: [],
-        },
-      };
+    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
+      },
+    };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
@@ -834,7 +874,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -863,17 +903,15 @@ describe('files', () => {
         itemList: [mockDownloadFile],
       },
     };
-    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> =
-      {
-        content: null,
-      };
-    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Box,
-          itemList: [],
-        },
-      };
+    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: null,
+    };
+    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Box,
+        itemList: [],
+      },
+    };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
@@ -921,7 +959,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 
@@ -937,7 +975,6 @@ describe('files', () => {
   describe('uploadCloudStorageProviderFile', () => {
     const mockUploadFile: files.File = {
       size: 32,
-      filePath: 'file1',
       type: 'pdf',
       name: 'file1',
       lastModified: new Date(),
@@ -964,40 +1001,6 @@ describe('files', () => {
       isSubdirectory: true,
       type: 'folder',
     };
-    const mockDestinationFolderWithInvalidUrl: files.CloudStorageFolderItem = {
-      id: '113',
-      lastModifiedTime: '2021-03-14T15:08:35Z',
-      size: 0,
-      objectUrl: null,
-      title: 'folder2',
-      isSubdirectory: true,
-      type: 'folder',
-    };
-    const mockDestinationFile: files.CloudStorageFolderItem = {
-      id: '113',
-      lastModifiedTime: '2021-03-14T15:08:35Z',
-      size: 32,
-      objectUrl: 'file2.com',
-      title: 'file2',
-      isSubdirectory: false,
-      type: 'file',
-    };
-    const mockDestinationFileForSharepoint: files.ISharePointFile = {
-      createdByUser: userDetails,
-      lastModifiedByUser: userDetails,
-      sentByUser: userDetails,
-      lastModifiedTime: '2021-04-14T15:08:35Z',
-      size: 32,
-      objectUrl: 'file3.com',
-      title: 'file3',
-      isFolder: false,
-      type: 'pdf',
-      siteUrl: 'siteurl',
-      objectId: 'objectId',
-      serverRelativeUrl: 'serverRelativeUrl',
-      createdTime: '2021-04-14T15:08:35Z',
-      openInWindowFileUrl: 'openInWindowFileUrl',
-    };
     const uploadFileRequest: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
       content: {
         providerCode: files.CloudStorageProvider.Dropbox,
@@ -1005,50 +1008,23 @@ describe('files', () => {
         destinationFolder: mockDestinationFolder,
       },
     };
-    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: null,
-      };
-    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Dropbox,
-          itemList: [],
-          destinationFolder: mockDestinationFolder,
-        },
-      };
-    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Dropbox,
-          itemList: [mockUploadFile],
-          destinationFolder: null,
-        },
-      };
-    const uploadFileRequestWithInvalidDestinationFolderDetails: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Box,
-          itemList: [mockUploadFile],
-          destinationFolder: mockDestinationFolderWithInvalidUrl,
-        },
-      };
-    const uploadFileRequestWithFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.Dropbox,
-          itemList: [mockUploadFile],
-          destinationFolder: mockDestinationFile,
-        },
-      };
-    const uploadFileRequestWithSharepointFileAsDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
-      {
-        content: {
-          providerCode: files.CloudStorageProvider.SharePoint,
-          itemList: [mockUploadFile],
-          destinationFolder: mockDestinationFileForSharepoint,
-        },
-      };
+    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: null,
+    };
+    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [],
+        destinationFolder: mockDestinationFolder,
+      },
+    };
+    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
+      content: {
+        providerCode: files.CloudStorageProvider.Dropbox,
+        itemList: [mockUploadFile],
+        destinationFolder: null,
+      },
+    };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
@@ -1098,38 +1074,10 @@ describe('files', () => {
       ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
     });
 
-    it('should not allow upload calls for non sharepoint file as destination folder in request content', async () => {
-      await utils.initializeWithContext('content');
-      expect(() =>
-        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
-      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    });
-
-    it('should not allow upload calls for sharepoint file as destination folder in request content', async () => {
-      await utils.initializeWithContext('content');
-      expect(() =>
-        files.uploadCloudStorageProviderFile(uploadFileRequestWithSharepointFileAsDestinationFolder, emptyCallback),
-      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    });
-
-    it('should not allow upload calls for request content with invalid destination folder details ', async () => {
-      await utils.initializeWithContext('content');
-      expect(() =>
-        files.uploadCloudStorageProviderFile(uploadFileRequestWithInvalidDestinationFolderDetails, emptyCallback),
-      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    });
-
-    it('should not allow upload calls for file as destination folder in request content', async () => {
-      await utils.initializeWithContext('content');
-      expect(() =>
-        files.uploadCloudStorageProviderFile(uploadFileRequestWithFileAsDestinationFolder, emptyCallback),
-      ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
-    });
-
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn((err) => {
+      const callback = jest.fn(err => {
         expect(err).toBeFalsy();
       });
 

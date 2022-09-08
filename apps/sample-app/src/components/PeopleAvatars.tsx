@@ -66,8 +66,7 @@ export const PeopleAvatarList: React.FC<AvatarProps> = (props: AvatarProps) => {
           People to Meet Today
         </Title3>
         <div>
-
-          {AvatarItemList.map(avatar => (
+          {AvatarItemList.map((avatar) => (
             <>
               <Popover trapFocus openOnHover={true} size="medium">
                 <PopoverTrigger>
