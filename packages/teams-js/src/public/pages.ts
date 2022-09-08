@@ -4,7 +4,7 @@ import {
   sendAndUnwrap,
   sendMessageToParent,
 } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
@@ -42,32 +42,11 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('focusEnter', handler);
-  }
-
-  /**
-   * @hidden
-   * Undocumented helper function with shared code between deprecated version and current version of the registerFocusEnterHandler API.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @param handler - The handler for placing focus within the application.
-   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-   */
-  export function registerFocusEnterHandlerHelper(
-    handler: (navigateForward: boolean) => void,
-    versionSpecificHelper?: () => void,
-  ): void {
-    ensureInitialized();
-    if (versionSpecificHelper) {
-      versionSpecificHelper();
-    }
-    registerHandler('focusEnter', handler);
+    registerHandlerHelper('focusEnter', handler, [], () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
@@ -225,11 +204,11 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('fullScreenChange', handler);
+    registerHandlerHelper('fullScreenChange', handler, [], () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
@@ -492,31 +471,11 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
-      registerChangeConfigHandlerHelper(handler, () => {
+      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the registerConfigChangeHandler API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when the user clicks on Settings.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function registerChangeConfigHandlerHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-
-      registerHandler('changeSettings', handler);
     }
 
     /**

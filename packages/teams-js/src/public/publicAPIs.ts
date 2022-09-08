@@ -1,3 +1,4 @@
+import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app } from './app';
@@ -214,7 +215,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  pages.registerFocusEnterHandlerHelper(handler);
+  registerHandlerHelper('focusEnter', handler, []);
 }
 
 /**
@@ -226,7 +227,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
-  pages.config.registerChangeConfigHandlerHelper(handler);
+  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
 }
 
 /**
