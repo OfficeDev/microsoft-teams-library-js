@@ -387,6 +387,7 @@ export namespace pages {
       setValidityStateLogger('setting validity state to %i', validityState);
       ensureInitialized(FrameContexts.settings, FrameContexts.remove);
       if (!isSupported()) {
+        setValidityStateLogger('pages.config not supported, setValiditityState throwing errorNotSupportedOnPlatform');
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParent('settings.setValidityState', [validityState]);
