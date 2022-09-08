@@ -25,7 +25,7 @@ export namespace geoLocation {
       */
     longitude: number;
     /**
-      Accuracy descibes the maximum distance in meters from the captured coordinates to the actual location
+      Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location
       @remarks
       This property is only in scope for mobile
       */
