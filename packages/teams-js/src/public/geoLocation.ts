@@ -25,7 +25,9 @@ export namespace geoLocation {
       */
     longitude: number;
     /**
-      Accuracy of the coordinates captured
+      Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location
+      @remarks
+      This property is only in scope for mobile
       */
     accuracy?: number;
     /**
@@ -62,7 +64,7 @@ export namespace geoLocation {
     }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(resolve => {
       resolve(sendAndHandleError('permissions.has', permissions));
     });
   }
@@ -83,7 +85,7 @@ export namespace geoLocation {
     }
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(resolve => {
       resolve(sendAndHandleError('permissions.request', permissions));
     });
   }

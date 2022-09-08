@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Updated documentation for `accuracy` property of `Location` interface in `geolocation.ts` ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "none"
+}
