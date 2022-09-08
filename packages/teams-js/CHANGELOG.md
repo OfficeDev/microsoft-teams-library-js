@@ -17,10 +17,10 @@ Thu, 08 Sep 2022 17:11:49 GMT
 ### Patches
 
 - Fixed an issue with the v1 versions of `register*Handler` functions. Previously if the v2 version of the API's capability was not supported, attempts to call the v1 version would throw an exception, breaking backwards compatibility.
-- Updated documentation for many properties on `Context` interface
+- Updated documentation for many properties on `Context` interface.
 - Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only and removed some `@internal` items from dev documentation. Removed `initializePrivateApis` from the privateAPIs file, an unexported and hidden no-op function.
 - Added missing `HostClientType` values so correct `Runtime` is generated for `teams.fullTrust.joinedTeams` and `webStorage` capabilities.
-- 1. Renamed `filePath` field to `webkitRelativePath` 2. Removed two validation checks for `destinationFolder` fields 3. Added an optional field `provider` in callback of `addCloudStorageProvider` API
+- Renamed `filePath` field to `webkitRelativePath`. Removed two validation checks for `destinationFolder` fields. Added an optional field `provider` in callback of `addCloudStorageProvider` API.
 
 ## 2.2.0
 
