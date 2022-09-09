@@ -212,27 +212,6 @@ export namespace pages {
   }
 
   /**
-   * @hidden
-   * Undocumented helper function with shared code between deprecated version and current version of the registerFullScreenHandler API.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
-   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-   */
-  export function registerFullScreenHandlerHelper(
-    handler: (isFullScreen: boolean) => void,
-    versionSpecificHelper?: () => void,
-  ): void {
-    ensureInitialized();
-    if (versionSpecificHelper) {
-      versionSpecificHelper();
-    }
-    registerHandler('fullScreenChange', handler);
-  }
-
-  /**
    * Checks if the pages capability is supported by the host
    * @returns true if the pages capability is enabled in runtime.supports.pages and
    * false if it is disabled
@@ -729,29 +708,11 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: () => void): void {
-      onClickHelper(handler, () => {
+      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onClick API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onClickHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonClick', handler);
     }
 
     /**
@@ -760,29 +721,11 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: () => void): void {
-      onHoverEnterHelper(handler, () => {
+      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onHoverEnter API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onHoverEnterHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonHoverEnter', handler);
     }
 
     /**
@@ -791,29 +734,11 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: () => void): void {
-      onHoverLeaveHelper(handler, () => {
+      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onHoverLeave API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when existing hover of the personal app button in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onHoverLeaveHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonHoverLeave', handler);
     }
 
     /**
