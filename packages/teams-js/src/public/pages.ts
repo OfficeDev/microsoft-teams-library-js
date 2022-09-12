@@ -879,7 +879,7 @@ export namespace pages {
      *
      * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
      */
-    pageId: string;
+    pageId?: string;
 
     /**
      * @deprecated
