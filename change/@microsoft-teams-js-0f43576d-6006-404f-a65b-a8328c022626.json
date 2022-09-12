@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed an issue with the v1 versions of `register*Handler` functions. Previously if the v2 version of the API's capability was not supported, attempts to call the v1 version would throw an exception, breaking backwards compatibility.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,8 +1,26 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 03 Aug 2022 19:21:51 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 17:11:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.3.0
+
+Thu, 08 Sep 2022 17:11:49 GMT
+
+### Minor changes
+
+- Added support for audio-driven avatars to the `video` API, and the ability to upload personalized video effects to the private folder
+- Added `Search` capability to use global search box in the current app in Outlook
+- Added `timestamp` to `VideoFrame`, sent the `timestamp` back to Teams client after the video frame has been processed.
+
+### Patches
+
+- Fixed an issue with the v1 versions of `register*Handler` functions. Previously if the v2 version of the API's capability was not supported, attempts to call the v1 version would throw an exception, breaking backwards compatibility.
+- Updated documentation for many properties on `Context` interface.
+- Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only and removed some `@internal` items from dev documentation. Removed `initializePrivateApis` from the privateAPIs file, an unexported and hidden no-op function.
+- Added missing `HostClientType` values so correct `Runtime` is generated for `teams.fullTrust.joinedTeams` and `webStorage` capabilities.
+- Renamed `filePath` field to `webkitRelativePath`. Removed two validation checks for `destinationFolder` fields. Added an optional field `provider` in callback of `addCloudStorageProvider` API.
 
 ## 2.2.0
 
