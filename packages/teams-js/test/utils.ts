@@ -1,6 +1,16 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import {
+  ActionObjectType,
+  ChannelType,
+  FileOpenPreference,
+  HostClientType,
+  HostName,
+  SecondaryM365ContentIdName,
+  TeamType,
+  UserTeamRole,
+} from '../src/public';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 export interface MessageRequest {
@@ -33,7 +43,7 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
-    let that = this;
+    const that = this;
     this.messages = [];
     this.childMessages = [];
 
@@ -200,4 +210,115 @@ export class Utils {
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
   public flushPromises = () => new Promise((resolve) => setTimeout(resolve));
+
+  public setAppContext = (frameContext) => ({
+    actionInfo: {
+      actionId: 'actionId',
+      actionObjects: [
+        {
+          itemId: '1',
+          secondaryId: {
+            name: SecondaryM365ContentIdName.DriveId,
+            value: 'secondaryDriveValue',
+          },
+          type: ActionObjectType.M365Content,
+        },
+        { itemId: '2', type: ActionObjectType.M365Content },
+        {
+          itemId: '3',
+          secondaryId: {
+            name: SecondaryM365ContentIdName.GroupId,
+            value: 'secondaryGroupId',
+          },
+          type: ActionObjectType.M365Content,
+        },
+        {
+          itemId: '4',
+          secondaryId: {
+            name: SecondaryM365ContentIdName.SiteId,
+            value: 'secondarySiteId',
+          },
+          type: ActionObjectType.M365Content,
+        },
+        {
+          itemId: '5',
+          secondaryId: {
+            name: SecondaryM365ContentIdName.UserId,
+            value: 'secondarySiteId',
+          },
+          type: ActionObjectType.M365Content,
+        },
+      ],
+    },
+    app: {
+      iconPositionVertical: 5,
+      locale: 'someLocale',
+      parentMessageId: 'someParentMessageId',
+      sessionId: 'appSessionId',
+      theme: 'someTheme',
+      userClickTime: 2222,
+      userFileOpenPreference: FileOpenPreference.Inline,
+      appLaunchId: 'appLaunchId',
+      host: {
+        name: HostName.orange,
+        clientType: HostClientType.web,
+
+        ringId: 'someRingId',
+        sessionId: 'someSessionId',
+      },
+    },
+    page: {
+      id: 'someEntityId',
+      subPageId: 'someSubEntityId',
+      isFullScreen: true,
+      sourceOrigin: 'www.origin.com',
+      frameContext: frameContext,
+      isMultiWindow: true,
+    },
+    user: {
+      id: 'someUserObjectId',
+      displayName: 'someTestUser',
+      isCallingAllowed: true,
+      licenseType: 'someUserLicenseType',
+      loginHint: 'someLoginHint',
+      userPrincipalName: 'someUserPrincipalName',
+      tenant: {
+        id: 'someTid',
+        teamsSku: 'someTenantSKU',
+      },
+    },
+    channel: {
+      id: 'someChannelId',
+      displayName: 'someChannelName',
+      relativeUrl: 'someChannelRelativeUrl',
+      membershipType: ChannelType.Shared,
+      defaultOneNoteSectionId: 'someDefaultOneNoteSectionId',
+      ownerTenantId: 'someHostTenantId',
+      ownerGroupId: 'someHostGroupId',
+    },
+    chat: {
+      id: 'someChatId',
+    },
+    meeting: {
+      id: 'dummyMeetingId',
+    },
+    sharepoint: {},
+    team: {
+      internalId: 'someTeamId',
+      displayName: 'someTeamName',
+      type: TeamType.Staff,
+      groupId: 'someGroupId',
+      templateId: 'someTeamTemplateId',
+      isArchived: false,
+      userRole: UserTeamRole.Admin,
+    },
+    sharePointSite: {
+      teamSiteUrl: 'someSiteUrl',
+      teamSiteDomain: 'someTeamSiteDomain',
+      teamSitePath: 'someTeamSitePath',
+      teamSiteId: 'someSiteId',
+      mySitePath: 'mySitePath',
+      mySiteDomain: 'myDomain',
+    },
+  });
 }
