@@ -6,7 +6,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { app } from '.';
+import { DialogDimension, errorInvalidArguments, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
@@ -107,8 +108,14 @@ export namespace dialog {
       throw errorNotSupportedOnPlatform;
     }
 
-    // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-    sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+    app.getContext().then((appContext) => {
+      if (result && appContext.actionInfo) {
+        throw errorInvalidArguments;
+      } else {
+        // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+        sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+      }
+    });
   }
 
   /**
