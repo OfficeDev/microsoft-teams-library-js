@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "update dialog.submit and dialog.sendMessageToParentFromDialog to handle situation when called and contentActions are present and arguments are passed to functions",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "patch"
+}
