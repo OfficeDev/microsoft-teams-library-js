@@ -4,6 +4,7 @@ import { app } from '../../src/public/app';
 import {
   DialogDimension,
   errorInvalidArguments,
+  errorNotSupportedInCurrentContext,
   errorNotSupportedOnPlatform,
   FrameContexts,
 } from '../../src/public/constants';
@@ -457,33 +458,33 @@ describe('Dialog', () => {
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(4);
           try {
-            dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
+            return await dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
         });
 
-        it('FRAMED: should throw an error if actionInfo is present in appContext and submit is called with arguments', async () => {
+        it(`FRAMED: should throw an error if actionInfo is present in appContext and submit is called with arguments in ${context} context`, async () => {
           app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(context));
           await framedMock.initializeWithContext(context);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
 
           expect.assertions(1);
           try {
-            await dialog.submit('someResult');
+            dialog.submit('someResult');
           } catch (e) {
             expect(e).toEqual(errorInvalidArguments);
           }
         });
 
-        it('FRAMELESS: should throw an error if actionInfo is present in appContext and submit is called with arguments', async () => {
+        it(`FRAMELESS: should throw an error if actionInfo is present in appContext and submit is called with arguments in ${context} context`, async () => {
           app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(context));
           await framelessMock.initializeWithContext(context);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
 
           expect.assertions(4);
           try {
-            await dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
+            dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
           } catch (e) {
             expect(e).toEqual(errorInvalidArguments);
           }
@@ -945,7 +946,7 @@ describe('Dialog', () => {
             try {
               await dialog.sendMessageToParentFromDialog('someMessage');
             } catch (e) {
-              expect(e).toEqual(errorInvalidArguments);
+              expect(e).toEqual(errorNotSupportedInCurrentContext);
             }
           });
 
@@ -958,7 +959,7 @@ describe('Dialog', () => {
             try {
               await dialog.sendMessageToParentFromDialog('someMessage');
             } catch (e) {
-              expect(e).toEqual(errorInvalidArguments);
+              expect(e).toEqual(errorNotSupportedInCurrentContext);
             }
           });
         } else {
