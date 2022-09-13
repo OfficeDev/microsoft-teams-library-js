@@ -4,7 +4,8 @@ import { FrameContexts } from '../public/constants';
 
 /**
  * @hidden
- * Hide from docs
+ * @internal
+ * Limited to Microsoft-internal use
  * ------
  * Allowed roles during a meeting.
  */
@@ -16,6 +17,10 @@ export enum UserMeetingRole {
 }
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * ------
  * State of the current Live Share sessions backing fluid container.
  */
 export enum ContainerState {
@@ -44,6 +49,10 @@ export enum ContainerState {
 }
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * ------
  * Returned from `LiveShareHost.get/setFluidContainerId()` to specify the container mapping for the
  * current Live Share session.
  */
@@ -74,6 +83,10 @@ export interface IFluidContainerInfo {
 }
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * ------
  * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
  * Live Share session.
  */
@@ -90,6 +103,10 @@ export interface INtpTimeInfo {
 }
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * ------
  * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
  * current Live Share session.
  */
@@ -120,12 +137,17 @@ export interface IFluidTenantInfo {
 }
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * ------
  * Interface for hosting a Live Share session within a client like Teams.
  */
 export class LiveShareHost {
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Returns the Fluid Tenant connection info for user's current context.
    */
@@ -139,7 +161,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Returns the fluid access token for mapped container Id.
    *
@@ -156,7 +179,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Returns the ID of the fluid container associated with the user's current context.
    */
@@ -170,7 +194,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Sets the ID of the fluid container associated with the current context.
    *
@@ -190,7 +215,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Returns the shared clock server's current time.
    */
@@ -204,7 +230,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Associates the fluid client ID with a set of user roles.
    *
@@ -221,7 +248,8 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Hide from docs
+   * @internal
+   * Limited to Microsoft-internal use
    * ------
    * Returns the roles associated with a client ID.
    *
