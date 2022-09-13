@@ -75,8 +75,8 @@ export namespace liveShare {
     }
 
     try {
-      const pkg = (await import(LIVE_SHARE_PACKAGE)) as { TeamsFluidClient: LiveShareClient };
-      client = new pkg.TeamsFluidClient(options, LIVE_SHARE_HOST);
+      const pkg = (await import(LIVE_SHARE_PACKAGE)) as { LiveShareClient: LiveShareClient };
+      client = new pkg.LiveShareClient(options, LIVE_SHARE_HOST);
     } catch (err: unknown) {
       throw new Error(
         'Unable to initialize Live Share client. Ensure that your project includes "@microsoft/live-share"',
