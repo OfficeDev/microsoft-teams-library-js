@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added new liveShare hub",
+  "comment": "Added `liveShare` capability to interact with @microsoft/live-share package and enable building Live Share apps.",
   "packageName": "@microsoft/teams-js",
   "email": "stevenic@microsoft.com",
   "dependentChangeType": "patch"
