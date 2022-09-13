@@ -119,7 +119,7 @@ export namespace liveShare {
    * Returns the LiveShareHost object. Called by existing apps that use the TeamsFluidClient
    * directly. This prevents existing apps from breaking and will be removed when Live Share
    * goes GA.
-   * 
+   *
    * @beta
    */
   export function getHost(): LiveShareHost {
