@@ -761,7 +761,6 @@ export interface BaseDialogInfo {
   /**
    * Title of the task module.
    */
-
   title?: string;
 }
 

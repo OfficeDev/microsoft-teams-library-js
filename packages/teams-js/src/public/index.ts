@@ -12,7 +12,10 @@ export {
 export {
   ActionInfo,
   ActionObjectType,
+  AdaptiveCardDialogInfo,
+  AdaptiveCardVersion,
   BaseActionObject,
+  BotAdaptiveCardDialogInfo,
   BotUrlDialogInfo,
   Context,
   DeepLinkParameters,
