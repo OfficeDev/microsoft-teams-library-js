@@ -108,32 +108,24 @@ export namespace dialog {
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
    * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
    */
-  export function submit(result?: string | object, appIds?: string | string[]): void {
+  export function submit(result?: string | object, appIds?: string | string[]): Promise<void> {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    app
-      .getContext()
-      .then((appContext) => {
-        // if actionInfo exists in appContext, the dialog was loaded from a 3rd party app,
-        // and if submit was called with a result, throw an error because the result cannot be
-        // passed along to the desired recipient
-        if (result && appContext.actionInfo) {
-          throw errorInvalidArguments;
-        } else {
-          // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-          sendMessageToParent('tasks.completeTask', [
-            result,
-            appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
-          ]);
-        }
-      })
-      .catch((error) => {
-        throw error;
-      });
+    return app.getContext().then((appContext) => {
+      // if actionInfo exists in appContext, the dialog was loaded from a 3rd party app,
+      // and if submit was called with a result, throw an error because the result cannot be
+      // passed along to the desired recipient
+      if (result && appContext.actionInfo) {
+        throw errorInvalidArguments;
+      } else {
+        // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+        sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+      }
+    });
   }
 
   /**
@@ -147,7 +139,7 @@ export namespace dialog {
   export function sendMessageToParentFromDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: any,
-  ): void {
+  ): Promise<void> {
     ensureInitialized(FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -156,18 +148,13 @@ export namespace dialog {
     // if actionInfo exists in appContext, the dialog was loaded from a 3rd party app,
     // and if sendMessageToParentFromDialog was called with a message,
     // throw an error because the message cannot be passed along to the desired recipient
-    app
-      .getContext()
-      .then((appContext) => {
-        if (appContext.actionInfo) {
-          throw errorNotSupportedInCurrentContext;
-        } else {
-          sendMessageToParent('messageForParent', [message]);
-        }
-      })
-      .catch((error) => {
-        throw error;
-      });
+    app.getContext().then((appContext) => {
+      if (appContext.actionInfo) {
+        throw errorNotSupportedInCurrentContext;
+      } else {
+        sendMessageToParent('messageForParent', [message]);
+      }
+    });
   }
 
   /**
