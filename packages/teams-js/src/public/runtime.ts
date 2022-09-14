@@ -3,8 +3,10 @@
 import { GlobalVars } from '../internal/globalVars';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { HostVersionsInfo } from './interfaces';
 export interface IRuntime {
   readonly apiVersion: number;
+  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appInstallDialog?: {};
@@ -16,6 +18,9 @@ export interface IRuntime {
     readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
+      readonly adaptiveCard?: {
+        readonly bot?: {};
+      };
       readonly bot?: {};
       readonly update?: {};
     };
@@ -64,6 +69,9 @@ export let runtime: IRuntime = {
     webStorage: undefined,
     conversations: undefined,
     dialog: {
+      adaptiveCard: {
+        bot: undefined,
+      },
       bot: undefined,
       update: undefined,
     },
@@ -111,6 +119,9 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
+      adaptiveCard: {
+        bot: {},
+      },
       bot: {},
       update: {},
     },

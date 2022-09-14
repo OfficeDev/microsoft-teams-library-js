@@ -6,8 +6,15 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts, minAdaptiveCardVersion } from './constants';
+import {
+  AdaptiveCardDialogInfo,
+  BotAdaptiveCardDialogInfo,
+  BotUrlDialogInfo,
+  DialogInfo,
+  DialogSize,
+  UrlDialogInfo,
+} from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -207,6 +214,121 @@ export namespace dialog {
      */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
+    }
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert AdaptiveCardDialogInfo to DialogInfo to send the information to host in {@linkcode adaptiveCard.open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo: AdaptiveCardDialogInfo): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      card: adaptiveCardDialogInfo.card,
+      height: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.height : DialogDimension.Small,
+      width: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.width : DialogDimension.Small,
+      title: adaptiveCardDialogInfo.title,
+    };
+    return dialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
+   * --------
+   * Convert BotAdaptiveCardDialogInfo to DialogInfo to send the information to host in {@linkcode adaptiveCard.open} API.
+   *
+   * @internal
+   */
+  export function getDialogInfoFromBotAdaptiveCardDialogInfo(
+    botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
+  ): DialogInfo {
+    const dialogInfo: DialogInfo = {
+      card: botAdaptiveCardDialogInfo.card,
+      height: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.height : DialogDimension.Small,
+      width: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.width : DialogDimension.Small,
+      title: botAdaptiveCardDialogInfo.title,
+      completionBotId: botAdaptiveCardDialogInfo.completionBotId,
+    };
+    return dialogInfo;
+  }
+  /**
+   * Subcapability for interacting with adaptive card dialogs
+   */
+  export namespace adaptiveCard {
+    /**
+     * Allows app to open an adaptive card based dialog.
+     *
+     * @remarks
+     * This function cannot be called from inside of a dialog
+     *
+     * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module.
+     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+     */
+    export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
+      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        submitHandler?.({ err, result });
+        removeHandler('messageForParent');
+      });
+    }
+
+    /**
+     * Checks if dialog.adaptiveCard module is supported by the host
+     *
+     * @returns boolean to represent whether dialog.adaptiveCard module is supported
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard ? true : false;
+    }
+
+    /**
+     * Namespace for interaction with adaptive card dialogs that need to communicate with the bot framework
+     */
+    export namespace bot {
+      /**
+       * Allows an app to open a adaptive card-based dialog module using bot.
+       *
+       * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
+       * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
+       *
+       * @returns a function that can be used to send messages to the dialog.
+       */
+      export function open(
+        botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
+        submitHandler?: DialogSubmitHandler,
+      ): void {
+        ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+
+        const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+
+        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+        });
+      }
+
+      /**
+       * Checks if dialog.adaptiveCard.bot capability is supported by the host
+       *
+       * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
+       */
+      export function isSupported(): boolean {
+        return runtime.supports.dialog &&
+          runtime.supports.dialog.adaptiveCard &&
+          runtime.supports.dialog.adaptiveCard.bot
+          ? true
+          : false;
+      }
     }
   }
 
