@@ -458,7 +458,7 @@ describe('Dialog', () => {
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(4);
           try {
-            return await dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
+            await dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
           } catch (e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -471,22 +471,20 @@ describe('Dialog', () => {
 
           expect.assertions(1);
           try {
-            dialog.submit('someResult');
+            await dialog.submit('someResult');
           } catch (e) {
             expect(e).toEqual(errorInvalidArguments);
           }
         });
 
         it(`FRAMELESS: should throw an error if actionInfo is present in appContext and submit is called with arguments in ${context} context`, async () => {
-          app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(context));
           await framelessMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
-
+          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(4);
           try {
             dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
           } catch (e) {
-            expect(e).toEqual(errorInvalidArguments);
+            expect(e).toEqual(errorNotSupportedOnPlatform);
           }
         });
 
