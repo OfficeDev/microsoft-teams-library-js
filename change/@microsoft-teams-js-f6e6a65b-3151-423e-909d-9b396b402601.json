@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "Adding adaptive cards to dialogs",
+  "packageName": "@microsoft/teams-js",
+  "email": "shrshinde@microsoft.com",
+  "dependentChangeType": "patch"
+}
