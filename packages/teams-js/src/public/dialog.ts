@@ -148,7 +148,7 @@ export namespace dialog {
     // if actionInfo exists in appContext, the dialog was loaded from a 3rd party app,
     // and if sendMessageToParentFromDialog was called with a message,
     // throw an error because the message cannot be passed along to the desired recipient
-    app.getContext().then((appContext) => {
+    return app.getContext().then((appContext) => {
       if (appContext.actionInfo) {
         throw errorNotSupportedInCurrentContext;
       } else {
