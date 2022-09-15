@@ -1,4 +1,4 @@
-import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
+import { ErrorCode, SdkError } from './interfaces';
 export enum HostClientType {
   desktop = 'desktop',
   web = 'web',
@@ -84,4 +84,4 @@ export enum ChannelType {
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
 
-export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };
+export const minAdaptiveCardVersion = '1.5';

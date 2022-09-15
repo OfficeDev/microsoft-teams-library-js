@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { dialog, DialogInfo, DialogSize, IAppWindow, ParentAppWindow, tasks, UrlDialogInfo } from '@microsoft/teams-js';
+import {
+  AdaptiveCardDialogInfo,
+  dialog,
+  DialogInfo,
+  DialogSize,
+  IAppWindow,
+  ParentAppWindow,
+  tasks,
+  UrlDialogInfo,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -212,8 +221,42 @@ const DialogAPIs = (): ReactElement => {
       },
     });
 
+  const CheckDialogAdaptiveCardCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCapabilityDialogAdaptiveCard',
+      title: 'Check Capability Dialog Adaptive Card',
+      onClick: async () => {
+        if (dialog.adaptiveCard.isSupported()) {
+          return 'Dialog Adaptive Card module is supported';
+        } else {
+          return 'Dialog Adaptive Card module is not supported';
+        }
+      },
+    });
+
+  const OpenAdaptiveCardDialog = (): ReactElement =>
+    ApiWithTextInput<AdaptiveCardDialogInfo>({
+      name: 'dialogAdaptiveCardOpen',
+      title: 'Dialog Adaptive Card Open',
+      onClick: {
+        validateInput: (input) => {
+          if (!input) {
+            throw new Error('Input is undefined');
+          }
+        },
+        submit: async (adaptiveCardDialogInfo, setResult) => {
+          const onComplete = (resultObj: dialog.ISdkResponse): void => {
+            setResult('Error: ' + resultObj.err + '\nResult: ' + resultObj.result);
+          };
+          dialog.adaptiveCard.open(adaptiveCardDialogInfo as AdaptiveCardDialogInfo, onComplete);
+          return '';
+        },
+      },
+    });
   return (
     <ModuleWrapper title="Dialog">
+      <CheckDialogAdaptiveCardCapability />
+      <OpenAdaptiveCardDialog />
       <CheckDialogCapability />
       <OpenDialog />
       <ResizeDialog />

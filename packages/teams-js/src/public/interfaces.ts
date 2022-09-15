@@ -1015,13 +1015,5 @@ export enum DevicePermission {
 
 /** @hidden */
 export interface HostVersionsInfo {
-  adaptiveCardSchemaVersion?: AdaptiveCardVersion;
-}
-
-/**
- * Represents the major and minor versions of the AdaptiveCard schema.
- */
-export interface AdaptiveCardVersion {
-  majorVersion: number;
-  minorVersion: number;
+  adaptiveCardSchemaVersion?: string;
 }
