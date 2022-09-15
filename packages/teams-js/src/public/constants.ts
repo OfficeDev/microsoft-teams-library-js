@@ -17,10 +17,30 @@ export enum HostClientType {
 }
 
 export enum HostName {
+  /**
+   * Office.com and Office Windows App
+   */
   office = 'Office',
+
+  /**
+   * For "desktop" specifically, this refers to the new, pre-release version of Outlook for Windows.
+   * Also used on other platforms that map to a single Outlook client.
+   */
   outlook = 'Outlook',
+
+  /**
+   * Outlook for Windows: the classic, native, desktop client
+   */
   outlookWin32 = 'OutlookWin32',
+
+  /**
+   * Microsoft-internal test Host
+   */
   orange = 'Orange',
+
+  /**
+   * Teams
+   */
   teams = 'Teams',
 }
 
