@@ -763,7 +763,7 @@ export namespace pages {
      *
      * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
      */
-    pageId?: string;
+    pageId: string;
 
     /**
      * @deprecated
@@ -780,7 +780,7 @@ export namespace pages {
    *
    * @beta
    */
-  export namespace navigation {
+  export namespace navigate {
     /**
      * Navigate to the currently running application with page ID, and sub-page ID (for navigating to
      * specific content within the page). This is equivalent to navigating to a deep link with the above data, but
@@ -790,7 +790,7 @@ export namespace pages {
      *
      * @beta
      */
-    export function withinApp(params: NavigateWithinAppParams): Promise<void> {
+    export function to(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -803,7 +803,29 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.navigation.withinApp', params));
+        resolve(send('pages.navigate.to', params));
+      });
+    }
+
+    /**
+     * Navigate to the currently running application first static page defined in the application
+     * manifest.
+     * @beta
+     */
+    export function toDefaultPage(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(send('pages.navigate.toDefaultPage'));
       });
     }
 
@@ -815,7 +837,7 @@ export namespace pages {
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.navigation ? true : false) : false;
+      return runtime.supports.pages ? (runtime.supports.pages.navigate ? true : false) : false;
     }
   }
 }

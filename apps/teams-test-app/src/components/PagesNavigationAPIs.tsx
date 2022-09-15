@@ -1,7 +1,7 @@
 import { pages } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithTextInput } from './utils';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateTo = (): React.ReactElement =>
@@ -15,15 +15,27 @@ const NavigateTo = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await pages.navigation.withinApp(input);
+        await pages.navigate.to(input);
         return 'Completed';
       },
     },
   });
 
+const NavigateToDefaultPage = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'navigateToDefaultPage',
+    title: 'Navigate To Default Page',
+    onClick: async (setResult) => {
+      await pages.navigate.toDefaultPage();
+      setResult('Completed');
+      return JSON.stringify('Completed');
+    },
+  });
+
 const PagesNavigationAPIs = (): ReactElement => (
-  <ModuleWrapper title="Pages.navigation">
+  <ModuleWrapper title="Pages.navigate">
     <NavigateTo />
+    <NavigateToDefaultPage />
   </ModuleWrapper>
 );
 
