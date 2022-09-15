@@ -6,7 +6,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts, minAdaptiveCardVersion } from './constants';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import {
   AdaptiveCardDialogInfo,
   BotAdaptiveCardDialogInfo,
