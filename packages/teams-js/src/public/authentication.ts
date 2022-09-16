@@ -18,7 +18,9 @@ import { FrameContexts, HostClientType } from './constants';
  * @beta
  */
 export namespace authentication {
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   let authHandlers: { success: (string) => void; fail: (string) => void };
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   let authWindowMonitor: number;
 
   export function initialize(): void {
@@ -26,6 +28,7 @@ export namespace authentication {
     registerHandler('authentication.authenticate.failure', handleFailure, false);
   }
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   let authParams: AuthenticateParameters;
   /**
    * @deprecated
@@ -61,6 +64,7 @@ export namespace authentication {
   export function authenticate(authenticateParameters?: AuthenticateParameters): void;
   export function authenticate(authenticateParameters?: AuthenticateParameters): Promise<string> {
     const isDifferentParamsInCall: boolean = authenticateParameters !== undefined;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     const authenticateParams: AuthenticateParameters = isDifferentParamsInCall ? authenticateParameters : authParams;
     if (!authenticateParams) {
       throw new Error('No parameters are provided for authentication');
