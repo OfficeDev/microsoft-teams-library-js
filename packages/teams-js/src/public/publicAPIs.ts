@@ -1,3 +1,4 @@
+import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app } from './app';
@@ -120,7 +121,7 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-  pages.registerFullScreenHandlerHelper(handler);
+  registerHandlerHelper('fullScreenChange', handler, []);
 }
 
 /**
@@ -133,7 +134,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
-  pages.appButton.onClickHelper(handler);
+  registerHandlerHelper('appButtonClick', handler, [FrameContexts.content]);
 }
 
 /**
@@ -146,7 +147,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-  pages.appButton.onHoverEnterHelper(handler);
+  registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content]);
 }
 
 /**
@@ -159,7 +160,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-  pages.appButton.onHoverLeaveHelper(handler);
+  registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content]);
 }
 
 /**
@@ -214,7 +215,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  pages.registerFocusEnterHandlerHelper(handler);
+  registerHandlerHelper('focusEnter', handler, []);
 }
 
 /**
@@ -226,7 +227,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
-  pages.config.registerChangeConfigHandlerHelper(handler);
+  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
 }
 
 /**

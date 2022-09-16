@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { LoadContext } from '../public';
+import { FrameContexts, LoadContext } from '../public';
 import { pages } from '../public/pages';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 
 const handlersLogger = getLogger('handlers');
@@ -70,9 +71,38 @@ export function removeHandler(name: string): void {
   delete HandlersPrivate.handlers[name];
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function doesHandlerExist(name: string): boolean {
   return HandlersPrivate.handlers[name] != null;
+}
+
+/**
+ * @hidden
+ * Undocumented helper function with shared code between deprecated version and current version of register*Handler APIs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @param name - The name of the handler to register.
+ * @param handler - The handler to invoke.
+ * @param contexts - The context within which it is valid to register this handler.
+ * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
+ */
+export function registerHandlerHelper(
+  name: string,
+  handler: Function,
+  contexts: FrameContexts[],
+  registrationHelper?: () => void,
+): void {
+  ensureInitialized(...contexts);
+  if (registrationHelper) {
+    registrationHelper();
+  }
+
+  registerHandler(name, handler);
 }
 
 /**
