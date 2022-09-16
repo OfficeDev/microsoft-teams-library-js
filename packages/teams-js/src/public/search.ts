@@ -47,13 +47,6 @@ export namespace search {
    * Your application should *not* re-render inside of these callbacks, there may be a large number
    * of onChangeHandler calls if the user is typing rapidly in the search box.
    *
-   * @param onChangeHandler - This optional handler will be called when the user first starts using the
-   * host's search box and as the user types their query. Can be used to put your application into a 
-   * word-wheeling state or to display suggestions as the user is typing. 
-   * 
-   * This handler will be called with an empty {@link SearchQuery.searchTerm} when search is beginning, and subsequently,
-   * with the current contents of the search box.
-   * 
    * @param onClosedHandler - This handler will be called when the user exits or cancels their search.
    * Should be used to return your application to its most recent, non-search state. The value of {@link SearchQuery.searchTerm} 
    * will be whatever the last query was before ending search. 
@@ -62,6 +55,12 @@ export namespace search {
    * search (by pressing Enter for example). Should be used to display the full list of search results. 
    * The value of {@link SearchQuery.searchTerm} is the complete query the user entered in the search box.
    *
+   * @param onChangeHandler - This optional handler will be called when the user first starts using the
+   * host's search box and as the user types their query. Can be used to put your application into a 
+   * word-wheeling state or to display suggestions as the user is typing. 
+   * 
+   * This handler will be called with an empty {@link SearchQuery.searchTerm} when search is beginning, and subsequently,
+   * with the current contents of the search box.
    * @example
    * ``` ts
    * search.registerHandlers(
