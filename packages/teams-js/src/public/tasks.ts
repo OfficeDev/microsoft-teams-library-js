@@ -82,7 +82,7 @@ export namespace tasks {
    * @param taskInfo - TaskInfo object to convert
    * @returns - Converted UrlDialogInfo object
    */
-  export function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
+  function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
@@ -100,7 +100,7 @@ export namespace tasks {
    * @param taskInfo - TaskInfo object to convert
    * @returns - converted BotUrlDialogInfo object
    */
-  export function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
+  function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {
