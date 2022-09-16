@@ -28,7 +28,7 @@ const NavigateToDefaultPage = (): React.ReactElement =>
     onClick: async (setResult) => {
       await pages.navigate.toDefaultPage();
       setResult('Completed');
-      return JSON.stringify('Completed');
+      return 'Completed';
     },
   });
 
