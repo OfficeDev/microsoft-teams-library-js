@@ -112,6 +112,7 @@ export namespace sharing {
   }
 
   function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let err: SdkError;
     if (shareRequest.content.some((item) => !item.type)) {
       err = {
@@ -130,6 +131,7 @@ export namespace sharing {
   }
 
   function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let err: SdkError;
     if (shareRequest.content[0].type === 'URL') {
       if (shareRequest.content.some((item) => !item.url)) {

@@ -283,6 +283,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
       });
     }
@@ -298,6 +299,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
       });
     }
@@ -316,7 +318,9 @@ export namespace pages {
    * This object is usable only on the configuration frame.
    */
   export namespace config {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let saveHandler: (evt: SaveEvent) => void;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let removeHandler: (evt: RemoveEvent) => void;
 
     /**
@@ -580,6 +584,7 @@ export namespace pages {
    * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let backButtonPressHandler: () => boolean;
 
     export function _initialize(): void {

@@ -46,7 +46,9 @@ export namespace people {
   ): Promise<PeoplePickerResult[]> {
     ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let callback: (error: SdkError, people: PeoplePickerResult[]) => void;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let peoplePickerInputs: PeoplePickerInputs;
 
     if (typeof param1 === 'function') {
@@ -68,6 +70,7 @@ export namespace people {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
 
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       if (!validatePeoplePickerInput(peoplePickerInputs)) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
@@ -75,6 +78,7 @@ export namespace people {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       resolve(sendAndHandleError('people.selectPeople', peoplePickerInputs));
     });
   }

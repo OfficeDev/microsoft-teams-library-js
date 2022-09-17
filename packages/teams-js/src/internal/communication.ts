@@ -171,6 +171,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -212,6 +213,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(actionName, args);
   if (callback) {
     CommunicationPrivate.callbacks[request.id] = callback;
@@ -230,10 +232,12 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via framelessPostMessage interface', request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
@@ -243,9 +247,11 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via postMessage', request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Adding message %i to parent message queue', request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
@@ -404,6 +410,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageRequest;
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
@@ -411,6 +418,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
+          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       });
@@ -453,6 +461,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
     targetWindow.postMessage(request, targetOrigin);
   }
@@ -485,6 +494,7 @@ function sendMessageResponseToChild(
   isPartialResponse?: boolean,
 ): void {
   const targetWindow = Communication.childWindow;
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
@@ -506,6 +516,7 @@ export function sendMessageEventToChild(
   args?: any[],
 ): void {
   const targetWindow = Communication.childWindow;
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const customEvent = createMessageEvent(actionName, args);
   const targetOrigin = getTargetOrigin(targetWindow);
 
