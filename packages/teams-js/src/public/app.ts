@@ -591,7 +591,6 @@ export namespace app {
                   clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    initializeHelperLogger('Generating back compat runtime config');
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
                   } else {
                     throw e;

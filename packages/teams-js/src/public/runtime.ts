@@ -217,7 +217,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
   generateBackCompatRuntimeConfigLogger(
     'Supported capabilities in config before updating based on highestSupportedVersion: %o',
-    JSON.stringify(newSupports),
+    newSupports,
   );
 
   Object.keys(versionConstants).forEach((versionNumber) => {
@@ -241,7 +241,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
   generateBackCompatRuntimeConfigLogger(
     'Runtime config after updating based on highestSupportedVersion: %o',
-    JSON.stringify(backCompatRuntimeConfig),
+    backCompatRuntimeConfig,
   );
 
   return backCompatRuntimeConfig;
