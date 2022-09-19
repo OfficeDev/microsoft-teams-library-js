@@ -14,6 +14,7 @@ import { defaultSDKVersionForCompatCheck, version } from '../internal/constants'
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
 import { authentication } from './authentication';
@@ -31,6 +32,8 @@ import { teamsCore } from './teamsAPIs';
  * @beta
  */
 export namespace app {
+  const appLogger = getLogger('app');
+
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
   export const Messages = {
@@ -540,6 +543,7 @@ export namespace app {
     );
   }
 
+  const initializeHelperLogger = appLogger.extend('initializeHelper');
   function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
@@ -564,8 +568,10 @@ export namespace app {
             // so we assume that if we don't have it, we must be running in Teams.
             // After Teams updates its client code, we can remove this default code.
             try {
+              initializeHelperLogger('Parsing %s', runtimeConfig);
               /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig);
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
@@ -574,6 +580,7 @@ export namespace app {
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
+                  initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
                   // if the given runtime config was actually meant to be a SDK version, store it as such.
                   // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
                   // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
