@@ -10,7 +10,7 @@ import {
   sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
-import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
@@ -24,6 +24,7 @@ import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
 import { teamsCore } from './teamsAPIs';
+import { version } from './version';
 
 /**
  * Namespace to interact with app initialization and lifecycle.

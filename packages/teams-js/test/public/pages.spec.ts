@@ -1,4 +1,3 @@
-import { version } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
@@ -6,6 +5,7 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
