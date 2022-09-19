@@ -65,13 +65,13 @@ export namespace search {
    * ``` ts
    * search.registerHandlers(
       query => {
-        console.log(`Update your application with the changed search query: ${query.searchTerm}`);
-      },
-      query => {
         console.log('Update your application to handle the search experience being closed. Last query: ${query.searchTerm}');
       },
       query => {
         console.log(`Update your application to handle an executed search result: ${query.searchTerm}`);
+      },
+      query => {
+        console.log(`Update your application with the changed search query: ${query.searchTerm}`);
       },
      );
    * ```
