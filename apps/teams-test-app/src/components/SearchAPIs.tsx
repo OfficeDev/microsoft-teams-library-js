@@ -27,8 +27,8 @@ const RegisterHandlers = (): React.ReactElement =>
       };
       setResult('register handlers');
 
-      search.registerHandlers(onChange, onClosed, onExecute);
-      return 'recieved';
+      search.registerHandlers(onClosed, onExecute, onChange);
+      return 'received';
     },
   });
 
