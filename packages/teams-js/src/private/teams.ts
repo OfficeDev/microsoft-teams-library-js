@@ -147,6 +147,7 @@ export namespace teams {
             throw new Error(JSON.stringify(oldPlatformError));
           }
 
+          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
         });
       }

@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added logging to `runtime`, `app`, and `pages.config` to make it easier to investigate issues surrounding app initialization.",
+  "comment": "Added logging to `runtime` and `app` to make it easier to investigate issues surrounding app initialization.",
   "packageName": "@microsoft/teams-js",
   "email": "trharris@microsoft.com",
   "dependentChangeType": "patch"
