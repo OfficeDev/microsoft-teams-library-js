@@ -554,11 +554,6 @@ export namespace app {
         Handlers.initializeHandlers();
         GlobalVars.initializePromise = initializeCommunication(validMessageOrigins).then(
           ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
-            initializeHelperLogger('context: %s', context);
-            initializeHelperLogger('clientType: %s', clientType);
-            initializeHelperLogger('runtimeConfig: %s', runtimeConfig);
-            initializeHelperLogger('clientSupportedSDKVersion: %s', clientSupportedSDKVersion);
-
             GlobalVars.frameContext = context;
             GlobalVars.hostClientType = clientType;
             GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;

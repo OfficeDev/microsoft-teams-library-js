@@ -6,7 +6,6 @@ import {
 } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { getLogger } from '../internal/telemetry';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -19,7 +18,6 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace pages {
-  const pagesLogger = getLogger('pages');
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
@@ -360,7 +358,6 @@ export namespace pages {
    * This object is usable only on the configuration frame.
    */
   export namespace config {
-    const configLogger = pagesLogger.extend('config');
     let saveHandler: (evt: SaveEvent) => void;
     let removeHandler: (evt: RemoveEvent) => void;
 
@@ -377,17 +374,14 @@ export namespace pages {
       registerHandler('settings.remove', handleRemove, false);
     }
 
-    const setValidityStateLogger = configLogger.extend('setValidityState');
     /**
      * Sets the validity state for the configuration.
      * The initial value is false, so the user cannot save the configuration until this is called with true.
      * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
-      setValidityStateLogger('setting validity state to %i', validityState);
       ensureInitialized(FrameContexts.settings, FrameContexts.remove);
       if (!isSupported()) {
-        setValidityStateLogger('pages.config not supported, setValiditityState throwing errorNotSupportedOnPlatform');
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParent('settings.setValidityState', [validityState]);
@@ -634,14 +628,12 @@ export namespace pages {
       }
     }
 
-    const isSupportedLogger = configLogger.extend('isSupported');
     /**
      * Checks if the pages.config capability is supported by the host
      * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
      * false if it is disabled
      */
     export function isSupported(): boolean {
-      isSupportedLogger('Checking if pages.config is supported using runtime.supports object %o', runtime.supports);
       return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
     }
   }
