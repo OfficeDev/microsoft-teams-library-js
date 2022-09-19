@@ -88,7 +88,7 @@ const NavigateToApp = (): React.ReactElement =>
 const ShareDeepLinkOld = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
     name: 'core.shareDeepLink',
-    title: 'Share Deeplink',
+    title: 'Share Deeplink (Core)',
     onClick: {
       validateInput: (input) => {
         if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {
@@ -127,7 +127,7 @@ const ShareDeepLinkOld = (): ReactElement =>
 const ShareDeepLink = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
     name: 'pages.shareDeepLink',
-    title: 'Share Deeplink',
+    title: 'Share Deeplink (Pages)',
     onClick: {
       validateInput: (input) => {
         if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {

@@ -4,7 +4,7 @@ import {
   sendAndUnwrap,
   sendMessageToParent,
 } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
@@ -42,32 +42,11 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('focusEnter', handler);
-  }
-
-  /**
-   * @hidden
-   * Undocumented helper function with shared code between deprecated version and current version of the registerFocusEnterHandler API.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @param handler - The handler for placing focus within the application.
-   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-   */
-  export function registerFocusEnterHandlerHelper(
-    handler: (navigateForward: boolean) => void,
-    versionSpecificHelper?: () => void,
-  ): void {
-    ensureInitialized();
-    if (versionSpecificHelper) {
-      versionSpecificHelper();
-    }
-    registerHandler('focusEnter', handler);
+    registerHandlerHelper('focusEnter', handler, [], () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
@@ -225,32 +204,11 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('fullScreenChange', handler);
-  }
-
-  /**
-   * @hidden
-   * Undocumented helper function with shared code between deprecated version and current version of the registerFullScreenHandler API.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
-   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-   */
-  export function registerFullScreenHandlerHelper(
-    handler: (isFullScreen: boolean) => void,
-    versionSpecificHelper?: () => void,
-  ): void {
-    ensureInitialized();
-    if (versionSpecificHelper) {
-      versionSpecificHelper();
-    }
-    registerHandler('fullScreenChange', handler);
+    registerHandlerHelper('fullScreenChange', handler, [], () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
@@ -325,6 +283,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
       });
     }
@@ -340,6 +299,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
       });
     }
@@ -358,7 +318,9 @@ export namespace pages {
    * This object is usable only on the configuration frame.
    */
   export namespace config {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let saveHandler: (evt: SaveEvent) => void;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let removeHandler: (evt: RemoveEvent) => void;
 
     /**
@@ -492,31 +454,11 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: () => void): void {
-      registerChangeConfigHandlerHelper(handler, () => {
+      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the registerConfigChangeHandler API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when the user clicks on Settings.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function registerChangeConfigHandlerHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-
-      registerHandler('changeSettings', handler);
     }
 
     /**
@@ -642,6 +584,7 @@ export namespace pages {
    * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let backButtonPressHandler: () => boolean;
 
     export function _initialize(): void {
@@ -770,29 +713,11 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: () => void): void {
-      onClickHelper(handler, () => {
+      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onClick API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onClickHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonClick', handler);
     }
 
     /**
@@ -801,29 +726,11 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: () => void): void {
-      onHoverEnterHelper(handler, () => {
+      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onHoverEnter API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onHoverEnterHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonHoverEnter', handler);
     }
 
     /**
@@ -832,29 +739,11 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: () => void): void {
-      onHoverLeaveHelper(handler, () => {
+      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
-    }
-
-    /**
-     * @hidden
-     * Undocumented helper function with shared code between deprecated version and current version of the onHoverLeave API.
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     *
-     * @param handler - The handler to invoke when existing hover of the personal app button in the app bar.
-     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
-     */
-    export function onHoverLeaveHelper(handler: () => void, versionSpecificHelper?: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (versionSpecificHelper) {
-        versionSpecificHelper();
-      }
-      registerHandler('appButtonHoverLeave', handler);
     }
 
     /**

@@ -127,7 +127,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme.
+     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
      */
     theme: string;
 
@@ -569,6 +569,7 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
+              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
               const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
               initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig);
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
@@ -587,6 +588,7 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
+                  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
                   const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
                   clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
                 } catch (e) {
@@ -646,19 +648,23 @@ export namespace app {
     }
 
     if (GlobalVars.frameContext) {
+      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
       registerOnThemeChangeHandler(null);
       pages.backStack.registerBackButtonHandler(null);
       pages.registerFullScreenHandler(null);
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null);
+      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
+      /* eslint-enable strict-null-checks/all */
     }
 
     if (GlobalVars.frameContext === FrameContexts.settings) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnSaveHandler(null);
     }
 
     if (GlobalVars.frameContext === FrameContexts.remove) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnRemoveHandler(null);
     }
 
