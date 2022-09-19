@@ -107,44 +107,46 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <div className="App-container">
-      <AppAPIs />
-      <AppInitializationAPIs />
-      <AppInstallDialogAPIs />
-      <AuthenticationAPIs />
-      <AppEntityAPIs />
-      <BarCodeAPIs />
-      <CalendarAPIs />
-      <CallAPIs />
-      <ChatAPIs />
-      <DialogAPIs />
-      <FilesAPIs />
-      <FullTrustAPIs />
-      <GeoLocationAPIs />
-      <Links />
-      <LocationAPIs />
-      <LogAPIs />
-      <MailAPIs />
-      <MediaAPIs />
-      <MeetingAPIs />
-      <MeetingRoomAPIs />
-      <MenusAPIs />
-      <MonetizationAPIs />
-      <NotificationAPIs />
-      <PagesAPIs />
-      <PagesAppButtonAPIs />
-      <PagesBackStackAPIs />
-      <PagesConfigAPIs />
-      <PagesTabsAPIs />
-      <PeopleAPIs />
-      <PrivateAPIs />
-      <RemoteCameraAPIs />
-      <SearchAPIs />
-      <SharingAPIs />
-      <WebStorageAPIs />
-      <StageViewAPIs />
-      <TeamsCoreAPIs />
-      <TeamsAPIs />
+    <div>
+      <div className="App-container">
+        <AppAPIs />
+        <AppInitializationAPIs />
+        <AppInstallDialogAPIs />
+        <AuthenticationAPIs />
+        <AppEntityAPIs />
+        <BarCodeAPIs />
+        <CalendarAPIs />
+        <CallAPIs />
+        <ChatAPIs />
+        <DialogAPIs />
+        <FilesAPIs />
+        <FullTrustAPIs />
+        <GeoLocationAPIs />
+        <Links />
+        <LocationAPIs />
+        <LogAPIs />
+        <MailAPIs />
+        <MediaAPIs />
+        <MeetingAPIs />
+        <MeetingRoomAPIs />
+        <MenusAPIs />
+        <MonetizationAPIs />
+        <NotificationAPIs />
+        <PagesAPIs />
+        <PagesAppButtonAPIs />
+        <PagesBackStackAPIs />
+        <PagesConfigAPIs />
+        <PagesTabsAPIs />
+        <PeopleAPIs />
+        <PrivateAPIs />
+        <RemoteCameraAPIs />
+        <SearchAPIs />
+        <SharingAPIs />
+        <WebStorageAPIs />
+        <StageViewAPIs />
+        <TeamsCoreAPIs />
+        <TeamsAPIs />
+      </div>
       <Version />
     </div>
   );
