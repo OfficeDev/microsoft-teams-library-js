@@ -1,4 +1,3 @@
-import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as privateAPIs from '../../src/private/privateAPIs';
@@ -20,6 +19,7 @@ import {
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 

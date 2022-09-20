@@ -3,7 +3,7 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
-import { version } from './constants';
+import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
