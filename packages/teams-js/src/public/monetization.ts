@@ -66,8 +66,7 @@ export namespace monetization {
     param1: ((error: SdkError | null) => void) | PlanInfo | undefined,
     param2?: PlanInfo,
   ): Promise<void> {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let callback: (error: SdkError | null) => void;
+    let callback: ((error: SdkError | null) => void) | undefined;
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let planInfo: PlanInfo;
     if (typeof param1 === 'function') {
