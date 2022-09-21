@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Files upload API : 1. Changed datatype of `lastModified` field 2. Added a new field size",
+  "packageName": "@microsoft/teams-js",
+  "email": "jainharsh@microsof.com",
+  "dependentChangeType": "patch"
+}
