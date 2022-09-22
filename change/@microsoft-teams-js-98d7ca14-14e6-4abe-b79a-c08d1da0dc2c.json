@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "On the `File` interface changed the type of `lastModified` field from `Date` to `number` and added a new field `size` that contains the size in bytes of the file",
+  "comment": "On the `File` interface changed the type of `lastModified` field from `Date` to `number`",
   "packageName": "@microsoft/teams-js",
   "email": "jainharsh@microsoft.com",
   "dependentChangeType": "patch"

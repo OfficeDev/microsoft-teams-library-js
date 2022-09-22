@@ -433,10 +433,6 @@ export namespace files {
      * A string containing the path of the file relative to the ancestor directory the user selected
      */
     webkitRelativePath?: string;
-    /**
-     * The size, in bytes, of the data contained in the Blob object
-     */
-    size: number;
   }
 
   /**
