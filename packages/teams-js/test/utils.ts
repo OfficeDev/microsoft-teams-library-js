@@ -127,7 +127,7 @@ export class Utils {
     return app.initialize(validMessageOrigins);
   };
 
-  public findMessageByFunc = (func: string): MessageRequest => {
+  public findMessageByFunc = (func: string): MessageRequest | null => {
     for (let i = 0; i < this.messages.length; i++) {
       if (this.messages[i].func === func) {
         return this.messages[i];
@@ -136,7 +136,7 @@ export class Utils {
     return null;
   };
 
-  public findMessageInChildByFunc = (func: string): MessageRequest => {
+  public findMessageInChildByFunc = (func: string): MessageRequest | null => {
     if (this.childMessages && this.childMessages.length) {
       for (let i = 0; i < this.childMessages.length; i++) {
         if (this.childMessages[i].func === func) {

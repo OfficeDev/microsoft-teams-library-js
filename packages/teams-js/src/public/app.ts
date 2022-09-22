@@ -570,9 +570,8 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
-              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
-              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig);
+              const givenRuntimeConfig: IRuntime | undefined = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'undefined');
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
@@ -589,8 +588,13 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
+                  const givenRuntimeConfig: IRuntime | undefined = JSON.parse(clientSupportedSDKVersion);
+                  if (givenRuntimeConfig === undefined) {
+                    const errorMessage = 'Received undefined runtime config in clientSupportedSDKVersion';
+                    initializeHelperLogger(errorMessage);
+                    throw new Error(errorMessage);
+                  }
+
                   clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
                 } catch (e) {
                   if (e instanceof SyntaxError) {
