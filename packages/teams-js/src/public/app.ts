@@ -591,7 +591,11 @@ export namespace app {
                   const givenRuntimeConfig: IRuntime | null = JSON.parse(clientSupportedSDKVersion);
                   initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
-                  clientSupportedSDKVersion && givenRuntimeConfig && applyRuntimeConfig(givenRuntimeConfig);
+                  if (!givenRuntimeConfig) {
+                    throw new Error('givenRuntimeConfig successfully parsed to null');
+                  } else {
+                    applyRuntimeConfig(givenRuntimeConfig);
+                  }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
