@@ -142,11 +142,9 @@ export namespace menus {
     dropDown = 'dropDown',
     popOver = 'popOver',
   }
-  /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
-  let navBarMenuItemPressHandler: (id: string) => boolean;
-  let actionMenuItemPressHandler: (id: string) => boolean;
-  let viewConfigItemPressHandler: (id: string) => boolean;
-  /* eslint-enable strict-null-checks/all */ /* Fix tracked by 5730662 */
+  let navBarMenuItemPressHandler: ((id: string) => boolean) | undefined;
+  let actionMenuItemPressHandler: ((id: string) => boolean) | undefined;
+  let viewConfigItemPressHandler: ((id: string) => boolean) | undefined;
 
   export function initialize(): void {
     registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
