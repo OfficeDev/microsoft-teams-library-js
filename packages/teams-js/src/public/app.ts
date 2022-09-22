@@ -570,8 +570,8 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
-              const givenRuntimeConfig: IRuntime | undefined = JSON.parse(runtimeConfig);
-              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'undefined');
+              const givenRuntimeConfig: IRuntime | null = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
@@ -588,14 +588,10 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  const givenRuntimeConfig: IRuntime | undefined = JSON.parse(clientSupportedSDKVersion);
-                  if (givenRuntimeConfig === undefined) {
-                    const errorMessage = 'Received undefined runtime config in clientSupportedSDKVersion';
-                    initializeHelperLogger(errorMessage);
-                    throw new Error(errorMessage);
-                  }
+                  const givenRuntimeConfig: IRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
-                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                  clientSupportedSDKVersion && givenRuntimeConfig && applyRuntimeConfig(givenRuntimeConfig);
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
