@@ -106,35 +106,6 @@ jobs:
           mergeTestResults: true
         condition: succeededOrFailed()
 
-  - job: E2ETest4
-    displayName: 'E2E Test - BC Latest'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - template: tools/yaml-templates/build-app-host.yml
-        parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath4)@$(AppHostingSdkGitRef)
-
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --targetClientSdkCheckpoint=latestBackCompat --reportFileName=e2e-tests-report-bcompat'
-        displayName: 'Run E2E back compat tests against latest version'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-        enabled: true
-
-      - task: Yarn@2
-        displayName: 'Run tests for electron webview'
-        inputs:
-          Arguments: 'run xvfb-maybe mocha'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report*.xml'
-          testRunTitle: 'E2E Tests - BC Latest'
-          mergeTestResults: true
-        condition: succeededOrFailed()
-
   - job: E2ETest5
     displayName: 'E2E Test - TeamsJS V1'
     pool:
