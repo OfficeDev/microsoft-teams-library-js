@@ -1,7 +1,7 @@
 {
   "type": "patch",
-  "comment": "Files upload API : 1. Changed datatype of `lastModified` field from Date to number 2. Added a new field `size` of type number",
+  "comment": "On the `File` interface changed the type of `lastModified` field from `Date` to `number` and added a new field `size` that contains the size in bytes of the file",
   "packageName": "@microsoft/teams-js",
-  "email": "jainharsh@microsof.com",
+  "email": "jainharsh@microsoft.com",
   "dependentChangeType": "patch"
 }
