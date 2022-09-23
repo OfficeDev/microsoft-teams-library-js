@@ -106,34 +106,6 @@ jobs:
           mergeTestResults: true
         condition: succeededOrFailed()
 
-  - job: E2ETest5
-    displayName: 'E2E Test - TeamsJS V1'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - template: tools/yaml-templates/build-app-host.yml
-        parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath5)@$(AppHostingSdkGitRef)
-
-      - task: Yarn@2
-        displayName: 'Build Teams Test App V1'
-        inputs:
-          Arguments: 'build-test-app-V1'
-          ProjectDirectory: '$(ClientSdkProjectDirectory)'
-
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --envType=teamsV1 --targetClientSdkCheckpoint=1.12.1 --reportFileName=e2e-tests-report-V1'
-        displayName: 'Run E2E integration tests on Teams Test App V1'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report*.xml'
-          testRunTitle: 'E2E Tests - TeamsJs V1'
-          mergeTestResults: true
-        condition: succeededOrFailed()
-
   - job: E2ETestCDN
     displayName: 'E2E Test - CDN (only runs on release builds)'
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
