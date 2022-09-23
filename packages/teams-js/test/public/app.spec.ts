@@ -252,7 +252,9 @@ describe('Testing app capability', () => {
 
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
 
-        await expect(initPromise).rejects.toThrowError('givenRuntimeConfig successfully parsed to null');
+        await expect(initPromise).rejects.toThrowError(
+          'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+        );
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {

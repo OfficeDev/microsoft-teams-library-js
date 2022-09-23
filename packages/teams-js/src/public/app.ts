@@ -592,7 +592,9 @@ export namespace app {
                   initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
                   if (!givenRuntimeConfig) {
-                    throw new Error('givenRuntimeConfig successfully parsed to null');
+                    throw new Error(
+                      'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                    );
                   } else {
                     applyRuntimeConfig(givenRuntimeConfig);
                   }
