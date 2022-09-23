@@ -18,18 +18,15 @@ import { FrameContexts, HostClientType } from './constants';
  * @beta
  */
 export namespace authentication {
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  let authHandlers: { success: (string) => void; fail: (string) => void };
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  let authWindowMonitor: number;
+  let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
+  let authWindowMonitor: number | undefined;
 
   export function initialize(): void {
     registerHandler('authentication.authenticate.success', handleSuccess, false);
     registerHandler('authentication.authenticate.failure', handleFailure, false);
   }
 
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  let authParams: AuthenticateParameters;
+  let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
    * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern.
@@ -64,8 +61,9 @@ export namespace authentication {
   export function authenticate(authenticateParameters?: AuthenticateParameters): void;
   export function authenticate(authenticateParameters?: AuthenticateParameters): Promise<string> {
     const isDifferentParamsInCall: boolean = authenticateParameters !== undefined;
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    const authenticateParams: AuthenticateParameters = isDifferentParamsInCall ? authenticateParameters : authParams;
+    const authenticateParams: AuthenticateParameters | undefined = isDifferentParamsInCall
+      ? authenticateParameters
+      : authParams;
     if (!authenticateParams) {
       throw new Error('No parameters are provided for authentication');
     }

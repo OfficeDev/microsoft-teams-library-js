@@ -244,6 +244,19 @@ describe('Testing app capability', () => {
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
+      it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
+        const initPromise = app.initialize();
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
+
+        await expect(initPromise).rejects.toThrowError(
+          'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+        );
+      });
+
       Object.values(HostClientType).forEach((hostClientType) => {
         it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
           const initPromise = app.initialize();
