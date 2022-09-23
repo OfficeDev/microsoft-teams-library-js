@@ -582,8 +582,7 @@ export namespace pages {
    * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let backButtonPressHandler: () => boolean;
+    let backButtonPressHandler: (() => boolean) | undefined;
 
     export function _initialize(): void {
       registerHandler('backButtonPress', handleBackButtonPress, false);

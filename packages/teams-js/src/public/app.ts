@@ -570,9 +570,8 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
-              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
-              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig);
+              const givenRuntimeConfig: IRuntime | null = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
@@ -589,9 +588,16 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
-                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                  const givenRuntimeConfig: IRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
+
+                  if (!givenRuntimeConfig) {
+                    throw new Error(
+                      'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                    );
+                  } else {
+                    applyRuntimeConfig(givenRuntimeConfig);
+                  }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
