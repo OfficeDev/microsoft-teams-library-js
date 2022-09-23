@@ -25,6 +25,7 @@ steps:
     inputs:
       Arguments:
       ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+    retryCountOnTaskFailure: 2
 
   - task: Yarn@2
     displayName: 'Build app hosting sdk'
@@ -37,6 +38,7 @@ steps:
     inputs:
       Arguments:
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
+    retryCountOnTaskFailure: 2
 
   - task: Yarn@2
     displayName: 'Build client sdk'
