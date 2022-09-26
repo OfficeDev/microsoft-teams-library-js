@@ -88,12 +88,14 @@ export namespace media {
 
     if (!GlobalVars.isFramelessWindow) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(notSupportedError, undefined);
       return;
     }
 
     if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(oldPlatformError, undefined);
       return;
     }
@@ -135,11 +137,13 @@ export namespace media {
       ensureInitialized(FrameContexts.content, FrameContexts.task);
       if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
         const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         callback(oldPlatformError, null);
         return;
       }
       if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
         const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         callback(invalidInput, null);
         return;
       }
@@ -160,6 +164,7 @@ export namespace media {
       function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
         if (callback) {
           if (mediaResult && mediaResult.error) {
+            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
             callback(mediaResult.error, null);
           } else {
             if (mediaResult && mediaResult.mediaChunk) {
@@ -174,6 +179,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
+              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
             }
           }
@@ -192,8 +198,10 @@ export namespace media {
       this.content && callback && sendMessageToParent('getMedia', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
+          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
+            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
             callback(mediaResult.error, null);
             removeHandler('getMedia' + actionName);
           } else {
@@ -210,6 +218,7 @@ export namespace media {
                 helper.assembleAttachment.push(assemble);
               }
             } else {
+              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
               callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
               removeHandler('getMedia' + actionName);
             }
@@ -595,6 +604,7 @@ export namespace media {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
     if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(oldPlatformError, null);
       return;
     }
@@ -602,12 +612,14 @@ export namespace media {
     try {
       throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
     } catch (err) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(err, null);
       return;
     }
 
     if (!validateSelectMediaInputs(mediaInputs)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(invalidInput, null);
       return;
     }
@@ -621,6 +633,7 @@ export namespace media {
         // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
         if (mediaEvent) {
           if (isVideoControllerRegistered(mediaInputs)) {
+            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
             mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
           }
           return;
@@ -628,6 +641,7 @@ export namespace media {
 
         // Media Attachments are final response to selectMedia
         if (!localAttachments) {
+          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           callback(err, null);
           return;
         }
@@ -708,18 +722,22 @@ export namespace media {
       GlobalVars.hostClientType === HostClientType.teamsDisplays
     ) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(notSupportedError, null);
       return;
     }
 
     if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(oldPlatformError, null);
       return;
     }
 
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     if (!validateScanBarCodeInput(config)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       callback(invalidInput, null);
       return;
     }
