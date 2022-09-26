@@ -25,9 +25,8 @@ const NavigateToDefaultPage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'navigateToDefaultPage',
     title: 'Navigate To Default Page',
-    onClick: async (setResult) => {
+    onClick: async () => {
       await pages.currentApp.navigateToDefaultPage();
-      setResult('Completed');
       return 'Completed';
     },
   });
