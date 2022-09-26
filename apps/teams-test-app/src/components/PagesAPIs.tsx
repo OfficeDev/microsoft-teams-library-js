@@ -84,46 +84,6 @@ const NavigateToApp = (): React.ReactElement =>
     },
   });
 
-// This will be removed shortly, after the UI tests are updated to look for the new name (reflected in the almost duplicative ShareDeepLink element)
-const ShareDeepLinkOld = (): ReactElement =>
-  ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
-    name: 'core.shareDeepLink',
-    title: 'Share Deeplink (Core)',
-    onClick: {
-      validateInput: (input) => {
-        if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {
-          throw new Error('subPageId and subPageLabel OR subEntityId and subEntityLabel are required.');
-        }
-      },
-      submit: {
-        withPromise: async (input) => {
-          if (input.subEntityId && input.subEntityLabel) {
-            await pages.shareDeepLink({
-              subPageId: input.subEntityId,
-              subPageLabel: input.subEntityLabel,
-              subPageWebUrl: input.subEntityWebUrl,
-            });
-          } else {
-            await pages.shareDeepLink(input);
-          }
-          return 'called shareDeepLink';
-        },
-        withCallback: (input, setResult) => {
-          if (input.subEntityId && input.subEntityLabel) {
-            shareDeepLink(input);
-          } else {
-            shareDeepLink({
-              subEntityId: input.subPageId,
-              subEntityLabel: input.subPageLabel,
-              subEntityWebUrl: input.subPageWebUrl,
-            });
-          }
-          setResult('called shareDeepLink');
-        },
-      },
-    },
-  });
-
 const ShareDeepLink = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
     name: 'pages.shareDeepLink',
@@ -257,7 +217,6 @@ const PagesAPIs = (): ReactElement => (
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
-    <ShareDeepLinkOld />
     <ShareDeepLink />
     <ReturnFocus />
     <RegisterFocusEnterHandler />

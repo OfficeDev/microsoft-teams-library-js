@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { GlobalVars } from '../internal/globalVars';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+
+const runtimeLogger = getLogger('runtime');
+
 export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
@@ -196,6 +200,7 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   ],
 };
 
+const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -208,7 +213,14 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+  generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
+
   let newSupports = { ...teamsRuntimeConfig.supports };
+
+  generateBackCompatRuntimeConfigLogger(
+    'Supported capabilities in config before updating based on highestSupportedVersion: %o',
+    newSupports,
+  );
 
   Object.keys(versionConstants).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
@@ -228,10 +240,18 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     isLegacyTeams: true,
     supports: newSupports,
   };
+
+  generateBackCompatRuntimeConfigLogger(
+    'Runtime config after updating based on highestSupportedVersion: %o',
+    backCompatRuntimeConfig,
+  );
+
   return backCompatRuntimeConfig;
 }
 
+const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
+  applyRuntimeConfigLogger('Applying runtime %o', runtimeConfig);
   runtime = deepFreeze(runtimeConfig);
 }
 

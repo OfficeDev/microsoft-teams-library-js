@@ -23,6 +23,7 @@ steps:
       Arguments: 'install'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     displayName: 'Run yarn install on TeamsJS'
+    retryCountOnTaskFailure: 2
 
   - task: Yarn@2
     inputs:
