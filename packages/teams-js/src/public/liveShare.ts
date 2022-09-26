@@ -11,7 +11,7 @@ import { LiveShareHost } from '../internal/liveShareHost';
 export namespace liveShare {
   const LIVE_SHARE_PACKAGE = '@microsoft/live-share';
   const LIVE_SHARE_HOST = new LiveShareHost();
-  let client: LiveShareClient;
+  let client: LiveShareClient | undefined;
   let initializing = false;
 
   interface LiveShareClient {

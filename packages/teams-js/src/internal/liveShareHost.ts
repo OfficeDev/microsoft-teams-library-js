@@ -173,7 +173,11 @@ export class LiveShareHost {
     return new Promise<string>((resolve) => {
       ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
 
-      resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
+      if (containerId) {
+        resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
+      } else {
+        resolve(sendAndHandleSdkError('interactive.getFluidToken'));
+      }
     });
   }
 
