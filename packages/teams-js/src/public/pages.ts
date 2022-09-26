@@ -766,14 +766,14 @@ export namespace pages {
      */
     export interface NavigateWithinAppParams {
       /**
-       * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
+       * Use {@link app.PageInfo.id | app.Context.page.id}
        *
        * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
        */
       pageId: string;
 
       /**
-       * As of 2.0.0, please use {@link app.PageInfo.subPageId | app.Context.page.subPageId} instead
+       * Use {@link app.PageInfo.subPageId | app.Context.page.subPageId} 
        *
        * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
        * back to the application via the Context object.
