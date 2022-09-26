@@ -12,6 +12,7 @@ export namespace liveShare {
   const LIVE_SHARE_PACKAGE = '@microsoft/live-share';
   const LIVE_SHARE_HOST = new LiveShareHost();
   let client: LiveShareClient;
+  let initializing = false;
 
   interface LiveShareClient {
     new (options?: LiveShareOptions, host?: LiveShareHost);
@@ -70,17 +71,20 @@ export namespace liveShare {
    * @beta
    */
   export async function initialize(options?: LiveShareOptions): Promise<void> {
-    if (client) {
+    if (initializing || client) {
       throw new Error('Live Share has already been initialized.');
     }
 
     try {
+      initializing = true;
       const pkg = (await import(LIVE_SHARE_PACKAGE)) as { LiveShareClient: LiveShareClient };
       client = new pkg.LiveShareClient(options, LIVE_SHARE_HOST);
     } catch (err: unknown) {
       throw new Error(
         'Unable to initialize Live Share client. Ensure that your project includes "@microsoft/live-share"',
       );
+    } finally {
+      initializing = false;
     }
   }
 
