@@ -752,7 +752,7 @@ export namespace pages {
   }
 
   /**
-   * Provides functions for navigating within your application without specifying your application ID.
+   * Provides functions for navigating without needing to specify your application ID.
    *
    * @beta
    */
