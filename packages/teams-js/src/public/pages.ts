@@ -752,45 +752,42 @@ export namespace pages {
   }
 
   /**
-   * Parameters for the NavigatewithinApp API
+   * Provides functions for navigating within your application without specifying your application ID.
    *
    * @beta
    */
-  export interface NavigateWithinAppParams {
+  export namespace currentApp {
     /**
-     * @deprecated
-     * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
+     * Parameters for the NavigateWithinApp
      *
-     * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+     * @beta
      */
-    pageId: string;
+    export interface NavigateWithinAppParams {
+      /**
+       * As of 2.0.0, please use {@link app.PageInfo.id | app.Context.page.id} instead
+       *
+       * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+       */
+      pageId: string;
+
+      /**
+       * As of 2.0.0, please use {@link app.PageInfo.subPageId | app.Context.page.subPageId} instead
+       *
+       * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
+       * back to the application via the Context object.
+       */
+      subPageId?: string;
+    }
 
     /**
-     * @deprecated
-     * As of 2.0.0, please use {@link app.PageInfo.subPageId | app.Context.page.subPageId} instead
-     *
-     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
-     * back to the application via the Context object.
-     */
-    subPageId?: string;
-  }
-
-  /**
-   * Provides functions for navigating without your own application ID.
-   *
-   * @beta
-   */
-  export namespace navigate {
-    /**
-     * Navigate to the currently running application with page ID, and sub-page ID (for navigating to
-     * specific content within the page). This is equivalent to navigating to a deep link with the above data, but
-     * does not require the application to build a URL or worry about different deep link formats for different hosts.
+     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
+     * specific content within the page).
      * @param params - Parameters for the navigation
      * @returns a promise that will resolve if the navigation was successful
      *
      * @beta
      */
-    export function to(params: NavigateWithinAppParams): Promise<void> {
+    export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -803,16 +800,16 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.navigate.to', params));
+        resolve(send('pages.currentApp.navigateTo', params));
       });
     }
 
     /**
-     * Navigate to the currently running application first static page defined in the application
+     * Navigate to the currently running application's first static page defined in the application
      * manifest.
      * @beta
      */
-    export function toDefaultPage(): Promise<void> {
+    export function navigateToDefaultPage(): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
           FrameContexts.content,
@@ -825,19 +822,19 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.navigate.toDefaultPage'));
+        resolve(send('pages.currentApp.navigateToDefaultPage'));
       });
     }
 
     /**
-     * Checks if pages.navigation capability is supported by the host
-     * @returns true if the pages.navigation capability is enabled in runtime.supports.pages.navigation and
+     * Checks if pages.currentApp capability is supported by the host
+     * @returns true if the pages.currentApp capability is enabled in runtime.supports.pages.currentApp and
      * false if it is disabled
      *
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.navigate ? true : false) : false;
+      return runtime.supports.pages ? (runtime.supports.pages.currentApp ? true : false) : false;
     }
   }
 }

@@ -5,7 +5,7 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateTo = (): React.ReactElement =>
-  ApiWithTextInput<pages.NavigateWithinAppParams>({
+  ApiWithTextInput<pages.currentApp.NavigateWithinAppParams>({
     name: 'navigateTo',
     title: 'Navigate To',
     onClick: {
@@ -15,7 +15,7 @@ const NavigateTo = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await pages.navigate.to(input);
+        await pages.currentApp.navigateTo(input);
         return 'Completed';
       },
     },
@@ -26,17 +26,17 @@ const NavigateToDefaultPage = (): React.ReactElement =>
     name: 'navigateToDefaultPage',
     title: 'Navigate To Default Page',
     onClick: async (setResult) => {
-      await pages.navigate.toDefaultPage();
+      await pages.currentApp.navigateToDefaultPage();
       setResult('Completed');
       return 'Completed';
     },
   });
 
-const PagesNavigationAPIs = (): ReactElement => (
-  <ModuleWrapper title="Pages.navigate">
+const PagesCurrentAppAPIs = (): ReactElement => (
+  <ModuleWrapper title="Pages.currentApp">
     <NavigateTo />
     <NavigateToDefaultPage />
   </ModuleWrapper>
 );
 
-export default PagesNavigationAPIs;
+export default PagesCurrentAppAPIs;
