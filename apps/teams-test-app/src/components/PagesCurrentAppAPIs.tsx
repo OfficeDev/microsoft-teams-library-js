@@ -32,10 +32,17 @@ const NavigateToDefaultPage = (): React.ReactElement =>
     },
   });
 
+const CheckPageCurrentAppCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkPageCurrentAppCapability',
+    title: 'Check Page currentApp Call',
+    onClick: async () => `Pages.currentApp module ${pages.currentApp.isSupported() ? 'is' : 'is not'} supported`,
+  });
 const PagesCurrentAppAPIs = (): ReactElement => (
   <ModuleWrapper title="Pages.currentApp">
     <NavigateTo />
     <NavigateToDefaultPage />
+    <CheckPageCurrentAppCapability />
   </ModuleWrapper>
 );
 
