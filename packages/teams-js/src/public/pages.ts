@@ -772,7 +772,7 @@ export namespace pages {
       pageId: string;
 
       /**
-       * Optional developer-defined unique ID describing the content to navigate within the page. This 
+       * Optional developer-defined unique ID describing the content to navigate to within the page. This 
        * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId} 
        */
       subPageId?: string;
