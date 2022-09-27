@@ -11,13 +11,12 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly appInstallDialog?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -55,6 +54,7 @@ export interface IRuntime {
     };
     readonly teamsCore?: {};
     readonly video?: {};
+    readonly webStorage?: {};
   };
 }
 
