@@ -766,17 +766,14 @@ export namespace pages {
      */
     export interface NavigateWithinAppParams {
       /**
-       * Use {@link app.PageInfo.id | app.Context.page.id}
-       *
-       * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+       * The developer-defined unique ID for the page defined in the manifest or when first configuring 
+       * the page. (Known as {entityId} prior to TeamsJS v.2.0.0)
        */
       pageId: string;
 
       /**
-       * Use {@link app.PageInfo.subPageId | app.Context.page.subPageId} 
-       *
-       * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
-       * back to the application via the Context object.
+       * Optional developer-defined unique ID describing the content to navigate within the page. This 
+       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId} 
        */
       subPageId?: string;
     }
