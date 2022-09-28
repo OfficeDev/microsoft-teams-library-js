@@ -1,4 +1,5 @@
 import {
+  sendAndHandleSdkError,
   sendAndHandleStatusAndReason as send,
   sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
   sendAndUnwrap,
@@ -750,6 +751,90 @@ export namespace pages {
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
+    }
+  }
+
+  /**
+   * Provides functions for navigating without needing to specify your application ID.
+   *
+   * @beta
+   */
+  export namespace currentApp {
+    /**
+     * Parameters for the NavigateWithinApp
+     *
+     * @beta
+     */
+    export interface NavigateWithinAppParams {
+      /**
+       * The developer-defined unique ID for the page defined in the manifest or when first configuring
+       * the page. (Known as {entityId} prior to TeamsJS v.2.0.0)
+       */
+      pageId: string;
+
+      /**
+       * Optional developer-defined unique ID describing the content to navigate to within the page. This
+       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId}
+       */
+      subPageId?: string;
+    }
+
+    /**
+     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
+     * specific content within the page).
+     * @param params - Parameters for the navigation
+     * @returns a promise that will resolve if the navigation was successful
+     *
+     * @beta
+     */
+    export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+      });
+    }
+
+    /**
+     * Navigate to the currently running application's first static page defined in the application
+     * manifest.
+     * @beta
+     */
+    export function navigateToDefaultPage(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+      });
+    }
+
+    /**
+     * Checks if pages.currentApp capability is supported by the host
+     * @returns true if the pages.currentApp capability is enabled in runtime.supports.pages.currentApp and
+     * false if it is disabled
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.currentApp ? true : false) : false;
     }
   }
 }
