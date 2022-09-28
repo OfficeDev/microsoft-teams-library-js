@@ -99,7 +99,9 @@ export namespace dialog {
    * Submit the dialog module and close the dialog
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
-   * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
+   * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module.
+   * Since web apps can power multiple Teams apps across different environments or different branding schemas with the same domain,
+   * an array of valid appIDs corresponded to the different Teams apps can be provided.
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
