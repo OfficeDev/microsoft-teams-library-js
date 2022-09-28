@@ -508,14 +508,14 @@ describe('Testing pages module', () => {
           });
 
           it(`pages.currentApp.navigateTo should allow calls from ${context} context`, async () => {
-            expect.assertions(1);
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
 
             const promise = pages.currentApp.navigateTo(NavigateToParams);
 
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            utils.respondToMessage(navigateToMessage, true);
+            expect(navigateToMessage).not.toBeNull();
+            utils.respondToMessage(navigateToMessage);
 
             await expect(promise).resolves.toBe(undefined);
           });
@@ -527,7 +527,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateTo(NavigateToParams);
 
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            utils.respondToMessage(navigateToMessage, true);
+            utils.respondToMessage(navigateToMessage);
             await promise;
 
             expect(navigateToMessage).not.toBeNull();
@@ -572,14 +572,13 @@ describe('Testing pages module', () => {
           });
 
           it(`pages.currentApp.navigateToDefaultPage should allow calls from ${context} context`, async () => {
-            expect.assertions(1);
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
 
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            utils.respondToMessage(navigateToDefaultPageMessage, true);
+            utils.respondToMessage(navigateToDefaultPageMessage);
 
             await expect(promise).resolves.toBe(undefined);
           });
@@ -591,7 +590,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            utils.respondToMessage(navigateToDefaultPageMessage, true);
+            utils.respondToMessage(navigateToDefaultPageMessage);
             expect(await promise).toBeUndefined();
           });
         } else {
@@ -2301,7 +2300,7 @@ describe('Testing pages module', () => {
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToMessage.id,
-                args: [true],
+                args: [],
               },
             } as DOMMessageEvent);
 
@@ -2316,7 +2315,7 @@ describe('Testing pages module', () => {
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToMessage.id,
-                args: [NavigateToParams],
+                args: [],
               },
             } as DOMMessageEvent);
             await promise;
@@ -2373,7 +2372,7 @@ describe('Testing pages module', () => {
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToDefaultPageMessage.id,
-                args: [true],
+                args: [],
               },
             } as DOMMessageEvent);
 
@@ -2392,7 +2391,7 @@ describe('Testing pages module', () => {
             framelessPostMocks.respondToMessage({
               data: {
                 id: navigateToDefaultPageMessage.id,
-                args: [true],
+                args: [],
               },
             } as DOMMessageEvent);
             expect(await promise).toBeUndefined();

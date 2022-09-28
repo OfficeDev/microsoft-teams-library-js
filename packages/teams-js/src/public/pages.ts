@@ -1,4 +1,5 @@
 import {
+  sendAndHandleSdkError,
   sendAndHandleStatusAndReason as send,
   sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
   sendAndUnwrap,
@@ -799,7 +800,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.currentApp.navigateTo', params));
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
       });
     }
 
@@ -821,7 +822,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('pages.currentApp.navigateToDefaultPage'));
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
       });
     }
 
