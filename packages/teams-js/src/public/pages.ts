@@ -767,14 +767,14 @@ export namespace pages {
      */
     export interface NavigateWithinAppParams {
       /**
-       * The developer-defined unique ID for the page defined in the manifest or when first configuring 
+       * The developer-defined unique ID for the page defined in the manifest or when first configuring
        * the page. (Known as {entityId} prior to TeamsJS v.2.0.0)
        */
       pageId: string;
 
       /**
-       * Optional developer-defined unique ID describing the content to navigate to within the page. This 
-       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId} 
+       * Optional developer-defined unique ID describing the content to navigate to within the page. This
+       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId}
        */
       subPageId?: string;
     }

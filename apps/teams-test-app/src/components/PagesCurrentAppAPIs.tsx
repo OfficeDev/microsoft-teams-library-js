@@ -11,7 +11,7 @@ const NavigateTo = (): React.ReactElement =>
     onClick: {
       validateInput: (input) => {
         if (!input.pageId) {
-          throw new Error('PageID are required.');
+          throw 'PageID are required.';
         }
       },
       submit: async (input) => {
