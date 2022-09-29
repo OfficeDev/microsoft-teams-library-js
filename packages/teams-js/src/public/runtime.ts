@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { GlobalVars } from '../internal/globalVars';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
 import { HostVersionsInfo } from './interfaces';
+
+
+const runtimeLogger = getLogger('runtime');
 export interface IRuntime {
   readonly apiVersion: number;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly appInstallDialog?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly adaptiveCard?: {
@@ -36,10 +39,11 @@ export interface IRuntime {
     readonly notifications?: {};
     readonly pages?: {
       readonly appButton?: {};
-      readonly tabs?: {};
-      readonly config?: {};
       readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
       readonly fullTrust?: {};
+      readonly tabs?: {};
     };
     readonly people?: {};
     readonly permissions?: {};
@@ -55,6 +59,7 @@ export interface IRuntime {
     };
     readonly teamsCore?: {};
     readonly video?: {};
+    readonly webStorage?: {};
   };
 }
 
@@ -87,10 +92,11 @@ export let runtime: IRuntime = {
     notifications: undefined,
     pages: {
       appButton: undefined,
-      tabs: undefined,
-      config: undefined,
       backStack: undefined,
+      config: undefined,
+      currentApp: undefined,
       fullTrust: undefined,
+      tabs: undefined,
     },
     people: undefined,
     permissions: undefined,
@@ -205,6 +211,7 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   ],
 };
 
+const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -217,7 +224,14 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
 export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+  generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
+
   let newSupports = { ...teamsRuntimeConfig.supports };
+
+  generateBackCompatRuntimeConfigLogger(
+    'Supported capabilities in config before updating based on highestSupportedVersion: %o',
+    newSupports,
+  );
 
   Object.keys(versionConstants).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
@@ -237,10 +251,18 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     isLegacyTeams: true,
     supports: newSupports,
   };
+
+  generateBackCompatRuntimeConfigLogger(
+    'Runtime config after updating based on highestSupportedVersion: %o',
+    backCompatRuntimeConfig,
+  );
+
   return backCompatRuntimeConfig;
 }
 
+const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
 export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
+  applyRuntimeConfigLogger('Applying runtime %o', runtimeConfig);
   runtime = deepFreeze(runtimeConfig);
 }
 

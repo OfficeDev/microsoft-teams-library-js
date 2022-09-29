@@ -1,4 +1,3 @@
-import { version } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
@@ -27,6 +26,7 @@ import {
   shareDeepLink,
 } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
 describe('MicrosoftTeams-publicAPIs', () => {

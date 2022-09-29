@@ -32,7 +32,8 @@ export namespace tasks {
     submitHandler?: (err: string, result: string | object) => void,
   ): IAppWindow {
     const dialogSubmitHandler = submitHandler
-      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
+        (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -83,6 +84,7 @@ export namespace tasks {
    * @returns - Converted UrlDialogInfo object
    */
   function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
@@ -101,6 +103,7 @@ export namespace tasks {
    * @returns - converted BotUrlDialogInfo object
    */
   function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {

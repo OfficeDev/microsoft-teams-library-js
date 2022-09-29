@@ -60,6 +60,7 @@ export { video } from './video';
 export { search } from './search';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
+export { version } from './version';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
@@ -88,3 +89,4 @@ export {
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
+export { liveShare } from './liveShare';

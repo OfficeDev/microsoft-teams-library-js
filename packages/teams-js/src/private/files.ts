@@ -415,21 +415,22 @@ export namespace files {
   /**
    * @hidden
    * Object used to represent a file
+   * @beta
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export interface File extends Blob {
     /**
-     * Last modified timestamp
+     * A number that represents the number of milliseconds since the Unix epoch
      */
-    lastModified: Date;
+    lastModified: number;
     /**
      * Name of the file
      */
     name: string;
     /**
-     * The file path to uniquely identify it within the file hierarchy
+     * A string containing the path of the file relative to the ancestor directory the user selected
      */
     webkitRelativePath?: string;
   }

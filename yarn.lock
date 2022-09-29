@@ -1755,6 +1755,444 @@
     "@fluentui/set-version" "^8.2.1"
     tslib "^2.1.0"
 
+"@fluidframework/aqueduct@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/aqueduct/-/aqueduct-1.2.6.tgz#ca1c86500d333c8be21dfec594208628156445a8"
+  integrity sha512-HRAwwrk0satMRHweRAGcrtv1w24cXWGOobtjdvBuiXM4XfbngwNtrkUpJ6s4W8pS+8oE1Aww5G5rXwPjJUHi5w==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-loader" "^1.2.6"
+    "@fluidframework/container-runtime" "^1.2.6"
+    "@fluidframework/container-runtime-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/map" "^1.2.6"
+    "@fluidframework/request-handler" "^1.2.6"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/synthesize" "^1.2.6"
+    "@fluidframework/view-interfaces" "^1.2.6"
+    uuid "^8.3.1"
+
+"@fluidframework/azure-client@~1.0.1":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@fluidframework/azure-client/-/azure-client-1.0.3.tgz#c0de78009b9eca8817cb56555d7f5be7359ead2c"
+  integrity sha512-a/+zGf+BzRgwim0oxFiS/xtoFqsjNbc8WfE2tAX2wQb1GIG4fgfHwfadDJXCFp1Cf+4Rz+p+UVkFnyfY71MHAg==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/container-definitions" "^1.2.5"
+    "@fluidframework/container-loader" "^1.2.5"
+    "@fluidframework/core-interfaces" "^1.2.5"
+    "@fluidframework/driver-definitions" "^1.2.5"
+    "@fluidframework/driver-utils" "^1.2.5"
+    "@fluidframework/fluid-static" "^1.2.5"
+    "@fluidframework/map" "^1.2.5"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/routerlicious-driver" "^1.2.5"
+    "@fluidframework/runtime-utils" "^1.2.5"
+    "@fluidframework/server-services-client" "^0.1036.4000"
+    axios "^0.26.0"
+    uuid "^8.3.1"
+
+"@fluidframework/common-definitions@^0.20.1":
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/@fluidframework/common-definitions/-/common-definitions-0.20.1.tgz#f06a5a6da50bb883d26b6434230481bf92bd13a2"
+  integrity sha512-KaoQ7w2MDH5OeRKVatL5yVOCFg+9wD6bLSLFh1/TV1EZM46l49iBqO7UVjUtPE6BIm0jvvOzJXULGVSpzokX3g==
+
+"@fluidframework/common-utils@^0.32.1":
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/@fluidframework/common-utils/-/common-utils-0.32.1.tgz#ee66a36af4a66d2a19b979b1e5108af92809b4e8"
+  integrity sha512-8m7nTGLyzQqjGX9qZmE1L65IfSxrcEo35MtCVmH0qfttfVqEFghxXAgtmrcfvKkg6NUDTmb13hdyNx0hZlky7w==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@types/events" "^3.0.0"
+    base64-js "^1.5.1"
+    events "^3.1.0"
+    lodash "^4.17.21"
+    sha.js "^2.4.11"
+
+"@fluidframework/container-definitions@^1.2.5", "@fluidframework/container-definitions@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/container-definitions/-/container-definitions-1.2.6.tgz#a051b79362b37fb7e00c876a2be41339f86a9416"
+  integrity sha512-G+kJJFa1kgDmWZ928vpZGncBWq/DwBbZ6aXF0Yt9RoUxiV4w3z31cSEMCWqKO1uawfrloZXNF2VC9L3vn2sHYg==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+
+"@fluidframework/container-loader@^1.2.5", "@fluidframework/container-loader@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/container-loader/-/container-loader-1.2.6.tgz#f7c124da5862faffdb49a9fbe35d34a89ef65754"
+  integrity sha512-Rs4qVyvcLx4S8coTp9+BReGfmOsi+UA/HVwC9FzFJPBEPhaQpu5CoxDKFBC2C/0nbSRbAG06hA60EpJG5u9Qvg==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    abort-controller "^3.0.0"
+    double-ended-queue "^2.1.0-0"
+    lodash "^4.17.21"
+    uuid "^8.3.1"
+
+"@fluidframework/container-runtime-definitions@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/container-runtime-definitions/-/container-runtime-definitions-1.2.6.tgz#d8b135b80250e25eed6e5a9d40ab7228a9f56742"
+  integrity sha512-2SuGUXM8rCe08MpzvfpYiXXlRUic80WypsX9NDp/gOboPk47SzyqOYNa610Ydc/rHXM53f/a0t3G/B5fCgA0tQ==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@types/node" "^14.18.0"
+
+"@fluidframework/container-runtime@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/container-runtime/-/container-runtime-1.2.6.tgz#4fcd219e02ca7234122c4242e4652b971cd0418c"
+  integrity sha512-zQpDil5ttjO+Zi3L8SZKu5depGJ5gtxz/ULXbanx/aBiFE6vnPC0Mk4K/ROkYznLtBi//DtXPZVswIghs0VF4w==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-runtime-definitions" "^1.2.6"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/garbage-collector" "^1.2.6"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    double-ended-queue "^2.1.0-0"
+    uuid "^8.3.1"
+
+"@fluidframework/container-utils@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/container-utils/-/container-utils-1.2.6.tgz#422fe6e7dfca099cf6e842257bcf1358cef89824"
+  integrity sha512-hd0eoS7BN2kpeVPuXUoaTgyy15IpBQ51RDQ/5adRxH2GTokG4caqLvhB8LRyLhZJVHldtGvO9eQr6VzURn8o4A==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+
+"@fluidframework/core-interfaces@^1.2.5", "@fluidframework/core-interfaces@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/core-interfaces/-/core-interfaces-1.2.6.tgz#12e09aa568266335fc93487825c04a881cc0dd00"
+  integrity sha512-/TXSj4ICgVD4/Y2Il3J5c9HZs1Lc+nzIVGLaVbJCx8N0GxfJpn1MEP3BDXAY4+OE2wQVrk3famB6k1wo8VAbGg==
+
+"@fluidframework/datastore-definitions@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/datastore-definitions/-/datastore-definitions-1.2.6.tgz#f8787e6cee1b22057cd06549fe58ef7cee959ff8"
+  integrity sha512-edDEC9Zy5yRXF6/zdEYR9y800RdZraK/2WbZjS3ue0Nw500BpI85B47vmU0cEIENvn3sMMlucsgOL/+73LvcGg==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@types/node" "^14.18.0"
+
+"@fluidframework/datastore@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/datastore/-/datastore-1.2.6.tgz#100b73a6797917960999821e1adf96e6a9e5dad2"
+  integrity sha512-yT8jrogM8hpkAgkV1n2xya68MY9WEQln4pzg3nE+iSBKI8itAHwoZWYiD0grO2dG68a6mMJkks8SqOyTGknwgA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/garbage-collector" "^1.2.6"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    lodash "^4.17.21"
+    uuid "^8.3.1"
+
+"@fluidframework/driver-base@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/driver-base/-/driver-base-1.2.6.tgz#891dd6738cd8da4e89f7ce0e756df294cd64c906"
+  integrity sha512-r/ZiQzqY0zOyvXveZry3e7OZGfFgY+hKqWROH8Xmkx6mHVltySr1U2UnkhA5EGzr+vUOIRMgCpc3RIYHGcpJGA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+
+"@fluidframework/driver-definitions@^1.2.5", "@fluidframework/driver-definitions@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/driver-definitions/-/driver-definitions-1.2.6.tgz#9fc099852cba3f82d86bcc218ba6d962cb18fee9"
+  integrity sha512-NdMhErQiiKngXNDA1bEIx3alLCBBJv7p5wh7C06l9ArAgake0hk9oaS/4OF2IWoicSMaf7jJoZWHNkZvZGpGTA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+
+"@fluidframework/driver-utils@^1.2.5", "@fluidframework/driver-utils@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/driver-utils/-/driver-utils-1.2.6.tgz#c7b821b7b891288d06c5f64394e23d6ff12d2045"
+  integrity sha512-oTLAwmAf5rEFeKBezdynS7a8WoVHih8loGxmMqYxmiMJDJQxm4gctB2sVY8kYOm3opUYLN3we1s6dbwzv4Tx5w==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/gitresources" "^0.1036.5000"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    axios "^0.26.0"
+    uuid "^8.3.1"
+
+"@fluidframework/fluid-static@^1.2.5", "@fluidframework/fluid-static@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/fluid-static/-/fluid-static-1.2.6.tgz#190684d1d74ac84971e23037a3cca3474fa6d095"
+  integrity sha512-G3yBxgXZhXAd0MfErjr23UHKHzTfT76ZCCcUJkxXGV+Buvucl26EwxK3O6GKrr3G6BFI/AoPfW1hAh+LElxWxA==
+  dependencies:
+    "@fluidframework/aqueduct" "^1.2.6"
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-loader" "^1.2.6"
+    "@fluidframework/container-runtime-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/request-handler" "^1.2.6"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+
+"@fluidframework/garbage-collector@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/garbage-collector/-/garbage-collector-1.2.6.tgz#ef3ab3ca64c793aec2cfb3afac8194a2570e864c"
+  integrity sha512-1wIKikJX0rs4vtZC929IwXSz+4vU4mo/BLktblEcyoX01DheDZEUanytOTvMvGkgDFB7pPqTSEFa0AbQSDTq/A==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+
+"@fluidframework/gitresources@^0.1036.5000":
+  version "0.1036.5000"
+  resolved "https://registry.yarnpkg.com/@fluidframework/gitresources/-/gitresources-0.1036.5000.tgz#3e693027cedd2e909555f22a932beedfd7dbb2b9"
+  integrity sha512-Aq030GDRhPJCr7tVHDxFtWDwc6nd1r9x7k0/D34mVAVuXLyubk5dB2BytopZxfo9b91QXIPmjQfQ2GINTdk16w==
+
+"@fluidframework/map@^1.2.5", "@fluidframework/map@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/map/-/map-1.2.6.tgz#d5ecf478d0d41b3467543f8f9c3942c877808ab0"
+  integrity sha512-2gvNp7tX/74FS4CATGXF09eUpp93Bz2vRzkEjRdQ5tCMZZmrArupOxaudQpYjkGEZtjGP+5PM4OlNUjXzqmnbA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/shared-object-base" "^1.2.6"
+    path-browserify "^1.0.1"
+
+"@fluidframework/merge-tree@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/merge-tree/-/merge-tree-1.2.6.tgz#e5aa78945f1f682b232e29c6cc3163b6e15c1888"
+  integrity sha512-5bqjLAnT9LMMVnpIE7Irn4tDXGbcuM6cZTuxFtMW9AmWo/1H5Y1XPP/p6kTn2ze7xJXrKYv+Gcu9zTjpsNSS/g==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/shared-object-base" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+
+"@fluidframework/protocol-base@^0.1036.5000":
+  version "0.1036.5000"
+  resolved "https://registry.yarnpkg.com/@fluidframework/protocol-base/-/protocol-base-0.1036.5000.tgz#75997cd4197605981d218af0cc773d6583dea3fa"
+  integrity sha512-tsDtM6jptTwbqkVtqO6KRYRu6614ZwrzfJJEUM0OmTRk6ds5vdA+vPreG4qrrEO40HHy4y9nHx6AyGL/sMxv4w==
+  dependencies:
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/gitresources" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    lodash "^4.17.21"
+
+"@fluidframework/protocol-definitions@^0.1028.2000":
+  version "0.1028.2000"
+  resolved "https://registry.yarnpkg.com/@fluidframework/protocol-definitions/-/protocol-definitions-0.1028.2000.tgz#e5f008d6f27cb9b1a91d6315117c01822a40c83d"
+  integrity sha512-ZUPCmPFcK7UAK4RkfVWfzQPAWFvYNm6ywP51V42YC38gCGye+Epvyr3beA+FSaHPIZGxm5+Uw52+ykTvmDb2UA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+
+"@fluidframework/request-handler@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/request-handler/-/request-handler-1.2.6.tgz#d88c96b736317ffdf57d19c2343a734b4fe92ddf"
+  integrity sha512-rvRpXYbRjr5xdShZWgELAqvOC4RC4OudFeA/jXOAH5q2iAY/O0PYHIbny20aIErMktjqpu3FPOR2g4fN7zti3A==
+  dependencies:
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-runtime-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+
+"@fluidframework/routerlicious-driver@^1.2.5":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/routerlicious-driver/-/routerlicious-driver-1.2.6.tgz#c6f31e8cc0741c0fac6b20fab11ad30a56bf6751"
+  integrity sha512-TgsODlYCeFRJBjv2GS3oy79d1nXok+Bfi+VoffJ3w8Q30ADRCs6yQZ3ogMkDzagdtGU3ju0q1FxoCLzk8X33/g==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/driver-base" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/driver-utils" "^1.2.6"
+    "@fluidframework/gitresources" "^0.1036.5000"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/server-services-client" "^0.1036.5000"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    cross-fetch "^3.1.5"
+    json-stringify-safe "5.0.1"
+    querystring "^0.2.0"
+    socket.io-client "^4.4.1"
+    url-parse "^1.5.8"
+    uuid "^8.3.1"
+
+"@fluidframework/runtime-definitions@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/runtime-definitions/-/runtime-definitions-1.2.6.tgz#ca1406af3e6ed4be6ad21e7cb35217d189982e81"
+  integrity sha512-tMl1QkKUPRteyeQdCFUDAlGwqRbNl316yvzptSe22KKpFroQgUfYJbyg7J6NXubw8/TI9LB95e9HOX6ZQSEv3Q==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/driver-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@types/node" "^14.18.0"
+
+"@fluidframework/runtime-utils@^1.2.5", "@fluidframework/runtime-utils@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/runtime-utils/-/runtime-utils-1.2.6.tgz#f733c98223991c39746bc151d3ef9c2f4175f15e"
+  integrity sha512-OXmFLu1KWQYo4JmmLbvyhGvyVxsgCtLLj66fn6cCkshS4Bi+s48d/sXqXfPjHjQk49CG5h2Kq0aaJAze6v+isA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-runtime-definitions" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/garbage-collector" "^1.2.6"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+
+"@fluidframework/sequence@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/sequence/-/sequence-1.2.6.tgz#ee2d05534dc15c6d6b6b531692f385279b68cb41"
+  integrity sha512-RY2IgU1VyZrzwYus5+/33xZx2OVJPc3rt/atWzn+kcOmTu69Sz/fvswyj5aVK3xXggNcP36lZSViVOmOS1iPng==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/merge-tree" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/shared-object-base" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    uuid "^8.3.1"
+
+"@fluidframework/server-services-client@^0.1036.4000", "@fluidframework/server-services-client@^0.1036.5000":
+  version "0.1036.5000"
+  resolved "https://registry.yarnpkg.com/@fluidframework/server-services-client/-/server-services-client-0.1036.5000.tgz#69ac00d4f7bb0b218d393a8f2152d0166016b270"
+  integrity sha512-TBig0U1Fne0h10H6Sylcf6pe9PrYJy6PkLvTv+MX9ojuWsyPJbbhkPX/L2Gj/wmzDY+psvhA2TSLDZOMnpshpw==
+  dependencies:
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/gitresources" "^0.1036.5000"
+    "@fluidframework/protocol-base" "^0.1036.5000"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    axios "^0.26.0"
+    crc-32 "1.2.0"
+    debug "^4.1.1"
+    json-stringify-safe "^5.0.1"
+    jsrsasign "^10.2.0"
+    jwt-decode "^3.0.0"
+    querystring "^0.2.0"
+    sillyname "^0.1.0"
+    uuid "^8.3.1"
+
+"@fluidframework/shared-object-base@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/shared-object-base/-/shared-object-base-1.2.6.tgz#1c9c12f8fd353d7038a3514527fa59434cbda02f"
+  integrity sha512-VDwCTXOqvSkRKCn56IKmaRb9hyryh7UUxfwgIjwOWGEEz4f8VF60LQy2g3uyU4yDCin8Ki6X8bHDlYw4t2kCaA==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-runtime" "^1.2.6"
+    "@fluidframework/container-utils" "^1.2.6"
+    "@fluidframework/core-interfaces" "^1.2.6"
+    "@fluidframework/datastore" "^1.2.6"
+    "@fluidframework/datastore-definitions" "^1.2.6"
+    "@fluidframework/protocol-definitions" "^0.1028.2000"
+    "@fluidframework/runtime-definitions" "^1.2.6"
+    "@fluidframework/runtime-utils" "^1.2.6"
+    "@fluidframework/telemetry-utils" "^1.2.6"
+    uuid "^8.3.1"
+
+"@fluidframework/synthesize@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/synthesize/-/synthesize-1.2.6.tgz#21b665f60fe2702516c29ec9d6941845af6743ac"
+  integrity sha512-Bxu9djL9tVHfEnHOQcHhLJbxfUxkZkoGEkz/+I1q5JkJjTHxaFyJe9kzJ+wfcCjpIbR2lEvl5Oulk10yi/8kbQ==
+
+"@fluidframework/telemetry-utils@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/telemetry-utils/-/telemetry-utils-1.2.6.tgz#62aa35df3fbcb042534a8f8d91c7169f853553b8"
+  integrity sha512-9W3YQ5XBbjteO8uYhvgudOFA68qOC3V5rNXnbmVtnwM+UYecork468O7kwjpbT6nmYVNS/6S8zEvuVBTj94X1w==
+  dependencies:
+    "@fluidframework/common-definitions" "^0.20.1"
+    "@fluidframework/common-utils" "^0.32.1"
+    debug "^4.1.1"
+    events "^3.1.0"
+    uuid "^8.3.1"
+
+"@fluidframework/view-interfaces@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fluidframework/view-interfaces/-/view-interfaces-1.2.6.tgz#ffa94b1b0314754c859f735872361fcca1011715"
+  integrity sha512-8UGjlEJqzE40TZz7G5uLjOq+AUnBhFadQMnxi+QBbvclDZA8JmKEcJZV4tbsx2+xRiQScaKo+zsX6PB8F4Pr8Q==
+  dependencies:
+    "@fluidframework/core-interfaces" "^1.2.6"
+
 "@griffel/core@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@griffel/core/-/core-1.4.1.tgz#5ae960efd71897bfdb748ec4551da99d1eb8652c"
@@ -2717,7 +3155,7 @@
   integrity sha512-iKc5L036hc/wu13DX5kGf//3/WqTAErAPTyYKG6zT3vG070xXaaP7PInODznfyZduhiOvavmrRlQb34ajeDTUA==
 
 "@microsoft/teams-js@file:packages/teams-js":
-  version "2.2.0"
+  version "2.3.0"
   dependencies:
     debug "4.3.3"
 
@@ -2934,6 +3372,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@socket.io/component-emitter@~3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
+  integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -3055,6 +3498,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.50.tgz#1e0caa9364d3fccd2931c3ed96fdbeaa5d4cca83"
   integrity sha512-C6N5s2ZFtuZRj54k2/zyRhNDjJwwcViAM3Nbm8zjBpbqAdZ00mr0CFxvSKeO8Y/e03WVFLpQMdHYVfUd6SB+Hw==
 
+"@types/events@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
+  integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
+
 "@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.18":
   version "4.17.24"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.24.tgz#ea41f93bf7e0d59cd5a76665068ed6aab6815c07"
@@ -3156,6 +3604,11 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
 
+"@types/json-schema@^7.0.9":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
+  integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
+
 "@types/jszip@^3.4.1":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@types/jszip/-/jszip-3.4.1.tgz#e7a4059486e494c949ef750933d009684227846f"
@@ -3204,6 +3657,11 @@
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.0.tgz#acaa89247afddc7967e9902fd11761dadea1a555"
   integrity sha512-j2tekvJCO7j22cs+LO6i0kRPhmQ9MXaPZ55TzOc1lzkN5b6BWqq4AFjl04s1oRRQ1v5rSe+KEvnLUSTonuls/A==
+
+"@types/node@^14.18.0":
+  version "14.18.30"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.30.tgz#34c8d934fe86b6ee5c21c08fc1b7858599c84a5a"
+  integrity sha512-8OEyg4oc/CqN5+LbInKNLA8MfbGzbC+k8lVPePXazuwEVrVeQ9gwMDX00HJwWbC7syc1FWRU6Mow0Lm+mibHAQ==
 
 "@types/node@^15.6.1":
   version "15.14.9"
@@ -3349,6 +3807,21 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+"@typescript-eslint/eslint-plugin@^5.13.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.37.0.tgz#5ccdd5d9004120f28fc6e717fb4b5c9bddcfbc04"
+  integrity sha512-Fde6W0IafXktz1UlnhGkrrmnnGpAo1kyX7dnyHHVrmwJOn72Oqm3eYtddrpOwwel2W8PAK9F3pIL5S+lfoM0og==
+  dependencies:
+    "@typescript-eslint/scope-manager" "5.37.0"
+    "@typescript-eslint/type-utils" "5.37.0"
+    "@typescript-eslint/utils" "5.37.0"
+    debug "^4.3.4"
+    functional-red-black-tree "^1.0.1"
+    ignore "^5.2.0"
+    regexpp "^3.2.0"
+    semver "^7.3.7"
+    tsutils "^3.21.0"
+
 "@typescript-eslint/experimental-utils@4.31.2":
   version "4.31.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-4.31.2.tgz#98727a9c1e977dd5d20c8705e69cd3c2a86553fa"
@@ -3361,6 +3834,13 @@
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
+"@typescript-eslint/experimental-utils@^5.13.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-5.37.0.tgz#e1a423658e265f50c9e944b4bbe36fab2a340197"
+  integrity sha512-mmzzOOK2YpwSgzhXpeSAtAlxBZVLGuq8OdvrfzibR4jfTTrTd3AjCy17M2dUKVFNsrNfLM0nWsxMsJz0kiYHqw==
+  dependencies:
+    "@typescript-eslint/utils" "5.37.0"
+
 "@typescript-eslint/parser@^4.29.0":
   version "4.31.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.31.2.tgz#54aa75986e3302d91eff2bbbaa6ecfa8084e9c34"
@@ -3371,6 +3851,16 @@
     "@typescript-eslint/typescript-estree" "4.31.2"
     debug "^4.3.1"
 
+"@typescript-eslint/parser@^5.13.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.37.0.tgz#c382077973f3a4ede7453fb14cadcad3970cbf3b"
+  integrity sha512-01VzI/ipYKuaG5PkE5+qyJ6m02fVALmMPY3Qq5BHflDx3y4VobbLdHQkSMg9VPRS4KdNt4oYTMaomFoHonBGAw==
+  dependencies:
+    "@typescript-eslint/scope-manager" "5.37.0"
+    "@typescript-eslint/types" "5.37.0"
+    "@typescript-eslint/typescript-estree" "5.37.0"
+    debug "^4.3.4"
+
 "@typescript-eslint/scope-manager@4.31.2":
   version "4.31.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.31.2.tgz#1d528cb3ed3bcd88019c20a57c18b897b073923a"
@@ -3379,10 +3869,33 @@
     "@typescript-eslint/types" "4.31.2"
     "@typescript-eslint/visitor-keys" "4.31.2"
 
+"@typescript-eslint/scope-manager@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.37.0.tgz#044980e4f1516a774a418dafe701a483a6c9f9ca"
+  integrity sha512-F67MqrmSXGd/eZnujjtkPgBQzgespu/iCZ+54Ok9X5tALb9L2v3G+QBSoWkXG0p3lcTJsL+iXz5eLUEdSiJU9Q==
+  dependencies:
+    "@typescript-eslint/types" "5.37.0"
+    "@typescript-eslint/visitor-keys" "5.37.0"
+
+"@typescript-eslint/type-utils@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-5.37.0.tgz#43ed2f567ada49d7e33a6e4b6f9babd060445fe5"
+  integrity sha512-BSx/O0Z0SXOF5tY0bNTBcDEKz2Ec20GVYvq/H/XNKiUorUFilH7NPbFUuiiyzWaSdN3PA8JV0OvYx0gH/5aFAQ==
+  dependencies:
+    "@typescript-eslint/typescript-estree" "5.37.0"
+    "@typescript-eslint/utils" "5.37.0"
+    debug "^4.3.4"
+    tsutils "^3.21.0"
+
 "@typescript-eslint/types@4.31.2":
   version "4.31.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.31.2.tgz#2aea7177d6d744521a168ed4668eddbd912dfadf"
   integrity sha512-kWiTTBCTKEdBGrZKwFvOlGNcAsKGJSBc8xLvSjSppFO88AqGxGNYtF36EuEYG6XZ9vT0xX8RNiHbQUKglbSi1w==
+
+"@typescript-eslint/types@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.37.0.tgz#09e4870a5f3af7af3f84e08d792644a87d232261"
+  integrity sha512-3frIJiTa5+tCb2iqR/bf7XwU20lnU05r/sgPJnRpwvfZaqCJBrl8Q/mw9vr3NrNdB/XtVyMA0eppRMMBqdJ1bA==
 
 "@typescript-eslint/typescript-estree@4.31.2":
   version "4.31.2"
@@ -3397,6 +3910,31 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+"@typescript-eslint/typescript-estree@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.37.0.tgz#956dcf5c98363bcb97bdd5463a0a86072ff79355"
+  integrity sha512-JkFoFIt/cx59iqEDSgIGnQpCTRv96MQnXCYvJi7QhBC24uyuzbD8wVbajMB1b9x4I0octYFJ3OwjAwNqk1AjDA==
+  dependencies:
+    "@typescript-eslint/types" "5.37.0"
+    "@typescript-eslint/visitor-keys" "5.37.0"
+    debug "^4.3.4"
+    globby "^11.1.0"
+    is-glob "^4.0.3"
+    semver "^7.3.7"
+    tsutils "^3.21.0"
+
+"@typescript-eslint/utils@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.37.0.tgz#7784cb8e91390c4f90ccaffd24a0cf9874df81b2"
+  integrity sha512-jUEJoQrWbZhmikbcWSMDuUSxEE7ID2W/QCV/uz10WtQqfOuKZUqFGjqLJ+qhDd17rjgp+QJPqTdPIBWwoob2NQ==
+  dependencies:
+    "@types/json-schema" "^7.0.9"
+    "@typescript-eslint/scope-manager" "5.37.0"
+    "@typescript-eslint/types" "5.37.0"
+    "@typescript-eslint/typescript-estree" "5.37.0"
+    eslint-scope "^5.1.1"
+    eslint-utils "^3.0.0"
+
 "@typescript-eslint/visitor-keys@4.31.2":
   version "4.31.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.31.2.tgz#7d5b4a4705db7fe59ecffb273c1d082760f635cc"
@@ -3404,6 +3942,14 @@
   dependencies:
     "@typescript-eslint/types" "4.31.2"
     eslint-visitor-keys "^2.0.0"
+
+"@typescript-eslint/visitor-keys@5.37.0":
+  version "5.37.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.37.0.tgz#7b72dd343295ea11e89b624995abc7103c554eee"
+  integrity sha512-Hp7rT4cENBPIzMwrlehLW/28EVCOcE9U1Z1BQTc8EA8v5qpr7GRGuG+U58V5tTY48zvUOA3KHvw3rA8tY9fbdA==
+  dependencies:
+    "@typescript-eslint/types" "5.37.0"
+    eslint-visitor-keys "^3.3.0"
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
@@ -3584,6 +4130,13 @@ abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
+
+abort-controller@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
+  integrity sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==
+  dependencies:
+    event-target-shim "^5.0.0"
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   version "1.3.7"
@@ -4017,6 +4570,13 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
+axios@^0.26.0:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.26.1.tgz#1ede41c51fcf51bbbd6fd43669caaa4f0495aaa9"
+  integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
+  dependencies:
+    follow-redirects "^1.14.8"
+
 azure-devops-node-api@^10.2.2:
   version "10.2.2"
   resolved "https://registry.yarnpkg.com/azure-devops-node-api/-/azure-devops-node-api-10.2.2.tgz#9f557e622dd07bbaa9bd5e7e84e17c761e2151b2"
@@ -4156,6 +4716,11 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+
+base64-js@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
+  integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 base@^0.11.1:
   version "0.11.2"
@@ -5043,6 +5608,14 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
+crc-32@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/crc-32/-/crc-32-1.2.0.tgz#cb2db6e29b88508e32d9dd0ec1693e7b41a18208"
+  integrity sha512-1uBwHxF+Y/4yF5G48fwnKq6QsIXheor3ZLPT80yGBV1oEUwpPojlEhQbWKVw1VwcTQyMGHK1/XMmTjmlsmTTGA==
+  dependencies:
+    exit-on-epipe "~1.0.1"
+    printj "~1.1.0"
+
 create-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
@@ -5054,6 +5627,13 @@ cross-env@*:
   integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
   dependencies:
     cross-spawn "^7.0.1"
+
+cross-fetch@^3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
+  integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
+  dependencies:
+    node-fetch "2.6.7"
 
 cross-spawn@^5.0.1:
   version "5.1.0"
@@ -5227,6 +5807,13 @@ debug@^3.1.0, debug@^3.1.1, debug@^3.2.6:
   integrity sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==
   dependencies:
     ms "^2.1.1"
+
+debug@^4.3.4, debug@~4.3.1, debug@~4.3.2:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
+  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
+  dependencies:
+    ms "2.1.2"
 
 debuglog@^1.0.1:
   version "1.0.1"
@@ -5544,6 +6131,11 @@ dot-prop@^5.1.0:
   dependencies:
     is-obj "^2.0.0"
 
+double-ended-queue@^2.1.0-0:
+  version "2.1.0-0"
+  resolved "https://registry.yarnpkg.com/double-ended-queue/-/double-ended-queue-2.1.0-0.tgz#103d3527fd31528f40188130c841efdd78264e5c"
+  integrity sha512-+BNfZ+deCo8hMNpDqDnvT+c0XpJ5cUa6mqYq89bho2Ifze4URTqRkcwR399hWoTrTkbZ/XJYDgP6rc7pRgffEQ==
+
 dts-bundle-webpack@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/dts-bundle-webpack/-/dts-bundle-webpack-1.0.2.tgz#c50439a89e71fd9e42800092561c05d5c3ea9ea6"
@@ -5643,6 +6235,22 @@ end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
   dependencies:
     once "^1.4.0"
+
+engine.io-client@~6.2.1:
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-6.2.2.tgz#c6c5243167f5943dcd9c4abee1bfc634aa2cbdd0"
+  integrity sha512-8ZQmx0LQGRTYkHuogVZuGSpDqYZtCM/nv8zQ68VZ+JkOpazJ7ICdsSpaO6iXwvaU30oFg5QJOJWj8zWqhbKjkQ==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.1"
+    engine.io-parser "~5.0.3"
+    ws "~8.2.3"
+    xmlhttprequest-ssl "~2.0.0"
+
+engine.io-parser@~5.0.3:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/engine.io-parser/-/engine.io-parser-5.0.4.tgz#0b13f704fa9271b3ec4f33112410d8f3f41d0fc0"
+  integrity sha512-+nVFp+5z1E3HcToEnO7ZIj3g+3k9389DvWtvJZz0T6/eOCPIyyxehFcedoYrZQrp0LgQbD9pPXhpMBKMd5QURg==
 
 enhanced-resolve@^5.0.0, enhanced-resolve@^5.8.0, enhanced-resolve@^5.8.3:
   version "5.8.3"
@@ -5832,6 +6440,16 @@ eslint-plugin-simple-import-sort@^7.0.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-simple-import-sort/-/eslint-plugin-simple-import-sort-7.0.0.tgz#a1dad262f46d2184a90095a60c66fef74727f0f8"
   integrity sha512-U3vEDB5zhYPNfxT5TYR7u01dboFZp+HNpnGhkDB2g/2E4wZ/g1Q9Ton8UwCLfRV9yAKyYqDh62oHOamvkFxsvw==
 
+eslint-plugin-strict-null-checks@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-strict-null-checks/-/eslint-plugin-strict-null-checks-0.0.19.tgz#73ab2396f5085f61cd5791c723b19e4c2e98095f"
+  integrity sha512-fi8m8onqIveTNtKm7QGZ2aMW6aBabCBGb+otbut/f/3/j9a8MK9M7l0PAm61ZjZZ75P7hF0+9S7aXPFMSstuoA==
+  dependencies:
+    "@typescript-eslint/eslint-plugin" "^5.13.0"
+    "@typescript-eslint/experimental-utils" "^5.13.0"
+    "@typescript-eslint/parser" "^5.13.0"
+    requireindex "^1.2.0"
+
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-5.1.1.tgz#e786e59a66cb92b3f6c1fb0d508aab174848f48c"
@@ -5863,6 +6481,11 @@ eslint-visitor-keys@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz#f65328259305927392c938ed44eb0a5c9b2bd303"
   integrity sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==
+
+eslint-visitor-keys@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.3.0.tgz#f6480fa6b1f30efe2d1968aa8ac745b862469826"
+  integrity sha512-mQ+suqKJVyeuwGYHAdjMFqjCyfl8+Ldnxuyp3ldiMBFKkvytrXUZWaiPCEav8qDHKty44bD+qV1IP4T+w+xXRA==
 
 eslint@^7.32.0:
   version "7.32.0"
@@ -5963,6 +6586,11 @@ event-lite@^0.1.1:
   resolved "https://registry.yarnpkg.com/event-lite/-/event-lite-0.1.2.tgz#838a3e0fdddef8cc90f128006c8e55a4e4e4c11b"
   integrity sha512-HnSYx1BsJ87/p6swwzv+2v6B4X+uxUteoDfRxsAb1S1BePzQqOLevVmkdA15GHJVd9A9Ok6wygUR18Hu0YeV9g==
 
+event-target-shim@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
+  integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
+
 eventemitter3@^3.1.0:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
@@ -5973,7 +6601,7 @@ eventemitter3@^4.0.0:
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
-events@^3.2.0:
+events@^3.1.0, events@^3.2.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
@@ -6040,6 +6668,11 @@ execa@^5.0.0:
     onetime "^5.1.2"
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
+
+exit-on-epipe@~1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/exit-on-epipe/-/exit-on-epipe-1.0.1.tgz#0bdd92e87d5285d267daa8171d0eb06159689692"
+  integrity sha512-h2z5mrROTxce56S+pnvAV890uu7ls7f1kEvVGJbw1OlFH3/mlJ5bkXu0KRyW94v37zzHPiUd55iLn3DA7TjWpw==
 
 exit@^0.1.2:
   version "0.1.2"
@@ -6359,6 +6992,17 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
+fluid-framework@~1.2.2:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/fluid-framework/-/fluid-framework-1.2.6.tgz#4e353ac2fcf771cb44997f3d91b9e9ce4a511ae5"
+  integrity sha512-HOBquXb81LaehEmtwzZcZ01hm+9Pc5gZ8h6w4WkuehUF1Qt2TsYyIrOYQiC62vXV8EsX2m2TqRew+rTrHR+08Q==
+  dependencies:
+    "@fluidframework/container-definitions" "^1.2.6"
+    "@fluidframework/container-loader" "^1.2.6"
+    "@fluidframework/fluid-static" "^1.2.6"
+    "@fluidframework/map" "^1.2.6"
+    "@fluidframework/sequence" "^1.2.6"
+
 flush-write-stream@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/flush-write-stream/-/flush-write-stream-1.1.1.tgz#8dd7d873a1babc207d94ead0c2e0e44276ebf2e8"
@@ -6371,6 +7015,11 @@ follow-redirects@^1.0.0:
   version "1.14.9"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
   integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
+
+follow-redirects@^1.14.8:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
+  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -6745,7 +7394,7 @@ globals@^13.6.0, globals@^13.9.0:
   dependencies:
     type-fest "^0.20.2"
 
-globby@^11.0.0:
+globby@^11.0.0, globby@^11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/globby/-/globby-11.1.0.tgz#bd4be98bb042f83d796f7e3811991fbe82a0d34b"
   integrity sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==
@@ -7578,7 +8227,7 @@ is-glob@^4.0.0, is-glob@^4.0.1:
   dependencies:
     is-extglob "^2.1.1"
 
-is-glob@~4.0.1:
+is-glob@^4.0.3, is-glob@~4.0.1:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/is-glob/-/is-glob-4.0.3.tgz#64f61e42cbbb2eec2071a9dac0b28ba1e65d5084"
   integrity sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==
@@ -8359,7 +9008,7 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
 
-json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
+json-stringify-safe@5.0.1, json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
@@ -8424,6 +9073,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsrsasign@^10.2.0:
+  version "10.5.27"
+  resolved "https://registry.yarnpkg.com/jsrsasign/-/jsrsasign-10.5.27.tgz#481defb1206aa48cd740c3fce8ff546efb5bb45e"
+  integrity sha512-1F4LmDeJZHYwoVvB44jEo2uZL3XuwYNzXCDOu53Ui6vqofGQ/gCYDmaxfVZtN0TGd92UKXr/BONcfrPonUIcQQ==
+
 "jsx-ast-utils@^2.4.1 || ^3.0.0":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-3.2.1.tgz#720b97bfe7d901b927d87c3773637ae8ea48781b"
@@ -8468,6 +9122,11 @@ jws@3.x.x:
   dependencies:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
+
+jwt-decode@^3.0.0:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
+  integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
 keyborg@^1.1.0:
   version "1.2.0"
@@ -9370,7 +10029,7 @@ node-fetch-npm@^2.0.2:
     json-parse-better-errors "^1.0.0"
     safe-buffer "^5.1.1"
 
-node-fetch@^2.5.0, node-fetch@^2.6.1, node-fetch@^2.6.7:
+node-fetch@2.6.7, node-fetch@^2.5.0, node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -10006,6 +10665,11 @@ pascalcase@^0.1.1:
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
+path-browserify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
+  integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
+
 path-exists@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-2.1.0.tgz#0feb6c64f0fc518d9a754dd5efb62c7022761f4b"
@@ -10251,6 +10915,11 @@ pretty-format@^27.0.0, pretty-format@^27.2.0:
     ansi-styles "^5.0.0"
     react-is "^17.0.1"
 
+printj@~1.1.0:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/printj/-/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"
+  integrity sha512-zA2SmoLaxZyArQTOPj5LXecR+RagfPSU5Kw1qP+jkWeNlrq+eJZyY2oS68SU1Z/7/myXM4lo9716laOFAVStCQ==
+
 process-nextick-args@~1.0.6:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
@@ -10432,6 +11101,11 @@ querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
+
+querystring@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
+  integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
 
 querystringify@^2.1.1:
   version "2.2.0"
@@ -10761,7 +11435,7 @@ regexp.prototype.flags@^1.2.0, regexp.prototype.flags@^1.3.1:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
 
-regexpp@^3.1.0:
+regexpp@^3.1.0, regexpp@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
   integrity sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==
@@ -10873,6 +11547,11 @@ require-main-filename@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
+
+requireindex@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/requireindex/-/requireindex-1.2.0.tgz#3463cdb22ee151902635aa6c9535d4de9c2ef1ef"
+  integrity sha512-L9jEkOi3ASd9PYit2cwRfyppc9NoABujTP8/5gFcbERmo5jUoAKovIC3fsF17pkTnGsrByysqX+Kxd2OTNI1ww==
 
 requires-port@^1.0.0:
   version "1.0.0"
@@ -11116,6 +11795,13 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.2.0, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
+semver@^7.3.7:
+  version "7.3.7"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.7.tgz#12c5b649afdbf9049707796e22a4028814ce523f"
+  integrity sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==
+  dependencies:
+    lru-cache "^6.0.0"
+
 send@0.17.1:
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/send/-/send-0.17.1.tgz#c1d8b059f7900f7466dd4938bdc44e11ddb376c8"
@@ -11200,6 +11886,14 @@ setprototypeof@1.1.1:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
   integrity sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
 
+sha.js@^2.4.11:
+  version "2.4.11"
+  resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.4.11.tgz#37a5cf0b81ecbc6943de109ba2960d1b26584ae7"
+  integrity sha512-QMEp5B7cftE7APOjk5Y6xgrbWu+WkLVQwk8JNjZ8nKRciZaByEW6MubieAiToS7+dwvrjGhH8jRXz3MVd0AYqQ==
+  dependencies:
+    inherits "^2.0.1"
+    safe-buffer "^5.0.1"
+
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-3.0.1.tgz#8f2981ad92531f55035b01fb230769a40e02efa3"
@@ -11270,6 +11964,11 @@ signal-exit@^3.0.0, signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.4.tgz#366a4684d175b9cab2081e3681fda3747b6c51d7"
   integrity sha512-rqYhcAnZ6d/vTPGghdrw7iumdcbXpsk1b8IG/rz+VWV51DM0p7XCtMoJ3qhPLIbp3tvyt3pKRbaaEMZYpHto8Q==
+
+sillyname@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/sillyname/-/sillyname-0.1.0.tgz#cfd98858e2498671347775efe3bb5141f46c87d6"
+  integrity sha512-GWA0Zont13ov+cMNw4T7nU4SCyW8jdhD3vjA5+qs8jr+09sCPxOf+FPS5zE0c9pYlCwD+NU/CiMimY462lgG9g==
 
 sirv@^1.0.7:
   version "1.0.17"
@@ -11343,6 +12042,24 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
+
+socket.io-client@^4.4.1:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-4.5.2.tgz#9481518c560388c980c88b01e3cf62f367f04c96"
+  integrity sha512-naqYfFu7CLDiQ1B7AlLhRXKX3gdeaIMfgigwavDzgJoIUYulc1qHH5+2XflTsXTPY7BlPH5rppJyUjhjrKQKLg==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.2"
+    engine.io-client "~6.2.1"
+    socket.io-parser "~4.2.0"
+
+socket.io-parser@~4.2.0:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-4.2.1.tgz#01c96efa11ded938dcb21cbe590c26af5eff65e5"
+  integrity sha512-V4GrkLy+HeF1F/en3SpUaM+7XxYXpuMUWLGde1kSSh5nQMN4hLrbPIkD+otwh6q9R6NOQBN4AMaOZ2zVjui82g==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.1"
 
 sockjs-client@^1.5.0:
   version "1.5.2"
@@ -12408,7 +13125,7 @@ urix@^0.1.0:
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
 
-url-parse@^1.4.3, url-parse@^1.5.0, url-parse@^1.5.3:
+url-parse@^1.4.3, url-parse@^1.5.0, url-parse@^1.5.3, url-parse@^1.5.8:
   version "1.5.10"
   resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
   integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
@@ -12999,6 +13716,11 @@ ws@^7.3.1, ws@^7.4.6:
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.5.tgz#8b4bc4af518cfabd0473ae4f99144287b33eb881"
   integrity sha512-BAkMFcAzl8as1G/hArkxOxq3G7pjUqQ3gzYbLL0/5zNkph70e+lCoxBGnm6AW1+/aiNeV4fnKqZ8m4GZewmH2w==
 
+ws@~8.2.3:
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.2.3.tgz#63a56456db1b04367d0b721a0b80cae6d8becbba"
+  integrity sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==
+
 xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
@@ -13030,6 +13752,11 @@ xmlchars@^2.2.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.6.0.tgz#43a96ecb8beece991cef382c08397d82d4d0c46f"
   integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
+
+xmlhttprequest-ssl@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/xmlhttprequest-ssl/-/xmlhttprequest-ssl-2.0.0.tgz#91360c86b914e67f44dce769180027c0da618c67"
+  integrity sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==
 
 xpath.js@~1.1.0:
   version "1.1.0"
