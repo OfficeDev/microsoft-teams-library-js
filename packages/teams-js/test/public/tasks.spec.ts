@@ -1,7 +1,7 @@
 import { app } from '../../src/public/app';
-import { TaskModuleDimension } from '../../src/public/constants';
+import { DialogDimension, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
-import { TaskInfo } from '../../src/public/interfaces';
+import { DialogInfo, TaskInfo } from '../../src/public/interfaces';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
 
@@ -46,6 +46,13 @@ describe('tasks', () => {
             url: 'someUrl',
             completionBotId: 'someCompletionBotId',
           };
+          const dialogInfo: DialogInfo = {
+            card: 'someCard',
+            height: TaskModuleDimension.Large,
+            width: TaskModuleDimension.Large,
+            title: 'someTitle',
+            completionBotId: 'someCompletionBotId',
+          };
 
           tasks.startTask(taskInfo, () => {
             return;
@@ -53,7 +60,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([taskInfo]);
+          expect(startTaskMessage.args).toEqual([dialogInfo]);
         });
 
         it(`should pass along the taskInfo correctly when URL is not specified. ${context} context`, async () => {
@@ -124,6 +131,13 @@ describe('tasks', () => {
             card: 'someCard',
           };
 
+          const dialogInfo: DialogInfo = {
+            height: DialogDimension.Large,
+            card: 'someCard',
+            title: undefined,
+            width: DialogDimension.Small
+          };
+
           tasks.startTask(taskInfo, () => {
             return;
           });
@@ -131,8 +145,8 @@ describe('tasks', () => {
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
 
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([taskInfo]);
-          expect(startTaskMessage.args).toEqual([taskInfoWithSize]);
+          expect(startTaskMessage.args).toEqual([dialogInfo]);
+          expect(startTaskMessage.args).toEqual([dialogInfo]);
         });
 
         it(`should invoke callback with result. context: ${context}`, async () => {
@@ -168,6 +182,7 @@ describe('tasks', () => {
           utils.respondToMessage(startTaskMessage, 'someError');
           expect(callbackCalled).toBe(true);
         });
+
       } else {
         it(`should not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);

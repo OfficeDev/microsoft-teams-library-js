@@ -6,7 +6,6 @@ import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
 import { HostVersionsInfo } from './interfaces';
 
-
 const runtimeLogger = getLogger('runtime');
 export interface IRuntime {
   readonly apiVersion: number;

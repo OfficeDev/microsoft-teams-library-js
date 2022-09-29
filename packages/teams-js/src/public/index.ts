@@ -44,6 +44,7 @@ export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';
+export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { menus } from './menus';

@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParent } from '../internal/communication';
-import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { FrameContexts, TaskModuleDimension } from './constants';
+import { DialogDimension, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
+import {
+  AdaptiveCardDialogInfo,
+  BotAdaptiveCardDialogInfo,
+  BotUrlDialogInfo,
+  DialogSize,
+  TaskInfo,
+  UrlDialogInfo,
+} from './interfaces';
 
 /**
  * @deprecated
@@ -36,8 +41,11 @@ export namespace tasks {
         (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      if (taskInfo.completionBotId) {
+        dialog.adaptiveCard.bot.open(getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      } else {
+        dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      }
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
@@ -127,5 +135,45 @@ export namespace tasks {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
     return taskInfo;
+  }
+
+  /**
+   * @hidden
+   * Converts {@link TaskInfo} to {@link AdaptiveCardDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted AdaptiveCardDialogInfo
+   */
+  function getAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): AdaptiveCardDialogInfo {
+    const adaptiveCardDialogInfo: AdaptiveCardDialogInfo = {
+      card: taskInfo.card,
+      size: {
+        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+      },
+      title: taskInfo.title,
+    };
+
+    return adaptiveCardDialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Converts {@link TaskInfo} to {@link BotAdaptiveCardDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted BotAdaptiveCardDialogInfo
+   */
+  function getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotAdaptiveCardDialogInfo {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    const botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo = {
+      card: taskInfo.card,
+      size: {
+        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+      },
+      title: taskInfo.title,
+      completionBotId: taskInfo.completionBotId,
+    };
+
+    return botAdaptiveCardDialogInfo;
   }
 }

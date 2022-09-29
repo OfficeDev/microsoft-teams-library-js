@@ -814,11 +814,6 @@ export interface UrlDialogInfo extends BaseDialogInfo {
    */
   url: string;
 
-  /*
-   * The requested size of the dialog
-   */
-  size: DialogSize;
-
   /**
    * If client doesnt support the URL, the URL that needs to be opened in the browser.
    */

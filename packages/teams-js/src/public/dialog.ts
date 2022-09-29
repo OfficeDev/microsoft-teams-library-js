@@ -276,7 +276,6 @@ export namespace dialog {
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
       sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
         submitHandler?.({ err, result });
-        removeHandler('messageForParent');
       });
     }
 
@@ -294,7 +293,7 @@ export namespace dialog {
      */
     export namespace bot {
       /**
-       * Allows an app to open a adaptive card-based dialog module using bot.
+       * Allows an app to open an adaptive card-based dialog module using bot.
        *
        * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
        * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
