@@ -11,13 +11,12 @@ export interface IRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly appInstallDialog?: {};
     readonly appEntity?: {};
+    readonly appInstallDialog?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly webStorage?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -35,10 +34,11 @@ export interface IRuntime {
     readonly notifications?: {};
     readonly pages?: {
       readonly appButton?: {};
-      readonly tabs?: {};
-      readonly config?: {};
       readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
       readonly fullTrust?: {};
+      readonly tabs?: {};
     };
     readonly people?: {};
     readonly permissions?: {};
@@ -54,6 +54,7 @@ export interface IRuntime {
     };
     readonly teamsCore?: {};
     readonly video?: {};
+    readonly webStorage?: {};
   };
 }
 
@@ -83,10 +84,11 @@ export let runtime: IRuntime = {
     notifications: undefined,
     pages: {
       appButton: undefined,
-      tabs: undefined,
-      config: undefined,
       backStack: undefined,
+      config: undefined,
+      currentApp: undefined,
       fullTrust: undefined,
+      tabs: undefined,
     },
     people: undefined,
     permissions: undefined,
