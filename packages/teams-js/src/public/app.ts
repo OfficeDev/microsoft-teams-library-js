@@ -529,8 +529,7 @@ export namespace app {
    * Initializes the library.
    *
    * @remarks
-   * This must be called before any other SDK calls
-   * but after the frame is loaded successfully.
+   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
