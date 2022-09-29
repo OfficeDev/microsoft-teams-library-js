@@ -4,7 +4,7 @@ One of the best ways to contribute is to participate in discussions and discuss 
 
 ## API Design Guidelines
 
-Please review the [architectural guidelines](packages/teams-js/devdocs/architecture.md) when adding/changing functionality in the teams-js library.
+Please review the [architectural guidelines](https://github.com/OfficeDev/microsoft-teams-library-js/wiki/Library-Architecture) when adding/changing functionality in the teams-js library.
 
 ## General Contribution Guide
 
