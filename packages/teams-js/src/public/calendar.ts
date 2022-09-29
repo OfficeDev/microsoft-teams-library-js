@@ -43,6 +43,17 @@ export namespace calendar {
       }
     });
   }
+
+  export function openCalendarSchedulingForm(state: calendarSchedulingForm): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error('Not supported');
+      }
+      resolve(sendAndHandleError('calendar.openCalendarSchedulingForm', state));
+    });
+  }
+
   export function isSupported(): boolean {
     return runtime.supports.calendar ? true : false;
   }
@@ -57,5 +68,14 @@ export namespace calendar {
     endTime?: string;
     subject?: string;
     content?: string;
+  }
+
+  export interface calendarSchedulingForm {
+    eventId?: string;
+    navCtx?: string;
+    providerType?: string;
+    calendarType?: string;
+    conversationId?: string;
+    isBroadcast?: boolean;
   }
 }
