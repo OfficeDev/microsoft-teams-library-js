@@ -771,7 +771,7 @@ export interface AdaptiveCardDialogInfo extends BaseDialogInfo {
   /**
    * JSON defining an adaptive card.
    */
-  card: string;
+  card?: string;
 }
 
 /**
