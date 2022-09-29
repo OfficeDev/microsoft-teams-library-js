@@ -72,7 +72,7 @@ export namespace tasks {
    * Submit the task module.
    *
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
-   * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module.
+   * @param appIds - Valid application/s that the dailog can send result back to once dialog is submitted. It pervents malicious apps to get the dialog result.
    * Since web apps can power multiple Teams apps across different environments or different branding schemas with the same domain,
    * an array of valid appIDs corresponded to the different Teams apps can be provided.
    */
