@@ -1,8 +1,10 @@
 import {
+  Communication,
   sendAndHandleSdkError,
   sendAndHandleStatusAndReason as send,
   sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
   sendAndUnwrap,
+  sendMessageEventToChild,
   sendMessageToParent,
 } from '../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../internal/handlers';
@@ -640,7 +642,12 @@ export namespace pages {
 
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
-        navigateBack();
+        if (Communication.childWindow) {
+          // If no parent window function handled it let the child window
+          sendMessageEventToChild('backButtonPress', []);
+        } else {
+          navigateBack();
+        }
       }
     }
 
