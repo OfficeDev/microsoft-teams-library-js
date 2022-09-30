@@ -70,7 +70,7 @@ export namespace profile {
      *
      * This id is guaranteed to be unique for an object within a tenant,
      * and so if provided will lead to a more performant lookup. It can
-     * be resolved via MS Graph (see https://docs.microsoft.com/en-us/graph/api/resources/users
+     * be resolved via MS Graph (see https://learn.microsoft.com/graph/api/resources/users
      * for examples).
      */
     readonly AadObjectId?: string;

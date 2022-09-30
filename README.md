@@ -17,7 +17,7 @@ TIP: whenever building or testing the Teams client SDK, you can run `yarn build`
 
 See also: [Contributing](#Contributing)
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
+This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/overview?view=msteams-client-js-latest). See full [SDK reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 # Packages
 
