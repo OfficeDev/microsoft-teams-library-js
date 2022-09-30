@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Currently if a child IFrame is opened and the TeamsJs SDK is used it will not receive all the events that are sent to the parent IFrame.  This change allows the proxying of events if they are not handled in the parent frame.",
+  "comment": "Enabled proxying of window events to child frames if unhandled by current frame",
   "packageName": "@microsoft/teams-js",
   "email": "grahamc@microsoft.com",
   "dependentChangeType": "patch"
