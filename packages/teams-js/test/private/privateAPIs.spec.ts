@@ -401,18 +401,39 @@ describe('AppSDK-privateAPIs', () => {
     const parentMessage = utils.findMessageByFunc('testPartialFunc1');
     utils.respondToNativeMessage(parentMessage, true, {});
 
-    // The child window should properly receive the partial response
-    expect(utils.childMessages.length).toBe(1);
-    const firstChildMessage = utils.childMessages[0];
-    expect(firstChildMessage.isPartialResponse).toBeTruthy();
+    // The child window should properly receive the partial response plus
+    // the original event
+    expect(utils.childMessages.length).toBe(2);
+    const secondChildMessage = utils.childMessages[1];
+    expect(utils.childMessages[0].func).toBe('testPartialFunc1');
+    expect(secondChildMessage.isPartialResponse).toBeTruthy();
 
     // Pass the final response (non partial)
     utils.respondToNativeMessage(parentMessage, false, {});
 
     // The child window should properly receive the non-partial response
-    expect(utils.childMessages.length).toBe(2);
-    const secondChildMessage = utils.childMessages[1];
-    expect(secondChildMessage.isPartialResponse).toBeFalsy();
+    expect(utils.childMessages.length).toBe(3);
+    const thirdChildMessage = utils.childMessages[2];
+    expect(thirdChildMessage.isPartialResponse).toBeFalsy();
+  });
+
+  it ('Proxy messages to child window', async () => {
+    await utils.initializeWithContext('content', null, ['https://contoso.sharepoint.com']);
+    utils.processMessage({
+      origin: 'https://securebroker.sharepointonline.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'backButtonClick',
+        args: []
+      } as MessageResponse,
+    } as MessageEvent);
+
+    let message = utils.findMessageByFunc('backButtonClick');
+    expect(message).not.toBeNull();
+    expect(utils.childMessages.length).toBe(1);
+    let childMessage = utils.findMessageInChildByFunc('backButtonClick');
+    expect(childMessage).not.toBeNull();
   });
 
   describe('sendCustomMessage', () => {

@@ -643,7 +643,7 @@ export namespace pages {
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
         if (Communication.childWindow) {
-          // If no parent window function handled it let the child window
+          // If the current window did not handle it let the child window
           sendMessageEventToChild('backButtonPress', []);
         } else {
           navigateBack();
