@@ -99,9 +99,7 @@ export namespace dialog {
    * Submit the dialog module and close the dialog
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
-   * @param appIds - Valid application/s that the dailog can send result back to once dialog is submitted. It pervents malicious apps to get the dialog result.
-   * Since web apps can power multiple Teams apps across different environments or different branding schemas with the same domain,
-   * an array of valid appIDs corresponded to the different Teams apps can be provided.
+   * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
