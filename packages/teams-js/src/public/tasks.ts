@@ -144,6 +144,7 @@ export namespace tasks {
    * @returns - converted AdaptiveCardDialogInfo
    */
   function getAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): AdaptiveCardDialogInfo {
+    // eslint-disable-next-line strict-null-checks/all
     const adaptiveCardDialogInfo: AdaptiveCardDialogInfo = {
       card: taskInfo.card,
       size: {
