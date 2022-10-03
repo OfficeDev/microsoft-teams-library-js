@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Proxy save and remove events to child windows",
+  "packageName": "@microsoft/teams-js",
+  "email": "grahamc@microsoft.com",
+  "dependentChangeType": "patch"
+}
