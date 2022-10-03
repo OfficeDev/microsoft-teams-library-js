@@ -44,6 +44,9 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
+  } else if (Communication.childWindow) {
+    sendMessageEventToChild(name, [args]);
+    return [false, undefined];
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
     return [false, undefined];
@@ -170,6 +173,10 @@ function handleBeforeUnload(): void {
   };
 
   if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    readyToUnload();
+    if (Communication.childWindow) {
+      sendMessageEventToChild('beforeUnload');
+    } else {
+      readyToUnload();
+    }
   }
 }

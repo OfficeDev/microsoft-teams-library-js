@@ -249,7 +249,7 @@ export interface ActionInfo {
  *
  * @remarks
  * For more details about the updated {@link app.Context} interface, visit the
- * [Teams JavaScript client SDK](https://docs.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface)
+ * [Teams JavaScript client SDK](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk#updates-to-the-context-interface)
  * overview article.
  *
  * Represents the structure of the received context message.
