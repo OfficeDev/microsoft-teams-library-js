@@ -257,6 +257,7 @@ export namespace dialog {
   }
   /**
    * Subcapability for interacting with adaptive card dialogs
+   * @beta
    */
   export namespace adaptiveCard {
     /**
