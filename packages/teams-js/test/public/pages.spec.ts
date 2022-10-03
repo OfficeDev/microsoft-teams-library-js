@@ -1186,6 +1186,43 @@ describe('Testing pages module', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
+
+            it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.save',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(utils.childMessages.length).toBe(1);
+              let childMessage = utils.findMessageInChildByFunc('settings.save');
+              expect(childMessage).not.toBeNull();
+            });
+
+            it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              let handlerCalled = false;
+              pages.config.registerOnSaveHandler((saveEvent) => {
+                saveEvent.notifySuccess();
+                handlerCalled = true;
+              });
+              expect(handlerCalled).toBe(false);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.save',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(handlerCalled).toBe(true);
+              expect(utils.childMessages.length).toBe(0);
+            });
           } else {
             it(`pages.config.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
@@ -1243,6 +1280,43 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBeTruthy();
+            });
+
+            it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              pages.config.registerOnRemoveHandler(undefined);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.remove',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(utils.childMessages.length).toBe(1);
+              let childMessage = utils.findMessageInChildByFunc('settings.remove');
+              expect(childMessage).not.toBeNull();
+            });
+
+            it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              let handlerCalled = false;
+              pages.config.registerOnRemoveHandler(() => {
+                handlerCalled = true;
+              });
+              expect(handlerCalled).toBe(false);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.remove',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(handlerCalled).toBe(true);
+              expect(utils.childMessages.length).toBe(0);
             });
 
             it(`pages.config.registerOnRemoveHandler should successfully notify success from the registered remove handler when initialized with ${context} context`, async () => {
