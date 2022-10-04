@@ -240,8 +240,8 @@ const DialogAPIs = (): ReactElement => {
       title: 'Dialog Adaptive Card Open',
       onClick: {
         validateInput: (input) => {
-          if (!input) {
-            throw new Error('Input is undefined');
+          if (input.card === undefined) {
+            throw 'Card is undefined';
           }
         },
         submit: async (adaptiveCardDialogInfo, setResult) => {
