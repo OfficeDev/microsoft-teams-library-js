@@ -20,7 +20,7 @@ export interface IRuntime {
     readonly chat?: {};
     readonly conversations?: {};
     readonly dialog?: {
-      readonly adaptiveCard?: {
+      readonly card?: {
         readonly bot?: {};
       };
       readonly url?: {
@@ -75,7 +75,7 @@ export let runtime: IRuntime = {
     webStorage: undefined,
     conversations: undefined,
     dialog: {
-      adaptiveCard: {
+      card: {
         bot: undefined,
       },
       url: {
@@ -128,7 +128,7 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
-      adaptiveCard: {
+      card: {
         bot: {},
       },
       url: {

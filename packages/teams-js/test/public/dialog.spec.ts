@@ -1220,7 +1220,7 @@ describe('Dialog', () => {
         expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
       });
       it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', () => {
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { adaptiveCard: {} } } });
+        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
         expect(dialog.adaptiveCard.isSupported()).toBeTruthy();
       });
     });
@@ -1268,7 +1268,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { adaptiveCard: {} } } });
+            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1313,7 +1313,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { adaptiveCard: {} } } });
+            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1441,7 +1441,7 @@ describe('Dialog', () => {
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { adaptiveCard: {} } } });
+          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
@@ -1451,7 +1451,7 @@ describe('Dialog', () => {
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { adaptiveCard: { bot: {} } } } });
+          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: { bot: {} } } } });
           expect(dialog.adaptiveCard.bot.isSupported()).toBeTruthy();
         });
       });

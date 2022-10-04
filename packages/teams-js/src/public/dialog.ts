@@ -341,7 +341,7 @@ export namespace dialog {
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      */
     export function isSupported(): boolean {
-      return runtime.supports.dialog && runtime.supports.dialog.adaptiveCard ? true : false;
+      return runtime.supports.dialog && runtime.supports.dialog.card ? true : false;
     }
 
     /**
@@ -378,9 +378,7 @@ export namespace dialog {
        * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
        */
       export function isSupported(): boolean {
-        return runtime.supports.dialog &&
-          runtime.supports.dialog.adaptiveCard &&
-          runtime.supports.dialog.adaptiveCard.bot
+        return runtime.supports.dialog && runtime.supports.dialog.card && runtime.supports.dialog.card.bot
           ? true
           : false;
       }
