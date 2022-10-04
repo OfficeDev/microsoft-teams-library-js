@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Enabled proxying of window events to child frames if they are unhandled by current frame",
+  "packageName": "@microsoft/teams-js",
+  "email": "grahamc@microsoft.com",
+  "dependentChangeType": "patch"
+}

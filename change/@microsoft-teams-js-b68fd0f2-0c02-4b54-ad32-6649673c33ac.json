@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Added documentation for `appIds` in `dialog.submit` and `tasks.submitTask`",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}

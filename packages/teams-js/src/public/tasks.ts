@@ -72,7 +72,7 @@ export namespace tasks {
    * Submit the task module.
    *
    * @param result - Contains the result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
-   * @param appIds - Helps to validate that the call originates from the same appId as the one that invoked the task module
+   * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
     dialog.submit(result, appIds);
