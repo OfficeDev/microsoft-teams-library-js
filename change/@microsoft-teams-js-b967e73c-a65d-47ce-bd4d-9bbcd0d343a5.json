@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Delete documentation from wiki",
+  "comment": "Deleted documentation from repo that now lives on the wiki",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "none"
