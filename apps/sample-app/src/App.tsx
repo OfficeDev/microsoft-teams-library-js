@@ -20,7 +20,7 @@ const App: React.FC = () => {
         app.notifySuccess();
         const context = await app.getContext();
         // Learn more about 'app' namespace from the link below
-        //https://docs.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/using-teams-client-sdk?tabs=javascript%2Cmanifest-teams-toolkit#differentiate-your-app-experience
+        //https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/using-teams-client-sdk?tabs=javascript%2Cmanifest-teams-toolkit#differentiate-your-app-experience
         if (context?.app?.host?.name === 'Teams') {
           const themeNow = getThemeTeams(context?.app?.theme);
           setCurrTheme(themeNow);
