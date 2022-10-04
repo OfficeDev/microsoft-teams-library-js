@@ -7,7 +7,7 @@ import { pages } from '../../src/public/pages';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { Utils } from '../utils';
+import { MessageResponse, Utils } from '../utils';
 
 const emptyCallback = () => { };
 describe('Testing pages module', () => {
