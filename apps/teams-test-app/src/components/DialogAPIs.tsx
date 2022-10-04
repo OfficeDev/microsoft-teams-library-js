@@ -52,7 +52,7 @@ const DialogAPIs = (): ReactElement => {
             // Message from parent
             setResult(message);
           };
-          dialog.open(urlDialogInfo as UrlDialogInfo, onComplete, messageFromChildHandler);
+          dialog.url.open(urlDialogInfo as UrlDialogInfo, onComplete, messageFromChildHandler);
           return '';
         },
       },
@@ -122,7 +122,7 @@ const DialogAPIs = (): ReactElement => {
             return '';
           } else {
             setResult('Message sent to child');
-            dialog.sendMessageToDialog(message);
+            dialog.url.sendMessageToDialog(message);
             return '';
           }
         },
@@ -157,7 +157,7 @@ const DialogAPIs = (): ReactElement => {
             }
           } else {
             setResult('Message sent to parent');
-            dialog.sendMessageToParentFromDialog(message);
+            dialog.url.sendMessageToParentFromDialog(message);
           }
           return '';
         },
@@ -180,7 +180,7 @@ const DialogAPIs = (): ReactElement => {
             msg = message;
             setResult(message);
           };
-          dialog.registerOnMessageFromParent(callback);
+          dialog.url.registerOnMessageFromParent(callback);
         }
         return msg;
       },
@@ -198,7 +198,7 @@ const DialogAPIs = (): ReactElement => {
         },
         submit: {
           withPromise: async (submitInput) => {
-            dialog.submit(submitInput.result, submitInput.appIds);
+            dialog.url.submit(submitInput.result, submitInput.appIds);
             return '';
           },
           withCallback: (submitInput) => {

@@ -23,8 +23,8 @@ import {
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
-   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
+   * As of 2.0.0, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * and {@link dialog.url.bot.open dialog.url.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
    * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
    *
    * Allows an app to open the task module.
@@ -47,9 +47,9 @@ export namespace tasks {
         dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
       }
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -83,7 +83,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    dialog.submit(result, appIds);
+    dialog.url.submit(result, appIds);
   }
 
   /**

@@ -23,7 +23,9 @@ export interface IRuntime {
       readonly adaptiveCard?: {
         readonly bot?: {};
       };
-      readonly bot?: {};
+      readonly url?: {
+        readonly bot?: {};
+      };
       readonly update?: {};
     };
     readonly geoLocation?: {
@@ -76,7 +78,9 @@ export let runtime: IRuntime = {
       adaptiveCard: {
         bot: undefined,
       },
-      bot: undefined,
+      url: {
+        bot: undefined,
+      },
       update: undefined,
     },
     geoLocation: {
@@ -127,7 +131,9 @@ export const teamsRuntimeConfig: IRuntime = {
       adaptiveCard: {
         bot: {},
       },
-      bot: {},
+      url: {
+        bot: {},
+      },
       update: {},
     },
     logs: {},
