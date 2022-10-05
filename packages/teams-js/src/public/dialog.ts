@@ -186,6 +186,15 @@ export namespace dialog {
     }
 
     /**
+     * Checks if dialog.url module is supported by the host
+     *
+     * @returns boolean to represent whether dialog.url module is supported
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.dialog ? (runtime.supports.dialog.url ? true : false) : false;
+    }
+
+    /**
      * Namespace to open a dialog that sends results to the bot framework
      */
     export namespace bot {
@@ -341,7 +350,8 @@ export namespace dialog {
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      */
     export function isSupported(): boolean {
-      return runtime.supports.dialog && runtime.supports.dialog.card ? true : false;
+      console.log(runtime.supports);
+      return runtime.supports.dialog ? (runtime.supports.dialog.card ? true : false) : false;
     }
 
     /**
@@ -378,8 +388,12 @@ export namespace dialog {
        * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
        */
       export function isSupported(): boolean {
-        return runtime.supports.dialog && runtime.supports.dialog.card && runtime.supports.dialog.card.bot
-          ? true
+        return runtime.supports.dialog
+          ? runtime.supports.dialog.card
+            ? runtime.supports.dialog.card.bot
+              ? true
+              : false
+            : false
           : false;
       }
     }
