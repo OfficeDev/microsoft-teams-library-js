@@ -350,7 +350,6 @@ export namespace dialog {
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      */
     export function isSupported(): boolean {
-      console.log(runtime.supports);
       return runtime.supports.dialog ? (runtime.supports.dialog.card ? true : false) : false;
     }
 
