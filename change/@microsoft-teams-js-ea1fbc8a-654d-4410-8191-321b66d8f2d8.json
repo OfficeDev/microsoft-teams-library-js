@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added one common `registerHandlerHelper` function to replace several helpers.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
