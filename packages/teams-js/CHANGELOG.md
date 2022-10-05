@@ -1,8 +1,34 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 08 Sep 2022 17:11:49 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Oct 2022 21:56:41 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.4.0
+
+Wed, 05 Oct 2022 21:56:41 GMT
+
+### Minor changes
+
+- Added `liveShare` capability to interact with @microsoft/live-share package and enable building Live Share apps.
+- Added `OutlookWin32` to `HostName` enum
+- Added new sub capability `pages.currentApp.navigateTo` that enables navigation within an application without specifying application ID. `pages.currentApp.navigateToDefaultPage` that navigates to first static page defined in app manifest
+- Added (moved) `version` as a public constant containing the library version
+
+### Patches
+
+- Fixed more violations of strictNullChecks warning
+- Enabled `strictNullChecks` as lint rule
+- Updated the URLs for docs links.
+- Clarified documentation for `sharepoint` property on `Context` object
+- Added logging to `runtime` and `app` to make it easier to investigate issues surrounding app initialization.
+- Fixed some locations where `undefined` was properly handled but not explicitly in the type declaration
+- Enabled proxying of window events to child frames if they are unhandled by current frame
+- Fixed `search` API in test file
+- On the `File` interface changed the type of `lastModified` field from `Date` to `number`
+- Updated documentation for `app.initialize` to clarify that it must have completed before calling other library methods.
+- Clarified possible values for `theme` property on `AppInfo` object in docs
+- Added one common `registerHandlerHelper` function to replace several helpers.
 
 ## 2.3.0
 
