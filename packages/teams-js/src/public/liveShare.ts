@@ -9,7 +9,6 @@ import { LiveShareHost } from '../internal/liveShareHost';
  * @beta
  */
 export namespace liveShare {
-  const LIVE_SHARE_PACKAGE = '@microsoft/live-share';
   const LIVE_SHARE_HOST = new LiveShareHost();
   let client: LiveShareClient | undefined;
   let initializing = false;
@@ -77,8 +76,8 @@ export namespace liveShare {
 
     try {
       initializing = true;
-      const pkg = (await import(LIVE_SHARE_PACKAGE)) as { LiveShareClient: LiveShareClient };
-      client = new pkg.LiveShareClient(options, LIVE_SHARE_HOST);
+      const LiveShareClient = window['53de46f8-db62-4b8d-ae81-330f828ac86c'] as LiveShareClient;
+      client = new LiveShareClient(options, LIVE_SHARE_HOST);
     } catch (err: unknown) {
       throw new Error(
         'Unable to initialize Live Share client. Ensure that your project includes "@microsoft/live-share"',
