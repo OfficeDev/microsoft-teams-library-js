@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added (moved) `version` as a public constant containing the library version",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

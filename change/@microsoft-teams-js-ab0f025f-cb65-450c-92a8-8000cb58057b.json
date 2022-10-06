@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added new sub capability `pages.currentApp.navigateTo` that enables navigation within an application without specifying application ID. `pages.currentApp.navigateToDefaultPage` that navigates to first static page defined in app manifest",
-  "packageName": "@microsoft/teams-js",
-  "email": "shrshinde@microsoft.com",
-  "dependentChangeType": "patch"
-}
