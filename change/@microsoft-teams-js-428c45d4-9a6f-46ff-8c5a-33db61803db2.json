@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated the URLs for docs links.",
-  "packageName": "@microsoft/teams-js",
-  "email": "joshuapa@microsoft.com",
-  "dependentChangeType": "patch"
-}
