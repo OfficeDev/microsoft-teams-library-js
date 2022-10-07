@@ -23,9 +23,7 @@
     "debug": "4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "4.1.7",
-    "@fluidframework/azure-client": "~1.0.1",
-    "fluid-framework": "~1.2.2"
+    "@types/debug": "4.1.7"
   },
   "license": "MIT",
   "files": [

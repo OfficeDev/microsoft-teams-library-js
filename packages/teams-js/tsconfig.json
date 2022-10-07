@@ -5,7 +5,7 @@
     "declarationDir": "./dts",
     "target": "es5",
     "lib": ["ES5", "DOM", "ES2015.promise"],
-    "module": "es2020",
+    "module": "es6",
     "moduleResolution": "node",
     "noResolve": false,
     "noImplicitAny": false,
