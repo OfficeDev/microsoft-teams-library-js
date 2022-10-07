@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Reverted `liveShare` capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "95651173+jadahiya-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
