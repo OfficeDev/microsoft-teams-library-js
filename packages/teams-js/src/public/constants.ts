@@ -104,3 +104,7 @@ export enum ChannelType {
 }
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+
+export const errorInvalidArguments: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+
+export const errorNotSupportedInCurrentContext: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };

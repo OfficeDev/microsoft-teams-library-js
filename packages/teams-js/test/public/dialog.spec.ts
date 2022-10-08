@@ -1,7 +1,13 @@
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import {
+  DialogDimension,
+  errorInvalidArguments,
+  errorNotSupportedInCurrentContext,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+} from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
 import { DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
@@ -458,6 +464,32 @@ describe('Dialog', () => {
           }
         });
 
+        it(`FRAMED: should throw an error if actionInfo is present in appContext and submit is called with arguments in ${context} context`, async () => {
+          app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(context));
+          await framedMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+
+          expect.assertions(1);
+          try {
+            await dialog.submit('someResult');
+          } catch (e) {
+            expect(e).toEqual(errorInvalidArguments);
+          }
+        });
+
+        it(`FRAMELESS: should throw an error if actionInfo is present in appContext and submit is called with arguments in ${context} context`, async () => {
+          app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(context));
+          await framelessMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+
+          expect.assertions(4);
+          try {
+            dialog.submit('someResult', ['someAppId', 'someOtherAppId']);
+          } catch (e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
         it(`FRAMELESS: should successfully pass result and appIds parameters when called from ${JSON.stringify(
           context,
         )}`, async () => {
@@ -892,7 +924,7 @@ describe('Dialog', () => {
             framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
             expect.assertions(4);
             try {
-              dialog.sendMessageToParentFromDialog('exampleMessage');
+              await dialog.sendMessageToParentFromDialog('exampleMessage');
             } catch (e) {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
@@ -904,6 +936,31 @@ describe('Dialog', () => {
             const message = framelessMock.findMessageByFunc('messageForParent');
             expect(message).not.toBeUndefined();
             expect(message.args).toStrictEqual(['exampleMessage']);
+          });
+          it('FRAMED: should throw an error if actionInfo is present in appContext and sendMessageToParentFromDialog is called with arguments', async () => {
+            app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(frameContext));
+            await framedMock.initializeWithContext(frameContext);
+            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+
+            expect.assertions(1);
+            try {
+              await dialog.sendMessageToParentFromDialog('someMessage');
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedInCurrentContext);
+            }
+          });
+
+          it('FRAMELESS: should throw an error if actionInfo is present in appContext and sendMessageToParentFromDialog is called with arguments', async () => {
+            app.getContext = jest.fn().mockResolvedValueOnce(framedMock.setAppContext(frameContext));
+            await framelessMock.initializeWithContext(frameContext);
+            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+
+            expect.assertions(4);
+            try {
+              await dialog.sendMessageToParentFromDialog('someMessage');
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedInCurrentContext);
+            }
           });
         } else {
           it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
