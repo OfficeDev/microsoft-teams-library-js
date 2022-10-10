@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const execShellCommand = async cmd => {
+const execShellCommand = async (cmd) => {
   return new Promise((resolve, reject) => {
     exec(cmd, { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
       if (error) {
@@ -81,7 +81,11 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
 
     await execShellCommand('yarn beachball bump');
-    const version = require(relativePathToTeamsJsPackageJson).version;
+    let version = require(relativePathToTeamsJsPackageJson).version;
+
+    if (version === '2.4.0') {
+      version = '2.4.1';
+    }
 
     updatePackageJson(absolutePathTestAppPackageJson, version);
     const integrityHash = await buildAndGetIntegrityHash();
