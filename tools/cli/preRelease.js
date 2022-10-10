@@ -76,6 +76,7 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
     const relativePathToTestAppPackageJson = '../../apps/teams-test-app/package.json';
     const relativePathToTestAppHtml = '../../apps/teams-test-app/index_cdn.html';
 
+    const absolutePathToTeamsJsPackageJson = path.resolve(__dirname, relativePathToTeamsJsPackageJson);
     const absolutePathTestAppPackageJson = path.resolve(__dirname, relativePathToTestAppPackageJson);
     const absolutePathToTeamsJsReadme = path.resolve(__dirname, relativePathToTeamsJsReadme);
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
@@ -85,6 +86,7 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
 
     if (version === '2.4.0') {
       version = '2.4.1';
+      updatePackageJson(absolutePathToTeamsJsPackageJson, version);
     }
 
     updatePackageJson(absolutePathTestAppPackageJson, version);
