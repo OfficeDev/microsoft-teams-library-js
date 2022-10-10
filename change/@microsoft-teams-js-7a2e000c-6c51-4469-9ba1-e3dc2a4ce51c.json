@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed some locations where `undefined` was properly handled but not explicitly in the type declaration",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
