@@ -112,8 +112,7 @@ export namespace sharing {
   }
 
   function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let err: SdkError;
+    let err: SdkError | undefined;
     if (shareRequest.content.some((item) => !item.type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
@@ -131,8 +130,7 @@ export namespace sharing {
   }
 
   function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let err: SdkError;
+    let err: SdkError | undefined;
     if (shareRequest.content[0].type === 'URL') {
       if (shareRequest.content.some((item) => !item.url)) {
         err = {

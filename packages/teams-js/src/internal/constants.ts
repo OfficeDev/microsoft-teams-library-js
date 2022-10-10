@@ -1,7 +1,3 @@
-// This assignment is replaced at build time by a webpack plugin which ensures the value matches the version set in the package version
-declare const PACKAGE_VERSION = 'ERROR: This value should be replaced by webpack!';
-export const version = PACKAGE_VERSION;
-
 /**
  * @hidden
  * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.

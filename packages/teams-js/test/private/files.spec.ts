@@ -442,7 +442,7 @@ describe('files', () => {
     it('should trigger callback correctly', async () => {
       await utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -525,7 +525,7 @@ describe('files', () => {
     it('should send the message to parent correctly with file path as null', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -541,7 +541,7 @@ describe('files', () => {
     it('should send the message to parent correctly with non-null file path', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -597,7 +597,7 @@ describe('files', () => {
         message: 'Error Message',
       };
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toEqual(sdkError);
       });
 
@@ -659,7 +659,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -712,7 +712,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -773,7 +773,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -819,16 +819,18 @@ describe('files', () => {
       },
     };
 
-    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
-      content: null,
-    };
+    const deleteFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> =
+      {
+        content: null,
+      };
 
-    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> = {
-      content: {
-        providerCode: files.CloudStorageProvider.Box,
-        itemList: [],
-      },
-    };
+    const deleteFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDeleteFileContent> =
+      {
+        content: {
+          providerCode: files.CloudStorageProvider.Box,
+          itemList: [],
+        },
+      };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
@@ -874,7 +876,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -903,15 +905,17 @@ describe('files', () => {
         itemList: [mockDownloadFile],
       },
     };
-    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
-      content: null,
-    };
-    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> = {
-      content: {
-        providerCode: files.CloudStorageProvider.Box,
-        itemList: [],
-      },
-    };
+    const downloadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> =
+      {
+        content: null,
+      };
+    const downloadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderDownloadFileContent> =
+      {
+        content: {
+          providerCode: files.CloudStorageProvider.Box,
+          itemList: [],
+        },
+      };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
@@ -959,7 +963,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 
@@ -977,7 +981,7 @@ describe('files', () => {
       size: 32,
       type: 'pdf',
       name: 'file1',
-      lastModified: new Date(),
+      lastModified: 1663767892661,
       text: () => {
         return new Promise<string>(() => 'file text');
       },
@@ -1008,23 +1012,26 @@ describe('files', () => {
         destinationFolder: mockDestinationFolder,
       },
     };
-    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
-      content: null,
-    };
-    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
-      content: {
-        providerCode: files.CloudStorageProvider.Dropbox,
-        itemList: [],
-        destinationFolder: mockDestinationFolder,
-      },
-    };
-    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> = {
-      content: {
-        providerCode: files.CloudStorageProvider.Dropbox,
-        itemList: [mockUploadFile],
-        destinationFolder: null,
-      },
-    };
+    const uploadFileRequestWithNullContent: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
+      {
+        content: null,
+      };
+    const uploadFileRequestWithEmptyItemList: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
+      {
+        content: {
+          providerCode: files.CloudStorageProvider.Dropbox,
+          itemList: [],
+          destinationFolder: mockDestinationFolder,
+        },
+      };
+    const uploadFileRequestWithNullDestinationFolder: files.CloudStorageProviderRequest<files.CloudStorageProviderUploadFileContent> =
+      {
+        content: {
+          providerCode: files.CloudStorageProvider.Dropbox,
+          itemList: [mockUploadFile],
+          destinationFolder: null,
+        },
+      };
 
     it('should not allow calls before initialization', () => {
       expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
@@ -1077,7 +1084,7 @@ describe('files', () => {
     it('should send the message to parent correctly', () => {
       utils.initializeWithContext('content');
 
-      const callback = jest.fn(err => {
+      const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
       });
 

@@ -1,7 +1,10 @@
 import {
+  Communication,
+  sendAndHandleSdkError,
   sendAndHandleStatusAndReason as send,
   sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
   sendAndUnwrap,
+  sendMessageEventToChild,
   sendMessageToParent,
 } from '../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../internal/handlers';
@@ -318,10 +321,8 @@ export namespace pages {
    * This object is usable only on the configuration frame.
    */
   export namespace config {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let saveHandler: (evt: SaveEvent) => void;
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let removeHandler: (evt: RemoveEvent) => void;
+    let saveHandler: undefined | ((evt: SaveEvent) => void);
+    let removeHandler: undefined | ((evt: RemoveEvent) => void);
 
     /**
      * @hidden
@@ -443,6 +444,8 @@ export namespace pages {
       const saveEvent = new SaveEventImpl(result);
       if (saveHandler) {
         saveHandler(saveEvent);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.save', [result]);
       } else {
         // If no handler is registered, we assume success.
         saveEvent.notifySuccess();
@@ -538,6 +541,8 @@ export namespace pages {
       const removeEvent = new RemoveEventImpl();
       if (removeHandler) {
         removeHandler(removeEvent);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.remove', []);
       } else {
         // If no handler is registered, we assume success.
         removeEvent.notifySuccess();
@@ -584,8 +589,7 @@ export namespace pages {
    * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let backButtonPressHandler: () => boolean;
+    let backButtonPressHandler: (() => boolean) | undefined;
 
     export function _initialize(): void {
       registerHandler('backButtonPress', handleBackButtonPress, false);
@@ -642,7 +646,12 @@ export namespace pages {
 
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
-        navigateBack();
+        if (Communication.childWindow) {
+          // If the current window did not handle it let the child window
+          sendMessageEventToChild('backButtonPress', []);
+        } else {
+          navigateBack();
+        }
       }
     }
 
@@ -753,6 +762,90 @@ export namespace pages {
      */
     export function isSupported(): boolean {
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
+    }
+  }
+
+  /**
+   * Provides functions for navigating without needing to specify your application ID.
+   *
+   * @beta
+   */
+  export namespace currentApp {
+    /**
+     * Parameters for the NavigateWithinApp
+     *
+     * @beta
+     */
+    export interface NavigateWithinAppParams {
+      /**
+       * The developer-defined unique ID for the page defined in the manifest or when first configuring
+       * the page. (Known as {entityId} prior to TeamsJS v.2.0.0)
+       */
+      pageId: string;
+
+      /**
+       * Optional developer-defined unique ID describing the content to navigate to within the page. This
+       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId}
+       */
+      subPageId?: string;
+    }
+
+    /**
+     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
+     * specific content within the page).
+     * @param params - Parameters for the navigation
+     * @returns a promise that will resolve if the navigation was successful
+     *
+     * @beta
+     */
+    export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+      });
+    }
+
+    /**
+     * Navigate to the currently running application's first static page defined in the application
+     * manifest.
+     * @beta
+     */
+    export function navigateToDefaultPage(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+      });
+    }
+
+    /**
+     * Checks if pages.currentApp capability is supported by the host
+     * @returns true if the pages.currentApp capability is enabled in runtime.supports.pages.currentApp and
+     * false if it is disabled
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return runtime.supports.pages ? (runtime.supports.pages.currentApp ? true : false) : false;
     }
   }
 }

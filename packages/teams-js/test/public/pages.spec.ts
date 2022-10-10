@@ -1,4 +1,3 @@
-import { version } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
@@ -6,10 +5,11 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { Utils } from '../utils';
+import { MessageResponse, Utils } from '../utils';
 
-const emptyCallback = () => {};
+const emptyCallback = () => { };
 describe('Testing pages module', () => {
   describe('Framed - Testing pages module', () => {
     // Use to send a mock message from the app.
@@ -469,6 +469,135 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
 
             await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('Testing pages.currentApp.navigateTo function', () => {
+      const NavigateToParams: pages.currentApp.NavigateWithinAppParams = {
+        pageId: 'tasklist123',
+        subPageId: 'task456',
+      };
+
+      it('pages.currentApp.navigateTo should not allow calls before initialization', async () => {
+        await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
+      });
+
+      const allowedContexts = [
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      ];
+
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`pages.currentApp.navigateTo  should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.currentApp.navigateTo should allow calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateTo(NavigateToParams);
+
+            const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
+            expect(navigateToMessage).not.toBeNull();
+            utils.respondToMessage(navigateToMessage);
+
+            await expect(promise).resolves.toBe(undefined);
+          });
+
+          it('pages.currentApp.navigateTo  should successfully send the navigateToApp message', async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateTo(NavigateToParams);
+
+            const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
+            utils.respondToMessage(navigateToMessage);
+            await promise;
+
+            expect(navigateToMessage).not.toBeNull();
+            expect(navigateToMessage.args[0]).toStrictEqual(NavigateToParams);
+          });
+        } else {
+          it(`pages.currentApp.navigateTo  should not allow calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+
+            await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('Testing pages.currentApp.navigateToDefaultPage function', () => {
+      it('pages.navigate.toDefaultPage should not allow calls before initialization', async () => {
+        await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
+      });
+
+      const allowedContexts = [
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      ];
+
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`pages.currentApp.navigateToDefaultPage  should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.currentApp.navigateToDefaultPage()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.currentApp.navigateToDefaultPage should allow calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateToDefaultPage();
+
+            const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
+            utils.respondToMessage(navigateToDefaultPageMessage);
+
+            await expect(promise).resolves.toBe(undefined);
+          });
+
+          it('pages.currentApp.navigateToDefaultPage  should successfully send the navigateToApp message', async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateToDefaultPage();
+
+            const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
+            utils.respondToMessage(navigateToDefaultPageMessage);
+            expect(await promise).toBeUndefined();
+          });
+        } else {
+          it(`pages.currentApp.navigateToDefaultPage  should not allow calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+
+            await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -1057,6 +1186,43 @@ describe('Testing pages module', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(0);
             });
+
+            it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.save',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(utils.childMessages.length).toBe(1);
+              let childMessage = utils.findMessageInChildByFunc('settings.save');
+              expect(childMessage).not.toBeNull();
+            });
+
+            it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              let handlerCalled = false;
+              pages.config.registerOnSaveHandler((saveEvent) => {
+                saveEvent.notifySuccess();
+                handlerCalled = true;
+              });
+              expect(handlerCalled).toBe(false);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.save',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(handlerCalled).toBe(true);
+              expect(utils.childMessages.length).toBe(0);
+            });
           } else {
             it(`pages.config.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
@@ -1114,6 +1280,43 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBeTruthy();
+            });
+
+            it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              pages.config.registerOnRemoveHandler(undefined);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.remove',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(utils.childMessages.length).toBe(1);
+              let childMessage = utils.findMessageInChildByFunc('settings.remove');
+              expect(childMessage).not.toBeNull();
+            });
+
+            it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
+              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              let handlerCalled = false;
+              pages.config.registerOnRemoveHandler(() => {
+                handlerCalled = true;
+              });
+              expect(handlerCalled).toBe(false);
+              utils.processMessage({
+                origin: 'https://securebroker.sharepointonline.com',
+                source: utils.childWindow,
+                data: {
+                  id: 100,
+                  func: 'settings.remove',
+                  args: []
+                } as MessageResponse,
+              } as MessageEvent);
+              expect(handlerCalled).toBe(true);
+              expect(utils.childMessages.length).toBe(0);
             });
 
             it(`pages.config.registerOnRemoveHandler should successfully notify success from the registered remove handler when initialized with ${context} context`, async () => {
@@ -2125,6 +2328,153 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
 
             await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('Testing pages.currentApp.navigateTo function', () => {
+      const NavigateToParams: pages.currentApp.NavigateWithinAppParams = {
+        pageId: 'tasklist123',
+        subPageId: 'task456',
+      };
+
+      it('pages.currentApp.navigateTo should not allow calls before initialization', async () => {
+        await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
+      });
+
+      const allowedContexts = [
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      ];
+
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`pages.currentApp.navigateTo should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.currentApp.navigateTo should allow calls from ${context} context`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+            const promise = pages.currentApp.navigateTo(NavigateToParams);
+            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.currentApp.navigateTo');
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateToMessage.id,
+                args: [],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).resolves.toBe(undefined);
+          });
+
+          it('pages.currentApp.navigateTo should successfully send the navigateToApp message', async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+            const promise = pages.currentApp.navigateTo(NavigateToParams);
+            const navigateToMessage = framelessPostMocks.findMessageByFunc('pages.currentApp.navigateTo');
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateToMessage.id,
+                args: [],
+              },
+            } as DOMMessageEvent);
+            await promise;
+            expect(navigateToMessage).not.toBeNull();
+            expect(navigateToMessage.args[0]).toStrictEqual(NavigateToParams);
+          });
+        } else {
+          it(`pages.currentApp.navigateTo should not allow calls from ${context} context`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('Testing pages.currentApp.navigateToDefaultPage function', () => {
+      it('pages.navigate.toDefaultPage should not allow calls before initialization', async () => {
+        await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
+          'The library has not yet been initialized',
+        );
+      });
+
+      const allowedContexts = [
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.settings,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.meetingStage,
+      ];
+
+      Object.keys(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`pages.currentApp.navigateToDefaultPage  should throw errors when pages is not supported when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            expect(pages.currentApp.navigateToDefaultPage()).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.currentApp.navigateToDefaultPage should allow calls from ${context} context`, async () => {
+            expect.assertions(4);
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateToDefaultPage();
+
+            const navigateToDefaultPageMessage = framelessPostMocks.findMessageByFunc(
+              'pages.currentApp.navigateToDefaultPage',
+            );
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateToDefaultPageMessage.id,
+                args: [],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).resolves.toBe(undefined);
+          });
+
+          it('pages.currentApp.navigateToDefaultPage  should successfully send the navigateToApp message', async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+
+            const promise = pages.currentApp.navigateToDefaultPage();
+
+            const navigateToDefaultPageMessage = framelessPostMocks.findMessageByFunc(
+              'pages.currentApp.navigateToDefaultPage',
+            );
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateToDefaultPageMessage.id,
+                args: [],
+              },
+            } as DOMMessageEvent);
+            expect(await promise).toBeUndefined();
+          });
+        } else {
+          it(`pages.currentApp.navigateToDefaultPage  should not allow calls from ${context} context`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+
+            await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,

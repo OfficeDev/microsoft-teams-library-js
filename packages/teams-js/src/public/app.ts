@@ -10,10 +10,11 @@ import {
   sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
-import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
 import { authentication } from './authentication';
@@ -24,6 +25,7 @@ import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
 import { teamsCore } from './teamsAPIs';
+import { version } from './version';
 
 /**
  * Namespace to interact with app initialization and lifecycle.
@@ -31,6 +33,8 @@ import { teamsCore } from './teamsAPIs';
  * @beta
  */
 export namespace app {
+  const appLogger = getLogger('app');
+
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
   export const Messages = {
@@ -483,7 +487,7 @@ export namespace app {
     meeting?: MeetingInfo;
 
     /**
-     * SharePoint context. This is only available when hosted in SharePoint.
+     * When hosted in SharePoint, this is the [SharePoint PageContext](https://learn.microsoft.com/en-us/javascript/api/sp-page-context/pagecontext?view=sp-typescript-latest), else `undefined`
      */
     sharepoint?: any;
 
@@ -525,8 +529,7 @@ export namespace app {
    * Initializes the library.
    *
    * @remarks
-   * This must be called before any other SDK calls
-   * but after the frame is loaded successfully.
+   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https:www.example.com
@@ -540,6 +543,7 @@ export namespace app {
     );
   }
 
+  const initializeHelperLogger = appLogger.extend('initializeHelper');
   function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
@@ -564,8 +568,9 @@ export namespace app {
             // so we assume that if we don't have it, we must be running in Teams.
             // After Teams updates its client code, we can remove this default code.
             try {
-              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Parsing %s', runtimeConfig);
+              const givenRuntimeConfig: IRuntime | null = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
               // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
@@ -574,6 +579,7 @@ export namespace app {
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
+                  initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
                   // if the given runtime config was actually meant to be a SDK version, store it as such.
                   // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
                   // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
@@ -581,9 +587,16 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
-                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                  const givenRuntimeConfig: IRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
+
+                  if (!givenRuntimeConfig) {
+                    throw new Error(
+                      'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                    );
+                  } else {
+                    applyRuntimeConfig(givenRuntimeConfig);
+                  }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));

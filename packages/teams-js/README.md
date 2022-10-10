@@ -2,7 +2,7 @@
 
 Welcome to the Teams JavaScript client SDK! For breaking changes, please refer to our [changelog](./CHANGELOG.md) in the current `<root>/packages/teams-js` directory.
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/). See full [SDK reference documentation](https://docs.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
+This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/). See full [SDK reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 ## Getting Started
 
@@ -12,7 +12,7 @@ Whenever building or testing the Teams client SDK, you can run `yarn build` or `
 
 ## Installation
 
-To install the stable [version](https://docs.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest):
+To install the stable [version](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest):
 
 ### npm
 

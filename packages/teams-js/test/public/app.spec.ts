@@ -1,4 +1,3 @@
-import { version } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as privateAPIs from '../../src/private/privateAPIs';
@@ -20,6 +19,7 @@ import {
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -242,6 +242,19 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).toEqual(teamsRuntimeConfig);
+      });
+
+      it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
+        const initPromise = app.initialize();
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
+
+        await expect(initPromise).rejects.toThrowError(
+          'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+        );
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
