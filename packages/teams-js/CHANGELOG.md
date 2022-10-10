@@ -1,8 +1,35 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 08 Sep 2022 17:11:49 GMT and should not be manually modified.
+This log was last generated on Mon, 10 Oct 2022 19:09:20 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.4.1
+
+Mon, 10 Oct 2022 19:09:20 GMT
+
+### Minor changes
+
+- Added (moved) `version` as a public constant containing the library version
+- Added new sub capability `pages.currentApp.navigateTo` that enables navigation within an application without specifying application ID. `pages.currentApp.navigateToDefaultPage` that navigates to first static page defined in app manifest
+- Added `OutlookWin32` to `HostName` enum
+
+### Patches
+
+- Added one common `registerHandlerHelper` function to replace several helpers.
+- Clarified possible values for `theme` property on `AppInfo` object in docs
+- Updated documentation for `app.initialize` to clarify that it must have completed before calling other library methods.
+- On the `File` interface changed the type of `lastModified` field from `Date` to `number`
+- Fixed `search` API in test file
+- Enabled proxying of window events to child frames if they are unhandled by current frame
+- Added logging to `runtime` and `app` to make it easier to investigate issues surrounding app initialization.
+- Fixed some locations where `undefined` was properly handled but not explicitly in the type declaration
+- Reverted `liveShare` capability
+- Clarified documentation for `sharepoint` property on `Context` object
+- Enabled `strictNullChecks` as lint rule
+- Updated the URLs for docs links.
+- Enabled save and remove events in the `pages.config` capability to be proxied to child windows
+- Fixed more violations of strictNullChecks warning
 
 ## 2.3.0
 
@@ -351,7 +378,7 @@ Tue, 19 Apr 2022 16:08:56 GMT
 ### Major changes
 
 - Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
-- Change DeepLinkParameters not to use subEntity* anymore
+- Change DeepLinkParameters not to use subEntity\* anymore
 - Added `isSupported` checks to all functions and unit test cases in the following capabilities:
   - `chat`
   - `conversations`

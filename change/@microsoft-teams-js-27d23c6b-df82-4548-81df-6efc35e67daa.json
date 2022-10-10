@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Enabled save and remove events in the `pages.config` capability to be proxied to child windows",
-  "packageName": "@microsoft/teams-js",
-  "email": "grahamc@microsoft.com",
-  "dependentChangeType": "patch"
-}

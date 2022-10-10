@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `OutlookWin32` to `HostName` enum",
-  "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
-  "dependentChangeType": "patch"
-}
