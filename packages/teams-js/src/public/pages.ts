@@ -444,6 +444,8 @@ export namespace pages {
       const saveEvent = new SaveEventImpl(result);
       if (saveHandler) {
         saveHandler(saveEvent);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.save', [result]);
       } else {
         // If no handler is registered, we assume success.
         saveEvent.notifySuccess();
@@ -539,6 +541,8 @@ export namespace pages {
       const removeEvent = new RemoveEventImpl();
       if (removeHandler) {
         removeHandler(removeEvent);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.remove', []);
       } else {
         // If no handler is registered, we assume success.
         removeEvent.notifySuccess();

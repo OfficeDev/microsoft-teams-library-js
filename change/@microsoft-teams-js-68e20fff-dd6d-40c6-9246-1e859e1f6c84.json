@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Removed unnecessary export keyword from supporting functions `getUrlDialogInfoFromTaskInfo` and `getBotUrlDialogInfoFromTaskInfo` in `tasks.ts`",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "none"
-}
