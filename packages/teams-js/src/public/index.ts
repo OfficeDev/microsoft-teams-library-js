@@ -12,6 +12,7 @@ export {
 export {
   ActionInfo,
   ActionObjectType,
+  AdaptiveCardVersion,
   AdaptiveCardDialogInfo,
   BaseActionObject,
   BotAdaptiveCardDialogInfo,

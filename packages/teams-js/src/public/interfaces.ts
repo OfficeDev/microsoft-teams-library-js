@@ -750,6 +750,7 @@ export interface DeepLinkParameters {
 }
 
 /**
+ * @hidden
  * Shared Dialog Properties
  */
 export interface BaseDialogInfo {
@@ -1010,5 +1011,13 @@ export enum DevicePermission {
 
 /** @hidden */
 export interface HostVersionsInfo {
-  adaptiveCardSchemaVersion?: string;
+  adaptiveCardSchemaVersion?: AdaptiveCardVersion;
+}
+
+/**
+ * Represents the major and minor versions of the AdaptiveCard schema
+ */
+export interface AdaptiveCardVersion {
+  majorVersion: number;
+  minorVersion: number;
 }
