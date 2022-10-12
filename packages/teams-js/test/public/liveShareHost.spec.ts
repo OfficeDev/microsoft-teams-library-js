@@ -5,7 +5,7 @@ import {
     INtpTimeInfo,
     ContainerState,
     UserMeetingRole
-} from '../../src/internal/liveShareHost';
+} from '../../src/public/liveShareHost';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 

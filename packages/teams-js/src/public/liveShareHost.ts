@@ -1,13 +1,11 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from '../public/constants';
+import { FrameContexts } from './constants';
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
  * Allowed roles during a meeting.
+ *
+ * @beta
  */
 export enum UserMeetingRole {
   guest = 'Guest',
@@ -17,11 +15,9 @@ export enum UserMeetingRole {
 }
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
  * State of the current Live Share sessions backing fluid container.
+ *
+ * @beta
  */
 export enum ContainerState {
   /**
@@ -49,12 +45,10 @@ export enum ContainerState {
 }
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
  * Returned from `LiveShareHost.get/setFluidContainerId()` to specify the container mapping for the
  * current Live Share session.
+ *
+ * @beta
  */
 export interface IFluidContainerInfo {
   /**
@@ -83,12 +77,10 @@ export interface IFluidContainerInfo {
 }
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
  * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
  * Live Share session.
+ *
+ * @beta
  */
 export interface INtpTimeInfo {
   /**
@@ -103,12 +95,10 @@ export interface INtpTimeInfo {
 }
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
  * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
  * current Live Share session.
+ *
+ * @beta
  */
 export interface IFluidTenantInfo {
   /**
@@ -137,18 +127,12 @@ export interface IFluidTenantInfo {
 }
 
 /**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * ------
- * Interface for hosting a Live Share session within a client like Teams.
+ * Live Share host implementation for O365 and Teams clients.
+ *
+ * @beta
  */
 export class LiveShareHost {
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Returns the Fluid Tenant connection info for user's current context.
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
@@ -160,10 +144,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Returns the fluid access token for mapped container Id.
    *
    * @param containerId Fluid's container Id for the request. Undefined for new containers.
@@ -179,10 +159,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Returns the ID of the fluid container associated with the user's current context.
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
@@ -194,10 +170,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Sets the ID of the fluid container associated with the current context.
    *
    * @remarks
@@ -215,10 +187,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Returns the shared clock server's current time.
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
@@ -230,10 +198,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Associates the fluid client ID with a set of user roles.
    *
    * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
@@ -248,10 +212,6 @@ export class LiveShareHost {
   }
 
   /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * ------
    * Returns the roles associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.

@@ -87,4 +87,4 @@ export {
 export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
-export { liveShare } from './liveShare';
+export * from './liveShareHost';
