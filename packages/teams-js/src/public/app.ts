@@ -98,7 +98,7 @@ export namespace app {
      */
     reason: FailedReason;
     /**
-     * A message that describes the failure
+     * This property is currently unused.
      */
     message?: string;
   }
