@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { sendMessageToParent } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { DialogDimension, TaskModuleDimension } from './constants';
+import { DialogDimension, FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import {
   AdaptiveCardDialogInfo,
   BotAdaptiveCardDialogInfo,
   BotUrlDialogInfo,
+  DialogInfo,
   DialogSize,
   TaskInfo,
   UrlDialogInfo,
@@ -41,11 +44,12 @@ export namespace tasks {
         (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
-      if (taskInfo.completionBotId) {
-        dialog.adaptiveCard.bot.open(getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
-      } else {
-        dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
-      }
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+    } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
+      dialog.adaptiveCard.bot.open(getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+    } else if (taskInfo.card) {
+      dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {

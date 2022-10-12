@@ -46,21 +46,13 @@ describe('tasks', () => {
             url: 'someUrl',
             completionBotId: 'someCompletionBotId',
           };
-          const dialogInfo: DialogInfo = {
-            card: 'someCard',
-            height: TaskModuleDimension.Large,
-            width: TaskModuleDimension.Large,
-            title: 'someTitle',
-            completionBotId: 'someCompletionBotId',
-          };
-
           tasks.startTask(taskInfo, () => {
             return;
           });
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([dialogInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
         it(`should pass along the taskInfo correctly when URL is not specified. ${context} context`, async () => {
@@ -130,14 +122,6 @@ describe('tasks', () => {
             url: 'someUrl',
             card: 'someCard',
           };
-
-          const dialogInfo: DialogInfo = {
-            height: DialogDimension.Large,
-            card: 'someCard',
-            title: undefined,
-            width: DialogDimension.Small
-          };
-
           tasks.startTask(taskInfo, () => {
             return;
           });
@@ -145,8 +129,8 @@ describe('tasks', () => {
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
 
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([dialogInfo]);
-          expect(startTaskMessage.args).toEqual([dialogInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfoWithSize]);
         });
 
         it(`should invoke callback with result. context: ${context}`, async () => {
