@@ -82,7 +82,7 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
     const absolutePathToTeamsJsReadme = path.resolve(__dirname, relativePathToTeamsJsReadme);
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
 
-    //await execShellCommand('yarn beachball bump');
+    await execShellCommand('yarn beachball bump');
     let version = require(relativePathToTeamsJsPackageJson).version;
 
     updatePackageJson(absolutePathTestAppPackageJson, version);
