@@ -26,6 +26,7 @@ const buildAndGetIntegrityHash = async () => {
   const absolutePathToManifestJson = path.resolve(__dirname, relativePathToManifestJson);
 
   console.log('Building @microsoft/teams-js');
+  await execShellCommand('yarn workspace @microsoft/teams-js install');
   await execShellCommand('yarn workspace @microsoft/teams-js build');
 
   if (!fs.existsSync(absolutePathToManifestJson)) {
@@ -81,13 +82,8 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
     const absolutePathToTeamsJsReadme = path.resolve(__dirname, relativePathToTeamsJsReadme);
     const absolutePathToTestAppHtml = path.resolve(__dirname, relativePathToTestAppHtml);
 
-    await execShellCommand('yarn beachball bump');
+    //await execShellCommand('yarn beachball bump');
     let version = require(relativePathToTeamsJsPackageJson).version;
-
-    if (version === '2.4.0') {
-      version = '2.4.1';
-      updatePackageJson(absolutePathToTeamsJsPackageJson, version);
-    }
 
     updatePackageJson(absolutePathTestAppPackageJson, version);
     const integrityHash = await buildAndGetIntegrityHash();
