@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused.",
+  "comment": "Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"
