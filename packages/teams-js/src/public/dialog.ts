@@ -26,8 +26,10 @@ export namespace dialog {
     err?: string;
 
     /**
-     * Result value that the dialog is submitted with using {@linkcode submit} function. If the dialog
-     * was closed by the user without submitting, this value will be `undefined`.
+     * Value provided in the `result` parameter by the dialog when the {@linkcode submit} function
+     * was called.
+     * If the dialog was closed by the user without submitting (e.g., using a control in the corner
+     * of the dialog), this value will be `undefined` here.
      */
     result?: string | object;
   }
