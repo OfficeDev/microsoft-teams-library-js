@@ -63,20 +63,22 @@ describe('Testing authentication capability', () => {
     });
 
     describe('Testing authentication.registerAuthenticationHandlers function', () => {
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`authentication.registerAuthenticationHandlers should successfully pop up the auth window when authenticate called with authenticationParams for connectors with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             let windowOpenCalled = false;
-            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-              const specs: string = specsInput as string;
-              expect(url).toEqual('https://someurl/');
-              expect(name).toEqual('_blank');
-              expect(specs.indexOf('width=100')).not.toBe(-1);
-              expect(specs.indexOf('height=200')).not.toBe(-1);
-              windowOpenCalled = true;
-              return utils.childWindow as Window;
-            });
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
+                expect(url).toEqual('https://someurl/');
+                expect(name).toEqual('_blank');
+                expect(specs.indexOf('width=100')).not.toBe(-1);
+                expect(specs.indexOf('height=200')).not.toBe(-1);
+                windowOpenCalled = true;
+                return utils.childWindow as Window;
+              },
+            );
 
             const authenticationParams = {
               url: 'https://someurl/',
@@ -103,8 +105,8 @@ describe('Testing authentication capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`authentication.authenticate should allow calls from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
@@ -133,15 +135,17 @@ describe('Testing authentication capability', () => {
             await utils.initializeWithContext(context);
 
             let windowOpenCalled = false;
-            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-              const specs: string = specsInput as string;
-              expect(url).toEqual('https://someurl/');
-              expect(name).toEqual('_blank');
-              expect(specs.indexOf('width=100')).not.toBe(-1);
-              expect(specs.indexOf('height=200')).not.toBe(-1);
-              windowOpenCalled = true;
-              return utils.childWindow as Window;
-            });
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
+                expect(url).toEqual('https://someurl/');
+                expect(name).toEqual('_blank');
+                expect(specs.indexOf('width=100')).not.toBe(-1);
+                expect(specs.indexOf('height=200')).not.toBe(-1);
+                windowOpenCalled = true;
+                return utils.childWindow as Window;
+              },
+            );
 
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
               url: 'https://someurl/',
@@ -157,15 +161,17 @@ describe('Testing authentication capability', () => {
             await utils.initializeWithContext(context);
 
             let windowOpenCalled = false;
-            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-              const specs: string = specsInput as string;
-              expect(url).toEqual('https://someurl/');
-              expect(name).toEqual('_blank');
-              expect(specs.indexOf('width=100')).not.toBe(-1);
-              expect(specs.indexOf('height=200')).not.toBe(-1);
-              windowOpenCalled = true;
-              return utils.childWindow as Window;
-            });
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
+                expect(url).toEqual('https://someurl/');
+                expect(name).toEqual('_blank');
+                expect(specs.indexOf('width=100')).not.toBe(-1);
+                expect(specs.indexOf('height=200')).not.toBe(-1);
+                windowOpenCalled = true;
+                return utils.childWindow as Window;
+              },
+            );
             const authenticationParams = {
               url: 'https://someurl/',
               width: 100,
@@ -183,7 +189,7 @@ describe('Testing authentication capability', () => {
             utils.childWindow.closed = true;
           });
 
-          it(`authentication.authenticate should successfully handle auth success in legacy flow from ${context} context`, (done) => {
+          it(`authentication.authenticate should successfully handle auth success in legacy flow from ${context} context`, done => {
             utils.initializeWithContext(context).then(() => {
               const authenticationParams = {
                 url: 'https://someurl/',
@@ -216,15 +222,17 @@ describe('Testing authentication capability', () => {
             await utils.initializeWithContext(context);
 
             let windowOpenCalled = false;
-            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-              const specs: string = specsInput as string;
-              expect(url).toEqual('https://someurl/');
-              expect(name).toEqual('_blank');
-              expect(specs.indexOf('width=100')).not.toBe(-1);
-              expect(specs.indexOf('height=200')).not.toBe(-1);
-              windowOpenCalled = true;
-              return utils.childWindow as Window;
-            });
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation(
+              (url, name, specsInput): Window => {
+                const specs: string = specsInput as string;
+                expect(url).toEqual('https://someurl/');
+                expect(name).toEqual('_blank');
+                expect(specs.indexOf('width=100')).not.toBe(-1);
+                expect(specs.indexOf('height=200')).not.toBe(-1);
+                windowOpenCalled = true;
+                return utils.childWindow as Window;
+              },
+            );
 
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
               url: 'https://someurl/',
@@ -261,7 +269,7 @@ describe('Testing authentication capability', () => {
             await expect(promise).resolves.toEqual(mockResult);
           });
 
-          it(`authentication.authenticate should handle auth failure in legacy flow from ${context} context`, (done) => {
+          it(`authentication.authenticate should handle auth failure in legacy flow from ${context} context`, done => {
             utils.initializeWithContext(context).then(() => {
               const authenticationParams = {
                 url: 'https://someurl/',
@@ -312,7 +320,7 @@ describe('Testing authentication capability', () => {
             await expect(promise).rejects.toThrowError(errorMessage);
           });
 
-          allowedHostClientType.forEach((hostClientType) => {
+          allowedHostClientType.forEach(hostClientType => {
             it(`authentication.authenticate should successfully pop up the auth window in the ${hostClientType} client in legacy flow from ${context} context`, () => {
               return utils.initializeWithContext(context, hostClientType).then(() => {
                 const authenticationParams = {
@@ -333,7 +341,7 @@ describe('Testing authentication capability', () => {
               });
             });
 
-            it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
+            it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, done => {
               expect.assertions(2);
               utils.initializeWithContext(context, hostClientType).then(() => {
                 const authenticationParams = {
@@ -357,7 +365,7 @@ describe('Testing authentication capability', () => {
               });
             });
 
-            it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
+            it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, done => {
               expect.assertions(2);
               utils.initializeWithContext(context, hostClientType).then(() => {
                 const authenticationParams = {
@@ -415,8 +423,8 @@ describe('Testing authentication capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
+      Object.values(FrameContexts).forEach(context => {
+        it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, done => {
           expect.assertions(6);
           utils.initializeWithContext(context).then(() => {
             const authTokenRequest = {
@@ -426,7 +434,7 @@ describe('Testing authentication capability', () => {
               failureCallback: () => {
                 done();
               },
-              successCallback: (result) => {
+              successCallback: result => {
                 expect(result).toEqual('token');
                 done();
               },
@@ -445,12 +453,12 @@ describe('Testing authentication capability', () => {
           });
         });
 
-        it(`authentication.getAuthToken should successfully return error from getAuthToken in case of failure in legacy flow from ${context} context`, (done) => {
+        it(`authentication.getAuthToken should successfully return error from getAuthToken in case of failure in legacy flow from ${context} context`, done => {
           expect.assertions(6);
           utils.initializeWithContext(context).then(() => {
             const authTokenRequest = {
               resources: [mockResource],
-              failureCallback: (error) => {
+              failureCallback: error => {
                 expect(error).toEqual(errorMessage);
                 done();
               },
@@ -510,6 +518,30 @@ describe('Testing authentication capability', () => {
           await expect(promise).resolves.toEqual('token');
         });
 
+        it(`authentication.getAuthToken should request token for the tenant specified in the authTokenRequest from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const authTokenRequest = {
+            resources: [mockResource],
+            claims: [mockClaim],
+            silent: false,
+            tenantId: 'tenantId',
+          };
+
+          const promise = authentication.getAuthToken(authTokenRequest);
+
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(4);
+          expect(message.args[0]).toEqual([mockResource]);
+          expect(message.args[1]).toEqual([mockClaim]);
+          expect(message.args[2]).toEqual(false);
+          expect(message.args[3]).toEqual('tenantId');
+
+          utils.respondToMessage(message, true, 'token');
+          await expect(promise).resolves.toEqual('token');
+        });
+
         it(`authentication.getAuthToken should return error in case of failure from ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -553,8 +585,8 @@ describe('Testing authentication capability', () => {
         expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
+      Object.values(FrameContexts).forEach(context => {
+        it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, done => {
           utils.initializeWithContext(context).then(() => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
@@ -576,7 +608,7 @@ describe('Testing authentication capability', () => {
           });
         });
 
-        it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
+        it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, done => {
           utils.initializeWithContext(context).then(() => {
             const successCallback = (): void => {
               done();
@@ -648,7 +680,7 @@ describe('Testing authentication capability', () => {
         expect(message).not.toBeNull();
 
         // Wait 100ms for the message queue and 200ms for the close delay
-        await new Promise<void>((resolve) =>
+        await new Promise<void>(resolve =>
           setTimeout(() => {
             expect(closeWindowSpy).toHaveBeenCalled();
             resolve();
@@ -656,8 +688,8 @@ describe('Testing authentication capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
@@ -775,7 +807,7 @@ describe('Testing authentication capability', () => {
         expect(message).not.toBeNull();
 
         // Wait 100ms for the message queue and 200ms for the close delay
-        await new Promise<void>((resolve) =>
+        await new Promise<void>(resolve =>
           setTimeout(() => {
             expect(closeWindowSpy).toHaveBeenCalled();
             resolve();
@@ -783,8 +815,8 @@ describe('Testing authentication capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`authentication.notifyFailure should successfully notify auth failure ${context} context`, async () => {
             await utils.initializeWithContext('authentication');
 
@@ -890,8 +922,8 @@ describe('Testing authentication capability', () => {
     });
 
     describe('Testing authentication.authenticate function', () => {
-      Object.values(FrameContexts).forEach((context) => {
-        if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (!allowedContexts.some(allowedContext => allowedContext === context)) {
           it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
             await framelessPostMock.initializeWithContext(context);
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
@@ -907,7 +939,7 @@ describe('Testing authentication capability', () => {
             );
           });
         } else {
-          allowedHostClientType.forEach((hostClientType) => {
+          allowedHostClientType.forEach(hostClientType => {
             it(`authentication.authenticate should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context`, async () => {
               await framelessPostMock.initializeWithContext(context, hostClientType);
               const authenticationParams: authentication.AuthenticatePopUpParameters = {
@@ -962,9 +994,9 @@ describe('Testing authentication capability', () => {
     });
 
     describe('Testing authentication.registerAuthenticationHandlers function', () => {
-      allowedContexts.forEach((context) => {
-        allowedHostClientType.forEach((hostClientType) => {
-          it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
+      allowedContexts.forEach(context => {
+        allowedHostClientType.forEach(hostClientType => {
+          it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, done => {
             framelessPostMock.initializeWithContext(context, hostClientType).then(() => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
@@ -999,7 +1031,7 @@ describe('Testing authentication capability', () => {
             });
           });
 
-          it(`authentication.registerAuthenticationHandlers should handle auth failure with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
+          it(`authentication.registerAuthenticationHandlers should handle auth failure with parameters in the ${hostClientType} client from ${context} context in legacy flow`, done => {
             framelessPostMock.initializeWithContext(context, hostClientType).then(() => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
@@ -1043,8 +1075,8 @@ describe('Testing authentication capability', () => {
         );
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
+      Object.values(FrameContexts).forEach(context => {
+        it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, done => {
           framelessPostMock.initializeWithContext(context).then(() => {
             const authTokenRequest = {
               resources: [mockResource],
@@ -1053,7 +1085,7 @@ describe('Testing authentication capability', () => {
               failureCallback: () => {
                 done();
               },
-              successCallback: (result) => {
+              successCallback: result => {
                 expect(result).toEqual('token');
                 done();
               },
@@ -1077,11 +1109,11 @@ describe('Testing authentication capability', () => {
           });
         });
 
-        it(`authentication.getAuthToken should throw error in case of failure in legacy flow from ${context} context`, (done) => {
+        it(`authentication.getAuthToken should throw error in case of failure in legacy flow from ${context} context`, done => {
           framelessPostMock.initializeWithContext(context).then(() => {
             const authTokenRequest = {
               resources: [mockResource],
-              failureCallback: (error) => {
+              failureCallback: error => {
                 expect(error).toEqual(errorMessage);
                 done();
               },
@@ -1206,8 +1238,8 @@ describe('Testing authentication capability', () => {
         expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
+      Object.values(FrameContexts).forEach(context => {
+        it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, done => {
           framelessPostMock.initializeWithContext(context).then(() => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
@@ -1234,7 +1266,7 @@ describe('Testing authentication capability', () => {
           });
         });
 
-        it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
+        it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, done => {
           framelessPostMock.initializeWithContext(context).then(() => {
             const successCallback = (): void => {
               done();
@@ -1302,8 +1334,8 @@ describe('Testing authentication capability', () => {
         expect(() => authentication.notifySuccess()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`authentication.notifySuccess should not allow calls from ${context} context`, async () => {
             await framelessPostMock.initializeWithContext(context);
             expect(() => authentication.notifySuccess()).toThrow(
@@ -1332,8 +1364,8 @@ describe('Testing authentication capability', () => {
         expect(() => authentication.notifyFailure()).toThrowError('The library has not yet been initialized');
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+      Object.values(FrameContexts).forEach(context => {
+        if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
           it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
             await framelessPostMock.initializeWithContext(context);
             expect(() => authentication.notifyFailure()).toThrow(

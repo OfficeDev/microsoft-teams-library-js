@@ -186,12 +186,13 @@ export namespace authentication {
   }
 
   function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
-    return new Promise<[boolean, string]>((resolve) => {
+    return new Promise<[boolean, string]>(resolve => {
       resolve(
         sendMessageToParentAsync('authentication.getAuthToken', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
+          authTokenRequest?.tenantId,
         ]),
       );
     }).then(([success, result]: [boolean, string]) => {
@@ -245,7 +246,7 @@ export namespace authentication {
   }
 
   function getUserHelper(): Promise<UserProfile> {
-    return new Promise<[boolean, UserProfile | string]>((resolve) => {
+    return new Promise<[boolean, UserProfile | string]>(resolve => {
       resolve(sendMessageToParentAsync('authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
@@ -527,6 +528,10 @@ export namespace authentication {
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
+    /**
+     * An optional identifier of the home tenant for which to acquire the acess token for (used in cross-tenant shared channels).
+     */
+    tenantId?: string;
   }
 
   /**
