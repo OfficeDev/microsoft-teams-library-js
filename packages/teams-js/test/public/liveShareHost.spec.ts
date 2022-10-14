@@ -8,10 +8,11 @@ import {
 } from '../../src/public/liveShareHost';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
+import { resolve } from 'path';
 
 describe('LiveShareHost', () => {
   const utils = new Utils();
-  const host = new LiveShareHost();
+  let host: LiveShareHost;
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -29,6 +30,29 @@ describe('LiveShareHost', () => {
     if (app._uninitialize) {
       app._uninitialize();
     }
+  });
+
+  describe('create', () => {
+    it('should not allow calls before initialization', async () => {
+      const result = new Promise((resolve) => resolve(LiveShareHost.create()));
+      await expect(result).rejects.toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      const result = new Promise((resolve) => resolve(LiveShareHost.create()));
+      await expect(result).rejects.toThrowError(
+        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+      );
+    });
+
+    it('should create host instance', async () => {
+      await utils.initializeWithContext('meetingStage');
+      host = LiveShareHost.create();
+      expect(host).not.toBeNull();
+    });
   });
 
   describe('getFluidTenantInfo', () => {

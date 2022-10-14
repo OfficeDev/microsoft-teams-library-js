@@ -224,4 +224,16 @@ export class LiveShareHost {
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
   }
+
+  /**
+   * Returns a host instance for the client that can be passed to the `LiveShareClient` class.
+   *
+   * @remarks
+   * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
+   */
+  public static create(): LiveShareHost {
+    ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+
+    return new LiveShareHost();
+  }
 }
