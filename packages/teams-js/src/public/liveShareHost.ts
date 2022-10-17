@@ -3,6 +3,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 
 /**
+ * @hidden
  * Allowed roles during a meeting.
  *
  * @beta
@@ -15,6 +16,7 @@ export enum UserMeetingRole {
 }
 
 /**
+ * @hidden
  * State of the current Live Share sessions backing fluid container.
  *
  * @beta
@@ -45,6 +47,7 @@ export enum ContainerState {
 }
 
 /**
+ * @hidden
  * Returned from `LiveShareHost.get/setFluidContainerId()` to specify the container mapping for the
  * current Live Share session.
  *
@@ -77,6 +80,7 @@ export interface IFluidContainerInfo {
 }
 
 /**
+ * @hidden
  * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
  * Live Share session.
  *
@@ -95,6 +99,7 @@ export interface INtpTimeInfo {
 }
 
 /**
+ * @hidden
  * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
  * current Live Share session.
  *
@@ -128,11 +133,12 @@ export interface IFluidTenantInfo {
 
 /**
  * Live Share host implementation for O365 and Teams clients.
- *
+ * 
  * @beta
  */
 export class LiveShareHost {
   /**
+   * @hidden
    * Returns the Fluid Tenant connection info for user's current context.
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
@@ -144,6 +150,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the fluid access token for mapped container Id.
    *
    * @param containerId Fluid's container Id for the request. Undefined for new containers.
@@ -159,6 +166,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the ID of the fluid container associated with the user's current context.
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
@@ -170,6 +178,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Sets the ID of the fluid container associated with the current context.
    *
    * @remarks
@@ -187,6 +196,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the shared clock server's current time.
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
@@ -198,6 +208,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Associates the fluid client ID with a set of user roles.
    *
    * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
@@ -212,6 +223,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the roles associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.
