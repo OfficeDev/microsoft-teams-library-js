@@ -29,8 +29,6 @@ import { version } from './version';
 
 /**
  * Namespace to interact with app initialization and lifecycle.
- *
- * @beta
  */
 export namespace app {
   const appLogger = getLogger('app');
