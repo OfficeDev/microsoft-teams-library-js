@@ -44,7 +44,7 @@ export namespace dialog {
   export type PostMessageChannel = (message: any) => void;
 
   /**
-   * Handler used for receiving results when a dialog closes, either the value passed to {@linkcode submit}
+   * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode submit}
    * or an error if the dialog was closed by the user.
    * @beta
    */
