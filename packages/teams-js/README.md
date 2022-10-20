@@ -69,6 +69,10 @@ Stay tuned for examples coming soon.
 
 The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
 
+## Troubleshooting
+
+If the CDN hash value on the npm page is out of date please refer to [here] (https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/README.md) for an up to date version.
+
 ## Contributing
 
 Please be sure to check out the [Contributor's guide](../../CONTRIBUTING.md) for crucial steps.
