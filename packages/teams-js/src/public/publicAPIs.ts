@@ -1,5 +1,5 @@
 import { registerHandlerHelper } from '../internal/handlers';
-import { ensureInitialized } from '../internal/internalAPIs';
+import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
@@ -90,7 +90,7 @@ export function print(): void {
  * @param callback - The callback to invoke when the {@link Context} object is retrieved.
  */
 export function getContext(callback: (context: Context) => void): void {
-  ensureInitialized();
+  ensureInitializeCalled();
   app.getContext().then((context: app.Context) => {
     if (callback) {
       callback(transformAppContextToLegacyContext(context));
