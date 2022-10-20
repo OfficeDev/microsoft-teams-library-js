@@ -2,7 +2,12 @@ import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
+import { getLogger } from './telemetry';
 import { compareSDKVersions } from './utils';
+
+const internalLogger = getLogger('internal');
+const ensureInitializeCalledLogger = internalLogger.extend('ensureInitializeCalled');
+const ensureInitializedLogger = internalLogger.extend('ensureInitialized');
 
 /**
  * Ensures `initialize` was called. This function does NOT verify that a response from Host was received and initialization completed.
@@ -19,6 +24,7 @@ import { compareSDKVersions } from './utils';
  */
 export function ensureInitializeCalled(): void {
   if (!GlobalVars.initializeCalled) {
+    ensureInitializeCalledLogger('The library has not yet been initialized.');
     throw new Error('The library has not yet been initialized');
   }
 }
@@ -32,6 +38,10 @@ export function ensureInitializeCalled(): void {
  */
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCompleted) {
+    ensureInitializedLogger(
+      'The library has not yet been initialized. initializeCalled: %s',
+      GlobalVars.initializeCalled.toString(),
+    );
     throw new Error('The library has not yet been initialized');
   }
 
