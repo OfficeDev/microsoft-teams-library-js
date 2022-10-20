@@ -509,7 +509,7 @@ export namespace app {
    * @returns whether the Teams client SDK has been initialized.
    */
   export function isInitialized(): boolean {
-    return GlobalVars.initializeCalled;
+    return GlobalVars.initializeCompleted;
   }
 
   /**
