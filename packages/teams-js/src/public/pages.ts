@@ -17,8 +17,6 @@ import { runtime } from './runtime';
 
 /**
  * Navigation-specific part of the SDK.
- *
- * @beta
  */
 export namespace pages {
   /**

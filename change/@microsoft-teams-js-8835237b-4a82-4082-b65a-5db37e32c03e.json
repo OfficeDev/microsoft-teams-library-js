@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Removed the @beta tag from `pages`, `app`, and `authentication`. Added @beta tags to `chat`, `dialog`, and `profile` capabilities.",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "none"
+}

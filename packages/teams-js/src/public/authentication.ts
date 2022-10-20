@@ -14,8 +14,6 @@ import { FrameContexts, HostClientType } from './constants';
  * Namespace to interact with the authentication-specific part of the SDK.
  *
  * This object is used for starting or completing authentication flows.
- *
- * @beta
  */
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
