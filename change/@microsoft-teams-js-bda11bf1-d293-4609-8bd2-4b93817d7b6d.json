@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.",
+  "packageName": "@microsoft/teams-js",
+  "email": "stevenic@microsoft.com",
+  "dependentChangeType": "patch"
+}
