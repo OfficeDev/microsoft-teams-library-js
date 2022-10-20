@@ -56,13 +56,12 @@ export namespace profile {
   /**
    * The type of the profile trigger.
    *  - MouseHover: The user hovered a target.
-   *  - MouseClick: The user clicked a target.
-   *  - KeyboardPress: The user initiated the show profile request with their keyboard.
+   *  - Press: The target was pressed with either a mouse click or keyboard key press.
    *  - AppRequest: The show profile request is happening programmatically, without direct user interaction.
    *
    * @beta
    */
-  export type TriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'AppRequest';
+  export type TriggerType = 'MouseHover' | 'Press' | 'AppRequest';
 
   /**
    * The set of identifiers that are supported for resolving the persona.
