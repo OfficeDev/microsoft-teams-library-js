@@ -1,3 +1,4 @@
+import { isConstructorDeclaration } from 'typescript';
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
@@ -31,7 +32,14 @@ describe('appInstallDialog', () => {
   });
 
   it('Should not allow openAppInstallDialog if not supported', async () => {
-    utils.initializeWithContext(FrameContexts.content);
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({
+      apiVersion: 1,
+      isLegacyTeams: false,
+      supports: {
+        appInstallDialog: undefined,
+      },
+    });
     await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
       'Not supported',
     );

@@ -8,12 +8,22 @@ import { compareSDKVersions } from './utils';
  * @internal
  * Limited to Microsoft-internal use
  */
-export function ensureInitialized(...expectedFrameContexts: string[]): void {
+export function ensureInitializeCalled(): void {
   if (!GlobalVars.initializeCalled) {
     throw new Error('The library has not yet been initialized');
   }
+}
 
-  if (GlobalVars.frameContext && expectedFrameContexts && expectedFrameContexts.length > 0) {
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function ensureInitialized(...expectedFrameContexts: string[]): void {
+  if (!GlobalVars.initializeCompleted || !GlobalVars.frameContext) {
+    throw new Error('The library has not yet been initialized');
+  }
+
+  if (expectedFrameContexts && expectedFrameContexts.length > 0) {
     let found = false;
     for (let i = 0; i < expectedFrameContexts.length; i++) {
       if (expectedFrameContexts[i] === GlobalVars.frameContext) {
