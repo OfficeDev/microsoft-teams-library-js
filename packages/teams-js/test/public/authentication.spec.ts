@@ -415,6 +415,25 @@ describe('Testing authentication capability', () => {
         );
       });
 
+      it('authentication.getAuthToken should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        authentication.getAuthToken();
+        let message = utils.findMessageByFunc('authentication.getAuthToken');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('authentication.getAuthToken');
+        expect(message).not.toBeNull();
+      });
+
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
           expect.assertions(6);
@@ -551,6 +570,25 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
         expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
+      });
+
+      it('authentication.getUser should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        authentication.getUser();
+        let message = utils.findMessageByFunc('authentication.getUser');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('authentication.getUser');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
