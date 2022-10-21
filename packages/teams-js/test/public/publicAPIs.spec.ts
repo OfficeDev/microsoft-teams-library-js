@@ -786,9 +786,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeFalsy();
   });
 
-  it('print handler should successfully call default print handler', () => {
+  it('print handler should successfully call default print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
@@ -799,9 +799,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Ctrl+P should successfully call print handler', () => {
+  it('Ctrl+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
@@ -816,9 +816,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Cmd+P should successfully call print handler', () => {
+  it('Cmd+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;

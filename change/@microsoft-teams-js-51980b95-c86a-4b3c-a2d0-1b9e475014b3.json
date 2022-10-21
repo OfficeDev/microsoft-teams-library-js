@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated most APIs to require initialization to be fully finished before they are allowed to be called.",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}

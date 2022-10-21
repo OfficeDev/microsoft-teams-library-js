@@ -393,7 +393,8 @@ export namespace pages {
       handler: (evt: SaveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
-      ensureInitialized(FrameContexts.settings);
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -430,7 +431,8 @@ export namespace pages {
       handler: (evt: RemoveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
-      ensureInitialized(FrameContexts.remove, FrameContexts.settings);
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -634,7 +636,8 @@ export namespace pages {
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
     export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
-      ensureInitialized();
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized();
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
