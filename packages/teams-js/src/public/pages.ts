@@ -22,6 +22,8 @@ export namespace pages {
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
+   * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
+   * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
@@ -36,6 +38,8 @@ export namespace pages {
    * @hidden
    *
    * Registers a handler for specifying focus when it passes from the host to the application.
+   * On mobile hosts or hosts where there is no UI notion of "focus" the handler registered with
+   * this function will never be called.
    *
    * @param handler - The handler for placing focus within the application.
    *
@@ -184,6 +188,7 @@ export namespace pages {
 
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   * Please note that this method does yet work on mobile hosts.
    *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
@@ -202,6 +207,8 @@ export namespace pages {
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * On hosts where there is no support for making an app full screen, the handler registered
+   * with this function will never be called.
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
