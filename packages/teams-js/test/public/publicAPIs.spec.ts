@@ -761,10 +761,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
@@ -777,10 +775,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
@@ -807,10 +803,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeTruthy();
@@ -824,10 +818,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);

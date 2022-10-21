@@ -414,7 +414,6 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      // tslint:disable-next-line:no-any
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
@@ -487,12 +486,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(
-  id: number,
-  // tslint:disable-next-line:no-any
-  args?: any[],
-  isPartialResponse?: boolean,
-): void {
+function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
@@ -510,11 +504,7 @@ function sendMessageResponseToChild(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageEventToChild(
-  actionName: string,
-  // tslint:disable-next-line: no-any
-  args?: any[],
-): void {
+export function sendMessageEventToChild(actionName: string, args?: any[]): void {
   const targetWindow = Communication.childWindow;
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const customEvent = createMessageEvent(actionName, args);
@@ -533,7 +523,6 @@ export function sendMessageEventToChild(
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
@@ -547,7 +536,6 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
     id: id,
@@ -563,7 +551,6 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageEvent(func: string, args: any[]): MessageRequest {
   return {
     func: func,
