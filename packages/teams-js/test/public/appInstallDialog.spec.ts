@@ -3,6 +3,10 @@ import { app, appInstallDialog, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('appInstallDialog', () => {
   const utils = new Utils();
   const mockOpenAppInstallDialogParams: appInstallDialog.OpenAppInstallDialogParams = {

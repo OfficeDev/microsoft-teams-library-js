@@ -4,6 +4,10 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { teamsCore } from '../../src/public/teamsAPIs';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('Testing TeamsCore Capability', () => {
   describe('FRAMED - teamsCore Capability tests', () => {
     // Use to send a mock message from the app.
