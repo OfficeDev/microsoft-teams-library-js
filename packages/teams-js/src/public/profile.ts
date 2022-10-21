@@ -15,6 +15,8 @@ export namespace profile {
    * Opens a profile card at a specified position to show profile information about a persona.
    * @param showProfileRequest The parameters to position the card and identify the target user.
    * @returns Promise that will be fulfilled when the operation has completed
+   *
+   * @beta
    */
   export function showProfile(showProfileRequest: ShowProfileRequest): Promise<void> {
     ensureInitialized(FrameContexts.content);
@@ -46,23 +48,28 @@ export namespace profile {
    * The type of modalities that are supported when showing a profile.
    * Can be provided as an optional hint with the request and will be
    * respected if the hosting M365 application supports it.
+   *
+   * @beta
    */
   export type Modality = 'Card' | 'Expanded';
 
   /**
    * The type of the profile trigger.
    *  - MouseHover: The user hovered a target.
-   *  - MouseClick: The user clicked a target.
-   *  - KeyboardPress: The user initiated the show profile request with their keyboard.
+   *  - Press: The target was pressed with either a mouse click or keyboard key press.
    *  - AppRequest: The show profile request is happening programmatically, without direct user interaction.
+   *
+   * @beta
    */
-  export type TriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'AppRequest';
+  export type TriggerType = 'MouseHover' | 'Press' | 'AppRequest';
 
   /**
    * The set of identifiers that are supported for resolving the persona.
    *
    * At least one is required, and if multiple are provided then only the highest
    * priority one will be used (AadObjectId > Upn > Smtp).
+   *
+   * @beta
    */
   export type PersonaIdentifiers = {
     /**
@@ -88,6 +95,8 @@ export namespace profile {
 
   /**
    * The persona to show the profile for.
+   *
+   * @beta
    */
   export interface Persona {
     /**
@@ -103,6 +112,8 @@ export namespace profile {
 
   /**
    * Input parameters provided to the showProfile API.
+   *
+   * @beta
    */
   export interface ShowProfileRequest {
     /**
@@ -147,6 +158,13 @@ export namespace profile {
     triggerType: TriggerType;
   }
 
+  /**
+   * Checks if the profile capability is supported by the host
+   *
+   * @returns boolean to represent whether the profile capability is supported
+   *
+   * @beta
+   */
   export function isSupported(): boolean {
     return runtime.supports.profile ? true : false;
   }

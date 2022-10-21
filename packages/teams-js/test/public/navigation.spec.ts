@@ -74,8 +74,8 @@ describe('MicrosoftTeams-Navigation', () => {
         expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
-      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, () => {
-        utils.initializeWithContext(context);
+      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
         navigateToTab(null);
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
         expect(navigateToTabMsg).not.toBeNull();
@@ -209,8 +209,8 @@ describe('MicrosoftTeams-Navigation', () => {
         navigateBack();
         expect(pagesBackStackNavigateBack).toHaveBeenCalled();
       });
-      it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
-        utils.initializeWithContext(context);
+      it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
         navigateBack();
         const navigateBackMessage = utils.findMessageByFunc('navigateBack');
         expect(navigateBackMessage).not.toBeNull();
