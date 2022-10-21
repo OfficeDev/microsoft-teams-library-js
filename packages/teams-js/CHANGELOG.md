@@ -4,6 +4,12 @@ This log was last generated on Mon, 10 Oct 2022 19:09:20 GMT and should not be m
 
 <!-- Start content -->
 
+## 2.4.2
+
+### Patches
+
+- Fixed integrity hash in README
+
 ## 2.4.1
 
 Mon, 10 Oct 2022 19:09:20 GMT
