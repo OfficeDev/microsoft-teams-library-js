@@ -90,15 +90,28 @@ describe('AppSDK-privateAPIs', () => {
     'https://gov.teams.microsoft.us',
     'https://dod.teams.microsoft.us',
     'https://int.teams.microsoft.com',
+    'https://teams.live.com',
     'https://devspaces.skype.com',
+    'https://ssauth.skype.com',
+    'https://local.teams.live.com',
+    'https://local.teams.live.com:8080',
     'https://local.teams.office.com',
-    'https://microsoft.sharepoint.com',
+    'https://local.teams.office.com:8080',
     'https://msft.spoppe.com',
+    'https://microsoft.sharepoint.com',
     'https://microsoft.sharepoint-df.com',
     'https://microsoft.sharepointonline.com',
     'https://outlook.office.com',
     'https://outlook-sdf.office.com',
     'https://retailservices.teams.microsoft.com',
+    'https://www.office.com',
+    'https://word.office.com',
+    'https://excel.office.com',
+    'https://powerpoint.office.com',
+    'https://www.officeppe.com',
+    'https://test.www.office.com',
+    'https://test.www.microsoft365.com',
+    'https://www.microsoft365.com',
     'https://tasks.office.com',
     'https://www.example.com',
   ];
@@ -417,7 +430,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(thirdChildMessage.isPartialResponse).toBeFalsy();
   });
 
-  it ('Proxy messages to child window', async () => {
+  it('Proxy messages to child window', async () => {
     await utils.initializeWithContext('content', null, ['https://contoso.sharepoint.com']);
     utils.processMessage({
       origin: 'https://securebroker.sharepointonline.com',
@@ -425,7 +438,7 @@ describe('AppSDK-privateAPIs', () => {
       data: {
         id: 100,
         func: 'backButtonClick',
-        args: []
+        args: [],
       } as MessageResponse,
     } as MessageEvent);
 

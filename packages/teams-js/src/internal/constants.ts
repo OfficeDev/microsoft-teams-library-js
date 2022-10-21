@@ -143,6 +143,8 @@ export const validOrigins = [
   'powerpoint.office.com',
   'www.officeppe.com',
   '*.www.office.com',
+  '*.www.microsoft365.com',
+  'www.microsoft365.com',
 ];
 
 /**
