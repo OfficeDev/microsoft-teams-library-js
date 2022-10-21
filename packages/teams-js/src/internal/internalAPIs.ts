@@ -2,18 +2,50 @@ import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from './constants';
 import { GlobalVars } from './globalVars';
+import { getLogger } from './telemetry';
 import { compareSDKVersions } from './utils';
 
+const internalLogger = getLogger('internal');
+const ensureInitializeCalledLogger = internalLogger.extend('ensureInitializeCalled');
+const ensureInitializedLogger = internalLogger.extend('ensureInitialized');
+
 /**
+ * Ensures `initialize` was called. This function does NOT verify that a response from Host was received and initialization completed.
+ *
+ * `ensureInitializeCalled` should only be used for APIs which:
+ * - work in all FrameContexts
+ * - are part of a required Capability
+ * - are suspected to be used directly after calling `initialize`, potentially without awaiting the `initialize` call itself
+ *
+ * For most APIs {@link ensureInitialized} is the right validation function to use instead.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function ensureInitializeCalled(): void {
+  if (!GlobalVars.initializeCalled) {
+    ensureInitializeCalledLogger('The library has not yet been initialized.');
+    throw new Error('The library has not yet been initialized');
+  }
+}
+
+/**
+ * Ensures `initialize` was called and response from Host was received and processed.
+ * If expected FrameContexts are provided, it also validates that the current FrameContext matches one of the expected ones.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
-  if (!GlobalVars.initializeCalled) {
+  if (!GlobalVars.initializeCompleted) {
+    ensureInitializedLogger(
+      'The library has not yet been initialized. initializeCalled: %s',
+      GlobalVars.initializeCalled.toString(),
+    );
     throw new Error('The library has not yet been initialized');
   }
 
-  if (GlobalVars.frameContext && expectedFrameContexts && expectedFrameContexts.length > 0) {
+  if (expectedFrameContexts && expectedFrameContexts.length > 0) {
     let found = false;
     for (let i = 0; i < expectedFrameContexts.length; i++) {
       if (expectedFrameContexts[i] === GlobalVars.frameContext) {
