@@ -87,29 +87,28 @@ export namespace dialog {
     }
   }
 
-  /**
-   * Allows app to open a url based dialog.
-   *
-   * @remarks
-   * This function cannot be called from inside of a dialog
-   *
-   * @param urlDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-   * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
-   *
-   * @returns a function that can be used to send messages to the dialog.
-   *
-   * @beta
-   */
-  export function open(
-    urlDialogInfo: UrlDialogInfo,
-    submitHandler?: DialogSubmitHandler,
-    messageFromChildHandler?: PostMessageChannel,
-  ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
+  export namespace url {
+    /**
+     * Allows app to open a url based dialog.
+     *
+     * @remarks
+     * This function cannot be called from inside of a dialog
+     *
+     * @param urlDialogInfo - An object containing the parameters of the dialog module.
+     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+     *
+     * @returns a function that can be used to send messages to the dialog.
+     */
+    export function open(
+      urlDialogInfo: UrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): void {
+      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
 
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
