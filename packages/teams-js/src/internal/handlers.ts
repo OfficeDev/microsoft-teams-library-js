@@ -100,7 +100,8 @@ export function registerHandlerHelper(
   contexts: FrameContexts[],
   registrationHelper?: () => void,
 ): void {
-  ensureInitialized(...contexts);
+  // allow for registration cleanup even when not finished initializing
+  handler && ensureInitialized(...contexts);
   if (registrationHelper) {
     registrationHelper();
   }

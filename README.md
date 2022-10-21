@@ -14,7 +14,7 @@ Welcome to the Teams client SDK monorepo! For breaking changes, please refer to 
 
 TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
 
-See also: [Contributing](./Contributing.md)
+See also: [Contributing](CONTRIBUTING.md)
 
 This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/overview?view=msteams-client-js-latest). See full [SDK reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 

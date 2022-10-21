@@ -31,7 +31,14 @@ describe('appInstallDialog', () => {
   });
 
   it('Should not allow openAppInstallDialog if not supported', async () => {
-    utils.initializeWithContext(FrameContexts.content);
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({
+      apiVersion: 1,
+      isLegacyTeams: false,
+      supports: {
+        appInstallDialog: undefined,
+      },
+    });
     await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
       'Not supported',
     );

@@ -266,8 +266,8 @@ describe('tasks', () => {
       }
     });
 
-    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
+    it('should successfully pass result and appIds parameters when called from sidePanel context', async () => {
+      await utils.initializeWithContext('sidePanel');
 
       tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
 

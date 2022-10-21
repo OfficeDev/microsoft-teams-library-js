@@ -25,6 +25,8 @@ import { runtime } from './runtime';
 export namespace dialog {
   /**
    * Data Structure to represent the SDK response when dialog closes
+   *
+   * @beta
    */
   export interface ISdkResponse {
     /**
@@ -33,13 +35,26 @@ export namespace dialog {
     err?: string;
 
     /**
-     * Result value that the dialog is submitted with using {@linkcode submit} function
-     *
+     * Value provided in the `result` parameter by the dialog when the {@linkcode submit} function
+     * was called.
+     * If the dialog was closed by the user without submitting (e.g., using a control in the corner
+     * of the dialog), this value will be `undefined` here.
      */
     result?: string | object;
   }
+
+  /**
+   * Handler used to receive and process messages sent between a dialog and the app that launched it
+   * @beta
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
+
+  /**
+   * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode submit}
+   * or an error if the dialog was closed by the user.
+   * @beta
+   */
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
   const storedMessages: string[] = [];
 
@@ -51,6 +66,8 @@ export namespace dialog {
    * Function is called during app initialization
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * @beta
    */
   export function initialize(): void {
     registerHandler('messageForChild', handleDialogMessage, false);
@@ -71,30 +88,28 @@ export namespace dialog {
   }
 
   /**
-   * Namespace for interacting with url based dialogs
+   * Allows app to open a url based dialog.
+   *
+   * @remarks
+   * This function cannot be called from inside of a dialog
+   *
+   * @param urlDialogInfo - An object containing the parameters of the dialog module.
+   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+   * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+   *
+   * @returns a function that can be used to send messages to the dialog.
+   *
+   * @beta
    */
-  export namespace url {
-    /**
-     * Allows app to open a url based dialog.
-     *
-     * @remarks
-     * This function cannot be called from inside of a dialog
-     *
-     * @param urlDialogInfo - An object containing the parameters of the dialog module.
-     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
-     *
-     * @returns a function that can be used to send messages to the dialog.
-     */
-    export function open(
-      urlDialogInfo: UrlDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-      messageFromChildHandler?: PostMessageChannel,
-    ): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+  export function open(
+    urlDialogInfo: UrlDialogInfo,
+    submitHandler?: DialogSubmitHandler,
+    messageFromChildHandler?: PostMessageChannel,
+  ): void {
+    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
       if (messageFromChildHandler) {
         registerHandler('messageForParent', messageFromChildHandler);
@@ -287,6 +302,8 @@ export namespace dialog {
    * Checks if dialog module is supported by the host
    *
    * @returns boolean to represent whether dialog module is supported
+   *
+   * @beta
    */
   export function isSupported(): boolean {
     return runtime.supports.dialog ? true : false;
@@ -294,12 +311,16 @@ export namespace dialog {
 
   /**
    * Namespace to update the dialog
+   *
+   * @beta
    */
   export namespace update {
     /**
      * Update dimensions - height/width of a dialog.
      *
      * @param dimensions - An object containing width and height properties.
+     *
+     * @beta
      */
     export function resize(dimensions: DialogSize): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
@@ -313,6 +334,8 @@ export namespace dialog {
      * Checks if dialog.update capability is supported by the host
      *
      * @returns boolean to represent whether dialog.update is supported
+     *
+     * @beta
      */
     export function isSupported(): boolean {
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
