@@ -1,10 +1,14 @@
-import { Utils } from '../utils';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('meetingRoom', () => {
   const framelessPlatformMock = new FramelessPostMocks();

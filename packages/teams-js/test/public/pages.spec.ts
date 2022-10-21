@@ -9,6 +9,10 @@ import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { MessageResponse, Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 const emptyCallback = () => {};
 describe('Testing pages module', () => {
   describe('Framed - Testing pages module', () => {
@@ -1199,7 +1203,7 @@ describe('Testing pages module', () => {
                 } as MessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
-              let childMessage = utils.findMessageInChildByFunc('settings.save');
+              const childMessage = utils.findMessageInChildByFunc('settings.save');
               expect(childMessage).not.toBeNull();
             });
 
@@ -1295,7 +1299,7 @@ describe('Testing pages module', () => {
                 } as MessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
-              let childMessage = utils.findMessageInChildByFunc('settings.remove');
+              const childMessage = utils.findMessageInChildByFunc('settings.remove');
               expect(childMessage).not.toBeNull();
             });
 
