@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added 'www.microsoft365.com' and '*.www.microsoft365.com' to the `validOrigins` list.",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}
