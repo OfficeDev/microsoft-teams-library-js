@@ -1,9 +1,13 @@
 import { app } from '../../src/public/app';
-import { ErrorCode } from '../../src/public/interfaces';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { ErrorCode } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('sharing_v1', () => {
   const utils = new Utils();

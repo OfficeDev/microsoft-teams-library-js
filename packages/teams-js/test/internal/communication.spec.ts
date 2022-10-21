@@ -2,6 +2,10 @@ import * as communication from '../../src/internal/communication';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as utils from '../../src/internal/utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('communication', () => {
   it('initializeCommunication should reject if no parent window and no native interface found', async () => {
     const initPromise = communication.initializeCommunication(undefined);

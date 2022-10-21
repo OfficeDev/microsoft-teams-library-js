@@ -4,6 +4,10 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('conversations', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();

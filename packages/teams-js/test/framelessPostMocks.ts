@@ -4,6 +4,10 @@ import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
 
@@ -15,7 +19,7 @@ export class FramelessPostMocks {
   public messages: MessageRequest[] = [];
 
   public constructor() {
-    let that = this;
+    const that = this;
     this.messages = [];
     this.mockWindow = {
       outerWidth: 1024,
@@ -26,7 +30,7 @@ export class FramelessPostMocks {
       removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
       nativeInterface: {
         framelessPostMessage: function (message: string): void {
-          let msg = JSON.parse(message);
+          const msg = JSON.parse(message);
           that.messages.push(msg);
         },
       },
@@ -82,7 +86,7 @@ export class FramelessPostMocks {
 
   // tslint:disable-next-line:no-any
   private respondToInitMessage = (message: MessageRequest, ...args: any[]): void => {
-    let domEvent = {
+    const domEvent = {
       data: {
         id: message.id,
         args: args,

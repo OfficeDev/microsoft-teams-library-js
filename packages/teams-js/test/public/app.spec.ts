@@ -1,6 +1,5 @@
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as privateAPIs from '../../src/private/privateAPIs';
 import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
@@ -22,6 +21,10 @@ import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '..
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 /**
  * Type guard to determine if an action item is of M365Content Type
