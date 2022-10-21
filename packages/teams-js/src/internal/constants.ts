@@ -137,12 +137,14 @@ export const validOrigins = [
   'outlook.office365.com',
   'outlook-sdf.office365.com',
   '*.teams.microsoft.com',
+  '*.www.office.com',
   'www.office.com',
   'word.office.com',
   'excel.office.com',
   'powerpoint.office.com',
   'www.officeppe.com',
-  '*.www.office.com',
+  '*.www.microsoft365.com',
+  'www.microsoft365.com',
 ];
 
 /**
