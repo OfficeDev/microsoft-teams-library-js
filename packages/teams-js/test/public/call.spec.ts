@@ -1,6 +1,5 @@
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -21,7 +20,6 @@ describe('call', () => {
 
   afterEach(() => {
     if (app._uninitialize) {
-      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
   });
@@ -31,19 +29,12 @@ describe('call', () => {
   });
 
   it('should not allow calls if not supported', async () => {
-    await utils.initializeWithContext(FrameContexts.content);
-    utils.setRuntimeConfig({
-      apiVersion: 1,
-      isLegacyTeams: false,
-      supports: {
-        call: undefined,
-      },
-    });
+    utils.initializeWithContext(FrameContexts.content);
     await expect(call.startCall(mockStartCallParams)).rejects.toEqual(errorNotSupportedOnPlatform);
   });
 
   it('startCall should be called if supported: Non-legacy host', async () => {
-    await utils.initializeWithContext(FrameContexts.content);
+    utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,
       isLegacyTeams: false,
@@ -61,7 +52,7 @@ describe('call', () => {
   });
 
   it('startCall should be called if supported: Legacy host', async () => {
-    await utils.initializeWithContext(FrameContexts.content);
+    utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({
       apiVersion: 1,
       isLegacyTeams: true,

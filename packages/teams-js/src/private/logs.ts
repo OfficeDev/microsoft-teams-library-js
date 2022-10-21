@@ -24,8 +24,7 @@ export namespace logs {
    * Limited to Microsoft-internal use
    */
   export function registerGetLogHandler(handler: () => string): void {
-    // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    ensureInitialized();
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }

@@ -241,8 +241,8 @@ describe('location', () => {
       });
     });
 
-    it('should allow showLocation calls in desktop', async () => {
-      await framedPlatform.initializeWithContext(FrameContexts.content);
+    it('should allow showLocation calls in desktop', () => {
+      framedPlatform.initializeWithContext(FrameContexts.content);
       framedPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
       framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
       location.showLocation(defaultLocation, emptyCallback);
@@ -252,8 +252,8 @@ describe('location', () => {
       expect(message.args[0]).toEqual(defaultLocation);
     });
 
-    it('showLocation call in task frameContext works', async () => {
-      await framelessPlatform.initializeWithContext(FrameContexts.task);
+    it('showLocation call in task frameContext works', () => {
+      framelessPlatform.initializeWithContext(FrameContexts.task);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
       framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
       location.showLocation(defaultLocation, emptyCallback);
@@ -263,8 +263,8 @@ describe('location', () => {
       expect(message.args[0]).toEqual(defaultLocation);
     });
 
-    it('showLocation call in content frameContext works', async () => {
-      await framelessPlatform.initializeWithContext(FrameContexts.content);
+    it('showLocation call in content frameContext works', () => {
+      framelessPlatform.initializeWithContext(FrameContexts.content);
       framelessPlatform.setClientSupportedSDKVersion(minVersionForLocationAPIs);
       framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
       location.showLocation(defaultLocation, emptyCallback);
@@ -350,7 +350,7 @@ describe('location', () => {
     });
   });
 
-  it('Frameless - showLocation should throw error when location is not supported', () => {
+  it('Frameless - showLocation should throw error when location is not supported', async () => {
     framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
     framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
       expect.assertions(4);
@@ -376,7 +376,7 @@ describe('location', () => {
     });
   });
 
-  it('Framed - showLocation should throw error when location is not supported', () => {
+  it('Framed - showLocation should throw error when location is not supported', async () => {
     framedPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
     framedPlatform.initializeWithContext(FrameContexts.task).then(() => {
       expect.assertions(1);

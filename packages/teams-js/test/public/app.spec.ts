@@ -61,17 +61,8 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
-        expect.assertions(2);
-
-        const initPromise = app.initialize();
-        expect(app.isInitialized()).toBe(false);
-
-        const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, 'content');
-
-        await initPromise;
-
+      it('app.isInitialized should return true after initialized', () => {
+        app.initialize();
         expect(app.isInitialized()).toBe(true);
       });
     });
@@ -340,25 +331,6 @@ describe('Testing app capability', () => {
         await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
       });
 
-      it('app.getContext should allow calls after initialization called, but before it finished', async () => {
-        expect.assertions(3);
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        app.getContext();
-        let message = utils.findMessageByFunc('getContext');
-        expect(message).toBeNull();
-
-        utils.respondToMessage(initMessage, 'content');
-
-        await initPromise;
-
-        message = utils.findMessageByFunc('getContext');
-        expect(message).not.toBeNull();
-      });
-
       Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await utils.initializeWithContext(context);
@@ -601,25 +573,6 @@ describe('Testing app capability', () => {
         expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
       });
 
-      it('app.notifyAppLoaded should allow calls after initialization called, but before it finished', async () => {
-        expect.assertions(3);
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        app.notifyAppLoaded();
-        let message = utils.findMessageByFunc('appInitialization.appLoaded');
-        expect(message).toBeNull();
-
-        utils.respondToMessage(initMessage, 'content');
-
-        await initPromise;
-
-        message = utils.findMessageByFunc('appInitialization.appLoaded');
-        expect(message).not.toBeNull();
-      });
-
       Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyAppLoaded should successfully notify app is loaded with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
@@ -635,25 +588,6 @@ describe('Testing app capability', () => {
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
         expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
-      });
-
-      it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
-        expect.assertions(3);
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        app.notifySuccess();
-        let message = utils.findMessageByFunc('appInitialization.success');
-        expect(message).toBeNull();
-
-        utils.respondToMessage(initMessage, 'content');
-
-        await initPromise;
-
-        message = utils.findMessageByFunc('appInitialization.success');
-        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -676,28 +610,6 @@ describe('Testing app capability', () => {
             message: 'Failed message',
           }),
         ).toThrowError('The library has not yet been initialized');
-      });
-
-      it('app.notifyFailure should allow calls after initialization called, but before it finished', async () => {
-        expect.assertions(3);
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        app.notifyFailure({
-          reason: app.FailedReason.AuthFailed,
-          message: 'Failed message',
-        });
-        let message = utils.findMessageByFunc('appInitialization.failure');
-        expect(message).toBeNull();
-
-        utils.respondToMessage(initMessage, 'content');
-
-        await initPromise;
-
-        message = utils.findMessageByFunc('appInitialization.failure');
-        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -858,22 +770,8 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
-        expect.assertions(2);
-
-        const initPromise = app.initialize();
-        expect(app.isInitialized()).toBe(false);
-
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-
-        await initPromise;
-
+      it('app.isInitialized should return true after initialized', () => {
+        app.initialize();
         expect(app.isInitialized()).toBe(true);
       });
     });

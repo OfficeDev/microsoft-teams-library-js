@@ -7,7 +7,7 @@ import {
 } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
 
 /**
@@ -165,7 +165,7 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
-    ensureInitializeCalled();
+    ensureInitialized();
     return getAuthTokenHelper(authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
@@ -224,7 +224,7 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
-    ensureInitializeCalled();
+    ensureInitialized();
     return getUserHelper()
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {

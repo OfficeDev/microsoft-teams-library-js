@@ -69,8 +69,7 @@ export namespace teamsCore {
     handler: (context: LoadContext) => void,
     versionSpecificHelper?: () => void,
   ): void {
-    // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    ensureInitialized();
 
     if (versionSpecificHelper) {
       versionSpecificHelper();
@@ -111,8 +110,7 @@ export namespace teamsCore {
     handler: (readyToUnload: () => void) => boolean,
     versionSpecificHelper?: () => void,
   ): void {
-    // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    ensureInitialized();
     if (versionSpecificHelper) {
       versionSpecificHelper();
     }

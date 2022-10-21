@@ -13,7 +13,7 @@ import {
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -507,7 +507,7 @@ export namespace app {
    * @returns whether the Teams client SDK has been initialized.
    */
   export function isInitialized(): boolean {
-    return GlobalVars.initializeCompleted;
+    return GlobalVars.initializeCalled;
   }
 
   /**
@@ -689,7 +689,7 @@ export namespace app {
    */
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
-      ensureInitializeCalled();
+      ensureInitialized();
       resolve(sendAndUnwrap('getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
@@ -698,7 +698,7 @@ export namespace app {
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
-    ensureInitializeCalled();
+    ensureInitialized();
     sendMessageToParent(Messages.AppLoaded, [version]);
   }
 
@@ -706,7 +706,7 @@ export namespace app {
    * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
-    ensureInitializeCalled();
+    ensureInitialized();
     sendMessageToParent(Messages.Success, [version]);
   }
 
@@ -717,7 +717,7 @@ export namespace app {
    * during initialization as well as an optional message.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
-    ensureInitializeCalled();
+    ensureInitialized();
     sendMessageToParent(Messages.Failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
@@ -730,7 +730,7 @@ export namespace app {
    * @param expectedFailureRequest - The expected failure request containing the reason and an optional message
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
-    ensureInitializeCalled();
+    ensureInitialized();
     sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
   }
 
@@ -743,8 +743,7 @@ export namespace app {
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
-    // allow for registration cleanup even when not called initialize
-    handler && ensureInitializeCalled();
+    ensureInitialized();
     Handlers.registerOnThemeChangeHandler(handler);
   }
 

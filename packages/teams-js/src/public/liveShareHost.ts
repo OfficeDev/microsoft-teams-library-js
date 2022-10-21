@@ -133,14 +133,14 @@ export interface IFluidTenantInfo {
 
 /**
  * Live Share host implementation for O365 and Teams clients.
- *
+ * 
  * @beta
  */
 export class LiveShareHost {
   /**
    * @hidden
    * Returns the Fluid Tenant connection info for user's current context.
-   *
+   * 
    * @beta
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
@@ -157,7 +157,7 @@ export class LiveShareHost {
    *
    * @param containerId Fluid's container Id for the request. Undefined for new containers.
    * @returns token for connecting to Fluid's session.
-   *
+   * 
    * @beta
    */
   public getFluidToken(containerId?: string): Promise<string> {
@@ -172,7 +172,7 @@ export class LiveShareHost {
   /**
    * @hidden
    * Returns the ID of the fluid container associated with the user's current context.
-   *
+   * 
    * @beta
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
@@ -192,7 +192,7 @@ export class LiveShareHost {
    * `getFluidContainerId()` to get the ID of the container being used.
    * @param containerId ID of the fluid container the client created.
    * @returns A data structure with a `containerState` indicating the success or failure of the request.
-   *
+   * 
    * @beta
    */
   public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
@@ -206,7 +206,7 @@ export class LiveShareHost {
   /**
    * @hidden
    * Returns the shared clock server's current time.
-   *
+   * 
    * @beta
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
@@ -223,7 +223,7 @@ export class LiveShareHost {
    *
    * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
    * @returns The roles for the current user.
-   *
+   * 
    * @beta
    */
   public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
@@ -240,7 +240,7 @@ export class LiveShareHost {
    *
    * @param clientId The Client ID the message was received from.
    * @returns The roles for a given client. Returns `undefined` if the client ID hasn't been registered yet.
-   *
+   * 
    * @beta
    */
   public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
@@ -256,7 +256,7 @@ export class LiveShareHost {
    *
    * @remarks
    * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
-   *
+   * 
    * @beta
    */
   public static create(): LiveShareHost {

@@ -9,7 +9,7 @@ import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { MessageResponse, Utils } from '../utils';
 
-const emptyCallback = () => {};
+const emptyCallback = () => { };
 describe('Testing pages module', () => {
   describe('Framed - Testing pages module', () => {
     // Use to send a mock message from the app.
@@ -1195,7 +1195,7 @@ describe('Testing pages module', () => {
                 data: {
                   id: 100,
                   func: 'settings.save',
-                  args: [],
+                  args: []
                 } as MessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
@@ -1217,7 +1217,7 @@ describe('Testing pages module', () => {
                 data: {
                   id: 100,
                   func: 'settings.save',
-                  args: [],
+                  args: []
                 } as MessageResponse,
               } as MessageEvent);
               expect(handlerCalled).toBe(true);
@@ -1291,7 +1291,7 @@ describe('Testing pages module', () => {
                 data: {
                   id: 100,
                   func: 'settings.remove',
-                  args: [],
+                  args: []
                 } as MessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
@@ -1312,7 +1312,7 @@ describe('Testing pages module', () => {
                 data: {
                   id: 100,
                   func: 'settings.remove',
-                  args: [],
+                  args: []
                 } as MessageResponse,
               } as MessageEvent);
               expect(handlerCalled).toBe(true);
@@ -1470,8 +1470,8 @@ describe('Testing pages module', () => {
             expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
-          it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+          it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
+            utils.initializeWithContext(context);
             pages.backStack.navigateBack();
             const navigateBackMessage = utils.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();
@@ -3256,8 +3256,8 @@ describe('Testing pages module', () => {
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
             expect(pages.backStack.navigateBack()).rejects.toEqual(errorNotSupportedOnPlatform);
           });
-          it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, async () => {
-            await framelessPostMocks.initializeWithContext(context);
+          it(`pages.backStack.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
+            framelessPostMocks.initializeWithContext(context);
             pages.backStack.navigateBack();
             const navigateBackMessage = framelessPostMocks.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();

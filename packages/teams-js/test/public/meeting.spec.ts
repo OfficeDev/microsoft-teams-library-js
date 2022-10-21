@@ -1071,8 +1071,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
@@ -1099,8 +1099,8 @@ describe('meeting', () => {
       expect(returnedSpeakingState).toBe(speakingState);
     });
 
-    it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
@@ -1143,8 +1143,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
@@ -1173,8 +1173,8 @@ describe('meeting', () => {
       expect(response).toBe(raiseHandState);
     });
 
-    it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
@@ -1219,8 +1219,8 @@ describe('meeting', () => {
       ).toThrowError('The library has not yet been initialized');
     });
 
-    it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
@@ -1249,8 +1249,8 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
 
-    it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', async () => {
-      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', () => {
+      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
