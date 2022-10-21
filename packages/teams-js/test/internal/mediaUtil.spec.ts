@@ -1,14 +1,18 @@
 import {
-  validateSelectMediaInputs,
-  validateGetMediaInputs,
-  validateViewImagesInput,
-  decodeAttachment,
   createFile,
-  validatePeoplePickerInput,
+  decodeAttachment,
   isMediaCallForImageOutputFormats,
+  validateGetMediaInputs,
+  validatePeoplePickerInput,
+  validateSelectMediaInputs,
+  validateViewImagesInput,
 } from '../../src/internal/mediaUtil';
-import { people } from '../../src/public/people';
 import { media } from '../../src/public/media';
+import { people } from '../../src/public/people';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('mediaUtil', () => {
   /**

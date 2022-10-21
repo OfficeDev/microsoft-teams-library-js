@@ -15,7 +15,7 @@
     "clean": "rimraf ./dist",
     "docs": "yarn typedoc",
     "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",
-    "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .ts",
+    "lint": "yarn eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },

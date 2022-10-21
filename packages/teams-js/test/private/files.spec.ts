@@ -1,8 +1,12 @@
 import { files } from '../../src/private/files';
-import { FileOpenPreference, ErrorCode, SdkError } from '../../src/public';
+import { ErrorCode, FileOpenPreference, SdkError } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('files', () => {
   const utils = new Utils();

@@ -1,15 +1,19 @@
-import { TeamInstanceParameters, UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
+import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
+  openFilePreview,
   registerCustomHandler,
   registerUserSettingsChangeHandler,
   sendCustomEvent,
   sendCustomMessage,
-  openFilePreview,
 } from '../../src/private/privateAPIs';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { MessageRequest, MessageResponse, Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
@@ -57,12 +61,12 @@ describe('AppSDK-privateAPIs', () => {
   unSupportedDomains.forEach((unSupportedDomain) => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
       await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
-      let callbackCalled: boolean = false;
+      let callbackCalled = false;
       app.getContext().then(() => {
         callbackCalled = true;
       });
 
-      let getContextMessage = utils.findMessageByFunc('getContext');
+      const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
       callbackCalled = false;
@@ -108,7 +112,7 @@ describe('AppSDK-privateAPIs', () => {
       await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
       const contextPromise = app.getContext();
 
-      let getContextMessage = utils.findMessageByFunc('getContext');
+      const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
       utils.processMessage({
@@ -132,7 +136,7 @@ describe('AppSDK-privateAPIs', () => {
   it('should not make calls to unsupported domains', async () => {
     app.initialize(['http://some-invalid-origin.com']);
 
-    let initMessage = utils.findMessageByFunc('initialize');
+    const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
     utils.processMessage({
@@ -145,7 +149,7 @@ describe('AppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Try to make a call
-    let callbackCalled: boolean = false;
+    let callbackCalled = false;
     app.getContext().then(() => {
       callbackCalled = true;
       return;
@@ -179,7 +183,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
-    let initMessage = utils.findMessageByFunc('initialize');
+    const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
     expect(utils.findMessageByFunc('getContext')).toBeNull();
 
@@ -197,28 +201,28 @@ describe('AppSDK-privateAPIs', () => {
 
     const contextPromise1 = app.getContext();
 
-    let getContextMessage1 = utils.messages[utils.messages.length - 1];
+    const getContextMessage1 = utils.messages[utils.messages.length - 1];
 
     const contextPromise2 = app.getContext();
 
-    let getContextMessage2 = utils.messages[utils.messages.length - 1];
+    const getContextMessage2 = utils.messages[utils.messages.length - 1];
 
     const contextPromise3 = app.getContext();
 
-    let getContextMessage3 = utils.messages[utils.messages.length - 1];
+    const getContextMessage3 = utils.messages[utils.messages.length - 1];
 
     // They're all distinct utils.messages
     expect(getContextMessage3).not.toBe(getContextMessage1);
     expect(getContextMessage2).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage2);
 
-    let contextBridge1: Context = {
+    const contextBridge1: Context = {
       locale: 'someLocale1',
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
       userObjectId: 'someUserObjectId1',
     };
-    let expectedContext1: app.Context = {
+    const expectedContext1: app.Context = {
       app: {
         locale: 'someLocale1',
         sessionId: '',
@@ -241,13 +245,13 @@ describe('AppSDK-privateAPIs', () => {
       },
     };
 
-    let contextBridge2: Context = {
+    const contextBridge2: Context = {
       locale: 'someLocale2',
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
       userObjectId: 'someUserObjectId2',
     };
-    let expectedContext2: app.Context = {
+    const expectedContext2: app.Context = {
       app: {
         locale: 'someLocale2',
         sessionId: '',
@@ -270,13 +274,13 @@ describe('AppSDK-privateAPIs', () => {
       },
     };
 
-    let contextBridge3: Context = {
+    const contextBridge3: Context = {
       locale: 'someLocale3',
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
       userObjectId: 'someUserObjectId3',
     };
-    let expectedContext3: app.Context = {
+    const expectedContext3: app.Context = {
       app: {
         locale: 'someLocale3',
         sessionId: '',
@@ -320,10 +324,10 @@ describe('AppSDK-privateAPIs', () => {
       callbackCalled++;
     });
 
-    let getContextMessage = utils.findMessageByFunc('getContext');
+    const getContextMessage = utils.findMessageByFunc('getContext');
     expect(getContextMessage).not.toBeNull();
 
-    let expectedContext: Context = {
+    const expectedContext: Context = {
       locale: 'someLocale',
       groupId: 'someGroupId',
       channelId: 'someChannelId',
@@ -417,7 +421,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(thirdChildMessage.isPartialResponse).toBeFalsy();
   });
 
-  it ('Proxy messages to child window', async () => {
+  it('Proxy messages to child window', async () => {
     await utils.initializeWithContext('content', null, ['https://contoso.sharepoint.com']);
     utils.processMessage({
       origin: 'https://securebroker.sharepointonline.com',
@@ -425,14 +429,14 @@ describe('AppSDK-privateAPIs', () => {
       data: {
         id: 100,
         func: 'backButtonClick',
-        args: []
+        args: [],
       } as MessageResponse,
     } as MessageEvent);
 
-    let message = utils.findMessageByFunc('backButtonClick');
+    const message = utils.findMessageByFunc('backButtonClick');
     expect(message).not.toBeNull();
     expect(utils.childMessages.length).toBe(1);
-    let childMessage = utils.findMessageInChildByFunc('backButtonClick');
+    const childMessage = utils.findMessageInChildByFunc('backButtonClick');
     expect(childMessage).not.toBeNull();
   });
 
@@ -442,7 +446,7 @@ describe('AppSDK-privateAPIs', () => {
 
       sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
-      let message = utils.findMessageByFunc('customMessage');
+      const message = utils.findMessageByFunc('customMessage');
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
     });
@@ -467,7 +471,7 @@ describe('AppSDK-privateAPIs', () => {
       const customActionName = 'customMessageToChild1';
       sendCustomEvent(customActionName, ['arg1', 234, 12.3, true]);
 
-      let message = utils.findMessageInChildByFunc(customActionName);
+      const message = utils.findMessageInChildByFunc(customActionName);
       expect(message).not.toBeNull();
       expect(message.args).toEqual(['arg1', 234, 12.3, true]);
     });
