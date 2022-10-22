@@ -84,7 +84,6 @@ export class FramelessPostMocks {
     return null;
   };
 
-  // tslint:disable-next-line:no-any
   private respondToInitMessage = (message: MessageRequest, ...args: any[]): void => {
     const domEvent = {
       data: {
