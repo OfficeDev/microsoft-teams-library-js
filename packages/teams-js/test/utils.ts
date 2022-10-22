@@ -11,14 +11,14 @@ import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: any[]; // tslint:disable-line:no-any
+  args?: any[];
   timestamp?: number;
   isPartialResponse?: boolean;
 }
 
 export interface MessageResponse {
   id: number;
-  args?: any[]; // tslint:disable-line:no-any
+  args?: any[];
 }
 
 export class Utils {
@@ -152,7 +152,6 @@ export class Utils {
     return null;
   };
 
-  // tslint:disable-next-line:no-any
   public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
     this.processMessage({
       origin: this.validOrigin,
@@ -174,7 +173,6 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  // tslint:disable-next-line:no-any
   public sendMessage = (func: string, ...args: any[]): void => {
     this.processMessage({
       origin: this.validOrigin,

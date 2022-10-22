@@ -33,13 +33,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendCustomMessage(
-  actionName: string,
-  // tslint:disable-next-line:no-any
-  args?: any[],
-  // tslint:disable-next-line:no-any
-  callback?: (...args: any[]) => void,
-): void {
+export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
   ensureInitialized();
 
   sendMessageToParent(actionName, args, callback);
@@ -57,11 +51,7 @@ export function sendCustomMessage(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendCustomEvent(
-  actionName: string,
-  // tslint:disable-next-line:no-any
-  args?: any[],
-): void {
+export function sendCustomEvent(actionName: string, args?: any[]): void {
   ensureInitialized();
 
   //validate childWindow
@@ -81,13 +71,7 @@ export function sendCustomEvent(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerCustomHandler(
-  actionName: string,
-  customHandler: (
-    // tslint:disable-next-line:no-any
-    ...args: any[]
-  ) => any[],
-): void {
+export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
   ensureInitialized();
   registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
