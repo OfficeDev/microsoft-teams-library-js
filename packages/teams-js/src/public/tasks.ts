@@ -3,9 +3,17 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { FrameContexts, TaskModuleDimension } from './constants';
+import { DialogDimension, FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
+import {
+  AdaptiveCardDialogInfo,
+  BotAdaptiveCardDialogInfo,
+  BotUrlDialogInfo,
+  DialogInfo,
+  DialogSize,
+  TaskInfo,
+  UrlDialogInfo,
+} from './interfaces';
 
 /**
  * @deprecated
@@ -18,8 +26,8 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
-   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
+   * As of 2.0.0, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * and {@link dialog.url.bot.open dialog.url.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
    * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
    *
    * Allows an app to open the task module.
@@ -38,10 +46,14 @@ export namespace tasks {
     if (taskInfo.card !== undefined || taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+    } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
+      dialog.adaptiveCard.bot.open(getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+    } else if (taskInfo.card) {
+      dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -75,7 +87,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    dialog.submit(result, appIds);
+    dialog.url.submit(result, appIds);
   }
 
   /**
@@ -127,5 +139,46 @@ export namespace tasks {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
     return taskInfo;
+  }
+
+  /**
+   * @hidden
+   * Converts {@link TaskInfo} to {@link AdaptiveCardDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted AdaptiveCardDialogInfo
+   */
+  function getAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): AdaptiveCardDialogInfo {
+    // eslint-disable-next-line strict-null-checks/all
+    const adaptiveCardDialogInfo: AdaptiveCardDialogInfo = {
+      card: taskInfo.card,
+      size: {
+        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+      },
+      title: taskInfo.title,
+    };
+
+    return adaptiveCardDialogInfo;
+  }
+
+  /**
+   * @hidden
+   * Converts {@link TaskInfo} to {@link BotAdaptiveCardDialogInfo}
+   * @param taskInfo - TaskInfo object to convert
+   * @returns - converted BotAdaptiveCardDialogInfo
+   */
+  function getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotAdaptiveCardDialogInfo {
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    const botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo = {
+      card: taskInfo.card,
+      size: {
+        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+      },
+      title: taskInfo.title,
+      completionBotId: taskInfo.completionBotId,
+    };
+
+    return botAdaptiveCardDialogInfo;
   }
 }

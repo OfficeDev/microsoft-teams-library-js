@@ -12,6 +12,9 @@ import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import DialogCardAPIs from './components/DialogCardAPIs';
+import DialogUpdateAPIs from './components/DialogUpdateAPIs';
+import DialogUrlAPIs from './components/DialogUrlAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -120,6 +123,9 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <DialogAPIs />
+        <DialogCardAPIs />
+        <DialogUpdateAPIs />
+        <DialogUrlAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />

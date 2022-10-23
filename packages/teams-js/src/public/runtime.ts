@@ -4,11 +4,12 @@ import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
-
 export interface IRuntime {
   readonly apiVersion: number;
+  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
@@ -19,7 +20,12 @@ export interface IRuntime {
     readonly chat?: {};
     readonly conversations?: {};
     readonly dialog?: {
-      readonly bot?: {};
+      readonly card?: {
+        readonly bot?: {};
+      };
+      readonly url?: {
+        readonly bot?: {};
+      };
       readonly update?: {};
     };
     readonly geoLocation?: {
@@ -69,7 +75,12 @@ export let runtime: IRuntime = {
     webStorage: undefined,
     conversations: undefined,
     dialog: {
-      bot: undefined,
+      card: {
+        bot: undefined,
+      },
+      url: {
+        bot: undefined,
+      },
       update: undefined,
     },
     geoLocation: {
@@ -117,7 +128,12 @@ export const teamsRuntimeConfig: IRuntime = {
     chat: {},
     conversations: {},
     dialog: {
-      bot: {},
+      card: {
+        bot: {},
+      },
+      url: {
+        bot: {},
+      },
       update: {},
     },
     logs: {},
