@@ -13,6 +13,7 @@ import {
   BotUrlDialogInfo,
   DialogInfo,
   DialogSize,
+  TaskInfo,
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
@@ -485,6 +486,47 @@ export namespace dialog {
         completionBotId: botAdaptiveCardDialogInfo.completionBotId,
       };
       return dialogInfo;
+    }
+
+    /**
+     * @hidden
+     * Converts {@link TaskInfo} to {@link AdaptiveCardDialogInfo}
+     * @param taskInfo - TaskInfo object to convert
+     * @returns - converted AdaptiveCardDialogInfo
+     */
+    export function getAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): AdaptiveCardDialogInfo {
+      // eslint-disable-next-line strict-null-checks/all
+      const adaptiveCardDialogInfo: AdaptiveCardDialogInfo = {
+        card: taskInfo.card,
+        size: {
+          height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+          width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+        },
+        title: taskInfo.title,
+      };
+
+      return adaptiveCardDialogInfo;
+    }
+
+    /**
+     * @hidden
+     * Converts {@link TaskInfo} to {@link BotAdaptiveCardDialogInfo}
+     * @param taskInfo - TaskInfo object to convert
+     * @returns - converted BotAdaptiveCardDialogInfo
+     */
+    export function getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotAdaptiveCardDialogInfo {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      const botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo = {
+        card: taskInfo.card,
+        size: {
+          height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
+          width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
+        },
+        title: taskInfo.title,
+        completionBotId: taskInfo.completionBotId,
+      };
+
+      return botAdaptiveCardDialogInfo;
     }
   }
 }

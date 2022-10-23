@@ -3,17 +3,9 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
-import { DialogDimension, FrameContexts, TaskModuleDimension } from './constants';
+import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
-import {
-  AdaptiveCardDialogInfo,
-  BotAdaptiveCardDialogInfo,
-  BotUrlDialogInfo,
-  DialogInfo,
-  DialogSize,
-  TaskInfo,
-  UrlDialogInfo,
-} from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 
 /**
  * @deprecated
@@ -47,9 +39,15 @@ export namespace tasks {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
-      dialog.adaptiveCard.bot.open(getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.adaptiveCard.bot.open(
+        dialog.adaptiveCard.getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo),
+        dialogSubmitHandler,
+      );
     } else if (taskInfo.card) {
-      dialog.adaptiveCard.open(getAdaptiveCardDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.adaptiveCard.open(
+        dialog.adaptiveCard.getAdaptiveCardDialogInfoFromTaskInfo(taskInfo),
+        dialogSubmitHandler,
+      );
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
@@ -139,46 +137,5 @@ export namespace tasks {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
     return taskInfo;
-  }
-
-  /**
-   * @hidden
-   * Converts {@link TaskInfo} to {@link AdaptiveCardDialogInfo}
-   * @param taskInfo - TaskInfo object to convert
-   * @returns - converted AdaptiveCardDialogInfo
-   */
-  function getAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): AdaptiveCardDialogInfo {
-    // eslint-disable-next-line strict-null-checks/all
-    const adaptiveCardDialogInfo: AdaptiveCardDialogInfo = {
-      card: taskInfo.card,
-      size: {
-        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
-        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
-      },
-      title: taskInfo.title,
-    };
-
-    return adaptiveCardDialogInfo;
-  }
-
-  /**
-   * @hidden
-   * Converts {@link TaskInfo} to {@link BotAdaptiveCardDialogInfo}
-   * @param taskInfo - TaskInfo object to convert
-   * @returns - converted BotAdaptiveCardDialogInfo
-   */
-  function getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotAdaptiveCardDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    const botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo = {
-      card: taskInfo.card,
-      size: {
-        height: taskInfo.height ? taskInfo.height : DialogDimension.Small,
-        width: taskInfo.width ? taskInfo.width : DialogDimension.Small,
-      },
-      title: taskInfo.title,
-      completionBotId: taskInfo.completionBotId,
-    };
-
-    return botAdaptiveCardDialogInfo;
   }
 }
