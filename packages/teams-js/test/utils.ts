@@ -4,6 +4,10 @@ import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 export interface MessageRequest {
   id: number;
   func: string;
