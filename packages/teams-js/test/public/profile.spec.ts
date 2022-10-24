@@ -1,7 +1,7 @@
-import { ShowProfileRequestInternal } from '../../src/internal/profile';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
+import { ShowProfileRequestInternal } from '../../src/public/profile';
 import { profile } from '../../src/public/profile';
 import { Utils } from '../utils';
 
