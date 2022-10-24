@@ -1,3 +1,4 @@
+import { ShowProfileRequestInternal } from '../../src/internal/profile';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
@@ -64,7 +65,7 @@ describe('profile', () => {
           expect(message.func).toEqual('profile.showProfile');
           expect(message.args.length).toEqual(1);
 
-          const sentRequest = message.args[0];
+          const sentRequest = message.args[0] as ShowProfileRequestInternal;
           expect(sentRequest.persona).toEqual(request.persona);
           expect(sentRequest.triggerType).toEqual(request.triggerType);
           expect(sentRequest.targetRectangle).toEqual({

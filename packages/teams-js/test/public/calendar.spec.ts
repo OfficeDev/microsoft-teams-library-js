@@ -261,7 +261,7 @@ describe('calendar', () => {
       expect(executeDeepLinkMessage).not.toBeNull();
       expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string | URL);
       validateCalendarDeepLinkPrefix(calendarDeepLink);
 
       utils.respondToMessage(executeDeepLinkMessage, true);

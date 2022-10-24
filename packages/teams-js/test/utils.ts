@@ -4,21 +4,17 @@ import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
-/* eslint-disable */
-/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
-   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
-
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: any[];
+  args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
 }
 
 export interface MessageResponse {
   id: number;
-  args?: any[];
+  args?: unknown[];
 }
 
 export class Utils {
@@ -81,7 +77,7 @@ export class Utils {
           that.messages.push(JSON.parse(message));
         },
       },
-      self: null as Window,
+      self: null as unknown as Window,
       open: function (url: string, name: string, specs: string): Window {
         return that.childWindow as Window;
       },
@@ -103,7 +99,7 @@ export class Utils {
     };
   }
 
-  public processMessage: (ev: MessageEvent) => void;
+  public processMessage: null | ((ev: MessageEvent) => void);
 
   public initializeWithContext = async (
     frameContext: string,
@@ -153,6 +149,12 @@ export class Utils {
   };
 
   public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -174,6 +176,12 @@ export class Utils {
   };
 
   public sendMessage = (func: string, ...args: any[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
