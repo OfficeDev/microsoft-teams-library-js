@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Clarified documentation on behavior of some methods in `pages` capability on mobile hosts",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "none"
+}

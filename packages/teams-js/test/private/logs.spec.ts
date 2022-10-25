@@ -5,6 +5,10 @@ import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('logs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
@@ -65,7 +69,7 @@ describe('logs', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = false;
-        const log: string = '1/1/2019 Info - App initialized';
+        const log = '1/1/2019 Info - App initialized';
         logs.registerGetLogHandler(() => {
           handlerInvoked = true;
           return log;

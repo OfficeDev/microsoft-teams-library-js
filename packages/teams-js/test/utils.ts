@@ -3,17 +3,22 @@ import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: any[]; // tslint:disable-line:no-any
+  args?: any[];
   timestamp?: number;
   isPartialResponse?: boolean;
 }
 
 export interface MessageResponse {
   id: number;
-  args?: any[]; // tslint:disable-line:no-any
+  args?: any[];
 }
 
 export class Utils {
@@ -33,7 +38,7 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
-    let that = this;
+    const that = this;
     this.messages = [];
     this.childMessages = [];
 
@@ -147,7 +152,6 @@ export class Utils {
     return null;
   };
 
-  // tslint:disable-next-line:no-any
   public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
     this.processMessage({
       origin: this.validOrigin,
@@ -169,7 +173,6 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  // tslint:disable-next-line:no-any
   public sendMessage = (func: string, ...args: any[]): void => {
     this.processMessage({
       origin: this.validOrigin,
