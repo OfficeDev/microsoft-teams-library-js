@@ -4,10 +4,6 @@ import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
-/* eslint-disable */
-/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
-   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
-
 export interface MessageRequest {
   id: number;
   func: string;
@@ -58,12 +54,12 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: function (type: string, listener: (ev: MessageEvent) => void): void {
         if (type === 'message') {
           that.processMessage = listener;
         }
       },
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: function (type: string): void {
         if (type === 'message') {
           that.processMessage = null;
         }
@@ -71,7 +67,7 @@ export class Utils {
       location: {
         origin: that.tabOrigin,
         href: that.validOrigin,
-        assign: function (url: string): void {
+        assign: function (): void {
           return;
         },
       },
@@ -82,18 +78,18 @@ export class Utils {
         },
       },
       self: null as unknown as Window,
-      open: function (url: string, name: string, specs: string): Window {
+      open: function (): Window {
         return that.childWindow as Window;
       },
       close: function (): void {
         return;
       },
-      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
+      setInterval: (handler: TimerHandler, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: function (message: MessageRequest): void {
         that.childMessages.push(message);
       },
       close: function (): void {
@@ -152,7 +148,7 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
+  public respondToMessage = (message: MessageRequest, ...args: unknown[]): void => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -169,7 +165,7 @@ export class Utils {
     } as MessageEvent);
   };
 
-  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
@@ -179,7 +175,7 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = (func: string, ...args: any[]): void => {
+  public sendMessage = (func: string, ...args: unknown[]): void => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
@@ -199,14 +195,14 @@ export class Utils {
   /**
    * To be called after initializeWithContext to set the clientSupportedSDKVersion
    */
-  public setClientSupportedSDKVersion = (version: string) => {
+  public setClientSupportedSDKVersion = (version: string): void => {
     GlobalVars.clientSupportedSDKVersion = version;
   };
 
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime) => {
+  public setRuntimeConfig = (runtime: IRuntime): void => {
     applyRuntimeConfig(runtime);
   };
 
