@@ -34,6 +34,7 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
+    /* eslint-disable-next-line @typescript-eslint/no-this-alias */ /* Intentionally making a copy of this and using both the old and new instance */
     const that = this;
     this.messages = [];
     this.childMessages = [];
@@ -210,5 +211,5 @@ export class Utils {
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-  public flushPromises = () => new Promise((resolve) => setTimeout(resolve));
+  public flushPromises = (): Promise<number> => new Promise((resolve) => setTimeout(resolve));
 }
