@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Added code comment for `dialog.submit` to inform developers about certain scenarios when this function may not behave as expected.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jekoch@microsoft.com",
+  "dependentChangeType": "none"
+}
