@@ -102,7 +102,7 @@ describe('chat', () => {
           expect(executeDeepLinkMessage).not.toBeNull();
           expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
           validateChatDeepLinkPrefix(chatDeepLink);
           validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
@@ -194,7 +194,7 @@ describe('chat', () => {
           expect(executeDeepLinkMessage).not.toBeNull();
           expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
           validateChatDeepLinkPrefix(chatDeepLink);
           validateDeepLinkUsers(chatDeepLink, chatRequest.users);
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);

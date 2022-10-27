@@ -138,25 +138,9 @@ export namespace profile {
   }
 
   /**
-   * Internal representation of a DOMRect suitable for sending via postMessage.
-   */
-  type Rectangle = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-
-  /**
    * An internal representation of the showProfile parameters suitable for sending via postMessage.
    * The hub expects to receive an object of this type.
    */
-  interface ShowProfileRequestInternal {
-    modality?: Modality;
-    persona: Persona;
-    targetRectangle: Rectangle;
-    triggerType: TriggerType;
-  }
 
   /**
    * Checks if the profile capability is supported by the host
@@ -168,4 +152,21 @@ export namespace profile {
   export function isSupported(): boolean {
     return runtime.supports.profile ? true : false;
   }
+}
+
+/**
+ * Internal representation of a DOMRect suitable for sending via postMessage.
+ */
+export type Rectangle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export interface ShowProfileRequestInternal {
+  modality?: profile.Modality;
+  persona: profile.Persona;
+  targetRectangle: Rectangle;
+  triggerType: profile.TriggerType;
 }
