@@ -302,6 +302,23 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
     },
   });
 
+const SetAppShareButtonVisibility = (): React.ReactElement =>
+  ApiWithTextInput<boolean>({
+    name: 'setAppShareButtonVisibility',
+    title: 'Set App Share Button Visibility',
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input !== 'boolean') {
+          throw new Error('input should be boolean');
+        }
+      },
+      submit: async (input) => {
+        meeting.meetingAppShareButton.setAppShareButtonVisibility(input);
+        return '';
+      },
+    },
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -319,6 +336,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
+    <SetAppShareButtonVisibility />
   </ModuleWrapper>
 );
 

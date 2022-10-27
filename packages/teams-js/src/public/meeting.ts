@@ -518,4 +518,25 @@ export namespace meeting {
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
+  /**
+   * nested namespace for Meeting Service
+   *
+   * @beta
+   */
+  export namespace meetingAppShareButton {
+    /**
+     * Allows an app to hide/show app share button in a meeting
+     * @param isGlobalAppShareButtonVisible is a boolean flag to set show or hide app share button
+     *
+     * @beta
+     */
+    export function setAppShareButtonVisibility(isGlobalAppShareButtonVisible: boolean): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(FrameContexts.sidePanel);
+        resolve(
+          sendMessageToParent('meeting.meetingApps.setAppShareButtonVisibility', [isGlobalAppShareButtonVisible]),
+        );
+      });
+    }
+  }
 }
