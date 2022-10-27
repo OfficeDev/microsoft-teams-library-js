@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Adds Outlook's consumer domain to domains' whitelist",
+  "comment": "Adds Outlook's consumer domain to domains' allowlist",
   "packageName": "@microsoft/teams-js",
   "email": "rconti@microsoft.com",
   "dependentChangeType": "patch"
