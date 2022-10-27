@@ -1,10 +1,10 @@
 {
   "type": "minor",
   "comment": {
-    "title": "",
+    "title": "new API to support show/hide of app share button",
     "value": ""
   },
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "mbhandari@microsoft.com",
   "dependentChangeType": "patch"
 }
