@@ -78,7 +78,7 @@ describe('call', () => {
     expect(executeDeepLinkMsg).toBeTruthy();
     expect(executeDeepLinkMsg.args).toHaveLength(1);
 
-    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
+    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0] as string);
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 
