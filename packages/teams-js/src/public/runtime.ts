@@ -60,51 +60,7 @@ export interface IRuntime {
 
 export let runtime: IRuntime = {
   apiVersion: 1,
-  supports: {
-    appInstallDialog: undefined,
-    barCode: undefined,
-    calendar: undefined,
-    call: undefined,
-    chat: undefined,
-    webStorage: undefined,
-    conversations: undefined,
-    dialog: {
-      bot: undefined,
-      update: undefined,
-    },
-    geoLocation: {
-      map: undefined,
-    },
-    location: undefined,
-    logs: undefined,
-    mail: undefined,
-    meetingRoom: undefined,
-    menus: undefined,
-    monetization: undefined,
-    notifications: undefined,
-    pages: {
-      appButton: undefined,
-      backStack: undefined,
-      config: undefined,
-      currentApp: undefined,
-      fullTrust: undefined,
-      tabs: undefined,
-    },
-    people: undefined,
-    permissions: undefined,
-    profile: undefined,
-    remoteCamera: undefined,
-    search: undefined,
-    sharing: undefined,
-    stageView: undefined,
-    teams: {
-      fullTrust: {
-        joinedTeams: undefined,
-      },
-    },
-    teamsCore: undefined,
-    video: undefined,
-  },
+  supports: {},
 };
 
 export const teamsRuntimeConfig: IRuntime = {
