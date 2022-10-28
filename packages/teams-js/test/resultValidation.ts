@@ -10,6 +10,10 @@ export interface MatcherAndArguments {
   arguments: unknown[];
 }
 
+export function getNumberOfAssertionsUsedToValidateRequest(numberOfArgumentsBeingValidated: number): number {
+  return 1 + (numberOfArgumentsBeingValidated === 0 ? 0 : 2 + numberOfArgumentsBeingValidated);
+}
+
 export function validateRequestWithoutArguments(request: MessageRequest | null): void {
   validateExpectedArgumentsInRequest(request, MatcherType.ToBe);
 }

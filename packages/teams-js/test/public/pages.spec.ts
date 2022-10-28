@@ -7,7 +7,12 @@ import { pages } from '../../src/public/pages';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
-import { MatcherType, validateExpectedArgumentsInRequest, validateRequestWithoutArguments } from '../resultValidation';
+import {
+  getNumberOfAssertionsUsedToValidateRequest,
+  MatcherType,
+  validateExpectedArgumentsInRequest,
+  validateRequestWithoutArguments,
+} from '../resultValidation';
 import { MessageResponse, Utils } from '../utils';
 
 /* eslint-disable */
@@ -326,7 +331,7 @@ describe('Testing pages module', () => {
           });
 
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
-            expect.assertions(1);
+            expect.assertions(getNumberOfAssertionsUsedToValidateRequest(0) + 1);
             await utils.initializeWithContext(context);
 
             const promise = pages.navigateCrossDomain('https://valid.origin.com');
@@ -409,7 +414,7 @@ describe('Testing pages module', () => {
           });
 
           it(`pages.navigateToApp should allow calls from ${context} context`, async () => {
-            expect.assertions(1);
+            expect.assertions(getNumberOfAssertionsUsedToValidateRequest(0) + 1);
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
 
