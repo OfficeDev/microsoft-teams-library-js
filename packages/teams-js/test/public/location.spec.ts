@@ -3,7 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { applyRuntimeConfig, _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -40,6 +40,13 @@ describe('location', () => {
   const emptyCallback = (): void => {
     return;
   };
+
+  describe('isSupported API', () => {
+    it('should not be supported before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(location.isSupported()).toBeFalsy();
+    });
+  });
 
   describe('getLocation API', () => {
     it('should not allow getLocation calls before initialization', () => {

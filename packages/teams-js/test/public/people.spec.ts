@@ -3,7 +3,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
-import { _minRuntimeConfigToUninitialize, v1HostClientTypes } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, v1HostClientTypes, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -163,6 +163,11 @@ describe('people', () => {
     it('people.isSupported should return true if the runtime says people is supported', () => {
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
       expect(people.isSupported()).toBeTruthy();
+    });
+
+    it('people.isSupported should be false before initialization', () => {
+      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(people.isSupported()).toBeFalsy();
     });
   });
 

@@ -58,10 +58,20 @@ export interface IRuntime {
   };
 }
 
-export let runtime: IRuntime = {
+/**
+ * @hidden
+ * Constant used to set the runtime configuration
+ * to its uninitialized state.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const _uninitializedRuntime = {
   apiVersion: 1,
   supports: {},
 };
+
+export let runtime: IRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: IRuntime = {
   apiVersion: 1,

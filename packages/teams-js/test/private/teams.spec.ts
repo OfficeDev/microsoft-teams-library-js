@@ -1,7 +1,7 @@
 import { TeamInstanceParameters, teams } from '../../src/private';
 import { app } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -164,6 +164,10 @@ describe('Testing teams capabillity', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
         expect(teams.isSupported()).toBeTruthy();
       });
+      it('should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(teams.isSupported()).toBeFalsy();
+      });
     });
 
     describe('Testing teams.getUserJoinedTeams', () => {
@@ -263,6 +267,10 @@ describe('Testing teams capabillity', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
         expect(teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
       });
+      it('joinedTeams.isSupported should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(teams.fullTrust.joinedTeams.isSupported()).toBeFalsy();
+      });
     });
 
     describe('teams.fullTrust.isSupported function', () => {
@@ -280,6 +288,11 @@ describe('Testing teams capabillity', () => {
       it('teams.fullTrust.isSupported should return true if the runtime says fullTrust is supported', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
         expect(teams.fullTrust.isSupported()).toBeTruthy();
+      });
+
+      it('teams.fullTrust should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(teams.fullTrust.isSupported()).toBeFalsy();
       });
     });
 

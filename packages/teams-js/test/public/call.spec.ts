@@ -1,6 +1,6 @@
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -28,6 +28,11 @@ describe('call', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  it('should not be supported before initialization', () => {
+    utils.setRuntimeConfig(_uninitializedRuntime);
+    expect(call.isSupported()).toBeFalsy();
   });
 
   it('should not allow calls before initialization', async () => {

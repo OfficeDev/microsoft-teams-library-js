@@ -1,6 +1,6 @@
 import { app, FrameContexts, menus } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { applyRuntimeConfig, _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -25,6 +25,13 @@ describe('Testing menus capability', () => {
         framedMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
         app._uninitialize();
       }
+    });
+
+    describe('Testing menus.isSupported', () => {
+      it('should be false before initialization', () => {
+        applyRuntimeConfig(_uninitializedRuntime);
+        expect(menus.isSupported()).toBeFalsy();
+      });
     });
 
     describe('Testing menus.setUpViews function', () => {

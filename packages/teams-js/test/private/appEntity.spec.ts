@@ -2,7 +2,7 @@ import { appEntity } from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -26,6 +26,13 @@ describe('appEntity', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(appEntity.isSupported()).toBeFalsy();
+    });
   });
 
   describe('selectAppEntity', () => {

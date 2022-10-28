@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, geoLocation, location } from '../../src/public/index';
 import { DevicePermission } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { applyRuntimeConfig, _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
 /* eslint-disable */
@@ -41,6 +41,13 @@ describe('geoLocation', () => {
   });
 
   const allowedContexts = [FrameContexts.content, FrameContexts.task];
+
+  describe('Testing isSupported', () => {
+    it('should not be supported before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(geoLocation.isSupported()).toBeFalsy();
+    });
+  });
 
   describe('Testing getCurrentLocation API', () => {
     it('should not allow getCurrentLocation calls before initialization', () => {
@@ -323,6 +330,11 @@ describe('geoLocation', () => {
   });
 
   describe('Testing geoLocation.map subcapability', () => {
+    it('should not be supported before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(geoLocation.map.isSupported()).toBe(false);
+    });
+
     describe('Testing geoLocation.map.showLocation API', () => {
       it('should not allow showLocation calls before initialization', () => {
         expect(() => geoLocation.map.showLocation(defaultLocation)).toThrowError(

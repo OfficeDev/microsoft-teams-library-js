@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { MessageResponse, Utils } from '../utils';
@@ -33,7 +33,6 @@ describe('Testing pages module', () => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-
         app._uninitialize();
       }
     });
@@ -731,6 +730,11 @@ describe('Testing pages module', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.isSupported()).toBeTruthy();
       });
+
+      it('pages.isSupported should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(pages.isSupported()).toBeFalsy();
+      });
     });
 
     describe('Testing pages.tabs namespace', () => {
@@ -924,6 +928,11 @@ describe('Testing pages module', () => {
             supports: { pages: { tabs: {} } },
           });
           expect(pages.tabs.isSupported()).toBeTruthy();
+        });
+
+        it('pages.tabs.isSupported should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(pages.tabs.isSupported()).toBeFalsy();
         });
       });
     });
@@ -1444,6 +1453,11 @@ describe('Testing pages module', () => {
           });
           expect(pages.config.isSupported()).toBeTruthy();
         });
+
+        it('pages.config.isSupported should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(pages.config.isSupported()).toBeFalsy();
+        });
       });
     });
 
@@ -1587,6 +1601,11 @@ describe('Testing pages module', () => {
           });
           expect(pages.backStack.isSupported()).toBeTruthy();
         });
+
+        it('pages.backStack.isSupported should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(pages.backStack.isSupported()).toBeFalsy();
+        });
       });
     });
 
@@ -1704,6 +1723,11 @@ describe('Testing pages module', () => {
             supports: { pages: { fullTrust: {} } },
           });
           expect(pages.fullTrust.isSupported()).toBeTruthy();
+        });
+
+        it('pages.fullTrust.isSupported should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(pages.fullTrust.isSupported()).toBeFalsy();
         });
       });
     });
@@ -1883,6 +1907,11 @@ describe('Testing pages module', () => {
             supports: { pages: { appButton: {} } },
           });
           expect(pages.appButton.isSupported()).toBeTruthy();
+        });
+
+        it('pages.appButton.isSupported should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(pages.appButton.isSupported()).toBeFalsy();
         });
       });
     });
@@ -2338,6 +2367,23 @@ describe('Testing pages module', () => {
             );
           });
         }
+      });
+    });
+
+    describe('Testing pages.currentApp.isSupported function', () => {
+      it('pages.currentApp.isSupported should return false if the runtime says pages.currentApp is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+        expect(pages.currentApp.isSupported()).not.toBeTruthy();
+      });
+
+      it('pages.currentApp.isSupported should return true if the runtime says pages.currentApp is supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+        expect(pages.currentApp.isSupported()).toBeTruthy();
+      });
+
+      it('pages.currentApp.isSupported should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(pages.currentApp.isSupported()).toBeFalsy();
       });
     });
 

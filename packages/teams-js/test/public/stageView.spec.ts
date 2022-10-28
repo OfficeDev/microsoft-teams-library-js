@@ -1,7 +1,7 @@
 import { ErrorCode } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { stageView } from '../../src/public/stageView';
 import { Utils } from '../utils';
 
@@ -40,6 +40,13 @@ describe('stageView', () => {
     websiteUrl: 'websiteUrl',
     entityId: 'entityId',
   };
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(stageView.isSupported()).toBeFalsy();
+    });
+  });
 
   describe('open', () => {
     it('should not allow calls before initialization', async () => {

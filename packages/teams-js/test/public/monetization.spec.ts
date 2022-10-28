@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
 import { monetization } from '../../src/public/monetization';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -91,6 +91,13 @@ describe('Testing monetization capability', () => {
           utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
           app._uninitialize();
         }
+      });
+
+      describe('isSupported', () => {
+        it('should be false before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(monetization.isSupported()).toBeFalsy();
+        });
       });
 
       describe('openPurchaseExperience', () => {

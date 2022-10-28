@@ -2,7 +2,7 @@ import { NotificationTypes, ShowNotificationParameters } from '../../src/private
 import { notifications } from '../../src/private/notifications';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -25,6 +25,13 @@ describe('notifications', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(notifications.isSupported()).toBeFalsy();
+    });
   });
 
   describe('showNotification', () => {

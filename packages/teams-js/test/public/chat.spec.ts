@@ -1,7 +1,7 @@
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
@@ -31,6 +31,11 @@ describe('chat', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  it('should not be supported before initialization', () => {
+    utils.setRuntimeConfig(_uninitializedRuntime);
+    expect(chat.isSupported()).toBeFalsy();
   });
 
   describe('Testing chat.openChat function', () => {

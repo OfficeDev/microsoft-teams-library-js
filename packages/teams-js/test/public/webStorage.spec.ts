@@ -1,7 +1,11 @@
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, generateBackCompatRuntimeConfig } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  generateBackCompatRuntimeConfig,
+  _uninitializedRuntime,
+} from '../../src/public/runtime';
 import { webStorage } from '../../src/public/webStorage';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -27,6 +31,13 @@ describe('webStorage', () => {
       app._uninitialize();
     }
     jest.clearAllMocks();
+  });
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(webStorage.isSupported()).toBeFalsy();
+    });
   });
 
   describe('webStorage.isWebStorageClearedOnUserLogOut', () => {

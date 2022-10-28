@@ -2,7 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -31,6 +31,13 @@ describe('calendar', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(calendar.isSupported()).toBeFalsy();
+    });
   });
 
   describe('openCalendarItem', () => {

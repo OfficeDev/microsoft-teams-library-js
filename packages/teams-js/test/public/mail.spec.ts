@@ -2,7 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { mail } from '../../src/public/mail';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -32,6 +32,13 @@ describe('mail', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(mail.isSupported()).toBeFalsy();
+    });
   });
 
   describe('openMailItem', () => {

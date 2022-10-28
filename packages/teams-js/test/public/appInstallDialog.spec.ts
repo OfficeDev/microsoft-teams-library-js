@@ -1,6 +1,6 @@
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -26,6 +26,11 @@ describe('appInstallDialog', () => {
 
       app._uninitialize();
     }
+  });
+
+  it('should not be supported before initialization', () => {
+    utils.setRuntimeConfig(_uninitializedRuntime);
+    expect(appInstallDialog.isSupported()).toBeFalsy();
   });
 
   it('should not allow openAppInstallDialog before initialization', async () => {

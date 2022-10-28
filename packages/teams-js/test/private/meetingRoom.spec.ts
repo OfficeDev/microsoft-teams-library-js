@@ -2,7 +2,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -51,6 +51,13 @@ describe('meetingRoom', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const emptyHandler = (): void => {};
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(meetingRoom.isSupported()).toBeFalsy();
+    });
+  });
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {

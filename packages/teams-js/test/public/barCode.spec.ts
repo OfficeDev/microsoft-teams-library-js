@@ -3,7 +3,7 @@ import { app } from '../../src/public/app';
 import { barCode } from '../../src/public/barCode';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { applyRuntimeConfig, _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
 /* eslint-disable */
@@ -37,6 +37,14 @@ describe('barCode', () => {
   const barCodeConfig = {
     timeOutIntervalInSec: 30,
   };
+
+  describe('isSupported', () => {
+    it('should be false before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(barCode.isSupported()).toBeFalsy();
+    });
+  });
+
   describe('Testing scanBarCode API', () => {
     it('should not allow scanBarCode calls before initialization', () => {
       expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError('The library has not yet been initialized');

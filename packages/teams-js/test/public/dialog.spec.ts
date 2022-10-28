@@ -5,7 +5,7 @@ import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../
 import { dialog } from '../../src/public/dialog';
 import { DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -416,6 +416,11 @@ describe('Dialog', () => {
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { update: {} } } });
         expect(dialog.update.isSupported()).toBeTruthy();
       });
+
+      it('should not be supported before initialization', () => {
+        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        expect(dialog.update.isSupported()).toBeFalsy();
+      });
     });
   });
   describe('submit', () => {
@@ -529,6 +534,11 @@ describe('Dialog', () => {
     it('dialog.update.isSupported should return true if the runtime says dialog is supported', () => {
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
       expect(dialog.isSupported()).toBeTruthy();
+    });
+
+    it('should not be supported before initialization', () => {
+      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(dialog.isSupported()).toBeFalsy();
     });
   });
 
@@ -786,6 +796,11 @@ describe('Dialog', () => {
       it('dialog.bot.isSupported should return true if the runtime says dialog and dialog.bot is supported', () => {
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { bot: {} } } });
         expect(dialog.bot.isSupported()).toBeTruthy();
+      });
+
+      it('should not be supported before initialization', () => {
+        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        expect(dialog.bot.isSupported()).toBeFalsy();
       });
     });
   });

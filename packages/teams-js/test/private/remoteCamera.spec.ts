@@ -3,7 +3,7 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -678,6 +678,11 @@ describe('remoteCamera', () => {
     it('remoteCamera.isSupported should return true if the runtime says remote camera is supported', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: { remoteCamera: {} } });
       expect(remoteCamera.isSupported()).toBeTruthy();
+    });
+
+    it('should be false before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(remoteCamera.isSupported()).toBeFalsy();
     });
   });
 });

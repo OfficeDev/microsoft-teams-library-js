@@ -1,6 +1,6 @@
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { teamsCore } from '../../src/public/teamsAPIs';
 import { Utils } from '../utils';
 
@@ -29,6 +29,13 @@ describe('Testing TeamsCore Capability', () => {
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
         app._uninitialize();
       }
+    });
+
+    describe('Testing teamsCore.isSupported function', () => {
+      it('should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(teamsCore.isSupported()).toBeFalsy();
+      });
     });
 
     describe('Testing teamsCore.enablePrintCapability function', () => {
