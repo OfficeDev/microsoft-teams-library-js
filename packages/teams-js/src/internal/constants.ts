@@ -136,6 +136,8 @@ export const validOrigins = [
   'outlook-sdf.office.com',
   'outlook.office365.com',
   'outlook-sdf.office365.com',
+  'outlook.live.com',
+  'outlook-sdf.live.com',
   '*.teams.microsoft.com',
   '*.www.office.com',
   'www.office.com',
