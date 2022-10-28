@@ -5,15 +5,16 @@ export enum MatcherType {
   ToStrictEqual,
 }
 
-export interface MatcherAndArguments {
-  matcher: MatcherType;
-  arguments: unknown[];
-}
-
+// This function will return the number of assertions used to validate a request object using
+// validateRequestWithoutArguments or validateExpectedArgumentsInRequest.
+// The number of assertions used changes depending on how many arguments are being validated, so
+// you have to pass in the number of arguments being validated.
+// The value returned from this function can be used to in calls to expect.assertions() if you have them.
 export function getNumberOfAssertionsUsedToValidateRequest(numberOfArgumentsBeingValidated: number): number {
   return 1 + (numberOfArgumentsBeingValidated === 0 ? 0 : 2 + numberOfArgumentsBeingValidated);
 }
 
+// Used to validate a request object you are expecting to contain no arguments.
 export function validateRequestWithoutArguments(request: MessageRequest | null): void {
   validateExpectedArgumentsInRequest(request, MatcherType.ToBe);
 }
@@ -22,6 +23,8 @@ export function validateRequestWithoutArguments(request: MessageRequest | null):
  * for null and undefined as part of validation and then using those values after testing them. */
 /* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+// Used to validate a request object you are expecting to contain arguments.
 export function validateExpectedArgumentsInRequest(
   request: MessageRequest | null,
   matcher: MatcherType,
