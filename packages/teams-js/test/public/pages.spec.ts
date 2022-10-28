@@ -67,7 +67,7 @@ describe('Testing pages module', () => {
           pages.returnFocus(true);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, MatcherType.ToBe, true);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
         });
 
         it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
@@ -76,7 +76,7 @@ describe('Testing pages module', () => {
           pages.returnFocus(false);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, MatcherType.ToBe, false);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, false);
         });
       });
     });
@@ -105,7 +105,7 @@ describe('Testing pages module', () => {
             return true;
           });
           const messageForRegister = utils.findMessageByFunc('registerHandler');
-          validateExpectedArgumentsInRequest(messageForRegister, MatcherType.ToBe, 'focusEnter');
+          validateExpectedArgumentsInRequest(messageForRegister, 'registerHandler', MatcherType.ToBe, 'focusEnter');
         });
 
         it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when set to true and initialized with ${context} context`, async () => {
@@ -164,7 +164,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             pages.setCurrentFrame(frameContext);
             const message = utils.findMessageByFunc('setFrameContext');
-            validateExpectedArgumentsInRequest(message, MatcherType.ToBe, frameContext);
+            validateExpectedArgumentsInRequest(message, 'setFrameContext', MatcherType.ToBe, frameContext);
           });
         } else {
           it(`pages.setCurrentFrame should not allow calls from ${context} context`, async () => {
@@ -206,11 +206,10 @@ describe('Testing pages module', () => {
             expect(utils.messages.length).toBe(2);
 
             const initMessage = utils.findMessageByFunc('initialize');
-            validateExpectedArgumentsInRequest(initMessage, MatcherType.ToBe, version);
+            validateExpectedArgumentsInRequest(initMessage, 'initialize', MatcherType.ToBe, version);
             expect(initMessage.id).toBe(0);
-            expect(initMessage.func).toBe('initialize');
             const message = utils.findMessageByFunc('setFrameContext');
-            validateExpectedArgumentsInRequest(message, MatcherType.ToBe, frameContext);
+            validateExpectedArgumentsInRequest(message, 'setFrameContext', MatcherType.ToBe, frameContext);
           });
         } else {
           it(`pages.initializeWithFrameContext should not allow calls from ${context} context`, async () => {
@@ -251,7 +250,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.getConfig();
             const message = utils.findMessageByFunc('settings.getSettings');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'settings.getSettings');
 
             utils.respondToMessage(message!, expectedSettings);
             return expect(promise).resolves.toBe(expectedSettings);
@@ -336,7 +335,7 @@ describe('Testing pages module', () => {
 
             const promise = pages.navigateCrossDomain('https://valid.origin.com');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-            validateRequestWithoutArguments(navigateCrossDomainMessage);
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
             utils.respondToMessage(navigateCrossDomainMessage!, true);
 
@@ -362,7 +361,12 @@ describe('Testing pages module', () => {
         pages.navigateCrossDomain('https://valid.origin.com');
 
         const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-        validateExpectedArgumentsInRequest(navigateCrossDomainMessage, MatcherType.ToBe, 'https://valid.origin.com');
+        validateExpectedArgumentsInRequest(
+          navigateCrossDomainMessage,
+          'navigateCrossDomain',
+          MatcherType.ToBe,
+          'https://valid.origin.com',
+        );
       });
 
       it('pages.navigateCrossDomain should throw on invalid cross-origin navigation request', async () => {
@@ -371,7 +375,12 @@ describe('Testing pages module', () => {
         const promise = pages.navigateCrossDomain('https://invalid.origin.com');
 
         const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
-        validateExpectedArgumentsInRequest(navigateCrossDomainMessage, MatcherType.ToBe, 'https://invalid.origin.com');
+        validateExpectedArgumentsInRequest(
+          navigateCrossDomainMessage,
+          'navigateCrossDomain',
+          MatcherType.ToBe,
+          'https://invalid.origin.com',
+        );
 
         utils.respondToMessage(navigateCrossDomainMessage!, false);
 
@@ -421,7 +430,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
-            validateRequestWithoutArguments(navigateToAppMessage);
+            validateRequestWithoutArguments(navigateToAppMessage, 'pages.navigateToApp');
 
             utils.respondToMessage(navigateToAppMessage!, true);
 
@@ -435,7 +444,12 @@ describe('Testing pages module', () => {
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
-            validateExpectedArgumentsInRequest(navigateToAppMessage, MatcherType.ToStrictEqual, navigateToAppParams);
+            validateExpectedArgumentsInRequest(
+              navigateToAppMessage,
+              'pages.navigateToApp',
+              MatcherType.ToStrictEqual,
+              navigateToAppParams,
+            );
 
             utils.respondToMessage(navigateToAppMessage!, true);
             await promise;
@@ -456,6 +470,7 @@ describe('Testing pages module', () => {
             const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
             validateExpectedArgumentsInRequest(
               executeDeepLinkMessage,
+              'executeDeepLink',
               MatcherType.ToBe,
               'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
             );
@@ -513,7 +528,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateTo(NavigateToParams);
 
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            validateRequestWithoutArguments(navigateToMessage);
+            validateRequestWithoutArguments(navigateToMessage, 'pages.currentApp.navigateTo');
 
             utils.respondToMessage(navigateToMessage!);
 
@@ -527,7 +542,12 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateTo(NavigateToParams);
 
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            validateExpectedArgumentsInRequest(navigateToMessage, MatcherType.ToStrictEqual, NavigateToParams);
+            validateExpectedArgumentsInRequest(
+              navigateToMessage,
+              'pages.currentApp.navigateTo',
+              MatcherType.ToStrictEqual,
+              NavigateToParams,
+            );
 
             utils.respondToMessage(navigateToMessage!);
             await promise;
@@ -577,7 +597,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            validateRequestWithoutArguments(navigateToDefaultPageMessage);
+            validateRequestWithoutArguments(navigateToDefaultPageMessage, 'pages.currentApp.navigateToDefaultPage');
 
             utils.respondToMessage(navigateToDefaultPageMessage!);
 
@@ -591,7 +611,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            validateRequestWithoutArguments(navigateToDefaultPageMessage);
+            validateRequestWithoutArguments(navigateToDefaultPageMessage, 'pages.currentApp.navigateToDefaultPage');
 
             utils.respondToMessage(navigateToDefaultPageMessage!);
             expect(await promise).toBeUndefined();
@@ -647,6 +667,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('shareDeepLink');
             validateExpectedArgumentsInRequest(
               message,
+              'shareDeepLink',
               MatcherType.ToBe,
               'someSubEntityId',
               'someSubEntityLabel',
@@ -689,7 +710,12 @@ describe('Testing pages module', () => {
             return true;
           });
           const messageForRegister = utils.findMessageByFunc('registerHandler');
-          validateExpectedArgumentsInRequest(messageForRegister, MatcherType.ToBe, 'fullScreenChange');
+          validateExpectedArgumentsInRequest(
+            messageForRegister,
+            'registerHandler',
+            MatcherType.ToBe,
+            'fullScreenChange',
+          );
         });
 
         it(`pages.registerFullScreenHandler should successfully invoke full screen handler when set to true and  initialized with ${context} context`, async () => {
@@ -770,14 +796,14 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             pages.tabs.navigateToTab(tabInstance);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
-            validateExpectedArgumentsInRequest(navigateToTabMsg, MatcherType.ToBe, tabInstance);
+            validateExpectedArgumentsInRequest(navigateToTabMsg, 'navigateToTab', MatcherType.ToBe, tabInstance);
           });
 
           it(`pages.tabs.navigateToTab should throw error when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.navigateToTab(null);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
-            validateRequestWithoutArguments(navigateToTabMsg);
+            validateRequestWithoutArguments(navigateToTabMsg, 'navigateToTab');
 
             utils.respondToMessage(navigateToTabMsg!, false);
             await promise.catch((e) =>
@@ -791,7 +817,7 @@ describe('Testing pages module', () => {
             const onComplete = getGenericOnCompleteHandler();
             onComplete(true);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
-            validateExpectedArgumentsInRequest(navigateToTabMsg, MatcherType.ToBe, null);
+            validateExpectedArgumentsInRequest(navigateToTabMsg, 'navigateToTab', MatcherType.ToBe, null);
           });
         });
       });
@@ -822,7 +848,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getTabInstances');
 
             utils.respondToMessage(message!, expectedTabInstanceParameters);
             expect(promise).resolves.toBe(expectedTabInstanceParameters);
@@ -832,7 +858,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getTabInstances');
 
             utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
@@ -842,7 +868,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getTabInstances');
 
             utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
@@ -877,7 +903,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getMruTabInstances');
 
             utils.respondToMessage(message!, expectedTabInstanceParameters);
             expect(promise).resolves.toBe(expectedTabInstanceParameters);
@@ -887,7 +913,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getMruTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getMruTabInstances');
 
             utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
@@ -897,7 +923,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
-            validateRequestWithoutArguments(message);
+            validateRequestWithoutArguments(message, 'getMruTabInstances');
 
             utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
@@ -986,7 +1012,7 @@ describe('Testing pages module', () => {
               pages.config.setValidityState(true);
 
               const message = utils.findMessageByFunc('settings.setValidityState');
-              validateExpectedArgumentsInRequest(message, MatcherType.ToBe, true);
+              validateExpectedArgumentsInRequest(message, 'settings.setValidityState', MatcherType.ToBe, true);
             });
 
             it(`pages.config.setValidityState should successfully set validity state to false when initialized with ${context} context`, async () => {
@@ -994,7 +1020,7 @@ describe('Testing pages module', () => {
               pages.config.setValidityState(false);
 
               const message = utils.findMessageByFunc('settings.setValidityState');
-              validateExpectedArgumentsInRequest(message, MatcherType.ToBe, false);
+              validateExpectedArgumentsInRequest(message, 'settings.setValidityState', MatcherType.ToBe, false);
             });
           } else {
             it(`pages.config.setValidityState does not allow calls from ${context} context`, async () => {
@@ -1043,7 +1069,7 @@ describe('Testing pages module', () => {
               await utils.initializeWithContext(context);
               pages.config.setConfig(settingsObj);
               const message = utils.findMessageByFunc('settings.setSettings');
-              validateExpectedArgumentsInRequest(message, MatcherType.ToBe, settingsObj);
+              validateExpectedArgumentsInRequest(message, 'settings.setSettings', MatcherType.ToBe, settingsObj);
             });
           } else {
             it(`pages.config.setConfig does not allow calls from ${context} context`, async () => {
@@ -1144,7 +1170,7 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.success');
-              validateRequestWithoutArguments(message);
+              validateRequestWithoutArguments(message, 'settings.save.success');
             });
 
             it(`pages.config.registerOnSaveHandler should successfully notify failure from the registered save handler when initialized with ${context} context`, async () => {
@@ -1157,7 +1183,7 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.failure');
-              validateExpectedArgumentsInRequest(message, MatcherType.ToBe, 'someReason');
+              validateExpectedArgumentsInRequest(message, 'settings.save.failure', MatcherType.ToBe, 'someReason');
             });
 
             it(`pages.config.registerOnSaveHandler should not allow multiple notifies from the registered save handler when initialized with ${context} context`, async () => {
@@ -1176,7 +1202,7 @@ describe('Testing pages module', () => {
               utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.success');
-              validateRequestWithoutArguments(message);
+              validateRequestWithoutArguments(message, 'settings.save.success');
             });
 
             it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
@@ -1324,7 +1350,7 @@ describe('Testing pages module', () => {
 
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.remove.success');
-              validateRequestWithoutArguments(message);
+              validateRequestWithoutArguments(message, 'settings.remove.success');
             });
 
             it(`pages.config.registerOnRemoveHandler should successfully notify failure from the registered remove handler when initialized with ${context} context`, async () => {
@@ -1340,7 +1366,7 @@ describe('Testing pages module', () => {
 
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.remove.failure');
-              validateExpectedArgumentsInRequest(message, MatcherType.ToBe, 'someReason');
+              validateExpectedArgumentsInRequest(message, 'settings.remove.failure', MatcherType.ToBe, 'someReason');
             });
           } else {
             it(`pages.config.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
