@@ -9,7 +9,7 @@ export enum MatcherType {
 // validateRequestWithoutArguments or validateExpectedArgumentsInRequest.
 // The number of assertions used changes depending on how many arguments are being validated, so
 // you have to pass in the number of arguments being validated.
-// The value returned from this function can be used to in calls to expect.assertions() if you have them.
+// The value returned from this function can be used in calls to expect.assertions() if you have them.
 export function getNumberOfAssertionsUsedToValidateRequest(numberOfArgumentsBeingValidated: number): number {
   return 2 + (numberOfArgumentsBeingValidated === 0 ? 0 : 2 + numberOfArgumentsBeingValidated);
 }
