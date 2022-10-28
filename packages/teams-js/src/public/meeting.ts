@@ -523,19 +523,17 @@ export namespace meeting {
    *
    * @beta
    */
-  export namespace meetingAppShareButton {
+  export namespace appShareButton {
     /**
      * Allows an app to hide/show app share button in a meeting
-     * @param isGlobalAppShareButtonVisible is a boolean flag to set show or hide app share button
+     * @param visible is a boolean flag to set show or hide app share button
      *
      * @beta
      */
-    export function setAppShareButtonVisibility(isGlobalAppShareButtonVisible: boolean): Promise<void> {
+    export function setVisibility(visible: boolean): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(FrameContexts.sidePanel);
-        resolve(
-          sendMessageToParent('meeting.meetingApps.setAppShareButtonVisibility', [isGlobalAppShareButtonVisible]),
-        );
+        resolve(sendMessageToParent('meeting.appShareButton.setVisibility', [visible]));
       });
     }
   }

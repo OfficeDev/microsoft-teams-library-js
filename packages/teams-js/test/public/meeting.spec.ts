@@ -1283,30 +1283,30 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
   });
-  describe('toggleAppShareButton', () => {
-    it('meeting.meetingAppShareButton.toggleAppShareButton should not allow calls before initialization', () => {
-      expect(() => meeting.meetingAppShareButton.setAppShareButtonVisibility(false)).rejects.toThrowError(
+  describe('setVisibility', () => {
+    it('meeting.appShareButton.setVisibility should not allow calls before initialization', () => {
+      expect(() => meeting.appShareButton.setVisibility(false)).rejects.toThrowError(
         'The library has not yet been initialized',
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should successfully set false isGlobalAppShareButtonVisible information. context: ${context}`, async () => {
-          framelessPlatformMock.initializeWithContext(context);
-          let isGlobalAppShareButtonVisible = false;
-          await meeting.meetingAppShareButton.setAppShareButtonVisibility(isGlobalAppShareButtonVisible);
+        it(`should successfully set false isAppShareButtonVisible information. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let isAppShareButtonVisible = false;
+          await meeting.appShareButton.setVisibility(isAppShareButtonVisible);
           const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
-            'meeting.meetingApps.setAppShareButtonVisibility',
+            'meeting.appShareButton.setVisibility',
           );
           expect(toggleAppShareButtonMessage).not.toBeNull();
           expect(toggleAppShareButtonMessage.args.length).toBe(1);
           expect(toggleAppShareButtonMessage.args[0]).toBe(false);
         });
       } else {
-        it(`should not successfully set false isGlobalAppShareButtonVisible information. context: ${context}`, async () => {
+        it(`should not successfully set false isAppShareButtonVisible information. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
-          expect(() => meeting.meetingAppShareButton.setAppShareButtonVisibility(false)).rejects.toThrowError(
+          expect(() => meeting.appShareButton.setVisibility(false)).rejects.toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
