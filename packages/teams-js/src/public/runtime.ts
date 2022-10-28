@@ -66,6 +66,7 @@ export interface IRuntime {
 
 export let runtime: IRuntime = {
   apiVersion: 1,
+  hostVersionsInfo: undefined,
   supports: {
     appInstallDialog: undefined,
     barCode: undefined,

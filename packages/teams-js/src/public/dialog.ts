@@ -13,6 +13,7 @@ import {
   BotUrlDialogInfo,
   DialogInfo,
   DialogSize,
+  M365ContentAction,
   TaskInfo,
   UrlDialogInfo,
 } from './interfaces';
@@ -126,7 +127,8 @@ export namespace dialog {
     /**
      * Submit the dialog module and close the dialog
      *
-     * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+     * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it,
+     *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
      * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter
      *                 helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified
      *                 because a web app from a single underlying domain can power multiple apps across different environments
