@@ -30,7 +30,7 @@ describe('notifications', () => {
   describe('isSupported', () => {
     it('should be false before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(notifications.isSupported()).toBeFalsy();
+      expect(() => notifications.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

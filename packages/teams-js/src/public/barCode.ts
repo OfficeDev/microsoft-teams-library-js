@@ -94,6 +94,7 @@ export namespace barCode {
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.barCode && runtime.supports.permissions ? true : false;
   }
 }

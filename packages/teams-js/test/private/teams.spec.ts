@@ -156,17 +156,19 @@ describe('Testing teams capabillity', () => {
     });
 
     describe('Testing teams.isSupported function', () => {
-      it('teams.isSupported should return false if the runtime says teams is not supported', () => {
+      it('teams.isSupported should return false if the runtime says teams is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(teams.isSupported()).not.toBeTruthy();
       });
-      it('teams.isSupported should return true if the runtime says teams is supported', () => {
+      it('teams.isSupported should return true if the runtime says teams is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
         expect(teams.isSupported()).toBeTruthy();
       });
       it('should be false before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(teams.isSupported()).toBeFalsy();
+        expect(() => teams.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
 
@@ -248,51 +250,60 @@ describe('Testing teams capabillity', () => {
 
     describe('joinedTeams.isSupported function', () => {
       const utils = new Utils();
-      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported', () => {
+      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(teams.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
       });
 
-      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams is supported', () => {
+      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
         expect(teams.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
       });
 
-      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams and fullTrust is supported', () => {
+      it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported when teams and fullTrust is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
         expect(teams.fullTrust.joinedTeams.isSupported()).not.toBeTruthy();
       });
 
-      it('joinedTeams.isSupported should return true if the runtime says joinedTeams is supported', () => {
+      it('joinedTeams.isSupported should return true if the runtime says joinedTeams is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: { joinedTeams: {} } } } });
         expect(teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
       });
       it('joinedTeams.isSupported should be false before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(teams.fullTrust.joinedTeams.isSupported()).toBeFalsy();
+        expect(() => teams.fullTrust.joinedTeams.isSupported()).toThrowError(
+          'The library has not yet been initialized',
+        );
       });
     });
 
     describe('teams.fullTrust.isSupported function', () => {
       const utils = new Utils();
-      it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported', () => {
+      it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(teams.fullTrust.isSupported()).not.toBeTruthy();
       });
 
-      it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported when teams is supported', () => {
+      it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported when teams is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: {} } });
         expect(teams.fullTrust.isSupported()).not.toBeTruthy();
       });
 
-      it('teams.fullTrust.isSupported should return true if the runtime says fullTrust is supported', () => {
+      it('teams.fullTrust.isSupported should return true if the runtime says fullTrust is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { teams: { fullTrust: {} } } });
         expect(teams.fullTrust.isSupported()).toBeTruthy();
       });
 
       it('teams.fullTrust should be false before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(teams.fullTrust.isSupported()).toBeFalsy();
+        expect(() => teams.fullTrust.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
 

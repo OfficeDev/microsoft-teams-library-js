@@ -231,6 +231,7 @@ export namespace conversations {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.conversations ? true : false;
   }
 }

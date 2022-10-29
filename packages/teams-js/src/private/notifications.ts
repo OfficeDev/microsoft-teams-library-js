@@ -32,6 +32,7 @@ export namespace notifications {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.notifications ? true : false;
   }
 }

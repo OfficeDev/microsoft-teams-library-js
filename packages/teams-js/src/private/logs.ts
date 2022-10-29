@@ -49,6 +49,7 @@ export namespace logs {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.logs ? true : false;
   }
 }

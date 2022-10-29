@@ -55,7 +55,7 @@ describe('meetingRoom', () => {
   describe('isSupported', () => {
     it('should be false before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(meetingRoom.isSupported()).toBeFalsy();
+      expect(() => meetingRoom.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

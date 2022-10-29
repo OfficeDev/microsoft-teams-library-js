@@ -670,19 +670,21 @@ describe('remoteCamera', () => {
   });
 
   describe('Testing remoteCamera.isSupported function', () => {
-    it('remoteCamera.isSupported should return false if the runtime says remote camera is not supported', () => {
+    it('remoteCamera.isSupported should return false if the runtime says remote camera is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(remoteCamera.isSupported()).not.toBeTruthy();
     });
 
-    it('remoteCamera.isSupported should return true if the runtime says remote camera is supported', () => {
+    it('remoteCamera.isSupported should return true if the runtime says remote camera is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { remoteCamera: {} } });
       expect(remoteCamera.isSupported()).toBeTruthy();
     });
 
     it('should be false before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(remoteCamera.isSupported()).toBeFalsy();
+      expect(() => remoteCamera.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 });

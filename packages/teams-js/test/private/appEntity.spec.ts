@@ -31,7 +31,7 @@ describe('appEntity', () => {
   describe('isSupported', () => {
     it('should be false before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(appEntity.isSupported()).toBeFalsy();
+      expect(() => appEntity.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

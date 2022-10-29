@@ -402,6 +402,7 @@ export namespace remoteCamera {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.remoteCamera ? true : false;
   }
 }

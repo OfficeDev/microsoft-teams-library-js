@@ -32,7 +32,7 @@ describe('logs', () => {
   describe('Testings logs.isSupported', () => {
     it('should be false before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(logs.isSupported()).toBeFalsy();
+      expect(() => logs.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

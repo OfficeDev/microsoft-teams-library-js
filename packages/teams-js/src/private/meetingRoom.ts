@@ -272,6 +272,7 @@ export namespace meetingRoom {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.meetingRoom ? true : false;
   }
 }

@@ -30,7 +30,7 @@ describe('conversations', () => {
   describe('isSupported', () => {
     it('should be false before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(conversations.isSupported()).toBeFalsy();
+      expect(() => conversations.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

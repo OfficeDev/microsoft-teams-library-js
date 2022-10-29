@@ -102,6 +102,7 @@ export namespace teams {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.teams ? true : false;
   }
 
@@ -162,6 +163,7 @@ export namespace teams {
        * Limited to Microsoft-internal use
        */
       export function isSupported(): boolean {
+        ensureInitialized();
         return runtime.supports.teams
           ? runtime.supports.teams.fullTrust
             ? runtime.supports.teams.fullTrust.joinedTeams
@@ -202,6 +204,7 @@ export namespace teams {
      * Limited to Microsoft-internal use
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;
     }
   }
