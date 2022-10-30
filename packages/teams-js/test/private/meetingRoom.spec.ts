@@ -53,7 +53,7 @@ describe('meetingRoom', () => {
   const emptyHandler = (): void => {};
 
   describe('isSupported', () => {
-    it('should be false before initialization', () => {
+    it('should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
       expect(() => meetingRoom.isSupported()).toThrowError('The library has not yet been initialized');
     });
