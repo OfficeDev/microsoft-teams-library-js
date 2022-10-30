@@ -38,6 +38,7 @@ export namespace appInstallDialog {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.appInstallDialog ? true : false;
   }
 }

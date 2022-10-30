@@ -30,9 +30,9 @@ describe('call', () => {
     }
   });
 
-  it('should not be supported before initialization', () => {
+  it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(call.isSupported()).toBeFalsy();
+    expect(() => call.isSupported()).toThrowError('The library has not yet been initialized');
   });
 
   it('should not allow calls before initialization', async () => {

@@ -45,7 +45,7 @@ describe('geoLocation', () => {
   describe('Testing isSupported', () => {
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(geoLocation.isSupported()).toBeFalsy();
+      expect(() => geoLocation.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 
@@ -332,7 +332,7 @@ describe('geoLocation', () => {
   describe('Testing geoLocation.map subcapability', () => {
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(geoLocation.map.isSupported()).toBe(false);
+      expect(() => geoLocation.map.isSupported()).toThrowError('The library has not yet been initialized');
     });
 
     describe('Testing geoLocation.map.showLocation API', () => {

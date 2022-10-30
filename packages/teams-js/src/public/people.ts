@@ -134,6 +134,7 @@ export namespace people {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.people ? true : false;
   }
 }

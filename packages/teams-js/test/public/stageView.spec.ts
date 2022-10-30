@@ -42,9 +42,9 @@ describe('stageView', () => {
   };
 
   describe('isSupported', () => {
-    it('should be false before initialization', () => {
+    it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(stageView.isSupported()).toBeFalsy();
+      expect(() => stageView.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

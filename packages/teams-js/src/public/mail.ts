@@ -31,6 +31,7 @@ export namespace mail {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.mail ? true : false;
   }
 

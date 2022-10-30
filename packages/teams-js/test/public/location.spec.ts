@@ -42,9 +42,21 @@ describe('location', () => {
   };
 
   describe('isSupported API', () => {
+    it('location.isSupported should return false if the runtime says location is not supported', async () => {
+      await framelessPlatform.initializeWithContext(FrameContexts.content);
+      framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(location.isSupported()).not.toBeTruthy();
+    });
+
+    it('location.isSupported should return true if the runtime says location is supported', async () => {
+      await framelessPlatform.initializeWithContext(FrameContexts.content);
+      framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+      expect(location.isSupported()).toBeTruthy();
+    });
+
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(location.isSupported()).toBeFalsy();
+      expect(() => location.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 
@@ -336,16 +348,6 @@ describe('location', () => {
         } as DOMMessageEvent);
       });
     });
-  });
-
-  it('location.isSupported should return false if the runtime says location is not supported', () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    expect(location.isSupported()).not.toBeTruthy();
-  });
-
-  it('location.isSupported should return true if the runtime says location is supported', () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
-    expect(location.isSupported()).toBeTruthy();
   });
 
   it('Frameless - getLocation should throw error when not supported in the runtime config', () => {

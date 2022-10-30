@@ -34,13 +34,6 @@ describe('mail', () => {
     }
   });
 
-  describe('isSupported', () => {
-    it('should be false before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(mail.isSupported()).toBeFalsy();
-    });
-  });
-
   describe('openMailItem', () => {
     const openMailItemParams: mail.OpenMailItemParams = {
       itemId: '1',
@@ -272,14 +265,21 @@ describe('mail', () => {
   });
 
   describe('isSupported', () => {
-    it('should return false if the runtime says mail is not supported', () => {
+    it('should return false if the runtime says mail is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(mail.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says mail is supported', () => {
+    it('should return true if the runtime says mail is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
       expect(mail.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => mail.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 });

@@ -64,6 +64,7 @@ export namespace call {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.call ? true : false;
   }
 }

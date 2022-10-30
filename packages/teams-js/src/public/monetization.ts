@@ -89,6 +89,7 @@ export namespace monetization {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.monetization ? true : false;
   }
 }

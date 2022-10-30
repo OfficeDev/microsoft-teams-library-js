@@ -27,6 +27,7 @@ export namespace webStorage {
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.webStorage ? true : false;
   }
 }

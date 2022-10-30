@@ -31,9 +31,9 @@ describe('video', () => {
   });
 
   describe('isSupported', () => {
-    it('should be false before initialization', () => {
+    it('should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(video.isSupported()).toBeFalsy();
+      expect(() => video.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

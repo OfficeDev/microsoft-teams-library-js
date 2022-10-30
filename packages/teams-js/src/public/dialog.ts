@@ -211,6 +211,7 @@ export namespace dialog {
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.dialog ? true : false;
   }
 
@@ -243,6 +244,7 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
     }
   }
@@ -292,6 +294,7 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
   }

@@ -76,6 +76,7 @@ export namespace stageView {
    * false if it is disabled
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.stageView ? true : false;
   }
 }

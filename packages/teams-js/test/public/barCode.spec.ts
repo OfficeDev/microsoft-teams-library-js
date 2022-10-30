@@ -39,7 +39,7 @@ describe('barCode', () => {
   };
 
   describe('isSupported', () => {
-    it('should be false before initialization', () => {
+    it('should throw if called before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
       expect(() => barCode.isSupported()).toThrowError('The library has not yet been initialized');
     });

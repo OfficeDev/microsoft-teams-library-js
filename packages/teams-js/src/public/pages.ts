@@ -213,7 +213,7 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     registerHandlerHelper('fullScreenChange', handler, [], () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -225,6 +225,7 @@ export namespace pages {
    * false if it is disabled
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.pages ? true : false;
   }
 
@@ -318,6 +319,7 @@ export namespace pages {
      * false if it is disabled
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
     }
   }
@@ -380,7 +382,7 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       registerOnSaveHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -418,7 +420,7 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       registerOnRemoveHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -588,6 +590,7 @@ export namespace pages {
      * false if it is disabled
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
     }
   }
@@ -626,7 +629,7 @@ export namespace pages {
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
       registerBackButtonHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -669,6 +672,7 @@ export namespace pages {
      * false if it is disabled
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
     }
   }
@@ -716,6 +720,7 @@ export namespace pages {
      * false if it is disabled
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
     }
   }
@@ -769,6 +774,7 @@ export namespace pages {
      * false if it is disabled
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
     }
   }

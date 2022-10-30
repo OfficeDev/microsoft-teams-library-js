@@ -236,6 +236,7 @@ export namespace menus {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.menus ? true : false;
   }
 }

@@ -98,6 +98,7 @@ export namespace geoLocation {
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
   }
 
@@ -149,6 +150,7 @@ export namespace geoLocation {
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.geoLocation && runtime.supports.geoLocation.map && runtime.supports.permissions
         ? true
         : false;

@@ -183,6 +183,7 @@ export namespace video {
    * false if it is disabled
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.video ? true : false;
   }
 } //end of video namespace

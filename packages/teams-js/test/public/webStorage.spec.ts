@@ -33,13 +33,6 @@ describe('webStorage', () => {
     jest.clearAllMocks();
   });
 
-  describe('isSupported', () => {
-    it('should be false before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(webStorage.isSupported()).toBeFalsy();
-    });
-  });
-
   describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
     it('should not allow calls before initialization', () => {
       expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError('The library has not yet been initialized');
@@ -129,14 +122,21 @@ describe('webStorage', () => {
   });
 
   describe('Framed - isSupported', () => {
-    it('webStorage.isSupported should return false if the runtime says webStorage is not supported', () => {
+    it('webStorage.isSupported should return false if the runtime says webStorage is not supported', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.content);
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(webStorage.isSupported()).not.toBeTruthy();
     });
 
-    it('webStorage.isSupported should return true if the runtime says webStorage is supported', () => {
+    it('webStorage.isSupported should return true if the runtime says webStorage is supported', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.content);
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
       expect(webStorage.isSupported()).toBeTruthy();
+    });
+
+    it('webStorage.isSupported should throw if called before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => webStorage.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
   describe('Frameless - isSupported', () => {
@@ -150,6 +150,11 @@ describe('webStorage', () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.task, HostClientType.ios);
       framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
       expect(webStorage.isSupported()).toBeTruthy();
+    });
+
+    it('webStorage.isSupported should throw if called before initialization', () => {
+      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => webStorage.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 });

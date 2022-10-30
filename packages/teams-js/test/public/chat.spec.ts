@@ -33,9 +33,11 @@ describe('chat', () => {
     }
   });
 
-  it('should not be supported before initialization', () => {
-    utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(chat.isSupported()).toBeFalsy();
+  describe('Testing chat.isSupported function', () => {
+    it('should not be supported before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => chat.isSupported()).toThrowError('The library has not yet been initialized');
+    });
   });
 
   describe('Testing chat.openChat function', () => {

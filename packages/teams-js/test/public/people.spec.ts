@@ -155,19 +155,21 @@ describe('people', () => {
   });
 
   describe('Testing people.isSupported function', () => {
-    it('people.isSupported should return false if the runtime says people is not supported', () => {
+    it('people.isSupported should return false if the runtime says people is not supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(people.isSupported()).not.toBeTruthy();
     });
 
-    it('people.isSupported should return true if the runtime says people is supported', () => {
+    it('people.isSupported should return true if the runtime says people is supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
       expect(people.isSupported()).toBeTruthy();
     });
 
-    it('people.isSupported should be false before initialization', () => {
+    it('people.isSupported should throw if called before initialization', () => {
       framedMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(people.isSupported()).toBeFalsy();
+      expect(() => people.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

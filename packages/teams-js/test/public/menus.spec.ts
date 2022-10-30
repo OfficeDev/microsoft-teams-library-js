@@ -28,9 +28,9 @@ describe('Testing menus capability', () => {
     });
 
     describe('Testing menus.isSupported', () => {
-      it('should be false before initialization', () => {
+      it('should throw if called before initialization', () => {
         applyRuntimeConfig(_uninitializedRuntime);
-        expect(menus.isSupported()).toBeFalsy();
+        expect(() => menus.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
 

@@ -28,9 +28,9 @@ describe('appInstallDialog', () => {
     }
   });
 
-  it('should not be supported before initialization', () => {
+  it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(appInstallDialog.isSupported()).toBeFalsy();
+    expect(() => appInstallDialog.isSupported()).toThrowError('The library has not yet been initialized');
   });
 
   it('should not allow openAppInstallDialog before initialization', async () => {

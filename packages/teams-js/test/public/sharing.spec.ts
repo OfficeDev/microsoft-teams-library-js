@@ -357,19 +357,21 @@ describe('sharing_v2', () => {
 
   describe('Testing sharing.isSupported function', () => {
     const utils = new Utils();
-    it('sharing.isSupported should return false if the runtime says sharing is not supported', () => {
+    it('sharing.isSupported should return false if the runtime says sharing is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(sharing.isSupported()).not.toBeTruthy();
     });
 
-    it('sharing.isSupported should return true if the runtime says sharing is supported', () => {
+    it('sharing.isSupported should return true if the runtime says sharing is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
       expect(sharing.isSupported()).toBeTruthy();
     });
 
-    it('sharing.isSupported should be false before initialization', () => {
+    it('sharing.isSupported should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(sharing.isSupported()).toBeFalsy();
+      expect(() => sharing.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

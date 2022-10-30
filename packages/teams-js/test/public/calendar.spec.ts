@@ -33,13 +33,6 @@ describe('calendar', () => {
     }
   });
 
-  describe('isSupported', () => {
-    it('should be false before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(calendar.isSupported()).toBeFalsy();
-    });
-  });
-
   describe('openCalendarItem', () => {
     const openCalendarItemParams: calendar.OpenCalendarItemParams = {
       itemId: '1',
@@ -308,14 +301,21 @@ describe('calendar', () => {
     });
   });
   describe('isSupported', () => {
-    it('should return false if the runtime says calendar is not supported', () => {
+    it('should return false if the runtime says calendar is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(calendar.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says calendar is supported', () => {
+    it('should return true if the runtime says calendar is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
       expect(calendar.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => calendar.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 });

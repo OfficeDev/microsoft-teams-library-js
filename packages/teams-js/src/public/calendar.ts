@@ -44,6 +44,7 @@ export namespace calendar {
     });
   }
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.calendar ? true : false;
   }
 

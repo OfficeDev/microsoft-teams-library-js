@@ -150,6 +150,7 @@ export namespace profile {
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.profile ? true : false;
   }
 }

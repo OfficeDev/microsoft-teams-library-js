@@ -49,7 +49,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     registerOnLoadHandlerHelper(handler, () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -72,7 +72,7 @@ export namespace teamsCore {
     // allow for registration cleanup even when not finished initializing
     handler && ensureInitialized();
 
-    if (versionSpecificHelper) {
+    if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
 
@@ -90,7 +90,7 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -113,7 +113,7 @@ export namespace teamsCore {
   ): void {
     // allow for registration cleanup even when not finished initializing
     handler && ensureInitialized();
-    if (versionSpecificHelper) {
+    if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);
@@ -125,6 +125,7 @@ export namespace teamsCore {
    * false if it is disabled
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.teamsCore ? true : false;
   }
 }

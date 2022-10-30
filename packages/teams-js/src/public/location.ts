@@ -120,6 +120,7 @@ export namespace location {
    * @returns boolean to represent whether Location is supported
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.location ? true : false;
   }
 }

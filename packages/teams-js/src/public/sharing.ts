@@ -149,6 +149,7 @@ export namespace sharing {
   }
 
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.sharing ? true : false;
   }
 }

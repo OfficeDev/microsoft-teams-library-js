@@ -27,9 +27,9 @@ describe('profile', () => {
   });
 
   describe('isSupported', () => {
-    it('should be false before initialization', () => {
+    it('should throw if called before initialization', () => {
       desktopPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(profile.isSupported()).toBeFalsy();
+      expect(() => profile.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 

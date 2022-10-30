@@ -402,24 +402,27 @@ describe('Dialog', () => {
       });
     });
     describe('dialog.update.isSupported function', () => {
-      it('dialog.update.isSupported should return false if the runtime says dialog is not supported', () => {
+      it('dialog.update.isSupported should return false if the runtime says dialog is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', () => {
+      it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', () => {
+      it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { update: {} } } });
         expect(dialog.update.isSupported()).toBeTruthy();
       });
 
       it('should not be supported before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(dialog.update.isSupported()).toBeFalsy();
+        expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
   });
@@ -526,19 +529,21 @@ describe('Dialog', () => {
     });
   });
   describe('dialog.isSupported function', () => {
-    it('dialog.isSupported should return false if the runtime says dialog is not supported', () => {
+    it('dialog.isSupported should return false if the runtime says dialog is not supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(dialog.isSupported()).not.toBeTruthy();
     });
 
-    it('dialog.update.isSupported should return true if the runtime says dialog is supported', () => {
+    it('dialog.update.isSupported should return true if the runtime says dialog is supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
       expect(dialog.isSupported()).toBeTruthy();
     });
 
     it('should not be supported before initialization', () => {
       framedMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(dialog.isSupported()).toBeFalsy();
+      expect(() => dialog.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 
@@ -783,24 +788,27 @@ describe('Dialog', () => {
     });
 
     describe('dialog.bot.isSupported function', () => {
-      it('dialog.bot.isSupported should return false if the runtime says dialog is not supported', () => {
+      it('dialog.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(dialog.bot.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.bot.isSupported should return false if the runtime says dialog.bot is not supported', () => {
+      it('dialog.bot.isSupported should return false if the runtime says dialog.bot is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
         expect(dialog.bot.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.bot.isSupported should return true if the runtime says dialog and dialog.bot is supported', () => {
+      it('dialog.bot.isSupported should return true if the runtime says dialog and dialog.bot is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { bot: {} } } });
         expect(dialog.bot.isSupported()).toBeTruthy();
       });
 
       it('should not be supported before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(dialog.bot.isSupported()).toBeFalsy();
+        expect(() => dialog.bot.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
   });
