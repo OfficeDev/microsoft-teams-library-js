@@ -1,14 +1,14 @@
-# Microsoft Teams JavaScript client SDK
+# Microsoft Teams JavaScript client library
 
-Welcome to the Teams JavaScript client SDK! For breaking changes, please refer to our [changelog](./CHANGELOG.md) in the current `<root>/packages/teams-js` directory.
+Welcome to the Teams JavaScript client library! For breaking changes, please refer to our [changelog](./CHANGELOG.md) in the current `<root>/packages/teams-js` directory.
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/). See full [SDK reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
+This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/). See full [library reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 ## Getting Started
 
 See [instructions](../../README.md#Getting-Started) in the monorepo root for how to clone and build the repository.
 
-Whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
+Whenever building or testing the Teams client library, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
 
 ## Installation
 
@@ -40,7 +40,7 @@ import { app } from '@microsoft/teams-js';
 
 ### As a script tag
 
-Reference the SDK inside of your `.html` page using:
+Reference the library inside of your `.html` page using:
 
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
@@ -59,7 +59,7 @@ Reference the SDK inside of your `.html` page using:
 
 ### Dependencies
 
-Teams client SDK depends on [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) type. If you support older browsers and devices which may not yet provide it natively (e.g. IE 11), you need to provide a global polyfill, such as [es6-promise](https://www.npmjs.com/package/es6-promise), in your bundled application. If you're using a script tag to reference the Teams client SDK, you need to make sure the polyfill is included and initialized before the Teams client SDK is.
+Teams client library depends on [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) type. If you support older browsers and devices which may not yet provide it natively (e.g. IE 11), you need to provide a global polyfill, such as [es6-promise](https://www.npmjs.com/package/es6-promise), in your bundled application. If you're using a script tag to reference the Teams client library, you need to make sure the polyfill is included and initialized before the Teams client library is initialized.
 
 ## Examples
 
@@ -67,7 +67,7 @@ Stay tuned for examples coming soon.
 
 ## Testing
 
-The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client SDK APIs.
+The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client library APIs.
 
 ## Troubleshooting
 
