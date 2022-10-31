@@ -10,8 +10,14 @@ export enum MatcherType {
 // The number of assertions used changes depending on how many arguments are being validated, so
 // you have to pass in the number of arguments being validated.
 // The value returned from this function can be used in calls to expect.assertions() if you have them.
-export function getNumberOfAssertionsUsedToValidateRequest(numberOfArgumentsBeingValidated: number): number {
-  return 2 + (numberOfArgumentsBeingValidated === 0 ? 0 : 2 + numberOfArgumentsBeingValidated);
+export function getCountOfAssertionsUsedToValidateRequest(numberOfArgumentsBeingValidated: number): number {
+  return (
+    countOfTestAssertionsRegardlessOfNumberOfArgumentsBeingValidated +
+    (numberOfArgumentsBeingValidated === 0
+      ? 0
+      : countOfTestAssertionsUsedWhenThereAreArgumentsToValidateRegardlessOfHowMany +
+        countOfTestAssertionsUsedToValidateEachArgument * numberOfArgumentsBeingValidated)
+  );
 }
 
 // Used to validate a request object you are expecting to contain no arguments.
@@ -23,6 +29,10 @@ export function validateRequestWithoutArguments(request: MessageRequest | null, 
  * for null and undefined as part of validation and then using those values after testing them. */
 /* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+const countOfTestAssertionsRegardlessOfNumberOfArgumentsBeingValidated = 2;
+const countOfTestAssertionsUsedWhenThereAreArgumentsToValidateRegardlessOfHowMany = 2;
+const countOfTestAssertionsUsedToValidateEachArgument = 1;
 
 // Used to validate a request object you are expecting to contain arguments.
 export function validateExpectedArgumentsInRequest(
