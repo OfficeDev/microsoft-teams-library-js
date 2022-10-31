@@ -3,8 +3,8 @@ import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import {
   _minRuntimeConfigToUninitialize,
-  generateBackCompatRuntimeConfig,
   _uninitializedRuntime,
+  generateBackCompatRuntimeConfig,
 } from '../../src/public/runtime';
 import { webStorage } from '../../src/public/webStorage';
 import { FramelessPostMocks } from '../framelessPostMocks';
