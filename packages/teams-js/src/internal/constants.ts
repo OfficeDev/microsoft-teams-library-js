@@ -175,3 +175,12 @@ export const teamsDeepLinkProtocol = 'https';
  * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkHost = 'teams.microsoft.com';
+
+/**
+ * @hidden
+ * Error thrown when the {@linkcode app.initialize} has not yet successfully completed
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const errorLibraryNotInitialized: Error = new Error('The library has not yet been initialized');

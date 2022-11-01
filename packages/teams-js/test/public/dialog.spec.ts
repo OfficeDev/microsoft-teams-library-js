@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
@@ -808,7 +809,7 @@ describe('Dialog', () => {
 
       it('should not be supported before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.bot.isSupported()).toThrowError('The library has not yet been initialized');
+        expect(() => dialog.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
   });

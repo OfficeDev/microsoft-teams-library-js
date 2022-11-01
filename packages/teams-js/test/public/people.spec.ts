@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -51,7 +52,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople()).toThrowError('The library has not yet been initialized');
+      expect(() => people.selectPeople()).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -169,7 +170,7 @@ describe('people', () => {
 
     it('people.isSupported should throw if called before initialization', () => {
       framedMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => people.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => people.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -180,7 +181,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => people.selectPeople(() => {})).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

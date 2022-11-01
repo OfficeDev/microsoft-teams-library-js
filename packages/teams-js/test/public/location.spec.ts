@@ -1,4 +1,4 @@
-import { locationAPIsRequiredVersion } from '../../src/internal/constants';
+import { errorLibraryNotInitialized, locationAPIsRequiredVersion } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -56,15 +56,13 @@ describe('location', () => {
 
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => location.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => location.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('getLocation API', () => {
     it('should not allow getLocation calls before initialization', () => {
-      expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(errorLibraryNotInitialized);
     });
     it('getLocation call in default version of platform support fails', () => {
       framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
@@ -208,9 +206,7 @@ describe('location', () => {
   });
   describe('Testing showLocation API', () => {
     it('should not allow showLocation calls before initialization', () => {
-      expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(errorLibraryNotInitialized);
     });
 
     it('showLocation call in default version of platform support fails', () => {

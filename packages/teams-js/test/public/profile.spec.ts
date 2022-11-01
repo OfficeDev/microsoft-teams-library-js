@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
@@ -29,13 +30,13 @@ describe('profile', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       desktopPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => profile.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => profile.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('showProfile', () => {
     it('should not allow showProfile calls before initialization', () => {
-      expect(() => profile.showProfile(undefined)).toThrowError('The library has not yet been initialized');
+      expect(() => profile.showProfile(undefined)).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

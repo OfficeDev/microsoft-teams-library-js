@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { appEntity } from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -31,7 +32,7 @@ describe('appEntity', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => appEntity.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => appEntity.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -39,9 +40,7 @@ describe('appEntity', () => {
     const allowedContexts = [FrameContexts.content];
 
     it('appEntity.selectAppEntity should not allow calls before initialization', () => {
-      expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

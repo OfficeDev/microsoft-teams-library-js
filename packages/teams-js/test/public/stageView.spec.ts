@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ErrorCode } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -44,13 +45,13 @@ describe('stageView', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => stageView.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => stageView.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('open', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(stageView.open(stageViewParams)).rejects.toThrowError('The library has not yet been initialized');
+      await expect(stageView.open(stageViewParams)).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((frameContext) => {

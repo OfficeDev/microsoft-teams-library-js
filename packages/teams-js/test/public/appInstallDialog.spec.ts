@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
@@ -30,12 +31,12 @@ describe('appInstallDialog', () => {
 
   it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(() => appInstallDialog.isSupported()).toThrowError('The library has not yet been initialized');
+    expect(() => appInstallDialog.isSupported()).toThrowError(errorLibraryNotInitialized);
   });
 
   it('should not allow openAppInstallDialog before initialization', async () => {
     await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
-      'The library has not yet been initialized',
+      errorLibraryNotInitialized,
     );
   });
 

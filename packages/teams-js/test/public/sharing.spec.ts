@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
@@ -371,7 +372,7 @@ describe('sharing_v2', () => {
 
     it('sharing.isSupported should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => sharing.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => sharing.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 

@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -36,7 +37,7 @@ describe('chat', () => {
   describe('Testing chat.isSupported function', () => {
     it('should not be supported before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => chat.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => chat.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -46,7 +47,7 @@ describe('chat', () => {
         user: 'someUPN',
         message: 'someMessage',
       };
-      return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+      return expect(chat.openChat(chatRequest)).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     it('should not allow calls from settings context', async () => {
@@ -127,7 +128,7 @@ describe('chat', () => {
         users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
       };
-      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     it('should not allow calls when no members are provided', () => {

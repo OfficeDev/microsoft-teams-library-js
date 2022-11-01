@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ChildAppWindow, ParentAppWindow } from '../../src/public';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
@@ -37,7 +38,7 @@ describe('appWindow', () => {
     describe('ChildAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => childAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
+        expect(() => childAppWindow.postMessage('message')).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -62,7 +63,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => childAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          errorLibraryNotInitialized,
         );
       });
 
@@ -91,7 +92,7 @@ describe('appWindow', () => {
     describe('ParentAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => parentAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
+        expect(() => parentAppWindow.postMessage('message')).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -135,7 +136,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => parentAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          errorLibraryNotInitialized,
         );
       });
 

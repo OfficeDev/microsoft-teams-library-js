@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
 import { FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
@@ -28,7 +29,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigation.returnFocus function', () => {
     it('navigation.returnFocus should not allow calls before initialization', () => {
-      expect(() => returnFocus(true)).toThrowError('The library has not yet been initialized');
+      expect(() => returnFocus(true)).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -65,7 +66,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigation.navigateToTab function', () => {
     it('navigation.navigateToTab should not allow calls before initialization', () => {
-      expect(() => navigateToTab(null)).toThrowError('The library has not yet been initialized');
+      expect(() => navigateToTab(null)).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -116,9 +117,7 @@ describe('MicrosoftTeams-Navigation', () => {
     ];
 
     it('navigation.navigateCrossDomain should not allow calls before initialization', () => {
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -201,7 +200,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigate.navigateBack function', () => {
     it('navigation.navigateBack should not allow calls before initialization', () => {
-      expect(() => navigateBack()).toThrowError('The library has not yet been initialized');
+      expect(() => navigateBack()).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

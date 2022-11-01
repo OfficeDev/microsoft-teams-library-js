@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { NotificationTypes, ShowNotificationParameters } from '../../src/private/interfaces';
 import { notifications } from '../../src/private/notifications';
 import { app } from '../../src/public/app';
@@ -30,7 +31,7 @@ describe('notifications', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => notifications.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => notifications.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -40,9 +41,7 @@ describe('notifications', () => {
       notificationType: NotificationTypes.fileDownloadStart,
     };
     it('should not allow calls before initialization', () => {
-      expect(() => notifications.showNotification(showNotificationParameters)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => notifications.showNotification(showNotificationParameters)).toThrowError(errorLibraryNotInitialized);
     });
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {

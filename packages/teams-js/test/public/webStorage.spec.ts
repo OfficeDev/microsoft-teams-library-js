@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -35,7 +36,7 @@ describe('webStorage', () => {
 
   describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
     it('should not allow calls before initialization', () => {
-      expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError('The library has not yet been initialized');
+      expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError(errorLibraryNotInitialized);
     });
 
     const supportedMobileClientTypes = [HostClientType.ios, HostClientType.android];
@@ -136,7 +137,7 @@ describe('webStorage', () => {
 
     it('webStorage.isSupported should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => webStorage.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => webStorage.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
   describe('Frameless - isSupported', () => {
@@ -154,7 +155,7 @@ describe('webStorage', () => {
 
     it('webStorage.isSupported should throw if called before initialization', () => {
       framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => webStorage.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => webStorage.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 });

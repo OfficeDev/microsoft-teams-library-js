@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
@@ -32,11 +33,11 @@ describe('call', () => {
 
   it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(() => call.isSupported()).toThrowError('The library has not yet been initialized');
+    expect(() => call.isSupported()).toThrowError(errorLibraryNotInitialized);
   });
 
   it('should not allow calls before initialization', async () => {
-    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError(errorLibraryNotInitialized);
   });
 
   it('should not allow calls if not supported', async () => {

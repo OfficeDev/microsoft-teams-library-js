@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { logs } from '../../src/private/logs';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -32,7 +33,7 @@ describe('logs', () => {
   describe('Testings logs.isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => logs.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => logs.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -42,7 +43,7 @@ describe('logs', () => {
         logs.registerGetLogHandler(() => {
           return '';
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

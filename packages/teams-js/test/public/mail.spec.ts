@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -41,9 +42,7 @@ describe('mail', () => {
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
-      await mail
-        .openMailItem(openMailItemParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+      await mail.openMailItem(openMailItemParams).catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
     });
 
     Object.keys(FrameContexts)
@@ -170,9 +169,7 @@ describe('mail', () => {
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
-      await mail
-        .composeMail(composeMailParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+      await mail.composeMail(composeMailParams).catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
     });
 
     Object.keys(FrameContexts)
@@ -279,7 +276,7 @@ describe('mail', () => {
 
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => mail.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => mail.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 });

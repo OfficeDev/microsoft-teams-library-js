@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -43,7 +44,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem(openCalendarItemParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
     });
 
     Object.keys(FrameContexts)
@@ -177,7 +178,7 @@ describe('calendar', () => {
 
       await calendar
         .composeMeeting(composeMeetingParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
     });
 
     Object.keys(FrameContexts)
@@ -315,7 +316,7 @@ describe('calendar', () => {
 
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => calendar.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => calendar.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 });

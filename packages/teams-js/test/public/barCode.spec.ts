@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { barCode } from '../../src/public/barCode';
@@ -41,13 +42,13 @@ describe('barCode', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => barCode.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => barCode.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('Testing scanBarCode API', () => {
     it('should not allow scanBarCode calls before initialization', () => {
-      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError('The library has not yet been initialized');
+      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -140,7 +141,7 @@ describe('barCode', () => {
 
   describe('Testing HasPermisison API', () => {
     it('should not allow hasPermission calls before initialization', () => {
-      return expect(() => barCode.hasPermission()).toThrowError('The library has not yet been initialized');
+      return expect(() => barCode.hasPermission()).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -220,7 +221,7 @@ describe('barCode', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
-          expect(() => barCode.requestPermission()).toThrowError('The library has not yet been initialized');
+          expect(() => barCode.requestPermission()).toThrowError(errorLibraryNotInitialized);
         });
 
         it('requestPermission call in default version of platform support fails', async () => {

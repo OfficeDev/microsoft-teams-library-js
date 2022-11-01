@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -38,7 +39,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError('The library has not yet been initialized');
+          ).toThrowError(errorLibraryNotInitialized);
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -96,15 +97,13 @@ describe('Testing monetization capability', () => {
       describe('isSupported', () => {
         it('should throw if called before initialization', () => {
           utils.setRuntimeConfig(_uninitializedRuntime);
-          expect(() => monetization.isSupported()).toThrowError('The library has not yet been initialized');
+          expect(() => monetization.isSupported()).toThrowError(errorLibraryNotInitialized);
         });
       });
 
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(errorLibraryNotInitialized);
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -175,7 +174,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError('The library has not yet been initialized');
+          ).toThrowError(errorLibraryNotInitialized);
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -239,9 +238,7 @@ describe('Testing monetization capability', () => {
 
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(errorLibraryNotInitialized);
         });
 
         Object.values(FrameContexts).forEach((context) => {

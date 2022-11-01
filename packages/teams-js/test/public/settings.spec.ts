@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { FrameContexts } from '../../src/public';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
@@ -95,7 +96,7 @@ describe('settings', () => {
         settings.getSettings((settings) => {
           expect(settings).toBe(expectedSettings);
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -136,7 +137,7 @@ describe('settings', () => {
     it('settings.setSettings should not allow calls before initialization', () => {
       expect(() => {
         settings.setSettings(settingsObj);
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -173,7 +174,7 @@ describe('settings', () => {
         settings.registerOnSaveHandler(() => {
           handlerCalled = true;
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {

@@ -1,4 +1,4 @@
-import { permissionsAPIsRequiredVersion } from '../../src/internal/constants';
+import { errorLibraryNotInitialized, permissionsAPIsRequiredVersion } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -45,13 +45,13 @@ describe('geoLocation', () => {
   describe('Testing isSupported', () => {
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => geoLocation.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => geoLocation.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('Testing getCurrentLocation API', () => {
     it('should not allow getCurrentLocation calls before initialization', () => {
-      expect(() => geoLocation.getCurrentLocation()).toThrowError('The library has not yet been initialized');
+      expect(() => geoLocation.getCurrentLocation()).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -137,7 +137,7 @@ describe('geoLocation', () => {
 
   describe('Testing HasPermisison API', () => {
     it('should not allow hasPermission calls before initialization', () => {
-      return expect(() => geoLocation.hasPermission()).toThrowError('The library has not yet been initialized');
+      return expect(() => geoLocation.hasPermission()).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -236,7 +236,7 @@ describe('geoLocation', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
-          expect(() => geoLocation.requestPermission()).toThrowError('The library has not yet been initialized');
+          expect(() => geoLocation.requestPermission()).toThrowError(errorLibraryNotInitialized);
         });
 
         it('requestPermission call in default version of platform support fails', async () => {
@@ -332,14 +332,12 @@ describe('geoLocation', () => {
   describe('Testing geoLocation.map subcapability', () => {
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => geoLocation.map.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => geoLocation.map.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
 
     describe('Testing geoLocation.map.showLocation API', () => {
       it('should not allow showLocation calls before initialization', () => {
-        expect(() => geoLocation.map.showLocation(defaultLocation)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => geoLocation.map.showLocation(defaultLocation)).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -470,7 +468,7 @@ describe('geoLocation', () => {
     });
     describe('Testing geoLocation.map.chooseLocation API', () => {
       it('should not allow chooseLocation calls before initialization', () => {
-        expect(() => geoLocation.map.chooseLocation()).toThrowError('The library has not yet been initialized');
+        expect(() => geoLocation.map.chooseLocation()).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {

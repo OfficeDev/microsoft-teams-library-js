@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -30,7 +31,7 @@ describe('conversations', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => conversations.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => conversations.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -42,7 +43,7 @@ describe('conversations', () => {
         entityId: 'someEntityId',
       };
       return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
 
@@ -119,7 +120,7 @@ describe('conversations', () => {
 
   describe('closeConversation', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => conversations.closeConversation()).toThrowError('The library has not yet been initialized');
+      expect(() => conversations.closeConversation()).toThrowError(errorLibraryNotInitialized);
     });
 
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
@@ -143,7 +144,7 @@ describe('conversations', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      return expect(conversations.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+      return expect(conversations.getChatMembers()).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     it('getChatMembers should throw error if conversations capability is not supported in runtime config', async () => {

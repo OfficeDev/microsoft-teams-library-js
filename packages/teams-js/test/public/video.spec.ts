@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -33,7 +34,7 @@ describe('video', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => video.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => video.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 

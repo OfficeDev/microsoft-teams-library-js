@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
@@ -55,15 +56,13 @@ describe('meetingRoom', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => meetingRoom.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => meetingRoom.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(errorLibraryNotInitialized);
     });
 
     it('getPairedMeetingRoomInfo should throw error when meetingRoom is not supported.', async () => {
@@ -130,7 +129,7 @@ describe('meetingRoom', () => {
   describe('sendCommandToPairedMeetingRoom', () => {
     it('should not allow calls before initialization', () => {
       return expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
 
@@ -196,7 +195,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler)).toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
 
@@ -259,7 +258,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler)).toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
     it('registerMeetingRoomStatesUpdateHandler should throw error when meetingRoom is not supported.', async () => {

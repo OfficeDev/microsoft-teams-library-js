@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -44,7 +45,7 @@ describe('media', () => {
 
   describe('captureImage', () => {
     it('should not allow captureImage calls before initialization', () => {
-      expect(() => media.captureImage(emptyCallback)).toThrowError('The library has not yet been initialized');
+      expect(() => media.captureImage(emptyCallback)).toThrowError(errorLibraryNotInitialized);
     });
 
     it('captureImage call in default version of platform support fails', async () => {
