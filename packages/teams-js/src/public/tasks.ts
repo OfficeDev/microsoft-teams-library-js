@@ -33,9 +33,9 @@ export namespace tasks {
   ): IAppWindow {
     const dialogSubmitHandler = submitHandler
       ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
-        (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
-    if (taskInfo.card !== undefined || taskInfo.url === undefined) {
+    if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
