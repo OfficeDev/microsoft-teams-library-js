@@ -314,14 +314,8 @@ export namespace dialog {
      * Limited to Microsoft-internal use
      */
     export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
-      const dialogInfo: DialogInfo = {
-        url: botUrlDialogInfo.url,
-        height: botUrlDialogInfo.size ? botUrlDialogInfo.size.height : DialogDimension.Small,
-        width: botUrlDialogInfo.size ? botUrlDialogInfo.size.width : DialogDimension.Small,
-        title: botUrlDialogInfo.title,
-        fallbackUrl: botUrlDialogInfo.fallbackUrl,
-        completionBotId: botUrlDialogInfo.completionBotId,
-      };
+      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(botUrlDialogInfo);
+      dialogInfo.completionBotId = botUrlDialogInfo.completionBotId;
       return dialogInfo;
     }
   }
@@ -503,13 +497,8 @@ export namespace dialog {
     export function getDialogInfoFromBotAdaptiveCardDialogInfo(
       botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
     ): DialogInfo {
-      const dialogInfo: DialogInfo = {
-        card: botAdaptiveCardDialogInfo.card,
-        height: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.height : DialogDimension.Small,
-        width: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.width : DialogDimension.Small,
-        title: botAdaptiveCardDialogInfo.title,
-        completionBotId: botAdaptiveCardDialogInfo.completionBotId,
-      };
+      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+      dialogInfo.completionBotId = botAdaptiveCardDialogInfo.completionBotId;
       return dialogInfo;
     }
 
