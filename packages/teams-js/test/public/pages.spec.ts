@@ -1,4 +1,4 @@
-import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { DOMMessageEvent, MessageResponse } from '../../src/internal/interfaces';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -13,7 +13,7 @@ import {
   validateExpectedArgumentsInRequest,
   validateRequestWithoutArguments,
 } from '../resultValidation';
-import { MessageResponse, Utils } from '../utils';
+import { Utils } from '../utils';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
