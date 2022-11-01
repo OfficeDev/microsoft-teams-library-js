@@ -760,13 +760,13 @@ export interface BaseDialogInfo {
   size: DialogSize;
 
   /**
-   * Title of the task module.
+   * Title of the dialog module.
    */
   title?: string;
 }
 
 /**
- * Data structure to describe dialog information needed to open a adaptive card based dialog.
+ * Data structure to describe dialog information needed to open an adaptive card-based dialog.
  */
 export interface AdaptiveCardDialogInfo extends BaseDialogInfo {
   /**
@@ -780,7 +780,7 @@ export interface AdaptiveCardDialogInfo extends BaseDialogInfo {
  */
 export interface BotAdaptiveCardDialogInfo extends AdaptiveCardDialogInfo {
   /**
-   * Specifies a bot ID to send the result of the user's interaction with the task module.
+   * Specifies a bot ID to send the result of the user's interaction with the dialog module.
    * The bot will receive a task/complete invoke event with a JSON object
    * in the event payload.
    */
@@ -1015,7 +1015,7 @@ export interface HostVersionsInfo {
 }
 
 /**
- * Represents the major and minor versions of the AdaptiveCard schema
+ * Represents the major and minor versions of the AdaptiveCard schema in the current host
  */
 export interface AdaptiveCardVersion {
   majorVersion: number;

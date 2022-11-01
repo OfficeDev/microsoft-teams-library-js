@@ -106,3 +106,12 @@ export enum ChannelType {
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
 
 export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };
+export function isHostAdaptiveCardSchemaVersionUnsupported(
+  hostAdaptiveCardSchemaVersion: AdaptiveCardVersion,
+): boolean {
+  return (
+    hostAdaptiveCardSchemaVersion.majorVersion < minAdaptiveCardVersion.majorVersion ||
+    (hostAdaptiveCardSchemaVersion.majorVersion == minAdaptiveCardVersion.majorVersion &&
+      hostAdaptiveCardSchemaVersion.minorVersion < minAdaptiveCardVersion.minorVersion)
+  );
+}

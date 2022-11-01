@@ -1,10 +1,13 @@
-/* eslint-disable strict-null-checks/all */
 import { app } from '../../src/public/app';
 import { TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('tasks', () => {
   // Use to send a mock message from the app.

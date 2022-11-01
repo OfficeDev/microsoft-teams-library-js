@@ -6,7 +6,14 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { compareSDKVersions } from '../internal/utils';
+import {
+  DialogDimension,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+  isHostAdaptiveCardSchemaVersionUnsupported,
+  minAdaptiveCardVersion,
+} from './constants';
 import {
   AdaptiveCardDialogInfo,
   BotAdaptiveCardDialogInfo,
@@ -398,7 +405,17 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.dialog ? (runtime.supports.dialog.card ? true : false) : false;
+      const isAdaptiveCardVersionSupported =
+        runtime.hostVersionsInfo &&
+        runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&
+        !isHostAdaptiveCardSchemaVersionUnsupported(runtime.hostVersionsInfo.adaptiveCardSchemaVersion);
+      return isAdaptiveCardVersionSupported
+        ? runtime.supports.dialog
+          ? runtime.supports.dialog.card
+            ? true
+            : false
+          : false
+        : false;
     }
 
     /**
@@ -410,7 +427,7 @@ export namespace dialog {
       /**
        * Allows an app to open an adaptive card-based dialog module using bot.
        *
-       * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId {@link BotAdaptiveCardDialogInfo}.
+       * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
        * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
        *
        * @returns a function that can be used to send messages to the dialog.
@@ -439,10 +456,16 @@ export namespace dialog {
        * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
        */
       export function isSupported(): boolean {
-        return runtime.supports.dialog
-          ? runtime.supports.dialog.card
-            ? runtime.supports.dialog.card.bot
-              ? true
+        const isAdaptiveCardVersionSupported =
+          runtime.hostVersionsInfo &&
+          runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&
+          !isHostAdaptiveCardSchemaVersionUnsupported(runtime.hostVersionsInfo.adaptiveCardSchemaVersion);
+        return isAdaptiveCardVersionSupported
+          ? runtime.supports.dialog
+            ? runtime.supports.dialog.card
+              ? runtime.supports.dialog.card.bot
+                ? true
+                : false
               : false
             : false
           : false;

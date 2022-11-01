@@ -1,8 +1,12 @@
-/* eslint-disable strict-null-checks/all */
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import {
+  DialogDimension,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+  minAdaptiveCardVersion,
+} from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
@@ -10,13 +14,18 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
+
 describe('Dialog', () => {
   // Use to send a mock message from the app.
 
   const framedMock = new Utils();
   const framelessMock = new FramelessPostMocks();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const emptyCallback = (): void => {};
+  const emptyCallback = (): void => { };
 
   beforeEach(() => {
     framedMock.processMessage = null;
@@ -1075,6 +1084,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
+            framedMock.setRuntimeConfig({
+              apiVersion: 1,
+              hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+              supports: { dialog: { card: {} } },
+            });
             dialog.adaptiveCard.open(adaptiveCardDialogInfo, () => {
               return;
             });
@@ -1096,7 +1110,7 @@ describe('Dialog', () => {
             }
           });
 
-          it(`FRAMELESS: should throw error when dialog is supported and adaptiveCard is notin ${context} context`, async () => {
+          it(`FRAMELESS: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
             expect.assertions(4);
@@ -1109,6 +1123,11 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
+            framedMock.setRuntimeConfig({
+              apiVersion: 1,
+              hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+              supports: { dialog: { card: {} } },
+            });
             dialog.adaptiveCard.open(adaptiveCardDialogInfo, () => {
               return;
             });
@@ -1121,6 +1140,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: {} } },
+              });
               expect.assertions(2);
               const submitString = 'succesfullySubmit';
 
@@ -1137,6 +1161,11 @@ describe('Dialog', () => {
 
           it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: {} } },
+              });
               expect.assertions(5);
               const submitString = 'succesfullySubmit';
               dialog.adaptiveCard.open(adaptiveCardDialogInfo, (result: dialog.ISdkResponse) => {
@@ -1158,6 +1187,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: {} } },
+              });
               expect.assertions(2);
               const error = { errorCode: 500, message: 'Internal Error Occured' };
 
@@ -1174,6 +1208,11 @@ describe('Dialog', () => {
 
           it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: {} } },
+              });
               expect.assertions(5);
               dialog.adaptiveCard.open(adaptiveCardDialogInfo, (result: dialog.ISdkResponse) => {
                 expect(result.result).toBeFalsy();
@@ -1221,11 +1260,19 @@ describe('Dialog', () => {
       });
 
       it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is supported and adaptiveCard is not', () => {
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+        framedMock.setRuntimeConfig({
+          apiVersion: 1,
+          hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+          supports: { dialog: {} },
+        });
         expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
       });
       it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', () => {
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
+        framedMock.setRuntimeConfig({
+          apiVersion: 1,
+          hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+          supports: { dialog: { card: {} } },
+        });
         expect(dialog.adaptiveCard.isSupported()).toBeTruthy();
       });
     });
@@ -1284,6 +1331,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
+            framedMock.setRuntimeConfig({
+              apiVersion: 1,
+              hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+              supports: { dialog: { card: { bot: {} } } },
+            });
             dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo, () => {
               return;
             });
@@ -1329,6 +1381,11 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
+            framedMock.setRuntimeConfig({
+              apiVersion: 1,
+              hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+              supports: { dialog: { card: { bot: {} } } },
+            });
             dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo, () => {
               return;
             });
@@ -1341,6 +1398,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: { bot: {} } } },
+              });
               expect.assertions(2);
 
               const submitString = 'succesfullySubmit';
@@ -1358,6 +1420,11 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: { bot: {} } } },
+              });
               const submitString = 'succesfullySubmit';
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo, (result: dialog.ISdkResponse) => {
@@ -1379,6 +1446,11 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: { bot: {} } } },
+              });
               expect.assertions(2);
 
               const error = { errorCode: 500, message: 'Internal Error Occured' };
@@ -1396,6 +1468,11 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
+              framedMock.setRuntimeConfig({
+                apiVersion: 1,
+                hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+                supports: { dialog: { card: { bot: {} } } },
+              });
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo, (result: dialog.ISdkResponse) => {
                 expect(result.result).toBeFalsy();
                 expect(result.err).toBe(error);
@@ -1441,22 +1518,38 @@ describe('Dialog', () => {
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+          framedMock.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: {} },
+          });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
+          framedMock.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: {} },
+          });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+          framedMock.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: {} },
+          });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', () => {
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: { bot: {} } } } });
+          framedMock.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { card: { bot: {} } } },
+          });
           expect(dialog.adaptiveCard.bot.isSupported()).toBeTruthy();
         });
       });
