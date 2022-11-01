@@ -67,7 +67,7 @@ export interface IRuntime {
  * Limited to Microsoft-internal use
  */
 export const _uninitializedRuntime = {
-  apiVersion: 1,
+  apiVersion: -1,
   supports: {},
 };
 
