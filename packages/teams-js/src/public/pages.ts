@@ -221,8 +221,9 @@ export namespace pages {
 
   /**
    * Checks if the pages capability is supported by the host
-   * @returns true if the pages capability is enabled in runtime.supports.pages and
-   * false if it is disabled
+   * @returns boolean to represent whether the appEntity capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
     ensureInitialized();
@@ -315,8 +316,9 @@ export namespace pages {
 
     /**
      * Checks if the pages.tab capability is supported by the host
-     * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.tab capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -586,8 +588,9 @@ export namespace pages {
 
     /**
      * Checks if the pages.config capability is supported by the host
-     * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.config capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -668,8 +671,9 @@ export namespace pages {
 
     /**
      * Checks if the pages.backStack capability is supported by the host
-     * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.backStack capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -713,11 +717,11 @@ export namespace pages {
     }
     /**
      * @hidden
-     * Hide from docs
-     * ------
+     *
      * Checks if the pages.fullTrust capability is supported by the host
-     * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.fullTrust capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -770,8 +774,9 @@ export namespace pages {
 
     /**
      * Checks if pages.appButton capability is supported by the host
-     * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.appButton capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -853,8 +858,9 @@ export namespace pages {
 
     /**
      * Checks if pages.currentApp capability is supported by the host
-     * @returns true if the pages.currentApp capability is enabled in runtime.supports.pages.currentApp and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.currentApp capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully complete
      *
      * @beta
      */

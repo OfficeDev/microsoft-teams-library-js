@@ -133,9 +133,10 @@ export namespace chat {
   }
 
   /**
-   * Checks if chat capability is supported by the host
-   *
+   * Checks if the chat capability is supported by the host
    * @returns boolean to represent whether the chat capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */

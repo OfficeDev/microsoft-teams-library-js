@@ -43,7 +43,10 @@ export namespace logs {
   /**
    * @hidden
    *
+   * Checks if the logs capability is supported by the host
    * @returns boolean to represent whether the logs capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use

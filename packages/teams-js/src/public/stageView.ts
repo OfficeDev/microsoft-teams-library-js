@@ -72,8 +72,10 @@ export namespace stageView {
   /**
    * Checks if stageView capability is supported by the host
    * @beta
-   * @returns true if the stageView capability is enabled in runtime.supports.stageView and
-   * false if it is disabled
+   * @returns boolean to represent whether the stageView capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
+   *
    */
   export function isSupported(): boolean {
     ensureInitialized();

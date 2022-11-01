@@ -421,7 +421,7 @@ describe('Dialog', () => {
         expect(dialog.update.isSupported()).toBeTruthy();
       });
 
-      it('should not be supported before initialization', () => {
+      it('should throw before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
         expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
       });

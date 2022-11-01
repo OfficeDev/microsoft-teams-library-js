@@ -266,7 +266,10 @@ export namespace meetingRoom {
   /**
    * @hidden
    *
+   * Checks if the meetingRoom capability is supported by the host
    * @returns boolean to represent whether the meetingRoom capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use

@@ -21,8 +21,9 @@ export namespace webStorage {
 
   /**
    * Checks if webStorage capability is supported by the host
-   * @returns true if the webStorage capability is enabled in runtime.supports.webStorage and
-   * false if it is disabled
+   * @returns boolean to represent whether the webStorage capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */

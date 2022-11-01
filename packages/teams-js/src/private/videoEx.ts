@@ -212,16 +212,17 @@ export namespace videoEx {
 
   /**
    * @hidden
+   *
    * Checks if video capability is supported by the host
    * @beta
    *
-   * @returns true if the video capability is enabled in runtime.supports.video and
-   * false if it is disabled
+   * @returns boolean to represent whether the video capability is supported
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return video.isSupported();
   }
 

@@ -93,10 +93,11 @@ export namespace teams {
 
   /**
    * @hidden
-   * Checks if teams capability is supported by the host
    *
-   * @returns true if the teams capability is enabled in runtime.supports.teams and
-   * false if it is disabled
+   * Checks if teams capability is supported by the host
+   * @returns boolean to represent whether the teams capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -154,10 +155,11 @@ export namespace teams {
       }
       /**
        * @hidden
-       * Checks if teams.fullTrust.joinedTeams capability is supported by the host
        *
-       * @returns true if the teams.fullTrust.joinedTeams capability is enabled in
-       * runtime.supports.teams.fullTrust.joinedTeams and false if it is disabled
+       * Checks if teams.fullTrust.joinedTeams capability is supported by the host
+       * @returns boolean to represent whether the teams.fullTrust.joinedTeams capability is supported
+       *
+       * @throws if {@linkcode app.initialize} has not successfully completed
        *
        * @internal
        * Limited to Microsoft-internal use
@@ -196,9 +198,11 @@ export namespace teams {
 
     /**
      * @hidden
+     *
      * Checks if teams.fullTrust capability is supported by the host
-     * @returns true if the teams.fullTrust capability is enabled in runtime.supports.teams.fullTrust and
-     * false if it is disabled
+     * @returns boolean to represent whether the teams.fullTrust capability is supported
+     *
+     * @throws if {@linkcode app.initialize} has not successfully completed
      *
      * @internal
      * Limited to Microsoft-internal use

@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -118,12 +119,14 @@ export namespace search {
 
   /**
    * Checks if search capability is supported by the host
-   * @returns true if the search capability is supported by the host and false otherwise
-   * false if it is disabled
+   * @returns boolean to represent whether the search capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.search ? true : false;
   }
 }

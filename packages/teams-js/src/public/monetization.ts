@@ -88,6 +88,14 @@ export namespace monetization {
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 
+  /**
+   * @hidden
+   *
+   * Checks if the monetization capability is supported by the host
+   * @returns boolean to represent whether the monetization capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
     ensureInitialized();
     return runtime.supports.monetization ? true : false;

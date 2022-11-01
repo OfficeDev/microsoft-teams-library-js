@@ -63,6 +63,12 @@ export namespace call {
     });
   }
 
+  /**
+   * Checks if the call capability is supported by the host
+   * @returns boolean to represent whether the call capability is supported
+   *
+   * @throws if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
     ensureInitialized();
     return runtime.supports.call ? true : false;
