@@ -661,6 +661,9 @@ describe('Testing pages module', () => {
       it('pages.registerFullScreenHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFullScreenHandler(emptyCallback)).toThrowError(errorLibraryNotInitialized);
       });
+      it('pages.registerFullScreenHandler should not throw if called before initialization with no handler', () => {
+        expect(() => pages.registerFullScreenHandler(null)).not.toThrow();
+      });
       Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
@@ -1072,6 +1075,10 @@ describe('Testing pages module', () => {
           expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(errorLibraryNotInitialized);
         });
 
+        it('pages.registerOnSaveHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.config.registerOnSaveHandler(null)).not.toThrow();
+        });
+
         Object.values(FrameContexts).forEach((context) => {
           if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`pages.config.registerOnSaveHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
@@ -1242,6 +1249,10 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerOnRemoveHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(errorLibraryNotInitialized);
+        });
+
+        it('pages.config.registerOnRemoveHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.config.registerOnRemoveHandler(null)).not.toThrow();
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1492,6 +1503,9 @@ describe('Testing pages module', () => {
         });
         it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
           expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(errorLibraryNotInitialized);
+        });
+        it('pages.backStack.registerBackButtonHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(null)).not.toThrow();
         });
         Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
