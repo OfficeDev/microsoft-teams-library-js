@@ -29,18 +29,19 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash: |
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  displayName: Install Homebrew
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    displayName: Install Homebrew
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - bash: |
-    brew install xctesthtmlreport
-  displayName: "Install XCTestHtmlReport for publishing result"
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
+      brew install xctesthtmlreport
+    displayName: "Install XCTestHtmlReport for publishing result"
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - bash : 'sh build_sdk.sh'
-  displayName: "Build iOS SDK"
-  workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+    displayName: "Build iOS SDK"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+  
   - task: NodeTool@0
     inputs:
       versionSpec: "14.x"
@@ -76,9 +77,9 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
   - bash: 'sh generate_junit_report.sh'
-  displayName: "Generate report to be published"
-  workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
-  condition: succeededOrFailed()
+    displayName: "Generate report to be published"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+    condition: succeededOrFailed()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
