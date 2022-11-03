@@ -547,7 +547,7 @@ export namespace meeting {
      * along with contentUrl (overrides contentUrl populated in app manifest)
      * @throws standard Invalid Url error
      * @param shareInformation has two elements, one isVisible boolean flag and another
-     * optional string or null contentUrl, which will override contentUrl coming from Manifest
+     * optional string contentUrl, which will override contentUrl coming from Manifest
      * @beta
      */
     export function setOptions(shareInformation: ShareInformation): void {
