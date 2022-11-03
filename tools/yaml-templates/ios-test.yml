@@ -7,7 +7,7 @@ steps:
   - checkout: self
   # - checkout: $(parameters.iOSAppHostingSdkGitPath)@refs/heads/main
   #   persistCredentials: true
-  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}@refs/heads/main
     path: iOSHost
     persistCredentials: true
 
