@@ -1,3 +1,8 @@
+parameters:
+  - name: 'iOSAppHostingSdkGitPath'
+    default: none
+    type: string
+
 steps:
   - checkout: self
   # - checkout: $(parameters.iOSAppHostingSdkGitPath)@refs/heads/main
