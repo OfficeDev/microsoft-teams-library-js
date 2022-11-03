@@ -1,9 +1,9 @@
-resources:
-  repositories:
-  - repository: git://$(IOSAppHostingSdkGitPath)
-    type: git
-    name: 'iOS SDK'  # repository in Azure DevOps
-    ref: 'refs/heads/main'   
+# resources:
+#   repositories:
+#   - repository: git://$(IOSAppHostingSdkGitPath)
+#     type: git
+#     name: 'iOS SDK'  # repository in Azure DevOps
+#     ref: 'refs/heads/main'   
 
 variables:
   - group: InfoSec-SecurityResults
