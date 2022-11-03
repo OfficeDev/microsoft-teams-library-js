@@ -551,10 +551,10 @@ export namespace meeting {
      * @beta
      */
     export function setOptions(shareInformation: ShareInformation): void {
+      ensureInitialized(FrameContexts.sidePanel);
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
-      ensureInitialized(FrameContexts.sidePanel);
       sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
     }
   }
