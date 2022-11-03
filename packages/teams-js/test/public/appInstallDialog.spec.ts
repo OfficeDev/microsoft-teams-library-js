@@ -31,12 +31,12 @@ describe('appInstallDialog', () => {
 
   it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(() => appInstallDialog.isSupported()).toThrowError(errorLibraryNotInitialized);
+    expect(() => appInstallDialog.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should not allow openAppInstallDialog before initialization', async () => {
     await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
-      errorLibraryNotInitialized,
+      new Error(errorLibraryNotInitialized),
     );
   });
 

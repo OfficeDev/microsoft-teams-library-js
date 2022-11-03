@@ -38,7 +38,9 @@ describe('meeting', () => {
       );
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.toggleIncomingClientAudio(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.toggleIncomingClientAudio(emptyCallBack)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -121,7 +123,9 @@ describe('meeting', () => {
   describe('getIncomingClientAudioState', () => {
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.getIncomingClientAudioState(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.getIncomingClientAudioState(emptyCallBack)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     it('should not allow get incoming client audio calls with null callback', () => {
@@ -202,7 +206,7 @@ describe('meeting', () => {
       expect(() => meeting.getMeetingDetails(null)).toThrowError('[get meeting details] Callback cannot be null');
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.getMeetingDetails(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.getMeetingDetails(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
     const allowedContexts = [
       FrameContexts.sidePanel,
@@ -307,7 +311,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getAuthenticationTokenForAnonymousUser(emptyCallBack)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -393,7 +397,7 @@ describe('meeting', () => {
       expect(() => meeting.getLiveStreamState(null)).toThrowError('[get live stream state] Callback cannot be null');
     });
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.getLiveStreamState(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.getLiveStreamState(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -480,7 +484,7 @@ describe('meeting', () => {
 
     it('should fail when called before app is initialized', () => {
       expect(() => meeting.requestStartLiveStreaming(emptyCallBack, 'streamurl', 'streamkey')).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
@@ -572,7 +576,7 @@ describe('meeting', () => {
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStopLiveStreaming(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.requestStopLiveStreaming(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     const allowedContexts = [FrameContexts.sidePanel];
@@ -655,7 +659,9 @@ describe('meeting', () => {
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.registerLiveStreamChangedHandler(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.registerLiveStreamChangedHandler(emptyCallBack)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach((context) => {
@@ -699,7 +705,9 @@ describe('meeting', () => {
       );
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.shareAppContentToStage(emptyCallBack, '')).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.shareAppContentToStage(emptyCallBack, '')).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -787,7 +795,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getAppContentStageSharingCapabilities(emptyCallBack)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -878,7 +886,9 @@ describe('meeting', () => {
       );
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.stopSharingAppContentToStage(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.stopSharingAppContentToStage(emptyCallBack)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -961,7 +971,9 @@ describe('meeting', () => {
       );
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.getAppContentStageSharingState(emptyCallBack)).toThrowError(errorLibraryNotInitialized);
+      expect(() => meeting.getAppContentStageSharingState(emptyCallBack)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -1059,7 +1071,7 @@ describe('meeting', () => {
         meeting.registerSpeakingStateChangeHandler(() => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', async () => {
@@ -1131,7 +1143,7 @@ describe('meeting', () => {
         meeting.registerRaiseHandStateChangedHandler(() => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', async () => {
@@ -1207,7 +1219,7 @@ describe('meeting', () => {
         meeting.registerMeetingReactionReceivedHandler(() => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', async () => {

@@ -33,11 +33,11 @@ describe('call', () => {
 
   it('should throw if called before initialization', () => {
     utils.setRuntimeConfig(_uninitializedRuntime);
-    expect(() => call.isSupported()).toThrowError(errorLibraryNotInitialized);
+    expect(() => call.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should not allow calls before initialization', async () => {
-    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError(errorLibraryNotInitialized);
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should not allow calls if not supported', async () => {

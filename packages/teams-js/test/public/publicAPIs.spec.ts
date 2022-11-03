@@ -62,7 +62,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       getContext(() => {
         return;
       }),
-    ).toThrowError(errorLibraryNotInitialized);
+    ).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should successfully initialize', () => {
@@ -447,7 +447,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -571,7 +571,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -667,7 +667,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -836,7 +836,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerOnLoadHandler(() => {
           return false;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
     it('should successfully register handler', async () => {
       await utils.initializeWithContext(FrameContexts.content);
@@ -891,7 +891,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerBeforeUnloadHandler(() => {
           return false;
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a before unload handler', async () => {

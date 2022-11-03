@@ -45,7 +45,7 @@ describe('media', () => {
 
   describe('captureImage', () => {
     it('should not allow captureImage calls before initialization', () => {
-      expect(() => media.captureImage(emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => media.captureImage(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('captureImage call in default version of platform support fails', async () => {

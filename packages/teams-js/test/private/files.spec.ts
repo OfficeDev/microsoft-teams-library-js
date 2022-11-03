@@ -37,7 +37,7 @@ describe('files', () => {
   describe('getCloudStorageFolders', () => {
     it('should not allow calls before initialization', async () => {
       await expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -90,7 +90,7 @@ describe('files', () => {
   describe('addCloudStorageFolder', () => {
     it('should not allow calls before initialization', async () => {
       await expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -151,7 +151,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', async () => {
       expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -228,7 +228,7 @@ describe('files', () => {
     it('should not allow calls before initialization', async () => {
       expect(() =>
         files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -320,7 +320,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.openCloudStorageFile(mockCloudStorageFolderItem, files.CloudStorageProvider.Box)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -441,7 +441,7 @@ describe('files', () => {
           false,
           emptyCallback,
         ),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should trigger callback correctly', async () => {
@@ -468,7 +468,7 @@ describe('files', () => {
 
   describe('getFileDownloads', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -509,7 +509,7 @@ describe('files', () => {
 
   describe('openDownloadFolder', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls with empty callback', async () => {
@@ -559,7 +559,7 @@ describe('files', () => {
 
   describe('addCloudStorageProvider', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls with empty callback', async () => {
@@ -641,7 +641,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -694,7 +694,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -755,7 +755,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -835,7 +835,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -920,7 +920,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -1036,7 +1036,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 

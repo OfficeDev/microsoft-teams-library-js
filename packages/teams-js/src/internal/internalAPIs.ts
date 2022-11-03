@@ -28,8 +28,8 @@ const ensureInitializedLogger = internalLogger.extend('ensureInitialized');
  */
 export function ensureInitializeCalled(): void {
   if (!GlobalVars.initializeCalled) {
-    ensureInitializeCalledLogger(errorLibraryNotInitialized.message);
-    throw errorLibraryNotInitialized;
+    ensureInitializeCalledLogger(errorLibraryNotInitialized);
+    throw new Error(errorLibraryNotInitialized);
   }
 }
 
@@ -44,10 +44,10 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCompleted) {
     ensureInitializedLogger(
       '%s. initializeCalled: %s',
-      errorLibraryNotInitialized.message,
+      errorLibraryNotInitialized,
       GlobalVars.initializeCalled.toString(),
     );
-    throw errorLibraryNotInitialized;
+    throw new Error(errorLibraryNotInitialized);
   }
 
   if (expectedFrameContexts && expectedFrameContexts.length > 0) {

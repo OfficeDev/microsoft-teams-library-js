@@ -39,7 +39,7 @@ describe('LiveShareHost', () => {
   describe('create', () => {
     it('should not allow calls before initialization', async () => {
       const result = new Promise((resolve) => resolve(LiveShareHost.create()));
-      await expect(result).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(result).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -59,7 +59,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidTenantInfo', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidTenantInfo()).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.getFluidTenantInfo()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -89,7 +89,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidToken', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidToken('test-container')).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.getFluidToken('test-container')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -114,7 +114,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidContainerId()).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.getFluidContainerId()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -144,7 +144,9 @@ describe('LiveShareHost', () => {
 
   describe('setFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.setFluidContainerId('test-container')).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.setFluidContainerId('test-container')).rejects.toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -175,7 +177,7 @@ describe('LiveShareHost', () => {
 
   describe('getNtpTime', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getNtpTime()).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.getNtpTime()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -203,7 +205,7 @@ describe('LiveShareHost', () => {
 
   describe('registerClientId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.registerClientId('test-client')).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.registerClientId('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -228,7 +230,7 @@ describe('LiveShareHost', () => {
 
   describe('getClientRoles', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getClientRoles('test-client')).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(host.getClientRoles('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {

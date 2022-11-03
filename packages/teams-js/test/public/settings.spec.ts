@@ -96,7 +96,7 @@ describe('settings', () => {
         settings.getSettings((settings) => {
           expect(settings).toBe(expectedSettings);
         });
-      }).toThrowError(errorLibraryNotInitialized);
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -137,7 +137,7 @@ describe('settings', () => {
     it('settings.setSettings should not allow calls before initialization', () => {
       expect(() => {
         settings.setSettings(settingsObj);
-      }).toThrowError(errorLibraryNotInitialized);
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -174,7 +174,7 @@ describe('settings', () => {
         settings.registerOnSaveHandler(() => {
           handlerCalled = true;
         });
-      }).toThrowError(errorLibraryNotInitialized);
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

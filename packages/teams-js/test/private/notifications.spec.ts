@@ -31,7 +31,7 @@ describe('notifications', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => notifications.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => notifications.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -41,7 +41,9 @@ describe('notifications', () => {
       notificationType: NotificationTypes.fileDownloadStart,
     };
     it('should not allow calls before initialization', () => {
-      expect(() => notifications.showNotification(showNotificationParameters)).toThrowError(errorLibraryNotInitialized);
+      expect(() => notifications.showNotification(showNotificationParameters)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {

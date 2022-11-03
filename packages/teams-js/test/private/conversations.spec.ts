@@ -31,7 +31,7 @@ describe('conversations', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => conversations.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => conversations.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -43,7 +43,7 @@ describe('conversations', () => {
         entityId: 'someEntityId',
       };
       return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -120,7 +120,7 @@ describe('conversations', () => {
 
   describe('closeConversation', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => conversations.closeConversation()).toThrowError(errorLibraryNotInitialized);
+      expect(() => conversations.closeConversation()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
@@ -144,7 +144,7 @@ describe('conversations', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      return expect(conversations.getChatMembers()).rejects.toThrowError(errorLibraryNotInitialized);
+      return expect(conversations.getChatMembers()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('getChatMembers should throw error if conversations capability is not supported in runtime config', async () => {

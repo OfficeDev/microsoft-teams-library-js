@@ -37,7 +37,9 @@ describe('Testing teams capabillity', () => {
     describe('Testing teams.getTeamChannels function', () => {
       const allowedContexts = [FrameContexts.content];
       it('should not allow calls before initialization', () => {
-        expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(errorLibraryNotInitialized);
+        expect(() => teams.getTeamChannels('groupId', emptyCallback)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -107,7 +109,9 @@ describe('Testing teams capabillity', () => {
 
     describe('Testing teams.refreshSiteUrl function', () => {
       it('teams.refreshSiteUrl should not allow calls before initialization', () => {
-        expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError(errorLibraryNotInitialized);
+        expect(() => teams.refreshSiteUrl('threadId', emptyCallback)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -165,14 +169,14 @@ describe('Testing teams capabillity', () => {
       });
       it('should throw if called before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => teams.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => teams.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
     describe('Testing teams.getUserJoinedTeams', () => {
       it('should not allow calls before initialization', () => {
         return expect(teams.fullTrust.joinedTeams.getUserJoinedTeams()).rejects.toThrowError(
-          errorLibraryNotInitialized,
+          new Error(errorLibraryNotInitialized),
         );
       });
       it('should throw error when fullTrust.joinedTeams is not supported', async () => {
@@ -272,7 +276,7 @@ describe('Testing teams capabillity', () => {
       });
       it('joinedTeams.isSupported should be false before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => teams.fullTrust.joinedTeams.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => teams.fullTrust.joinedTeams.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
@@ -298,13 +302,15 @@ describe('Testing teams capabillity', () => {
 
       it('teams.fullTrust should be false before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => teams.fullTrust.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => teams.fullTrust.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
     describe('getConfigSetting', () => {
       it('should not allow calls before initialization', () => {
-        return expect(teams.fullTrust.getConfigSetting('key')).rejects.toThrowError(errorLibraryNotInitialized);
+        return expect(teams.fullTrust.getConfigSetting('key')).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       it('should throw error when fullTrust is not supported', async () => {

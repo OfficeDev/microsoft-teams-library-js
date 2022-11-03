@@ -31,7 +31,7 @@ describe('Testing menus capability', () => {
     describe('Testing menus.isSupported', () => {
       it('should throw if called before initialization', () => {
         applyRuntimeConfig(_uninitializedRuntime);
-        expect(() => menus.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
@@ -42,7 +42,9 @@ describe('Testing menus capability', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -71,7 +73,7 @@ describe('Testing menus capability', () => {
       const menuItem: menus.MenuItem = new menus.MenuItem();
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -103,7 +105,9 @@ describe('Testing menus capability', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -156,7 +160,9 @@ describe('Testing menus capability', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -189,7 +195,7 @@ describe('Testing menus capability', () => {
       } = { enabled: true, selected: false };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -232,7 +238,9 @@ describe('Testing menus capability', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(errorLibraryNotInitialized);
+        expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {

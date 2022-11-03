@@ -38,7 +38,7 @@ describe('appWindow', () => {
     describe('ChildAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => childAppWindow.postMessage('message')).toThrowError(errorLibraryNotInitialized);
+        expect(() => childAppWindow.postMessage('message')).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -63,7 +63,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => childAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          errorLibraryNotInitialized,
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -92,7 +92,7 @@ describe('appWindow', () => {
     describe('ParentAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => parentAppWindow.postMessage('message')).toThrowError(errorLibraryNotInitialized);
+        expect(() => parentAppWindow.postMessage('message')).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -136,7 +136,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => parentAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          errorLibraryNotInitialized,
+          new Error(errorLibraryNotInitialized),
         );
       });
 

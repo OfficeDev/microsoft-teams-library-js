@@ -42,7 +42,9 @@ describe('mail', () => {
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
-      await mail.openMailItem(openMailItemParams).catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
+      await mail
+        .openMailItem(openMailItemParams)
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -169,7 +171,9 @@ describe('mail', () => {
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
-      await mail.composeMail(composeMailParams).catch((e) => expect(e).toMatchObject(errorLibraryNotInitialized));
+      await mail
+        .composeMail(composeMailParams)
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -276,7 +280,7 @@ describe('mail', () => {
 
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => mail.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => mail.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

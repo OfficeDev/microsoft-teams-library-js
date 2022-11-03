@@ -372,7 +372,7 @@ describe('sharing_v2', () => {
 
     it('sharing.isSupported should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => sharing.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => sharing.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 

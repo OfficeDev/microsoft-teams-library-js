@@ -56,13 +56,15 @@ describe('location', () => {
 
     it('should not be supported before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => location.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => location.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
   describe('getLocation API', () => {
     it('should not allow getLocation calls before initialization', () => {
-      expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
     it('getLocation call in default version of platform support fails', () => {
       framelessPlatform.initializeWithContext(FrameContexts.task).then(() => {
@@ -206,7 +208,9 @@ describe('location', () => {
   });
   describe('Testing showLocation API', () => {
     it('should not allow showLocation calls before initialization', () => {
-      expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(errorLibraryNotInitialized);
+      expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     it('showLocation call in default version of platform support fails', () => {

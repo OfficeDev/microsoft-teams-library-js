@@ -37,7 +37,7 @@ describe('chat', () => {
   describe('Testing chat.isSupported function', () => {
     it('should not be supported before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => chat.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => chat.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -47,7 +47,7 @@ describe('chat', () => {
         user: 'someUPN',
         message: 'someMessage',
       };
-      return expect(chat.openChat(chatRequest)).rejects.toThrowError(errorLibraryNotInitialized);
+      return expect(chat.openChat(chatRequest)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls from settings context', async () => {
@@ -128,7 +128,7 @@ describe('chat', () => {
         users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
       };
-      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(errorLibraryNotInitialized);
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls when no members are provided', () => {

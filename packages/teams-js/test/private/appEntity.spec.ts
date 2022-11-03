@@ -32,7 +32,7 @@ describe('appEntity', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => appEntity.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => appEntity.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -40,7 +40,9 @@ describe('appEntity', () => {
     const allowedContexts = [FrameContexts.content];
 
     it('appEntity.selectAppEntity should not allow calls before initialization', () => {
-      expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(errorLibraryNotInitialized);
+      expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     Object.values(FrameContexts).forEach((context) => {

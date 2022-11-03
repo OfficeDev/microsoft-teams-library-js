@@ -30,13 +30,13 @@ describe('profile', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       desktopPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => profile.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => profile.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
   describe('showProfile', () => {
     it('should not allow showProfile calls before initialization', () => {
-      expect(() => profile.showProfile(undefined)).toThrowError(errorLibraryNotInitialized);
+      expect(() => profile.showProfile(undefined)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

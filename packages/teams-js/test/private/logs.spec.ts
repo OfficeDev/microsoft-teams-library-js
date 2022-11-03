@@ -33,7 +33,7 @@ describe('logs', () => {
   describe('Testings logs.isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => logs.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => logs.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -43,7 +43,7 @@ describe('logs', () => {
         logs.registerGetLogHandler(() => {
           return '';
         }),
-      ).toThrowError(errorLibraryNotInitialized);
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

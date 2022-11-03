@@ -52,7 +52,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople()).toThrowError(errorLibraryNotInitialized);
+      expect(() => people.selectPeople()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -170,7 +170,7 @@ describe('people', () => {
 
     it('people.isSupported should throw if called before initialization', () => {
       framedMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => people.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => people.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -181,7 +181,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople(() => {})).toThrowError(errorLibraryNotInitialized);
+      expect(() => people.selectPeople(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

@@ -35,13 +35,13 @@ describe('Testing TeamsCore Capability', () => {
     describe('Testing teamsCore.isSupported function', () => {
       it('should throw if called before initialization', () => {
         utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => teamsCore.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => teamsCore.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
     describe('Testing teamsCore.enablePrintCapability function', () => {
       it('teamsCore.enablePrintCapability should not allow calls before initialization', () => {
-        expect(() => teamsCore.enablePrintCapability()).toThrowError(errorLibraryNotInitialized);
+        expect(() => teamsCore.enablePrintCapability()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -138,7 +138,7 @@ describe('Testing TeamsCore Capability', () => {
           teamsCore.registerOnLoadHandler(() => {
             return false;
           }),
-        ).toThrowError(errorLibraryNotInitialized);
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -177,7 +177,7 @@ describe('Testing TeamsCore Capability', () => {
           teamsCore.registerBeforeUnloadHandler(() => {
             return false;
           }),
-        ).toThrowError(errorLibraryNotInitialized);
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {

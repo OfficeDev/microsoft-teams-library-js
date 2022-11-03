@@ -45,13 +45,13 @@ describe('stageView', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       utils.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => stageView.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => stageView.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
   describe('open', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(stageView.open(stageViewParams)).rejects.toThrowError(errorLibraryNotInitialized);
+      await expect(stageView.open(stageViewParams)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((frameContext) => {

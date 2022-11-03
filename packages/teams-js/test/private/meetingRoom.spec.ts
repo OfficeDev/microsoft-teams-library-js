@@ -56,13 +56,13 @@ describe('meetingRoom', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => meetingRoom.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => meetingRoom.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(errorLibraryNotInitialized);
+      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('getPairedMeetingRoomInfo should throw error when meetingRoom is not supported.', async () => {
@@ -129,7 +129,7 @@ describe('meetingRoom', () => {
   describe('sendCommandToPairedMeetingRoom', () => {
     it('should not allow calls before initialization', () => {
       return expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -195,7 +195,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -258,7 +258,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler)).toThrowError(
-        errorLibraryNotInitialized,
+        new Error(errorLibraryNotInitialized),
       );
     });
     it('registerMeetingRoomStatesUpdateHandler should throw error when meetingRoom is not supported.', async () => {

@@ -809,7 +809,7 @@ describe('Dialog', () => {
 
       it('should not be supported before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
+        expect(() => dialog.bot.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
   });

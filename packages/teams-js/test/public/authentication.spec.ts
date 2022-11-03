@@ -103,7 +103,9 @@ describe('Testing authentication capability', () => {
           width: 100,
           height: 200,
         };
-        expect(() => authentication.authenticate(authenticationParams)).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.authenticate(authenticationParams)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -413,7 +415,7 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.getAuthToken should allow calls after initialization called, but before it finished', async () => {
@@ -570,7 +572,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.getUser should allow calls after initialization called, but before it finished', async () => {
@@ -665,7 +667,7 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.notifySuccess should not close auth window before notify success message has been sent', async () => {
@@ -785,7 +787,7 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('should not close auth window before notify failure message has been sent', async () => {
@@ -1063,7 +1065,7 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1226,7 +1228,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1322,7 +1324,7 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1352,7 +1354,7 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError(errorLibraryNotInitialized);
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {

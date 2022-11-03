@@ -39,7 +39,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError(errorLibraryNotInitialized);
+          ).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -97,13 +97,15 @@ describe('Testing monetization capability', () => {
       describe('isSupported', () => {
         it('should throw if called before initialization', () => {
           utils.setRuntimeConfig(_uninitializedRuntime);
-          expect(() => monetization.isSupported()).toThrowError(errorLibraryNotInitialized);
+          expect(() => monetization.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
 
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(errorLibraryNotInitialized);
+          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -174,7 +176,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError(errorLibraryNotInitialized);
+          ).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -238,7 +240,9 @@ describe('Testing monetization capability', () => {
 
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(errorLibraryNotInitialized);
+          expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
         });
 
         Object.values(FrameContexts).forEach((context) => {

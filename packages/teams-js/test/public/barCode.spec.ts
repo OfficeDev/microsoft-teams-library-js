@@ -42,13 +42,13 @@ describe('barCode', () => {
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
       applyRuntimeConfig(_uninitializedRuntime);
-      expect(() => barCode.isSupported()).toThrowError(errorLibraryNotInitialized);
+      expect(() => barCode.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
   describe('Testing scanBarCode API', () => {
     it('should not allow scanBarCode calls before initialization', () => {
-      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(errorLibraryNotInitialized);
+      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -141,7 +141,7 @@ describe('barCode', () => {
 
   describe('Testing HasPermisison API', () => {
     it('should not allow hasPermission calls before initialization', () => {
-      return expect(() => barCode.hasPermission()).toThrowError(errorLibraryNotInitialized);
+      return expect(() => barCode.hasPermission()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -221,7 +221,7 @@ describe('barCode', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
-          expect(() => barCode.requestPermission()).toThrowError(errorLibraryNotInitialized);
+          expect(() => barCode.requestPermission()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         it('requestPermission call in default version of platform support fails', async () => {

@@ -29,7 +29,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigation.returnFocus function', () => {
     it('navigation.returnFocus should not allow calls before initialization', () => {
-      expect(() => returnFocus(true)).toThrowError(errorLibraryNotInitialized);
+      expect(() => returnFocus(true)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -66,7 +66,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigation.navigateToTab function', () => {
     it('navigation.navigateToTab should not allow calls before initialization', () => {
-      expect(() => navigateToTab(null)).toThrowError(errorLibraryNotInitialized);
+      expect(() => navigateToTab(null)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -117,7 +117,7 @@ describe('MicrosoftTeams-Navigation', () => {
     ];
 
     it('navigation.navigateCrossDomain should not allow calls before initialization', () => {
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(errorLibraryNotInitialized);
+      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -200,7 +200,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigate.navigateBack function', () => {
     it('navigation.navigateBack should not allow calls before initialization', () => {
-      expect(() => navigateBack()).toThrowError(errorLibraryNotInitialized);
+      expect(() => navigateBack()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
