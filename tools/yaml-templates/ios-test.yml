@@ -87,6 +87,6 @@ steps:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
       testRunTitle: 'E2E Tests - iOS'
-      searchFolder: '$(System.DefaultWorkingDirectory)'
+      searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
     condition: succeededOrFailed()
