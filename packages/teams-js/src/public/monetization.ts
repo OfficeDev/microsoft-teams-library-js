@@ -94,7 +94,7 @@ export namespace monetization {
    * Checks if the monetization capability is supported by the host
    * @returns boolean to represent whether the monetization capability is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
     ensureInitialized();

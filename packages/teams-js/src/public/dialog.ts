@@ -207,7 +207,7 @@ export namespace dialog {
    * Checks if dialog capability is supported by the host
    * @returns boolean to represent whether dialog capabilty is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
@@ -241,7 +241,7 @@ export namespace dialog {
      * Checks if dialog.update capability is supported by the host
      * @returns boolean to represent whether dialog.update capabilty is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
      */
@@ -292,7 +292,7 @@ export namespace dialog {
      * Checks if dialog.bot capability is supported by the host
      * @returns boolean to represent whether dialog.bot is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
      */

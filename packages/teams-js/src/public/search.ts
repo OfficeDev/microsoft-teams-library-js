@@ -120,7 +120,7 @@ export namespace search {
    * Checks if search capability is supported by the host
    * @returns boolean to represent whether the search capability is supported
    *
-   * @throws if {@link app.initialize} has not successfully completed
+   * @throws Error if {@link app.initialize} has not successfully completed
    *
    * @beta
    */

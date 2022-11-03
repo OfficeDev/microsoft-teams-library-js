@@ -111,7 +111,7 @@ export namespace appEntity {
    * Checks if the appEntity capability is supported by the host
    * @returns boolean to represent whether the appEntity capability is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use

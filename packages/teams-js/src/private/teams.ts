@@ -97,7 +97,7 @@ export namespace teams {
    * Checks if teams capability is supported by the host
    * @returns boolean to represent whether the teams capability is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -159,7 +159,7 @@ export namespace teams {
        * Checks if teams.fullTrust.joinedTeams capability is supported by the host
        * @returns boolean to represent whether the teams.fullTrust.joinedTeams capability is supported
        *
-       * @throws if {@linkcode app.initialize} has not successfully completed
+       * @throws Error if {@linkcode app.initialize} has not successfully completed
        *
        * @internal
        * Limited to Microsoft-internal use
@@ -202,7 +202,7 @@ export namespace teams {
      * Checks if teams.fullTrust capability is supported by the host
      * @returns boolean to represent whether the teams.fullTrust capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @internal
      * Limited to Microsoft-internal use

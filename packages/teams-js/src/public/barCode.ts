@@ -90,7 +90,7 @@ export namespace barCode {
    * Checks if barCode capability is supported by the host
    * @returns boolean to represent whether the barCode capability is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */

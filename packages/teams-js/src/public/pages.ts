@@ -223,7 +223,7 @@ export namespace pages {
    * Checks if the pages capability is supported by the host
    * @returns boolean to represent whether the appEntity capability is supported
    *
-   * @throws if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
     ensureInitialized();
@@ -318,7 +318,7 @@ export namespace pages {
      * Checks if the pages.tab capability is supported by the host
      * @returns boolean to represent whether the pages.tab capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -590,7 +590,7 @@ export namespace pages {
      * Checks if the pages.config capability is supported by the host
      * @returns boolean to represent whether the pages.config capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -673,7 +673,7 @@ export namespace pages {
      * Checks if the pages.backStack capability is supported by the host
      * @returns boolean to represent whether the pages.backStack capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -721,7 +721,7 @@ export namespace pages {
      * Checks if the pages.fullTrust capability is supported by the host
      * @returns boolean to represent whether the pages.fullTrust capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -776,7 +776,7 @@ export namespace pages {
      * Checks if pages.appButton capability is supported by the host
      * @returns boolean to represent whether the pages.appButton capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully completed
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
       ensureInitialized();
@@ -860,7 +860,7 @@ export namespace pages {
      * Checks if pages.currentApp capability is supported by the host
      * @returns boolean to represent whether the pages.currentApp capability is supported
      *
-     * @throws if {@linkcode app.initialize} has not successfully complete
+     * @throws Error if {@linkcode app.initialize} has not successfully complete
      *
      * @beta
      */
