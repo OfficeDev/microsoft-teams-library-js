@@ -403,13 +403,7 @@ export namespace dialog {
         runtime.hostVersionsInfo &&
         runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&
         !isHostAdaptiveCardSchemaVersionUnsupported(runtime.hostVersionsInfo.adaptiveCardSchemaVersion);
-      return isAdaptiveCardVersionSupported
-        ? runtime.supports.dialog
-          ? runtime.supports.dialog.card
-            ? true
-            : false
-          : false
-        : false;
+      return (isAdaptiveCardVersionSupported && runtime.supports.dialog && runtime.supports.dialog.card) !== undefined;
     }
 
     /**
@@ -454,15 +448,12 @@ export namespace dialog {
           runtime.hostVersionsInfo &&
           runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&
           !isHostAdaptiveCardSchemaVersionUnsupported(runtime.hostVersionsInfo.adaptiveCardSchemaVersion);
-        return isAdaptiveCardVersionSupported
-          ? runtime.supports.dialog
-            ? runtime.supports.dialog.card
-              ? runtime.supports.dialog.card.bot
-                ? true
-                : false
-              : false
-            : false
-          : false;
+        return (
+          (isAdaptiveCardVersionSupported &&
+            runtime.supports.dialog &&
+            runtime.supports.dialog.card &&
+            runtime.supports.dialog.card.bot) !== undefined
+        );
       }
     }
 

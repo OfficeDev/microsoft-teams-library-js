@@ -1,5 +1,5 @@
 import { getAdaptiveCardSchemaVersion } from '../../src/public';
-import { minAdaptiveCardVersion } from '../../src/public/constants';
+import { isHostAdaptiveCardSchemaVersionUnsupported, minAdaptiveCardVersion } from '../../src/public/constants';
 import { Utils } from '../utils';
 /* eslint-disable */
 
@@ -24,4 +24,17 @@ describe('Testing Adaptive Cards', () => {
       expect(getAdaptiveCardSchemaVersion()).toBeUndefined();
     });
   });
+
+  describe('Testing isHostAdaptiveCardSchemaVersionUnsupported', () => {
+    it('should return false if the version supported by host is equal to minimum adaptive card version', () => {
+      expect(isHostAdaptiveCardSchemaVersionUnsupported(minAdaptiveCardVersion)).toBeFalsy();
+    });
+    it('should return false if the version supported by host is higher than minimum adaptive card version', () => {
+      expect(isHostAdaptiveCardSchemaVersionUnsupported({ majorVersion: 1, minorVersion: 6 })).toBeFalsy();
+    });
+
+    it('should return true if the version supported by host is less than minimum adaptive card version', () => {
+      expect(isHostAdaptiveCardSchemaVersionUnsupported({ majorVersion: 1, minorVersion: 4 })).toBeTruthy();
+    });
+  })
 });
