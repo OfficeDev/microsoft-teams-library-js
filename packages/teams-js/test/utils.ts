@@ -1,6 +1,6 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
 
@@ -10,11 +10,6 @@ export interface MessageRequest {
   args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
-}
-
-export interface MessageResponse {
-  id: number;
-  args?: unknown[];
 }
 
 export class Utils {
