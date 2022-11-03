@@ -1283,30 +1283,61 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
   });
-  describe('setVisibility', () => {
-    it('meeting.appShareButton.setVisibility should not allow calls before initialization', () => {
-      expect(() => meeting.appShareButton.setVisibility(false)).rejects.toThrowError(
+  describe('setVisibilityInfo', () => {
+    let shareUrl = 'https://test.com';
+    let shareInformation: meeting.appShareButton.ShareInformation = {
+      isVisible: false,
+      shareUrl: shareUrl,
+    };
+    it('meeting.appShareButton.setVisibilityInfo should not allow calls before initialization', () => {
+      expect(() => meeting.appShareButton.setVisibilityInfo(shareInformation)).toThrowError(
         'The library has not yet been initialized',
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should successfully set false isAppShareButtonVisible information. context: ${context}`, async () => {
+        it(`should successfully set shareInformation. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
-          let isAppShareButtonVisible = false;
-          await meeting.appShareButton.setVisibility(isAppShareButtonVisible);
+          meeting.appShareButton.setVisibilityInfo(shareInformation);
           const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
-            'meeting.appShareButton.setVisibility',
+            'meeting.appShareButton.setVisibilityInfo',
           );
           expect(toggleAppShareButtonMessage).not.toBeNull();
           expect(toggleAppShareButtonMessage.args.length).toBe(1);
-          expect(toggleAppShareButtonMessage.args[0]).toBe(false);
+          expect(toggleAppShareButtonMessage.args[0]).toStrictEqual(shareInformation);
+        });
+
+        it(`should successfully set false isVisible and shareUrl to be null. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          shareInformation.shareUrl = null;
+          meeting.appShareButton.setVisibilityInfo(shareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setVisibilityInfo',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0]).toStrictEqual(shareInformation);
+        });
+
+        it(`should successfully set false isVisible and shareUrl to be undefined. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let newShareInformation: meeting.appShareButton.ShareInformation = {
+            isVisible: false,
+          };
+          meeting.appShareButton.setVisibilityInfo(newShareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setVisibilityInfo',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0].isVisible).toBe(false);
+          expect(toggleAppShareButtonMessage.args[0].shareUrl).toBe(undefined);
         });
       } else {
-        it(`should not successfully set false isAppShareButtonVisible information. context: ${context}`, async () => {
+        it(`should not successfully shareInformation. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
-          expect(() => meeting.appShareButton.setVisibility(false)).rejects.toThrowError(
+          expect(() => meeting.appShareButton.setVisibilityInfo(shareInformation)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,

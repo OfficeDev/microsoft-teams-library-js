@@ -519,22 +519,40 @@ export namespace meeting {
     registerHandler('meeting.meetingReactionReceived', handler);
   }
   /**
-   * nested namespace for Meeting Service
+   * Nested namespace for functions to control behavior of the app share button
    *
    * @beta
    */
   export namespace appShareButton {
     /**
-     * Allows an app to hide/show app share button in a meeting
-     * @param visible is a boolean flag to set show or hide app share button
+     * Property bag for the setVisibilityInfo
      *
      * @beta
      */
-    export function setVisibility(visible: boolean): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(FrameContexts.sidePanel);
-        resolve(sendMessageToParent('meeting.appShareButton.setVisibility', [visible]));
-      });
+    export interface ShareInformation {
+      /**
+       * boolean flag to set show or hide app share button
+       */
+      isVisible: boolean;
+
+      /**
+       * optional string or null shareUrl, which will override shareUrl coming from Manifest
+       */
+      shareUrl?: string | null;
+    }
+    /**
+     * FrameContext of app manifest governs the default behavior of app share button
+     * example: if frameContext contains meeting stage then by default app share button is visible
+     *
+     * This function can be use to hide/show app share button in meeting,
+     * along with shareUrl (overrides shareUrl populated in app manifest)
+     * @param shareInformation has two elements, one isVisible boolean flag and another
+     * optional string or null shareUrl, which will override shareUrl coming from Manifest
+     * @beta
+     */
+    export function setVisibilityInfo(shareInformation: ShareInformation): void {
+      ensureInitialized(FrameContexts.sidePanel);
+      sendMessageToParent('meeting.appShareButton.setVisibilityInfo', [shareInformation]);
     }
   }
 }
