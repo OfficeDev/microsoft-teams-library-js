@@ -72,7 +72,7 @@ steps:
     displayName: 'Disable Slow Animation'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
-  - bash: 'sh parallel_ui_testing.sh'
+  - bash: 'sh parallel_ui_testing_for_publishing.sh'
     displayName: "iOS UI/E2E Tests"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
