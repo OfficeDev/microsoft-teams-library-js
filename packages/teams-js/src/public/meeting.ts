@@ -536,23 +536,26 @@ export namespace meeting {
       isVisible: boolean;
 
       /**
-       * optional string or null shareUrl, which will override shareUrl coming from Manifest
+       * optional string contentUrl, which will override contentUrl coming from Manifest
        */
-      shareUrl?: string | null;
+      contentUrl?: string;
     }
     /**
-     * FrameContext of app manifest governs the default behavior of app share button
-     * example: if frameContext contains meeting stage then by default app share button is visible
+     * By default app share button will be hidden and this API will govern the visibility of it.
      *
-     * This function can be use to hide/show app share button in meeting,
-     * along with shareUrl (overrides shareUrl populated in app manifest)
+     * This function can be used to hide/show app share button in meeting,
+     * along with contentUrl (overrides contentUrl populated in app manifest)
+     * @throws standard Invalid Url error
      * @param shareInformation has two elements, one isVisible boolean flag and another
-     * optional string or null shareUrl, which will override shareUrl coming from Manifest
+     * optional string or null contentUrl, which will override contentUrl coming from Manifest
      * @beta
      */
-    export function setVisibilityInfo(shareInformation: ShareInformation): void {
+    export function setOptions(shareInformation: ShareInformation): void {
+      if (shareInformation.contentUrl) {
+        new URL(shareInformation.contentUrl);
+      }
       ensureInitialized(FrameContexts.sidePanel);
-      sendMessageToParent('meeting.appShareButton.setVisibilityInfo', [shareInformation]);
+      sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
     }
   }
 }

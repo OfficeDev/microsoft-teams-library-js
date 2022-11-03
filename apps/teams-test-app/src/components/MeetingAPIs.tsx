@@ -304,21 +304,24 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
 
 interface ShareInformation {
   isVisible: boolean;
-  shareUrl?: string | null;
+  contentUrl?: string;
 }
 
-const SetVisibilityInfo = (): React.ReactElement =>
+const SetOptions = (): React.ReactElement =>
   ApiWithTextInput<ShareInformation>({
-    name: 'setVisibilityInfo',
-    title: 'Set App Share Button visibility info',
+    name: 'setOptions',
+    title: 'Set App Share Button options',
     onClick: {
       validateInput: (input) => {
         if (typeof input.isVisible !== 'boolean') {
           throw new Error('input.isVisible should be boolean');
         }
+        if (input.contentUrl) {
+          new URL(input.contentUrl);
+        }
       },
       submit: async (input) => {
-        meeting.appShareButton.setVisibilityInfo(input);
+        meeting.appShareButton.setOptions(input);
         return '';
       },
     },
@@ -341,7 +344,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
-    <SetVisibilityInfo />
+    <SetOptions />
   </ModuleWrapper>
 );
 
