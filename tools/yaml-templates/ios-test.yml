@@ -7,7 +7,7 @@ steps:
   - checkout: self
   # - checkout: $(parameters.iOSAppHostingSdkGitPath)@refs/heads/main
   #   persistCredentials: true
-  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}@refs/heads/main
+  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}@refs/heads/kx/pipeline_connection_preparation
     path: iOSHost
     persistCredentials: true
 
@@ -24,12 +24,23 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash: |
-      pod install
+      pod install > /dev/null
     displayName: Run Cocoapods - pod install
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  # TODO: build iOS SDK
+  - bash: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  displayName: Install Homebrew
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
 
+  - bash: |
+    brew install xctesthtmlreport
+  displayName: "Install XCTestHtmlReport for publishing result"
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - bash : 'sh build_sdk.sh'
+  displayName: "Build iOS SDK"
+  workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
   - task: NodeTool@0
     inputs:
       versionSpec: "14.x"
@@ -63,3 +74,18 @@ steps:
   - bash: 'sh parallel_ui_testing.sh'
     displayName: "iOS UI/E2E Tests"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+
+  - bash: 'sh generate_junit_report.sh'
+  displayName: "Generate report to be published"
+  workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+  condition: succeededOrFailed()
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: '**/*.junit'
+      failTaskOnFailedTests: false
+      testRunTitle: 'E2E Tests - iOS'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      mergeTestResults: true
+    condition: succeededOrFailed()
