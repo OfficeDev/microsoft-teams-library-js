@@ -1,6 +1,6 @@
 steps:
   - checkout: self
-  - checkout: iOS SDK
+  - checkout: $(parameters.iOSAppHostingSdkGitPath)@refs/heads/main
     persistCredentials: true
   # - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
   #   path: iOSHost
