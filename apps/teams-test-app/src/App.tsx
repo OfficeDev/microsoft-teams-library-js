@@ -38,6 +38,7 @@ import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import ProfileAPIs from './components/ProfileAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SearchAPIs from './components/SearchAPIs';
 import SharingAPIs from './components/SharingAPIs';
@@ -147,6 +148,7 @@ const App = (): ReactElement => {
         <PagesTabsAPIs />
         <PeopleAPIs />
         <PrivateAPIs />
+        <ProfileAPIs />
         <RemoteCameraAPIs />
         <SearchAPIs />
         <SharingAPIs />
