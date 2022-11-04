@@ -518,4 +518,19 @@ export namespace meeting {
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
+
+  /**
+   * App will handle the Audio - Mic & Speaker. Teams to go Audio less (No Audio)
+   *
+   * @param callback - Callback contains 2 parameters, error and result.
+   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
+   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   */
+  export function letAppHandleAudio(callback: (error: SdkError | null, result: boolean | null) => void): void {
+    if (!callback) {
+      throw new Error('[letAppHandleAudio] Callback cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('meeting.letAppHandleAudio', callback);
+  }
 }

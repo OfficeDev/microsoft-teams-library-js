@@ -1283,4 +1283,81 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
   });
+
+  describe('letAppHandleAudio', () => {
+    it('should not allow call with null callback', () => {
+      expect(() => meeting.letAppHandleAudio(null)).toThrowError('[letAppHandleAudio] Callback cannot be null');
+    });
+    it('should not allow calls before initialization', () => {
+      expect(() => meeting.letAppHandleAudio(emptyCallBack)).toThrowError('The library has not yet been initialized');
+    });
+
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`should successfully terminate app content stage sharing session. context: ${context} context`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          let callbackCalled = false;
+          let returnedSdkError: SdkError | null;
+          let returnedResult: boolean | null;
+          meeting.letAppHandleAudio((error: SdkError, result: boolean) => {
+            callbackCalled = true;
+            returnedResult = result;
+            returnedSdkError = error;
+          });
+
+          const letAppHandleAudioMessage = framelessPlatformMock.findMessageByFunc('meeting.letAppHandleAudio');
+          expect(letAppHandleAudioMessage).not.toBeNull();
+          const callbackId = letAppHandleAudioMessage.id;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [null, true],
+            },
+          } as DOMMessageEvent);
+          expect(callbackCalled).toBe(true);
+          expect(returnedSdkError).toBeNull();
+          expect(returnedResult).toBe(true);
+        });
+
+        it('should throw if the letAppHandleAudio message sends and fails', async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          let callbackCalled = false;
+          let returnedSdkError: SdkError | null;
+          let returnedResult: boolean | null;
+          meeting.letAppHandleAudio((error: SdkError, result: boolean) => {
+            callbackCalled = true;
+            returnedResult = result;
+            returnedSdkError = error;
+          });
+
+          const letAppHandleAudioMessage = framelessPlatformMock.findMessageByFunc('meeting.letAppHandleAudio');
+          expect(letAppHandleAudioMessage).not.toBeNull();
+          const callbackId = letAppHandleAudioMessage.id;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+            },
+          } as DOMMessageEvent);
+          expect(callbackCalled).toBe(true);
+          expect(returnedSdkError).not.toBeNull();
+          expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+          expect(returnedResult).toBe(null);
+        });
+      } else {
+        it(`should not allow meeting.letAppHandleAudio calls from ${context} context`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          expect(() => meeting.letAppHandleAudio(emptyCallBack)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+  });
 });
