@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed `profile.isSupported` and showProfile `TriggerType`",
-  "packageName": "@microsoft/teams-js",
-  "email": "grhewitt@microsoft.com",
-  "dependentChangeType": "patch"
-}
