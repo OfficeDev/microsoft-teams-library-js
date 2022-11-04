@@ -89,7 +89,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version, runtimeVersion]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
