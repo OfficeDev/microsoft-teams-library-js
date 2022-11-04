@@ -76,7 +76,7 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
   - bash: 'sh generate_junit_report.sh'
-    displayName: "Generate report to be published"
+    displayName: "Generate E2E test report"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
     condition: succeededOrFailed()
 
