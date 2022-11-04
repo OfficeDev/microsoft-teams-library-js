@@ -5,8 +5,7 @@ parameters:
 
 steps:
   - checkout: self
-  # - checkout: $(parameters.iOSAppHostingSdkGitPath)@refs/heads/main
-  #   persistCredentials: true
+  # branch should be changed after test
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}@refs/heads/kx/pipeline_connection_preparation
     path: iOSHost
     persistCredentials: true
