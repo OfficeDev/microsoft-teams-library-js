@@ -1283,4 +1283,63 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
   });
+  describe('setOptions', () => {
+    let contentUrl = 'https://www.test.com';
+    let shareInformation: meeting.appShareButton.ShareInformation = {
+      isVisible: false,
+      contentUrl: contentUrl,
+    };
+    it('meeting.appShareButton.setOptions should not allow calls before initialization', () => {
+      expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+    const allowedContexts = [FrameContexts.sidePanel];
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`should successfully set shareInformation. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          meeting.appShareButton.setOptions(shareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setOptions',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0]).toStrictEqual(shareInformation);
+        });
+
+        it(`should successfully set false isVisible and contentUrl to be bad Url. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let invalidUrl = 'www.xyz.com';
+          shareInformation.contentUrl = invalidUrl;
+          expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(`Invalid URL: ${invalidUrl}`);
+        });
+
+        it(`should successfully set false isVisible and contentUrl to be undefined. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let newShareInformation: meeting.appShareButton.ShareInformation = {
+            isVisible: false,
+          };
+          meeting.appShareButton.setOptions(newShareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setOptions',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0].isVisible).toBe(false);
+          expect(toggleAppShareButtonMessage.args[0].contentUrl).toBe(undefined);
+        });
+      } else {
+        it(`should not successfully shareInformation. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          shareInformation.contentUrl = contentUrl;
+          expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+  });
 });
