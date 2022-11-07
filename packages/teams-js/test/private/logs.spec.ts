@@ -46,6 +46,10 @@ describe('logs', () => {
       ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
+    it('logs.registerGetLogHandler should not throw if called before initialization with no handler', () => {
+      expect(() => logs.registerGetLogHandler(null)).not.toThrow();
+    });
+
     Object.values(FrameContexts).forEach((context) => {
       it('logs.registerGetLogHandler should throw error when logs is not supported.', async () => {
         await utils.initializeWithContext(context);
