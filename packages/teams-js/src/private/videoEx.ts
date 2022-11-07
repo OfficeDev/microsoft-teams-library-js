@@ -216,6 +216,8 @@ export namespace videoEx {
    * Checks if video capability is supported by the host
    * @beta
    *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    * @returns boolean to represent whether the video capability is supported
    *
    * @internal
