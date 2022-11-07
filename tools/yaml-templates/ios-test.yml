@@ -5,7 +5,9 @@ parameters:
 
 steps:
   - checkout: self
-  # branch should be changed after test
+  # Currently connecting to a PR that hasn't been checked in in iOS Host SDK side for testing purpose,
+  # checkout branch next line in iOS Host SDK side should be reverted to main branch before this PR check in
+  # for formal usage and comments should be removed as well.
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}@refs/heads/kx/pipeline_connection_preparation
     path: iOSHost
     persistCredentials: true
