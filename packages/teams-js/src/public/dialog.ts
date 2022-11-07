@@ -6,14 +6,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { compareSDKVersions } from '../internal/utils';
-import {
-  DialogDimension,
-  errorNotSupportedOnPlatform,
-  FrameContexts,
-  isHostAdaptiveCardSchemaVersionUnsupported,
-  minAdaptiveCardVersion,
-} from './constants';
+import { isHostAdaptiveCardSchemaVersionUnsupported } from '../internal/utils';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import {
   AdaptiveCardDialogInfo,
   BotAdaptiveCardDialogInfo,
@@ -107,7 +101,6 @@ export namespace dialog {
      * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
      * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
      *
-     * @returns a function that can be used to send messages to the dialog.
      *
      * @beta
      */
@@ -417,8 +410,6 @@ export namespace dialog {
        *
        * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
        * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
-       *
-       * @returns a function that can be used to send messages to the dialog.
        *
        * @beta
        */

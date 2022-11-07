@@ -3,7 +3,8 @@
 import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
-import { SdkError } from '../public/interfaces';
+import { minAdaptiveCardVersion } from '../public/constants';
+import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { validOrigins } from './constants';
 
@@ -337,4 +338,25 @@ export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
     url.searchParams.append('context', JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId }));
   }
   return url.toString();
+}
+
+/**
+ * @hidden
+ * Checks if the Adaptive Card schema version is supported by the host.
+ * @param hostAdaptiveCardSchemaVersion Hosts supported Adaptive Card Version in the runtime.
+ *
+ * @returns true if the adaptive card version is not supported and false if it is supported.
+ */
+export function isHostAdaptiveCardSchemaVersionUnsupported(
+  hostAdaptiveCardSchemaVersion: AdaptiveCardVersion,
+): boolean {
+  const versionCheck = compareSDKVersions(
+    `${hostAdaptiveCardSchemaVersion.majorVersion}.${hostAdaptiveCardSchemaVersion.minorVersion}`,
+    `${minAdaptiveCardVersion.majorVersion}.${minAdaptiveCardVersion.minorVersion}`,
+  );
+  if (versionCheck >= 0) {
+    return false;
+  } else {
+    return true;
+  }
 }

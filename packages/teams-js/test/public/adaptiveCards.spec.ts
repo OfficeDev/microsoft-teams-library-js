@@ -1,5 +1,6 @@
+import { isHostAdaptiveCardSchemaVersionUnsupported } from '../../src/internal/utils';
 import { getAdaptiveCardSchemaVersion } from '../../src/public';
-import { isHostAdaptiveCardSchemaVersionUnsupported, minAdaptiveCardVersion } from '../../src/public/constants';
+import { minAdaptiveCardVersion } from '../../src/public/constants';
 import { Utils } from '../utils';
 /* eslint-disable */
 

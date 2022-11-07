@@ -86,7 +86,6 @@ export enum DialogDimension {
   Small = 'small',
 }
 
-import { compareSDKVersions } from '../internal/utils';
 import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
@@ -106,17 +105,9 @@ export enum ChannelType {
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
 
+/**
+ * @hidden
+ *
+ * Minimum Adaptive Card version supported by the Hosts.
+ */
 export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };
-export function isHostAdaptiveCardSchemaVersionUnsupported(
-  hostAdaptiveCardSchemaVersion: AdaptiveCardVersion,
-): boolean {
-  const versionCheck = compareSDKVersions(
-    `${hostAdaptiveCardSchemaVersion.majorVersion}.${hostAdaptiveCardSchemaVersion.minorVersion}`,
-    `${minAdaptiveCardVersion.majorVersion}.${minAdaptiveCardVersion.minorVersion}`,
-  );
-  if (versionCheck >= 0) {
-    return false;
-  } else {
-    return true;
-  }
-}
