@@ -33,7 +33,8 @@ export default function IndexPage(props: SSRProps): ReactElement {
       <div> Hello World. </div>
       <div>
         <h1 id="id01">{props.renderString}</h1>
-        <pre>{JSON.stringify(props.context, null, 2)}</pre>
+        <pre>SSR Context: {JSON.stringify(props.context, null, 2)}</pre>
+        <pre>CSR Context: {JSON.stringify(teamsContext, null, 2)}</pre>
       </div>
     </div>
   );
@@ -45,7 +46,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
  * @returns prop data
  */
 export const getServerSideProps: GetServerSideProps = async () => {
-  let appContext: microsoftTeams.app.Context = null;
+  let appContext: microsoftTeams.app.Context = {};
 
   microsoftTeams.app
     .initialize()
@@ -57,6 +58,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
     });
 
   return {
-    props: { renderString: "SSR'd", context: appContext },
+    props: {
+      renderString: "SSR'd",
+      context: appContext,
+    },
   };
 };
