@@ -88,4 +88,4 @@ steps:
       testRunTitle: 'E2E Tests - iOS'
       searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
-    condition: succeededOrFailed()
+    condition: always()
