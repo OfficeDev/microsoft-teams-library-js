@@ -162,6 +162,7 @@ export type Rectangle = {
 };
 
 /**
+ * @beta
  * @hidden
  * An internal representation of the showProfile parameters suitable for sending via postMessage.
  * The hub expects to receive an object of this type.
