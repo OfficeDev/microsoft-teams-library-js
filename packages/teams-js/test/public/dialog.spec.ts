@@ -54,7 +54,7 @@ describe('Dialog', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => dialog.url.open(urlDialogInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.url.open(urlDialogInfo)).toThrowError(errorLibraryNotInitialized);
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -322,7 +322,7 @@ describe('Dialog', () => {
 
       it('should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        expect(() => dialog.update.resize({} as any)).toThrowError('The library has not yet been initialized');
+        expect(() => dialog.update.resize({} as any)).toThrowError(errorLibraryNotInitialized);
       });
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
@@ -429,13 +429,13 @@ describe('Dialog', () => {
 
       it('dialog.update.isSupported should throw before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
+        expect(() => dialog.update.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
   });
   describe('submit', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => dialog.url.submit()).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.url.submit()).toThrowError(errorLibraryNotInitialized);
     });
     const allowedContexts = [
       FrameContexts.content,
@@ -549,7 +549,7 @@ describe('Dialog', () => {
     });
     it('dialog.update.isSupported should throw before initialization', () => {
       framedMock.setRuntimeConfig(_uninitializedRuntime);
-      expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.update.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
 
@@ -564,7 +564,7 @@ describe('Dialog', () => {
     };
 
     it('should not allow calls before initialization', () => {
-      expect(() => dialog.url.bot.open(botUrlDialogInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.url.bot.open(botUrlDialogInfo)).toThrowError(errorLibraryNotInitialized);
     });
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -821,7 +821,7 @@ describe('Dialog', () => {
 
       it('dialog.url.bot.isSupported should throw before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.url.bot.isSupported()).toThrowError('The library has not yet been initialized');
+        expect(() => dialog.url.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
   });
@@ -830,7 +830,7 @@ describe('Dialog', () => {
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
-      expect(() => dialog.url.sendMessageToDialog('message')).toThrowError('The library has not yet been initialized');
+      expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.values(FrameContexts).forEach((frameContext) => {
@@ -900,7 +900,7 @@ describe('Dialog', () => {
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
       expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
 
@@ -972,7 +972,7 @@ describe('Dialog', () => {
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
       expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        errorLibraryNotInitialized,
       );
     });
 
@@ -1079,7 +1079,7 @@ describe('Dialog', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => dialog.adaptiveCard.open(adaptiveCardDialogInfo)).toThrowError(
-          'The library has not yet been initialized',
+          errorLibraryNotInitialized,
         );
       });
 
@@ -1307,7 +1307,7 @@ describe('Dialog', () => {
 
       it('dialog.adaptiveCard.isSupported should throw before initialization', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.adaptiveCard.isSupported()).toThrowError('The library has not yet been initialized');
+        expect(() => dialog.adaptiveCard.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
 
@@ -1324,7 +1324,7 @@ describe('Dialog', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo)).toThrowError(
-          'The library has not yet been initialized',
+          errorLibraryNotInitialized,
         );
       });
 
@@ -1594,7 +1594,7 @@ describe('Dialog', () => {
 
         it('dialog.adaptiveCard.bot.isSupported should throw before initialization', () => {
           framedMock.setRuntimeConfig(_uninitializedRuntime);
-          expect(() => dialog.adaptiveCard.bot.isSupported()).toThrowError('The library has not yet been initialized');
+          expect(() => dialog.adaptiveCard.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
         });
       });
     });
