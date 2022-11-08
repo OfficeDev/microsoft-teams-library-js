@@ -823,11 +823,6 @@ describe('Dialog', () => {
         framedMock.setRuntimeConfig(_uninitializedRuntime);
         expect(() => dialog.url.bot.isSupported()).toThrowError('The library has not yet been initialized');
       });
-
-      it('should not be supported before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
-        expect(() => dialog.bot.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-      });
     });
   });
 
