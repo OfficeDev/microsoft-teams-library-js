@@ -1,9 +1,10 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { barCode } from '../../src/public/barCode';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
 /* eslint-disable */
@@ -37,9 +38,17 @@ describe('barCode', () => {
   const barCodeConfig = {
     timeOutIntervalInSec: 30,
   };
+
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(() => barCode.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('Testing scanBarCode API', () => {
     it('should not allow scanBarCode calls before initialization', () => {
-      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError('The library has not yet been initialized');
+      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -132,7 +141,7 @@ describe('barCode', () => {
 
   describe('Testing HasPermisison API', () => {
     it('should not allow hasPermission calls before initialization', () => {
-      return expect(() => barCode.hasPermission()).toThrowError('The library has not yet been initialized');
+      return expect(() => barCode.hasPermission()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -212,7 +221,7 @@ describe('barCode', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it('should not allow requestPermission calls before initialization', () => {
-          expect(() => barCode.requestPermission()).toThrowError('The library has not yet been initialized');
+          expect(() => barCode.requestPermission()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         it('requestPermission call in default version of platform support fails', async () => {

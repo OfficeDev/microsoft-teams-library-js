@@ -175,3 +175,6 @@ export const teamsDeepLinkProtocol = 'https';
  * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkHost = 'teams.microsoft.com';
+
+/** @hidden */
+export const errorLibraryNotInitialized = 'The library has not yet been initialized';

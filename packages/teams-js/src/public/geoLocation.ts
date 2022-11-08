@@ -92,12 +92,14 @@ export namespace geoLocation {
 
   /**
    * Checks if geoLocation capability is supported by the host
-   *
    * @returns boolean to represent whether geoLocation is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
   }
 
@@ -143,12 +145,14 @@ export namespace geoLocation {
 
     /**
      * Checks if geoLocation.map capability is supported by the host
-     *
      * @returns boolean to represent whether geoLocation.map is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.geoLocation && runtime.supports.geoLocation.map && runtime.supports.permissions
         ? true
         : false;
