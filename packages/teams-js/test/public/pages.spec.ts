@@ -1,10 +1,12 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent, MessageResponse } from '../../src/internal/interfaces';
+// import { uninitializedLibraryError } from '../../src/internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import {
@@ -39,14 +41,13 @@ describe('Testing pages module', () => {
       // Reset the object since it's a singleton
       if (app._uninitialize) {
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-
         app._uninitialize();
       }
     });
 
     describe('Testing pages.returnFocus function', () => {
       it('pages.returnFocus should not allow calls before initialization', () => {
-        expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
+        expect(() => pages.returnFocus()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -84,7 +85,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.registerFocusEnterHandler function', () => {
       it('pages.registerFocusEnterHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFocusEnterHandler(emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -144,7 +145,7 @@ describe('Testing pages module', () => {
       };
 
       it('pages.setCurrentFrame should not allow calls before initialization', () => {
-        expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
+        expect(() => pages.setCurrentFrame(frameContext)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -281,7 +282,7 @@ describe('Testing pages module', () => {
 
       it('pages.navigateCrossDomain should not allow calls before initialization', async () => {
         await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -289,33 +290,33 @@ describe('Testing pages module', () => {
       /*
       it('should not allow calls with a bad origin', async () => {
         await expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
   
       it('should not allow calls with an empty origin', async () => {
-        await expect(pages.navigateCrossDomain('')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateCrossDomain('')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
   
       it('should not allow calls with a blank origin', async () => {
-        await expect(pages.navigateCrossDomain(' ')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(pages.navigateCrossDomain(' ')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
   
       it('should not allow calls with an origin without base', async () => {
         await expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
   
       it('should not allow calls with an origin without suffix', async () => {
         await expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
   
       it('should not allow calls with an origin with invalid base', async () => {
         await expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
       */
@@ -401,7 +402,7 @@ describe('Testing pages module', () => {
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -500,7 +501,7 @@ describe('Testing pages module', () => {
 
       it('pages.currentApp.navigateTo should not allow calls before initialization', async () => {
         await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -569,7 +570,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.currentApp.navigateToDefaultPage function', () => {
       it('pages.navigate.toDefaultPage should not allow calls before initialization', async () => {
         await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -639,7 +640,7 @@ describe('Testing pages module', () => {
       };
 
       it('pages.shareDeepLink should not allow calls before initialization', () => {
-        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
+        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -690,8 +691,11 @@ describe('Testing pages module', () => {
     describe('Testing pages.registerFullScreenHandler function', () => {
       it('pages.registerFullScreenHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFullScreenHandler(emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
+      });
+      it('pages.registerFullScreenHandler should not throw if called before initialization with no handler', () => {
+        expect(() => pages.registerFullScreenHandler(null)).not.toThrow();
       });
       Object.values(FrameContexts).forEach((context) => {
         it(`pages.registerFullScreenHandler should throw errors when pages is not supported when initialized with ${context}`, async () => {
@@ -747,14 +751,21 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.isSupported function', () => {
-      it('pages.isSupported should return false if the runtime says pages is not supported', () => {
+      it('pages.isSupported should return false if the runtime says pages is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(pages.isSupported()).not.toBeTruthy();
       });
 
-      it('pages.isSupported should return true if the runtime says pages is supported', () => {
+      it('pages.isSupported should return true if the runtime says pages is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.isSupported()).toBeTruthy();
+      });
+
+      it('should throw if called before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(() => pages.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
@@ -777,7 +788,7 @@ describe('Testing pages module', () => {
         };
         it('pages.tabs.navigateToTab should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.navigateToTab(null)).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -828,9 +839,7 @@ describe('Testing pages module', () => {
           favoriteTeamsOnly: true,
         };
         it('pages.tabs.getTabInstances should not allow calls before initialization', async () => {
-          await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized',
-          );
+          await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -884,7 +893,7 @@ describe('Testing pages module', () => {
 
         it('pages.tabs.getMruTabInstances should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.getMruTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -932,22 +941,30 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.tabs.isSupported function', () => {
-        it('pages.tabs.isSupported should return false if the runtime says pages is not supported', () => {
+        it('pages.tabs.isSupported should return false if the runtime says pages is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(pages.tabs.isSupported()).toBeFalsy();
         });
 
-        it('pages.tabs.isSupported should return false if the runtime says pages.tabs is not supported', () => {
+        it('pages.tabs.isSupported should return false if the runtime says pages.tabs is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
           expect(pages.tabs.isSupported()).not.toBeTruthy();
         });
 
-        it('pages.tabs.isSupported should return true if the runtime says pages.tabs is supported', () => {
+        it('pages.tabs.isSupported should return true if the runtime says pages.tabs is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
             apiVersion: 1,
             supports: { pages: { tabs: {} } },
           });
           expect(pages.tabs.isSupported()).toBeTruthy();
+        });
+
+        it('pages.tabs.isSupported should throw if called before initialization', async () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => pages.tabs.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });
@@ -957,8 +974,8 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
 
         it('pages.config.setValidityState should not allow calls before initialization', () => {
-          expect(() => pages.config.setValidityState(true)).toThrowError('The library has not yet been initialized');
-          expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setValidityState(true)).toThrowError(new Error(errorLibraryNotInitialized));
+          expect(() => pages.config.setValidityState(false)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1047,7 +1064,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.setConfig should not allow calls before initialization', () => {
           expect(() => pages.config.setConfig({} as pages.InstanceConfig)).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -1089,8 +1106,12 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerOnSaveHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
+        });
+
+        it('pages.registerOnSaveHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.config.registerOnSaveHandler(null)).not.toThrow();
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1259,8 +1280,12 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerOnRemoveHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
+        });
+
+        it('pages.config.registerOnRemoveHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.config.registerOnRemoveHandler(null)).not.toThrow();
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1386,7 +1411,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerChangeConfigHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -1439,21 +1464,29 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.config.isSupported function', () => {
-        it('pages.config.isSupported should return false if the runtime says its not supported', () => {
+        it('pages.config.isSupported should return false if the runtime says its not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(pages.config.isSupported()).not.toBeTruthy();
         });
-        it('pages.config.isSupported should return false if the runtime says pages.config is not supported', () => {
+        it('pages.config.isSupported should return false if the runtime says pages.config is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
           expect(pages.config.isSupported()).not.toBeTruthy();
         });
 
-        it('pages.config.isSupported should return true if the runtime says pages.config is supported', () => {
+        it('pages.config.isSupported should return true if the runtime says pages.config is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
             apiVersion: 1,
             supports: { pages: { config: {} } },
           });
           expect(pages.config.isSupported()).toBeTruthy();
+        });
+
+        it('pages.config.isSupported should throw if called before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => pages.config.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });
@@ -1469,7 +1502,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.backStack.navigateBack function', () => {
         it('pages.backStack.navigateBack should not allow calls before initialization', async () => {
-          await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
+          await expect(pages.backStack.navigateBack()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1497,13 +1530,16 @@ describe('Testing pages module', () => {
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
         it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
           expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
         it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
           expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
+        });
+        it('pages.backStack.registerBackButtonHandler should not throw if called before initialization with no handler', () => {
+          expect(() => pages.backStack.registerBackButtonHandler(null)).not.toThrow();
         });
         Object.values(FrameContexts).forEach((context) => {
           it(`pages.backStack.registerBackButtonHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
@@ -1582,21 +1618,29 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.backStack.isSupported function', () => {
-        it('pages.backStack.isSupported should return false if the runtime says its not supported', () => {
+        it('pages.backStack.isSupported should return false if the runtime says its not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(pages.backStack.isSupported()).not.toBeTruthy();
         });
-        it('pages.backStack.isSupported should return false if the runtime says pages.backStack is not supported', () => {
+        it('pages.backStack.isSupported should return false if the runtime says pages.backStack is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
           expect(pages.backStack.isSupported()).not.toBeTruthy();
         });
 
-        it('pages.backStack.isSupported should return true if the runtime says pages.backStack is supported', () => {
+        it('pages.backStack.isSupported should return true if the runtime says pages.backStack is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
             apiVersion: 1,
             supports: { pages: { backStack: {} } },
           });
           expect(pages.backStack.isSupported()).toBeTruthy();
+        });
+
+        it('pages.backStack.isSupported should throw if called before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => pages.backStack.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });
@@ -1605,7 +1649,7 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.fullTrust.enterFullScreen function', () => {
         it('pages.fullTrust.enterFullScreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
+          expect(() => pages.fullTrust.enterFullscreen()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1653,7 +1697,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.fullTrust.exitFullscreen function', () => {
         it('pages.fullTrust.exitFullscreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
+          expect(() => pages.fullTrust.exitFullscreen()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1700,21 +1744,29 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.fullTrust.isSupported function', () => {
-        it('pages.fullTrust.isSupported should return false if the runtime says its not supported', () => {
+        it('pages.fullTrust.isSupported should return false if the runtime says its not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(pages.fullTrust.isSupported()).not.toBeTruthy();
         });
-        it('pages.fullTrust.isSupported should return false if the runtime says pages.fullTrust is not supported', () => {
+        it('pages.fullTrust.isSupported should return false if the runtime says pages.fullTrust is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
           expect(pages.fullTrust.isSupported()).not.toBeTruthy();
         });
 
-        it('pages.fullTrust.isSupported should return true if the runtime says pages.fullTrust is supported', () => {
+        it('pages.fullTrust.isSupported should return true if the runtime says pages.fullTrust is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
             apiVersion: 1,
             supports: { pages: { fullTrust: {} } },
           });
           expect(pages.fullTrust.isSupported()).toBeTruthy();
+        });
+
+        it('pages.fullTrust.isSupported should throw if called before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => pages.fullTrust.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });
@@ -1723,7 +1775,7 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.appButton.onClick function', () => {
         it('pages.appButton.onClick should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1774,9 +1826,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverEnter function', () => {
         it('pages.appButton.onHoverEnter should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1827,9 +1877,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverLeave function', () => {
         it('pages.appButton.onHoverLeave should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -1879,21 +1927,29 @@ describe('Testing pages module', () => {
       });
 
       describe('Testing pages.appButton.isSupported function', () => {
-        it('pages.appButton.isSupported should return false if the runtime says its not supported', () => {
+        it('pages.appButton.isSupported should return false if the runtime says its not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(pages.appButton.isSupported()).not.toBeTruthy();
         });
-        it('pages.appButton.isSupported should return false if the runtime says pages.appButton is not supported', () => {
+        it('pages.appButton.isSupported should return false if the runtime says pages.appButton is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
           expect(pages.appButton.isSupported()).not.toBeTruthy();
         });
 
-        it('pages.appButton.isSupported should return true if the runtime says pages.appButton is supported', () => {
+        it('pages.appButton.isSupported should return true if the runtime says pages.appButton is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
             apiVersion: 1,
             supports: { pages: { appButton: {} } },
           });
           expect(pages.appButton.isSupported()).toBeTruthy();
+        });
+
+        it('pages.appButton.isSupported should throw if called before initialization', () => {
+          utils.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => pages.appButton.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });
@@ -1920,7 +1976,7 @@ describe('Testing pages module', () => {
 
     describe('Testing pages.returnFocus function', () => {
       it('pages.returnFocus should not allow calls before initialization', () => {
-        expect(() => pages.returnFocus()).toThrowError('The library has not yet been initialized');
+        expect(() => pages.returnFocus()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1962,7 +2018,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.registerFocusEnterHandler function', () => {
       it('pages.registerFocusEnterHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFocusEnterHandler(emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
       Object.values(FrameContexts).forEach((context) => {
@@ -2032,7 +2088,7 @@ describe('Testing pages module', () => {
       };
 
       it('pages.setCurrentFrame should not allow calls before initialization', () => {
-        expect(() => pages.setCurrentFrame(frameContext)).toThrowError('The library has not yet been initialized');
+        expect(() => pages.setCurrentFrame(frameContext)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -2179,7 +2235,7 @@ describe('Testing pages module', () => {
 
       it('pages.navigateCrossDomain should not allow calls before initialization', async () => {
         await expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -2278,7 +2334,7 @@ describe('Testing pages module', () => {
 
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -2352,6 +2408,23 @@ describe('Testing pages module', () => {
       });
     });
 
+    describe('Testing pages.currentApp.isSupported function', () => {
+      it('pages.currentApp.isSupported should return false if the runtime says pages.currentApp is not supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+        expect(pages.currentApp.isSupported()).not.toBeTruthy();
+      });
+
+      it('pages.currentApp.isSupported should return true if the runtime says pages.currentApp is supported', () => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
+        expect(pages.currentApp.isSupported()).toBeTruthy();
+      });
+
+      it('pages.currentApp.isSupported should be false before initialization', () => {
+        utils.setRuntimeConfig(_uninitializedRuntime);
+        expect(pages.currentApp.isSupported()).toBeFalsy();
+      });
+    });
+
     describe('Testing pages.currentApp.navigateTo function', () => {
       const NavigateToParams: pages.currentApp.NavigateWithinAppParams = {
         pageId: 'tasklist123',
@@ -2360,7 +2433,7 @@ describe('Testing pages module', () => {
 
       it('pages.currentApp.navigateTo should not allow calls before initialization', async () => {
         await expect(pages.currentApp.navigateTo(NavigateToParams)).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -2427,7 +2500,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.currentApp.navigateToDefaultPage function', () => {
       it('pages.navigate.toDefaultPage should not allow calls before initialization', async () => {
         await expect(pages.currentApp.navigateToDefaultPage()).rejects.toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -2508,7 +2581,7 @@ describe('Testing pages module', () => {
       };
 
       it('pages.shareDeepLink should not allow calls before initialization', () => {
-        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError('The library has not yet been initialized');
+        expect(() => pages.shareDeepLink(deepLinkParameters)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -2556,7 +2629,7 @@ describe('Testing pages module', () => {
     describe('Testing pages.registerFullScreenHandler function', () => {
       it('pages.registerFullScreenHandler should not allow calls before initialization', () => {
         expect(() => pages.registerFullScreenHandler(emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
       Object.values(FrameContexts).forEach((context) => {
@@ -2631,7 +2704,7 @@ describe('Testing pages module', () => {
 
         it('pages.tabs.navigateToTab should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.navigateToTab(null)).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -2671,9 +2744,7 @@ describe('Testing pages module', () => {
           favoriteTeamsOnly: true,
         };
         it('pages.tabs.getTabInstances should not allow calls before initialization', async () => {
-          await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized',
-          );
+          await expect(() => pages.tabs.getTabInstances()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -2733,7 +2804,7 @@ describe('Testing pages module', () => {
 
         it('pages.tabs.getMruTabInstances should not allow calls before initialization', async () => {
           await expect(() => pages.tabs.getMruTabInstances()).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -2801,8 +2872,8 @@ describe('Testing pages module', () => {
         const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
 
         it('pages.config.setValidityState should not allow calls before initialization', () => {
-          expect(() => pages.config.setValidityState(true)).toThrowError('The library has not yet been initialized');
-          expect(() => pages.config.setValidityState(false)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.config.setValidityState(true)).toThrowError(new Error(errorLibraryNotInitialized));
+          expect(() => pages.config.setValidityState(false)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -2895,7 +2966,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.setConfig should not allow calls before initialization', () => {
           expect(() => pages.config.setConfig({} as pages.InstanceConfig)).rejects.toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -2938,7 +3009,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerOnSaveHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerOnSaveHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -3091,7 +3162,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerOnRemoveHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerOnRemoveHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -3190,7 +3261,7 @@ describe('Testing pages module', () => {
 
         it('pages.config.registerChangeConfigHandler should not allow calls before initialization', () => {
           expect(() => pages.config.registerChangeConfigHandler(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -3256,7 +3327,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.backStack.navigateBack function', () => {
         it('pages.backStack.navigateBack should not allow calls before initialization', async () => {
-          await expect(pages.backStack.navigateBack()).rejects.toThrowError('The library has not yet been initialized');
+          await expect(pages.backStack.navigateBack()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -3283,12 +3354,12 @@ describe('Testing pages module', () => {
       describe('Testing pages.backStack.registerBackButtonHandler function', () => {
         it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to true', () => {
           expect(() => pages.backStack.registerBackButtonHandler(() => true)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
         it('pages.backStack.registerBackButtonHandler should not allow calls before initialization when set to false', () => {
           expect(() => pages.backStack.registerBackButtonHandler(() => false)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -3377,7 +3448,7 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.fullTrust.enterFullScreen function', () => {
         it('pages.fullTrust.enterFullScreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.enterFullscreen()).toThrowError('The library has not yet been initialized');
+          expect(() => pages.fullTrust.enterFullscreen()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -3425,7 +3496,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.fullTrust.exitFullscreen function', () => {
         it('pages.fullTrust.exitFullscreen should not allow calls before initialization', () => {
-          expect(() => pages.fullTrust.exitFullscreen()).toThrowError('The library has not yet been initialized');
+          expect(() => pages.fullTrust.exitFullscreen()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -3476,7 +3547,7 @@ describe('Testing pages module', () => {
       const allowedContexts = [FrameContexts.content];
       describe('Testing pages.appButton.onClick function', () => {
         it('pages.appButton.onClick should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError('The library has not yet been initialized');
+          expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -3529,9 +3600,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverEnter function', () => {
         it('pages.appButton.onHoverEnter should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -3586,9 +3655,7 @@ describe('Testing pages module', () => {
 
       describe('Testing pages.appButton.onHoverLeave function', () => {
         it('pages.appButton.onHoverLeave should not allow calls before initialization', () => {
-          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
-            'The library has not yet been initialized',
-          );
+          expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {

@@ -118,12 +118,14 @@ export namespace search {
 
   /**
    * Checks if search capability is supported by the host
-   * @returns true if the search capability is supported by the host and false otherwise
-   * false if it is disabled
+   * @returns boolean to represent whether the search capability is supported
+   *
+   * @throws Error if {@link app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.search ? true : false;
   }
 }
